@@ -117,18 +117,16 @@ canvas.addEventListener("mouseup", function(e) {
     var currType = StrokeClassifier.GetStrokeType(inkCanvas._activeStroke.stroke);
     if (currType != StrokeType.SCRIBBLE) {
         selections.push(selection);
-        var myWindow = window.open("","Selected","width=1000, height=1000");
-        myWindow.focus();
-        myWindow.document.body.innerHTML="";
-        myWindow.document.write(selection.getContent());
+		port.postMessage({ "text" : selection.getContent()});
+        //var myWindow = window.open("","Selected","width=1000, height=1000");
+        //myWindow.focus();
+        //myWindow.document.body.innerHTML="";
+       // myWindow.document.write(selection.getContent());
     }
     else {
         inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
         inkCanvas.update();
     }
-
-   // console.log("num selections: " + selections.length);
-    port.postMessage({ "text" : content});
 
 
     ///////////// UNCOMMENT TO SHOW WINDOW!!!!!!!!!!!!!!!!!!!!//////////////////////////////////////

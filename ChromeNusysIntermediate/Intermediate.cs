@@ -16,23 +16,31 @@ namespace ChromeNusysIntermediate
 
         static void Main(string[] args)
         {
-            Client client = new Client();
+            //Client client = new Client();
 
             string input = OpenStandardStreamIn();
 
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\blu";
+            System.IO.Directory.CreateDirectory(dir);
+            var fileDir = dir + "\\test.txt";
+            //System.IO.File.WriteAllLines(@"C:\Users\Ben\Documents\WriteLins2.txt", line2);
+
+            
             //if the input is the empty string, then we are no longer connected to chrome and should shut down
             while (input != null && input != "")
             {
                     string[] line = {input};
-                    string[] line2 = { "a line" };
-                    System.IO.File.WriteAllLines(@"C:\Users\Ben\Documents\WriteLins2.txt", line2);
-                    System.IO.File.WriteAllLines(@"C:\Users\Ben\Documents\WriteLins.txt", line);
+                    File.AppendAllLines(fileDir, line);
+                    //System.IO.File.WriteAllLines(@"C:\Users\Ben\Documents\WriteLins.txt", line);
+
 
                     input = "length=" + input.Length + "begin input:" + input;
-                    client.Send(input);
+                    //client.Send(input);
                     input = OpenStandardStreamIn();
                 
             }
+            
+            
         }
 
         private static string OpenStandardStreamIn()
