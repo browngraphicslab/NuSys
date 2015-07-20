@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using Windows.Storage.Search;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -46,6 +48,27 @@ namespace NuStarterProject
             ScaleX = 0;
             ScaleY = 0;
             _factory = new Factory(this);
+            SetupChromeIntermediate();
+
+        }
+
+        private async void SetupChromeIntermediate()
+        {
+            
+            var a = Windows.Storage.KnownFolders.DocumentsLibrary;
+  
+
+
+            var options = new Windows.Storage.Search.QueryOptions();
+            var query = a.CreateFileQueryWithOptions(options);
+
+            query.ContentsChanged += delegate(IStorageQueryResultBase sender, object args)
+            {
+                Debug.WriteLine("CONTENTS CHANGED!");
+            };
+
+            var files = query.GetFilesAsync();
+
         }
 
 

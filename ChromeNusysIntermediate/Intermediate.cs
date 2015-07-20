@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,10 +18,12 @@ namespace ChromeNusysIntermediate
         static void Main(string[] args)
         {
             //Client client = new Client();
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSysData";
+            Debug.WriteLine(dir);
 
             string input = OpenStandardStreamIn();
 
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\blu";
+
             System.IO.Directory.CreateDirectory(dir);
             var fileDir = dir + "\\test.txt";
             //System.IO.File.WriteAllLines(@"C:\Users\Ben\Documents\WriteLins2.txt", line2);
