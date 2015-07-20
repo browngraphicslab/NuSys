@@ -1,7 +1,7 @@
 {
 	"name" : "com.browngraphicslab.chromenusysintermediate",
 	"description" : "Handleds messages from chrome and sends them to wpf",
-	"path" : "ChromeNusysIntermediate.exe",
+	"path" : "bin/Debug/ChromeNusysIntermediate.exe",
 	"type" : "stdio",
 	"allowed_origins": [
 		"chrome-extension://pmnijcgnggbkmbeolldpablbkhnfbdgc/"

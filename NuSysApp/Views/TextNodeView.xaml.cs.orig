@@ -1,0 +1,97 @@
+﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+
+namespace NuStarterProject
+{
+    public sealed partial class TextNodeView : UserControl
+    {
+        private bool _isEditing;
+        public TextNodeView(TextNodeViewModel vm)
+        {
+            this.InitializeComponent();
+            this.DataContext = vm;
+            _isEditing = false;
+            this.SetUpBindings();
+        }
+
+        public TextNodeView(string dataString)
+        {
+            this.InitializeComponent();
+
+            _isEditing = false;
+            this.textBlock.Text = dataString;
+            this.textBlock.FontFamily = new FontFamily(Constants.DEFAULT_FONT);
+            this.textBlock.FontSize = Constants.DEFAULT_FONT_SIZE;
+
+            this.textBox.Text = dataString;
+            this.textBox.FontFamily = new FontFamily(Constants.DEFAULT_FONT);
+            this.textBox.FontSize = Constants.DEFAULT_FONT_SIZE;
+
+        }
+
+
+
+        #region Helper Methods
+        private void SetUpBindings()
+        {
+            Binding leftBinding = new Binding() { Path = new PropertyPath("X") };
+            leftBinding.Mode = BindingMode.TwoWay;
+            this.SetBinding(Canvas.LeftProperty, leftBinding);
+
+            Binding topBinding = new Binding() { Path = new PropertyPath("Y") };
+            topBinding.Mode = BindingMode.TwoWay;
+            this.SetBinding(Canvas.TopProperty, topBinding);
+        }
+
+        #endregion Helper Methods
+
+        #region Event Handlers
+        private void UserControl_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+            e.Handled = true;
+        }
+
+        private void Resizer_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            e.Handled = true;
+        }
+
+        private void UserControl_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+<<<<<<< HEAD
+            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            vm.ToggleSelection();
+            e.Handled = true;
+=======
+            /* TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+             vm.IsSelected = !vm.IsSelected;
+             e.Handled = true; */
+            if (_isEditing)
+            {
+                this.textBox.Visibility = Visibility.Collapsed;
+                this.textBlock.Visibility = Visibility.Visible;
+                this.textBlock.Text = this.textBox.Text;
+                _isEditing = false;
+            }
+            else
+            {
+                this.textBox.Visibility = Visibility.Visible;
+                this.textBlock.Visibility = Visibility.Collapsed;
+                this.textBox.Text = this.textBlock.Text;
+                _isEditing = true;
+            }
+
+
+>>>>>>> 91a88ef3ab87a00a038c2eef24f02795b400966c
+        }
+        #endregion Event Handlers
+    }
+}

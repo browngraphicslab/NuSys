@@ -1,0 +1,42 @@
+﻿<UserControl
+    x:Class="NuStarterProject.BezierLink"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+
+        <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+
+                            <!--this startpoint should be bound to node centerpoint-->
+
+                            <PathFigure x:Name="pathfigure" StartPoint="{Binding Node1.Anchor}">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+
+                                        <!-- this bezier segment has 3 points of curvilinear change. -->
+                                        <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
+                                            node on the other end of the link -->
+
+                                        <BezierSegment x:Name="curve"
+                                                       Point3="{Binding Node2.Anchor}" />
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+
+        </Path>
+
+    </Grid>
+</UserControl>

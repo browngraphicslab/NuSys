@@ -1,0 +1,79 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+using System.Windows;
+
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+
+namespace NuStarterProject.Views
+{
+
+    public sealed partial class BezierLink : UserControl
+    {
+
+        LinkViewModel _vm;
+
+        public BezierLink(LinkViewModel vm)
+        {
+            this.InitializeComponent();
+            this.DataContext = vm;
+            _vm = vm;
+            this.SetUpBindings();
+            this.UpdateControlPoints();
+        }
+
+        public void UpdateControlPoints()
+        {
+<<<<<<< HEAD
+            TextNodeViewModel node1 = _vm.Node1;
+            TextNodeViewModel node2 = _vm.Node2;
+            Point anchor1 = node1.Anchor;
+            Point anchor2 = node2.Anchor;
+            double distanceX = anchor1.X - anchor2.X;
+            double distanceY = anchor1.Y - anchor2.Y;
+            Point controlPoint = new Point();
+            if (anchor1.Y > anchor2.Y)
+            {
+                controlPoint.X = anchor2.X + distanceX / 2;
+                controlPoint.Y = anchor2.Y + distanceY / 3;
+            } else 
+            {
+                controlPoint.X = anchor1.X - distanceX / 2;
+                controlPoint.Y = anchor1.Y - distanceY / 3;
+            }
+            curve.Point1 = controlPoint;
+            curve.Point2 = controlPoint;
+            
+=======
+            NodeViewModel node1 = _vm.Node1;
+            NodeViewModel node2 = _vm.Node2;
+            double nodeDistanceX = node1.X - node2.X;
+            double nodeDistanceY = node1.Y - node2.Y;
+            Point startPoint = pathfigure.StartPoint;
+            Point endPoint = curve.Point3;
+>>>>>>> 05a81f528d8dff4ccb337d718c5954cb7bdbb425
+        }
+
+        private void SetUpBindings()
+        {
+            Binding leftBinding = new Binding() { Path = new PropertyPath("X") };
+            leftBinding.Mode = BindingMode.TwoWay;
+            this.SetBinding(Canvas.LeftProperty, leftBinding);
+
+            Binding topBinding = new Binding() { Path = new PropertyPath("Y") };
+            topBinding.Mode = BindingMode.TwoWay;
+            this.SetBinding(Canvas.TopProperty, topBinding);
+        }
+    }
+}

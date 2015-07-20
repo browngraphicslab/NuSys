@@ -1,0 +1,224 @@
+﻿using NuStarterProject.Views;
+using System.Collections.ObjectModel;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+
+namespace NuStarterProject
+{
+    /// <summary>
+    /// Models the basic Workspace and maintains a list of all atoms. 
+    /// </summary>
+    public class WorkspaceViewModel : BaseINPC
+    {
+        #region Private Members
+        private ObservableCollection<UserControl> _atomViewList; //Canvas binds to this
+        //private ObservableCollection<LinkView> _linkViewList; //currently unused
+        private ObservableCollection<NodeViewModel> _nodeViewModelList;//currently unsued
+        private ObservableCollection<LinkViewModel> _linkViewModelList; //currently unused
+<<<<<<< HEAD
+        private TextNodeViewModel _selectedNodeViewModel; //currently selected node
+        public enum Mode { TEXTNODE, GLOBALINK, ERASE };
+=======
+        private NodeViewModel _selectedNodeViewModel; //currently selected node
+        public enum Mode { TEXTNODE, GLOBALINK };
+>>>>>>> 05a81f528d8dff4ccb337d718c5954cb7bdbb425
+        private Mode _currentMode;
+        private double _transformX, _transformY, _scaleX, _scaleY;
+
+        #endregion Private Members
+
+        public WorkspaceViewModel()
+        {
+            _atomViewList = new ObservableCollection<UserControl>();
+            //_linkViewList = new ObservableCollection<LinkView>();
+            _nodeViewModelList = new ObservableCollection<NodeViewModel>();
+            _linkViewModelList = new ObservableCollection<LinkViewModel>();
+            _selectedNodeViewModel = null;
+            this.CurrentMode = Mode.TEXTNODE;
+            TransformX = 0;
+            TransformY = 0;
+            ScaleX = 0;
+            ScaleY = 0;
+
+        }
+
+
+        /// <summary>
+        /// Deletes a given node from the workspace, and their links.
+        /// </summary>
+        /// <param name="nodeVM"></param>
+        public void DeleteNode(NodeViewModel nodeVM)
+        {
+            ObservableCollection<BezierLink> linkList = nodeVM.GetLinkList();
+            foreach (BezierLink link in linkList)
+            {
+                _atomViewList.Remove(link);
+            }
+            _atomViewList.Remove(nodeVM.View);
+            _nodeViewModelList.Remove(nodeVM);
+        }
+
+        /// <summary>
+        /// Sets the passed in Node as selected. If there atlready is a selected node, the two are linked.
+        /// </summary>
+        /// <param name="selected"></param>
+        public void SetSelection(NodeViewModel selected)
+        {
+            if(_selectedNodeViewModel == null)
+            {
+                _selectedNodeViewModel = selected;
+                return;
+            }
+            this.CreateNewLink(_selectedNodeViewModel, selected);
+            selected.IsSelected = false;
+            _selectedNodeViewModel.IsSelected = false;
+            _selectedNodeViewModel = null;
+        }
+
+        /// <summary>
+        /// Unselects the currently selected node.
+        /// </summary> 
+        public void ClearSelection()
+        {
+            if(_selectedNodeViewModel != null)
+            {
+                _selectedNodeViewModel.ToggleSelection();
+                _selectedNodeViewModel = null;
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Creates a link between two nodes. 
+        /// </summary>
+        /// <param name="nodeVM1"></param>
+        /// <param name="nodeVM2"></param>
+        public void CreateNewLink(NodeViewModel nodeVM1, NodeViewModel nodeVM2)
+        {
+            int x1 = (int)(nodeVM1.X + nodeVM1.Transform.Matrix.OffsetX );
+            int y1 = (int)(nodeVM1.Y + nodeVM1.Transform.Matrix.OffsetY );
+            int x2 = (int)(nodeVM2.X + nodeVM2.Transform.Matrix.OffsetX );
+            int y2 = (int)(nodeVM2.Y + nodeVM2.Transform.Matrix.OffsetY );
+            if (_currentMode == Mode.TEXTNODE)
+            {
+                LinkViewModel vm = new LinkViewModel(x1, x2, y1, y2, nodeVM1, nodeVM2);
+                
+                _atomViewList.Add(vm.View);
+                nodeVM1.AddLink(vm.View);
+                nodeVM2.AddLink(vm.View);
+            }
+           
+
+        }
+
+        /// <summary>
+        /// Creates a new textnode at the given coordinates. 
+        /// </summary>
+        /// <param name="xCoordinate"></param>
+        /// <param name="yCoordinate"></param>
+        public void CreateNewTextNode(double xCoordinate, double yCoordinate)
+        {
+            //TextNodeViewModel vm = new TextNodeViewModel(this);
+            InkNodeViewModel vm = new InkNodeViewModel(this);
+            _nodeViewModelList.Add(vm);
+            _atomViewList.Add(vm.View);
+            vm.X = 0;
+            vm.Y = 0;
+            Matrix transMat = ((MatrixTransform)vm.View.RenderTransform).Matrix;
+            transMat.OffsetX += xCoordinate - TransformX;
+            transMat.OffsetY += yCoordinate - TransformY;
+            vm.Transform = new MatrixTransform();
+            vm.Transform.Matrix = transMat;
+        }
+        
+        #region Public Members
+        public ObservableCollection<NodeViewModel> NodeViewModelList
+        {
+            get { return _nodeViewModelList; }
+        }
+
+        public ObservableCollection<LinkViewModel> LinkViewModelList
+        {
+            get { return _linkViewModelList; }
+        }
+
+        public ObservableCollection<UserControl> NodeViewList
+        {
+            get { return _atomViewList; }
+        }
+
+        public Mode CurrentMode
+        {
+            get { return _currentMode; }
+            set
+            {
+                if (_currentMode == value) {
+                    return;
+                }
+                _currentMode = value;
+            }
+        }
+        //public ObservableCollection<LinkView> LinkViewList
+        //{
+        //    get { return _linkViewList; }
+        //}
+        public double TransformX
+        {
+            get { return _transformX; }
+            set
+            {
+                if (_transformX == value)
+                {
+                    return;
+                }
+                _transformX = value;
+                RaisePropertyChanged("TransformX");
+            }
+        }
+
+        public double TransformY
+        {
+            get { return _transformY; }
+
+            set
+            {
+                if (_transformY == value)
+                {
+                    return;
+                }
+                _transformY = value;
+                RaisePropertyChanged("TransformY");
+            }
+        }
+
+        public double ScaleX
+        {
+            get { return _scaleX; }
+            set
+            {
+                if (_scaleX == value)
+                {
+                    return;
+                }
+                _scaleX = value;
+            }
+        }
+
+        public double ScaleY
+        {
+            get { return _scaleY; }
+            set
+            {
+                if (_scaleY == value)
+                {
+                    return;
+                }
+                _scaleY = value;
+            }
+        }
+
+        #endregion Public Members
+
+
+    }
+}
