@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{F63CD448-F845-40DF-B792-2EE5ACDFF3E2}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="old\assets\brush.png" />
+    <Content Include="old\assets\icon.png" />
+    <Content Include="old\lib\jquery-1.11.2.js" />
+    <Content Include="old\src\BracketSelection.js" />
+    <Content Include="old\src\BrushStroke.js" />
+    <Content Include="old\src\CircleBrush.js" />
+    <Content Include="old\src\DomUtil.js" />
+    <Content Include="old\src\HashMap.js" />
+    <Content Include="old\src\HighlightBrush.js" />
+    <Content Include="old\src\InkCanvas.js" />
+    <Content Include="old\src\Line.js" />
+    <Content Include="old\src\LineBrush.js" />
+    <Content Include="old\src\LineSelection.js" />
+    <Content Include="old\src\main.js" />
+    <Content Include="old\src\MarqueeBrush.js" />
+    <Content Include="old\src\MarqueeSelection.js" />
+    <Content Include="old\src\MathUtil.js" />
+    <Content Include="old\src\Rectangle.js" />
+    <Content Include="old\src\SelectionBrush.js" />
+    <Content Include="old\src\Statistics.js" />
+    <Content Include="old\src\Stroke.js" />
+    <Content Include="old\src\StrokeClassifier.js" />
+    <Content Include="old\src\UnknownSelection.js" />
+    <Content Include="old\src\Vector2.js" />
+    <Content Include="out\assets\brush.png" />
+    <Content Include="out\assets\icon.png" />
+    <Content Include="out\NuSysChromeExtension.js" />
+    <Content Include="Scripts\src\app.css" />
+    <Content Include="out\bg.js" />
+    <Content Include="out\popup.html" />
+    <Content Include="out\select.js" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md" />
+    <Content Include="out\manifest.json" />
+    <Content Include="packages.config" />
+    <Content Include="out\NuSysChromeExtension.js.map" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\src\ink\brush\BrushStroke.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\brush\SelectionBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\brush\HighlightBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\brush\IBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\InkCanvas.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\Stroke.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\StrokeClassifier.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\StrokeType.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\ISelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\DomUtil.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Line.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Rectangle.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Statistics.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Vector2.ts" />
+    <TypeScriptCompile Include="Scripts\typings\chrome\chrome-app.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\chrome\chrome-cast.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\chrome\chrome.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\filesystem\filesystem.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\filewriter\filewriter.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\webrtc\MediaStream.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\webrtc\RTCPeerConnection.d.ts" />
+    <TypeScriptCompile Include="Scripts\src\app.ts" />
+    <TypeScriptCompile Include="Scripts\src\Main.ts" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>ChromeExtension</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptOutFile>out\NuSysChromeExtension.js</TypeScriptOutFile>
+    <TypeScriptOutDir>C:\stu\NuSys\ChromeExtension\out</TypeScriptOutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
