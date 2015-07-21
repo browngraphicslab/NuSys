@@ -26,10 +26,10 @@ if(!isRunning) {
     chrome.tabs.executeScript({file: 'src/main.js'});
     isRunning = true;
 
-
-    document.getElementById("btnSend").addEventListener("click", function(){
-        console.log(chrome.extension.getBackgroundPage().port);
-        console.log(selections)
+    var t = this;
+    document.getElementById("btnSend").addEventListener("click", function () {
+        console.log("button clicked");
+        console.log(t.selections);
     });
 }
 

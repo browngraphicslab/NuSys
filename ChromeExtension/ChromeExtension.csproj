@@ -24,7 +24,10 @@
   <ItemGroup>
     <Content Include="old\assets\brush.png" />
     <Content Include="old\assets\icon.png" />
+    <Content Include="old\bg.js" />
     <Content Include="old\lib\jquery-1.11.2.js" />
+    <Content Include="old\popup.html" />
+    <Content Include="old\select.js" />
     <Content Include="old\src\BracketSelection.js" />
     <Content Include="old\src\BrushStroke.js" />
     <Content Include="old\src\CircleBrush.js" />
@@ -62,6 +65,8 @@
     <Content Include="out\manifest.json" />
     <Content Include="packages.config" />
     <Content Include="out\NuSysChromeExtension.js.map" />
+    <Content Include="old\manifest.json" />
+    <Content Include="old\README.md" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

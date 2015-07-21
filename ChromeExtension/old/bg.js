@@ -1,9 +1,8 @@
 var port;
 var localPort;
-var selectedContent = new Array();
+var selections = new Array();
 
 chrome.runtime.onStartup.addListener(startConnection());
-
 port.onDisconnect.addListener(function() {
 	console.debug("disconnected");
 });
@@ -20,4 +19,3 @@ chrome.runtime.onConnect.addListener(function(mesPort){
 function startConnection() {
 	port = chrome.runtime.connectNative('com.browngraphicslab.chromenusysintermediate');
 }
-

@@ -106,6 +106,7 @@ namespace NuStarterProject
         {
             text = new string[100];
             var readFile = await Windows.Storage.FileIO.ReadLinesAsync(file);
+            
             int counter = 0;
             foreach (var line in readFile)
             {
@@ -125,10 +126,9 @@ namespace NuStarterProject
                     NodeViewModelList.Add(nodeVm);
                     NodeViewList.Add(nodeVm.View);
                 }
-                i = 0;
-                counter = 0;
-                text = new string[100];
+
             });
+            
             
            
         }
