@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -54,21 +56,42 @@ namespace NuStarterProject
 
         private async void SetupChromeIntermediate()
         {
-            
-            var a = Windows.Storage.KnownFolders.DocumentsLibrary;
-  
+            StorageFolder transferFolder = null;
+            StorageFile transferFile = null;
+            var docFolder = KnownFolders.DocumentsLibrary;
+            const string transferFolderName = "NuSysTransfer";
+            const string transferFileName = "chromeSelections.nusys";
 
+            // Create transfer folder if not exists.
+            try
+            {
+                transferFolder = await docFolder.GetFolderAsync(transferFolderName).AsTask();
+            }
+            catch (Exception exception)
+            {
+                transferFolder = await docFolder.CreateFolderAsync(transferFolderName).AsTask();
+            }
 
-            var options = new Windows.Storage.Search.QueryOptions();
-            var query = a.CreateFileQueryWithOptions(options);
+            // Create transfer file if not exists.
+            try
+            {
+                await transferFolder.GetFileAsync(transferFileName).AsTask();
+            }
+            catch (Exception exception)
+            {
+                await transferFolder.CreateFileAsync(transferFileName).AsTask();
+            }
+
+            // Start watching 
+            var options = new QueryOptions {FileTypeFilter = {".nusys"}};
+            var query = transferFolder.CreateFileQueryWithOptions(options);
 
             query.ContentsChanged += delegate(IStorageQueryResultBase sender, object args)
             {
-                Debug.WriteLine("CONTENTS CHANGED!");
+                Debug.WriteLine("CONTENTS CHANGED! " + args);
             };
 
-            var files = query.GetFilesAsync();
-
+            query.GetFilesAsync();
         }
 
 

@@ -113,11 +113,11 @@ canvas.addEventListener("mouseup", function(e) {
 
         inkCanvas.update();
     }
-
+    
     var currType = StrokeClassifier.GetStrokeType(inkCanvas._activeStroke.stroke);
     if (currType != StrokeType.SCRIBBLE) {
         selections.push(selection);
-		port.postMessage({ "text" : selection.getContent()});
+		port.postMessage(selection.getContent());
         //var myWindow = window.open("","Selected","width=1000, height=1000");
         //myWindow.focus();
         //myWindow.document.body.innerHTML="";

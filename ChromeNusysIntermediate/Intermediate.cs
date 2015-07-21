@@ -18,14 +18,14 @@ namespace ChromeNusysIntermediate
         static void Main(string[] args)
         {
             //Client client = new Client();
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSysData";
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSysTransfer";
             Debug.WriteLine(dir);
 
             string input = OpenStandardStreamIn();
 
 
             System.IO.Directory.CreateDirectory(dir);
-            var fileDir = dir + "\\test.txt";
+            var fileDir = dir + "\\chromeSelections.nusys";
             //System.IO.File.WriteAllLines(@"C:\Users\Ben\Documents\WriteLins2.txt", line2);
 
             
