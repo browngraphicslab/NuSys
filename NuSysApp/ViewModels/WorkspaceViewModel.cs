@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
+using Windows.ApplicationModel.Core;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.UI.Xaml.Controls;
@@ -75,25 +79,59 @@ namespace NuStarterProject
             // Create transfer file if not exists.
             try
             {
-                await transferFolder.GetFileAsync(transferFileName).AsTask();
+
+                transferFile = await transferFolder.GetFileAsync(transferFileName).AsTask();
             }
             catch (Exception exception)
             {
-                await transferFolder.CreateFileAsync(transferFileName).AsTask();
+                transferFile = await transferFolder.CreateFileAsync(transferFileName).AsTask();
             }
 
             // Start watching 
             var options = new QueryOptions {FileTypeFilter = {".nusys"}};
             var query = transferFolder.CreateFileQueryWithOptions(options);
-
             query.ContentsChanged += delegate(IStorageQueryResultBase sender, object args)
             {
                 Debug.WriteLine("CONTENTS CHANGED! " + args);
+                //file = transferFolder.GetFileAsync(transferFileName).GetResults();
+                //ReadFile(query.Folder.GetFileAsync().GetResults());
+                ReadFile(transferFile);
             };
 
             query.GetFilesAsync();
         }
 
+        private string[] text;
+        public async void ReadFile(StorageFile file)
+        {
+            text = new string[100];
+            var readFile = await Windows.Storage.FileIO.ReadLinesAsync(file);
+            int counter = 0;
+            foreach (var line in readFile)
+            {
+                text[counter] = line;
+                counter++;
+            }
+
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                int i = 0;
+                while (i < counter)
+                {
+                    var nodeVm = _factory.CreateNewText(text[i]);
+                    this.PositionNode(nodeVm, 100 + counter * 100, 100 + counter * 100);
+                    i++;
+                    NodeViewModelList.Add(nodeVm);
+                    NodeViewList.Add(nodeVm.View);
+                }
+                i = 0;
+                counter = 0;
+                text = new string[100];
+            });
+            
+           
+        }
 
         /// <summary>
         /// Returns true if the given node intersects with any link on the workspace, 
