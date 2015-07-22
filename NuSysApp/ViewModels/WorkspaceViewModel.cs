@@ -120,7 +120,7 @@ namespace NuStarterProject
                 int i = 0;
                 while (i < counter)
                 {
-                    var nodeVm = _factory.CreateNewText(text[i]);
+                    var nodeVm = _factory.CreateNewRichText(text[i]);
                     this.PositionNode(nodeVm, 100 + counter * 100, 100 + counter * 100);
                     i++;
                     NodeViewModelList.Add(nodeVm);

@@ -40,6 +40,7 @@
         BackgroundColor="#464646">
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="nusys">
@@ -56,5 +57,6 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <uap:Capability Name="documentsLibrary" />
+    <uap:Capability Name="picturesLibrary" />
   </Capabilities>
 </Package>

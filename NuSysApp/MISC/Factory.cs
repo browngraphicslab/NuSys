@@ -14,7 +14,15 @@
             textVM.Data = data;
             return textVM;
         }
-        
+
+        public RichTextNodeViewModel CreateNewRichText(string html)
+        {
+            RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
+            var block = HtmlRichTextConverter.GenerateBlockFromHtml(html, "https://en.wikipedia.org/");
+            richTextVM.Data = block;
+            return richTextVM;
+        }
+
 
         public InkNodeViewModel CreateNewInk()
         {
