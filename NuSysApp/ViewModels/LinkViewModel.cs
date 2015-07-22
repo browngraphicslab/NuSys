@@ -27,13 +27,10 @@ namespace NuSysApp
 
         #endregion Private members
 
-        public LinkViewModel(int x1, int x2, int y1, int y2, NodeViewModel node1,
+        public LinkViewModel(NodeViewModel node1,
             NodeViewModel node2, WorkspaceViewModel workspace)
         {
-            this.X1 = x1;
-            this.X2 = x2;
-            this.Y1 = y1;
-            this.Y2 = y2;
+            
             this.Node1 = node1;
             this.Node2 = node2;
             this.Node1.UpdateAnchor();
@@ -47,6 +44,12 @@ namespace NuSysApp
             {
                 this.View = new LinkView(this);
             }
+        }
+
+        public void DeleteLink()
+        {
+            this.Node1.LinkList.Remove(this);
+            this.Node2.LinkList.Remove(this);
         }
 
         #region Public Properties

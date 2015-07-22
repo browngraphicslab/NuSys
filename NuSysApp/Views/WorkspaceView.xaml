@@ -124,7 +124,7 @@ x:Class="NuSysApp.WorkspaceView"
                 </TransitionCollection>
             </Grid.Transitions>
         </Grid>-->
-        <ItemsControl Name="IC" ItemsSource="{Binding NodeViewList}">
+        <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
             <ItemsControl.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}"/>

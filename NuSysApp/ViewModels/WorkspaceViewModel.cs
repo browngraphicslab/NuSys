@@ -43,7 +43,8 @@ namespace NuSysApp
 
         public WorkspaceViewModel()
         {
-            NodeViewList = new ObservableCollection<UserControl>();
+            AtomViewList = new ObservableCollection<UserControl>();
+            LinkViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedNodeViewModel = null;
@@ -57,6 +58,8 @@ namespace NuSysApp
             SetupChromeIntermediate();
 
         }
+
+        public ObservableCollection<UserControl> LinkViewList { get; set; }
 
         private async void SetupChromeIntermediate()
         {
@@ -124,7 +127,7 @@ namespace NuSysApp
                     this.PositionNode(nodeVm, 100 + counter * 100, 100 + counter * 100);
                     i++;
                     NodeViewModelList.Add(nodeVm);
-                    NodeViewList.Add(nodeVm.View);
+                    AtomViewList.Add(nodeVm.View);
                 }
 
             });
@@ -207,25 +210,21 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
-            var linkList = nodeVM.GetLinkList();
-            if (linkList != null)
+            //1. Remove all the node's links
+            var toDelete = new List<LinkViewModel>();
+            foreach (var linkVm in nodeVM.LinkList)
             {
-                foreach (var link in linkList)
-                {
-                    NodeViewList.Remove(link);
-                }
+                AtomViewList.Remove(linkVm.View);
+                toDelete.Add(linkVm);
             }
-
-            var lineList = nodeVM.GetLineList();
-            if (lineList != null)
+          
+            foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
             {
-                foreach (var link in lineList)
-                {
-                    NodeViewList.Remove(link);
-                }
+                linkVm.DeleteLink();
             }
-
-            NodeViewList.Remove(nodeVM.View);
+            
+            //2. Remove the node itself 
+            AtomViewList.Remove(nodeVM.View);
             NodeViewModelList.Remove(nodeVM);
         }
 
@@ -264,18 +263,12 @@ namespace NuSysApp
         /// <param name="nodeVM2"></param>
         public void CreateNewLink(NodeViewModel nodeVM1, NodeViewModel nodeVM2)
         {
-            var x1 = (int) (nodeVM1.X + nodeVM1.Transform.Matrix.OffsetX);
-            var y1 = (int) (nodeVM1.Y + nodeVM1.Transform.Matrix.OffsetY);
-            var x2 = (int) (nodeVM2.X + nodeVM2.Transform.Matrix.OffsetX);
-            var y2 = (int) (nodeVM2.Y + nodeVM2.Transform.Matrix.OffsetY);
-
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
-            var vm = new LinkViewModel(x1, x2, y1, y2, nodeVM1, nodeVM2, this);
+            var vm = new LinkViewModel(nodeVM1, nodeVM2, this);
 
-            NodeViewList.Add(vm.View);
-            nodeVM1.AddLink(vm.View);
-            nodeVM2.AddLink(vm.View);
-            LinkViewModelList.Add(vm);
+            AtomViewList.Add(vm.View);
+            nodeVM1.AddLink(vm);
+            nodeVM2.AddLink(vm);
         }
 
         public void CreateNewNode(double xCoordinate, double yCoordinate)
@@ -293,7 +286,7 @@ namespace NuSysApp
                     return;
             }
             NodeViewModelList.Add(vm);
-            NodeViewList.Add(vm.View);
+            AtomViewList.Add(vm.View);
             this.PositionNode(vm, xCoordinate, yCoordinate);
         }
 
@@ -313,7 +306,7 @@ namespace NuSysApp
 
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; }
 
-        public ObservableCollection<UserControl> NodeViewList { get; }
+        public ObservableCollection<UserControl> AtomViewList { get; }
 
         public NodeViewModel SelectedNodeViewModel { get; private set; }
 
