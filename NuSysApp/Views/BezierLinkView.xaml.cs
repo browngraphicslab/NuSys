@@ -19,11 +19,11 @@ using System.ComponentModel;
 
 namespace NuSysApp
 {
-    public sealed partial class BezierLink : UserControl
+    public sealed partial class BezierLinkView : UserControl
     {
         private LinkViewModel _vm;
 
-        public BezierLink(LinkViewModel vm)
+        public BezierLinkView(LinkViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;

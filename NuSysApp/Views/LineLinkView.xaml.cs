@@ -10,9 +10,9 @@ using Windows.UI.Xaml.Data;
 
 namespace NuSysApp
 {
-    public sealed partial class LinkView : UserControl
+    public sealed partial class LineLinkView : UserControl
     {
-        public LinkView(LinkViewModel vm)
+        public LineLinkView(LinkViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;

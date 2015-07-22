@@ -147,7 +147,7 @@ namespace NuSysApp
             var lines = NodeToLineSegmentHelper(node);
             foreach (var link in LinkViewModelList)
             {
-                var line1 = link.Line;
+                var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
                     if (Geometry.LinesIntersect(line1, line2))

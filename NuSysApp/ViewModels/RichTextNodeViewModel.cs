@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
+
 namespace NuSysApp
 {
     public class RichTextNodeViewModel : NodeViewModel
-    { 
+    {
         #region Private Members
+
         private RichTextNode _node;
         private List<Block> _data;
         private UserControl _view;
 
-       
-
         #endregion Private Members
 
-        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel): base(workSpaceViewModel)
+        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
         {
             _node = new RichTextNode("Hello oOrld", 0);
             this.Transform = new MatrixTransform();
@@ -26,10 +26,8 @@ namespace NuSysApp
             this.IsEditing = false;
 
             this.View = new RichTextNodeView(this);
-           
         }
 
-        
         #region Public Properties
 
         /// <summary>
@@ -39,26 +37,20 @@ namespace NuSysApp
         {
             get { return _data; }
             set
-            {     
+            {
                 _data = value;
                 RaisePropertyChanged("Data");
                 RichTextBlock rtb = (RichTextBlock) this.View.FindName("textBlock");
-                
-        
+
                 foreach (var block in _data)
                 {
                     rtb.Blocks.Add(block);
                 }
-
             }
         }
 
-
         public override UserControl View
         {
-           
-        
-        
             get { return _view; }
             set
             {
@@ -73,7 +65,6 @@ namespace NuSysApp
             }
         }
 
-        
         #endregion Public Properties
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
 
@@ -13,7 +7,7 @@ namespace NuSysApp
     /// <summary>
     /// link view model class
     /// 
-    /// parameters: ints x1, x2, y1, and y2 are coordinates of two nodes a link is connecting, node1 and node2 are those two nodes, 
+    /// parameters: node1 and node2 are the two nodes that the link connects, 
     /// and workspace is main workspace.
     /// 
     /// </summary>
@@ -21,7 +15,6 @@ namespace NuSysApp
     {
         #region Private Members
 
-        private int _x1, _x2, _y1, _y2;
         private UserControl _view;
         private NodeViewModel _node1, _node2;
 
@@ -30,19 +23,19 @@ namespace NuSysApp
         public LinkViewModel(NodeViewModel node1,
             NodeViewModel node2, WorkspaceViewModel workspace)
         {
-            
             this.Node1 = node1;
             this.Node2 = node2;
             this.Node1.UpdateAnchor();
             this.Node2.UpdateAnchor();
 
-            if (workspace.CurrentLinkMode == WorkspaceViewModel.LinkMode.BEZIERLINK)
+            switch (workspace.CurrentLinkMode)
             {
-                this.View = new BezierLink(this);
-            }
-            else
-            {
-                this.View = new LinkView(this);
+                case WorkspaceViewModel.LinkMode.BEZIERLINK:
+                    this.View = new BezierLinkView(this);
+                    break;
+                default:
+                    this.View = new LineLinkView(this);
+                    break;
             }
         }
 
@@ -67,62 +60,6 @@ namespace NuSysApp
                 _view = value;
 
                 RaisePropertyChanged("View");
-            }
-        }
-
-        public int X1
-        {
-            get { return _x1; }
-            set
-            {
-                if (_x1 == value)
-                {
-                    return;
-                }
-                _x1 = value;
-                RaisePropertyChanged("X1");
-            }
-        }
-
-        public int Y1
-        {
-            get { return _y1; }
-            set
-            {
-                if (_y1 == value)
-                {
-                    return;
-                }
-                _y1 = value;
-                RaisePropertyChanged("Y1");
-            }
-        }
-
-        public int X2
-        {
-            get { return _x2; }
-            set
-            {
-                if (_x2 == value)
-                {
-                    return;
-                }
-                _x2 = value;
-                RaisePropertyChanged("X2");
-            }
-        }
-
-        public int Y2
-        {
-            get { return _y2; }
-            set
-            {
-                if (_y2 == value)
-                {
-                    return;
-                }
-                _y2 = value;
-                RaisePropertyChanged("Y2");
             }
         }
 
@@ -154,7 +91,8 @@ namespace NuSysApp
             }
         }
 
-        public Line Line => new Line() {X1 = Node1.AnchorX , X2 = Node2.AnchorX, Y1 = Node1.AnchorY, Y2 = Node2.AnchorY};
+        public Line LineRepresentation
+            => new Line() {X1 = Node1.AnchorX, X2 = Node2.AnchorX, Y1 = Node1.AnchorY, Y2 = Node2.AnchorY};
 
         #endregion Public Properties
     }

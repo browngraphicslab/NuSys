@@ -10,6 +10,7 @@ namespace NuSysApp
         private UserControl _view;
         private BitmapImage _image;
         private ImageModel _imgm;
+
         public ImageNodeViewModel(WorkspaceViewModel vm, ImageModel igm) : base(vm)
         {
             this.View = new ImageNodeView(this);
@@ -40,6 +41,7 @@ namespace NuSysApp
                 RaisePropertyChanged("Image");
             }
         }
+
         public ImageModel Imgm
         {
             get { return _imgm; }
@@ -52,6 +54,7 @@ namespace NuSysApp
                 _imgm = value;
             }
         }
+
         public Uri ImageSource
         {
             get { return Imgm.Image.UriSource; }

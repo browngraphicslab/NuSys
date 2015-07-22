@@ -31,7 +31,7 @@ x:Class="NuSysApp.WorkspaceView"
                     <AppBarButton.Flyout>
                         <MenuFlyout Placement="Bottom">
                             <MenuFlyoutItem Text="Bezier Link" Click="MenuFlyoutItem_Click_Bezier"></MenuFlyoutItem>
-                            <MenuFlyoutItem Text="Line Link" Click="MenuFlyoutItem_Click_Line"></MenuFlyoutItem>
+                            <MenuFlyoutItem Text="LineRepresentation Link" Click="MenuFlyoutItem_Click_Line"></MenuFlyoutItem>
                             <MenuFlyout.MenuFlyoutPresenterStyle>
                                 <Style x:Name="DropdownLink" TargetType="MenuFlyoutPresenter">
                                     <Setter Property="Background" Value="White" />
