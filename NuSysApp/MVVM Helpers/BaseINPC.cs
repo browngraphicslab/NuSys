@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     /// This serves as a base class to all ViewModels and allows calls to RaisePropertyChanged.

@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Media;
 /// parameters: workspaceviewmodel
 /// </summary>
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public class InkNodeViewModel : NodeViewModel
     {

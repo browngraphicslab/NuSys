@@ -1,7 +1,7 @@
 ﻿
 using Windows.UI;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     /// This static class holds all important constants used in my application. This allows me to change all 

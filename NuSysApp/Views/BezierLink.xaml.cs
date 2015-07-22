@@ -16,7 +16,7 @@ using System.Windows;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public sealed partial class BezierLink : UserControl
     {
@@ -27,32 +27,20 @@ namespace NuStarterProject
             this.InitializeComponent();
             this.DataContext = vm;
             _vm = vm;
-            this.SetUpBindings();
+            //this.SetUpBindings(); // dont need this anymore
             this.UpdateControlPoints();
         }
 
         public void UpdateControlPoints()
         {
-            NodeViewModel node1 = _vm.Node1;
-            NodeViewModel node2 = _vm.Node2;
-            Point anchor1 = node1.Anchor;
-            Point anchor2 = node2.Anchor;
-            double distanceX = anchor1.X - anchor2.X;
-            //double distanceY = anchor1.Y - anchor2.Y;
-            //Point controlPoint = new Point();
-            if (anchor1.X < anchor2.X)
-            {
-                //controlPoint.X = anchor2.X + distanceX / 2;
-                //controlPoint.Y = anchor2.Y + distanceY / 3;
-            }
-            else
-            {
-                //controlPoint.X = anchor1.X - distanceX / 2;
-                //controlPoint.Y = anchor1.Y - distanceY / 3;03
-            }
+            //var node1 = _vm.Node1;
+            //var node2 = _vm.Node2;
+            //var anchor1 = node1.Anchor;
+            //var anchor2 = node2.Anchor;
+            //var distanceX = anchor1.X - anchor2.X;
 
-            curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
-            curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+            //curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
+            //curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
         }
 
 
@@ -73,5 +61,7 @@ namespace NuStarterProject
 
             this.SetBinding(Canvas.TopProperty, topBinding);
         }
+
+        
     }
 }

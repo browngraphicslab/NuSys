@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Data;
     /// this class is for the line representation of links.
     /// </summary>
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public sealed partial class LinkView : UserControl
     {

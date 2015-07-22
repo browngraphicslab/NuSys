@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
-namespace NuStarterProject
+namespace NuSysApp
 {
     public class RichTextNodeViewModel : NodeViewModel
     { 

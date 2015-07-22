@@ -8,7 +8,7 @@ using Windows.UI.Popups;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     /// This is the view for the entire workspace. It instantiates the WorkspaceViewModel. 

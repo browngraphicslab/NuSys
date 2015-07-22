@@ -1,15 +1,19 @@
 ﻿<UserControl
-    x:Class="NuStarterProject.BezierLink"
+    x:Class="NuSysApp.BezierLink"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
-
+    d:DesignWidth="400"
+    xmlns:converters="using:NuSysApp">
+    <UserControl.Resources>
+        <converters:NodeToControlpoint2Converter x:Key="Point1Converter"/>
+      
+       
+    </UserControl.Resources>
     <Grid>
-
         <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1">
             <Path.Data>
                 <PathGeometry>
@@ -27,6 +31,7 @@
                                             node on the other end of the link -->
 
                                         <BezierSegment x:Name="curve"
+                                                       Point1="{Binding Node1}"
                                                        Point3="{Binding Node2.Anchor}" />
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>

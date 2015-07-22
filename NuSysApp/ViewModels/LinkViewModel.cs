@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     /// link view model class

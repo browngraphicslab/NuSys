@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     /// Models the basic Workspace and maintains a list of all atoms. 

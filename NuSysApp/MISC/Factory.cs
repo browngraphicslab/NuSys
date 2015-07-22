@@ -1,4 +1,4 @@
-﻿namespace NuStarterProject
+﻿namespace NuSysApp
 {
     public class Factory
     {

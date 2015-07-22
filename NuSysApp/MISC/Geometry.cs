@@ -2,7 +2,7 @@
 using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     ///     This static class performs all visual gemoetry calculations.

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public class BoolToVisibilityConverter : IValueConverter
     {

@@ -1,10 +1,9 @@
-﻿using NuStarterProjects;
-using System;
+﻿using System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public class ImageNodeViewModel : NodeViewModel
     {

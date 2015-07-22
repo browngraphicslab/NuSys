@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public class SelectionToColorConverter : IValueConverter
     {
