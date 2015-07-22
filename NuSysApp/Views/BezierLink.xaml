@@ -8,11 +8,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     xmlns:converters="using:NuSysApp">
-    <UserControl.Resources>
-        <converters:NodeToControlpoint2Converter x:Key="Point1Converter"/>
-      
-       
-    </UserControl.Resources>
+   
     <Grid>
         <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1">
             <Path.Data>
@@ -31,8 +27,7 @@
                                             node on the other end of the link -->
 
                                         <BezierSegment x:Name="curve"
-                                                       Point1="{Binding Node1}"
-                                                       Point3="{Binding Node2.Anchor}" />
+                                        Point3="{Binding Node2.Anchor}" />
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>

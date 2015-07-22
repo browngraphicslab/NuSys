@@ -9,6 +9,7 @@ namespace NuSysApp
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            var nodeVm = (NodeViewModel) value;
             var linkvm = (LinkViewModel) parameter;
             var node1 = linkvm.Node1;
             var node2 = linkvm.Node2;

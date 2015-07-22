@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-
 
 namespace NuSysApp
 {
@@ -86,11 +84,6 @@ namespace NuSysApp
             this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2);
             this.AnchorY = (int) (this.Y + this.Transform.Matrix.OffsetY + this.Height/2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
-            if (Linklist == null) { return;}
-            foreach (var link in Linklist)
-            {
-                link.UpdateControlPoints();
-            }
         }
 
         public void Resize(double dx, double dy)

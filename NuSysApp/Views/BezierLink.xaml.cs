@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Windows;
+using System.ComponentModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -27,39 +28,33 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             _vm = vm;
-            //this.SetUpBindings(); // dont need this anymore
+            vm.Node1.PropertyChanged += new PropertyChangedEventHandler(node_PropertyChanged);
+            vm.Node2.PropertyChanged += new PropertyChangedEventHandler(node_PropertyChanged);
             this.UpdateControlPoints();
         }
 
-        public void UpdateControlPoints()
+        private void node_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //var node1 = _vm.Node1;
-            //var node2 = _vm.Node2;
-            //var anchor1 = node1.Anchor;
-            //var anchor2 = node2.Anchor;
-            //var distanceX = anchor1.X - anchor2.X;
+            this.UpdateControlPoints();
+        }
 
-            //curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
-            //curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
+        private void UpdateControlPoints()
+        {
+            var node1 = _vm.Node1;
+            var node2 = _vm.Node2;
+            var anchor1 = node1.Anchor;
+            var anchor2 = node2.Anchor;
+            var distanceX = anchor1.X - anchor2.X;
+
+            curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
+            curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
         }
 
 
         private void SetUpBindings()
         {
-            var leftBinding = new Binding
-            {
-                Path = new PropertyPath("X"),
-                Mode = BindingMode.TwoWay
-            };
-            this.SetBinding(Canvas.LeftProperty, leftBinding);
-
-            var topBinding = new Binding
-            {
-                Path = new PropertyPath("Y"),
-                Mode = BindingMode.TwoWay
-            };
-
-            this.SetBinding(Canvas.TopProperty, topBinding);
+            
+         
         }
 
         
