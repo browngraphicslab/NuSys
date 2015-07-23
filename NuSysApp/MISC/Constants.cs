@@ -1,4 +1,5 @@
 ﻿
+using Windows.Storage;
 using Windows.UI;
 
 namespace NuStarterProject
@@ -9,6 +10,12 @@ namespace NuStarterProject
     /// </summary>
     public class Constants
     {
+        #region Folders and files
+        public static string FOLDER_NUSYS_TEMP = "NuSys";
+        public static string FOLDER_CHROME_TRANSFER_NAME = "ChromeTransfer";
+        public static string FILE_CHROME_TRANSFER_NAME = "selections.nusys";
+        #endregion Folders and files
+
         #region Node Dimensions
         public const double DEFAULT_NODE_SIZE = 200;
         public const double EXTRA_PADDING_SPACE = 50;

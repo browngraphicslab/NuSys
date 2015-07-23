@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Office.Interop.Word;
+using SautinSoft;
 
 namespace ConsoleApplication1
 {
@@ -12,6 +14,39 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
+
+
+            string filename = args[0];
+            string outputFileName = args[1];
+
+
+            SautinSoft.HtmlToRtf h = new HtmlToRtf();
+            string htmlPath = filename;
+            string htmlString = File.ReadAllText(htmlPath);
+            string rtfPath = outputFileName;
+
+            List<HtmlToRtf.SautinImage> imgList = new List<HtmlToRtf.SautinImage>();
+
+            h.BaseURL = @"d:\";
+
+            // Convert HTML to and place all images inside imgList.
+            var reuslt = h.ConvertString(htmlString, imgList);
+            File.WriteAllText(outputFileName, reuslt);
+
+            // Save all images to HDD.
+            foreach (HtmlToRtf.SautinImage img in imgList)
+            {
+                
+            }
+
+
+
+            // Save document into PDF Format
+
+
+
+
+            /*
             Microsoft.Office.Interop.Word.Application word = new Microsoft.Office.Interop.Word.Application();
 
             // C# doesn't have optional arguments so we'll need a dummy value
@@ -26,7 +61,7 @@ namespace ConsoleApplication1
            
    
                 // Cast as Object for word Open method
-                Object filename = (Object)@"C:\Users\phili_n4ua7ts\Desktop\bla.html";
+                Object filename = (Object)@"C:\Users\phili_n4ua7ts\Desktop\bla2.html";
 
                 // Use the dummy value as a placeholder for optional arguments
                 Document doc = word.Documents.Open(ref filename, ref oMissing,
@@ -57,6 +92,7 @@ namespace ConsoleApplication1
 // the correct Quit method.
 ((_Application)word).Quit(ref oMissing, ref oMissing, ref oMissing);
             word = null;
+            */
 
         }
     }

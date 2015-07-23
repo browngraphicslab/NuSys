@@ -20,9 +20,6 @@ namespace NuStarterProject
             this.SetUpBindings();
         }
 
-
-
-
         #region Helper Methods
         private void SetUpBindings()
         {
