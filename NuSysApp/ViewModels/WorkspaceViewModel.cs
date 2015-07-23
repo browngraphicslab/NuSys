@@ -11,6 +11,7 @@ using Windows.Storage.Search;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.MISC;
 
 namespace NuSysApp
 {
@@ -55,86 +56,75 @@ namespace NuSysApp
             ScaleX = 0;
             ScaleY = 0;
             _factory = new Factory(this);
-            SetupChromeIntermediate();
+
+            Init();
 
         }
 
         public ObservableCollection<UserControl> LinkViewList { get; set; }
 
+        private async void Init()
+        {
+            var result = await SetupDirectories();
+            SetupChromeIntermediate();
+        }
+
         private async void SetupChromeIntermediate()
         {
-            StorageFolder transferFolder = null;
-            StorageFile transferFile = null;
-            var docFolder = KnownFolders.DocumentsLibrary;
-            const string transferFolderName = "NuSysTransfer";
-            const string transferFileName = "chromeSelections.nusys";
-
-            // Create transfer folder if not exists.
-            try
+            var transferFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.ChromeTransferFolder, Constants.FILE_CHROME_TRANSFER_NAME);
+            var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
+            fw.FilesChanged += async delegate
             {
-                transferFolder = await docFolder.GetFolderAsync(transferFolderName).AsTask();
-            }
-            catch (Exception exception)
-            {
-                transferFolder = await docFolder.CreateFolderAsync(transferFolderName).AsTask();
-            }
+                var readFile = await FileIO.ReadTextAsync(transferFile);
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
-            // Create transfer file if not exists.
-            try
-            {
-
-                transferFile = await transferFolder.GetFileAsync(transferFileName).AsTask();
-            }
-            catch (Exception exception)
-            {
-                transferFile = await transferFolder.CreateFileAsync(transferFileName).AsTask();
-            }
-
-            // Start watching 
-            var options = new QueryOptions {FileTypeFilter = {".nusys"}};
-            var query = transferFolder.CreateFileQueryWithOptions(options);
-            query.ContentsChanged += delegate(IStorageQueryResultBase sender, object args)
-            {
-                Debug.WriteLine("CONTENTS CHANGED! " + args);
-                //file = transferFolder.GetFileAsync(transferFileName).GetResults();
-                //ReadFile(query.Folder.GetFileAsync().GetResults());
-                ReadFile(transferFile);
-            };
-
-            query.GetFilesAsync();
-        }
-
-        private string[] text;
-        public async void ReadFile(StorageFile file)
-        {
-            text = new string[100];
-            var readFile = await Windows.Storage.FileIO.ReadLinesAsync(file);
-            
-            int counter = 0;
-            foreach (var line in readFile)
-            {
-                text[counter] = line;
-                counter++;
-            }
-
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
-                int i = 0;
-                while (i < counter)
+                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    var nodeVm = _factory.CreateNewRichText(text[i]);
-                    this.PositionNode(nodeVm, 100 + counter * 100, 100 + counter * 100);
-                    i++;
+                    var nodeVm = _factory.CreateNewRichText(readFile);
+                    this.PositionNode(nodeVm, 100, 100);
                     NodeViewModelList.Add(nodeVm);
                     AtomViewList.Add(nodeVm.View);
-                }
+                });
+            };            
+        }
+
+        private async Task<bool> SetupDirectories()
+        {
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+            return true;
+        }
+
+
+        private async void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
+        {
+            Debug.WriteLine("CONTENTS CHANGED! " + args);
+            const string transferFolderName = "NuSysTransfer";
+            const string transferFileName = "chromeSelections.nusys";
+            var docFolder = KnownFolders.DocumentsLibrary;
+            var transferFolder = await docFolder.GetFolderAsync(transferFolderName).AsTask();
+            var transferFile = await transferFolder.GetFileAsync(transferFileName).AsTask();
+            
+            var readFile = await FileIO.ReadTextAsync(transferFile);
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                var nodeVm = _factory.CreateNewRichText(readFile);
+                this.PositionNode(nodeVm, 100, 100);
+                NodeViewModelList.Add(nodeVm);
+                AtomViewList.Add(nodeVm.View);
 
             });
-            
-            
-           
+
+            var options = new QueryOptions { FileTypeFilter = { ".nusys" } };
+            var query = transferFolder.CreateFileQueryWithOptions(options);
+            query.ContentsChanged += OnTransferFolderChange;
+            var files = query.GetFilesAsync();
         }
+
+      
 
         /// <summary>
         /// Returns true if the given node intersects with any link on the workspace, 
