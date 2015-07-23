@@ -41,6 +41,10 @@ namespace NuSysApp
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
             this.UpdateAnchor();
+            foreach (var link in LinkList)
+            {
+                link.UpdateAnchor();
+            }
         }
 
         /// <summary>
