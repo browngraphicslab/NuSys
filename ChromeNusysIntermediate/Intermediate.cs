@@ -24,19 +24,12 @@ namespace ChromeNusysIntermediate
 
         static void Main(string[] args)
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSysTransfer";
-            Directory.CreateDirectory(dir);
-            var fileDir = dir + "\\chromeSelections.nusys";
-
-            //string input = File.ReadAllText("Assets/sample.html");
-
-            //Debug.WriteLine(Resources.image.ToString());
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\ChromeTransfer";
+            var fileDir = dir + "\\selections.nusys";
            
             string input = OpenStandardStreamIn();
             while (input != null && input != "")
             {
-                //input = input.Remove(0, 1);
-                // input = input.Remove(input.Length - 1, 1);
                 input = Regex.Unescape(input);
                 string imgSrc = "http:" +
                                 Regex.Match(input, "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1]
@@ -73,6 +66,8 @@ namespace ChromeNusysIntermediate
                 }
 
                 input = HtmlToRichText(input, "");
+                var i = input.IndexOf("________________________________________________________");
+                input = input.Remove(i, input.Length-i) + "}";
 
                 if (!imgSrc.Equals("http:"))
                 {
@@ -85,28 +80,6 @@ namespace ChromeNusysIntermediate
                 File.Move(fileDir, fileDir);
                 input = OpenStandardStreamIn();
             }
-
-
-            /*
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSysTransfer";
-            Directory.CreateDirectory(dir);
-            var fileDir = dir + "\\chromeSelections.nusys";
-            string input = OpenStandardStreamIn();
-            
-            //if the input is the empty string, then we are no longer connected to chrome and should shut down
-            while (input != null && input != "")
-            {
-                string imgSrc = "https://upload.wikimedia.org" + Regex.Match(input, " <img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1].Value;
-                string pattern = @"<img[^>]+\>";
-                string replacement = "IMAGE";
-                Regex rgx = new Regex(pattern);
-                input = rgx.Replace(input, replacement);
-                
-                input = HtmlToRichText(input, "");
-                string[] line = {input};
-                File.AppendAllLines(fileDir, line);
-                input = OpenStandardStreamIn();
-            } */
         }
 
         private static string HtmlToRichText(string html, string baseUrl)

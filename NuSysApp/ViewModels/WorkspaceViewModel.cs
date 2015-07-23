@@ -57,10 +57,17 @@ namespace NuSysApp
             ScaleY = 0;
             _factory = new Factory(this);
 
+            Init();
+
         }
 
         public ObservableCollection<UserControl> LinkViewList { get; set; }
 
+        private async void Init()
+        {
+            var result = await SetupDirectories();
+            SetupChromeIntermediate();
+        }
 
         private async void SetupChromeIntermediate()
         {
@@ -81,10 +88,11 @@ namespace NuSysApp
             };            
         }
 
-        private async void SetupDirectories()
+        private async Task<bool> SetupDirectories()
         {
             NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+            return true;
         }
 
 
