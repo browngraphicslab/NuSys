@@ -7,7 +7,6 @@ namespace NuSysApp
 {
     public class ImageNodeViewModel : NodeViewModel
     {
-        private UserControl _view;
         private BitmapImage _image;
         private ImageModel _imgm;
 

@@ -9,7 +9,6 @@ namespace NuSysApp
 
         private TextNode _node;
         private string _data;
-        private UserControl _view;
 
         #endregion Private Members
 

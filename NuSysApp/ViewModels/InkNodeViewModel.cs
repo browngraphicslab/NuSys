@@ -13,7 +13,6 @@ namespace NuSysApp
     public class InkNodeViewModel : NodeViewModel
     {
 
-        private UserControl _view;
         public InkNodeViewModel(WorkspaceViewModel vm): base(vm)
         {
             this.View = new InkNodeView(this);

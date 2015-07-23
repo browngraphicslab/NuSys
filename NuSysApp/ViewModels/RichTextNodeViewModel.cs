@@ -13,7 +13,6 @@ namespace NuSysApp
 
         private RichTextNode _node;
         private string _data;
-        private UserControl _view;
 
         #endregion Private Members
 
