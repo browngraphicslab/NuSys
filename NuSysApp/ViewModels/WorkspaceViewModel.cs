@@ -76,7 +76,7 @@ namespace NuSysApp
                     var nodeVm = _factory.CreateNewRichText(readFile);
                     this.PositionNode(nodeVm, 100, 100);
                     NodeViewModelList.Add(nodeVm);
-                    NodeViewList.Add(nodeVm.View);
+                    AtomViewList.Add(nodeVm.View);
                 });
             };            
         }
