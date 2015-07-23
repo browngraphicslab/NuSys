@@ -4,12 +4,13 @@ using Windows.UI.Xaml.Data;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-    /// <summary>
-    /// this class is for the line representation of links.
-    /// </summary>
+    
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// this class is for the line representation of links.
+    /// </summary>
     public sealed partial class LineLinkView : UserControl
     {
         public LineLinkView(LinkViewModel vm)
@@ -21,6 +22,7 @@ namespace NuSysApp
 
         /// <summary>
         /// sets up bindings for line links with the linkviewmodel.
+        /// TO DO: THIS NO LONGER WORKS BECAUSE THE BINDINGS X, Y NO LONGER EXIST
         /// </summary>
         private void SetUpBindings()
         {
