@@ -45,10 +45,9 @@ namespace NuSysApp
         public WorkspaceViewModel()
         {
             AtomViewList = new ObservableCollection<UserControl>();
-            LinkViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
-            SelectedNodeViewModel = null;
+            SelectedAtomViewModel = null;
             this.CurrentMode = Mode.TEXTNODE;
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
             TransformX = 0;
@@ -61,8 +60,7 @@ namespace NuSysApp
 
         }
 
-        public ObservableCollection<UserControl> LinkViewList { get; set; }
-
+       
         private async void Init()
         {
             var result = await SetupDirectories();
@@ -137,7 +135,7 @@ namespace NuSysApp
             var lines = NodeToLineSegmentHelper(node);
             foreach (var link in LinkViewModelList)
             {
-                var line1 = link.LineRepresentation;
+                Line line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
                     if (Geometry.LinesIntersect(line1, line2))
@@ -210,7 +208,7 @@ namespace NuSysApp
           
             foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
             {
-                linkVm.DeleteLink();
+                linkVm.Remove();
             }
             
             //2. Remove the node itself 
@@ -219,20 +217,21 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Sets the passed in Node as selected. If there atlready is a selected node, the two are linked.
+        /// Sets the passed in Atom as selected. If there atlready is a selected Atom, the old \
+        /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void SetSelection(NodeViewModel selected)
+        public void SetSelection(AtomViewModel selected)
         {
-            if (SelectedNodeViewModel == null)
+            if (SelectedAtomViewModel == null)
             {
-                SelectedNodeViewModel = selected;
+                SelectedAtomViewModel = selected;
                 return;
             }
-            this.CreateNewLink(SelectedNodeViewModel, selected);
+            this.CreateNewLink(SelectedAtomViewModel, selected);
             selected.IsSelected = false;
-            SelectedNodeViewModel.IsSelected = false;
-            SelectedNodeViewModel = null;
+            SelectedAtomViewModel.IsSelected = false;
+            SelectedAtomViewModel = null;
         }
 
         /// <summary>
@@ -240,9 +239,9 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
-            if (SelectedNodeViewModel == null) return;
-            SelectedNodeViewModel.ToggleSelection();
-            SelectedNodeViewModel = null;
+            if (SelectedAtomViewModel == null) return;
+            SelectedAtomViewModel.ToggleSelection();
+            SelectedAtomViewModel = null;
             return;
         }
 
@@ -251,14 +250,14 @@ namespace NuSysApp
         /// </summary>
         /// <param name="nodeVM1"></param>
         /// <param name="nodeVM2"></param>
-        public void CreateNewLink(NodeViewModel nodeVM1, NodeViewModel nodeVM2)
+        public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
-            var vm = new LinkViewModel(nodeVM1, nodeVM2, this);
+            var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
             AtomViewList.Add(vm.View);
-            nodeVM1.AddLink(vm);
-            nodeVM2.AddLink(vm);
+            atomVm1.AddLink(vm);
+            atomVm2.AddLink(vm);
         }
 
         public void CreateNewNode(double xCoordinate, double yCoordinate)
@@ -298,7 +297,7 @@ namespace NuSysApp
 
         public ObservableCollection<UserControl> AtomViewList { get; }
 
-        public NodeViewModel SelectedNodeViewModel { get; private set; }
+        public AtomViewModel SelectedAtomViewModel { get; private set; }
 
         public Mode CurrentMode { get; set; }
 
@@ -360,5 +359,7 @@ namespace NuSysApp
         }
 
         #endregion Public Members
+
+       
     }
 }

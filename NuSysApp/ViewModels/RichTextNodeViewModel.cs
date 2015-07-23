@@ -45,23 +45,6 @@ namespace NuSysApp
                 rtb.Document.SetText(TextSetOptions.FormatRtf, _data);
             }
         }
-
-        public override UserControl View
-        {
-            get { return _view; }
-            set
-            {
-                if (_view == value)
-                {
-                    return;
-                }
-
-                _view = value;
-
-                RaisePropertyChanged("View");
-            }
-        }
-
         #endregion Public Properties
     }
 }

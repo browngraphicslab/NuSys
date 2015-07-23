@@ -11,8 +11,8 @@ namespace NuSysApp
         {
             var nodeVm = (NodeViewModel) value;
             var linkvm = (LinkViewModel) parameter;
-            var node1 = linkvm.Node1;
-            var node2 = linkvm.Node2;
+            var node1 = linkvm.Atom1;
+            var node2 = linkvm.Atom2;
             var anchor1 = node1.Anchor;
             var anchor2 = node2.Anchor;
             var distanceX = anchor1.X - anchor2.X;

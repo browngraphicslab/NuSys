@@ -91,7 +91,7 @@ namespace NuSysApp
         private void delete_Click(object sender, RoutedEventArgs e)
         {
             InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
-            vm.DeleteNode();
+            vm.Remove();
         }
         #endregion Event Handlers
     }

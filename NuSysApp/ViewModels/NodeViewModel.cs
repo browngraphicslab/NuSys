@@ -16,38 +16,19 @@ namespace NuSysApp
     {
         #region Private Members      
 
-       
-        private int _x, _y;
-        private double _width, _height;
         private Color _color; //currently unused
 
-        //anchor points are centers of nodes
-        private int _anchorX, _anchorY;
-        private Point _anchor;
-         
-        private bool _isSelected, _isEditing;
         private MatrixTransform _transform;
-        
+
         #endregion Private Members
 
-        protected NodeViewModel(WorkspaceViewModel vm)
+        protected NodeViewModel(WorkspaceViewModel vm): base(vm)
         {
-            WorkSpaceViewModel = vm;
-            LinkList = new ObservableCollection<LinkViewModel>();
         }
-
-        public ObservableCollection<LinkViewModel> LinkList { get; set; }
 
         #region Node Manipulations
 
-       
-
-        public void AddLink(LinkViewModel link)
-        {
-            this.LinkList.Add(link);
-        }
-
-        public void DeleteNode()
+        public override void Remove()
         {
             WorkSpaceViewModel.DeleteNode(this);
         }
@@ -65,7 +46,7 @@ namespace NuSysApp
         /// <summary>
         /// Updates the anchor points (central points) of the node when it is transformed. Also updates the attached links.
         /// </summary>
-        public void UpdateAnchor()
+        public override void UpdateAnchor()
         {
             this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2);
             this.AnchorY = (int) (this.Y + this.Transform.Matrix.OffsetY + this.Height/2);
@@ -84,26 +65,9 @@ namespace NuSysApp
             this.UpdateAnchor();
         }
 
-        /// <summary>
-        /// toggles selection of the node
-        /// </summary>
-        public void ToggleSelection()
-        {
-            this.IsSelected = !this.IsSelected;
-            WorkSpaceViewModel.SetSelection(this);
-        }
-
-        /// <summary>
-        /// toggles editing ability of nodes.
-        /// </summary>
-        public void ToggleEditing()
-        {
-            this.IsEditing = !this.IsEditing;
-        }
-
         #endregion Node Manipulations
 
-        public Rect GetBoundingBox()
+        public override Rect GetBoudingRect()
         {
             return new Rect()
             {
@@ -111,49 +75,10 @@ namespace NuSysApp
                 Width = this.Width,
                 X = this.X + this.Transform.Matrix.OffsetX,
                 Y = this.Y + this.Transform.Matrix.OffsetY
-            };           
+            };
         }
 
         #region Public Properties
-
-
-
-        public WorkspaceViewModel WorkSpaceViewModel { get; }
-
-        /// <summary>
-        /// indicatew whether node is selected.
-        /// </summary>
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                if (_isSelected == value)
-                {
-                    return;
-                }
-
-                _isSelected = value;
-                RaisePropertyChanged("IsSelected");
-            }
-        }
-
-        /// <summary>
-        /// indicates whether node is editable.
-        /// </summary>
-        public bool IsEditing
-        {
-            get { return _isEditing; }
-            set
-            {
-                if (_isEditing == value)
-                {
-                    return;
-                }
-                _isEditing = value;
-                RaisePropertyChanged("IsEditing");
-            }
-        }
 
         public MatrixTransform Transform
         {
@@ -167,72 +92,6 @@ namespace NuSysApp
                 _transform = value;
 
                 RaisePropertyChanged("Transform");
-            }
-        }
-
-        /// <summary>
-        /// sets and gets view, to be applied specifically in the child classes of nodeviewmodel.
-        /// </summary>
-        public abstract UserControl View { get; set; }
-
-        public int X
-        {
-            get { return _x; }
-            set
-            {
-                if (_x == value)
-                {
-                    return;
-                }
-                _x = value;
-                RaisePropertyChanged("X");
-            }
-        }
-
-        public int Y
-        {
-            get { return _y; }
-            set
-            {
-                if (_y == value)
-                {
-                    return;
-                }
-
-                _y = value;
-                RaisePropertyChanged("Y");
-            }
-        }
-
-        public double Width
-        {
-            get { return _width; }
-            set
-            {
-                if (_width == value || value < Constants.MIN_NODE_SIZE) //prevent node from getting to small
-                {
-                    return;
-                }
-
-                _width = value;
-
-                RaisePropertyChanged("Width");
-            }
-        }
-
-        public double Height
-        {
-            get { return _height; }
-            set
-            {
-                if (_height == value || value < Constants.MIN_NODE_SIZE) //prevent node from getting to small
-                {
-                    return;
-                }
-
-                _height = value;
-
-                RaisePropertyChanged("Height");
             }
         }
 
@@ -254,57 +113,6 @@ namespace NuSysApp
                 RaisePropertyChanged("Color");
             }
         }
-
-        public int AnchorX
-        {
-            get { return _anchorX; }
-            set
-            {
-                if (_anchorX == value)
-                {
-                    return;
-                }
-
-                _anchorX = value;
-
-                RaisePropertyChanged("AnchorX");
-            }
-        }
-
-        public int AnchorY
-        {
-            get { return _anchorY; }
-            set
-            {
-                if (_anchorY == value)
-                {
-                    return;
-                }
-
-                _anchorY = value;
-
-                RaisePropertyChanged("AnchorY");
-            }
-        }
-
-        /// <summary>
-        /// central point of node.
-        /// </summary>
-        public Point Anchor
-        {
-            get { return _anchor; }
-            set
-            {
-                if (_anchor == value)
-                {
-                    return;
-                }
-                _anchor = value;
-                RaisePropertyChanged("Anchor");
-            }
-        }
-
-       
 
         #endregion Public Properties
     }

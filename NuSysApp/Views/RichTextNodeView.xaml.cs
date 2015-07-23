@@ -72,7 +72,7 @@ namespace NuSysApp
         private void delete_Click(object sender, RoutedEventArgs e)
         {
             RichTextNodeViewModel vm = (RichTextNodeViewModel)this.DataContext;
-            vm.DeleteNode();
+            vm.Remove();
         }
 
     }

@@ -22,12 +22,6 @@ namespace NuSysApp
             this._imgm = igm;
         }
 
-        public override UserControl View
-        {
-            get { return _view; }
-            set { _view = value; }
-        }
-
         public BitmapImage Image
         {
             get { return _image; }

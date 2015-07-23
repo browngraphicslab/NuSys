@@ -75,7 +75,7 @@ namespace NuSysApp
         private void delete_Click(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
-            vm.DeleteNode();
+            vm.Remove();
         }
     }
 }

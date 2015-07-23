@@ -44,21 +44,7 @@ namespace NuSysApp
         }
 
 
-        public override UserControl View
-        {
-            get { return _view; }
-            set
-            {
-                if (_view == value)
-                {
-                    return;
-                }
-
-                _view = value;
-
-                RaisePropertyChanged("View");
-            }
-        }
+      
 
         #endregion Public Properties
     }

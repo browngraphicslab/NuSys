@@ -1,19 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.ComponentModel;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using System.Windows;
-using System.ComponentModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -21,42 +8,42 @@ namespace NuSysApp
 {
     public sealed partial class BezierLinkView : UserControl
     {
-        private LinkViewModel _vm;
-
         public BezierLinkView(LinkViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            _vm = vm;
-            vm.Node1.PropertyChanged += new PropertyChangedEventHandler(node_PropertyChanged);
-            vm.Node2.PropertyChanged += new PropertyChangedEventHandler(node_PropertyChanged);
+
+            //Universal apps does not support multiple databinding, so this is a workarround. 
+            vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
+            vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             this.UpdateControlPoints();
         }
 
-        private void node_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        /// <summary>
+        /// Gets called every time either one of the atoms that this link binds to has changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void atom_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             this.UpdateControlPoints();
         }
 
+        /// <summary>
+        /// Updates the location of the bezier controlpoints. 
+        /// Do not call this method outside of this class.
+        /// </summary>
         private void UpdateControlPoints()
         {
-            var node1 = _vm.Node1;
-            var node2 = _vm.Node2;
-            var anchor1 = node1.Anchor;
-            var anchor2 = node2.Anchor;
+            var vm = (LinkViewModel) this.DataContext;
+            var atom1 = vm.Atom1;
+            var atom2 = vm.Atom2;
+            var anchor1 = atom1.Anchor;
+            var anchor2 = atom2.Anchor;
             var distanceX = anchor1.X - anchor2.X;
 
-            curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
-            curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
+            curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
+            curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
         }
-
-
-        private void SetUpBindings()
-        {
-            
-         
-        }
-
-        
     }
 }

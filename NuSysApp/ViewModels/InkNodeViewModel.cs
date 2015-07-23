@@ -24,17 +24,6 @@ namespace NuSysApp
             this.IsEditing = false; //sets the ink to initially be disabled 
         }
 
-        public override UserControl View
-        {
-            get
-            {
-                return _view; ;
-            }
-
-            set
-            {
-                _view = value;
-            }
-        }
+       
     }
 }

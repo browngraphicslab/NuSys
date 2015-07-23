@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using System;
+using Windows.Foundation;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
 
@@ -7,26 +9,25 @@ namespace NuSysApp
     /// <summary>
     /// link view model class
     /// 
-    /// parameters: node1 and node2 are the two nodes that the link connects, 
+    /// parameters: Atom1 and Atom2 are the two atoms that the link connects, 
     /// and workspace is main workspace.
     /// 
     /// </summary>
-    public class LinkViewModel : BaseINPC
+    public class LinkViewModel : AtomViewModel
     {
         #region Private Members
-
-        private UserControl _view;
-        private NodeViewModel _node1, _node2;
+  
+        private AtomViewModel _atom1, _atom2;
 
         #endregion Private members
 
-        public LinkViewModel(NodeViewModel node1,
-            NodeViewModel node2, WorkspaceViewModel workspace)
+        public LinkViewModel(AtomViewModel atom1,
+            AtomViewModel atom2, WorkspaceViewModel workspace): base(workspace)
         {
-            this.Node1 = node1;
-            this.Node2 = node2;
-            this.Node1.UpdateAnchor();
-            this.Node2.UpdateAnchor();
+            this.Atom1 = atom1;
+            this.Atom2 = atom2;
+            this.Atom1.UpdateAnchor();
+            this.Atom2.UpdateAnchor();
 
             switch (workspace.CurrentLinkMode)
             {
@@ -39,61 +40,55 @@ namespace NuSysApp
             }
         }
 
-        public void DeleteLink()
+        public override void Remove()
         {
-            this.Node1.LinkList.Remove(this);
-            this.Node2.LinkList.Remove(this);
+            this.Atom1.LinkList.Remove(this);
+            this.Atom2.LinkList.Remove(this);
         }
 
         #region Public Properties
 
-        public UserControl View
+        public AtomViewModel Atom1
         {
-            get { return _view; }
+            get { return _atom1; }
             set
             {
-                if (_view == value)
+                if (_atom1 == value)
                 {
                     return;
                 }
-
-                _view = value;
-
-                RaisePropertyChanged("View");
+                _atom1 = value;
+                RaisePropertyChanged("Atom1");
             }
         }
 
-        public NodeViewModel Node1
+        public AtomViewModel Atom2
         {
-            get { return _node1; }
+            get { return _atom2; }
             set
             {
-                if (_node1 == value)
+                if (_atom2 == value)
                 {
                     return;
                 }
-                _node1 = value;
-                RaisePropertyChanged("Node1");
-            }
-        }
-
-        public NodeViewModel Node2
-        {
-            get { return _node2; }
-            set
-            {
-                if (_node2 == value)
-                {
-                    return;
-                }
-                _node2 = value;
-                RaisePropertyChanged("Node2");
+                _atom2 = value;
+                RaisePropertyChanged("Atom2");
             }
         }
 
         public Line LineRepresentation
-            => new Line() {X1 = Node1.AnchorX, X2 = Node2.AnchorX, Y1 = Node1.AnchorY, Y2 = Node2.AnchorY};
+            => new Line() {X1 = Atom1.AnchorX, X2 = Atom2.AnchorX, Y1 = Atom1.AnchorY, Y2 = Atom2.AnchorY};
 
         #endregion Public Properties
+
+        public override Rect GetBoudingRect()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateAnchor()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
