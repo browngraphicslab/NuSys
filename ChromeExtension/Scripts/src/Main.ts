@@ -1,5 +1,7 @@
 ﻿/// <reference path="../typings/chrome/chrome.d.ts"/>
 /// <reference path="../typings/jquery/jquery.d.ts"/>
+/// <reference path="ink/InkCanvas.ts"/>
+/// <reference path="selection/LineSelection.ts"/>
 
 class Main {
 
@@ -26,7 +28,6 @@ class Main {
         canvas.height = window.innerHeight;
         canvas.style.position = "fixed";
         canvas.style.top = "0";
-
 
         document.body.appendChild(canvas);
         var inkCanvas = new InkCanvas(canvas);
@@ -127,10 +128,10 @@ class Main {
             var currType = StrokeClassifier.getStrokeType(inkCanvas._activeStroke.stroke);
             if (currType != StrokeType.Scribble) {
                 selections.push(selection);
-                var myWindow = window.open("", "Selected", "width=1000, height=1000");
-                myWindow.focus();
-                myWindow.document.body.innerHTML = "";
-                myWindow.document.write(selection.getContent());
+                //var myWindow = window.open("", "Selected", "width=1000, height=1000");
+                //myWindow.focus();
+                //myWindow.document.body.innerHTML = "";
+                //myWindow.document.write(selection.getContent());
             }
             else {
                 inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
