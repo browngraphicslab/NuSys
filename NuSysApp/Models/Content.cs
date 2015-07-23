@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public abstract class Content
     {

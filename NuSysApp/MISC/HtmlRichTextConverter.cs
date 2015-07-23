@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Imaging;
 using HtmlAgilityPack;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     class HtmlRichTextConverter
     {
@@ -85,7 +85,7 @@ namespace NuStarterProject
                 else if (node.Name.Equals("#text"))
                 {
 
-                    string text = node.InnerText;
+                    var text = node.InnerText;
                     if (!string.IsNullOrEmpty(text) && !text.Equals(lastLinkText))
                     {
                         Paragraph p;
@@ -98,7 +98,7 @@ namespace NuStarterProject
                         {
                             p = rtBlocks.Last() as Paragraph;
                         }
-                        Run r = new Run();
+                        var r = new Run();
                         r.Text = text;
                         p.Inlines.Add(r);
                         lastLinkText = "";

@@ -4,20 +4,20 @@ using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
-namespace NuStarterProject
+
+namespace NuSysApp
 {
     public class RichTextNodeViewModel : NodeViewModel
-    { 
+    {
         #region Private Members
+
         private RichTextNode _node;
         private string _data;
         private UserControl _view;
 
-       
-
         #endregion Private Members
 
-        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel): base(workSpaceViewModel)
+        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
         {
             _node = new RichTextNode("Hello oOrld", 0);
             this.Transform = new MatrixTransform();
@@ -27,10 +27,8 @@ namespace NuStarterProject
             this.IsEditing = false;
 
             this.View = new RichTextNodeView(this);
-           
         }
 
-        
         #region Public Properties
 
         /// <summary>
@@ -40,21 +38,16 @@ namespace NuStarterProject
         {
             get { return _data; }
             set
-            {     
+            {
                 _data = value;
                 RaisePropertyChanged("Data");
                 RichEditBox rtb = (RichEditBox) this.View.FindName("textBlock");
                 rtb.Document.SetText(TextSetOptions.FormatRtf, _data);
-
             }
         }
 
-
         public override UserControl View
         {
-           
-        
-        
             get { return _view; }
             set
             {
@@ -69,7 +62,6 @@ namespace NuStarterProject
             }
         }
 
-        
         #endregion Public Properties
     }
 }

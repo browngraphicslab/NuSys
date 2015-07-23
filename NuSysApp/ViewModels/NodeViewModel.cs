@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
-
-namespace NuStarterProject
+namespace NuSysApp
 {
     /// <summary>
     /// 
@@ -35,32 +33,18 @@ namespace NuStarterProject
         protected NodeViewModel(WorkspaceViewModel vm)
         {
             WorkSpaceViewModel = vm;
-            Linklist = new ObservableCollection<BezierLink>();
-            Linelist = new ObservableCollection<LinkView>();
+            LinkList = new ObservableCollection<LinkViewModel>();
         }
+
+        public ObservableCollection<LinkViewModel> LinkList { get; set; }
 
         #region Node Manipulations
 
-        public ObservableCollection<BezierLink> GetLinkList()
-        {
-            return Linklist;
-        }
+       
 
-        public ObservableCollection<LinkView> GetLineList()
+        public void AddLink(LinkViewModel link)
         {
-            return Linelist;
-        }
-
-        public void AddLink(object link)
-        {
-            if (WorkSpaceViewModel.CurrentLinkMode == WorkspaceViewModel.LinkMode.BEZIERLINK)
-            {
-                Linklist.Add(link as BezierLink);
-            }
-            else
-            {
-                Linelist.Add(link as LinkView);
-            }
+            this.LinkList.Add(link);
         }
 
         public void DeleteNode()
@@ -79,20 +63,20 @@ namespace NuStarterProject
         }
 
         /// <summary>
-        /// updates the anchor points (central points) of the node when it is transformed. Also updates the attached links.
+        /// Updates the anchor points (central points) of the node when it is transformed. Also updates the attached links.
         /// </summary>
         public void UpdateAnchor()
         {
             this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2);
             this.AnchorY = (int) (this.Y + this.Transform.Matrix.OffsetY + this.Height/2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
-            if (Linklist == null) { return;}
-            foreach (var link in Linklist)
-            {
-                link.UpdateControlPoints();
-            }
         }
 
+        /// <summary>
+        /// Resizes the node. Eventually this should use a scale transformation instead.
+        /// </summary>
+        /// <param name="dx"></param>
+        /// <param name="dy"></param>
         public void Resize(double dx, double dy)
         {
             this.Width += dx;
@@ -125,16 +109,14 @@ namespace NuStarterProject
             {
                 Height = this.Height,
                 Width = this.Width,
-                X = this.X,
-                Y = this.Y
+                X = this.X + this.Transform.Matrix.OffsetX,
+                Y = this.Y + this.Transform.Matrix.OffsetY
             };           
         }
 
         #region Public Properties
 
-        //collection of links - linklist is for bezier curves, linelist is for lines
-        public ObservableCollection<LinkView> Linelist { get; }
-        public ObservableCollection<BezierLink> Linklist { get; }
+
 
         public WorkspaceViewModel WorkSpaceViewModel { get; }
 

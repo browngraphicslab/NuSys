@@ -102,11 +102,12 @@
     <Compile Include="MISC\NuSysStorages.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\RichTextNode.cs" />
+    <Compile Include="NodeToControlpoint1Converter.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
-    <Compile Include="ViewModels\NodeType.cs" />
+    <Compile Include="MISC\NodeType.cs" />
     <Compile Include="ViewModels\RichTextNodeViewModel.cs" />
     <Compile Include="Views\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
@@ -117,20 +118,20 @@
     <Compile Include="Models\Content.cs" />
     <Compile Include="MISC\Factory.cs" />
     <Compile Include="Models\Link.cs" />
-    <Compile Include="ViewModels\Command.cs" />
+    <Compile Include="MISC\Command.cs" />
     <Compile Include="ViewModels\InkNodeViewModel.cs" />
     <Compile Include="ViewModels\LinkViewModel.cs" />
     <Compile Include="ViewModels\NodeViewModel.cs" />
-    <Compile Include="Views\BezierLink.xaml.cs">
-      <DependentUpon>BezierLink.xaml</DependentUpon>
+    <Compile Include="Views\BezierLinkView.xaml.cs">
+      <DependentUpon>BezierLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="Views\InkNodeView.xaml.cs">
       <DependentUpon>InkNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LinkView.xaml.cs">
-      <DependentUpon>LinkView.xaml</DependentUpon>
+    <Compile Include="Views\LineLinkView.xaml.cs">
+      <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RichTextNodeView.xaml.cs">
       <DependentUpon>RichTextNodeView.xaml</DependentUpon>
@@ -177,7 +178,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\BezierLink.xaml">
+    <Page Include="Views\BezierLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -185,7 +186,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LinkView.xaml">
+    <Page Include="Views\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

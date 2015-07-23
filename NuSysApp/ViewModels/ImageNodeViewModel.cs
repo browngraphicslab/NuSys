@@ -1,16 +1,16 @@
-﻿using NuStarterProjects;
-using System;
+﻿using System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace NuStarterProject
+namespace NuSysApp
 {
     public class ImageNodeViewModel : NodeViewModel
     {
         private UserControl _view;
         private BitmapImage _image;
         private ImageModel _imgm;
+
         public ImageNodeViewModel(WorkspaceViewModel vm, ImageModel igm) : base(vm)
         {
             this.View = new ImageNodeView(this);
@@ -41,6 +41,7 @@ namespace NuStarterProject
                 RaisePropertyChanged("Image");
             }
         }
+
         public ImageModel Imgm
         {
             get { return _imgm; }
@@ -53,6 +54,7 @@ namespace NuStarterProject
                 _imgm = value;
             }
         }
+
         public Uri ImageSource
         {
             get { return Imgm.Image.UriSource; }

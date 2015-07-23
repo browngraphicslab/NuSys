@@ -1,14 +1,15 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
-/// <summary>
-/// class for ink drawing nodes
-/// 
-/// parameters: workspaceviewmodel
-/// </summary>
 
-namespace NuStarterProject
+
+namespace NuSysApp
 {
+    /// <summary>
+    /// class for ink drawing nodes
+    /// 
+    /// parameters: workspaceviewmodel
+    /// </summary>
     public class InkNodeViewModel : NodeViewModel
     {
 
