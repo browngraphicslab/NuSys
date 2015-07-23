@@ -76,19 +76,15 @@ namespace NuSysApp
 
         #endregion
 
-        #region other methods
-        /// <summary>
-        /// Returns the bounding rectangle of an atom. 
-        /// </summary>
-        /// <returns></returns>
-        public abstract Rect GetBoudingRect();
-
+        #region Other Methods
+     
         /// <summary>
         /// Updates the anchor point of an atom. 
         /// </summary>
         public abstract void UpdateAnchor();
 
-        #endregion other methods
+        #endregion Other Methods
+
         #region Public Properties
 
         /// <summary>

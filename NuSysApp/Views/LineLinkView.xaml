@@ -10,7 +10,7 @@
     d:DesignWidth="400">
     
     <Grid>
-        <Line Name="line" Stroke="#FF9C9C9C" StrokeThickness="2" X1="{Binding Node1.AnchorX}" Y1="{Binding Node1.AnchorY}" X2="{Binding Node2.AnchorX}" Y2="{Binding Node2.AnchorY}"></Line>
+        <Line Name="line" Stroke="#FF9C9C9C" StrokeThickness="2" X1="{Binding Atom1.AnchorX}" Y1="{Binding Atom1.AnchorY}" X2="{Binding Atom2.AnchorX}" Y2="{Binding Atom2.AnchorY}"></Line>
         
     </Grid>
 </UserControl>

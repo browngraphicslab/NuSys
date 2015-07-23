@@ -66,30 +66,67 @@ namespace NuSysApp
             return true;
         }
 
-        public static Point addPoints(Point pt1, Point pt2)
-        {
-            return new Point(pt1.X + pt2.X, pt1.Y + pt2.Y);
-        }
-
-        public static Point subtractPoints(Point pt1, Point pt2)
-        {
-            return new Point(pt1.X - pt2.X, pt1.Y - pt2.Y);
-        }
-
-        /// <summary>
-        ///     Returns the input line's angle from horizontal, with range [0.0, 360.0).
-        /// </summary>
-        public static double angleFromHorizontal(Line line)
-        {
-            var dx = line.X2 - line.X1;
-            var dy = line.Y2 - line.Y1;
-            return Math.Atan2(dy, dx)*(180.0/Math.PI) + 180.0;
-        }
-
         public struct Segment
         {
             public Point End;
             public Point Start;
         }
+
+        public static Line[] NodeToLineSegment(NodeViewModel node)
+        {
+            var lines = new Line[4];
+            var x = node.X + node.Transform.Matrix.OffsetX;
+            var y = node.Y + node.Transform.Matrix.OffsetY;
+
+            //AB line  
+            lines[0] = new Line
+            {
+                X1 = x,
+                Y1 = y,
+                X2 = x + node.Width,
+                Y2 = y
+            };
+
+            //CD line 
+            lines[1] = new Line
+            {
+                X1 = x,
+                Y1 = y + node.Height,
+                X2 = x + node.Width,
+                Y2 = y + node.Height
+            };
+
+            //AC line 
+            lines[2] = new Line
+            {
+                X1 = x,
+                Y1 = y,
+                X2 = x,
+                Y2 = y + node.Height
+            };
+
+            //BC line 
+            lines[3] = new Line
+            {
+                X1 = x + node.Width,
+                Y1 = y,
+                X2 = x + node.Width,
+                Y2 = y + node.Height
+            };
+
+            return lines;
+        }
+
+        public static Rect NodeToBoudingRect(NodeViewModel nodeVm)
+        {
+            return new Rect()
+            {
+                Height = nodeVm.Height,
+                Width = nodeVm.Width,
+                X = nodeVm.X + nodeVm.Transform.Matrix.OffsetX,
+                Y = nodeVm.Y + nodeVm.Transform.Matrix.OffsetY
+            };
+        }
     }
+    
 }

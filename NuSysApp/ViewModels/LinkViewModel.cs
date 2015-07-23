@@ -81,11 +81,6 @@ namespace NuSysApp
 
         #endregion Public Properties
 
-        public override Rect GetBoudingRect()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void UpdateAnchor()
         {
             throw new NotImplementedException();

@@ -67,17 +67,6 @@ namespace NuSysApp
 
         #endregion Node Manipulations
 
-        public override Rect GetBoudingRect()
-        {
-            return new Rect()
-            {
-                Height = this.Height,
-                Width = this.Width,
-                X = this.X + this.Transform.Matrix.OffsetX,
-                Y = this.Y + this.Transform.Matrix.OffsetY
-            };
-        }
-
         #region Public Properties
 
         public MatrixTransform Transform

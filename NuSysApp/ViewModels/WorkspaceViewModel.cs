@@ -132,7 +132,7 @@ namespace NuSysApp
         /// <returns></returns>
         public bool CheckForNodeLinkIntersections(NodeViewModel node)
         {
-            var lines = NodeToLineSegmentHelper(node);
+            var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
                 Line line1 = link.LineRepresentation;
@@ -145,51 +145,6 @@ namespace NuSysApp
                 }
             }
             return false;
-        }
-
-        private static Line[] NodeToLineSegmentHelper(NodeViewModel node)
-        {
-            var lines = new Line[4];
-            var x = node.X + node.Transform.Matrix.OffsetX;
-            var y = node.Y + node.Transform.Matrix.OffsetY;
-
-            //AB line  
-            lines[0] = new Line
-            {
-                X1 = x,
-                Y1 = y,
-                X2 = x + node.Width,
-                Y2 = y
-            };
-
-            //CD line 
-            lines[1] = new Line
-            {
-                X1 = x,
-                Y1 = y + node.Height,
-                X2 = x + node.Width,
-                Y2 = y + node.Height
-            };
-
-            //AC line 
-            lines[2] = new Line
-            {
-                X1 = x,
-                Y1 = y,
-                X2 = x,
-                Y2 = y + node.Height
-            };
-
-            //BC line 
-            lines[3] = new Line
-            {
-                X1 = x + node.Width,
-                Y1 = y,
-                X2 = x + node.Width,
-                Y2 = y + node.Height
-            };
-
-            return lines;
         }
 
         /// <summary>
@@ -248,8 +203,8 @@ namespace NuSysApp
         /// <summary>
         /// Creates a link between two nodes. 
         /// </summary>
-        /// <param name="nodeVM1"></param>
-        /// <param name="nodeVM2"></param>
+        /// <param name="atomVM1"></param>
+        /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
