@@ -45,11 +45,14 @@ namespace NuSysApp
             }
         }
 
+        #region Link Manipulation Methods
         public override void Remove()
         {
             this.Atom1.LinkList.Remove(this);
             this.Atom2.LinkList.Remove(this);
         }
+
+#endregion Link Manipulation Methods
 
         #region Public Properties
 

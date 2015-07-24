@@ -67,8 +67,10 @@ namespace NuSysApp
             this.Width += dx;
             this.Height += dy;
             this.UpdateAnchor();
+            
         }
 
+        
         #endregion Node Manipulations
 
         #region Public Properties
