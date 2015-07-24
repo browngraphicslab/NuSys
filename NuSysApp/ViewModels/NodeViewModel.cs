@@ -41,6 +41,10 @@ namespace NuSysApp
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
             this.UpdateAnchor();
+            foreach (var link in LinkList)
+            {
+                link.UpdateAnchor();
+            }
         }
 
         /// <summary>
@@ -63,8 +67,10 @@ namespace NuSysApp
             this.Width += dx;
             this.Height += dy;
             this.UpdateAnchor();
+            
         }
 
+        
         #endregion Node Manipulations
 
         #region Public Properties

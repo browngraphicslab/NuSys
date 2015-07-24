@@ -7,8 +7,11 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    xmlns:converters="using:NuSysApp">
-   
+    xmlns:converters="using:NuSysApp"
+    DoubleTapped="BezierLinkView_OnDoubleTapped">
+    <UserControl.Resources>
+        <converters:SelectionToColorConverter x:Key="sConverter" />
+    </UserControl.Resources>
     <Grid>
         <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1">
             <Path.Data>
@@ -27,7 +30,7 @@
                                             node on the other end of the link -->
 
                                         <BezierSegment x:Name="curve"
-                                        Point3="{Binding Atom2.Anchor}" />
+                                                       Point3="{Binding Atom2.Anchor}" />
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>

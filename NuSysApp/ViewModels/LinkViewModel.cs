@@ -29,8 +29,13 @@ namespace NuSysApp
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
 
+            var line = this.LineRepresentation;
+            this.AnchorX = (int) (line.X2 + (Math.Abs(line.X2 - line.X1)/2));
+            this.AnchorY = (int) (line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
+            this.Anchor = new Point(this.AnchorX, this.AnchorY);
+
             switch (workspace.CurrentLinkMode)
-            {
+            { 
                 case WorkspaceViewModel.LinkMode.BEZIERLINK:
                     this.View = new BezierLinkView(this);
                     break;
@@ -40,11 +45,14 @@ namespace NuSysApp
             }
         }
 
+        #region Link Manipulation Methods
         public override void Remove()
         {
             this.Atom1.LinkList.Remove(this);
             this.Atom2.LinkList.Remove(this);
         }
+
+#endregion Link Manipulation Methods
 
         #region Public Properties
 
@@ -83,7 +91,12 @@ namespace NuSysApp
 
         public override void UpdateAnchor()
         {
-            throw new NotImplementedException();
+            var line = this.LineRepresentation;
+            var dx = Math.Abs(line.X2 - line.X1)/2;
+            var dy = Math.Abs(line.Y2 - line.Y1)/2;
+            this.AnchorX = (int)(line.X1 - dx);
+            this.AnchorY = (int)(line.Y1 + dy);
+            this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }
     }
 }

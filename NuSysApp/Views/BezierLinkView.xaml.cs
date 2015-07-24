@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -44,6 +45,13 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+        }
+
+        private void BezierLinkView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = (LinkViewModel) this.DataContext;
+            vm.ToggleSelection();
+            e.Handled = true;
         }
     }
 }
