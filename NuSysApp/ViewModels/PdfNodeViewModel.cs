@@ -24,7 +24,7 @@ namespace NuSysApp
             //this.RenderedBitmapImage = InitializePdfNode().Result;
         }
 
-        public async Task InitializePdfNode()
+        public async Task InitializePdfNodeAsync()
         {
             //_bitmapImage = await PdfRenderer.RenderPdfPage(_filePath, 0);
             var storageFile = await FileManager.PromptUserForFile(new List<string> {".pdf", ".pptx", ".docx"});
