@@ -133,7 +133,7 @@
             </ItemsControl.RenderTransform>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas x:Name="canvas" />
+                    <Canvas x:Name="canvas" Width="10000" Height="10000"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
