@@ -96,6 +96,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
@@ -153,8 +154,13 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="ApplicationInsights.config" />
+    <EmbeddedResource Include="Assets\paragraph.nusys" />
     <None Include="NuStarterProject_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="Resources\image_and_caption.nusys" />
+    <None Include="Resources\paragraph.nusys" />
+    <None Include="Resources\table.nusys" />
+    <PRIResource Include="Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Pics\ink icon.png" />
