@@ -5,8 +5,9 @@ Manually using richtextbox
 2. Add .nusys file as resource
 3. Initialize the richtextbox like so: 
 ```c#
-var nodeVm = _factory.CreateNewRichText(readFile);
-                    this.PositionNode(nodeVm, 100, 100);
-                    NodeViewModelList.Add(nodeVm);
-                    AtomViewList.Add(nodeVm.View);
+var nodeVm = _factory.CreateNewRichText(readFile);  
+this.PositionNode(nodeVm, 100, 100);
+NodeViewModelList.Add(nodeVm);
+AtomViewList.Add(nodeVm.View);
 ```
+4.
