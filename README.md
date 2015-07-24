@@ -11,7 +11,7 @@ NodeViewModelList.Add(nodeVm);
 AtomViewList.Add(nodeVm.View);
 ```
 
-4. Add StreamReader to Factory and pass in the file in our case the file was called 'paragraph'
+Add StreamReader to Factory and pass in the file in our case the file was called 'paragraph'
 
 ```c#
 using (Stream s =
