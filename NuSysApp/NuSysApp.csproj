@@ -96,12 +96,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MISC\FileManager.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
+    <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
-    <Compile Include="Models\PDFNodeModel.cs" />
+    <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\RichTextNode.cs" />
     <Compile Include="NodeToControlpoint1Converter.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
     <Compile Include="MISC\NodeType.cs" />
+    <Compile Include="ViewModels\PdfNodeViewModel.cs" />
     <Compile Include="ViewModels\RichTextNodeViewModel.cs" />
     <Compile Include="Views\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>

@@ -1,4 +1,5 @@
-﻿using Windows.Data.Pdf;
+﻿using System.Threading.Tasks;
+using Windows.Data.Pdf;
 
 namespace NuSysApp.ViewModels
 {
@@ -12,6 +13,11 @@ namespace NuSysApp.ViewModels
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, PdfDocument pdfDocument)
             : base(workspaceViewModel)
+        {
+            
+        }
+
+        public async Task PdfNodeInit(PdfNodeViewModel pnvm)
         {
             
         }

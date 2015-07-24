@@ -200,31 +200,10 @@ namespace NuSysApp
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.LINELINK;
         }
-        private async Task<StorageFile> PromptUserForFile(List<string> allowedFileTypes, PickerViewMode viewMode = PickerViewMode.Thumbnail)
-        {
-            FileOpenPicker openFile = new FileOpenPicker();
-            openFile.ViewMode = viewMode;
-            openFile.FileTypeFilter.Clear();
-            foreach (string fileType in allowedFileTypes)
-            {
-                openFile.FileTypeFilter.Add(fileType);
-            }
-            try
-            {
-                StorageFile file = await openFile.PickSingleFileAsync();
-                return file;
-            }
-            catch
-            {
-                System.Diagnostics.Debug.WriteLine("Error Caught");
-                return null;
-            }
-        }
-
 
         async void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await PromptUserForFile(new List<string> { ".bmp", ".png", ".jpeg", ".jpg" });
+            StorageFile file = await FileManager.PromptUserForFile(new List<string> { ".bmp", ".png", ".jpeg", ".jpg" });
             // 'file' is null if user cancels the file picker.
             if (file != null)
             {
@@ -244,8 +223,6 @@ namespace NuSysApp
                 }
             }
         }
-
-
 
         #endregion App Bar Handlers
 
