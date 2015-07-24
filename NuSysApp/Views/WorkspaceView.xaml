@@ -15,7 +15,7 @@
                 <AppBarButton Click="AppBarButton_Click_Save" Label="Save" Icon="Save" Background="White" />
                 <AppBarButton Click="AppBarButton_Click_Erase" Label="Erase" Background="White" />
                 <AppBarButton Click="AddButtonClick" Label="Upload" Icon="Upload" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_Document" Label="Document" Icon="Document" Background="White" />
+                <AppBarButton Click="AppBarButton_Click_Document" Label="PDF" Icon="Document" Background="White" />
                 <AppBarButton Click="AppBarButton_Click_OFile" Label="Open File" Icon="OpenFile" Background="White" />
                 <AppBarButton Click="AppBarButton_Click_AFriend" Label="Add Friend" Icon="AddFriend" Background="White" />
                 <AppBarButton Click="AppBarButton_Click_Undo" Label="Undo" Icon="Undo" Background="White" />

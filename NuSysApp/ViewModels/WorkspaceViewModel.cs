@@ -31,7 +31,8 @@ namespace NuSysApp
             GLOBALINK,
             INK,
             ERASE,
-            IMAGE
+            IMAGE,
+            PDF
         }; //enum created to switch between multiple modes in the appbar
 
         public enum LinkMode
@@ -217,7 +218,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public void CreateNewNode(double xCoordinate, double yCoordinate, object data)
+        public NodeViewModel CreateNewNode(double xCoordinate, double yCoordinate, object data)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
@@ -232,12 +233,16 @@ namespace NuSysApp
                     vm = _factory.CreateNewImage((BitmapImage)data);
                     this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
                     break;
+                case Mode.PDF:
+                    vm = _factory.CreateNewPdfNodeViewModel();
+                    break;
                 default:
-                    return;
+                    return null;
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             this.PositionNode(vm, xCoordinate, yCoordinate);
+            return vm;
         }
 
         private void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
@@ -323,6 +328,5 @@ namespace NuSysApp
 
         #endregion Public Members
 
-       
     }
 }

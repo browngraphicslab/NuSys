@@ -30,6 +30,12 @@ namespace NuSysApp
             return imageVM;
         }
 
+        public PdfNodeViewModel CreateNewPdfNodeViewModel()
+        {
+            PdfNodeViewModel pdfNodeVM = new PdfNodeViewModel(_workSpaceViewModel);
+            return pdfNodeVM;
+        }
+
         public InkNodeViewModel CreateNewInk()
         {
             return new InkNodeViewModel(_workSpaceViewModel);

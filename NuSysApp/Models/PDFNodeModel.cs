@@ -2,15 +2,19 @@
 
 namespace NuSysApp
 {
-    class PdfNodeModel : Node
+    public class PdfNodeModel : Node
     {
-        public PdfNodeModel(string filePath, int id) : base(id)
+        //public PdfNodeModel(string filePath, int id) : base(id)
+        //{
+        //    FilePath = filePath;
+        //}
+        public PdfNodeModel(int id) : base(id)
         {
-            FilePath = filePath;
+            
         }
 
-        public string FilePath { get; set; }
+        //public string FilePath { get; set; }
 
-        public BitmapImage RenderedBitmapImage { get; set; }
+        public BitmapImage RenderedPage { get; set; }
     }
 }

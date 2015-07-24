@@ -153,9 +153,17 @@ namespace NuSysApp
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
 
-        private void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// PDF nodes have a special asynchronous initialization function that must be called from PdfNodeViewModel,
+        /// in order to allow users to select PDF files from file explorer without disrupting other processes in the workspace.
+        /// Currently, only PDFs contained in the Pictures library are accessible.
+        /// </summary>
+        private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            //TO DO 
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
+            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(0, 0, null);
+            await pdfNodeViewModel.InitializePdfNode();
         }
 
         private void AppBarButton_Click_OFile(object sender, RoutedEventArgs e)
@@ -177,8 +185,6 @@ namespace NuSysApp
         {
             //TO DO 
         }
-
-        
 
         private void AppBarButton_Click_Pictures(object sender, RoutedEventArgs e)
         {
