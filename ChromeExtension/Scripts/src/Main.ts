@@ -2,23 +2,28 @@
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 /// <reference path="ink/InkCanvas.ts"/>
 /// <reference path="selection/LineSelection.ts"/>
+/// <reference path="selection/UnknownSelection.ts"/>
 
 class Main {
-
+    
+    static DOC_WIDTH: number;
+    static DOC_HEIGHT: number;
 
     constructor() {
         console.log("Starting NuSys yo");
         this.init();
     }
 
+
+
     init() {
         var body = document.body,
             html = document.documentElement;
 
-        var dwidth = Math.max(body.scrollWidth, body.offsetWidth,
+        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth,
             html.clientWidth, html.scrollWidth, html.offsetWidth);
 
-        var dheight = Math.max(body.scrollHeight, body.offsetHeight,
+        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight,
             html.clientHeight, html.scrollHeight, html.offsetHeight);
 
         var port = chrome.runtime.connect({ name: "content" });
@@ -58,21 +63,18 @@ class Main {
                     case StrokeType.Bracket:
                         selection = new BracketSelection(inkCanvas, true);
                         console.log("switching to bracket!")
-                        break;
-                        /*
+                        break;  
                     case StrokeType.Marquee:
                         selection = new MarqueeSelection(inkCanvas, true);
                         console.log("switching to marquee!")
-                        break;
+                        break; 
                     case StrokeType.Scribble:
                         selection = new UnknownSelection(inkCanvas, true);
                         console.log("switching to unknown!")
                         break;
-                        */
                 }
 
                 inkCanvas.redrawActiveStroke();
-
             }
             selection.update(e.clientX, e.clientY);
         }
@@ -83,78 +85,59 @@ class Main {
             canvas.removeEventListener("mousemove", onMouseMove);
             document.body.removeChild(canvas);
             selection.end(e.clientX, e.clientY);
+            var currType = prevStrokeType;
+            //var stroke = inkCanvas._activeStroke.stroke;
+            var stroke = inkCanvas._activeStroke.stroke.getCopy();
+            var currType = StrokeClassifier.getStrokeType(stroke);
+            console.log("curr: " + currType);
+           // console.log("scribble: " + StrokeType.Scribble);
 
-            var stroke = inkCanvas._activeStroke.stroke.getResampled(20);
-            //inkCanvas.drawStroke(stroke, new CircleBrush());
+            if (currType == StrokeType.Scribble) {
 
-            var segments = stroke.breakUp();
+                var segments = stroke.breakUp();
+                var p0 = stroke.points[0];
+                var p1 = stroke.points[stroke.points.length - 1];
+                var line = Line.fromPoint(p0, p1);
 
-            var p0 = stroke.points[0];
-            var p1 = stroke.points[stroke.points.length - 1];
-
-            var line = Line.fromPoint(p0, p1);
-
-            var intersectionCount = 0;
-            $.each(segments, function () {
-                var intersects = line.intersectsLine(this);
-                if (intersects)
-                    intersectionCount++;
-            });
-
-            if (intersectionCount > 2) {
-
-                var strokeBB = stroke.getBoundingRect();
-
-                $.each(selections, function () {
-                    try {
-                        if (this.getBoundingRect().intersectsRectangle(strokeBB)) {
-                            console.log(this);
-                            this.deselect();
-                            console.log("RECT INTERSECTION");
-
-                            var selectionIndex = selections.indexOf(this);
-                            if (selectionIndex > -1)
-                                selections.splice(selectionIndex, 1);
-                        }
-                    } catch (e) {
-                        console.log(e)
-                        console.log(this);
-                    }
+                var intersectionCount = 0;
+                $.each(segments, function () {
+                    var intersects = line.intersectsLine(this);
+                    if (intersects)
+                        intersectionCount++;
                 });
 
-                inkCanvas.update();
-            }
+                if (intersectionCount > 2) {
 
-            var currType = StrokeClassifier.getStrokeType(inkCanvas._activeStroke.stroke);
-            if (currType != StrokeType.Scribble) {
-                selections.push(selection);
-                //var myWindow = window.open("", "Selected", "width=1000, height=1000");
-                //myWindow.focus();
-                //myWindow.document.body.innerHTML = "";
-                //myWindow.document.write(selection.getContent());
+                    var strokeBB = stroke.getBoundingRect();
+
+                    $.each(selections, function () {
+                        try {
+                            if (this.getBoundingRect().intersectsRectangle(strokeBB)) {
+                                console.log(this);
+                                this.deselect();
+                                console.log("RECT INTERSECTION");
+
+                                var selectionIndex = selections.indexOf(this);
+                                if (selectionIndex > -1)
+                                    selections.splice(selectionIndex, 1);
+                            }
+                        } catch (e) {
+                            console.log(e)
+                            console.log(this);
+                        }
+                    });
+                }
+                inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
             }
             else {
-                inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
-                inkCanvas.update();
+                selections.push(selection);
             }
-
-            // console.log("num selections: " + selections.length);
-            //port.postMessage({ "text": content });
-
-
-            ///////////// UNCOMMENT TO SHOW WINDOW!!!!!!!!!!!!!!!!!!!!//////////////////////////////////////
-
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////
-
-            // console.log(content);
-            document.body.appendChild(canvas);
 
             selection = new LineSelection(inkCanvas);
             prevStrokeType = StrokeType.Line;
+
+            document.body.appendChild(canvas);
+            inkCanvas.update();
         });
-
     }
-
-
 } 
