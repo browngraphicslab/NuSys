@@ -18,15 +18,12 @@ namespace NuSysApp
         {
             this.View = new PdfNodeView(this);
             this.Transform = new MatrixTransform();
-            //_pdfNodeModel = new PdfNodeModel("FILEPATH HERE", 0); // TODO: BIND FILEPATH DATA TO PDFNODEMODEL
             _pdfNodeModel = new PdfNodeModel(0);
             _workspaceViewModel = workspaceViewModel;
-            //this.RenderedBitmapImage = InitializePdfNode().Result;
         }
 
         public async Task InitializePdfNodeAsync()
         {
-            //_bitmapImage = await PdfRenderer.RenderPdfPage(_filePath, 0);
             var storageFile = await FileManager.PromptUserForFile(new List<string> {".pdf", ".pptx", ".docx"});
             var fileName = storageFile.Name;
             var fileType = storageFile.FileType;
