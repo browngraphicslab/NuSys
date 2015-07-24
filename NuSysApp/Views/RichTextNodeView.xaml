@@ -44,7 +44,7 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <RichEditBox Name="textBlock" Height="200" VerticalAlignment="Top" Margin="20,60,0,0"
+        <RichEditBox Name="textBlock" Height="576" VerticalAlignment="Top" Margin="0,63,0,0"
                      Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}" />
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
