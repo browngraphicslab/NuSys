@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.MISC;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
@@ -29,7 +30,8 @@ namespace NuSysApp
             TEXTNODE,
             GLOBALINK,
             INK,
-            ERASE
+            ERASE,
+            IMAGE
         }; //enum created to switch between multiple modes in the appbar
 
         public enum LinkMode
@@ -52,8 +54,8 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
             TransformX = 0;
             TransformY = 0;
-            ScaleX = 0;
-            ScaleY = 0;
+            ScaleX = 1;
+            ScaleY = 1;
             _factory = new Factory(this);
 
             Init();
@@ -215,7 +217,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public void CreateNewNode(double xCoordinate, double yCoordinate)
+        public void CreateNewNode(double xCoordinate, double yCoordinate, object data)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
@@ -225,6 +227,10 @@ namespace NuSysApp
                     break;
                 case Mode.INK:
                     vm = _factory.CreateNewInk();
+                    break;
+                case Mode.IMAGE:
+                    vm = _factory.CreateNewImage((BitmapImage)data);
+                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
                     break;
                 default:
                     return;
@@ -297,6 +303,7 @@ namespace NuSysApp
                     return;
                 }
                 _scaleX = value;
+                RaisePropertyChanged("ScaleX");
             }
         }
 
@@ -310,6 +317,7 @@ namespace NuSysApp
                     return;
                 }
                 _scaleY = value;
+                RaisePropertyChanged("ScaleY");
             }
         }
 
