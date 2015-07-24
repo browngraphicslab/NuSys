@@ -80,6 +80,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\lib\collections.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\BrushStroke.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\brush\MarqueeBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\brush\LineBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\SelectionBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\HighlightBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\IBrush.ts" />
@@ -89,6 +91,8 @@
     <TypeScriptCompile Include="Scripts\src\ink\StrokeType.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\ISelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\MarqueeSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\UnknownSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\util\DomUtil.ts" />
     <TypeScriptCompile Include="Scripts\src\util\Line.ts" />
