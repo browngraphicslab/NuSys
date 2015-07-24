@@ -9,15 +9,15 @@ var nodeVm = _factory.CreateNewRichText(readFile);
 this.PositionNode(nodeVm, 100, 100);
 NodeViewModelList.Add(nodeVm);
 AtomViewList.Add(nodeVm.View);
-```
+
 4. Add StreamReader to Factory and pass in the file in our case the file was called 'paragraph'
 ```c#
-            using (Stream s =
-                  typeof(NuSysApp.App).GetTypeInfo()
-                      .Assembly.GetManifestResourceStream("NuSysApp.Assets.paragraph.nusys"))
-            {
-                StreamReader reader = new StreamReader(s);
-                c = reader.ReadToEnd();
-                Debug.WriteLine(c);
-            }
-            ```
+using (Stream s =
+      typeof(NuSysApp.App).GetTypeInfo()
+          .Assembly.GetManifestResourceStream("NuSysApp.Assets.paragraph.nusys"))
+ {
+    StreamReader reader = new StreamReader(s);
+    c = reader.ReadToEnd();
+    Debug.WriteLine(c);
+ }
+
