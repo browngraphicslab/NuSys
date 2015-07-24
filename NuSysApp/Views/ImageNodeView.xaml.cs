@@ -41,21 +41,22 @@ namespace NuSysApp
         #region Event Handlers
         private void UserControl_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
+            ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+            vm.Resize((e.Delta.Scale - 1) * vm.Width, (e.Delta.Scale - 1) * vm.Height);//TO DO: POSSIBLY REMOVE THIS FEATURE FOR LACK OF CONSISTENCY
             e.Handled = true;
         }
 
         private void Resizer_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
+            ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true;
         }
 
         private void UserControl_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
+            ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.ToggleSelection();
 
             e.Handled = true;
@@ -69,7 +70,7 @@ namespace NuSysApp
 
         private void delete_Click(object sender, RoutedEventArgs e)
         {
-            InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
+            ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.Remove();
         }
         #endregion Event Handlers

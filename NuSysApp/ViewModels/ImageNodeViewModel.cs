@@ -7,35 +7,35 @@ namespace NuSysApp
 {
     public class ImageNodeViewModel : NodeViewModel
     {
-        private BitmapImage _image;
         private ImageModel _imgm;
 
-        public ImageNodeViewModel(WorkspaceViewModel vm, ImageModel igm) : base(vm)
+        public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
         {
             this.View = new ImageNodeView(this);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DEFAULT_NODE_SIZE;
-            this.Height = Constants.DEFAULT_NODE_SIZE;
+            this.Height = Constants.DEFAULT_NODE_SIZE*igm.PixelHeight/igm.PixelWidth;//maintains aspect ratio
             this.IsSelected = false;
             this.IsEditing = false;
-            this._imgm = igm;
+            this.ImageModel = new ImageModel(igm, 0);
         }
-
-        public BitmapImage Image
+        public override void Resize(double dx, double dy)
         {
-            get { return _image; }
-            set
+            double newDx, newDy;
+            if (dx > dy)
             {
-                if (_image == value)
-                {
-                    return;
-                }
-                _image = value;
-                RaisePropertyChanged("Image");
+                newDx = (dy /*/ WorkSpaceViewModel.ScaleX*/) * ImageModel.Image.PixelWidth / ImageModel.Image.PixelHeight;
+                newDy = dy;/// WorkSpaceViewModel.ScaleY;
             }
+            else
+            {
+                newDx = dx; /// WorkSpaceViewModel.ScaleX;
+                newDy = (dx /*/ WorkSpaceViewModel.ScaleY*/) * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
+            }
+            base.Resize(newDx, newDy);
         }
 
-        public ImageModel Imgm
+        public ImageModel ImageModel
         {
             get { return _imgm; }
             set
@@ -45,12 +45,9 @@ namespace NuSysApp
                     return;
                 }
                 _imgm = value;
+                RaisePropertyChanged("ImageModel");
             }
         }
 
-        public Uri ImageSource
-        {
-            get { return Imgm.Image.UriSource; }
-        }
     }
 }

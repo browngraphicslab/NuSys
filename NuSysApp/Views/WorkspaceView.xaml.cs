@@ -5,6 +5,10 @@ using Windows.UI.Xaml.Input;
 using System;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Collections.Generic;
+using Windows.Storage.Pickers;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -71,7 +75,7 @@ namespace NuSysApp
         private void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y);
+            vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y,"");
             vm.ClearSelection();
         }
 
@@ -196,34 +200,55 @@ namespace NuSysApp
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.LINELINK;
         }
+        private async Task<StorageFile> PromptUserForFile(List<string> allowedFileTypes, PickerViewMode viewMode = PickerViewMode.Thumbnail)
+        {
+            FileOpenPicker openFile = new FileOpenPicker();
+            openFile.ViewMode = viewMode;
+            openFile.FileTypeFilter.Clear();
+            foreach (string fileType in allowedFileTypes)
+            {
+                openFile.FileTypeFilter.Add(fileType);
+            }
+            try
+            {
+                StorageFile file = await openFile.PickSingleFileAsync();
+                return file;
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("Error Caught");
+                return null;
+            }
+        }
+
 
         async void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            var openFile = new Windows.Storage.Pickers.FileOpenPicker(); //open's file explorer changes to this code will be made by Adil allowing images to be added to canvas: Currently working on this
-            openFile.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-            openFile.FileTypeFilter.Add(".gif");
-            openFile.FileTypeFilter.Add(".png");
-            openFile.FileTypeFilter.Add(".docx");
-            openFile.FileTypeFilter.Add(".jpeg");
-            openFile.FileTypeFilter.Add(".ppt");
-            openFile.FileTypeFilter.Add(".jpg");
-            Windows.Storage.StorageFile file = await openFile.PickSingleFileAsync();
-            /*   if (null != file)
-               {
-                   using (var stream = await file.OpenSequentialReadAsync())
-                   {
-                       catch(Exception ex)
-                       {
-                           System.Diagnostics.Debug.WriteLine("Exception");
-                       }
+            StorageFile file = await PromptUserForFile(new List<string> { ".bmp", ".png", ".jpeg", ".jpg" });
+            // 'file' is null if user cancels the file picker.
+            if (file != null)
+            {
+                // Open a stream for the selected file.
+                // The 'using' block ensures the stream is disposed
+                // after the image is loaded.
+                using (Windows.Storage.Streams.IRandomAccessStream fileStream =
+                    await file.OpenAsync(FileAccessMode.Read))
+                {
+                    // Set the image source to the selected bitmap.
+                    BitmapImage bitmapImage = new BitmapImage();
 
-                   }
-
-               } */
+                    bitmapImage.SetSource(fileStream);
+                    WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+                    vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
+                    vm.CreateNewNode(0, 0, bitmapImage);
+                }
+            }
         }
 
+
+
         #endregion App Bar Handlers
-       
+
         #endregion Event Handlers
     }
 

@@ -1,4 +1,6 @@
-﻿namespace NuSysApp
+﻿using Windows.UI.Xaml.Media.Imaging;
+
+namespace NuSysApp
 {
     public class Factory
     {
@@ -22,6 +24,11 @@
             return richTextVM;
         }
 
+        public ImageNodeViewModel CreateNewImage(BitmapImage bmi)
+        {
+            ImageNodeViewModel imageVM = new ImageNodeViewModel(_workSpaceViewModel, bmi);
+            return imageVM;
+        }
 
         public InkNodeViewModel CreateNewInk()
         {

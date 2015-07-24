@@ -62,7 +62,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="dx"></param>
         /// <param name="dy"></param>
-        public void Resize(double dx, double dy)
+        public virtual void Resize(double dx, double dy)
         {
             this.Width += dx;
             this.Height += dy;
