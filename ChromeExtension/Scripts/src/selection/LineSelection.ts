@@ -1,4 +1,12 @@
-﻿class LineSelection implements ISelection {
+﻿/// <reference path="../../typings/jquery/jquery.d.ts"/>
+/// <reference path="../ink/InkCanvas.ts"/>
+/// <reference path="../ink/brush/BrushStroke.ts"/>
+/// <reference path="../ink/brush/HighlightBrush.ts"/>
+/// <reference path="../ink/brush/SelectionBrush.ts"/>
+/// <reference path="../util/Rectangle.ts"/>
+/// <reference path="../util/DomUtil.ts"/>
+
+class LineSelection implements ISelection {
     
     _brushStroke:BrushStroke;
     _inkCanvas:InkCanvas;
@@ -67,7 +75,7 @@
         if (nodes.length > 0) {
             var original_content = $(commonParent).clone();
 
-            $.each(nodes, function() {
+            $.each(nodes, function () {
 
                 if (this.nodeType == Node.TEXT_NODE) {
                     $(this).replaceWith($(this).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
@@ -83,7 +91,7 @@
 
             var frag = this._range.cloneContents();
             var result = "";
-            $.each(frag.childNodes, function() {
+            $.each(frag["children"], function() {
                 result += $(this)[0].outerHTML.replace(/<word>|<\/word>/g, " ");
             });
             result = result.replace(/\s\s+/g, ' ').trim();

@@ -46,6 +46,7 @@
         var maxX = -1000000;
         var minY = 1000000;
         var maxY = -1000000;
+        console.log(this._clientRects.length);
         for (var i = 0; i < this._clientRects.length; i++) {
             var p = this._clientRects[i];
             maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
@@ -55,12 +56,12 @@
         }
 
         return new Rectangle(minX, minY + window.pageYOffset, maxX - minX, maxY - minY);
-
-
     }
 
     analyzeContent(): void {
         
+        console.log("analyzing content");
+
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
         selectionBB.w = 1024 - selectionBB.x; // TODO: fix this magic number
@@ -89,16 +90,16 @@
 
             }
         }
-
+ 
 
         var candidates = [];
         var precision = 4;
 
-
         for (var k in hitCounter) {
+            console.log(k);
             candidates.push(hitCounter[k] / totalScore);
         }
-
+        
 
         var std = Statistics.getStandardDeviation(candidates, precision);
 
@@ -122,6 +123,7 @@
 
             var rects = range.getClientRects();
             this._clientRects = this._clientRects.concat.apply([], rects);
+            console.log(rects.length);
         }
 
         console.log(result);

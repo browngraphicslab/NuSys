@@ -1,6 +1,9 @@
-﻿class DomUtil {
+﻿/// <reference path="../../typings/jquery/jquery.d.ts"/>
+
+class DomUtil {
     
     static getCommonAncestor(a: Element, b: Element) {
+
         var parentsa = $(a).parents().toArray();
         var parentsb = $(b).parents().toArray();
 
@@ -24,5 +27,4 @@
 
         return found;
     }
-
 }

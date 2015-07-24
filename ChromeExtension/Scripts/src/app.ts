@@ -1,5 +1,3 @@
 ﻿/// <reference path="Main.ts"/>
 
-document.onload = () => {
-    var greeter = new Main();
-};
+var greeter = new Main();
