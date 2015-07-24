@@ -8,7 +8,7 @@ Manually using richtextbox
 var nodeVm = _factory.CreateNewRichText(readFile);  
 this.PositionNode(nodeVm, 100, 100);
 NodeViewModelList.Add(nodeVm);
-AtomViewList.Add(nodeVm.View);
+AtomViewList.Add(nodeVm.View);```
 
 4. Add StreamReader to Factory and pass in the file in our case the file was called 'paragraph'
 ```c#
