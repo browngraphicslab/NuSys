@@ -101,6 +101,7 @@
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
+    <Compile Include="Models\PDFNodeModel.cs" />
     <Compile Include="Models\RichTextNode.cs" />
     <Compile Include="NodeToControlpoint1Converter.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
