@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Collections.Generic;
 using Windows.Storage.Pickers;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -27,6 +28,7 @@ namespace NuSysApp
        
         private int penSize = Constants.INITIAL_PEN_SIZE;
         private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
+        private Boolean _isZooming;
         #endregion Private Members
 
         public WorkspaceView()
@@ -34,8 +36,7 @@ namespace NuSysApp
                 this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
-            
-            
+            _isZooming = false;
         }
 
         #region Helper Methods
@@ -82,6 +83,7 @@ namespace NuSysApp
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y,"");
+            Debug.WriteLine(e.GetPosition(this).X + "???" + e.GetPosition(this).Y);
             vm.ClearSelection();
         }
 
@@ -96,8 +98,26 @@ namespace NuSysApp
         private void Page_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            if (!_isZooming)
+            {
+                
+                vm.CenterX = e.Position.X;//(e.Position.X / vm.ScaleX) - vm.TransformX;
+         
+                vm.CenterY = e.Position.Y;//(e.Position.Y / vm.ScaleY) - vm.TransformY;
+                                          //  vm.CenterX = 0;
+                                          // vm.CenterY = 0;
+                Debug.WriteLine(vm.CenterX + "///" + vm.CenterY + "///" + vm.TransformX + "///" + vm.TransformY);
+                _isZooming = true;
+            }
+
+            //vm.TransformX += e.Delta.Translation.X / vm.ScaleX + vm.CenterX*(e.Delta.Scale-1);
+            //vm.TransformY += e.Delta.Translation.Y / vm.ScaleY + vm.CenterY*(e.Delta.Scale-1);
+
             vm.TransformX += e.Delta.Translation.X;
             vm.TransformY += e.Delta.Translation.Y;
+
+            vm.ScaleX *= e.Delta.Scale;
+            vm.ScaleY *= e.Delta.Scale;
 
             e.Handled = true;
         }
@@ -110,6 +130,12 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        private void Page_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            _isZooming = false;
+            e.Handled = true;
+
+        }
         private void Page_ManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {
             e.Handled = true;
@@ -239,6 +265,7 @@ namespace NuSysApp
         #endregion App Bar Handlers
 
         #endregion Event Handlers
+
     }
 
 

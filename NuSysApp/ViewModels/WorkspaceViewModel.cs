@@ -41,7 +41,7 @@ namespace NuSysApp
             BEZIERLINK
         }
 
-        private double _transformX, _transformY, _scaleX, _scaleY;
+        private double _transformX, _transformY, _scaleX, _scaleY, _centerX, _centerY;
 
         #endregion Private Members
 
@@ -56,6 +56,8 @@ namespace NuSysApp
             TransformX = 0;
             TransformY = 0;
             ScaleX = 1;
+            CenterX = 0;
+            CenterY = 0;
             ScaleY = 1;
             _factory = new Factory(this);
 
@@ -254,9 +256,11 @@ namespace NuSysApp
         {
             vm.X = 0;
             vm.Y = 0;
+                
+            
             var transMat = ((MatrixTransform) vm.View.RenderTransform).Matrix;
-            transMat.OffsetX += xCoordinate + TransformX;
-            transMat.OffsetY += yCoordinate + TransformY;
+            transMat.OffsetX += xCoordinate/ ScaleX - TransformX;
+            transMat.OffsetY += yCoordinate/ ScaleY - TransformY;
             vm.Transform = new MatrixTransform {Matrix = transMat};
         }
 
@@ -328,6 +332,34 @@ namespace NuSysApp
                 }
                 _scaleY = value;
                 RaisePropertyChanged("ScaleY");
+            }
+        }
+
+        public double CenterX
+        {
+            get { return _centerX; }
+            set
+            {
+                if (_centerX == value)
+                {
+                    return;
+                }
+                _centerX = value;
+                RaisePropertyChanged("CenterX");
+            }
+        }
+
+        public double CenterY
+        {
+            get { return _centerY; }
+            set
+            {
+                if (_centerY == value)
+                {
+                    return;
+                }
+                _centerY = value;
+                RaisePropertyChanged("CenterY");
             }
         }
 

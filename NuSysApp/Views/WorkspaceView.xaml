@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
-    ManipulationInertiaStarting="Page_ManipulationInertiaStarting">
+    ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted">
 
     <Page.TopAppBar>
         <AppBar x:Name="TopToolbar" Background="#FF15C3F2" Visibility="Visible" ClosedDisplayMode="Minimal">
@@ -128,7 +128,7 @@
             <ItemsControl.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}" />
-                    <ScaleTransform />
+                    <ScaleTransform ScaleX="{Binding ScaleX}" ScaleY="{Binding ScaleY}" CenterX="{Binding CenterX}" CenterY="{Binding CenterY}"/>
                 </TransformGroup>
             </ItemsControl.RenderTransform>
             <ItemsControl.ItemsPanel>
@@ -143,7 +143,7 @@
             <InkCanvas.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}" />
-                    <ScaleTransform />
+                    <ScaleTransform ScaleX="{Binding ScaleX}" ScaleY="{Binding ScaleY}" CenterX="{Binding CenterX}" CenterY="{Binding CenterY}"/>
                 </TransformGroup>
             </InkCanvas.RenderTransform>
         </InkCanvas>
