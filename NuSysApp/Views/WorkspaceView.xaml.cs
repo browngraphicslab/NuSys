@@ -3,6 +3,10 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media.Imaging;
@@ -27,9 +31,11 @@ namespace NuSysApp
 
         public WorkspaceView()
         {
-            this.InitializeComponent();
+                this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
+            
+            
         }
 
         #region Helper Methods
