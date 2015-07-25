@@ -107,4 +107,12 @@ class InkCanvas {
         this.update();
     }
 
+    hide(): void {
+        console.log("hide canvas");
+    }
+
+    reveal(): void {
+        console.log("reveal canvas");
+    }
+
 }
