@@ -105,8 +105,8 @@ namespace NuSysApp
                 Debug.WriteLine(vm.CenterX + "///" + vm.CenterY + "///" + vm.TransformX + "///" + vm.TransformY);
                 _isZooming = true;
             }
-            vm.TransformX += e.Delta.Translation.X / vm.ScaleX; //+ vm.CenterX/e.Delta.Scale;
-            vm.TransformY += e.Delta.Translation.Y / vm.ScaleY;// + vm.CenterY/e.Delta.Scale;
+            vm.TransformX += e.Delta.Translation.X / vm.ScaleX + vm.CenterX*(e.Delta.Scale-1);
+            vm.TransformY += e.Delta.Translation.Y / vm.ScaleY + vm.CenterY*(e.Delta.Scale-1);
 
             vm.ScaleX *= e.Delta.Scale;
             vm.ScaleY *= e.Delta.Scale;
