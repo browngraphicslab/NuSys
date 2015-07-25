@@ -110,9 +110,6 @@ namespace NuSysApp
                 _isZooming = true;
             }
 
-            //vm.TransformX += e.Delta.Translation.X / vm.ScaleX + vm.CenterX*(e.Delta.Scale-1);
-            //vm.TransformY += e.Delta.Translation.Y / vm.ScaleY + vm.CenterY*(e.Delta.Scale-1);
-
             vm.TransformX += e.Delta.Translation.X;
             vm.TransformY += e.Delta.Translation.Y;
 
