@@ -14,7 +14,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             injected = true;
         }
         else {
-            console.log("wooohoo");
+            console.log("woooo");
             $("#selected").empty();
             chrome.storage.local.set({ 'curr': [] });
             document.getElementById("cmn-toggle-1").checked = true;

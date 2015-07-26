@@ -70,11 +70,6 @@ namespace NuSysApp
         {
             var result = await SetupDirectories();
             SetupChromeIntermediate();
-            var nodeVm = _factory.CreateNewRichText("");
-            this.PositionNode(nodeVm, 100, 100);
-            NodeViewModelList.Add(nodeVm);
-            AtomViewList.Add(nodeVm.View);
-
         }
 
         private async void SetupChromeIntermediate()
