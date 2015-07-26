@@ -248,7 +248,8 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
-            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(0, 0, null);
+            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(p.X, p.Y, null);
             await pdfNodeViewModel.InitializePdfNodeAsync();
         }
 
@@ -311,7 +312,8 @@ namespace NuSysApp
                     bitmapImage.SetSource(fileStream);
                     WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
                     vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
-                    vm.CreateNewNode(0, 0, bitmapImage);
+                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+                    vm.CreateNewNode(p.X, p.Y, bitmapImage);
                 }
             }
         }
