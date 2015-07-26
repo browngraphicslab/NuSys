@@ -89,6 +89,24 @@ namespace NuSysApp
             vm.ClearSelection();
         }
 
+        private void Page_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var p = e.GetPosition(this);
+            var tt = new TranslateTransform();
+            tt.X = p.X;
+            tt.Y = p.Y;
+            FM.RenderTransform = tt;
+
+
+            if (FM.Visibility == Visibility.Collapsed)
+            {
+                FM.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FM.Visibility = Visibility.Collapsed;
+            }
+        }
 
 
         private void Page_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -230,7 +248,8 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
-            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(0, 0, null);
+            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(p.X, p.Y, null);
             await pdfNodeViewModel.InitializePdfNodeAsync();
         }
 
@@ -293,11 +312,28 @@ namespace NuSysApp
                     bitmapImage.SetSource(fileStream);
                     WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
                     vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
-                    vm.CreateNewNode(0, 0, bitmapImage);
+                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+                    vm.CreateNewNode(p.X, p.Y, bitmapImage);
                 }
             }
         }
 
+        private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+            Point center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+
+            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
+            compositeTransform.ScaleX *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240)/4;
+            compositeTransform.ScaleY *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/ 240)/4;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            vm.CompositeTransform = compositeTransform;
+        }
         #endregion App Bar Handlers
 
         #endregion Event Handlers
