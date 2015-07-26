@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -32,22 +33,6 @@ namespace NuSysApp
         }
 
         public async Task InitializePdfNodeAsync()
-        {
-            var storageFile = await FileManager.PromptUserForFile(new List<string> { ".pdf", ".pptx", ".docx" });
-            var fileName = storageFile.Name;
-            var fileType = storageFile.FileType;
-            if (fileType == ".pdf")
-            {
-                this.RenderedBitmapImage = await PdfRenderer.RenderPdfPage(fileName, 0);
-                _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.PDF;
-                var pdfNodeViewModel = _workspaceViewModel.CreateNewNode(0, 0, null) as PdfNodeViewModel;
-                if (pdfNodeViewModel == null) return;
-                _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
-                _workspaceViewModel.CreateNewNode(0, 0, RenderedBitmapImage);
-            }
-        }
-
-        public async Task InitializePdfNodeAsync2()
         {
             var storageFile = await FileManager.PromptUserForFile(new List<string> { ".pdf", ".pptx", ".docx" });
             var fileName = storageFile.Name;
