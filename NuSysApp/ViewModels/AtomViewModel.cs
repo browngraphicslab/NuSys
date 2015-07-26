@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
@@ -51,6 +52,8 @@ namespace NuSysApp
         public void ToggleEditing()
         {
             this.IsEditing = !this.IsEditing;
+           
+           
         }
 
         /// <summary>
