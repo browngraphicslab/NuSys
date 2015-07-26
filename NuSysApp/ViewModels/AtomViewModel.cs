@@ -53,6 +53,8 @@ namespace NuSysApp
         public void ToggleEditing()
         {
             this.IsEditing = !this.IsEditing;
+           
+           
         }
 
         /// <summary>
