@@ -92,9 +92,9 @@ namespace NuSysApp
         public override void UpdateAnchor()
         {
             var line = this.LineRepresentation;
-            var dx = Math.Abs(line.X2 - line.X1)/2;
-            var dy = Math.Abs(line.Y2 - line.Y1)/2;
-            this.AnchorX = (int)(line.X1 - dx);
+            var dx = (line.X2 - line.X1)/2;
+            var dy = (line.Y2 - line.Y1)/2;
+            this.AnchorX = (int)(line.X1 + dx);
             this.AnchorY = (int)(line.Y1 + dy);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }

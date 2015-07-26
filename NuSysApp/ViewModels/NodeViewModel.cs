@@ -66,8 +66,7 @@ namespace NuSysApp
         {
             this.Width += dx;
             this.Height += dy;
-            this.UpdateAnchor();
-            
+            this.UpdateAnchor();         
         }
 
         
