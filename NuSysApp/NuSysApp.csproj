@@ -96,11 +96,15 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MISC\FileManager.cs" />
+    <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
+    <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
+    <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\RichTextNode.cs" />
     <Compile Include="NodeToControlpoint1Converter.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
@@ -108,6 +112,7 @@
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
     <Compile Include="MISC\NodeType.cs" />
+    <Compile Include="ViewModels\PdfNodeViewModel.cs" />
     <Compile Include="ViewModels\RichTextNodeViewModel.cs" />
     <Compile Include="Views\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
@@ -133,6 +138,9 @@
     <Compile Include="Views\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PdfNodeView.xaml.cs">
+      <DependentUpon>PdfNodeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RichTextNodeView.xaml.cs">
       <DependentUpon>RichTextNodeView.xaml</DependentUpon>
     </Compile>
@@ -153,8 +161,13 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="ApplicationInsights.config" />
+    <EmbeddedResource Include="Assets\paragraph.nusys" />
     <None Include="NuStarterProject_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="Resources\image_and_caption.nusys" />
+    <None Include="Resources\paragraph.nusys" />
+    <None Include="Resources\table.nusys" />
+    <PRIResource Include="Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Pics\ink icon.png" />
@@ -189,6 +202,10 @@
     <Page Include="Views\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PdfNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RichTextNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>

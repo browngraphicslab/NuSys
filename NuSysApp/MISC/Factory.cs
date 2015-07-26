@@ -1,4 +1,10 @@
-﻿namespace NuSysApp
+using Windows.UI.Xaml.Media.Imaging;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+
+namespace NuSysApp
 {
     public class Factory
     {
@@ -18,10 +24,31 @@
         public RichTextNodeViewModel CreateNewRichText(string html)
         {
             RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
-            richTextVM.Data = html;
+            String c;
+            using (Stream s =
+                  typeof(NuSysApp.App).GetTypeInfo()
+                      .Assembly.GetManifestResourceStream("NuSysApp.Assets.paragraph.nusys"))
+            {
+                StreamReader reader = new StreamReader(s);
+                c = reader.ReadToEnd();
+                Debug.WriteLine(c);
+            }
+            richTextVM.Data = c;
+            
             return richTextVM;
         }
 
+        public ImageNodeViewModel CreateNewImage(BitmapImage bmi)
+        {
+            ImageNodeViewModel imageVM = new ImageNodeViewModel(_workSpaceViewModel, bmi);
+            return imageVM;
+        }
+
+        public PdfNodeViewModel CreateNewPdfNodeViewModel()
+        {
+            PdfNodeViewModel pdfNodeVM = new PdfNodeViewModel(_workSpaceViewModel);
+            return pdfNodeVM;
+        }
 
         public InkNodeViewModel CreateNewInk()
         {

@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="NuSysApp.TextNodeView"
+    x:Class="NuSysApp.PdfNodeView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -12,15 +12,14 @@
     RenderTransform="{Binding Transform}"
     ManipulationDelta="UserControl_ManipulationDelta" ManipulationMode="All"
     DoubleTapped="UserControl_DoubleTapped"
-    PointerPressed="UserControl_PointerPressed"
-    PointerReleased="UserControl_PointerReleased">
+    PointerPressed="UserControl_PointerPressed">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}}">
-        <Button Opacity=".5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50"
-                Height="50"
+    <Grid Name="MyGrid">
+        <Image Source="{Binding PdfNodeModel.RenderedPage}" Stretch="Uniform"/>
+        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50" Height="50"
                 Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}">
             <Button.Template>
                 <ControlTemplate>
@@ -39,41 +38,29 @@
                     <MenuFlyout.MenuFlyoutPresenterStyle>
                         <Style BasedOn="{StaticResource RadialMenu}" TargetType="MenuFlyoutPresenter"
                                x:Name="textnodemenu">
-                            <Setter Property="Background" Value="LightBlue" />
+                            <Setter Property="Background" Value="#FF444444" />
                         </Style>
                     </MenuFlyout.MenuFlyoutPresenterStyle>
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-
-        <TextBlock Name="textBlock" TextWrapping="Wrap" Height="200" VerticalAlignment="Top" Margin="20,60,0,0"
-                   FontSize="12" Foreground="White" FontFamily="Calibri"
-                   Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}"
-                   Text="{Binding Data, Mode=TwoWay}" />
-        <TextBox x:Name="textBox" Foreground="White" TextWrapping="Wrap" Height="200" VerticalAlignment="Top"
-                 Margin="20, 60, 0, 0" FontSize="12" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
-                 Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}"
-                 Background="Transparent" BorderBrush="Transparent" />
-        <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
+        <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Click="delete_Click" Margin="10,10,0,0"
                 Background="#00000000">
             <Button.Content>
-                <Image Source="ms-appx:///Pics/xicon (1).png" />
+                <Image Source="ms-appx:///Pics/xicon.png" />
             </Button.Content>
         </Button>
-        <Button x:Name="edit" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White"
-                FontFamily="Calibri" Content="edit" Click="Edit_Click" />
         <Path x:Name="plusButton"
               Data="M29.75,15 C29.75,23.1462 23.1462,29.75 15,29.75 C6.8538,29.75 0.25,23.1462 0.25,15 C0.25,6.8538 6.8538,0.25 15,0.25 C23.1462,0.25 29.75,6.8538 29.75,15 z M14.8755,4 L14.8755,25.625 M25.688,14.8125 L4.06299,14.8125"
               Fill="White" HorizontalAlignment="Left" Height="30" Margin="-15,-15,0,0" Stretch="Fill" Stroke="Black"
               StrokeThickness="0.5" UseLayoutRounding="False" VerticalAlignment="Top"
               Width="30" Canvas.ZIndex="1" Visibility="Collapsed" />
-        <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+        <Path x:Name="Resizer" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
-              Opacity=".5" ManipulationDelta="Resizer_ManipulationDelta" ManipulationMode="All" />
-        <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="1"
+              Opacity=".5" ManipulationDelta="Resizer_ManipulationDelta" ManipulationMode="All" Fill="Gray"/>
+        <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Gray" StrokeThickness="1"
                    StrokeDashArray="5" Opacity=".8"
                    Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
-
     </Grid>
 
 </UserControl>

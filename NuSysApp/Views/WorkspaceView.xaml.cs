@@ -3,8 +3,16 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Collections.Generic;
+using Windows.Storage.Pickers;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,6 +34,8 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
+            
+            
         }
 
         #region Helper Methods
@@ -43,7 +53,7 @@ namespace NuSysApp
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             inkCanvas.InkPresenter.IsInputEnabled = false;
-            Canvas.SetZIndex(inkCanvas, -2);
+            Canvas.SetZIndex(inkCanvas, -3);
 
         }
         
@@ -71,7 +81,7 @@ namespace NuSysApp
         private void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y);
+            vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y,"");
             vm.ClearSelection();
         }
 
@@ -149,9 +159,17 @@ namespace NuSysApp
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
 
-        private void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// PDF nodes have a special asynchronous initialization function that must be called from PdfNodeViewModel,
+        /// in order to allow users to select PDF files from file explorer without disrupting other processes in the workspace.
+        /// Currently, only PDFs contained in the Pictures library are accessible.
+        /// </summary>
+        private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            //TO DO 
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
+            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(0, 0, null);
+            await pdfNodeViewModel.InitializePdfNodeAsync();
         }
 
         private void AppBarButton_Click_OFile(object sender, RoutedEventArgs e)
@@ -173,8 +191,6 @@ namespace NuSysApp
         {
             //TO DO 
         }
-
-        
 
         private void AppBarButton_Click_Pictures(object sender, RoutedEventArgs e)
         {
@@ -199,31 +215,29 @@ namespace NuSysApp
 
         async void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            var openFile = new Windows.Storage.Pickers.FileOpenPicker(); //open's file explorer changes to this code will be made by Adil allowing images to be added to canvas: Currently working on this
-            openFile.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-            openFile.FileTypeFilter.Add(".gif");
-            openFile.FileTypeFilter.Add(".png");
-            openFile.FileTypeFilter.Add(".docx");
-            openFile.FileTypeFilter.Add(".jpeg");
-            openFile.FileTypeFilter.Add(".ppt");
-            openFile.FileTypeFilter.Add(".jpg");
-            Windows.Storage.StorageFile file = await openFile.PickSingleFileAsync();
-            /*   if (null != file)
-               {
-                   using (var stream = await file.OpenSequentialReadAsync())
-                   {
-                       catch(Exception ex)
-                       {
-                           System.Diagnostics.Debug.WriteLine("Exception");
-                       }
+            StorageFile file = await FileManager.PromptUserForFile(new List<string> { ".bmp", ".png", ".jpeg", ".jpg" });
+            // 'file' is null if user cancels the file picker.
+            if (file != null)
+            {
+                // Open a stream for the selected file.
+                // The 'using' block ensures the stream is disposed
+                // after the image is loaded.
+                using (Windows.Storage.Streams.IRandomAccessStream fileStream =
+                    await file.OpenAsync(FileAccessMode.Read))
+                {
+                    // Set the image source to the selected bitmap.
+                    BitmapImage bitmapImage = new BitmapImage();
 
-                   }
-
-               } */
+                    bitmapImage.SetSource(fileStream);
+                    WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+                    vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
+                    vm.CreateNewNode(0, 0, bitmapImage);
+                }
+            }
         }
 
         #endregion App Bar Handlers
-       
+
         #endregion Event Handlers
     }
 

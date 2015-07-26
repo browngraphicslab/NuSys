@@ -14,9 +14,11 @@ namespace NuSysApp
         //editing is handeled using methods: IsEditing, ToggleEditing (all in NodeViewModel.cs), Edit_Click (in this file)
         public RichTextNodeView(RichTextNodeViewModel vm)
         {
-            this.InitializeComponent();
             this.DataContext = vm;
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
+            this.InitializeComponent();
+            
+           
             this.SetUpBindings();
         }
 
@@ -61,6 +63,14 @@ namespace NuSysApp
         {
             RichTextNodeViewModel vm = (RichTextNodeViewModel)this.DataContext;
             vm.ToggleEditing();
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
             #endregion Event Handlers
         }
 

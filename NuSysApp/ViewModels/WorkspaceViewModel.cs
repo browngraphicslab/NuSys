@@ -8,10 +8,13 @@ using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Search;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.MISC;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
@@ -29,7 +32,9 @@ namespace NuSysApp
             TEXTNODE,
             GLOBALINK,
             INK,
-            ERASE
+            ERASE,
+            IMAGE,
+            PDF
         }; //enum created to switch between multiple modes in the appbar
 
         public enum LinkMode
@@ -52,8 +57,8 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
             TransformX = 0;
             TransformY = 0;
-            ScaleX = 0;
-            ScaleY = 0;
+            ScaleX = 1;
+            ScaleY = 1;
             _factory = new Factory(this);
 
             Init();
@@ -65,6 +70,11 @@ namespace NuSysApp
         {
             var result = await SetupDirectories();
             SetupChromeIntermediate();
+            var nodeVm = _factory.CreateNewRichText("");
+            this.PositionNode(nodeVm, 100, 100);
+            NodeViewModelList.Add(nodeVm);
+            AtomViewList.Add(nodeVm.View);
+
         }
 
         private async void SetupChromeIntermediate()
@@ -138,8 +148,9 @@ namespace NuSysApp
                 Line line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
-                    if (Geometry.LinesIntersect(line1, line2))
+                    if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
+                        node.ClippedParent = link;
                         return true;
                     }
                 }
@@ -195,9 +206,8 @@ namespace NuSysApp
         public void ClearSelection()
         {
             if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.ToggleSelection();
+            SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
-            return;
         }
 
         /// <summary>
@@ -210,12 +220,13 @@ namespace NuSysApp
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
+            LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);
             atomVm2.AddLink(vm);
         }
 
-        public void CreateNewNode(double xCoordinate, double yCoordinate)
+        public NodeViewModel CreateNewNode(double xCoordinate, double yCoordinate, object data)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
@@ -226,12 +237,20 @@ namespace NuSysApp
                 case Mode.INK:
                     vm = _factory.CreateNewInk();
                     break;
+                case Mode.IMAGE:
+                    vm = _factory.CreateNewImage((BitmapImage)data);
+                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+                    break;
+                case Mode.PDF:
+                    vm = _factory.CreateNewPdfNodeViewModel();
+                    break;
                 default:
-                    return;
+                    return null;
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             this.PositionNode(vm, xCoordinate, yCoordinate);
+            return vm;
         }
 
         private void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
@@ -297,6 +316,7 @@ namespace NuSysApp
                     return;
                 }
                 _scaleX = value;
+                RaisePropertyChanged("ScaleX");
             }
         }
 
@@ -310,11 +330,11 @@ namespace NuSysApp
                     return;
                 }
                 _scaleY = value;
+                RaisePropertyChanged("ScaleY");
             }
         }
 
         #endregion Public Members
 
-       
     }
 }

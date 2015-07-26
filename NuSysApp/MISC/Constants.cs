@@ -18,6 +18,7 @@ namespace NuSysApp
 
         #region Node Dimensions
         public const double DEFAULT_NODE_SIZE = 200;
+        public const double DEFAULT_ANNOTATION_SIZE = 100;
         public const double EXTRA_PADDING_SPACE = 50;
         public const double MIN_NODE_SIZE = 40;
 

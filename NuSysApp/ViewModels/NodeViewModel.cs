@@ -18,7 +18,7 @@ namespace NuSysApp
 
         private Color _color; //currently unused
 
-        private MatrixTransform _transform;
+       
 
         #endregion Private Members
 
@@ -62,33 +62,23 @@ namespace NuSysApp
         /// </summary>
         /// <param name="dx"></param>
         /// <param name="dy"></param>
-        public void Resize(double dx, double dy)
+        public virtual void Resize(double dx, double dy)
         {
             this.Width += dx;
             this.Height += dy;
-            this.UpdateAnchor();
-            
+            this.UpdateAnchor();         
         }
 
-        
+
+        public void CreateAnnotation()
+        {
+            this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this);
+        }
         #endregion Node Manipulations
 
         #region Public Properties
 
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-
-                RaisePropertyChanged("Transform");
-            }
-        }
+        
 
         /// <summary>
         /// color of node
