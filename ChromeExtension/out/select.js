@@ -3,7 +3,7 @@ var	html = document.documentElement;
 var isRunning = false;
 var injected = false;
 var addition = null;
-
+var port = null;
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     chrome.tabs.sendMessage(tabs[0].id, { msg: "checkInjection" }, function (response) {
 
@@ -15,6 +15,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         }
         else {
             console.log("woooo");
+            port = chrome.runtime.connect({ name: "content" });
             $("#selected").empty();
             chrome.storage.local.set({ 'curr': [] });
             document.getElementById("cmn-toggle-1").checked = true;
@@ -39,6 +40,14 @@ $("#cmn-toggle-1").change(function () {
             console.log("request for toggle change sent");
         })
     })
+});
+
+$("#btnSend").click(function () {
+    chrome.storage.local.get('curr', function (result) {
+        addition = result.curr;
+        console.log(JSON.stringify(result.curr));
+        chrome.extension.getBackgroundPage().port.postMessage(JSON.stringify(result.curr));
+    });
 });
 
 $("#view").click(function () {

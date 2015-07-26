@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
-    ManipulationInertiaStarting="Page_ManipulationInertiaStarting">
+    ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted">
 
     <Page.TopAppBar>
         <AppBar x:Name="TopToolbar" Background="#FF15C3F2" Visibility="Visible" ClosedDisplayMode="Minimal">
@@ -125,27 +125,15 @@
             </Grid.Transitions>
         </Grid>-->
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-            <ItemsControl.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}" />
-                    <ScaleTransform />
-                </TransformGroup>
-            </ItemsControl.RenderTransform>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas x:Name="canvas" Width="10000" Height="10000"/>
+                    <Canvas HorizontalAlignment="Left" Background="Beige" RenderTransform="{Binding CompositeTransform}"  x:Name="canvas">
+                    </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" Name="inkCanvas">
-
-            <InkCanvas.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}" />
-                    <ScaleTransform />
-                </TransformGroup>
-            </InkCanvas.RenderTransform>
+        <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" Name="inkCanvas" RenderTransform="{Binding CompositeTransform}">
         </InkCanvas>
     </Grid>
 </Page>

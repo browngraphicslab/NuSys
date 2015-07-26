@@ -85,7 +85,7 @@ class MarqueeSelection implements ISelection {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
-     //   this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         console.log(this._parentList);
         this.analyzeContent();

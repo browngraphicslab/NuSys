@@ -27,8 +27,6 @@ class Main {
         Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight,
             html.clientHeight, html.scrollHeight, html.offsetHeight);
 
-        var port = chrome.runtime.connect({ name: "content" });
-
         var canvas = document.createElement("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -154,7 +152,6 @@ class Main {
             else {
                 selections.push(selection);
                 selectedArray.push(selection.getContent());
-                port.postMessage(selection.getContent());
                 chrome.storage.local.set({ 'curr': selectedArray });
             
                 obj[currentDate.toDateString() + currentDate.toTimeString()] = selectedArray;
@@ -166,6 +163,12 @@ class Main {
 
                 console.log(selection.getContent());
             }
+
+            var stroke = Stroke.fromPoints([{ x: 0, y: 0 }, { x: 0 + w, y: 0 + h }]);
+
+            inkCanvas.drawStroke(stroke, new SelectionBrush(
+
+                inkCanvas._brushStrokes.push(new BrushStroke(
 
             selection = new LineSelection(inkCanvas);
             prevStrokeType = StrokeType.Line;

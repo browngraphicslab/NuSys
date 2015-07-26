@@ -2866,7 +2866,6 @@ var Main = (function () {
         var body = document.body, html = document.documentElement;
         Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
         Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-        var port = chrome.runtime.connect({ name: "content" });
         var canvas = document.createElement("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -2974,7 +2973,6 @@ var Main = (function () {
             else {
                 selections.push(selection);
                 selectedArray.push(selection.getContent());
-                port.postMessage(selection.getContent());
                 chrome.storage.local.set({ 'curr': selectedArray });
                 obj[currentDate.toDateString() + currentDate.toTimeString()] = selectedArray;
                 console.log(currentDate.toTimeString);
@@ -3340,7 +3338,7 @@ var MarqueeSelection = (function () {
         this.getNextElement(el);
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-        //   this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         console.log(this._parentList);
         this.analyzeContent();
