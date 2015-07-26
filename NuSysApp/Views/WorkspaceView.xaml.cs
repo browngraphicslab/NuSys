@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using Windows.Storage.Pickers;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -33,7 +35,7 @@ namespace NuSysApp
 
         public WorkspaceView()
         {
-                this.InitializeComponent();
+            this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
             _isZooming = false;
@@ -82,8 +84,8 @@ namespace NuSysApp
         private void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y,"");
-            Debug.WriteLine(e.GetPosition(this).X + "???" + e.GetPosition(this).Y);
+            var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(this));
+            vm.CreateNewNode(p.X, p.Y,"");
             vm.ClearSelection();
         }
 
@@ -97,24 +99,61 @@ namespace NuSysApp
 
         private void Page_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            if (!_isZooming)
-            {
-                
-                vm.CenterX = e.Position.X;//(e.Position.X / vm.ScaleX) - vm.TransformX;
-         
-                vm.CenterY = e.Position.Y;//(e.Position.Y / vm.ScaleY) - vm.TransformY;
-                                          //  vm.CenterX = 0;
-                                          // vm.CenterY = 0;
-                Debug.WriteLine(vm.CenterX + "///" + vm.CenterY + "///" + vm.TransformX + "///" + vm.TransformY);
-                _isZooming = true;
-            }
+            var vm = (WorkspaceViewModel)this.DataContext;
 
-            vm.TransformX += e.Delta.Translation.X;
-            vm.TransformY += e.Delta.Translation.Y;
+            var compositeTransform = vm.CompositeTransform;
+            var tmpTranslate = new TranslateTransform();
+            
 
+            tmpTranslate.X = compositeTransform.CenterX;
+            tmpTranslate.Y = compositeTransform.CenterY;
+
+            Point center = compositeTransform.Inverse.TransformPoint(e.Position);
+
+            Point localPoint = tmpTranslate.Inverse.TransformPoint(center);
+
+            //Now scale the point in local space
+            localPoint.X *= compositeTransform.ScaleX;
+            localPoint.Y *= compositeTransform.ScaleY;
+
+            //Transform local space into world space again
+            Point worldPoint = tmpTranslate.TransformPoint(localPoint);
+
+            //Take the actual scaling...
+            Point distance = new Point(
+                worldPoint.X - center.X,
+                worldPoint.Y - center.Y);
+
+            //...amd balance the jump of the changed scaling origin by changing the translation            
+
+            compositeTransform.TranslateX += distance.X;
+            compositeTransform.TranslateY += distance.Y;
+
+            //Also set the scaling values themselves, especially set the new scale center...
+
+            compositeTransform.ScaleX *= e.Delta.Scale;
+            compositeTransform.ScaleY *= e.Delta.Scale;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            //And consider a translational shift
+
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+            
+
+            vm.CompositeTransform = compositeTransform;
+            /*
+            var x = e.Position.X - vm.TransformX;
+            var y = e.Position.Y - vm.TransformY;
+            Debug.WriteLine(x + ", " + y);
+            vm.Origin = new Point(x / 10000.0, y / 10000.0);
             vm.ScaleX *= e.Delta.Scale;
-            vm.ScaleY *= e.Delta.Scale;
+            vm.ScaleY *= e.Delta.Scale;    */
+            //  vm.TransformX += e.Delta.Translation.X / vm.ScaleX;
+            //  vm.TransformY += e.Delta.Translation.Y / vm.ScaleY;
+
 
             e.Handled = true;
         }

@@ -125,27 +125,15 @@
             </Grid.Transitions>
         </Grid>-->
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-            <ItemsControl.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}" />
-                    <ScaleTransform ScaleX="{Binding ScaleX}" ScaleY="{Binding ScaleY}" CenterX="{Binding CenterX}" CenterY="{Binding CenterY}"/>
-                </TransformGroup>
-            </ItemsControl.RenderTransform>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas x:Name="canvas" Width="10000" Height="10000"/>
+                    <Canvas HorizontalAlignment="Left" Background="Beige" RenderTransform="{Binding CompositeTransform}"  x:Name="canvas">
+                    </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" Name="inkCanvas">
-
-            <InkCanvas.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform X="{Binding TransformX}" Y="{Binding TransformY}" />
-                    <ScaleTransform ScaleX="{Binding ScaleX}" ScaleY="{Binding ScaleY}" CenterX="{Binding CenterX}" CenterY="{Binding CenterY}"/>
-                </TransformGroup>
-            </InkCanvas.RenderTransform>
+        <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" Name="inkCanvas" RenderTransform="{Binding CompositeTransform}">
         </InkCanvas>
     </Grid>
 </Page>

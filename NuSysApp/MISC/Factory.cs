@@ -24,17 +24,7 @@ namespace NuSysApp
         public RichTextNodeViewModel CreateNewRichText(string html)
         {
             RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
-            String c;
-            using (Stream s =
-                  typeof(NuSysApp.App).GetTypeInfo()
-                      .Assembly.GetManifestResourceStream("NuSysApp.Assets.paragraph.nusys"))
-            {
-                StreamReader reader = new StreamReader(s);
-                c = reader.ReadToEnd();
-                Debug.WriteLine(c);
-            }
-            richTextVM.Data = c;
-            
+            richTextVM.Data = html;            
             return richTextVM;
         }
 

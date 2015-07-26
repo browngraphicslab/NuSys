@@ -36,8 +36,8 @@ namespace NuSysApp
         public void Translate(double dx, double dy)
         {
             var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
-            transMat.OffsetX += dx / WorkSpaceViewModel.ScaleX;
-            transMat.OffsetY += dy / WorkSpaceViewModel.ScaleY;
+            transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
             this.UpdateAnchor();
@@ -64,8 +64,8 @@ namespace NuSysApp
         /// <param name="dy"></param>
         public virtual void Resize(double dx, double dy)
         {
-            this.Width += dx / WorkSpaceViewModel.ScaleX;
-            this.Height += dy / WorkSpaceViewModel.ScaleY;
+            this.Width += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            this.Height += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
             this.UpdateAnchor();
             
         }

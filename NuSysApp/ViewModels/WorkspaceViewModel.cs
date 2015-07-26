@@ -41,7 +41,7 @@ namespace NuSysApp
             BEZIERLINK
         }
 
-        private double _transformX, _transformY, _scaleX, _scaleY, _centerX, _centerY;
+        private CompositeTransform _compositeTransform;
 
         #endregion Private Members
 
@@ -53,16 +53,14 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             this.CurrentMode = Mode.TEXTNODE;
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
-            TransformX = 0;
-            TransformY = 0;
-            ScaleX = 1;
-            CenterX = 0;
-            CenterY = 0;
-            ScaleY = 1;
             _factory = new Factory(this);
+            
 
             Init();
-
+            var c = new CompositeTransform();
+            c.TranslateX = -100000;
+            c.TranslateY = -100000;
+            CompositeTransform = c;
         }
 
        
@@ -70,11 +68,6 @@ namespace NuSysApp
         {
             var result = await SetupDirectories();
             SetupChromeIntermediate();
-            var nodeVm = _factory.CreateNewRichText("");
-            this.PositionNode(nodeVm, 100, 100);
-            NodeViewModelList.Add(nodeVm);
-            AtomViewList.Add(nodeVm.View);
-
         }
 
         private async void SetupChromeIntermediate()
@@ -89,7 +82,8 @@ namespace NuSysApp
                 await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     var nodeVm = _factory.CreateNewRichText(readFile);
-                    this.PositionNode(nodeVm, 100, 100);
+                    var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
+                    this.PositionNode(nodeVm, p.X, p.Y);
                     NodeViewModelList.Add(nodeVm);
                     AtomViewList.Add(nodeVm.View);
                 });
@@ -256,11 +250,10 @@ namespace NuSysApp
         {
             vm.X = 0;
             vm.Y = 0;
-                
             
             var transMat = ((MatrixTransform) vm.View.RenderTransform).Matrix;
-            transMat.OffsetX += xCoordinate/ ScaleX - TransformX;
-            transMat.OffsetY += yCoordinate/ ScaleY - TransformY;
+            transMat.OffsetX = xCoordinate;
+            transMat.OffsetY = yCoordinate;
             vm.Transform = new MatrixTransform {Matrix = transMat};
         }
 
@@ -278,88 +271,18 @@ namespace NuSysApp
 
         public LinkMode CurrentLinkMode { get; set; }
 
-        public double TransformX
+      
+        public CompositeTransform CompositeTransform
         {
-            get { return _transformX; }
+            get { return _compositeTransform; }
             set
             {
-                if (_transformX == value)
+                if (_compositeTransform == value)
                 {
                     return;
                 }
-                _transformX = value;
-                RaisePropertyChanged("TransformX");
-            }
-        }
-
-        public double TransformY
-        {
-            get { return _transformY; }
-
-            set
-            {
-                if (_transformY == value)
-                {
-                    return;
-                }
-                _transformY = value;
-                RaisePropertyChanged("TransformY");
-            }
-        }
-
-        public double ScaleX
-        {
-            get { return _scaleX; }
-            set
-            {
-                if (_scaleX == value)
-                {
-                    return;
-                }
-                _scaleX = value;
-                RaisePropertyChanged("ScaleX");
-            }
-        }
-
-        public double ScaleY
-        {
-            get { return _scaleY; }
-            set
-            {
-                if (_scaleY == value)
-                {
-                    return;
-                }
-                _scaleY = value;
-                RaisePropertyChanged("ScaleY");
-            }
-        }
-
-        public double CenterX
-        {
-            get { return _centerX; }
-            set
-            {
-                if (_centerX == value)
-                {
-                    return;
-                }
-                _centerX = value;
-                RaisePropertyChanged("CenterX");
-            }
-        }
-
-        public double CenterY
-        {
-            get { return _centerY; }
-            set
-            {
-                if (_centerY == value)
-                {
-                    return;
-                }
-                _centerY = value;
-                RaisePropertyChanged("CenterY");
+                _compositeTransform = value;
+                RaisePropertyChanged("CompositeTransform");
             }
         }
 
