@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
@@ -46,7 +47,8 @@ namespace NuSysApp
                 this.Width = Constants.DEFAULT_NODE_SIZE * 3;
                 this.Height = Constants.DEFAULT_NODE_SIZE * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
                 _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.PDF;
-                _workspaceViewModel.CreateNewNode(0, 0, null);
+                var p = _workspaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(0,0));
+                _workspaceViewModel.CreateNewNode(p.X, p.Y, null);
             }
         }
 
