@@ -63,7 +63,7 @@ namespace NuSysApp
         {
             RichTextNodeViewModel vm = (RichTextNodeViewModel)this.DataContext;
             vm.ToggleEditing();
-           
+            ManipulationMode = ManipulationModes.None;
             #endregion Event Handlers
         }
 
