@@ -64,6 +64,14 @@ namespace NuSysApp
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
             vm.ToggleEditing();
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
             #endregion Event Handlers
         }
 
@@ -76,6 +84,12 @@ namespace NuSysApp
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
             vm.Remove();
+        }
+
+        private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            vm.CreateAnnotation();
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Media.Imaging;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace NuSysApp
 {
@@ -20,7 +24,7 @@ namespace NuSysApp
         public RichTextNodeViewModel CreateNewRichText(string html)
         {
             RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
-            richTextVM.Data = html;
+            richTextVM.Data = html;            
             return richTextVM;
         }
 

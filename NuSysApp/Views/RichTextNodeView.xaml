@@ -16,7 +16,8 @@
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
-    </UserControl.Resources>
+        <converters:BoolInvertConverter x:Key="IConverter"/>
+     </UserControl.Resources>
     <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}}">
         <Button Opacity=".5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50"
                 Height="50"
@@ -44,8 +45,8 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <RichEditBox Name="textBlock" Height="200" VerticalAlignment="Top" Margin="20,60,0,0"
-                     Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}" />
+        <RichEditBox x:Name="textBlock" Height="576" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
+                     IsReadOnly="{Binding IsEditing, Converter={StaticResource IConverter}}" />
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
             <Button.Content>

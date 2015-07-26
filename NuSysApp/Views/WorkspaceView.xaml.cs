@@ -3,12 +3,19 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Collections.Generic;
 using Windows.Storage.Pickers;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -23,6 +30,7 @@ namespace NuSysApp
        
         private int penSize = Constants.INITIAL_PEN_SIZE;
         private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
+        private Boolean _isZooming;
         #endregion Private Members
 
         public WorkspaceView()
@@ -30,6 +38,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
+            _isZooming = false;
         }
 
         #region Helper Methods
@@ -47,7 +56,7 @@ namespace NuSysApp
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             inkCanvas.InkPresenter.IsInputEnabled = false;
-            Canvas.SetZIndex(inkCanvas, -2);
+            Canvas.SetZIndex(inkCanvas, -3);
 
         }
         
@@ -75,7 +84,8 @@ namespace NuSysApp
         private void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CreateNewNode(e.GetPosition(this).X, e.GetPosition(this).Y,"");
+            var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(this));
+            vm.CreateNewNode(p.X, p.Y,"");
             vm.ClearSelection();
         }
 
@@ -89,9 +99,61 @@ namespace NuSysApp
 
         private void Page_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.TransformX += e.Delta.Translation.X;
-            vm.TransformY += e.Delta.Translation.Y;
+            var vm = (WorkspaceViewModel)this.DataContext;
+
+            var compositeTransform = vm.CompositeTransform;
+            var tmpTranslate = new TranslateTransform();
+            
+
+            tmpTranslate.X = compositeTransform.CenterX;
+            tmpTranslate.Y = compositeTransform.CenterY;
+
+            Point center = compositeTransform.Inverse.TransformPoint(e.Position);
+
+            Point localPoint = tmpTranslate.Inverse.TransformPoint(center);
+
+            //Now scale the point in local space
+            localPoint.X *= compositeTransform.ScaleX;
+            localPoint.Y *= compositeTransform.ScaleY;
+
+            //Transform local space into world space again
+            Point worldPoint = tmpTranslate.TransformPoint(localPoint);
+
+            //Take the actual scaling...
+            Point distance = new Point(
+                worldPoint.X - center.X,
+                worldPoint.Y - center.Y);
+
+            //...amd balance the jump of the changed scaling origin by changing the translation            
+
+            compositeTransform.TranslateX += distance.X;
+            compositeTransform.TranslateY += distance.Y;
+
+            //Also set the scaling values themselves, especially set the new scale center...
+
+            compositeTransform.ScaleX *= e.Delta.Scale;
+            compositeTransform.ScaleY *= e.Delta.Scale;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            //And consider a translational shift
+
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+            
+
+            vm.CompositeTransform = compositeTransform;
+            /*
+            var x = e.Position.X - vm.TransformX;
+            var y = e.Position.Y - vm.TransformY;
+            Debug.WriteLine(x + ", " + y);
+            vm.Origin = new Point(x / 10000.0, y / 10000.0);
+            vm.ScaleX *= e.Delta.Scale;
+            vm.ScaleY *= e.Delta.Scale;    */
+            //  vm.TransformX += e.Delta.Translation.X / vm.ScaleX;
+            //  vm.TransformY += e.Delta.Translation.Y / vm.ScaleY;
+
 
             e.Handled = true;
         }
@@ -104,6 +166,12 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        private void Page_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            _isZooming = false;
+            e.Handled = true;
+
+        }
         private void Page_ManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {
             e.Handled = true;
@@ -230,9 +298,26 @@ namespace NuSysApp
             }
         }
 
+        private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+            Point center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+
+            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
+            compositeTransform.ScaleX *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240)/4;
+            compositeTransform.ScaleY *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/ 240)/4;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            vm.CompositeTransform = compositeTransform;
+        }
         #endregion App Bar Handlers
 
         #endregion Event Handlers
+
     }
 
 

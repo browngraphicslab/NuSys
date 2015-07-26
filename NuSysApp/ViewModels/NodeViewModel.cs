@@ -18,7 +18,7 @@ namespace NuSysApp
 
         private Color _color; //currently unused
 
-        private MatrixTransform _transform;
+       
 
         #endregion Private Members
 
@@ -36,8 +36,8 @@ namespace NuSysApp
         public void Translate(double dx, double dy)
         {
             var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
-            transMat.OffsetX += dx;
-            transMat.OffsetY += dy;
+            transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
             this.UpdateAnchor();
@@ -64,31 +64,22 @@ namespace NuSysApp
         /// <param name="dy"></param>
         public virtual void Resize(double dx, double dy)
         {
-            this.Width += dx;
-            this.Height += dy;
+            this.Width += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            this.Height += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
             this.UpdateAnchor();
             
         }
 
-        
+
+        public void CreateAnnotation()
+        {
+            this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this);
+        }
         #endregion Node Manipulations
 
         #region Public Properties
 
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-
-                RaisePropertyChanged("Transform");
-            }
-        }
+        
 
         /// <summary>
         /// color of node

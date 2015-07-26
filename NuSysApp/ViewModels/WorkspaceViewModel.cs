@@ -8,7 +8,9 @@ using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Search;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.MISC;
@@ -41,7 +43,7 @@ namespace NuSysApp
             BEZIERLINK
         }
 
-        private double _transformX, _transformY, _scaleX, _scaleY;
+        private CompositeTransform _compositeTransform;
 
         #endregion Private Members
 
@@ -53,14 +55,14 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             this.CurrentMode = Mode.TEXTNODE;
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
-            TransformX = 0;
-            TransformY = 0;
-            ScaleX = 1;
-            ScaleY = 1;
             _factory = new Factory(this);
+            
 
             Init();
-
+            var c = new CompositeTransform();
+            c.TranslateX = -100000;
+            c.TranslateY = -100000;
+            CompositeTransform = c;
         }
 
        
@@ -82,7 +84,8 @@ namespace NuSysApp
                 await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     var nodeVm = _factory.CreateNewRichText(readFile);
-                    this.PositionNode(nodeVm, 100, 100);
+                    var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
+                    this.PositionNode(nodeVm, p.X, p.Y);
                     NodeViewModelList.Add(nodeVm);
                     AtomViewList.Add(nodeVm.View);
                 });
@@ -141,8 +144,9 @@ namespace NuSysApp
                 Line line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
-                    if (Geometry.LinesIntersect(line1, line2))
+                    if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
+                        node.ClippedParent = link;
                         return true;
                     }
                 }
@@ -198,9 +202,8 @@ namespace NuSysApp
         public void ClearSelection()
         {
             if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.ToggleSelection();
+            SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
-            return;
         }
 
         /// <summary>
@@ -213,6 +216,7 @@ namespace NuSysApp
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
+            LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);
             atomVm2.AddLink(vm);
@@ -249,9 +253,10 @@ namespace NuSysApp
         {
             vm.X = 0;
             vm.Y = 0;
+            
             var transMat = ((MatrixTransform) vm.View.RenderTransform).Matrix;
-            transMat.OffsetX += xCoordinate + TransformX;
-            transMat.OffsetY += yCoordinate + TransformY;
+            transMat.OffsetX = xCoordinate;
+            transMat.OffsetY = yCoordinate;
             vm.Transform = new MatrixTransform {Matrix = transMat};
         }
 
@@ -269,60 +274,18 @@ namespace NuSysApp
 
         public LinkMode CurrentLinkMode { get; set; }
 
-        public double TransformX
+      
+        public CompositeTransform CompositeTransform
         {
-            get { return _transformX; }
+            get { return _compositeTransform; }
             set
             {
-                if (_transformX == value)
+                if (_compositeTransform == value)
                 {
                     return;
                 }
-                _transformX = value;
-                RaisePropertyChanged("TransformX");
-            }
-        }
-
-        public double TransformY
-        {
-            get { return _transformY; }
-
-            set
-            {
-                if (_transformY == value)
-                {
-                    return;
-                }
-                _transformY = value;
-                RaisePropertyChanged("TransformY");
-            }
-        }
-
-        public double ScaleX
-        {
-            get { return _scaleX; }
-            set
-            {
-                if (_scaleX == value)
-                {
-                    return;
-                }
-                _scaleX = value;
-                RaisePropertyChanged("ScaleX");
-            }
-        }
-
-        public double ScaleY
-        {
-            get { return _scaleY; }
-            set
-            {
-                if (_scaleY == value)
-                {
-                    return;
-                }
-                _scaleY = value;
-                RaisePropertyChanged("ScaleY");
+                _compositeTransform = value;
+                RaisePropertyChanged("CompositeTransform");
             }
         }
 
