@@ -163,7 +163,7 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
             var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(0, 0, null);
-            await pdfNodeViewModel.InitializePdfNodeAsync();
+            await pdfNodeViewModel.InitializePdfNodeAsync2();
         }
 
         private void AppBarButton_Click_OFile(object sender, RoutedEventArgs e)
