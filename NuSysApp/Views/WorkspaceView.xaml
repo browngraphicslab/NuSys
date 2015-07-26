@@ -7,113 +7,54 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
-    ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" >
+    ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" RightTapped="Page_RightTapped" >
 
-    <Page.TopAppBar>
-        <AppBar x:Name="TopToolbar" Background="#FF15C3F2" Visibility="Visible" ClosedDisplayMode="Minimal">
-            <StackPanel Opacity=".5" Orientation="Horizontal" Background="White">
-                <AppBarButton Click="AppBarButton_Click_Save" Label="Save" Icon="Save" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_Erase" Label="Erase" Background="White" />
-                <AppBarButton Click="AddButtonClick" Label="Upload" Icon="Upload" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_Document" Label="PDF" Icon="Document" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_OFile" Label="Open File" Icon="OpenFile" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_AFriend" Label="Add Friend" Icon="AddFriend" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_Undo" Label="Undo" Icon="Undo" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_Redo" Label="Redo" Icon="Redo" Background="White" />
-                <AppBarButton Click="AppBarButton_Click_Scribble" Label="Scribble" Background="White">
-                    <AppBarButton.Icon>
-                        <BitmapIcon UriSource="pics/scribble icon.png" />
-                    </AppBarButton.Icon>
-                </AppBarButton>
-                <AppBarButton Label="Text" Icon="Font" Background="White" Click="AppBarButton_Click_Text" />
-                <AppBarButton Label="Pictures" Icon="Pictures" Background="White" Click="AppBarButton_Click_Pictures" />
-                <AppBarButton Label="Links" Background="White">
-                    <AppBarButton.Flyout>
-                        <MenuFlyout Placement="Bottom">
-                            <MenuFlyoutItem Text="Bezier Link" Click="MenuFlyoutItem_Click_Bezier" />
-                            <MenuFlyoutItem Text="LineRepresentation Link" Click="MenuFlyoutItem_Click_Line" />
-                            <MenuFlyout.MenuFlyoutPresenterStyle>
-                                <Style x:Name="DropdownLink" TargetType="MenuFlyoutPresenter">
-                                    <Setter Property="Background" Value="White" />
-                                    <Setter Property="BorderBrush" Value="LightBlue" />
-                                    <Setter Property="BorderThickness" Value="1" />
-                                    <Setter Property="Margin" Value="0,32,0,0" />
-                                </Style>
-                            </MenuFlyout.MenuFlyoutPresenterStyle>
-                        </MenuFlyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
-                <AppBarButton Label="Global Ink" Background="White" Click="AppBarButton_Click">
-
-                    <AppBarButton.Icon>
-                        <BitmapIcon UriSource="pics/ink icon.png" />
-                    </AppBarButton.Icon>
-                    <AppBarButton.Flyout>
-                        <MenuFlyout Placement="Bottom">
-                            <MenuFlyoutItem Text="test1" />
-                            <MenuFlyoutSubItem Text="test1sub">
-                                <MenuFlyoutItem Text="test1sub" />
-                            </MenuFlyoutSubItem>
-                            <MenuFlyoutSeparator Background="LightBlue" />
-                            <MenuFlyoutItem Text="test2" />
-                            <MenuFlyoutItem Text="test3" />
-                            <MenuFlyoutItem Text="test4" />
-                            <MenuFlyout.MenuFlyoutPresenterStyle>
-                                <Style x:Name="Dropdown" TargetType="MenuFlyoutPresenter">
-                                    <Setter Property="Background" Value="White" />
-                                    <Setter Property="BorderBrush" Value="LightBlue" />
-                                    <Setter Property="BorderThickness" Value="1" />
-                                    <Setter Property="Margin" Value="0,32,0,0" />
-                                </Style>
-                            </MenuFlyout.MenuFlyoutPresenterStyle>
-                        </MenuFlyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
-                <AppBarButton Label="Search" Background="White">
-                    <AppBarButton.Icon>
-                        <BitmapIcon UriSource="pics/search icon.png" />
-                    </AppBarButton.Icon>
-                </AppBarButton>
-            </StackPanel>
-        </AppBar>
-    </Page.TopAppBar>
-    <Page.BottomAppBar>
-        <AppBar x:Name="BottomToolbar" Background="#FF15C3F2" ClosedDisplayMode="Minimal">
-            <StackPanel Opacity=".5" Orientation="Horizontal" Background="White">
-                <AppBarButton Label="Save" Icon="Save" Background="White" Click="AppBarButton_Click_Save" />
-                <AppBarButton Label="Upload" Icon="Upload" Background="White" Click="AddButtonClick" />
-                <AppBarButton Label="Document" Icon="Document" Background="White" Click="AppBarButton_Click_Document" />
-                <AppBarButton Label="Open File" Icon="OpenFile" Background="White" Click="AppBarButton_Click_OFile" />
-                <AppBarButton Label="Add Friend" Icon="AddFriend" Background="White" Click="AppBarButton_Click_AFriend" />
-                <AppBarButton Label="Undo" Icon="Undo" Background="White" Click="AppBarButton_Click_Undo" />
-                <AppBarButton Label="Redo" Icon="Redo" Background="White" Click="AppBarButton_Click_Redo" />
-                <AppBarButton Label="Scribble" Background="White" Click="AppBarButton_Click_Scribble">
-                    <AppBarButton.Icon>
-                        <BitmapIcon UriSource="pics/scribble icon.png" />
-                    </AppBarButton.Icon>
-
-                </AppBarButton>
-                <AppBarButton Label="Text" Icon="Font" Background="White" Click="AppBarButton_Click" />
-                <AppBarButton Label="Pictures" Icon="Pictures" Background="White" Click="AppBarButton_Click_Pictures" />
-                <AppBarButton Label="Global Ink" Background="White" Click="AppBarButton_Click">
-                    <AppBarButton.Icon>
-                        <BitmapIcon UriSource="pics/ink icon.png" />
-                    </AppBarButton.Icon>
-                </AppBarButton>
-                <AppBarButton Label="Search" Background="White">
-                    <AppBarButton.Icon>
-                        <BitmapIcon UriSource="pics/search icon.png" />
-                    </AppBarButton.Icon>
-                </AppBarButton>
-            </StackPanel>
-        </AppBar>
-    </Page.BottomAppBar>
+    <Page.Resources>
+        <Style TargetType="Button" x:Key="FloatingButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Width="100" Height="100" Opacity=".75">
+                            <Ellipse Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity=".75"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 
     <Grid x:Name="maingrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="0*" />
         </Grid.RowDefinitions>
+        <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed">
+            <Button Style="{StaticResource FloatingButton}" Click="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+                <Button.Background>
+                    <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
+            <Button Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
+                <Button.Background>
+                    <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
+            <Button Style="{StaticResource FloatingButton}" Click="AppBarButton_Click_Text" HorizontalAlignment="Center">
+                <Button.Background>
+                    <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
+            <Button Style="{StaticResource FloatingButton}" Click="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
+                <Button.Background>
+                    <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
+            <Button Style="{StaticResource FloatingButton}" Click="AddButtonClick" HorizontalAlignment="Center">
+                <Button.Background>
+                    <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
+        </StackPanel>
         <!--<Grid x:Name="lefttoolbar" HorizontalAlignment="Left" Margin="0,0,0,0" Width="50">
             <StackPanel x:Name="stackpanel" Background="#FF15C3F2" Opacity="0.5" Width="50" HorizontalAlignment="Left"></StackPanel>
             <Rectangle Fill="#FF15C3F2" HorizontalAlignment="Right" Margin="0,278,-10,278" Width="5" Opacity="0.5" 
@@ -135,5 +76,6 @@
 
         <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" Name="inkCanvas" RenderTransform="{Binding CompositeTransform}">
         </InkCanvas>
+        
     </Grid>
 </Page>

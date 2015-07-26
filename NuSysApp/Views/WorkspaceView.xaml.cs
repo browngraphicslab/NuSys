@@ -89,6 +89,24 @@ namespace NuSysApp
             vm.ClearSelection();
         }
 
+        private void Page_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var p = e.GetPosition(this);
+            var tt = new TranslateTransform();
+            tt.X = p.X;
+            tt.Y = p.Y;
+            FM.RenderTransform = tt;
+
+
+            if (FM.Visibility == Visibility.Collapsed)
+            {
+                FM.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FM.Visibility = Visibility.Collapsed;
+            }
+        }
 
 
         private void Page_PointerPressed(object sender, PointerRoutedEventArgs e)
