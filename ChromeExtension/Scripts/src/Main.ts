@@ -127,7 +127,7 @@ class Main {
                     if (intersects)
                         intersectionCount++;
                 });
-
+                console.log("dfdf");
                 if (intersectionCount > 2) {
 
                     var strokeBB = stroke.getBoundingRect();
@@ -158,7 +158,7 @@ class Main {
             
                 obj[currentDate.toDateString() + currentDate.toTimeString()] = selectedArray;
                 console.log(currentDate.toTimeString);
-                
+                console.log("+++++++++++++++++++++++++++++++++++++++++++ddfdf++++++++++");
                 chrome.storage.local.set(obj);
 
                 chrome.storage.local.get(null, function (data) { console.info(data) });
