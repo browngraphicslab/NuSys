@@ -8,7 +8,9 @@ using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Search;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.MISC;
@@ -146,8 +148,9 @@ namespace NuSysApp
                 Line line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
-                    if (Geometry.LinesIntersect(line1, line2))
+                    if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
+                        node.ClippedParent = link;
                         return true;
                     }
                 }
@@ -217,6 +220,7 @@ namespace NuSysApp
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
+            LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);
             atomVm2.AddLink(vm);

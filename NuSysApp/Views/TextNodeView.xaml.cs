@@ -77,5 +77,11 @@ namespace NuSysApp
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
             vm.Remove();
         }
+
+        private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            vm.CreateAnnotation();
+        }
     }
 }

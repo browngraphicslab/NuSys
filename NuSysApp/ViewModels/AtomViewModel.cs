@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -17,7 +19,7 @@ namespace NuSysApp
 
         private bool _isSelected, _isEditing;
         private UserControl _view;
-
+        private MatrixTransform _transform;
         #endregion Private Members
 
         protected AtomViewModel(WorkspaceViewModel vm)
@@ -84,10 +86,36 @@ namespace NuSysApp
         /// </summary>
         public ObservableCollection<LinkViewModel> LinkList { get; set; }
 
+        
+
         /// <summary>
         /// Accessor only reference to the workspace in which the atom is contained
         /// </summary>
         public WorkspaceViewModel WorkSpaceViewModel { get; }
+
+        private AtomViewModel _clippedParent;
+        public AtomViewModel ClippedParent
+        {
+            get { return _clippedParent; }
+            set
+            {
+                _clippedParent = value;
+                _clippedParent.PropertyChanged += parent_PropertyChanged;
+                
+            }
+        }
+
+        private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+          
+            this.Width = Constants.DEFAULT_ANNOTATION_SIZE;
+            this.Height = Constants.DEFAULT_ANNOTATION_SIZE;
+            var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
+            transMat.OffsetX = ClippedParent.AnchorX - this.Width/2 ;
+            transMat.OffsetY = ClippedParent.AnchorY - this.Height/2;
+            Transform = new MatrixTransform();
+            this.Transform.Matrix = transMat;
+        }
 
         /// <summary>
         /// indicates whether node is selected.
@@ -178,6 +206,20 @@ namespace NuSysApp
             }
         }
 
+        public MatrixTransform Transform
+        {
+            get { return _transform; }
+            set
+            {
+                if (_transform == value)
+                {
+                    return;
+                }
+                _transform = value;
+
+                RaisePropertyChanged("Transform");
+            }
+        }
         /// <summary>
         /// Width of this atom
         /// </summary>

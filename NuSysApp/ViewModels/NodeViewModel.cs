@@ -18,7 +18,7 @@ namespace NuSysApp
 
         private Color _color; //currently unused
 
-        private MatrixTransform _transform;
+       
 
         #endregion Private Members
 
@@ -69,25 +69,16 @@ namespace NuSysApp
             this.UpdateAnchor();         
         }
 
-        
+
+        public void CreateAnnotation()
+        {
+            this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this);
+        }
         #endregion Node Manipulations
 
         #region Public Properties
 
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-
-                RaisePropertyChanged("Transform");
-            }
-        }
+        
 
         /// <summary>
         /// color of node
