@@ -203,9 +203,8 @@ namespace NuSysApp
         public void ClearSelection()
         {
             if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.ToggleSelection();
+            SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
-            return;
         }
 
         /// <summary>

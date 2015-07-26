@@ -13,7 +13,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-
             //Universal apps does not support multiple databinding, so this is a workarround. 
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
@@ -52,6 +51,16 @@ namespace NuSysApp
             var vm = (LinkViewModel) this.DataContext;
             vm.ToggleSelection();
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// This handler makes sure that double tap events don't get interpreted as single tap events first.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BezierLinkView_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            e.Handled = true; 
         }
     }
 }

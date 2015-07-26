@@ -31,7 +31,7 @@ namespace NuSysApp
 
         public WorkspaceView()
         {
-                this.InitializeComponent();
+            this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
             
@@ -53,7 +53,7 @@ namespace NuSysApp
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             inkCanvas.InkPresenter.IsInputEnabled = false;
-            Canvas.SetZIndex(inkCanvas, -2);
+            Canvas.SetZIndex(inkCanvas, -3);
 
         }
         
