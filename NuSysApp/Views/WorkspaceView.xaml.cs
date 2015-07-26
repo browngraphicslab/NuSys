@@ -298,6 +298,22 @@ namespace NuSysApp
             }
         }
 
+        private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+            Point center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+
+            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
+            compositeTransform.ScaleX *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240)/4;
+            compositeTransform.ScaleY *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/ 240)/4;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            vm.CompositeTransform = compositeTransform;
+        }
         #endregion App Bar Handlers
 
         #endregion Event Handlers
