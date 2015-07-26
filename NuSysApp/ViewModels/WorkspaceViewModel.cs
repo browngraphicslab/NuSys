@@ -239,6 +239,7 @@ namespace NuSysApp
                     break;
                 case Mode.PDF:
                     vm = _factory.CreateNewPdfNodeViewModel();
+                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
                     break;
                 default:
                     return null;
