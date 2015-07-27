@@ -85,7 +85,7 @@
             </Button>
             <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
                 <Button.Background>
-                    <ImageBrush ImageSource="doc icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
         </StackPanel>
