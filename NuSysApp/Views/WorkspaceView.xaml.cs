@@ -359,6 +359,7 @@ namespace NuSysApp
             if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth || compositeTransform.TranslateY < -85 + FM.Children.Count*-100 || compositeTransform.TranslateY > this.ActualHeight)
             {
                 FM.Visibility = Visibility.Collapsed;
+                e.Complete();
             }
             e.Handled = true;
         }

@@ -14,7 +14,7 @@
   <mp:PhoneIdentity PhoneProductId="151be203-7bd2-4ce5-80d2-fe29687cfa91" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>NuStarterProject</DisplayName>
+    <DisplayName>NuSys</DisplayName>
     <PublisherDisplayName>Nick Turley</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -33,7 +33,7 @@
       EntryPoint="NuStarterProject.App">
       
       <uap:VisualElements
-        DisplayName="NuStarterProject"
+        DisplayName="NuSys"
         Square150x150Logo="Assets\Logo.png"
         Square44x44Logo="Assets\SmallLogo.png"
         Description="NuStarterProject"

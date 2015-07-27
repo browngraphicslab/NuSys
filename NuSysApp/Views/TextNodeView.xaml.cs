@@ -95,6 +95,7 @@ namespace NuSysApp
             {
                 this.MyGrid.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
                 this.textBlock.Foreground = new SolidColorBrush(Colors.Black);
+                this.textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
     }

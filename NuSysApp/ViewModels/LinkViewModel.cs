@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
@@ -50,13 +52,20 @@ namespace NuSysApp
         {
             this.Atom1.LinkList.Remove(this);
             this.Atom2.LinkList.Remove(this);
+            var toDelete = this.LinkList.ToList();
+            foreach (var link in toDelete)
+            {
+                link.Remove();
+                WorkSpaceViewModel.AtomViewList.Remove(link.View);
+            }
             this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
+            this.Annotation?.Remove();
         }
 
 #endregion Link Manipulation Methods
 
         #region Public Properties
-
+        public NodeViewModel Annotation { get; set; }
         public AtomViewModel Atom1
         {
             get { return _atom1; }
