@@ -61,8 +61,8 @@ namespace NuSysApp
 
             Init();
             var c = new CompositeTransform();
-            c.TranslateX = -100000;
-            c.TranslateY = -100000;
+            c.TranslateX = (-1)* (Constants.MAX_CANVAS_SIZE);
+            c.TranslateY = (-1) * (Constants.MAX_CANVAS_SIZE);
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
