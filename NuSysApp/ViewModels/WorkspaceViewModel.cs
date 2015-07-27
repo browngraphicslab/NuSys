@@ -52,7 +52,7 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             this.CurrentMode = Mode.TEXTNODE;
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
-            _factory = new Factory(this);
+            //_factory = new Factory(this);
 
 
             Init();
@@ -87,7 +87,8 @@ namespace NuSysApp
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
                         var readFile = await FileIO.ReadTextAsync(file);
-                        var nodeVm = _factory.CreateNewRichText(readFile);
+                        //var nodeVm = _factory.CreateNewRichText(readFile);
+                        var nodeVm = Factory.CreateNewRichText(readFile);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -206,32 +207,30 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public NodeViewModel CreateNewNode(double xCoordinate, double yCoordinate, object data)
+        public async Task CreateNewNode(double xCoordinate, double yCoordinate, object data)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
             {
                 case Mode.TEXTNODE:
-                    vm = _factory.CreateNewText("Enter text here");
+                    vm = Factory.CreateNewText("Enter text here");
                     break;
                 case Mode.INK:
-                    vm = _factory.CreateNewInk();
+                    vm = Factory.CreateNewInk();
                     break;
                 case Mode.IMAGE:
-                    vm = _factory.CreateNewImage((BitmapImage)data);
+                    vm = Factory.CreateNewImage((BitmapImage)data);
                     this.CurrentMode = Mode.TEXTNODE;
                     break;
                 case Mode.PDF:
-                    vm = _factory.CreateNewPdfNodeViewModel();
-                    this.CurrentMode = Mode.TEXTNODE;
+                    vm = await Factory.CreateNewPdfNodeViewModel();
                     break;
                 default:
-                    return null;
+                    return;
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             PositionNode(vm, xCoordinate, yCoordinate);
-            return vm;
         }
 
         private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
