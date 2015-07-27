@@ -43,7 +43,8 @@ namespace NuSysApp
             BEZIERLINK
         }
 
-        private CompositeTransform _compositeTransform;
+        private CompositeTransform _compositeTransform, _fMTransform;
+        
 
         #endregion Private Members
 
@@ -63,6 +64,7 @@ namespace NuSysApp
             c.TranslateX = -100000;
             c.TranslateY = -100000;
             CompositeTransform = c;
+            FMTransform = new CompositeTransform();
         }
 
 
@@ -267,6 +269,19 @@ namespace NuSysApp
             }
         }
 
+        public CompositeTransform FMTransform
+            {
+            get { return _fMTransform; }
+            set
+            {
+                if (_fMTransform == value)
+                {
+                    return;
+                }
+                _fMTransform = value;
+                RaisePropertyChanged("FMTransform");
+            }
+        }
         #endregion Public Members
 
     }

@@ -91,12 +91,14 @@ namespace NuSysApp
 
         private void Page_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var p = e.GetPosition(this);
-            var tt = new TranslateTransform();
-            tt.X = p.X;
-            tt.Y = p.Y;
-            FM.RenderTransform = tt;
+            var vm = (WorkspaceViewModel)this.DataContext;
+            var FMT = new CompositeTransform();
 
+            var p = e.GetPosition(this);
+            FMT.TranslateX = p.X;
+            FMT.TranslateY = p.Y;
+
+            vm.FMTransform = FMT;
 
             if (FM.Visibility == Visibility.Collapsed)
             {
@@ -106,6 +108,7 @@ namespace NuSysApp
             {
                 FM.Visibility = Visibility.Collapsed;
             }
+            
         }
 
 
@@ -333,6 +336,28 @@ namespace NuSysApp
             compositeTransform.CenterY = center.Y;
 
             vm.CompositeTransform = compositeTransform;
+        }
+        private void FM_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+
+            var compositeTransform = vm.FMTransform;
+
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            vm.FMTransform = compositeTransform;
+            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth || compositeTransform.TranslateY < -85 + FM.Children.Count*-100 || compositeTransform.TranslateY > this.ActualHeight)
+            {
+                FM.Visibility = Visibility.Collapsed;
+            }
+            e.Handled = true;
+        }
+
+        private void FM_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        {
+            e.Handled = true;
         }
         #endregion App Bar Handlers
 
