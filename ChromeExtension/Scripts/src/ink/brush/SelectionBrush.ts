@@ -16,7 +16,6 @@
 
     drawStroke(stroke: Stroke, inkCanvas: InkCanvas) {
         if (this._rect != null) {
-            console.log(this._rect);
             stroke = new Stroke();
             stroke.points.push({ x: this._rect.x, y: this._rect.y });
             stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });
@@ -29,7 +28,6 @@
 
         startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
         startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
-        console.log("OFFSETY: " + stroke.documentOffsetY);
 
         var ctx = inkCanvas._context;
         ctx.globalCompositeOperation = "source-over";

@@ -2638,7 +2638,6 @@ var SelectionBrush = (function () {
     };
     SelectionBrush.prototype.drawStroke = function (stroke, inkCanvas) {
         if (this._rect != null) {
-            console.log(this._rect);
             stroke = new Stroke();
             stroke.points.push({ x: this._rect.x, y: this._rect.y });
             stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });
@@ -2649,7 +2648,6 @@ var SelectionBrush = (function () {
         var h = stroke.points[stroke.points.length - 1].y - startY;
         startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
         startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
-        console.log("OFFSETY: " + stroke.documentOffsetY);
         var ctx = inkCanvas._context;
         ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = 0.6;
@@ -2860,93 +2858,58 @@ var UnknownSelection = (function () {
 /// <reference path="selection/UnknownSelection.ts"/>
 var Main = (function () {
     function Main() {
-        console.log("Starting NuSys.");
-        this.init();
-    }
-    Main.prototype.init = function () {
-        var body = document.body, html = document.documentElement;
-        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
-        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-        var canvas = document.createElement("canvas");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        canvas.style.position = "fixed";
-        canvas.style.top = "0";
-        document.body.appendChild(canvas);
-        var inkCanvas = new InkCanvas(canvas);
-        var selection = new LineSelection(inkCanvas);
-        ///array for clipboard in popup.html/// 
-        var selectedArray = [];
-        var currentDate = new Date();
-        var obj = {};
-        var currToggle = true;
-        document.body.addEventListener("mousedown", function (e) {
-            document.body.appendChild(canvas);
-            selection.start(e.clientX, e.clientY);
-            canvas.addEventListener("mousemove", onMouseMove);
-        });
-        document.addEventListener("scroll", function () {
-            inkCanvas.update();
-        });
-        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            if (request.msg == "checkInjection")
-                sendResponse({ toggleState: currToggle });
-            if (request.toggleChanged == true) {
-                console.log("show canvas");
-                currToggle = true;
-            }
-            if (request.toggleChanged == false) {
-                console.log("hide canvas");
-                inkCanvas.hide();
-                currToggle = false;
-            }
-        });
-        var prevStrokeType = 0 /* Line */;
-        function onMouseMove(e) {
-            var currType = StrokeClassifier.getStrokeType(inkCanvas._activeStroke.stroke);
-            if (currType != prevStrokeType) {
-                prevStrokeType = currType;
+        var _this = this;
+        this.prevStrokeType = 0 /* Line */;
+        this.selections = new Array();
+        this.selectedArray = new Array();
+        this.mouseMove = function (e) {
+            var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
+            if (currType != _this.prevStrokeType) {
+                _this.prevStrokeType = currType;
                 switch (currType) {
                     case 0 /* Line */:
-                        selection = new LineSelection(inkCanvas);
+                        _this.selection = new LineSelection(_this.inkCanvas);
                         break;
                     case 1 /* Bracket */:
-                        selection = new BracketSelection(inkCanvas, true);
+                        _this.selection = new BracketSelection(_this.inkCanvas, true);
                         console.log("switching to bracket!");
                         break;
                     case 2 /* Marquee */:
-                        selection = new MarqueeSelection(inkCanvas, true);
+                        _this.selection = new MarqueeSelection(_this.inkCanvas, true);
                         console.log("switching to marquee!");
                         break;
                     case 3 /* Scribble */:
-                        selection = new UnknownSelection(inkCanvas, true);
+                        _this.selection = new UnknownSelection(_this.inkCanvas, true);
                         console.log("switching to unknown!");
                         break;
                 }
-                inkCanvas.redrawActiveStroke();
+                _this.inkCanvas.redrawActiveStroke();
             }
-            selection.update(e.clientX, e.clientY);
-        }
-        var selections = [];
-        $("canvas").mouseleave(function () {
-            canvas.removeEventListener("mousemove", onMouseMove);
-            document.body.removeChild(canvas);
-            selection.end(0, 0);
-            selection.deselect();
-            inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
-            inkCanvas.update();
+            _this.selection.update(e.clientX, e.clientY);
+        };
+        this.documentDown = function (e) {
+            document.body.appendChild(_this.canvas);
+            _this.selection.start(e.clientX, e.clientY);
+            _this.canvas.addEventListener("mousemove", _this.mouseMove);
+            _this.isSelecting = true;
+        };
+        this.documentScroll = function (e) {
+            _this.inkCanvas.update();
+        };
+        this.windowUp = function (e) {
+            if (!_this.isSelecting)
+                return;
+            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+            _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
+            _this.inkCanvas.update();
             window.getSelection().removeAllRanges();
-        });
-        window.addEventListener("mouseup", function (e) {
-            window.getSelection().removeAllRanges();
-        });
-        canvas.addEventListener("mouseup", function (e) {
-            canvas.removeEventListener("mousemove", onMouseMove);
-            document.body.removeChild(canvas);
-            selection.end(e.clientX, e.clientY);
-            var currType = prevStrokeType;
-            //var stroke = inkCanvas._activeStroke.stroke;
-            var stroke = inkCanvas._activeStroke.stroke.getCopy();
+            _this.isSelecting = false;
+        };
+        this.canvasUp = function (e) {
+            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+            document.body.removeChild(_this.canvas);
+            _this.selection.end(e.clientX, e.clientY);
+            var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
             var currType = StrokeClassifier.getStrokeType(stroke);
             if (currType == 3 /* Scribble */) {
                 var segments = stroke.breakUp();
@@ -2961,41 +2924,78 @@ var Main = (function () {
                 });
                 if (intersectionCount > 2) {
                     var strokeBB = stroke.getBoundingRect();
-                    $.each(selections, function () {
+                    strokeBB.y += stroke.documentOffsetY;
+                    _this.selections.forEach(function (s) {
                         try {
-                            if (this.getBoundingRect().intersectsRectangle(strokeBB)) {
-                                console.log(this);
-                                this.deselect();
+                            if (s.getBoundingRect().intersectsRectangle(strokeBB)) {
+                                s.deselect();
                                 console.log("RECT INTERSECTION");
-                                var selectionIndex = selections.indexOf(this);
+                                var selectionIndex = _this.selections.indexOf(s);
                                 if (selectionIndex > -1)
-                                    selections.splice(selectionIndex, 1);
+                                    _this.selections.splice(selectionIndex, 1);
                             }
                         }
                         catch (e) {
                             console.log(e);
-                            console.log(this);
+                            console.log(_this);
                         }
                     });
                 }
-                inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
+                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
             }
             else {
-                selections.push(selection);
-                selectedArray.push(selection.getContent());
-                chrome.storage.local.set({ 'curr': selectedArray });
-                obj[currentDate.toDateString() + currentDate.toTimeString()] = selectedArray;
-                console.log(currentDate.toTimeString);
-                console.log("+++++++++++++++++++++++++++++++++++++++++++ddfdf++++++++++");
+                _this.selections.push(_this.selection);
+                _this.selectedArray.push(_this.selection.getContent());
+                chrome.storage.local.set({ 'curr': _this.selectedArray });
+                var currentDate = new Date();
+                var obj = {};
+                obj[currentDate.toDateString() + currentDate.toTimeString()] = _this.selectedArray;
                 chrome.storage.local.set(obj);
                 chrome.storage.local.get(null, function (data) {
                     console.info(data);
                 });
             }
-            selection = new LineSelection(inkCanvas);
-            prevStrokeType = 0 /* Line */;
-            document.body.appendChild(canvas);
-            inkCanvas.update();
+            _this.selection = new LineSelection(_this.inkCanvas);
+            _this.prevStrokeType = 0 /* Line */;
+            document.body.appendChild(_this.canvas);
+            _this.inkCanvas.update();
+            _this.isSelecting = false;
+        };
+        console.log("Starting NuSys.");
+        this.init();
+    }
+    Main.prototype.init = function () {
+        var _this = this;
+        // create and append canvas
+        var body = document.body, html = document.documentElement;
+        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = "fixed";
+        this.canvas.style.top = "0";
+        document.body.appendChild(this.canvas);
+        this.inkCanvas = new InkCanvas(this.canvas);
+        this.selection = new LineSelection(this.inkCanvas);
+        // register listeners
+        window.addEventListener("mouseup", this.windowUp);
+        document.body.addEventListener("mousedown", this.documentDown);
+        document.addEventListener("scroll", this.documentScroll);
+        this.canvas.addEventListener("mouseup", this.canvasUp);
+        var currToggle = true;
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if (request.msg == "checkInjection")
+                sendResponse({ toggleState: currToggle });
+            if (request.toggleChanged == true) {
+                console.log("show canvas");
+                currToggle = true;
+            }
+            if (request.toggleChanged == false) {
+                console.log("hide canvas");
+                _this.inkCanvas.hide();
+                currToggle = false;
+            }
         });
     };
     return Main;
@@ -3493,11 +3493,9 @@ var MarqueeSelection = (function () {
                 return false;
             }
             if (rectX["left"] >= this._marqueeX1 && rectX["left"] + rectX["width"] <= this._marqueeX2 && rectX["top"] >= this._marqueeY1 && rectX["top"] + rectX["height"] <= this._marqueeY2) {
-                //console.log("TRUE");
                 this.setTextStyle(myEl, el);
                 return true;
             }
-            //console.log("FALSE");
             return false;
         }
     };

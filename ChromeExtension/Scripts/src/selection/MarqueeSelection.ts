@@ -258,11 +258,9 @@ class MarqueeSelection implements ISelection {
                 rectX["left"] + rectX["width"] <= this._marqueeX2 &&
                 rectX["top"] >= this._marqueeY1 &&
                 rectX["top"] + rectX["height"] <= this._marqueeY2) {
-                //console.log("TRUE");
                 this.setTextStyle(myEl, el);
                 return true;
             }
-            //console.log("FALSE");
             return false;
         }
     }
