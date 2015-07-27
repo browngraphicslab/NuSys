@@ -15,6 +15,7 @@ using Windows.Storage.Pickers;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -43,53 +44,24 @@ namespace NuSysApp
 
         #region Helper Methods
 
-        public IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
-        {
-            if (depObj != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
-                    if (child != null && child is T)
-                    {
-                        yield return (T)child;
-                    }
-
-                    foreach (T childOfChild in FindVisualChildren<T>(child))
-                    {
-                        yield return childOfChild;
-                    }
-                }
-            }
-        }
+        
         //InkCanvas inkCanvas = null;
         /// <summary>
         /// Performs initial ink setup. 
         /// </summary>
         private void SetUpInk()
         {
-            _drawingAttributes = new InkDrawingAttributes();
-            _drawingAttributes.Color = Windows.UI.Colors.Black; //ink set to black
-            _drawingAttributes.Size = new Windows.Foundation.Size(2, 2); //ink can be thicker or thinner 
-            _drawingAttributes.IgnorePressure = false;
-            
-     //       foreach (var ink in FindVisualChildren<InkCanvas>(this))
-     //       {
-     //           if (ink.Name == "inkCanvas")
-     //           {
-     //               inkCanvas = ink;
-     //           }
-     ///*   Your code here  */
-     //       }
-     //       if (inkCanvas == null)
-     //       {
-     //           Debug.WriteLine("ink canvas wasn't found");
-     //           return;
-     //       }
+            _drawingAttributes = new InkDrawingAttributes
+            {
+                Color = Windows.UI.Colors.Black,
+                Size = new Windows.Foundation.Size(2, 2),
+                IgnorePressure = false
+            };
+           
             inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);      
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |   
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             inkCanvas.InkPresenter.IsInputEnabled = false;
             Canvas.SetZIndex(inkCanvas, -3);
 
@@ -97,7 +69,7 @@ namespace NuSysApp
         
         private void ToggleInk()
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             if (vm.CurrentMode == WorkspaceViewModel.Mode.GLOBALINK)
             {
                 inkCanvas.InkPresenter.IsInputEnabled = true;
@@ -158,25 +130,27 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
-            var tmpTranslate = new TranslateTransform();
-            
+            var tmpTranslate = new TranslateTransform
+            {
+                X = compositeTransform.CenterX,
+                Y = compositeTransform.CenterY
+            };
 
-            tmpTranslate.X = compositeTransform.CenterX;
-            tmpTranslate.Y = compositeTransform.CenterY;
 
-            Point center = compositeTransform.Inverse.TransformPoint(e.Position);
 
-            Point localPoint = tmpTranslate.Inverse.TransformPoint(center);
+            var center = compositeTransform.Inverse.TransformPoint(e.Position);
+
+            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
 
             //Now scale the point in local space
             localPoint.X *= compositeTransform.ScaleX;
             localPoint.Y *= compositeTransform.ScaleY;
 
             //Transform local space into world space again
-            Point worldPoint = tmpTranslate.TransformPoint(localPoint);
+            var worldPoint = tmpTranslate.TransformPoint(localPoint);
 
             //Take the actual scaling...
-            Point distance = new Point(
+            var distance = new Point(
                 worldPoint.X - center.X,
                 worldPoint.Y - center.Y);
 
@@ -245,7 +219,7 @@ namespace NuSysApp
         #endregion Page Handlers
         #region App Bar Handlers
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
-        {
+        {   
             Canvas.SetZIndex(inkCanvas, -2);
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.GLOBALINK;
@@ -254,8 +228,7 @@ namespace NuSysApp
         }
 
         private void AppBarButton_Click_Text(object sender, RoutedEventArgs e)
-        {
-
+        { 
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
             this.ToggleInk();

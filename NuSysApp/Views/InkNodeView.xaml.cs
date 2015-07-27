@@ -90,8 +90,14 @@ namespace NuSysApp
 
         private void delete_Click(object sender, RoutedEventArgs e)
         {
-            InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
+            var vm = (InkNodeViewModel)this.DataContext;
             vm.Remove();
+        }
+
+        private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = (InkNodeViewModel)this.DataContext;
+            vm.CreateAnnotation();
         }
         #endregion Event Handlers
     }

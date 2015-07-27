@@ -124,7 +124,7 @@ namespace NuSysApp
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
-                Line line1 = link.LineRepresentation;
+                var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
                     if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
@@ -154,6 +154,7 @@ namespace NuSysApp
             foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
             {
                 linkVm.Remove();
+                nodeVM.LinkList.Remove(linkVm);
             }
 
             //2. Remove the node itself 
@@ -197,6 +198,8 @@ namespace NuSysApp
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
+            if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
+
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
             LinkViewModelList.Add(vm);

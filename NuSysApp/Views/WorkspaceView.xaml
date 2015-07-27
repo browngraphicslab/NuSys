@@ -15,7 +15,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid Width="100" Height="100" Opacity=".75" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" ManipulationMode="All" RenderTransform="{Binding FMTransform}">
-                            <Ellipse Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity=".75"/>
+                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -32,7 +32,6 @@
                 <RowDefinition />
                 <RowDefinition Height="0*" />
             </Grid.RowDefinitions>
-            
             <!--<Grid x:Name="lefttoolbar" HorizontalAlignment="Left" Margin="0,0,0,0" Width="50">
             <StackPanel x:Name="stackpanel" Background="#FF15C3F2" Opacity="0.5" Width="50" HorizontalAlignment="Left"></StackPanel>
             <Rectangle Fill="#FF15C3F2" HorizontalAlignment="Right" Margin="0,278,-10,278" Width="5" Opacity="0.5" 
@@ -53,15 +52,12 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            
-
-
         </Grid>
         <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" >
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+            <Button Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
+                </Button.Background>               
             </Button>
             <Button Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
                 <Button.Background>
@@ -89,7 +85,5 @@
                 </Button.Background>
             </Button>
         </StackPanel>
-
     </Canvas>
-    
 </Page>

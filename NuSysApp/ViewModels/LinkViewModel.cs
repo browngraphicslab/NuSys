@@ -50,6 +50,7 @@ namespace NuSysApp
         {
             this.Atom1.LinkList.Remove(this);
             this.Atom2.LinkList.Remove(this);
+            this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
         }
 
 #endregion Link Manipulation Methods
