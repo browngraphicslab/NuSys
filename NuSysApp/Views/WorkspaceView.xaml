@@ -29,7 +29,7 @@
             <RowDefinition Height="0*" />
         </Grid.RowDefinitions>
         <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" >
-            <Button Style="{StaticResource FloatingButton}" Click="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
@@ -39,17 +39,17 @@
                     <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Click="AppBarButton_Click_Text" HorizontalAlignment="Center">
+            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Click="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
+            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Click="AddButtonClick" HorizontalAlignment="Center">
+            <Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
