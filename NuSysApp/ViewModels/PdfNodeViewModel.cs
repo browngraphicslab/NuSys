@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+//using Microsoft.Office.Core;
+//using W = Microsoft.Office.Interop.Word;
+
 
 namespace NuSysApp
 {
     public class PdfNodeViewModel : NodeViewModel
     {
 
-        //private readonly string _filePath;
         private BitmapImage _bitmapImage;
         private List<BitmapImage> _renderedPages; 
         private PdfNodeModel _pdfNodeModel;
@@ -39,16 +39,21 @@ namespace NuSysApp
             var fileType = storageFile.FileType;
             if (fileType == ".pdf")
             {
-                this.PageCount = await PdfRenderer.GetPageCount(fileName);
-                this.RenderedPages = await PdfRenderer.RenderPdf(fileName);
-                this.CurrentPageNumber = 0;
-                var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
-                this.Width = Constants.DEFAULT_NODE_SIZE * 3;
-                this.Height = Constants.DEFAULT_NODE_SIZE * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
-                _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.PDF;
-                var p = _workspaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(0,0));
-                _workspaceViewModel.CreateNewNode(p.X, p.Y, null);
+                await ProcessPdfFile(storageFile);
             }
+        }
+
+        private async Task ProcessPdfFile(StorageFile pdfStorageFile)
+        {
+            this.PageCount = await PdfRenderer.GetPageCount(pdfStorageFile);
+            this.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
+            this.CurrentPageNumber = 0;
+            var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
+            this.Width = Constants.DEFAULT_NODE_SIZE * 3;
+            this.Height = Constants.DEFAULT_NODE_SIZE * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.PDF;
+            var p = _workspaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+            _workspaceViewModel.CreateNewNode(p.X, p.Y, null);
         }
 
         public override void Resize(double dx, double dy)

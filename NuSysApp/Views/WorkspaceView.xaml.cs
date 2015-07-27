@@ -13,7 +13,6 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Collections.Generic;
 using Windows.Storage.Pickers;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 

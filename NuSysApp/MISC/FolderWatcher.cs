@@ -24,14 +24,14 @@ namespace NuSysApp.MISC
             Init(path);
         }
 
-        private async void Init(StorageFolder path)
+        private void Init(StorageFolder path)
         {
             _query = path.CreateFileQuery();
             _query.ContentsChanged += OnTransferFolderChange;
             var files = _query.GetFilesAsync();
         }
 
-        private async void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
+        private void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
         {
             Debug.WriteLine("CONTENTS CHANGED! " + args);
             if (FilesChanged != null)
