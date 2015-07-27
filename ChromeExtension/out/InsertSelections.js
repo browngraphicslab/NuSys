@@ -14,7 +14,6 @@ chrome.storage.local.get(null, function (data) {
 
 function injectScript(tab) {
     chrome.tabs.executeScript({ file: 'jquery.js' });
-    chrome.tabs.executeScript({ file: 'HashMap.js' });
     chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
 }
 
