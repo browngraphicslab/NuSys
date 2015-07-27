@@ -363,6 +363,10 @@ namespace NuSysApp
 
         #endregion Event Handlers
 
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
     }
 
 

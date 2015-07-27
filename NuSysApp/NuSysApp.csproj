@@ -182,6 +182,7 @@
     <Content Include="Pics\xicon.png" />
     <Content Include="Pics\xicon %281%29.png" />
     <Content Include="Views\global ink icon.png" />
+    <Content Include="Views\doc icon.png" />
     <Content Include="Views\image icon.png" />
     <Content Include="Views\link icon.png" />
     <Content Include="Views\scribble icon %281%29.png" />
