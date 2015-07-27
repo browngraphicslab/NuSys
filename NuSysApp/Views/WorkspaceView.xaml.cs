@@ -41,6 +41,27 @@ namespace NuSysApp
         }
 
         #region Helper Methods
+
+        public IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        yield return (T)child;
+                    }
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        yield return childOfChild;
+                    }
+                }
+            }
+        }
+        //InkCanvas inkCanvas = null;
         /// <summary>
         /// Performs initial ink setup. 
         /// </summary>
@@ -50,6 +71,20 @@ namespace NuSysApp
             _drawingAttributes.Color = Windows.UI.Colors.Black; //ink set to black
             _drawingAttributes.Size = new Windows.Foundation.Size(2, 2); //ink can be thicker or thinner 
             _drawingAttributes.IgnorePressure = false;
+            
+     //       foreach (var ink in FindVisualChildren<InkCanvas>(this))
+     //       {
+     //           if (ink.Name == "inkCanvas")
+     //           {
+     //               inkCanvas = ink;
+     //           }
+     ///*   Your code here  */
+     //       }
+     //       if (inkCanvas == null)
+     //       {
+     //           Debug.WriteLine("ink canvas wasn't found");
+     //           return;
+     //       }
             inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);      
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |   
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
