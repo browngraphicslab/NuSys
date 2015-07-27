@@ -67,7 +67,6 @@ namespace NuSysApp
             this.Width += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
             this.Height += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
             this.UpdateAnchor();
-            
         }
 
 

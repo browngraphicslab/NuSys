@@ -9,8 +9,9 @@ class Main {
     static DOC_WIDTH: number;
     static DOC_HEIGHT: number;
 
+
     constructor() {
-        console.log("Starting NuSys yo");
+        console.log("Starting NuSys.");
         this.init();
     }
 
@@ -26,8 +27,6 @@ class Main {
         Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight,
             html.clientHeight, html.scrollHeight, html.offsetHeight);
 
-        var port = chrome.runtime.connect({ name: "content" });
-
         var canvas = document.createElement("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -36,7 +35,13 @@ class Main {
 
         document.body.appendChild(canvas);
         var inkCanvas = new InkCanvas(canvas);
-        var selection:ISelection = new LineSelection(inkCanvas);
+        var selection: ISelection = new LineSelection(inkCanvas);
+
+        ///array for clipboard in popup.html/// 
+        var selectedArray = [];
+        var currentDate = new Date();   
+        var obj = {};
+        var currToggle = true;
 
         document.body.addEventListener("mousedown", function (e) {
 
@@ -49,6 +54,21 @@ class Main {
             inkCanvas.update();
         });
 
+
+        chrome.runtime.onMessage.addListener(
+            function (request, sender, sendResponse) {
+                if (request.msg == "checkInjection")
+                    sendResponse({ toggleState: currToggle })
+                if (request.toggleChanged == true) {
+                    console.log("show canvas");
+                    currToggle = true;
+                }
+                if (request.toggleChanged == false) {
+                    console.log("hide canvas");
+                    inkCanvas.hide();
+                    currToggle = false;
+                }
+            });
 
         var prevStrokeType = StrokeType.Line;
 
@@ -105,7 +125,7 @@ class Main {
                     if (intersects)
                         intersectionCount++;
                 });
-
+                console.log("dfdf");
                 if (intersectionCount > 2) {
 
                     var strokeBB = stroke.getBoundingRect();
@@ -131,6 +151,17 @@ class Main {
             }
             else {
                 selections.push(selection);
+                selectedArray.push(selection.getContent());
+                chrome.storage.local.set({ 'curr': selectedArray });
+            
+                obj[currentDate.toDateString() + currentDate.toTimeString()] = selectedArray;
+                console.log(currentDate.toTimeString);
+                console.log("+++++++++++++++++++++++++++++++++++++++++++ddfdf++++++++++");
+                chrome.storage.local.set(obj);
+
+                chrome.storage.local.get(null, function (data) { console.info(data) });
+
+                console.log(selection.getContent());
             }
 
             selection = new LineSelection(inkCanvas);

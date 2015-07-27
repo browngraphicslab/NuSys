@@ -13,7 +13,9 @@
         "activeTab",
         "http://*/*",
         "https://ajax.googleapis.com/",
-        "nativeMessaging"
+        "nativeMessaging",
+        "storage",
+        "unlimitedStorage"
     ],
     "web_accessible_resources": [
         "assets/*.png"

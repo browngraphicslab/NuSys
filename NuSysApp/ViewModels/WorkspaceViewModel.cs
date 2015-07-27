@@ -56,7 +56,7 @@ namespace NuSysApp
             this.CurrentMode = Mode.TEXTNODE;
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
             _factory = new Factory(this);
-            
+
 
             Init();
             var c = new CompositeTransform();
@@ -65,7 +65,7 @@ namespace NuSysApp
             CompositeTransform = c;
         }
 
-       
+
         private async void Init()
         {
             var result = await SetupDirectories();
@@ -89,7 +89,7 @@ namespace NuSysApp
                     NodeViewModelList.Add(nodeVm);
                     AtomViewList.Add(nodeVm.View);
                 });
-            };            
+            };
         }
 
         private async Task<bool> SetupDirectories()
@@ -125,13 +125,16 @@ namespace NuSysApp
             }
 
 
+
+
+
             var options = new QueryOptions { FileTypeFilter = { ".nusys" } };
             var query = transferFolder.CreateFileQueryWithOptions(options);
             query.ContentsChanged += OnTransferFolderChange;
             var files = query.GetFilesAsync();
         }
 
-      
+
 
         /// <summary>
         /// Returns true if the given node intersects with any link on the workspace, 
@@ -170,12 +173,12 @@ namespace NuSysApp
                 AtomViewList.Remove(linkVm.View);
                 toDelete.Add(linkVm);
             }
-          
+
             foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
             {
                 linkVm.Remove();
             }
-            
+
             //2. Remove the node itself 
             AtomViewList.Remove(nodeVM.View);
             NodeViewModelList.Remove(nodeVM);
@@ -257,11 +260,11 @@ namespace NuSysApp
         {
             vm.X = 0;
             vm.Y = 0;
-            
-            var transMat = ((MatrixTransform) vm.View.RenderTransform).Matrix;
+
+            var transMat = ((MatrixTransform)vm.View.RenderTransform).Matrix;
             transMat.OffsetX = xCoordinate;
             transMat.OffsetY = yCoordinate;
-            vm.Transform = new MatrixTransform {Matrix = transMat};
+            vm.Transform = new MatrixTransform { Matrix = transMat };
         }
 
         #region Public Members
@@ -278,7 +281,7 @@ namespace NuSysApp
 
         public LinkMode CurrentLinkMode { get; set; }
 
-      
+
         public CompositeTransform CompositeTransform
         {
             get { return _compositeTransform; }
