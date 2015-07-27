@@ -107,20 +107,23 @@ namespace NuSysApp
             const string transferFileName = "chromeSelections.nusys";
             var docFolder = KnownFolders.DocumentsLibrary;
             var transferFolder = await docFolder.GetFolderAsync(transferFolderName).AsTask();
-            var transferFile = await transferFolder.GetFileAsync(transferFileName).AsTask();
-            
-            var readFile = await FileIO.ReadTextAsync(transferFile);
+            var transferFiles = await transferFolder.GetFilesAsync().AsTask();
+
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-
-
-            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            foreach (var file in transferFiles)
             {
-                var nodeVm = _factory.CreateNewRichText(readFile);
-                this.PositionNode(nodeVm, 100, 100);
-                NodeViewModelList.Add(nodeVm);
-                AtomViewList.Add(nodeVm.View);
+                Debug.WriteLine(file.Path);
 
-            });
+                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                {
+                    var readFile = await FileIO.ReadTextAsync(file);
+                    var nodeVm = _factory.CreateNewRichText(readFile);
+                    this.PositionNode(nodeVm, 100, 100);
+                    NodeViewModelList.Add(nodeVm);
+                    AtomViewList.Add(nodeVm.View);
+                });
+            }
+
 
             var options = new QueryOptions { FileTypeFilter = { ".nusys" } };
             var query = transferFolder.CreateFileQueryWithOptions(options);
