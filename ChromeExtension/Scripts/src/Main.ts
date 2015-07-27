@@ -16,10 +16,34 @@ class Main {
     selections: Array<ISelection> = new Array<ISelection>();
     selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;
-
+    isEnabled: boolean;
     constructor() {
         console.log("Starting NuSys.");
         this.init();
+    }
+
+    toggleEnabled(flag: boolean): void {
+        this.isEnabled = flag;
+
+        console.log("enabled: " + this.isEnabled);
+
+        if (this.isEnabled) {
+            window.addEventListener("mouseup", this.windowUp);
+            document.body.addEventListener("mousedown", this.documentDown);
+            document.addEventListener("scroll", this.documentScroll);
+            this.canvas.addEventListener("mouseup", this.canvasUp);
+            document.body.appendChild(this.canvas); 
+        } else {
+            window.removeEventListener("mouseup", this.windowUp);
+            document.body.removeEventListener("mousedown", this.documentDown);
+            document.removeEventListener("scroll", this.documentScroll);
+            this.canvas.removeEventListener("mouseup", this.canvasUp);
+            try {
+                document.body.removeChild(this.canvas);
+            } catch (e) {
+                console.log("no canvas visible." + e)
+            }
+        }
     }
 
     mouseMove = (e):void => {
@@ -154,32 +178,28 @@ class Main {
         this.canvas.height = window.innerHeight;
         this.canvas.style.position = "fixed";
         this.canvas.style.top = "0";
-        document.body.appendChild(this.canvas);
+
 
         this.inkCanvas = new InkCanvas(this.canvas);
         this.selection = new LineSelection(this.inkCanvas);        
 
-        // register listeners
-        window.addEventListener("mouseup", this.windowUp);
-        document.body.addEventListener("mousedown", this.documentDown);
-        document.addEventListener("scroll", this.documentScroll);
-        this.canvas.addEventListener("mouseup", this.canvasUp);
-        
 
-        var currToggle = true;
+        var currToggle = false;
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if (request.msg == "checkInjection")
                     sendResponse({ toggleState: currToggle })
-                if (request.toggleChanged == true) {
+                if (request.toggleState == true) {
+                    this.toggleEnabled(true);
                     console.log("show canvas");
                     currToggle = true;
                 }
-                if (request.toggleChanged == false) {
+                if (request.toggleState == false) {
                     console.log("hide canvas");
-                    this.inkCanvas.hide();
+                    this.toggleEnabled(false);
                     currToggle = false;
                 }
+
             });
     }
 } 
