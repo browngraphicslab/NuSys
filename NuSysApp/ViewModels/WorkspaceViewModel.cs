@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.Storage.Search;
-using Windows.UI.Xaml;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using NuSysApp.MISC;
 using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp.MISC;
 
 namespace NuSysApp
 {
@@ -61,8 +57,8 @@ namespace NuSysApp
 
             Init();
             var c = new CompositeTransform();
-            c.TranslateX = -100000;
-            c.TranslateY = -100000;
+            c.TranslateX = (-1)* (Constants.MAX_CANVAS_SIZE);
+            c.TranslateY = (-1) * (Constants.MAX_CANVAS_SIZE);
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
@@ -83,16 +79,17 @@ namespace NuSysApp
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                int count = 0;
                 foreach (var file in transferFiles)
                 {
                     Debug.WriteLine(file.Path);
 
-                    await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
                         var readFile = await FileIO.ReadTextAsync(file);
                         var nodeVm = _factory.CreateNewRichText(readFile);
-                        var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
-                        this.PositionNode(nodeVm, p.X, p.Y);
+                        var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
+                        PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
                         AtomViewList.Add(nodeVm.View);
                     });
@@ -124,12 +121,13 @@ namespace NuSysApp
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
-                Line line1 = link.LineRepresentation;
+                var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
                     if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
+                        link.Annotation = node;
                         return true;
                     }
                 }
@@ -154,6 +152,7 @@ namespace NuSysApp
             foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
             {
                 linkVm.Remove();
+                nodeVM.LinkList.Remove(linkVm);
             }
 
             //2. Remove the node itself 
@@ -197,6 +196,8 @@ namespace NuSysApp
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
+            if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
+
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
             LinkViewModelList.Add(vm);
@@ -218,22 +219,22 @@ namespace NuSysApp
                     break;
                 case Mode.IMAGE:
                     vm = _factory.CreateNewImage((BitmapImage)data);
-                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+                    this.CurrentMode = Mode.TEXTNODE;
                     break;
                 case Mode.PDF:
                     vm = _factory.CreateNewPdfNodeViewModel();
-                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+                    this.CurrentMode = Mode.TEXTNODE;
                     break;
                 default:
                     return null;
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
-            this.PositionNode(vm, xCoordinate, yCoordinate);
+            PositionNode(vm, xCoordinate, yCoordinate);
             return vm;
         }
 
-        private void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
+        private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
             vm.X = 0;
             vm.Y = 0;

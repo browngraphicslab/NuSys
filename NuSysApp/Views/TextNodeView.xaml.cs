@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -82,14 +83,20 @@ namespace NuSysApp
 
         private void delete_Click(object sender, RoutedEventArgs e)
         {
-            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            var vm = (TextNodeViewModel)this.DataContext;
             vm.Remove();
         }
 
         private void UserControl_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            var vm = (TextNodeViewModel)this.DataContext;
             vm.CreateAnnotation();
+            if (vm.IsAnnotation)
+            {
+                this.MyGrid.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
+                this.textBlock.Foreground = new SolidColorBrush(Colors.Black);
+                this.textBox.Foreground = new SolidColorBrush(Colors.Black);
+            }
         }
     }
 }

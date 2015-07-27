@@ -101,23 +101,34 @@ namespace NuSysApp
             get { return _clippedParent; }
             set
             {
-                _clippedParent = value;
-                _clippedParent.PropertyChanged += parent_PropertyChanged;
+                if (_clippedParent == null)
+                {
+                    _clippedParent = value;
+                    _clippedParent.PropertyChanged += parent_PropertyChanged;
+                    parent_PropertyChanged(null, null);
+                    this.Width = Constants.DEFAULT_ANNOTATION_SIZE*2;
+                    this.Height = Constants.DEFAULT_ANNOTATION_SIZE;
+                    
+                }
+                else
+                {
+                    _clippedParent = value;
+                }
+                
                 
             }
         }
 
         private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-          
-            this.Width = Constants.DEFAULT_ANNOTATION_SIZE;
-            this.Height = Constants.DEFAULT_ANNOTATION_SIZE;
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
             transMat.OffsetX = ClippedParent.AnchorX - this.Width/2 ;
             transMat.OffsetY = ClippedParent.AnchorY - this.Height/2;
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
         }
+
+        public bool IsAnnotation { get; set; }
 
         /// <summary>
         /// indicates whether node is selected.

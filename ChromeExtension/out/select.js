@@ -4,13 +4,26 @@ var isRunning = false;
 var injected = false;
 var addition = null;
 var port = null;
+
+$('#cmn-toggle-1').prop('checked', chrome.extension.getBackgroundPage().isEnabled);
+
+chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    console.log("sending: " + chrome.extension.getBackgroundPage().isEnabled)
+    chrome.tabs.sendMessage(tabs[0].id, { toggleState: chrome.extension.getBackgroundPage().isEnabled }, function (response) {
+        console.log("request for toggle change sent");
+    })
+})
+
+$(".btnclose").click(function () {
+    window.close();
+});
+
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     chrome.tabs.sendMessage(tabs[0].id, { msg: "checkInjection" }, function (response) {
 
         ///check whether javascript files were already injected by sending message from select.js to main.js 
         if (response) {
             console.log("Already there");
-            document.getElementById("cmn-toggle-1").checked = response.toggleState;
             injected = true;
         }
         else {
@@ -18,7 +31,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             port = chrome.runtime.connect({ name: "content" });
             $("#selected").empty();
             chrome.storage.local.set({ 'curr': [] });
-            document.getElementById("cmn-toggle-1").checked = true;
             chrome.tabs.executeScript({ file: 'jquery.js' });
             chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
         }
@@ -35,11 +47,15 @@ chrome.storage.local.get('curr', function (result) {
 
 
 $("#cmn-toggle-1").change(function () {
+
+    chrome.extension.getBackgroundPage().isEnabled = !chrome.extension.getBackgroundPage().isEnabled;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { togglechanged: $("#cmn-toggle-1").is(':checked') }, function (response) {
+        console.log("sending: " + chrome.extension.getBackgroundPage().isEnabled)
+        chrome.tabs.sendMessage(tabs[0].id, { toggleState: chrome.extension.getBackgroundPage().isEnabled }, function (response) {
             console.log("request for toggle change sent");
         })
-    })
+    });
+
 });
 
 $("#btnSend").click(function () {

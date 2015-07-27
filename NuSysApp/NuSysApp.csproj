@@ -170,19 +170,20 @@
     <PRIResource Include="Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Pics\ink icon.png" />
     <Content Include="Pics\scribble icon.png" />
     <Content Include="Pics\search icon.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\Logo.scale-100.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
-    <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen.scale-1001.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
     <Content Include="Pics\xicon.png" />
     <Content Include="Pics\xicon %281%29.png" />
+    <Content Include="Views\document icon.png" />
     <Content Include="Views\global ink icon.png" />
-    <Content Include="Views\doc icon.png" />
     <Content Include="Views\image icon.png" />
     <Content Include="Views\link icon.png" />
     <Content Include="Views\scribble icon %281%29.png" />

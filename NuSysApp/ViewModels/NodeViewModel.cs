@@ -18,8 +18,8 @@ namespace NuSysApp
 
         private Color _color; //currently unused
 
-       
-
+        
+        
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
@@ -35,6 +35,7 @@ namespace NuSysApp
 
         public void Translate(double dx, double dy)
         {
+            if (IsAnnotation){return;}
             var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
             transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
             transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
@@ -72,13 +73,18 @@ namespace NuSysApp
 
         public void CreateAnnotation()
         {
-            this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this);
+            if (this.LinkList.Count > 0) return;
+
+            if (this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
+            {
+                this.IsAnnotation = true;
+            }
         }
         #endregion Node Manipulations
 
         #region Public Properties
 
-        
+     
 
         /// <summary>
         /// color of node

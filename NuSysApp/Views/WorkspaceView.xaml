@@ -15,24 +15,49 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid Width="100" Height="100" Opacity=".75" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" ManipulationMode="All" RenderTransform="{Binding FMTransform}">
-                            <Ellipse Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity=".75"/>
+                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
     </Page.Resources>
+    <Canvas Background="Transparent" ManipulationMode="All" >
+        <Border RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
+            <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" x:Name="inkCanvas">
+            </InkCanvas>
+        </Border>
+        <Grid x:Name="maingrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="0*" />
+            </Grid.RowDefinitions>
+            <!--<Grid x:Name="lefttoolbar" HorizontalAlignment="Left" Margin="0,0,0,0" Width="50">
+            <StackPanel x:Name="stackpanel" Background="#FF15C3F2" Opacity="0.5" Width="50" HorizontalAlignment="Left"></StackPanel>
+            <Rectangle Fill="#FF15C3F2" HorizontalAlignment="Right" Margin="0,278,-10,278" Width="5" Opacity="0.5" 
+                       RadiusY="5.25" RadiusX="5.25" />
+            <Grid.Transitions>
+                <TransitionCollection>
+                    <EdgeUIThemeTransition Edge="Left"></EdgeUIThemeTransition>
+                </TransitionCollection>
+            </Grid.Transitions>
+        </Grid>-->
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Beige"   x:Name="canvas">
 
-    <Grid x:Name="maingrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="0*" />
-        </Grid.RowDefinitions>
+                        </Canvas>
+
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Grid>
         <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" >
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+            <Button Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
+                </Button.Background>               
             </Button>
             <Button Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
                 <Button.Background>
@@ -56,31 +81,9 @@
             </Button>
             <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
                 <Button.Background>
-                    <ImageBrush ImageSource="doc icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
         </StackPanel>
-        <!--<Grid x:Name="lefttoolbar" HorizontalAlignment="Left" Margin="0,0,0,0" Width="50">
-            <StackPanel x:Name="stackpanel" Background="#FF15C3F2" Opacity="0.5" Width="50" HorizontalAlignment="Left"></StackPanel>
-            <Rectangle Fill="#FF15C3F2" HorizontalAlignment="Right" Margin="0,278,-10,278" Width="5" Opacity="0.5" 
-                       RadiusY="5.25" RadiusX="5.25" />
-            <Grid.Transitions>
-                <TransitionCollection>
-                    <EdgeUIThemeTransition Edge="Left"></EdgeUIThemeTransition>
-                </TransitionCollection>
-            </Grid.Transitions>
-        </Grid>-->
-        <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas HorizontalAlignment="Left" Background="Beige" RenderTransform="{Binding CompositeTransform}"  x:Name="canvas">
-                    </Canvas>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-
-        <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" Name="inkCanvas" RenderTransform="{Binding CompositeTransform}">
-        </InkCanvas>
-        
-    </Grid>
+    </Canvas>
 </Page>
