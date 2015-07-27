@@ -74,21 +74,29 @@ namespace NuSysApp
 
         private async void SetupChromeIntermediate()
         {
+
             var transferFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.ChromeTransferFolder, Constants.FILE_CHROME_TRANSFER_NAME);
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
             fw.FilesChanged += async delegate
             {
-                var readFile = await FileIO.ReadTextAsync(transferFile);
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                Debug.WriteLine("CONTENTS CHANGED! ");
+                var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
-                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                foreach (var file in transferFiles)
                 {
-                    var nodeVm = _factory.CreateNewRichText(readFile);
-                    var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
-                    this.PositionNode(nodeVm, p.X, p.Y);
-                    NodeViewModelList.Add(nodeVm);
-                    AtomViewList.Add(nodeVm.View);
-                });
+                    Debug.WriteLine(file.Path);
+
+                    await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        var readFile = await FileIO.ReadTextAsync(file);
+                        var nodeVm = _factory.CreateNewRichText(readFile);
+                        var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
+                        this.PositionNode(nodeVm, p.X, p.Y);
+                        NodeViewModelList.Add(nodeVm);
+                        AtomViewList.Add(nodeVm.View);
+                    });
+                }
             };
         }
 
@@ -98,43 +106,6 @@ namespace NuSysApp
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
             return true;
         }
-
-
-        private async void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
-        {
-            Debug.WriteLine("CONTENTS CHANGED! " + args);
-            const string transferFolderName = "NuSysTransfer";
-            const string transferFileName = "chromeSelections.nusys";
-            var docFolder = KnownFolders.DocumentsLibrary;
-            var transferFolder = await docFolder.GetFolderAsync(transferFolderName).AsTask();
-            var transferFiles = await transferFolder.GetFilesAsync().AsTask();
-
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            foreach (var file in transferFiles)
-            {
-                Debug.WriteLine(file.Path);
-
-                await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                {
-                    var readFile = await FileIO.ReadTextAsync(file);
-                    var nodeVm = _factory.CreateNewRichText(readFile);
-                    this.PositionNode(nodeVm, 100, 100);
-                    NodeViewModelList.Add(nodeVm);
-                    AtomViewList.Add(nodeVm.View);
-                });
-            }
-
-
-
-
-
-            var options = new QueryOptions { FileTypeFilter = { ".nusys" } };
-            var query = transferFolder.CreateFileQueryWithOptions(options);
-            query.ContentsChanged += OnTransferFolderChange;
-            var files = query.GetFilesAsync();
-        }
-
-
 
         /// <summary>
         /// Returns true if the given node intersects with any link on the workspace, 
