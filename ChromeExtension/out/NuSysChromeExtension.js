@@ -2982,6 +2982,7 @@ var Main = (function () {
             document.addEventListener("scroll", this.documentScroll);
             this.canvas.addEventListener("mouseup", this.canvasUp);
             document.body.appendChild(this.canvas);
+            this.inkCanvas.update();
         }
         else {
             window.removeEventListener("mouseup", this.windowUp);
@@ -2995,6 +2996,16 @@ var Main = (function () {
                 console.log("no canvas visible." + e);
             }
         }
+    };
+    Main.prototype.drawPastSelections = function (rectArray) {
+        var _this = this;
+        $.each(rectArray, function (index, rect) {
+            var stroke = new Stroke();
+            stroke.points.push({ x: rect.x, y: rect.y });
+            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
+            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
+        });
+        this.inkCanvas.update();
     };
     Main.prototype.init = function () {
         var _this = this;
@@ -3028,15 +3039,16 @@ var Main = (function () {
                 currToggle = false;
             }
             if (request.pastPage != null) {
-                sendResponse({ farewell: "goodbye" });
+                sendResponse({ farewell: "received Info" });
                 console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                _this.toggleEnabled(true);
                 var rects = null;
                 chrome.storage.local.get(null, function (data) {
                     console.info(data);
                     console.log(data[request.pastPage]);
                     rects = data[request.pastPage]["boundingRects"];
                     console.log(rects);
-                    //  drawPastSelections(rects);
+                    _this.drawPastSelections(rects);
                 });
             }
         });

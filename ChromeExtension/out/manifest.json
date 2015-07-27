@@ -15,13 +15,14 @@
         "https://ajax.googleapis.com/",
         "nativeMessaging",
         "storage",
-        "unlimitedStorage"
+        "unlimitedStorage",
+         "tabs",
+         "<all_urls>"
     ],
     "web_accessible_resources": [
         "assets/*.png"
     ],
     "background": {
-        "scripts": [ "bg.js" ],
-        "persistent" :  false
+        "scripts": [ "bg.js" ]
     }
 }
