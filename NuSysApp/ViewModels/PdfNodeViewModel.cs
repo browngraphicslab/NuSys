@@ -51,9 +51,6 @@ namespace NuSysApp
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
             this.Width = Constants.DEFAULT_NODE_SIZE * 3;
             this.Height = Constants.DEFAULT_NODE_SIZE * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
-            _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.PDF;
-            var p = _workspaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
-            _workspaceViewModel.CreateNewNode(p.X, p.Y, null);
         }
 
         public override void Resize(double dx, double dy)

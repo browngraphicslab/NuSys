@@ -205,7 +205,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public NodeViewModel CreateNewNode(double xCoordinate, double yCoordinate, object data)
+        public async Task CreateNewNode(double xCoordinate, double yCoordinate, object data)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
@@ -218,19 +218,19 @@ namespace NuSysApp
                     break;
                 case Mode.IMAGE:
                     vm = _factory.CreateNewImage((BitmapImage)data);
-                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+                    this.CurrentMode = Mode.TEXTNODE;
                     break;
                 case Mode.PDF:
-                    vm = _factory.CreateNewPdfNodeViewModel();
-                    this.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+                    var pnvm = _factory.CreateNewPdfNodeViewModel();
+                    await pnvm.InitializePdfNodeAsync();
+                    vm = pnvm;
                     break;
                 default:
-                    return null;
+                    return;
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             this.PositionNode(vm, xCoordinate, yCoordinate);
-            return vm;
         }
 
         private void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)

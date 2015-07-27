@@ -21,12 +21,22 @@ namespace NuSysApp
             return textVM;
         }
 
+        //public static TextNodeViewModel CreateNewText(string data)
+        //{
+        //    return new TextNodeViewModel(new WorkspaceViewModel()) {Data = data};
+        //}
+
         public RichTextNodeViewModel CreateNewRichText(string html)
         {
             RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
-            richTextVM.Data = html;            
+            richTextVM.Data = html;
             return richTextVM;
         }
+
+        //public static RichTextNodeViewModel CreateNewRichText(string html)
+        //{
+        //    return new RichTextNodeViewModel(new WorkspaceViewModel()) {Data = html};
+        //}
 
         public ImageNodeViewModel CreateNewImage(BitmapImage bmi)
         {
@@ -36,8 +46,9 @@ namespace NuSysApp
 
         public PdfNodeViewModel CreateNewPdfNodeViewModel()
         {
-            PdfNodeViewModel pdfNodeVM = new PdfNodeViewModel(_workSpaceViewModel);
-            return pdfNodeVM;
+            //var pdfNodeVM = new PdfNodeViewModel(_workSpaceViewModel);
+            //return pdfNodeVM;
+            return new PdfNodeViewModel(_workSpaceViewModel);
         }
 
         public InkNodeViewModel CreateNewInk()
