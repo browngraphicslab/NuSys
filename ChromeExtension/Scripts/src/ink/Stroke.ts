@@ -139,6 +139,8 @@ class Stroke {
     getCopy() {
         var s = new Stroke();
         s.points = this.points.slice(0);
+        s.documentOffsetX = this.documentOffsetX;
+        s.documentOffsetY = this.documentOffsetY;
         return s;
     }
 }

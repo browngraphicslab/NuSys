@@ -29,6 +29,7 @@
 
         startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
         startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
+        console.log("OFFSETY: " + stroke.documentOffsetY);
 
         var ctx = inkCanvas._context;
         ctx.globalCompositeOperation = "source-over";

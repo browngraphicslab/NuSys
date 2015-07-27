@@ -100,6 +100,22 @@ class Main {
         }
 
         var selections = [];
+
+        $("canvas").mouseleave(function () {
+            canvas.removeEventListener("mousemove", onMouseMove);
+            document.body.removeChild(canvas);
+            selection.end(0, 0);
+            selection.deselect();
+            inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
+            inkCanvas.update();
+            window.getSelection().removeAllRanges();
+            
+        });
+
+        window.addEventListener("mouseup", function (e) {
+            window.getSelection().removeAllRanges()
+        });
+
         canvas.addEventListener("mouseup", function (e) {
 
             canvas.removeEventListener("mousemove", onMouseMove);
@@ -109,8 +125,7 @@ class Main {
             //var stroke = inkCanvas._activeStroke.stroke;
             var stroke = inkCanvas._activeStroke.stroke.getCopy();
             var currType = StrokeClassifier.getStrokeType(stroke);
-            console.log("curr: " + currType);
-           // console.log("scribble: " + StrokeType.Scribble);
+
 
             if (currType == StrokeType.Scribble) {
 
@@ -125,7 +140,7 @@ class Main {
                     if (intersects)
                         intersectionCount++;
                 });
-                console.log("dfdf");
+
                 if (intersectionCount > 2) {
 
                     var strokeBB = stroke.getBoundingRect();
@@ -160,8 +175,6 @@ class Main {
                 chrome.storage.local.set(obj);
 
                 chrome.storage.local.get(null, function (data) { console.info(data) });
-
-                console.log(selection.getContent());
             }
 
             selection = new LineSelection(inkCanvas);

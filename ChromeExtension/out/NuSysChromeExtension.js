@@ -2649,6 +2649,7 @@ var SelectionBrush = (function () {
         var h = stroke.points[stroke.points.length - 1].y - startY;
         startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
         startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
+        console.log("OFFSETY: " + stroke.documentOffsetY);
         var ctx = inkCanvas._context;
         ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = 0.6;
@@ -2927,6 +2928,18 @@ var Main = (function () {
             selection.update(e.clientX, e.clientY);
         }
         var selections = [];
+        $("canvas").mouseleave(function () {
+            canvas.removeEventListener("mousemove", onMouseMove);
+            document.body.removeChild(canvas);
+            selection.end(0, 0);
+            selection.deselect();
+            inkCanvas.removeBrushStroke(inkCanvas._activeStroke);
+            inkCanvas.update();
+            window.getSelection().removeAllRanges();
+        });
+        window.addEventListener("mouseup", function (e) {
+            window.getSelection().removeAllRanges();
+        });
         canvas.addEventListener("mouseup", function (e) {
             canvas.removeEventListener("mousemove", onMouseMove);
             document.body.removeChild(canvas);
@@ -2935,8 +2948,6 @@ var Main = (function () {
             //var stroke = inkCanvas._activeStroke.stroke;
             var stroke = inkCanvas._activeStroke.stroke.getCopy();
             var currType = StrokeClassifier.getStrokeType(stroke);
-            console.log("curr: " + currType);
-            // console.log("scribble: " + StrokeType.Scribble);
             if (currType == 3 /* Scribble */) {
                 var segments = stroke.breakUp();
                 var p0 = stroke.points[0];
@@ -2948,7 +2959,6 @@ var Main = (function () {
                     if (intersects)
                         intersectionCount++;
                 });
-                console.log("dfdf");
                 if (intersectionCount > 2) {
                     var strokeBB = stroke.getBoundingRect();
                     $.each(selections, function () {
@@ -2981,7 +2991,6 @@ var Main = (function () {
                 chrome.storage.local.get(null, function (data) {
                     console.info(data);
                 });
-                console.log(selection.getContent());
             }
             selection = new LineSelection(inkCanvas);
             prevStrokeType = 0 /* Line */;
@@ -3136,6 +3145,8 @@ var Stroke = (function () {
     Stroke.prototype.getCopy = function () {
         var s = new Stroke();
         s.points = this.points.slice(0);
+        s.documentOffsetX = this.documentOffsetX;
+        s.documentOffsetY = this.documentOffsetY;
         return s;
     };
     return Stroke;
@@ -3204,7 +3215,6 @@ var BracketSelection = (function () {
         var maxX = -1000000;
         var minY = 1000000;
         var maxY = -1000000;
-        console.log(this._clientRects.length);
         for (var i = 0; i < this._clientRects.length; i++) {
             var p = this._clientRects[i];
             maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
@@ -3216,7 +3226,6 @@ var BracketSelection = (function () {
     };
     BracketSelection.prototype.analyzeContent = function () {
         var _this = this;
-        console.log("analyzing content");
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
         selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
@@ -3241,28 +3250,23 @@ var BracketSelection = (function () {
         }
         var candidates = [];
         var precision = 4;
-        console.log("numCandidates: " + candidates.length);
         hitCounter.forEach(function (k, v) {
             candidates.push(v / totalScore);
         });
-        console.log(candidates);
         var std = Statistics.getStandardDeviation(candidates, precision);
         var result = "";
         this._clientRects = new Array();
         var count = 0;
         var result = "";
         hitCounter.forEach(function (k, v) {
-            console.log(k);
             if (Statistics.isWithinStd(candidates[count++], 1, std)) {
                 result += k["outerHTML"];
                 var range = document.createRange();
                 range.selectNodeContents(k);
                 var rects = range.getClientRects();
                 _this._clientRects = _this._clientRects.concat.apply([], rects);
-                console.log(rects.length);
             }
         });
-        console.log(result);
         this._content = result;
     };
     BracketSelection.prototype.getContent = function () {
@@ -3286,9 +3290,11 @@ var MarqueeSelection = (function () {
         this._selected = null;
         this._ct = 0;
         this._content = null;
+        this._offsetY = 0;
         this._inkCanvas = inkCanvas;
         if (fromActiveStroke) {
             var stroke = inkCanvas._activeStroke.stroke;
+            this._offsetY = stroke.documentOffsetY;
             this._startX = stroke.points[0].x;
             this._startY = stroke.points[0].y;
             this._mouseX = stroke.points[stroke.points.length - 1].x;
@@ -3340,12 +3346,10 @@ var MarqueeSelection = (function () {
         this._brushStroke = this._inkCanvas._activeStroke;
         this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
-        console.log(this._parentList);
         this.analyzeContent();
     };
     MarqueeSelection.prototype.deselect = function () {
-        if (!this._inkCanvas.removeBrushStroke(this._brushStroke))
-            console.log(this);
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
     };
     MarqueeSelection.prototype.getNextElement = function (el) {
         if (this._selected != el) {
@@ -3382,7 +3386,6 @@ var MarqueeSelection = (function () {
         }
         if (nextY > 0) {
             if (document.body.contains(this._inkCanvas._canvas)) {
-                console.log("///////Y/////");
                 document.body.removeChild(this._inkCanvas._canvas);
             }
             element = document.elementFromPoint(this._startX, this._mouseY - nextY + 1);
@@ -3430,10 +3433,9 @@ var MarqueeSelection = (function () {
         this._inkCanvas.draw(this._marqueeX2, this._marqueeY2);
     };
     MarqueeSelection.prototype.getBoundingRect = function () {
-        return new Rectangle(this._marqueeX1, this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
+        return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     };
     MarqueeSelection.prototype.analyzeContent = function () {
-        console.log("analyzing content");
         if (this._parentList.length != 1) {
             for (var i = 1; i < this._parentList.length; i++) {
                 var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
@@ -3581,9 +3583,6 @@ var MarqueeSelection = (function () {
             ay1 = rectX["top"];
             ay2 = rectX["top"] + rectX["height"];
         }
-        /*
-         //console.log(ax1+","+ay1+","+ax2+","+ay2);
-         //console.log(bx1+","+bx2+","+by1+","+by2);*/
         if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
             return true;
         }
@@ -3592,7 +3591,6 @@ var MarqueeSelection = (function () {
         }
     };
     MarqueeSelection.prototype.getContent = function () {
-        console.log(this._content);
         return this._content;
     };
     return MarqueeSelection;

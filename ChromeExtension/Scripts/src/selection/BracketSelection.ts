@@ -48,7 +48,6 @@ class BracketSelection implements ISelection {
         var maxX = -1000000;
         var minY = 1000000;
         var maxY = -1000000;
-        console.log(this._clientRects.length);
         for (var i = 0; i < this._clientRects.length; i++) {
             var p = this._clientRects[i];
             maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
@@ -62,8 +61,6 @@ class BracketSelection implements ISelection {
 
     analyzeContent(): void {
         
-        console.log("analyzing content");
-
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
         selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
@@ -97,13 +94,10 @@ class BracketSelection implements ISelection {
 
         var candidates = [];
         var precision = 4;
-        console.log("numCandidates: " + candidates.length)
         hitCounter.forEach((k, v) => {            
             candidates.push(v / totalScore);
         });    
         
-        console.log(candidates)  
-
         var std = Statistics.getStandardDeviation(candidates, precision);
 
         var result = "";
@@ -113,7 +107,6 @@ class BracketSelection implements ISelection {
         var result = "";
 
         hitCounter.forEach((k, v) => {
-            console.log(k)
             if (Statistics.isWithinStd(candidates[count++], 1, std)) {
 
                 result += k["outerHTML"];
@@ -122,11 +115,8 @@ class BracketSelection implements ISelection {
 
                 var rects = range.getClientRects();
                 this._clientRects = this._clientRects.concat.apply([], rects);
-                console.log(rects.length);
             }
         });
-
-        console.log(result);
 
         this._content = result;
     }

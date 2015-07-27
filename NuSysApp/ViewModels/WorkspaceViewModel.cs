@@ -97,6 +97,12 @@ namespace NuSysApp
                         AtomViewList.Add(nodeVm.View);
                     });
                 }
+
+
+                foreach (var file in transferFiles)
+                {
+                    await file.DeleteAsync();
+                }
             };
         }
 
