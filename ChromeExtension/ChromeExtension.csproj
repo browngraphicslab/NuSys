@@ -49,8 +49,10 @@
     <Content Include="old\src\StrokeClassifier.js" />
     <Content Include="old\src\UnknownSelection.js" />
     <Content Include="old\src\Vector2.js" />
+    <Content Include="out\AllSelections.html" />
     <Content Include="out\assets\brush.png" />
     <Content Include="out\assets\icon.png" />
+    <Content Include="out\InsertSelections.js" />
     <Content Include="out\jquery.js" />
     <Content Include="out\NuSysChromeExtension.js" />
     <Content Include="Scripts\src\app.css" />
