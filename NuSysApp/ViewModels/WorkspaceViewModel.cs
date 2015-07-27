@@ -127,6 +127,7 @@ namespace NuSysApp
                     if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
+                        link.Annotation = node;
                         return true;
                     }
                 }

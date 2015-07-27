@@ -51,12 +51,13 @@ namespace NuSysApp
             this.Atom1.LinkList.Remove(this);
             this.Atom2.LinkList.Remove(this);
             this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
+            this.Annotation?.Remove();
         }
 
 #endregion Link Manipulation Methods
 
         #region Public Properties
-
+        public NodeViewModel Annotation { get; set; }
         public AtomViewModel Atom1
         {
             get { return _atom1; }
