@@ -83,6 +83,7 @@ namespace NuSysApp
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                int count = 0;
                 foreach (var file in transferFiles)
                 {
                     Debug.WriteLine(file.Path);
@@ -91,7 +92,7 @@ namespace NuSysApp
                     {
                         var readFile = await FileIO.ReadTextAsync(file);
                         var nodeVm = _factory.CreateNewRichText(readFile);
-                        var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
+                        var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         this.PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
                         AtomViewList.Add(nodeVm.View);

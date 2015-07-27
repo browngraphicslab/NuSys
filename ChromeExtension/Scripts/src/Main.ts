@@ -16,10 +16,39 @@ class Main {
     selections: Array<ISelection> = new Array<ISelection>();
     selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;
+    isEnabled: boolean;
+    rectangleArray = [];
+    objectKeyCount: number = 0;
 
     constructor() {
         console.log("Starting NuSys.");
         this.init();
+    }
+
+    
+
+    toggleEnabled(flag: boolean): void {
+        this.isEnabled = flag;
+
+        console.log("enabled: " + this.isEnabled);
+
+        if (this.isEnabled) {
+            window.addEventListener("mouseup", this.windowUp);
+            document.body.addEventListener("mousedown", this.documentDown);
+            document.addEventListener("scroll", this.documentScroll);
+            this.canvas.addEventListener("mouseup", this.canvasUp);
+            document.body.appendChild(this.canvas); 
+        } else {
+            window.removeEventListener("mouseup", this.windowUp);
+            document.body.removeEventListener("mousedown", this.documentDown);
+            document.removeEventListener("scroll", this.documentScroll);
+            this.canvas.removeEventListener("mouseup", this.canvasUp);
+            try {
+                document.body.removeChild(this.canvas);
+            } catch (e) {
+                console.log("no canvas visible." + e)
+            }
+        }
     }
 
     mouseMove = (e):void => {
@@ -120,11 +149,19 @@ class Main {
         else {
             this.selections.push(this.selection);
             this.selectedArray.push(this.selection.getContent());
+            this.rectangleArray.push(this.selection.getBoundingRect());
+            var selectionInfo = {};
+            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            selectionInfo["selections"] = this.selectedArray;
+            selectionInfo["boundingRects"] = this.rectangleArray;
+            selectionInfo["date"] = (new Date()).toString();
+            selectionInfo["title"] = document.title;
             chrome.storage.local.set({ 'curr': this.selectedArray });
 
             var currentDate = new Date();
             var obj = {};
-            obj[currentDate.toDateString() + currentDate.toTimeString()] = this.selectedArray;
+            obj[this.objectKeyCount] = selectionInfo;
+            
             chrome.storage.local.set(obj);
             chrome.storage.local.get(null, function (data) { console.info(data) });
         }
@@ -154,32 +191,49 @@ class Main {
         this.canvas.height = window.innerHeight;
         this.canvas.style.position = "fixed";
         this.canvas.style.top = "0";
-        document.body.appendChild(this.canvas);
+
 
         this.inkCanvas = new InkCanvas(this.canvas);
-        this.selection = new LineSelection(this.inkCanvas);        
-
-        // register listeners
-        window.addEventListener("mouseup", this.windowUp);
-        document.body.addEventListener("mousedown", this.documentDown);
-        document.addEventListener("scroll", this.documentScroll);
-        this.canvas.addEventListener("mouseup", this.canvasUp);
+        this.selection = new LineSelection(this.inkCanvas);    
         
-
-        var currToggle = true;
+        chrome.storage.local.get(null, (data) => {
+            console.log(data);
+            this.objectKeyCount = Object.keys(data).length;
+        });   
+        
+        var currToggle = false;
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if (request.msg == "checkInjection")
                     sendResponse({ toggleState: currToggle })
-                if (request.toggleChanged == true) {
+                if (request.toggleState == true) {
+                    this.toggleEnabled(true);
                     console.log("show canvas");
                     currToggle = true;
                 }
-                if (request.toggleChanged == false) {
+                if (request.toggleState == false) {
                     console.log("hide canvas");
-                    this.inkCanvas.hide();
+                    this.toggleEnabled(false);
                     currToggle = false;
                 }
+                if (request.pastPage != null) {
+                    sendResponse({ farewell: "goodbye" });
+                    console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                    var rects = null;
+
+                    chrome.storage.local.get(null, function (data) {
+                        console.info(data);
+                        console.log(data[request.pastPage]);
+                        rects = data[request.pastPage]["boundingRects"];
+                        console.log(rects);
+                      //  drawPastSelections(rects);
+
+
+
+
+                    });
+                }
+
             });
     }
 } 
