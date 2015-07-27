@@ -1,8 +1,10 @@
-﻿using Windows.UI.Input.Inking;
+﻿using Windows.UI;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -98,6 +100,10 @@ namespace NuSysApp
         {
             var vm = (InkNodeViewModel)this.DataContext;
             vm.CreateAnnotation();
+            if (vm.IsAnnotation)
+            {
+                this.MyGrid.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
+            }
         }
         #endregion Event Handlers
     }

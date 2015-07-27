@@ -18,7 +18,7 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}}">
+    <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}, Mode=OneTime}">
         <Button Opacity=".5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50"
                 Height="50"
                 Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}">

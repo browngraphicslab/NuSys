@@ -106,7 +106,7 @@ namespace NuSysApp
                     _clippedParent = value;
                     _clippedParent.PropertyChanged += parent_PropertyChanged;
                     parent_PropertyChanged(null, null);
-                    this.Width = Constants.DEFAULT_ANNOTATION_SIZE;
+                    this.Width = Constants.DEFAULT_ANNOTATION_SIZE*2;
                     this.Height = Constants.DEFAULT_ANNOTATION_SIZE;
                     
                 }
@@ -121,8 +121,6 @@ namespace NuSysApp
 
         private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-          
-            
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
             transMat.OffsetX = ClippedParent.AnchorX - this.Width/2 ;
             transMat.OffsetY = ClippedParent.AnchorY - this.Height/2;

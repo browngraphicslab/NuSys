@@ -221,7 +221,7 @@ namespace NuSysApp
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {   
             Canvas.SetZIndex(inkCanvas, -2);
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.GLOBALINK;
             inkCanvas.InkPresenter.IsInputEnabled = true;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
@@ -229,7 +229,7 @@ namespace NuSysApp
 
         private void AppBarButton_Click_Text(object sender, RoutedEventArgs e)
         { 
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
             this.ToggleInk();
         }
@@ -237,7 +237,7 @@ namespace NuSysApp
         private void AppBarButton_Click_Erase(object sender, RoutedEventArgs e)
         {
 
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.ERASE;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
         }
