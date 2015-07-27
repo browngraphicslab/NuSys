@@ -76,8 +76,6 @@ namespace NuSysApp
 
         private async void SetupChromeIntermediate()
         {
-
-            var transferFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.ChromeTransferFolder, Constants.FILE_CHROME_TRANSFER_NAME);
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
             fw.FilesChanged += async delegate
             {
