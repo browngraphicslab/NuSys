@@ -56,7 +56,7 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             this.CurrentMode = Mode.TEXTNODE;
             this.CurrentLinkMode = LinkMode.BEZIERLINK;
-            _factory = new Factory(this);
+            //_factory = new Factory(this);
 
 
             Init();
@@ -90,7 +90,8 @@ namespace NuSysApp
                     await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
                         var readFile = await FileIO.ReadTextAsync(file);
-                        var nodeVm = _factory.CreateNewRichText(readFile);
+                        //var nodeVm = _factory.CreateNewRichText(readFile);
+                        var nodeVm = Factory.CreateNewRichText(readFile);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point(200, 200));
                         this.PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -211,19 +212,17 @@ namespace NuSysApp
             switch (this.CurrentMode)
             {
                 case Mode.TEXTNODE:
-                    vm = _factory.CreateNewText("Enter text here");
+                    vm = Factory.CreateNewText("Enter text here");
                     break;
                 case Mode.INK:
-                    vm = _factory.CreateNewInk();
+                    vm = Factory.CreateNewInk();
                     break;
                 case Mode.IMAGE:
-                    vm = _factory.CreateNewImage((BitmapImage)data);
+                    vm = Factory.CreateNewImage((BitmapImage)data);
                     this.CurrentMode = Mode.TEXTNODE;
                     break;
                 case Mode.PDF:
-                    var pnvm = _factory.CreateNewPdfNodeViewModel();
-                    await pnvm.InitializePdfNodeAsync();
-                    vm = pnvm;
+                    vm = await Factory.CreateNewPdfNodeViewModel();
                     break;
                 default:
                     return;
