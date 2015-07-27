@@ -44,6 +44,7 @@ namespace NuSysApp
         //global ink
 
         public const int INITIAL_PEN_SIZE = 4;
-        
+
+        public const int MAX_CANVAS_SIZE = 100000;
     }
 }
