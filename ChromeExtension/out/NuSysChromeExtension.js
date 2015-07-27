@@ -2862,6 +2862,8 @@ var Main = (function () {
         this.prevStrokeType = 0 /* Line */;
         this.selections = new Array();
         this.selectedArray = new Array();
+        this.rectangleArray = [];
+        this.objectKeyCount = 0;
         this.mouseMove = function (e) {
             var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
             if (currType != _this.prevStrokeType) {
@@ -2946,10 +2948,17 @@ var Main = (function () {
             else {
                 _this.selections.push(_this.selection);
                 _this.selectedArray.push(_this.selection.getContent());
+                _this.rectangleArray.push(_this.selection.getBoundingRect());
+                var selectionInfo = {};
+                selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                selectionInfo["selections"] = _this.selectedArray;
+                selectionInfo["boundingRects"] = _this.rectangleArray;
+                selectionInfo["date"] = (new Date()).toString();
+                selectionInfo["title"] = document.title;
                 chrome.storage.local.set({ 'curr': _this.selectedArray });
                 var currentDate = new Date();
                 var obj = {};
-                obj[currentDate.toDateString() + currentDate.toTimeString()] = _this.selectedArray;
+                obj[_this.objectKeyCount] = selectionInfo;
                 chrome.storage.local.set(obj);
                 chrome.storage.local.get(null, function (data) {
                     console.info(data);
@@ -3000,6 +3009,10 @@ var Main = (function () {
         this.canvas.style.top = "0";
         this.inkCanvas = new InkCanvas(this.canvas);
         this.selection = new LineSelection(this.inkCanvas);
+        chrome.storage.local.get(null, function (data) {
+            console.log(data);
+            _this.objectKeyCount = Object.keys(data).length;
+        });
         var currToggle = false;
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             if (request.msg == "checkInjection")
@@ -3013,6 +3026,18 @@ var Main = (function () {
                 console.log("hide canvas");
                 _this.toggleEnabled(false);
                 currToggle = false;
+            }
+            if (request.pastPage != null) {
+                sendResponse({ farewell: "goodbye" });
+                console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                var rects = null;
+                chrome.storage.local.get(null, function (data) {
+                    console.info(data);
+                    console.log(data[request.pastPage]);
+                    rects = data[request.pastPage]["boundingRects"];
+                    console.log(rects);
+                    //  drawPastSelections(rects);
+                });
             }
         });
     };
