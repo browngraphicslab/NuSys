@@ -12,11 +12,39 @@
     <style>
           body {
               font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-              font-size: 100%;
-              min-width: 800px;
-              width: 90%;
+              width: 400px;
               position: relative;
-              zoom: 50%;
+          }
+
+          .enabler {
+              text-align:left;
+          }
+
+          .switch_caption {
+              font-size: 16px;
+              font-weight: bold;
+              display: inline-block;
+              line-height: 100%;  
+              vertical-align:middle; 
+          }
+
+          .switch {
+              margin-left: 20px;    
+              display: inline-block;
+              vertical-align:middle;
+          }
+
+          .popup_menu {
+              display: inline-block;
+              margin-left: 20px;
+          }
+
+          .menu_button {
+              width: 70px;
+              height: 50px;
+              font-size: 12px;
+              font-weight: bold;
+              vertical-align: middle;
           }
 
           #status {
@@ -26,17 +54,6 @@
               /*        overflow: hidden;
           max-width: 400px; */
           }
-
-          #send {
-              margin: 0 auto;
-              height: 50px;
-          }
-
-          #view {
-              margin: 0 auto;
-              height: 50px;
-          }
-
           .cmn-toggle {
               position: absolute;
               margin-left: -9999px;
@@ -59,14 +76,14 @@
         ============================================================ */
           input.cmn-toggle-round + label {
               padding: 2px;
-              width: 120px;
-              height: 60px;
+              width: 60px;
+              height: 20px;
               background-color: #dddddd;
-              -webkit-border-radius: 60px;
-              -moz-border-radius: 60px;
-              -ms-border-radius: 60px;
-              -o-border-radius: 60px;
-              border-radius: 60px;
+              -webkit-border-radius: 30px;
+              -moz-border-radius: 30px;
+              -ms-border-radius: 30px;
+              -o-border-radius: 30px;
+              border-radius: 30px;
           }
 
               input.cmn-toggle-round + label:before, input.cmn-toggle-round + label:after {
@@ -81,11 +98,11 @@
               input.cmn-toggle-round + label:before {
                   right: 1px;
                   background-color: #f1f1f1;
-                  -webkit-border-radius: 60px;
-                  -moz-border-radius: 60px;
-                  -ms-border-radius: 60px;
-                  -o-border-radius: 60px;
-                  border-radius: 60px;
+                  -webkit-border-radius: 30px;
+                  -moz-border-radius: 30px;
+                  -ms-border-radius: 30px;
+                  -o-border-radius: 30px;
+                  border-radius: 30px;
                   -webkit-transition: background 0.4s;
                   -moz-transition: background 0.4s;
                   -o-transition: background 0.4s;
@@ -93,7 +110,7 @@
               }
 
               input.cmn-toggle-round + label:after {
-                  width: 58px;
+                  width: 28px;
                   background-color: #fff;
                   -webkit-border-radius: 100%;
                   -moz-border-radius: 100%;
@@ -114,20 +131,26 @@
           }
 
           input.cmn-toggle-round:checked + label:after {
-              margin-left: 60px;
+              margin-left: 30px;
           }
     </style>
 
 </head>
 <body>
-
-    <button id="btnSend">Send To Nusys</button>
-    <button id="view">View All</button>
-    <button id="clear">Clear Data</button>
-    <div class="switch">
-        <input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox">
-        <label for="cmn-toggle-1"></label>
+    <h1>Your Selections:</h1>
+    <div class="enabler">
+        <span class="switch_caption">Enabled</span>
+        <div class="switch">
+            <input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox">
+            <label for="cmn-toggle-1"></label>
+        </div>
+        <div class="popup_menu">
+            <button id="btnSend" class="menu_button">Send To Nusys</button>
+            <button id="view" class="menu_button">View All</button>
+            <button id="clear" class="menu_button">Clear Data</button>
+        </div>
     </div>
+
 
     <div id="selected"></div>
     <script type="text/javascript" src="select.js"></script>
