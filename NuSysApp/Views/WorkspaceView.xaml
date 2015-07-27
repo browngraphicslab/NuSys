@@ -54,6 +54,11 @@
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
+            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
+                <Button.Background>
+                    <ImageBrush ImageSource="doc icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
         </StackPanel>
         <!--<Grid x:Name="lefttoolbar" HorizontalAlignment="Left" Margin="0,0,0,0" Width="50">
             <StackPanel x:Name="stackpanel" Background="#FF15C3F2" Opacity="0.5" Width="50" HorizontalAlignment="Left"></StackPanel>
