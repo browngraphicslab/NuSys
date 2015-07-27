@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using NuSysApp.MISC;
 
 namespace NuSysApp
 {

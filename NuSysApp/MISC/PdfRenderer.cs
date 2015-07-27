@@ -8,7 +8,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Diagnostics;
 
-namespace NuSysApp.MISC
+namespace NuSysApp
 {
     class PdfRenderer
     {
