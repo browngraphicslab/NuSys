@@ -254,7 +254,7 @@ namespace NuSysApp
         /// </summary>
         private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            OfficeInteropWord.GenerateTestDocument();
+            //OfficeInteropWord.GenerateTestDocument();
             var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
             var vm = (WorkspaceViewModel)DataContext;

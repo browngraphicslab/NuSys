@@ -34,8 +34,7 @@ namespace NuSysApp
         public async Task InitializeImageNodeAsync(StorageFile storageFile)
         {
             if (storageFile == null) return; // null if file explorer is closed by user
-            var supportedFileTypes = Constants.ImageFileTypes;
-            if (!supportedFileTypes.Contains(storageFile.FileType.ToLower())) return;
+            if (!Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower())) return;
             using (var fileStream = await storageFile.OpenAsync(FileAccessMode.Read))
             {
                 var bitmapImage = new BitmapImage();
