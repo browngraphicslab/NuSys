@@ -73,7 +73,20 @@ namespace NuSysApp
             }
             #endregion Event Handlers
         }
-
+        private void EditC_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (RichTextNodeViewModel)this.DataContext;
+            vm.ToggleEditingC();
+            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
+        }
         private void UserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
