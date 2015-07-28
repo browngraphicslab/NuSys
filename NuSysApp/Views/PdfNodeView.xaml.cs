@@ -83,7 +83,6 @@ namespace NuSysApp
             if (pageNum <= 0) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
             vm.CurrentPageNumber--;
-            inkCanvas.InkPresenter.StrokeContainer.Clear();
 
       //      foreach (InkStroke inkStroke in vm.InkContainer[(int)pageNum -1])
       //      {
@@ -115,7 +114,6 @@ namespace NuSysApp
             if (pageNum >= (pageCount - 1)) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int) pageNum + 1];
             vm.CurrentPageNumber++;
-            inkCanvas.InkPresenter.StrokeContainer.Clear();
             inkCanvas.InkPresenter.StrokeContainer=vm.InkContainer[(int)vm.CurrentPageNumber];
         }
     }
