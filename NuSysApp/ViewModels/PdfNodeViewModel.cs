@@ -51,6 +51,10 @@ namespace NuSysApp
             this.Width = Constants.DefaultNodeSize * 3;
             this.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
             this.InkContainer.Capacity = (int)this.PageCount;
+            for (var i = 0; i < PageCount; i++)
+            {
+                this.InkContainer.Add(new List<InkStroke>());
+            }
         }
 
         public override void Resize(double dx, double dy)

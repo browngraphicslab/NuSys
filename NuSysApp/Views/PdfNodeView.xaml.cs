@@ -85,11 +85,11 @@ namespace NuSysApp
             vm.CurrentPageNumber--;
             inkCanvas.InkPresenter.StrokeContainer.Clear();
 
-            foreach (InkStroke inkStroke in vm.InkContainer[(int)vm.CurrentPageNumber])
-            {
-                inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
-            }
-            //inkCanvas.InkPresenter.StrokeContainer.AddStrokes(vm.InkContainer[(int)vm.CurrentPageNumber]);
+            //foreach (InkStroke inkStroke in vm.InkContainer[(int)vm.CurrentPageNumber])
+           // {
+             //   inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
+            //}
+            inkCanvas.InkPresenter.StrokeContainer.AddStrokes(vm.InkContainer[(int)vm.CurrentPageNumber]);
         }
 
         private void EditC_Click(object sender, RoutedEventArgs e)
@@ -111,18 +111,10 @@ namespace NuSysApp
             var vm = (PdfNodeViewModel)this.DataContext;
             var pageCount = vm.PageCount;
             var pageNum = vm.CurrentPageNumber;
-            if (vm.InkContainer.Count <= pageNum)
-            {
-                vm.InkContainer.Add(new List<InkStroke>());
-            }
             vm.InkContainer[(int)pageNum] = inkCanvas.InkPresenter.StrokeContainer.GetStrokes();
             if (pageNum >= (pageCount - 1)) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int) pageNum + 1];
             vm.CurrentPageNumber++;
-            if (vm.InkContainer.Count <= vm.CurrentPageNumber)
-            {
-                vm.InkContainer.Add(new List<InkStroke>());
-            }
             inkCanvas.InkPresenter.StrokeContainer.Clear();
             inkCanvas.InkPresenter.StrokeContainer.AddStrokes(vm.InkContainer[(int)vm.CurrentPageNumber]);
         }
