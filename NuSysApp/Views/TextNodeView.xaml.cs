@@ -20,17 +20,26 @@ namespace NuSysApp
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
             this.SetUpBindings();
             inkCanvas.InkPresenter.IsInputEnabled = false;
+            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
+            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
+
         }
 
         #region Helper Methods
         private void SetUpBindings()
         {
-            Binding leftBinding = new Binding() { Path = new PropertyPath("X") };
-            leftBinding.Mode = BindingMode.TwoWay;
+            var leftBinding = new Binding
+            {
+                Path = new PropertyPath("X"),
+                Mode = BindingMode.TwoWay
+            };
             this.SetBinding(Canvas.LeftProperty, leftBinding);
 
-            Binding topBinding = new Binding() { Path = new PropertyPath("Y") };
-            topBinding.Mode = BindingMode.TwoWay;
+            var topBinding = new Binding
+            {
+                Path = new PropertyPath("Y"),
+                Mode = BindingMode.TwoWay
+            };
             this.SetBinding(Canvas.TopProperty, topBinding);
         }
 

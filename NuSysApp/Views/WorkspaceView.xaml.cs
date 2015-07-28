@@ -47,7 +47,7 @@ namespace NuSysApp
                 Size = new Windows.Foundation.Size(2, 2),
                 IgnorePressure = false
             };
-           
+            
             inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);      
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |   
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
@@ -67,6 +67,7 @@ namespace NuSysApp
             }
             else
             {
+                
                 inkCanvas.InkPresenter.IsInputEnabled = false; //when text button is clicked in the app bar, it disables the ink presenter using this line and the line above allows the TEXTNODE to be displayed on double tap
             }
         }
