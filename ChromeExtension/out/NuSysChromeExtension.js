@@ -2859,7 +2859,7 @@ var UnknownSelection = (function () {
 var Main = (function () {
     function Main() {
         var _this = this;
-        this.prevStrokeType = 0 /* Line */;
+        this.prevStrokeType = 1 /* Line */;
         this.selections = new Array();
         this.selectedArray = new Array();
         this.rectangleArray = [];
@@ -2869,18 +2869,21 @@ var Main = (function () {
             if (currType != _this.prevStrokeType) {
                 _this.prevStrokeType = currType;
                 switch (currType) {
-                    case 0 /* Line */:
+                    case 0 /* Null */:
                         _this.selection = new LineSelection(_this.inkCanvas);
                         break;
-                    case 1 /* Bracket */:
+                    case 1 /* Line */:
+                        _this.selection = new LineSelection(_this.inkCanvas);
+                        break;
+                    case 2 /* Bracket */:
                         _this.selection = new BracketSelection(_this.inkCanvas, true);
                         console.log("switching to bracket!");
                         break;
-                    case 2 /* Marquee */:
+                    case 3 /* Marquee */:
                         _this.selection = new MarqueeSelection(_this.inkCanvas, true);
                         console.log("switching to marquee!");
                         break;
-                    case 3 /* Scribble */:
+                    case 4 /* Scribble */:
                         _this.selection = new UnknownSelection(_this.inkCanvas, true);
                         console.log("switching to unknown!");
                         break;
@@ -2913,7 +2916,13 @@ var Main = (function () {
             _this.selection.end(e.clientX, e.clientY);
             var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
             var currType = StrokeClassifier.getStrokeType(stroke);
-            if (currType == 3 /* Scribble */) {
+            if (currType == 0 /* Null */) {
+                console.log("JUST A TAP");
+                document.body.appendChild(_this.canvas);
+                _this.inkCanvas.update();
+                return;
+            }
+            else if (currType == 4 /* Scribble */) {
                 var segments = stroke.breakUp();
                 var p0 = stroke.points[0];
                 var p1 = stroke.points[stroke.points.length - 1];
@@ -2933,8 +2942,12 @@ var Main = (function () {
                                 s.deselect();
                                 console.log("RECT INTERSECTION");
                                 var selectionIndex = _this.selections.indexOf(s);
-                                if (selectionIndex > -1)
+                                if (selectionIndex > -1) {
                                     _this.selections.splice(selectionIndex, 1);
+                                    _this.selectedArray.splice(selectionIndex, 1);
+                                    _this.rectangleArray.splice(selectionIndex, 1);
+                                    chrome.storage.local.set({ 'curr': _this.selectedArray });
+                                }
                             }
                         }
                         catch (e) {
@@ -2949,23 +2962,23 @@ var Main = (function () {
                 _this.selections.push(_this.selection);
                 _this.selectedArray.push(_this.selection.getContent());
                 _this.rectangleArray.push(_this.selection.getBoundingRect());
-                var selectionInfo = {};
-                selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                selectionInfo["selections"] = _this.selectedArray;
-                selectionInfo["boundingRects"] = _this.rectangleArray;
-                selectionInfo["date"] = (new Date()).toString();
-                selectionInfo["title"] = document.title;
                 chrome.storage.local.set({ 'curr': _this.selectedArray });
                 var currentDate = new Date();
-                var obj = {};
-                obj[_this.objectKeyCount] = selectionInfo;
-                chrome.storage.local.set(obj);
                 chrome.storage.local.get(null, function (data) {
                     console.info(data);
                 });
             }
+            var selectionInfo = {};
+            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            selectionInfo["selections"] = _this.selectedArray;
+            selectionInfo["boundingRects"] = _this.rectangleArray;
+            selectionInfo["date"] = (new Date()).toString();
+            selectionInfo["title"] = document.title;
+            var obj = {};
+            obj[_this.objectKeyCount] = selectionInfo;
+            chrome.storage.local.set(obj);
             _this.selection = new LineSelection(_this.inkCanvas);
-            _this.prevStrokeType = 0 /* Line */;
+            _this.prevStrokeType = 1 /* Line */;
             document.body.appendChild(_this.canvas);
             _this.inkCanvas.update();
             _this.isSelecting = false;
@@ -3213,27 +3226,31 @@ var StrokeClassifier = (function () {
         var p0 = stroke.points[0];
         var p1 = stroke.points[stroke.points.length - 1];
         var metrics = stroke.getStrokeMetrics();
+        if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
+            return 0 /* Null */;
+        }
         if (metrics.error > 20) {
-            return 3 /* Scribble */;
+            return 4 /* Scribble */;
         }
         if (Math.abs(p1.y - p0.y) < 20) {
-            return 0 /* Line */;
+            return 1 /* Line */;
         }
         if (Math.abs(p1.x - p0.x) < 20) {
-            return 1 /* Bracket */;
+            return 2 /* Bracket */;
         }
         if (Math.abs(p1.x - p0.x) > 50 && Math.abs(p1.y - p0.y) > 20) {
-            return 2 /* Marquee */;
+            return 3 /* Marquee */;
         }
     };
     return StrokeClassifier;
 })();
 var StrokeType;
 (function (StrokeType) {
-    StrokeType[StrokeType["Line"] = 0] = "Line";
-    StrokeType[StrokeType["Bracket"] = 1] = "Bracket";
-    StrokeType[StrokeType["Marquee"] = 2] = "Marquee";
-    StrokeType[StrokeType["Scribble"] = 3] = "Scribble";
+    StrokeType[StrokeType["Null"] = 0] = "Null";
+    StrokeType[StrokeType["Line"] = 1] = "Line";
+    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
+    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
+    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
 })(StrokeType || (StrokeType = {}));
 /// <reference path="../../lib/collections.ts"/>
 var BracketSelection = (function () {
