@@ -12,10 +12,11 @@ namespace NuSysApp
         protected void RaisePropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;
-            if(handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            //if (handler != null)
+            //{
+            //    handler(this, new PropertyChangedEventArgs(propertyName));
+            //}
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

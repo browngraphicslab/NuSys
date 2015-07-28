@@ -74,11 +74,11 @@
                     <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
+            <!--<Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
+            </Button>-->
             <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.UI.Text;
+﻿using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -21,8 +17,8 @@ namespace NuSysApp
         {
             _node = new RichTextNode("Hello oOrld", 0);
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DEFAULT_NODE_SIZE; //width set in /MISC/Constants.cs
-            this.Height = Constants.DEFAULT_NODE_SIZE; //height set in /MISC/Constants.cs
+            this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
+            this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
 
@@ -41,7 +37,7 @@ namespace NuSysApp
             {
                 _data = value;
                 RaisePropertyChanged("Data");
-                RichEditBox rtb = (RichEditBox) this.View.FindName("textBlock"); //TO DO: GET RID OF THIS. NEVER GRAB THE VIEW FROM WITHIN THE VIEWMODEL!! (- Nick)
+                var rtb = (RichEditBox) this.View.FindName("textBlock"); //TO DO: GET RID OF THIS. NEVER GRAB THE VIEW FROM WITHIN THE VIEWMODEL!! (- Nick)
                 rtb.Document.SetText(TextSetOptions.FormatRtf, _data);
             }
         }

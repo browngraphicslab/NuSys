@@ -1,5 +1,4 @@
-﻿using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+﻿using Windows.UI.Xaml.Media;
 
 
 
@@ -17,8 +16,8 @@ namespace NuSysApp
         {
             this.View = new InkNodeView(this);
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DEFAULT_NODE_SIZE; 
-            this.Height = Constants.DEFAULT_NODE_SIZE; 
+            this.Width = Constants.DefaultNodeSize; 
+            this.Height = Constants.DefaultNodeSize; 
             this.IsSelected = false;
             this.IsEditing = false; 
         }

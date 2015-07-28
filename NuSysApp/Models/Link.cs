@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace NuSysApp
 {
     public class Link
     {
-        private Node _inNode, _outNode;
+        private readonly Node _inNode, _outNode;
 
         public Link(Node inNode, Node outNode)
         {

@@ -26,7 +26,7 @@ class Main {
     }
 
     
-
+    
     toggleEnabled(flag: boolean): void {
         this.isEnabled = flag;
 
@@ -37,7 +37,8 @@ class Main {
             document.body.addEventListener("mousedown", this.documentDown);
             document.addEventListener("scroll", this.documentScroll);
             this.canvas.addEventListener("mouseup", this.canvasUp);
-            document.body.appendChild(this.canvas); 
+            document.body.appendChild(this.canvas);
+            this.inkCanvas.update();
         } else {
             window.removeEventListener("mouseup", this.windowUp);
             document.body.removeEventListener("mousedown", this.documentDown);
@@ -174,6 +175,17 @@ class Main {
         this.isSelecting = false;
     }
 
+    drawPastSelections(rectArray): void {
+            $.each(rectArray, (index, rect) => {
+                var stroke = new Stroke();
+                stroke.points.push({ x: rect.x, y: rect.y });
+                stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
+                this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
+            });
+            this.inkCanvas.update();
+    }
+
+
     init() {
 
         // create and append canvas
@@ -200,7 +212,9 @@ class Main {
             console.log(data);
             this.objectKeyCount = Object.keys(data).length;
         });   
-        
+
+
+
         var currToggle = false;
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
@@ -217,20 +231,17 @@ class Main {
                     currToggle = false;
                 }
                 if (request.pastPage != null) {
-                    sendResponse({ farewell: "goodbye" });
+                    sendResponse({ farewell: "received Info" });
                     console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                    this.toggleEnabled(true);
                     var rects = null;
 
-                    chrome.storage.local.get(null, function (data) {
+                    chrome.storage.local.get(null, (data) => {
                         console.info(data);
                         console.log(data[request.pastPage]);
                         rects = data[request.pastPage]["boundingRects"];
                         console.log(rects);
-                      //  drawPastSelections(rects);
-
-
-
-
+                        this.drawPastSelections(rects);
                     });
                 }
 
