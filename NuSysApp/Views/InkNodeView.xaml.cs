@@ -110,8 +110,10 @@ namespace NuSysApp
         public void UpdateInk()
         {
             var rect = this.inkCanvas.InkPresenter.StrokeContainer.PasteFromClipboard(new Point(0,0));
-            this.Width = rect.Width;
-            this.Height = rect.Height;
+            var vm = (InkNodeViewModel)this.DataContext;
+            vm.Width = rect.Width;
+            vm.Height = rect.Height;
+            
         }
         #endregion Event Handlers
     }

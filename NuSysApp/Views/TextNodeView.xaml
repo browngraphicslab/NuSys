@@ -45,7 +45,7 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" IsHitTestVisible="{Binding IsEditingInk}"/>
+        <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}"/>
         <TextBlock Name="textBlock" TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top" Margin="1,60,1,1"
                    FontSize="12" Foreground="White" FontFamily="Calibri"
 
