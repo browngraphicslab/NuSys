@@ -1,66 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace NuSysApp
 {
     public class Node
     {
-        private List<Link> _startLines, _endLines;
-        private List<Node> _connectedNodes;
-
-        private Content _content;
-        private int _id;
         public Node(int id)
         {
-            _startLines = new List<Link>();
-            _endLines = new List<Link>();
-            _id = id;
+            StartLines = new List<Link>();
+            EndLines = new List<Link>();
+            ID = id;
         }
         
         public void ConnectNodes(Node node)
         {
             if (!this.ConnectedNodes.Contains(node))
             {
-                Link connector = new Link(this, node);
+                var connector = new Link(this, node);
             }
         }
 
         public void Delete()
         {
-            foreach(Link connect in this.StartLines) 
+            foreach(var connect in this.StartLines) 
             {
                 connect.DeleteFromOut();
             }
-            foreach(Link connect in this.EndLines)
+            foreach(var connect in this.EndLines)
             {
                 connect.DeleteFromIn();
             }
         }
 
-        public Content Content
-        {
-            set { _content = value; }
-            get { return _content; }
-        }
-        public List<Link> StartLines
-        {
-            get { return _startLines;}
-        }
-        public List<Link> EndLines
-        {
-            get { return _endLines; }
-        }
-        public List<Node> ConnectedNodes
-        {
-            get { return _connectedNodes; }
-        }
+        public Content Content { set; get; }
 
-        public int ID
-        {
-            get{ return _id; }
-        }
+        public List<Link> StartLines { get; }
+
+        public List<Link> EndLines { get; }
+
+        public List<Node> ConnectedNodes { get; }
+
+        public int ID { get; }
     }
 }

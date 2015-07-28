@@ -102,6 +102,7 @@
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
+    <Compile Include="MISC\OfficeInteropWord.cs" />
     <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />
@@ -184,7 +185,6 @@
     <Content Include="Pics\xicon %281%29.png" />
     <Content Include="Views\document icon.png" />
     <Content Include="Views\global ink icon.png" />
-    <Content Include="Views\image icon.png" />
     <Content Include="Views\link icon.png" />
     <Content Include="Views\scribble icon %281%29.png" />
     <Content Include="Views\text icon.png" />
@@ -253,7 +253,6 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

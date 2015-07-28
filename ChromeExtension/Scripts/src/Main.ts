@@ -13,6 +13,7 @@ class Main {
     inkCanvas: InkCanvas;
     selection: ISelection;
     canvas: HTMLCanvasElement;
+
     selections: Array<ISelection> = new Array<ISelection>();
     selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;

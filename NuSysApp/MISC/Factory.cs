@@ -1,54 +1,37 @@
-using Windows.UI.Xaml.Media.Imaging;
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
+using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace NuSysApp
 {
     public class Factory
     {
-        WorkspaceViewModel _workSpaceViewModel;
-        public Factory(WorkspaceViewModel vm)
+        public static TextNodeViewModel CreateNewText(WorkspaceViewModel vm,  string data)
         {
-            _workSpaceViewModel = vm;
+            return new TextNodeViewModel(vm) { Data = data };
         }
 
-        public TextNodeViewModel CreateNewText(string data)
+        public static RichTextNodeViewModel CreateNewRichText(WorkspaceViewModel vm, string html)
         {
-            TextNodeViewModel textVM = new TextNodeViewModel(_workSpaceViewModel);
-            textVM.Data = data;
-            return textVM;
+            return new RichTextNodeViewModel(vm) { Data = html };
         }
 
-        public RichTextNodeViewModel CreateNewRichText(string html)
+        public async static Task<ImageNodeViewModel> CreateNewImage(WorkspaceViewModel vm, StorageFile storageFile)
         {
-            RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
-            richTextVM.Data = html;            
-            return richTextVM;
+            var invm = new ImageNodeViewModel(vm);
+            await invm.InitializeImageNodeAsync(storageFile);
+            return invm;
         }
 
-        public ImageNodeViewModel CreateNewImage(BitmapImage bmi)
+        public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(WorkspaceViewModel vm, StorageFile storageFile)
         {
-            ImageNodeViewModel imageVM = new ImageNodeViewModel(_workSpaceViewModel, bmi);
-            return imageVM;
+            var pnvm = new PdfNodeViewModel(vm);
+            await pnvm.InitializePdfNodeAsync(storageFile);
+            return pnvm;
         }
 
-        public PdfNodeViewModel CreateNewPdfNodeViewModel()
+        public static InkNodeViewModel CreateNewInk(WorkspaceViewModel vm)
         {
-            PdfNodeViewModel pdfNodeVM = new PdfNodeViewModel(_workSpaceViewModel);
-            return pdfNodeVM;
-        }
-
-        public InkNodeViewModel CreateNewInk()
-        {
-            return new InkNodeViewModel(_workSpaceViewModel);
-        }
-   
-        public NodeViewModel CreateFromDataString(string data)
-        {
-            //TO DO
-            return null;
+            return new InkNodeViewModel(vm);
         }
     }
 

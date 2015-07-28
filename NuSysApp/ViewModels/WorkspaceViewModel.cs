@@ -9,7 +9,6 @@ using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
 
 namespace NuSysApp
@@ -25,18 +24,18 @@ namespace NuSysApp
 
         public enum Mode
         {
-            TEXTNODE,
-            GLOBALINK,
-            INK,
-            ERASE,
-            IMAGE,
-            PDF
+            Textnode,
+            Globalink,
+            Ink,
+            Erase,
+            Image,
+            Pdf
         }; //enum created to switch between multiple modes in the appbar
 
         public enum LinkMode
         {
-            LINELINK,
-            BEZIERLINK
+            Linelink,
+            Bezierlink
         }
 
         private CompositeTransform _compositeTransform, _fMTransform;
@@ -50,15 +49,17 @@ namespace NuSysApp
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedAtomViewModel = null;
-            this.CurrentMode = Mode.TEXTNODE;
-            this.CurrentLinkMode = LinkMode.BEZIERLINK;
-            _factory = new Factory(this);
+            this.CurrentMode = Mode.Textnode;
+            this.CurrentLinkMode = LinkMode.Bezierlink;
+            //_factory = new Factory(this);
 
 
             Init();
-            var c = new CompositeTransform();
-            c.TranslateX = (-1)* (Constants.MAX_CANVAS_SIZE);
-            c.TranslateY = (-1) * (Constants.MAX_CANVAS_SIZE);
+            var c = new CompositeTransform
+            {
+                TranslateX = (-1)*(Constants.MaxCanvasSize),
+                TranslateY = (-1)*(Constants.MaxCanvasSize)
+            };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
@@ -69,7 +70,6 @@ namespace NuSysApp
             var result = await SetupDirectories();
             SetupChromeIntermediate();
         }
-
         private async void SetupChromeIntermediate()
         {
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
@@ -79,7 +79,7 @@ namespace NuSysApp
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                int count = 0;
+                var count = 0;
                 foreach (var file in transferFiles)
                 {
                     Debug.WriteLine(file.Path);
@@ -87,7 +87,8 @@ namespace NuSysApp
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
                         var readFile = await FileIO.ReadTextAsync(file);
-                        var nodeVm = _factory.CreateNewRichText(readFile);
+                        //var nodeVm = _factory.CreateNewRichText(readFile);
+                        var nodeVm = Factory.CreateNewRichText(this, readFile);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -105,8 +106,8 @@ namespace NuSysApp
 
         private async Task<bool> SetupDirectories()
         {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
-            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
             return true;
         }
 
@@ -195,7 +196,7 @@ namespace NuSysApp
         /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
-            if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
+            if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
             if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
 
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
@@ -206,32 +207,29 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public NodeViewModel CreateNewNode(double xCoordinate, double yCoordinate, object data)
+        public async Task CreateNewNode(double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
             {
-                case Mode.TEXTNODE:
-                    vm = _factory.CreateNewText("Enter text here");
+                case Mode.Textnode:
+                    vm = Factory.CreateNewText(this, "Enter text here");
                     break;
-                case Mode.INK:
-                    vm = _factory.CreateNewInk();
+                case Mode.Ink:
+                    vm = Factory.CreateNewInk(this);
                     break;
-                case Mode.IMAGE:
-                    vm = _factory.CreateNewImage((BitmapImage)data);
-                    this.CurrentMode = Mode.TEXTNODE;
+                case Mode.Image:
+                    vm = await Factory.CreateNewImage(this, (StorageFile)data);
                     break;
-                case Mode.PDF:
-                    vm = _factory.CreateNewPdfNodeViewModel();
-                    this.CurrentMode = Mode.TEXTNODE;
+                case Mode.Pdf:
+                    vm = await Factory.CreateNewPdfNodeViewModel(this, (StorageFile)data);
                     break;
                 default:
-                    return null;
+                    return;
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             PositionNode(vm, xCoordinate, yCoordinate);
-            return vm;
         }
 
         private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
