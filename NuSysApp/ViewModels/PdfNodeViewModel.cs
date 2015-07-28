@@ -28,7 +28,7 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<IReadOnlyList<InkStroke>>();
+            this.InkContainer = new List<InkStrokeContainer>();
             this.inkManager = new InkManager();
             _workspaceViewModel = workspaceViewModel;
         }
@@ -53,7 +53,7 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new List<InkStroke>());
+                this.InkContainer.Add(new InkStrokeContainer());
             }
         }
 
@@ -130,7 +130,8 @@ namespace NuSysApp
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
-        public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+     //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+        public List<InkStrokeContainer> InkContainer { get; set; }
         public InkManager inkManager { get; set; }
 
 
