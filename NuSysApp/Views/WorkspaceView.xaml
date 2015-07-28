@@ -53,7 +53,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" >
+        <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" Opacity=".75">
             <Button Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
