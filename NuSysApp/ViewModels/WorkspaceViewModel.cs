@@ -9,7 +9,6 @@ using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
 
 namespace NuSysApp
@@ -207,7 +206,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(double xCoordinate, double yCoordinate, object data)
+        public async Task CreateNewNode(double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm;
             switch (this.CurrentMode)
@@ -219,11 +218,10 @@ namespace NuSysApp
                     vm = Factory.CreateNewInk();
                     break;
                 case Mode.IMAGE:
-                    vm = Factory.CreateNewImage((BitmapImage)data);
-                    this.CurrentMode = Mode.TEXTNODE;
+                    vm = await Factory.CreateNewImage((StorageFile)data);
                     break;
                 case Mode.PDF:
-                    vm = await Factory.CreateNewPdfNodeViewModel();
+                    vm = await Factory.CreateNewPdfNodeViewModel((StorageFile)data);
                     break;
                 default:
                     return;

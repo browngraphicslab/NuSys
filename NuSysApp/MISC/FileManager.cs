@@ -8,13 +8,16 @@ namespace NuSysApp
 {
     class FileManager
     {
-        public static async Task<StorageFile> PromptUserForFile(IEnumerable<string> allowedFileTypes, PickerViewMode viewMode = PickerViewMode.Thumbnail)
+        public static async Task<StorageFile> PromptUserForFile(IEnumerable<string> allowedFileTypes = null, PickerViewMode viewMode = PickerViewMode.Thumbnail)
         {
             var fileOpenPicker = new FileOpenPicker {ViewMode = viewMode};
-            fileOpenPicker.FileTypeFilter.Clear();
-            foreach (var fileType in allowedFileTypes)
+            //fileOpenPicker.FileTypeFilter.Clear();
+            if (allowedFileTypes != null)
             {
-                fileOpenPicker.FileTypeFilter.Add(fileType);
+                foreach (var fileType in allowedFileTypes)
+                {
+                    fileOpenPicker.FileTypeFilter.Add(fileType);
+                }
             }
             try
             {

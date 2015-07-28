@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-//using Microsoft.Office.Core;
-//using W = Microsoft.Office.Interop.Word;
 
 
 namespace NuSysApp
@@ -31,11 +28,9 @@ namespace NuSysApp
             this.PageCount = 0;
             _workspaceViewModel = workspaceViewModel;
         }
-
-        public async Task InitializePdfNodeAsync()
+        public async Task InitializePdfNodeAsync(StorageFile storageFile)
         {
-            var storageFile = await FileManager.PromptUserForFile(new List<string> { ".pdf", ".pptx", ".docx" });
-            var fileName = storageFile.Name;
+            if (storageFile == null) return; // null if file explorer is closed by user
             var fileType = storageFile.FileType;
             if (fileType == ".pdf")
             {

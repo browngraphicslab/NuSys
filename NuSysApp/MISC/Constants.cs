@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+using System.Linq;
 using Windows.Storage;
 using Windows.UI;
 
@@ -46,5 +48,9 @@ namespace NuSysApp
         public const int INITIAL_PEN_SIZE = 4;
 
         public const int MAX_CANVAS_SIZE = 100000;
+
+        public static IEnumerable<string> IMAGE_FILE_TYPES = new List<string>() { ".bmp", ".png", ".jpeg", ".jpg" };
+        public static IEnumerable<string> PDF_FILE_TYPES = new List<string> { ".pdf", ".pptx", ".docx" };
+        public static IEnumerable<string> ALL_FILE_TYPES = IMAGE_FILE_TYPES.Concat(PDF_FILE_TYPES);
     }
 }

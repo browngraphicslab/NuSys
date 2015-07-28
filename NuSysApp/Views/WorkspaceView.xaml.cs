@@ -2,19 +2,10 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Windows.ApplicationModel.Resources;
-using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Media.Imaging;
-using System.Collections.Generic;
-using Windows.Storage.Pickers;
-using System.Threading.Tasks;
+using System.Linq;
 using Windows.Foundation;
-using Windows.UI;
 using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -30,7 +21,7 @@ namespace NuSysApp
        
         private int penSize = Constants.INITIAL_PEN_SIZE;
         private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
-        private Boolean _isZooming;
+        private bool _isZooming;
         #endregion Private Members
 
         public WorkspaceView()
@@ -87,11 +78,11 @@ namespace NuSysApp
         #region Page Handlers
 
 
-        private void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private async void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(this));
-            vm.CreateNewNode(p.X, p.Y,"");
+            await vm.CreateNewNode(p.X, p.Y,"");
             vm.ClearSelection();
         }
 
@@ -106,14 +97,7 @@ namespace NuSysApp
 
             vm.FMTransform = FMT;
 
-            if (FM.Visibility == Visibility.Collapsed)
-            {
-                FM.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                FM.Visibility = Visibility.Collapsed;
-            }
+            FM.Visibility = FM.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
             
         }
 
@@ -244,7 +228,7 @@ namespace NuSysApp
         private void AppBarButton_Click_Scribble(object sender, RoutedEventArgs e)
         {
 
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.INK;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
@@ -256,10 +240,20 @@ namespace NuSysApp
         /// </summary>
         private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
+            var storageFile = await FileManager.PromptUserForFile(Constants.ALL_FILE_TYPES);
+            if (storageFile == null) return;
+            var vm = (WorkspaceViewModel)DataContext;
+            if (Constants.IMAGE_FILE_TYPES.Contains(storageFile.FileType.ToLower()))
+            {
+                vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
+            }
+            else if (Constants.PDF_FILE_TYPES.Contains(storageFile.FileType))
+            {
+                vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
+            }
+            else return;
             var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
-            await vm.CreateNewNode(p.X, p.Y, null);
+            await vm.CreateNewNode(p.X, p.Y, storageFile);
         }
 
         private void AppBarButton_Click_OFile(object sender, RoutedEventArgs e)
@@ -293,38 +287,19 @@ namespace NuSysApp
 
         private void MenuFlyoutItem_Click_Bezier(object sender, RoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.BEZIERLINK;
         }
 
         private void MenuFlyoutItem_Click_Line(object sender, RoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.LINELINK;
         }
 
-        async void AddButtonClick(object sender, RoutedEventArgs e)
+        void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await FileManager.PromptUserForFile(new List<string> { ".bmp", ".png", ".jpeg", ".jpg" });
-            // 'file' is null if user cancels the file picker.
-            if (file != null)
-            {
-                // Open a stream for the selected file.
-                // The 'using' block ensures the stream is disposed
-                // after the image is loaded.
-                using (Windows.Storage.Streams.IRandomAccessStream fileStream =
-                    await file.OpenAsync(FileAccessMode.Read))
-                {
-                    // Set the image source to the selected bitmap.
-                    BitmapImage bitmapImage = new BitmapImage();
-
-                    bitmapImage.SetSource(fileStream);
-                    WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-                    vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
-                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
-                    await vm.CreateNewNode(p.X, p.Y, bitmapImage);
-                }
-            }
+            
         }
 
         private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)

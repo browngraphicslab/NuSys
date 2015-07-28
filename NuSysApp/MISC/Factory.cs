@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
@@ -15,15 +16,17 @@ namespace NuSysApp
             return new RichTextNodeViewModel(new WorkspaceViewModel()) { Data = html };
         }
 
-        public static ImageNodeViewModel CreateNewImage(BitmapImage bmi)
+        public async static Task<ImageNodeViewModel> CreateNewImage(StorageFile storageFile)
         {
-            return new ImageNodeViewModel(new WorkspaceViewModel(), bmi);
+            var invm = new ImageNodeViewModel(new WorkspaceViewModel());
+            await invm.InitializeImageNodeViewModel(storageFile);
+            return invm;
         }
 
-        public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel()
+        public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(StorageFile storageFile)
         {
             var pnvm = new PdfNodeViewModel(new WorkspaceViewModel());
-            await pnvm.InitializePdfNodeAsync();
+            await pnvm.InitializePdfNodeAsync(storageFile);
             return pnvm;
         }
 
