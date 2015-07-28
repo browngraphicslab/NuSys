@@ -89,7 +89,6 @@ function addToSelection(array) {
             }
         }
 
-
         $("#selected").append("<hr>");
         $("#selected").append("<div style='clear: both'>" + newVal + "</div>");
 

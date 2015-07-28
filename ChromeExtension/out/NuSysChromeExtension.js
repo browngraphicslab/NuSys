@@ -3014,14 +3014,16 @@ var Main = (function () {
         }
     };
     Main.prototype.relativeToAbsolute = function (content) {
+        //////change relative path in html string to absolute
         console.log(content);
         var res = content.split('href="');
-        var newVal = "";
-        for (var i = 0; i < res.length; i++) {
-            newVal += res[i];
-            if (i < res.length - 1) {
-                newVal += 'href="' + window.location.protocol + "//" + window.location.host;
+        var newVal = res[0];
+        for (var i = 1; i < res.length; i++) {
+            newVal += 'href="';
+            if (res[i].slice(0, 4) != "http") {
+                newVal += window.location.protocol + "//" + window.location.host;
             }
+            newVal += res[i];
         }
         return newVal;
     };
