@@ -50,11 +50,15 @@
                 <Image Source="ms-appx:///Pics/xicon.png" />
             </Button.Content>
         </Button>
-        <Button x:Name="pageLeft" Height ="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Left" Click="pageLeft_Click"
-                Background="Brown">
+        <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
+            <Button.Content>
+                <Image Opacity=".5" Stretch="Uniform" Source="left icon.png" />
+            </Button.Content>
         </Button>
-        <Button x:Name="pageRight" Height ="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click="pageRight_Click"
-                Background="Green">
+        <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="pageRight_Click">
+            <Button.Content>
+                <Image Opacity=".5" Stretch="Uniform" Source="right icon.png" />
+            </Button.Content>
         </Button>
         <Path x:Name="plusButton"
               Data="M29.75,15 C29.75,23.1462 23.1462,29.75 15,29.75 C6.8538,29.75 0.25,23.1462 0.25,15 C0.25,6.8538 6.8538,0.25 15,0.25 C23.1462,0.25 29.75,6.8538 29.75,15 z M14.8755,4 L14.8755,25.625 M25.688,14.8125 L4.06299,14.8125"
