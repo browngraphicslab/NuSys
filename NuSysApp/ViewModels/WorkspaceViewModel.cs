@@ -86,7 +86,7 @@ namespace NuSysApp
                     {
                         var readFile = await FileIO.ReadTextAsync(file);
                         //var nodeVm = _factory.CreateNewRichText(readFile);
-                        var nodeVm = Factory.CreateNewRichText(readFile);
+                        var nodeVm = Factory.CreateNewRichText(this, readFile);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -211,16 +211,16 @@ namespace NuSysApp
             switch (this.CurrentMode)
             {
                 case Mode.Textnode:
-                    vm = Factory.CreateNewText("Enter text here");
+                    vm = Factory.CreateNewText(this, "Enter text here");
                     break;
                 case Mode.Ink:
-                    vm = Factory.CreateNewInk();
+                    vm = Factory.CreateNewInk(this);
                     break;
                 case Mode.Image:
-                    vm = await Factory.CreateNewImage((StorageFile)data);
+                    vm = await Factory.CreateNewImage(this, (StorageFile)data);
                     break;
                 case Mode.Pdf:
-                    vm = await Factory.CreateNewPdfNodeViewModel((StorageFile)data);
+                    vm = await Factory.CreateNewPdfNodeViewModel(this, (StorageFile)data);
                     break;
                 default:
                     return;
