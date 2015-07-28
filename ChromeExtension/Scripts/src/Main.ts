@@ -13,6 +13,7 @@ class Main {
     inkCanvas: InkCanvas;
     selection: ISelection;
     canvas: HTMLCanvasElement;
+
     selections: Array<ISelection> = new Array<ISelection>();
     selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;
@@ -57,6 +58,9 @@ class Main {
         if (currType != this.prevStrokeType) {
             this.prevStrokeType = currType;
             switch (currType) {
+                case StrokeType.Null:
+                    this.selection = new LineSelection(this.inkCanvas);
+                    break;
                 case StrokeType.Line:
                     this.selection = new LineSelection(this.inkCanvas);
                     break;
@@ -109,7 +113,13 @@ class Main {
         var stroke = this.inkCanvas._activeStroke.stroke.getCopy();
         var currType = StrokeClassifier.getStrokeType(stroke);
 
-        if (currType == StrokeType.Scribble) {
+        if (currType == StrokeType.Null) {
+            console.log("JUST A TAP");
+            document.body.appendChild(this.canvas);
+            this.inkCanvas.update();
+            return;
+        }
+        else if (currType == StrokeType.Scribble) {
 
             var segments = stroke.breakUp();
             var p0 = stroke.points[0];
@@ -136,8 +146,12 @@ class Main {
                             console.log("RECT INTERSECTION");
 
                             var selectionIndex = this.selections.indexOf(s);
-                            if (selectionIndex > -1)
+                            if (selectionIndex > -1) {
                                 this.selections.splice(selectionIndex, 1);
+                                this.selectedArray.splice(selectionIndex, 1);
+                                this.rectangleArray.splice(selectionIndex, 1);
+                                chrome.storage.local.set({ 'curr': this.selectedArray });
+                                }
                         }
                     } catch (e) {
                         console.log(e)
@@ -149,30 +163,50 @@ class Main {
         }
         else {
             this.selections.push(this.selection);
-            this.selectedArray.push(this.selection.getContent());
+            this.selectedArray.push(this.relativeToAbsolute(this.selection.getContent()));
+            console.log(this.selection.getContent());
+            console.log(this.relativeToAbsolute(this.selection.getContent()));
             this.rectangleArray.push(this.selection.getBoundingRect());
-            var selectionInfo = {};
-            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            selectionInfo["selections"] = this.selectedArray;
-            selectionInfo["boundingRects"] = this.rectangleArray;
-            selectionInfo["date"] = (new Date()).toString();
-            selectionInfo["title"] = document.title;
+
             chrome.storage.local.set({ 'curr': this.selectedArray });
 
             var currentDate = new Date();
-            var obj = {};
-            obj[this.objectKeyCount] = selectionInfo;
-            
-            chrome.storage.local.set(obj);
+
             chrome.storage.local.get(null, function (data) { console.info(data) });
         }
+        var selectionInfo = {};
+        selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        console.log(window.location.protocol + '//' + window.location.host);
+      
+        selectionInfo["selections"] = this.selectedArray;
+        selectionInfo["boundingRects"] = this.rectangleArray;
+        selectionInfo["date"] = (new Date()).toString();
+        selectionInfo["title"] = document.title;
+        var obj = {};
+        obj[this.objectKeyCount] = selectionInfo;
 
+        chrome.storage.local.set(obj);
         this.selection = new LineSelection(this.inkCanvas);
         this.prevStrokeType = StrokeType.Line;
 
         document.body.appendChild(this.canvas);
         this.inkCanvas.update();
         this.isSelecting = false;
+    }
+
+    relativeToAbsolute(content : string): string {
+        console.log(content);
+        var res = content.split('href="');
+        var newVal = "";
+        for (var i = 0; i < res.length; i++) {
+
+            newVal += res[i];
+            if (i < res.length - 1) {
+                newVal += 'href="'+window.location.protocol + "//" + window.location.host;
+            }
+
+        }
+        return newVal;
     }
 
     drawPastSelections(rectArray): void {
