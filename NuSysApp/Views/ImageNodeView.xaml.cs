@@ -25,6 +25,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.SetUpBindings();
+            inkCanvas.InkPresenter.IsInputEnabled = false;
         }
         private void SetUpBindings()
         {
@@ -72,6 +73,20 @@ namespace NuSysApp
         {
             ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.Remove();
+        }
+        private void EditC_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (ImageNodeViewModel)this.DataContext;
+            vm.ToggleEditingC();
+            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
         }
         #endregion Event Handlers
     }

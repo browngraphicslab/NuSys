@@ -19,10 +19,8 @@ namespace NuSysApp
             this.DataContext = vm;
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
             this.SetUpBindings();
+            inkCanvas.InkPresenter.IsInputEnabled = false;
         }
-
-
-
 
         #region Helper Methods
         private void SetUpBindings()
@@ -75,7 +73,20 @@ namespace NuSysApp
             }
             #endregion Event Handlers
         }
-
+        private void EditC_Click(object sender, RoutedEventArgs e)
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            vm.ToggleEditingC();
+            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
+        }
         private void UserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;

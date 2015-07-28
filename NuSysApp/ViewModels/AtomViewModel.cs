@@ -17,7 +17,7 @@ namespace NuSysApp
         private int _anchorX, _anchorY;
         private Point _anchor;
 
-        private bool _isSelected, _isEditing;
+        private bool _isSelected, _isEditing,_isEditingInk;
         private UserControl _view;
         private MatrixTransform _transform;
         #endregion Private Members
@@ -56,7 +56,10 @@ namespace NuSysApp
            
            
         }
-
+        public void ToggleEditingC()
+        {
+            this.IsEditingInk = !this.IsEditingInk;
+        }
         /// <summary>
         /// Adds a link to this atom.
         /// </summary>
@@ -164,6 +167,20 @@ namespace NuSysApp
                 RaisePropertyChanged("IsEditing");
             }
         }
+        public bool IsEditingInk
+        {
+            get { return _isEditingInk; }
+            set
+            {
+                if (_isEditingInk == value)
+                {
+                    return;
+                }
+                _isEditingInk = value;
+                RaisePropertyChanged("IsEditingInk");
+            }
+        }
+
 
         /// <summary>
         /// sets and gets view, to be applied specifically in the child classes of nodeviewmodel.

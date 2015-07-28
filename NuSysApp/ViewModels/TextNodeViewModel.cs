@@ -9,7 +9,6 @@ namespace NuSysApp
 
         private TextNode _node;
         private string _data;
-
         #endregion Private Members
 
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
@@ -22,7 +21,7 @@ namespace NuSysApp
             this.Height = Constants.DEFAULT_NODE_SIZE; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
-
+            this.IsEditingInk = false;
             this.View = new TextNodeView(this);
         }
 
@@ -42,8 +41,6 @@ namespace NuSysApp
             }
         }
 
-
-      
 
         #endregion Public Properties
     }
