@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
@@ -15,7 +16,6 @@ namespace NuSysApp
         private PdfNodeModel _pdfNodeModel;
         private uint _currentPageNumber;
         private uint _pageCount;
-        private readonly WorkspaceViewModel _workspaceViewModel;
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
         {
@@ -26,15 +26,22 @@ namespace NuSysApp
             this.IsEditing = false;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            _workspaceViewModel = workspaceViewModel;
         }
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
         {
             if (storageFile == null) return; // null if file explorer is closed by user
             var fileType = storageFile.FileType;
-            if (fileType == ".pdf")
+            switch (fileType)
             {
-                await ProcessPdfFile(storageFile);
+                case ".pdf":
+                    await ProcessPdfFile(storageFile);
+                    break;
+                case ".pptx":
+                    //TODO
+                    break;
+                case ".docx":
+                    //TODO
+                    break;
             }
         }
 

@@ -47,8 +47,8 @@ namespace NuSysApp
 
         public const int MaxCanvasSize = 100000;
 
-        public static IEnumerable<string> ImageFileTypes = new List<string>() { ".bmp", ".png", ".jpeg", ".jpg" };
-        public static IEnumerable<string> PdfFileTypes = new List<string> { ".pdf", ".pptx", ".docx" };
-        public static IEnumerable<string> AllFileTypes = ImageFileTypes.Concat(PdfFileTypes);
+        public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg" };
+        public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf", ".pptx", ".docx" };
+        public static IEnumerable<string> AllFileTypes   = ImageFileTypes.Concat(PdfFileTypes);
     }
 }
