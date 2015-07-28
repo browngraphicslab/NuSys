@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.Foundation;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Diagnostics;
 

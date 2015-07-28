@@ -15,8 +15,8 @@ namespace NuSysApp
         {
             this.View = new ImageNodeView(this);
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DEFAULT_NODE_SIZE;
-            this.Height = Constants.DEFAULT_NODE_SIZE*igm.PixelHeight/igm.PixelWidth;//maintains aspect ratio
+            this.Width = Constants.DefaultNodeSize;
+            this.Height = Constants.DefaultNodeSize*igm.PixelHeight/igm.PixelWidth;//maintains aspect ratio
             this.IsSelected = false;
             this.IsEditing = false;
             this.ImageModel = new ImageModel(igm, 0);
@@ -33,15 +33,15 @@ namespace NuSysApp
         public async Task InitializeImageNodeViewModel(StorageFile storageFile)
         {
             if (storageFile == null) return; // null if file explorer is closed by user
-            var supportedFileTypes = Constants.IMAGE_FILE_TYPES;
+            var supportedFileTypes = Constants.ImageFileTypes;
             if (!supportedFileTypes.Contains(storageFile.FileType.ToLower())) return;
             using (var fileStream = await storageFile.OpenAsync(FileAccessMode.Read))
             {
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
                 this.ImageModel = new ImageModel(bitmapImage, 0);
-                this.Width = Constants.DEFAULT_NODE_SIZE;
-                this.Height = Constants.DEFAULT_NODE_SIZE * bitmapImage.PixelHeight / bitmapImage.PixelWidth;
+                this.Width = Constants.DefaultNodeSize;
+                this.Height = Constants.DefaultNodeSize * bitmapImage.PixelHeight / bitmapImage.PixelWidth;
             }
         }
 

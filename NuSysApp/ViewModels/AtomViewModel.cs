@@ -106,8 +106,8 @@ namespace NuSysApp
                     _clippedParent = value;
                     _clippedParent.PropertyChanged += parent_PropertyChanged;
                     parent_PropertyChanged(null, null);
-                    this.Width = Constants.DEFAULT_ANNOTATION_SIZE*2;
-                    this.Height = Constants.DEFAULT_ANNOTATION_SIZE;
+                    this.Width = Constants.DefaultAnnotationSize*2;
+                    this.Height = Constants.DefaultAnnotationSize;
                     
                 }
                 else
@@ -241,7 +241,7 @@ namespace NuSysApp
             get { return _width; }
             set
             {
-                if (_width == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
                 }
@@ -260,7 +260,7 @@ namespace NuSysApp
             get { return _height; }
             set
             {
-                if (_height == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
+                if (_height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
                 }

@@ -56,8 +56,8 @@ namespace NuSysApp
 
             Init();
             var c = new CompositeTransform();
-            c.TranslateX = (-1)* (Constants.MAX_CANVAS_SIZE);
-            c.TranslateY = (-1) * (Constants.MAX_CANVAS_SIZE);
+            c.TranslateX = (-1)* (Constants.MaxCanvasSize);
+            c.TranslateY = (-1) * (Constants.MaxCanvasSize);
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
@@ -105,8 +105,8 @@ namespace NuSysApp
 
         private async Task<bool> SetupDirectories()
         {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
-            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
             return true;
         }
 

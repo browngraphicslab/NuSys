@@ -1,5 +1,4 @@
-﻿using System;
-using Windows.Foundation;
+﻿using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
@@ -14,12 +13,16 @@ namespace NuSysApp
         /// </summary>
         public static bool LinesIntersect(Line line1, Line line2)
         {
-            var AB = new Segment();
-            AB.Start = new Point(line1.X1, line1.Y1);
-            AB.End = new Point(line1.X2, line1.Y2);
-            var CD = new Segment();
-            CD.Start = new Point(line2.X1, line2.Y1);
-            CD.End = new Point(line2.X2, line2.Y2);
+            var AB = new Segment
+            {
+                Start = new Point(line1.X1, line1.Y1),
+                End = new Point(line1.X2, line1.Y2)
+            };
+            var CD = new Segment
+            {
+                Start = new Point(line2.X1, line2.Y1),
+                End = new Point(line2.X2, line2.Y2)
+            };
 
             var dy_AC = AB.Start.Y - CD.Start.Y;
             var dx_DC = CD.End.X - CD.Start.X;

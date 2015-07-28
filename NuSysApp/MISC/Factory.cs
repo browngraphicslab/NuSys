@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {

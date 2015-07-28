@@ -19,7 +19,7 @@ namespace NuSysApp
     {
         #region Private Members
        
-        private int penSize = Constants.INITIAL_PEN_SIZE;
+        private int penSize = Constants.InitialPenSize;
         private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
         private bool _isZooming;
         #endregion Private Members
@@ -240,14 +240,14 @@ namespace NuSysApp
         /// </summary>
         private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            var storageFile = await FileManager.PromptUserForFile(Constants.ALL_FILE_TYPES);
+            var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
             var vm = (WorkspaceViewModel)DataContext;
-            if (Constants.IMAGE_FILE_TYPES.Contains(storageFile.FileType.ToLower()))
+            if (Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower()))
             {
                 vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
             }
-            else if (Constants.PDF_FILE_TYPES.Contains(storageFile.FileType))
+            else if (Constants.PdfFileTypes.Contains(storageFile.FileType))
             {
                 vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
             }

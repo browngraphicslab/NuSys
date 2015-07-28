@@ -44,8 +44,8 @@ namespace NuSysApp
             this.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
             this.CurrentPageNumber = 0;
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
-            this.Width = Constants.DEFAULT_NODE_SIZE * 3;
-            this.Height = Constants.DEFAULT_NODE_SIZE * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            this.Width = Constants.DefaultNodeSize * 3;
+            this.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
         }
 
         public override void Resize(double dx, double dy)
