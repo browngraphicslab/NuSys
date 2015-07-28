@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -11,7 +12,7 @@ namespace NuSysApp
     {
 
         private BitmapImage _bitmapImage;
-        private List<BitmapImage> _renderedPages; 
+        private List<BitmapImage> _renderedPages;
         private PdfNodeModel _pdfNodeModel;
         private uint _currentPageNumber;
         private uint _pageCount;
@@ -24,8 +25,11 @@ namespace NuSysApp
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
+            this.IsEditingInk = false;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
+            this.InkContainer = new List<IReadOnlyList<InkStroke>>();
+            this.inkManager = new InkManager();
             _workspaceViewModel = workspaceViewModel;
         }
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
@@ -46,6 +50,7 @@ namespace NuSysApp
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
             this.Width = Constants.DefaultNodeSize * 3;
             this.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            this.InkContainer.Capacity = (int)this.PageCount;
         }
 
         public override void Resize(double dx, double dy)
@@ -121,6 +126,9 @@ namespace NuSysApp
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
+        public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+        public InkManager inkManager { get; set; }
+
 
     }
 }
