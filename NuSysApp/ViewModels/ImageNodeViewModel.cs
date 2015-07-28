@@ -19,6 +19,7 @@ namespace NuSysApp
             this.Height = Constants.DefaultNodeSize*igm.PixelHeight/igm.PixelWidth;//maintains aspect ratio
             this.IsSelected = false;
             this.IsEditing = false;
+            this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
         }
 

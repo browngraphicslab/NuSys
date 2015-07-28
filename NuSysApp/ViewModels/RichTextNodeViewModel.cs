@@ -21,7 +21,7 @@ namespace NuSysApp
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
-
+            this.IsEditingInk = false;
             this.View = new RichTextNodeView(this);
         }
 
