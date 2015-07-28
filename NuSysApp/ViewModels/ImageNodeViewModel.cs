@@ -31,7 +31,7 @@ namespace NuSysApp
             this.IsEditing = false;
         }
 
-        public async Task InitializeImageNodeViewModel(StorageFile storageFile)
+        public async Task InitializeImageNodeAsync(StorageFile storageFile)
         {
             if (storageFile == null) return; // null if file explorer is closed by user
             var supportedFileTypes = Constants.ImageFileTypes;

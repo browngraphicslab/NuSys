@@ -102,6 +102,7 @@
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
+    <Compile Include="MISC\OfficeInteropWord.cs" />
     <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />

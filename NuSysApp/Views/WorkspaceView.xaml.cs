@@ -254,6 +254,7 @@ namespace NuSysApp
         /// </summary>
         private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
+            OfficeInteropWord.GenerateTestDocument();
             var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
             var vm = (WorkspaceViewModel)DataContext;
@@ -321,7 +322,7 @@ namespace NuSysApp
 
             var vm = (WorkspaceViewModel)this.DataContext;
             var compositeTransform = vm.CompositeTransform;
-            Point center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+            var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
 
             Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
             compositeTransform.ScaleX *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240)/4;

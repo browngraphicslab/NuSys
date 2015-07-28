@@ -55,9 +55,11 @@ namespace NuSysApp
 
 
             Init();
-            var c = new CompositeTransform();
-            c.TranslateX = (-1)* (Constants.MaxCanvasSize);
-            c.TranslateY = (-1) * (Constants.MaxCanvasSize);
+            var c = new CompositeTransform
+            {
+                TranslateX = (-1)*(Constants.MaxCanvasSize),
+                TranslateY = (-1)*(Constants.MaxCanvasSize)
+            };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
@@ -77,7 +79,7 @@ namespace NuSysApp
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                int count = 0;
+                var count = 0;
                 foreach (var file in transferFiles)
                 {
                     Debug.WriteLine(file.Path);
