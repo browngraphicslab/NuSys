@@ -62,6 +62,7 @@ class LineSelection implements ISelection {
     analyzeContent(): void {
         
         var stroke = this._brushStroke.stroke;
+        
         var pStart = stroke.points[0];
         var pEnd = stroke.points[stroke.points.length - 1];
 
@@ -81,9 +82,11 @@ class LineSelection implements ISelection {
                     $(this).replaceWith($(this).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
                 }
             });
-
-            nStart = document.elementFromPoint(pStart.x, pStart.y);
-            nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
+            var avgY = (pStart.y + pEnd.y) / 2;
+            nStart = document.elementFromPoint(pStart.x, avgY);
+            nEnd = document.elementFromPoint(pEnd.x, avgY);
+            console.log(nStart);
+            console.log(nEnd);
             this._range = new Range();
             this._range.setStart(nStart, 0);
             this._range.setEndAfter(nEnd);

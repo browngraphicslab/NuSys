@@ -112,6 +112,7 @@ class Main {
         this.selection.end(e.clientX, e.clientY);
         var stroke = this.inkCanvas._activeStroke.stroke.getCopy();
         var currType = StrokeClassifier.getStrokeType(stroke);
+        console.log("!!!!!!!!!!!!!!!!" + currType);
 
         if (currType == StrokeType.Null) {
             console.log("JUST A TAP");

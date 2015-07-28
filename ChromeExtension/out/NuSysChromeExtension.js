@@ -2752,8 +2752,11 @@ var LineSelection = (function () {
                     $(this).replaceWith($(this).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
                 }
             });
-            nStart = document.elementFromPoint(pStart.x, pStart.y);
-            nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
+            var avgY = (pStart.y + pEnd.y) / 2;
+            nStart = document.elementFromPoint(pStart.x, avgY);
+            nEnd = document.elementFromPoint(pEnd.x, avgY);
+            console.log(nStart);
+            console.log(nEnd);
             this._range = new Range();
             this._range.setStart(nStart, 0);
             this._range.setEndAfter(nEnd);
@@ -2916,6 +2919,7 @@ var Main = (function () {
             _this.selection.end(e.clientX, e.clientY);
             var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
             var currType = StrokeClassifier.getStrokeType(stroke);
+            console.log("!!!!!!!!!!!!!!!!" + currType);
             if (currType == 0 /* Null */) {
                 console.log("JUST A TAP");
                 document.body.appendChild(_this.canvas);
