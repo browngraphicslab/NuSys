@@ -1,4 +1,5 @@
-﻿using Windows.UI;
+﻿using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -104,6 +105,13 @@ namespace NuSysApp
             {
                 this.MyGrid.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
             }
+        }
+
+        public void UpdateInk()
+        {
+            var rect = this.inkCanvas.InkPresenter.StrokeContainer.PasteFromClipboard(new Point(0,0));
+            this.Width = rect.Width;
+            this.Height = rect.Height;
         }
         #endregion Event Handlers
     }

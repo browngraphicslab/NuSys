@@ -1,4 +1,5 @@
-﻿using Windows.UI.Input.Inking;
+﻿using System.Collections.Generic;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -7,6 +8,7 @@ using Windows.UI.Popups;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -22,6 +24,7 @@ namespace NuSysApp
         private int penSize = Constants.InitialPenSize;
         private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
         private bool _isZooming;
+        private bool _isSelecting;
         #endregion Private Members
 
         public WorkspaceView()
@@ -83,6 +86,39 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)this.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(this));
+            if (_isSelecting)
+            {
+                int d = 20;
+               
+                var point1 = new Point(p.X-d, p.Y-d);
+                var point2 = new Point(p.X + d, p.Y - d);
+                var point3 = new Point(p.X  + d, p.Y + d);
+                var point4 = new Point(p.X - d, p.Y + d);
+                
+                
+                var result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(point1, point3);
+                if (result.IsEmpty)
+                {
+                    result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(point2, point4);
+                }
+                if (result.IsEmpty) { return;}
+                inkCanvas.InkPresenter.StrokeContainer.CopySelectedToClipboard();
+                var inkView = new InkNodeView(new InkNodeViewModel(vm));
+                ((InkNodeViewModel)inkView.DataContext).X = 0;
+                ((InkNodeViewModel)inkView.DataContext).Y = 0;
+                Matrix matrix = new Matrix(1, 0, 0, 1, result.X, result.Y);
+
+                ((InkNodeViewModel)inkView.DataContext).Transform.Matrix = matrix;
+                vm.AtomViewList.Add(inkView);
+                vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
+
+                inkView.UpdateInk();
+                inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                Debug.WriteLine(result);
+                return;
+                
+            }
+            
             await vm.CreateNewNode(p.X, p.Y,"");
             vm.ClearSelection();
         }
@@ -102,15 +138,24 @@ namespace NuSysApp
             
         }
 
-
+        private Point _start;
         private void Page_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            if (_isSelecting)
+            {
+                _start = e.GetCurrentPoint(this).Position;
+                return;
+            }
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.ClearSelection();  
         }
 
         private void Page_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (_isSelecting)
+            {
+                return;
+            }
             var vm = (WorkspaceViewModel)this.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
@@ -175,13 +220,20 @@ namespace NuSysApp
 
         private void Page_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
-
+            if (_isSelecting)
+            {
+                return;
+            }
             e.Container = this;
             e.Handled = true;
         }
 
         private void Page_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            if (_isSelecting)
+            {
+                return;
+            }
             _isZooming = false;
             e.Handled = true;
 
@@ -362,6 +414,42 @@ namespace NuSysApp
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
+        }
+
+        private Point _end;
+        private void WorkspaceView_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = (WorkspaceViewModel) DataContext;
+            if (_isSelecting)
+            {
+                //_end = e.GetCurrentPoint(this).Position;
+                //_start = vm.CompositeTransform.Inverse.TransformPoint(_start);
+                //_end = vm.CompositeTransform.Inverse.TransformPoint(_end);
+                //var result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(_start, _end);
+                //inkCanvas.InkPresenter.StrokeContainer.CopySelectedToClipboard();
+                //var inkView = new InkNodeView(new InkNodeViewModel(vm));
+                //((InkNodeViewModel) inkView.DataContext).X = 0;
+                //((InkNodeViewModel)inkView.DataContext).Y = 0;
+                //Matrix matrix = new Matrix(1,0,0,1,result.X, result.Y);
+
+                //((InkNodeViewModel)inkView.DataContext).Transform.Matrix = matrix;
+                //vm.AtomViewList.Add(inkView);
+                //vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
+                
+                //inkView.UpdateInk();
+                //inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                //Debug.WriteLine(result);
+                return;
+            }
+        }
+
+        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            _isSelecting = !_isSelecting;
+            var vm = (WorkspaceViewModel) DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
+            inkCanvas.InkPresenter.IsInputEnabled = false;
         }
     }
 
