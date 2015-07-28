@@ -24,18 +24,18 @@ namespace NuSysApp
 
         public enum Mode
         {
-            TEXTNODE,
-            GLOBALINK,
-            INK,
-            ERASE,
-            IMAGE,
-            PDF
+            Textnode,
+            Globalink,
+            Ink,
+            Erase,
+            Image,
+            Pdf
         }; //enum created to switch between multiple modes in the appbar
 
         public enum LinkMode
         {
-            LINELINK,
-            BEZIERLINK
+            Linelink,
+            Bezierlink
         }
 
         private CompositeTransform _compositeTransform, _fMTransform;
@@ -49,8 +49,8 @@ namespace NuSysApp
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedAtomViewModel = null;
-            this.CurrentMode = Mode.TEXTNODE;
-            this.CurrentLinkMode = LinkMode.BEZIERLINK;
+            this.CurrentMode = Mode.Textnode;
+            this.CurrentLinkMode = LinkMode.Bezierlink;
             //_factory = new Factory(this);
 
 
@@ -68,7 +68,6 @@ namespace NuSysApp
             var result = await SetupDirectories();
             SetupChromeIntermediate();
         }
-
         private async void SetupChromeIntermediate()
         {
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
@@ -195,7 +194,7 @@ namespace NuSysApp
         /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
-            if (CurrentMode != Mode.TEXTNODE && CurrentMode != Mode.INK) return;
+            if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
             if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
 
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
@@ -211,16 +210,16 @@ namespace NuSysApp
             NodeViewModel vm;
             switch (this.CurrentMode)
             {
-                case Mode.TEXTNODE:
+                case Mode.Textnode:
                     vm = Factory.CreateNewText("Enter text here");
                     break;
-                case Mode.INK:
+                case Mode.Ink:
                     vm = Factory.CreateNewInk();
                     break;
-                case Mode.IMAGE:
+                case Mode.Image:
                     vm = await Factory.CreateNewImage((StorageFile)data);
                     break;
-                case Mode.PDF:
+                case Mode.Pdf:
                     vm = await Factory.CreateNewPdfNodeViewModel((StorageFile)data);
                     break;
                 default:

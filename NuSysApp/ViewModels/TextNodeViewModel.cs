@@ -1,5 +1,4 @@
-﻿using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+﻿using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -7,7 +6,7 @@ namespace NuSysApp
     {
         #region Private Members
 
-        private TextNode _node;
+        private readonly TextNode _node;
         private string _data;
 
         #endregion Private Members

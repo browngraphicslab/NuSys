@@ -60,7 +60,7 @@ namespace NuSysApp
         private void ToggleInk()
         {
             var vm = (WorkspaceViewModel)this.DataContext;
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.GLOBALINK)
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.Globalink)
             {
                 inkCanvas.InkPresenter.IsInputEnabled = true;
                 inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
@@ -205,7 +205,7 @@ namespace NuSysApp
         {   
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.GLOBALINK;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
             inkCanvas.InkPresenter.IsInputEnabled = true;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
         }
@@ -213,7 +213,7 @@ namespace NuSysApp
         private void AppBarButton_Click_Text(object sender, RoutedEventArgs e)
         { 
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.ToggleInk();
         }
 
@@ -221,7 +221,7 @@ namespace NuSysApp
         {
 
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.ERASE;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
         }
 
@@ -229,7 +229,7 @@ namespace NuSysApp
         {
 
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.INK;  //initializes ink canvas to be created to the viewmodel
+            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
 
@@ -245,11 +245,11 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)DataContext;
             if (Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower()))
             {
-                vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
+                vm.CurrentMode = WorkspaceViewModel.Mode.Image;
             }
             else if (Constants.PdfFileTypes.Contains(storageFile.FileType))
             {
-                vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
+                vm.CurrentMode = WorkspaceViewModel.Mode.Pdf;
             }
             else return;
             var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
@@ -288,13 +288,13 @@ namespace NuSysApp
         private void MenuFlyoutItem_Click_Bezier(object sender, RoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.BEZIERLINK;
+            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.Bezierlink;
         }
 
         private void MenuFlyoutItem_Click_Line(object sender, RoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.LINELINK;
+            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.Linelink;
         }
 
         void AddButtonClick(object sender, RoutedEventArgs e)
