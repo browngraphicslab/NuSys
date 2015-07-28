@@ -163,7 +163,9 @@ class Main {
         }
         else {
             this.selections.push(this.selection);
-            this.selectedArray.push(this.selection.getContent());
+            this.selectedArray.push(this.relativeToAbsolute(this.selection.getContent()));
+            console.log(this.selection.getContent());
+            console.log(this.relativeToAbsolute(this.selection.getContent()));
             this.rectangleArray.push(this.selection.getBoundingRect());
 
             chrome.storage.local.set({ 'curr': this.selectedArray });
@@ -174,6 +176,8 @@ class Main {
         }
         var selectionInfo = {};
         selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        console.log(window.location.protocol + '//' + window.location.host);
+      
         selectionInfo["selections"] = this.selectedArray;
         selectionInfo["boundingRects"] = this.rectangleArray;
         selectionInfo["date"] = (new Date()).toString();
@@ -188,6 +192,21 @@ class Main {
         document.body.appendChild(this.canvas);
         this.inkCanvas.update();
         this.isSelecting = false;
+    }
+
+    relativeToAbsolute(content : string): string {
+        console.log(content);
+        var res = content.split('href="');
+        var newVal = "";
+        for (var i = 0; i < res.length; i++) {
+
+            newVal += res[i];
+            if (i < res.length - 1) {
+                newVal += 'href="'+window.location.protocol + "//" + window.location.host;
+            }
+
+        }
+        return newVal;
     }
 
     drawPastSelections(rectArray): void {
