@@ -202,7 +202,12 @@ namespace NuSysApp
         #endregion Page Handlers
         #region App Bar Handlers
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
-        {   
+        {
+            inkButton.Opacity = .5;
+            linkButton.Opacity = 1;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -211,7 +216,12 @@ namespace NuSysApp
         }
 
         private void AppBarButton_Click_Text(object sender, RoutedEventArgs e)
-        { 
+        {
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 1;
+            textButton.Opacity = .5;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.ToggleInk();
@@ -219,7 +229,6 @@ namespace NuSysApp
 
         private void AppBarButton_Click_Erase(object sender, RoutedEventArgs e)
         {
-
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
@@ -227,7 +236,11 @@ namespace NuSysApp
 
         private void AppBarButton_Click_Scribble(object sender, RoutedEventArgs e)
         {
-
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 1;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = .5;
+            docButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;

@@ -53,23 +53,31 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" Opacity=".75">
-            <Button Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+        <Grid x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" Opacity=".75">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>               
+                </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
+            
+            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
+            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
+            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
@@ -79,11 +87,11 @@
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>-->
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
+            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-        </StackPanel>
+        </Grid>
     </Canvas>
 </Page>
