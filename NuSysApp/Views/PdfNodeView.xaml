@@ -50,10 +50,10 @@
                 <Image Source="ms-appx:///Pics/xicon.png" />
             </Button.Content>
         </Button>
-        <Button x:Name="pageLeft" Height ="30" Width="30" VerticalAlignment="Top" Click="pageLeft_Click" Margin="70,10"
+        <Button x:Name="pageLeft" Height ="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Left" Click="pageLeft_Click"
                 Background="Brown">
         </Button>
-        <Button x:Name="pageRight" Height ="30" Width="30" VerticalAlignment="Top" Click="pageRight_Click" Margin="100,10"
+        <Button x:Name="pageRight" Height ="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click="pageRight_Click"
                 Background="Green">
         </Button>
         <Path x:Name="plusButton"
