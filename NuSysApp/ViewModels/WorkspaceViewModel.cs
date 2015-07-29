@@ -104,10 +104,24 @@ namespace NuSysApp
             };
         }
 
-        private async Task<bool> SetupDirectories()
+        private void SetUpOfficeToPdfWatcher()
         {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
-            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
+            folderWatcher.FilesChanged += async delegate
+            {
+                var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            };
+        }
+
+        private static async Task<bool> SetupDirectories()
+        {
+            NuSysStorages.NuSysTempFolder =
+                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder =
+                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            NuSysStorages.OfficeToPdfFolder =
+                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderOfficeToPdf);
             return true;
         }
 

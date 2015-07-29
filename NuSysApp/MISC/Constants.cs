@@ -14,6 +14,7 @@ namespace NuSysApp
         public static string FolderNusysTemp = "NuSys";
         public static string FolderChromeTransferName = "ChromeTransfer";
         public static string FileChromeTransferName = "selections.nusys";
+        public static string FolderOfficeToPdf = "OfficeToPdf";
         #endregion Folders and files
 
         #region Node Dimensions
