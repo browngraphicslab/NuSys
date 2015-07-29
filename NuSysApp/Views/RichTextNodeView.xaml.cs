@@ -117,10 +117,10 @@ namespace NuSysApp
             
             Debug.WriteLine(periodo.Length);
             string x = periodo.Trim();
-
-            string uriToLaunch = @"http://google.com";
-            var uri = new Uri(uriToLaunch);
-            Windows.System.Launcher.LaunchUriAsync(uri);
+            x.Replace("HYPERLINK \" \"", "");
+            //string uriToLaunch = @"http://google.com";
+            //var uri = new Uri(uriToLaunch);
+            //Windows.System.Launcher.LaunchUriAsync(uri);
 
             Debug.WriteLine(x);
             //find the and then search through the .rtfio
