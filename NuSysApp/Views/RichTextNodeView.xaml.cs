@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -85,5 +86,9 @@ namespace NuSysApp
             vm.Remove();
         }
 
+        private void textBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("ad");
+        }
     }
 }

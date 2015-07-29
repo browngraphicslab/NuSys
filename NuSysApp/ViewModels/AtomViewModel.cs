@@ -243,6 +243,9 @@ namespace NuSysApp
             {
                 if (_width == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
                 {
+                    _width = Constants.MIN_NODE_SIZE;
+                    RaisePropertyChanged("Width");
+
                     return;
                 }
 
@@ -262,6 +265,9 @@ namespace NuSysApp
             {
                 if (_height == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
                 {
+                    _height = Constants.MIN_NODE_SIZE;
+
+                    RaisePropertyChanged("Height");
                     return;
                 }
 

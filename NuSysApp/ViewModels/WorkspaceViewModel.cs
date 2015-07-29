@@ -68,6 +68,75 @@ namespace NuSysApp
         {
             var result = await SetupDirectories();
             SetupChromeIntermediate();
+            SetupWordTransfer();
+            SetupPowerPointTransfer();
+        }
+
+        private async void SetupWordTransfer()
+        {
+            var fw = new FolderWatcher(NuSysStorages.WordTransferFolder);
+            fw.FilesChanged += async delegate
+            {
+                var file = await NuSysStorages.WordTransferFolder.GetFileAsync("selection.nusys").AsTask();
+
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    var readFile = await FileIO.ReadTextAsync(file);
+                    var nodeVm = _factory.CreateNewRichText(readFile);
+                    var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                    PositionNode(nodeVm, p.X, p.Y);
+                    NodeViewModelList.Add(nodeVm);
+                    AtomViewList.Add(nodeVm.View);
+                });
+                
+            };
+        }
+
+        private async void SetupPowerPointTransfer()
+        {
+            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
+            fw.FilesChanged += async delegate
+            {
+                // var file = await NuSysStorages.PowerPointTransferFolder.GetFileAsync("selection.nusys").AsTask();
+                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
+
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                int count = 0;
+                Debug.WriteLine("COUNT: " + transferFiles.Count);
+                foreach (var file in transferFiles) { 
+
+                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    {
+                        var lines = await FileIO.ReadLinesAsync(file);
+                        if (lines[0].EndsWith(".png"))
+                        {
+                            var str = lines[0];
+                            var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
+                            var fileStream = await imageFile.OpenAsync(FileAccessMode.Read);
+                            var image = new BitmapImage();
+                            image.SetSource(fileStream);
+
+                            Debug.WriteLine("WIDTH: " + image.PixelWidth);
+
+                            var nodeVm = _factory.CreateNewImage(image);
+                            var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                            PositionNode(nodeVm, p.X, p.Y);
+                            NodeViewModelList.Add(nodeVm);
+                            AtomViewList.Add(nodeVm.View);
+                        } else {
+
+                            var readFile = await FileIO.ReadTextAsync(file);
+                            var nodeVm = _factory.CreateNewRichText(readFile);
+                            var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                            PositionNode(nodeVm, p.X, p.Y);
+                            NodeViewModelList.Add(nodeVm);
+                            AtomViewList.Add(nodeVm.View);
+                        }
+                    });
+                }
+            };
         }
 
         private async void SetupChromeIntermediate()
@@ -107,6 +176,9 @@ namespace NuSysApp
         {
             NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+            NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_WORD_TRANSFER_NAME);
+            NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_POWERPOINT_TRANSFER_NAME);
+            NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_MEDIA_NAME);
             return true;
         }
 

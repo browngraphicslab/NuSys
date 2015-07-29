@@ -46,6 +46,8 @@
           <uap:FileTypeAssociation Name="nusys">
             <uap:SupportedFileTypes>
               <uap:FileType>.nusys</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

@@ -33,7 +33,6 @@ namespace NuSysApp.MISC
 
         private async void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
         {
-            Debug.WriteLine("CONTENTS CHANGED! " + args);
             if (FilesChanged != null)
                 FilesChanged();
         }
