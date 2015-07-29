@@ -21,9 +21,11 @@ namespace NuSysApp
             this.DataContext = vm;
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
             this.InitializeComponent();
-            
-           
             this.SetUpBindings();
+             inkCanvas.InkPresenter.IsInputEnabled = false;
+            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
+            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
+           
         }
 
         #region Helper Methods

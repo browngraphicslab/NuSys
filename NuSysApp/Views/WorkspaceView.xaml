@@ -5,7 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
+    mc:Ignorable="d" PointerPressed="Page_PointerPressed" PointerReleased="WorkspaceView_OnPointerReleased" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
     ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" RightTapped="Page_RightTapped" >
 
@@ -67,7 +67,7 @@
                 </Button.Background>
             </Button>
             
-            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
+            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
