@@ -1,5 +1,4 @@
-﻿using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+﻿using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -7,9 +6,8 @@ namespace NuSysApp
     {
         #region Private Members
 
-        private TextNode _node;
+        private readonly TextNode _node;
         private string _data;
-
         #endregion Private Members
 
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
@@ -18,11 +16,11 @@ namespace NuSysApp
             this.Data = "Enter text here";
             _node.Text = this.Data;
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DEFAULT_NODE_SIZE; //width set in /MISC/Constants.cs
-            this.Height = Constants.DEFAULT_NODE_SIZE; //height set in /MISC/Constants.cs
+            this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
+            this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
-
+            this.IsEditingInk = false;
             this.View = new TextNodeView(this);
         }
 
@@ -42,8 +40,6 @@ namespace NuSysApp
             }
         }
 
-
-      
 
         #endregion Public Properties
     }

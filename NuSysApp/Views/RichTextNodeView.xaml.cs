@@ -1,4 +1,9 @@
+
 ﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -18,9 +23,11 @@ namespace NuSysApp
             this.DataContext = vm;
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
             this.InitializeComponent();
-            
-           
             this.SetUpBindings();
+             inkCanvas.InkPresenter.IsInputEnabled = false;
+            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
+            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
+           
         }
 
         #region Helper Methods
@@ -74,7 +81,20 @@ namespace NuSysApp
             }
             #endregion Event Handlers
         }
-
+        private void EditC_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (RichTextNodeViewModel)this.DataContext;
+            vm.ToggleEditingC();
+            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
+        }
         private void UserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
@@ -86,9 +106,26 @@ namespace NuSysApp
             vm.Remove();
         }
 
-        private void textBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        private void Rich_Tapped(object sender, RoutedEventArgs f)
         {
-            Debug.WriteLine("ad");
+            int startSelection = textBlock.Document.Selection.StartPosition;
+            int endSelection = textBlock.Document.Selection.EndPosition;
+            string periodo = "";
+            textBlock.Document.GetText(TextGetOptions.UseCrlf, out periodo);
+            int eof = periodo.Length;
+            periodo = "";
+                ITextRange range = textBlock.Document.GetRange(--startSelection, endSelection);
+                range.GetText(TextGetOptions.UseCrlf, out periodo);
+            
+            Debug.WriteLine(periodo.Length);
+            string x = periodo.Trim();
+            x.Replace("HYPERLINK \" \"", "");
+            //string uriToLaunch = @"http://google.com";
+            //var uri = new Uri(uriToLaunch);
+            //Windows.System.Launcher.LaunchUriAsync(uri);
+
+            Debug.WriteLine(x);
+            //find the and then search through the .rtfio
         }
     }
 }

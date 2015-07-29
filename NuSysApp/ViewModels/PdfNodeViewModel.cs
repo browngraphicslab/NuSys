@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Windows.Foundation;
+using Windows.Storage;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using NuSysApp.MISC;
+
 
 namespace NuSysApp
 {
     public class PdfNodeViewModel : NodeViewModel
     {
 
-        //private readonly string _filePath;
         private BitmapImage _bitmapImage;
-        private List<BitmapImage> _renderedPages; 
+        private List<BitmapImage> _renderedPages;
         private PdfNodeModel _pdfNodeModel;
         private uint _currentPageNumber;
         private uint _pageCount;
@@ -28,27 +26,43 @@ namespace NuSysApp
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
+            this.IsEditingInk = false;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
+            this.InkContainer = new List<InkStrokeContainer>();
+            this.inkManager = new InkManager();
             _workspaceViewModel = workspaceViewModel;
         }
-
-        public async Task InitializePdfNodeAsync()
+        public async Task InitializePdfNodeAsync(StorageFile storageFile)
         {
-            var storageFile = await FileManager.PromptUserForFile(new List<string> { ".pdf", ".pptx", ".docx" });
-            var fileName = storageFile.Name;
+            if (storageFile == null) return; // null if file explorer is closed by user
             var fileType = storageFile.FileType;
-            if (fileType == ".pdf")
+            switch (fileType)
             {
-                this.PageCount = await PdfRenderer.GetPageCount(fileName);
-                this.RenderedPages = await PdfRenderer.RenderPdf(fileName);
-                this.CurrentPageNumber = 0;
-                var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
-                this.Width = Constants.DEFAULT_NODE_SIZE * 3;
-                this.Height = Constants.DEFAULT_NODE_SIZE * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
-                _workspaceViewModel.CurrentMode = WorkspaceViewModel.Mode.PDF;
-                var p = _workspaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(0,0));
-                _workspaceViewModel.CreateNewNode(p.X, p.Y, null);
+                case ".pdf":
+                    await ProcessPdfFile(storageFile);
+                    break;
+                case ".pptx":
+                    //TODO
+                    break;
+                case ".docx":
+                    //TODO
+                    break;
+            }
+        }
+
+        private async Task ProcessPdfFile(StorageFile pdfStorageFile)
+        {
+            this.PageCount = await PdfRenderer.GetPageCount(pdfStorageFile);
+            this.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
+            this.CurrentPageNumber = 0;
+            var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
+            this.Width = Constants.DefaultNodeSize * 3;
+            this.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            this.InkContainer.Capacity = (int)this.PageCount;
+            for (var i = 0; i < PageCount; i++)
+            {
+                this.InkContainer.Add(new InkStrokeContainer());
             }
         }
 
@@ -125,6 +139,10 @@ namespace NuSysApp
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
+     //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+        public List<InkStrokeContainer> InkContainer { get; set; }
+        public InkManager inkManager { get; set; }
+
 
     }
 }

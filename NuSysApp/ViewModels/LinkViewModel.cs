@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
 
@@ -38,7 +36,7 @@ namespace NuSysApp
 
             switch (workspace.CurrentLinkMode)
             { 
-                case WorkspaceViewModel.LinkMode.BEZIERLINK:
+                case WorkspaceViewModel.LinkMode.Bezierlink:
                     this.View = new BezierLinkView(this);
                     break;
                 default:

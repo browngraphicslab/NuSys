@@ -10,9 +10,9 @@ namespace NuSysApp
         {
             if ((bool)value)
             {
-                return new SolidColorBrush(Constants.SELECTED_COLOR);
+                return new SolidColorBrush(Constants.SelectedColor);
             }
-            return new SolidColorBrush(Constants.DEFAULT_COLOR);
+            return new SolidColorBrush(Constants.DefaultColor);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

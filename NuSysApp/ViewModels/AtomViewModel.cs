@@ -17,7 +17,7 @@ namespace NuSysApp
         private int _anchorX, _anchorY;
         private Point _anchor;
 
-        private bool _isSelected, _isEditing;
+        private bool _isSelected, _isEditing,_isEditingInk;
         private UserControl _view;
         private MatrixTransform _transform;
         #endregion Private Members
@@ -56,7 +56,10 @@ namespace NuSysApp
            
            
         }
-
+        public void ToggleEditingC()
+        {
+            this.IsEditingInk = !this.IsEditingInk;
+        }
         /// <summary>
         /// Adds a link to this atom.
         /// </summary>
@@ -106,8 +109,8 @@ namespace NuSysApp
                     _clippedParent = value;
                     _clippedParent.PropertyChanged += parent_PropertyChanged;
                     parent_PropertyChanged(null, null);
-                    this.Width = Constants.DEFAULT_ANNOTATION_SIZE*2;
-                    this.Height = Constants.DEFAULT_ANNOTATION_SIZE;
+                    this.Width = Constants.DefaultAnnotationSize*2;
+                    this.Height = Constants.DefaultAnnotationSize;
                     
                 }
                 else
@@ -164,6 +167,20 @@ namespace NuSysApp
                 RaisePropertyChanged("IsEditing");
             }
         }
+        public bool IsEditingInk
+        {
+            get { return _isEditingInk; }
+            set
+            {
+                if (_isEditingInk == value)
+                {
+                    return;
+                }
+                _isEditingInk = value;
+                RaisePropertyChanged("IsEditingInk");
+            }
+        }
+
 
         /// <summary>
         /// sets and gets view, to be applied specifically in the child classes of nodeviewmodel.
@@ -241,7 +258,7 @@ namespace NuSysApp
             get { return _width; }
             set
             {
-                if (_width == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     _width = Constants.MIN_NODE_SIZE;
                     RaisePropertyChanged("Width");
@@ -263,7 +280,7 @@ namespace NuSysApp
             get { return _height; }
             set
             {
-                if (_height == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
+                if (_height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     _height = Constants.MIN_NODE_SIZE;
 

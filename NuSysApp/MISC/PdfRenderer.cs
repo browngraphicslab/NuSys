@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.Foundation;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Diagnostics;
 
-namespace NuSysApp.MISC
+namespace NuSysApp
 {
     class PdfRenderer
     {
@@ -30,11 +28,10 @@ namespace NuSysApp.MISC
             return src;
         }
 
-        public static async Task<uint> GetPageCount(string pdfFilePath)
+        public static async Task<uint> GetPageCount(StorageFile pdfStorageFile)
         {
             try
             {
-                var pdfStorageFile = await KnownFolders.PicturesLibrary.GetFileAsync(pdfFilePath);
                 _pdfDocument = await PdfDocument.LoadFromFileAsync(pdfStorageFile);
                 return _pdfDocument.PageCount;
             }
@@ -44,11 +41,10 @@ namespace NuSysApp.MISC
             }
         }
 
-        public static async Task<List<BitmapImage>> RenderPdf(string pdfFilePath, double zoomFactor = 1.0)
+        public static async Task<List<BitmapImage>> RenderPdf(StorageFile pdfStorageFile, double zoomFactor = 1.0)
         {
             try
             {
-                var pdfStorageFile = await KnownFolders.PicturesLibrary.GetFileAsync(pdfFilePath);
                 _pdfDocument = await PdfDocument.LoadFromFileAsync(pdfStorageFile);
                 var numPages = _pdfDocument.PageCount;
                 Debug.WriteLine("number of pages: {0}", numPages);

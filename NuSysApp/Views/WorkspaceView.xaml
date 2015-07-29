@@ -5,7 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
+    mc:Ignorable="d" PointerPressed="Page_PointerPressed" PointerReleased="WorkspaceView_OnPointerReleased" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
     ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" RightTapped="Page_RightTapped" >
 
@@ -53,37 +53,45 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <StackPanel x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" >
-            <Button Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+        <Grid x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" Opacity=".75">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>               
+                </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
+            
+            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
+            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
+            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
+            <!--<Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
-            <Button Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
+            </Button>-->
+            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
                 <Button.Background>
                     <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-        </StackPanel>
+        </Grid>
     </Canvas>
 </Page>

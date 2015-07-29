@@ -1,7 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using Windows.Foundation;
+﻿using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -17,8 +15,6 @@ namespace NuSysApp
         #region Private Members      
 
         private Color _color; //currently unused
-
-        
         
         #endregion Private Members
 

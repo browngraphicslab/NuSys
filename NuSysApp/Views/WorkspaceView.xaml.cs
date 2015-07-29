@@ -1,22 +1,14 @@
-﻿using Windows.UI.Input.Inking;
+﻿using System.Collections.Generic;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Windows.ApplicationModel.Resources;
-using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Media.Imaging;
-using System.Collections.Generic;
-using Windows.Storage.Pickers;
-using System.Threading.Tasks;
-using System.Diagnostics;
+using System.Linq;
 using Windows.Foundation;
-using Windows.UI;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,9 +21,9 @@ namespace NuSysApp
     {
         #region Private Members
        
-        private int penSize = Constants.INITIAL_PEN_SIZE;
+        private int penSize = Constants.InitialPenSize;
         private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
-        private Boolean _isZooming;
+        private bool _isZooming;
         #endregion Private Members
 
         public WorkspaceView()
@@ -57,7 +49,7 @@ namespace NuSysApp
                 Size = new Windows.Foundation.Size(2, 2),
                 IgnorePressure = false
             };
-           
+            
             inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);      
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |   
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
@@ -70,13 +62,14 @@ namespace NuSysApp
         private void ToggleInk()
         {
             var vm = (WorkspaceViewModel)this.DataContext;
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.GLOBALINK)
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.Globalink)
             {
                 inkCanvas.InkPresenter.IsInputEnabled = true;
                 inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
             }
             else
             {
+                
                 inkCanvas.InkPresenter.IsInputEnabled = false; //when text button is clicked in the app bar, it disables the ink presenter using this line and the line above allows the TEXTNODE to be displayed on double tap
             }
         }
@@ -88,12 +81,43 @@ namespace NuSysApp
         #region Page Handlers
 
 
-        private void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private async void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(this));
-            vm.CreateNewNode(p.X, p.Y,"");
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
+            {
+                int d = 20;
+               
+                var point1 = new Point(p.X-d, p.Y-d);
+                var point2 = new Point(p.X + d, p.Y - d);
+                var point3 = new Point(p.X  + d, p.Y + d);
+                var point4 = new Point(p.X - d, p.Y + d);
+                
+                
+                var result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(point1, point3);
+                if (result.IsEmpty)
+                {
+                    result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(point2, point4);
+                }
+                if (result.IsEmpty) { return;}
+                inkCanvas.InkPresenter.StrokeContainer.CopySelectedToClipboard();
+     //           var inkView = new InkNodeView(new InkNodeViewModel(vm));
+    //            ((InkNodeViewModel)inkView.DataContext).X = 0;
+   //             ((InkNodeViewModel)inkView.DataContext).Y = 0;
+  //              Matrix matrix = new Matrix(1, 0, 0, 1, result.X, result.Y);
+
+  //              ((InkNodeViewModel)inkView.DataContext).Transform.Matrix = matrix;
+ //               vm.AtomViewList.Add(inkView);
+//                vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
+
+                inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                
+            }
+            
+            await vm.CreateNewNode(p.X, p.Y,"");
             vm.ClearSelection();
+            e.Handled = true;
         }
 
         private void Page_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -107,28 +131,30 @@ namespace NuSysApp
 
             vm.FMTransform = FMT;
 
-            if (FM.Visibility == Visibility.Collapsed)
-            {
-                FM.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                FM.Visibility = Visibility.Collapsed;
-            }
+            FM.Visibility = FM.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
             
         }
 
-
+        private Point _start;
         private void Page_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
             vm.ClearSelection();  
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
+            {
+                _start = e.GetCurrentPoint(this).Position;
+                return;
+            }
         }
 
         private void Page_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
 
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
+            {
+                return;
+            }
             var compositeTransform = vm.CompositeTransform;
             var tmpTranslate = new TranslateTransform
             {
@@ -178,7 +204,9 @@ namespace NuSysApp
             var x = e.Position.X - vm.TransformX;
             var y = e.Position.Y - vm.TransformY;
             Debug.WriteLine(x + ", " + y);
-            vm.Origin = new Point(x / 10000.0, y / 10000.0);
+            vm.Origin = new Point(x                 inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                await vm.CreateNewNode(p.X, p.Y,"");
+                vm.ClearSelection();/ 10000.0, y / 10000.0);
             vm.ScaleX *= e.Delta.Scale;
             vm.ScaleY *= e.Delta.Scale;    */
             //  vm.TransformX += e.Delta.Translation.X / vm.ScaleX;
@@ -191,7 +219,6 @@ namespace NuSysApp
 
         private void Page_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
-
             e.Container = this;
             e.Handled = true;
         }
@@ -219,34 +246,47 @@ namespace NuSysApp
         #endregion Page Handlers
         #region App Bar Handlers
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
-        {   
+        {
+            inkButton.Opacity = .5;
+            linkButton.Opacity = 1;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.GLOBALINK;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
             inkCanvas.InkPresenter.IsInputEnabled = true;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
         }
 
         private void AppBarButton_Click_Text(object sender, RoutedEventArgs e)
-        { 
+        {
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 1;
+            textButton.Opacity = .5;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.TEXTNODE;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.ToggleInk();
         }
 
         private void AppBarButton_Click_Erase(object sender, RoutedEventArgs e)
         {
-
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.ERASE;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
         }
 
         private void AppBarButton_Click_Scribble(object sender, RoutedEventArgs e)
         {
-
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.INK;  //initializes ink canvas to be created to the viewmodel
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 1;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = .5;
+            docButton.Opacity = 1;
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
 
@@ -257,11 +297,21 @@ namespace NuSysApp
         /// </summary>
         private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.PDF;
+            //OfficeInteropWord.GenerateTestDocument();
+            var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
+            if (storageFile == null) return;
+            var vm = (WorkspaceViewModel)DataContext;
+            if (Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower()))
+            {
+                vm.CurrentMode = WorkspaceViewModel.Mode.Image;
+            }
+            else if (Constants.PdfFileTypes.Contains(storageFile.FileType))
+            {
+                vm.CurrentMode = WorkspaceViewModel.Mode.Pdf;
+            }
+            else return;
             var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
-            var pdfNodeViewModel = (PdfNodeViewModel)vm.CreateNewNode(p.X, p.Y, null);
-            await pdfNodeViewModel.InitializePdfNodeAsync();
+            await vm.CreateNewNode(p.X, p.Y, storageFile);
         }
 
         private void AppBarButton_Click_OFile(object sender, RoutedEventArgs e)
@@ -295,38 +345,19 @@ namespace NuSysApp
 
         private void MenuFlyoutItem_Click_Bezier(object sender, RoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.BEZIERLINK;
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.Bezierlink;
         }
 
         private void MenuFlyoutItem_Click_Line(object sender, RoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.LINELINK;
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.Linelink;
         }
 
-        async void AddButtonClick(object sender, RoutedEventArgs e)
+        void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await FileManager.PromptUserForFile(new List<string> { ".bmp", ".png", ".jpeg", ".jpg" });
-            // 'file' is null if user cancels the file picker.
-            if (file != null)
-            {
-                // Open a stream for the selected file.
-                // The 'using' block ensures the stream is disposed
-                // after the image is loaded.
-                using (Windows.Storage.Streams.IRandomAccessStream fileStream =
-                    await file.OpenAsync(FileAccessMode.Read))
-                {
-                    // Set the image source to the selected bitmap.
-                    BitmapImage bitmapImage = new BitmapImage();
-
-                    bitmapImage.SetSource(fileStream);
-                    WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
-                    vm.CurrentMode = WorkspaceViewModel.Mode.IMAGE;
-                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
-                    vm.CreateNewNode(p.X, p.Y, bitmapImage);
-                }
-            }
+            
         }
 
         private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
@@ -334,7 +365,7 @@ namespace NuSysApp
 
             var vm = (WorkspaceViewModel)this.DataContext;
             var compositeTransform = vm.CompositeTransform;
-            Point center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+            var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
 
             Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
             compositeTransform.ScaleX *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240)/4;
@@ -375,6 +406,48 @@ namespace NuSysApp
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
+        }
+
+        private Point _end;
+        private async void WorkspaceView_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = (WorkspaceViewModel) DataContext;
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
+            {
+                _end = e.GetCurrentPoint(this).Position;
+                _start = vm.CompositeTransform.Inverse.TransformPoint(_start);
+                _end = vm.CompositeTransform.Inverse.TransformPoint(_end);
+                var result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(_start, _end);
+                inkCanvas.InkPresenter.StrokeContainer.CopySelectedToClipboard();
+              //  var inkView = new InkNodeView(new InkNodeViewModel(vm));
+             //   ((InkNodeViewModel)inkView.DataContext).X = 0;
+            //    ((InkNodeViewModel)inkView.DataContext).Y = 0;
+           //     Matrix matrix = new Matrix(1, 0, 0, 1, result.X, result.Y);
+
+           //     ((InkNodeViewModel)inkView.DataContext).Transform.Matrix = matrix;
+          //      vm.AtomViewList.Add(inkView);
+         //       vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
+
+         //       inkView.UpdateInk();
+        //        inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+       //         Debug.WriteLine(result);
+                await vm.CreateNewNode(result.X, result.Y,"");
+                vm.ClearSelection();
+                inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                return;
+            }
+        }
+
+        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 0.5;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;   
+            var vm = (WorkspaceViewModel) DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
+            inkCanvas.InkPresenter.IsInputEnabled = false;
         }
     }
 
