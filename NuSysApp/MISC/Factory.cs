@@ -33,6 +33,12 @@ namespace NuSysApp
         {
             return new InkNodeViewModel(vm);
         }
+        public static InkNodeViewModel CreateNewPromotedInk(WorkspaceViewModel vm)
+        {
+            var inkNode = new InkNodeViewModel(vm);
+            ((InkNodeView)inkNode.View).UpdateInk();
+            return inkNode;
+        }
     }
 
     

@@ -46,8 +46,8 @@
             </Button.Flyout>
         </Button>
         <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" IsHitTestVisible="{Binding IsEditingInk}"/>
-        <RichEditBox x:Name="textBlock" Height="576" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
-                     IsReadOnly="{Binding IsEditing, Converter={StaticResource IConverter}}" IsHitTestVisible="{Binding IsEditing, Converter={Binding StaticResource IConverter}}" />
+        <RichEditBox x:Name="textBlock" Height="576" IsEnabled="True" SelectionChanged="Rich_Tapped" IsTapEnabled="True" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
+                     IsReadOnly="{Binding IsEditing, Converter={StaticResource IConverter}}" />
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
             <Button.Content>
