@@ -85,6 +85,10 @@ namespace NuSysApp
                 newDx = dx; // WorkSpaceViewModel.ScaleX;
                 newDy = (dx /*/ WorkSpaceViewModel.ScaleY*/) * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
+            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            {
+                return;
+            }
             CompositeTransform ct = this. InkScale;
             ct.ScaleX *= (newDx + Width) / Width;
             ct.ScaleY *= (newDy + Height) / Height;

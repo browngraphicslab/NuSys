@@ -69,6 +69,10 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
             }
+            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            {
+                return;
+            }
             CompositeTransform ct = this. InkScale;
             ct.ScaleX *= (newDx + Width) / Width;
             ct.ScaleY *= (newDy + Height) / Height;
