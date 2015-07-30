@@ -112,18 +112,17 @@ namespace NuSysApp
         private static void SetUpOfficeToPdfWatcher()
         {
             var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
-            // runs when folder contents change
             folderWatcher.FilesChanged += async delegate
             {
                 var transferFiles = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
                 Debug.WriteLine("Number of files in OfficeToPdf: {0}", transferFiles.Count());
-                foreach (var file in transferFiles)
-                {
-                    Debug.WriteLine("File name: " + file.Name);
-                    Debug.WriteLine("File path: " + file.Path);
-                    var fileContents = await FileIO.ReadTextAsync(file);
-                    Debug.WriteLine("File contents: " + fileContents);
-                }
+                //foreach (var file in transferFiles)
+                //{
+                //    Debug.WriteLine("File name: " + file.Name);
+                //    Debug.WriteLine("File path: " + file.Path);
+                //    var fileContents = await FileIO.ReadTextAsync(file);
+                //    Debug.WriteLine("File contents: " + fileContents);
+                //}
             };
         }
 

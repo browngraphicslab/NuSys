@@ -60,57 +60,19 @@ namespace NuSysApp
                 case ".pptx":
                     var complete = false;
                     folder = NuSysStorages.OfficeToPdfFolder;
-                    //outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_pptx.nusys");
                     folderWatcher.FilesChanged += async () =>
                     {
                         var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
-                        foreach (var nusysFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
+                        foreach (var nusysFile in files.Where(file => file.Name == "convertedPDF.pdf"))
                         {
-                            var pdfFilePath = await FileIO.ReadTextAsync(nusysFile);
-                            if (string.IsNullOrEmpty(pdfFilePath)) continue;
-                            Debug.WriteLine("received pptx to pdf file path: " + pdfFilePath);
-
-                            //var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                            //await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                            //{
-                            //    storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
-                            //    await ProcessPdfFile(storageFile);
-                            //    Debug.WriteLine("checkpoint");
-                            //});
-
-                            /* An exception of type 'System.Runtime.InteropServices.COMException' occurred in mscorlib.ni.dll
-                            but was not handled in user code.
-                            Additional information: The application called an interface that was marshalled for a different
-                            thread. (Exception from HRESULT: 0x8001010E (RPC_E_WRONG_THREAD)) */
-                            ////storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
-                            ////await ProcessPdfFile(storageFile);
-
-                            //await ProcessPdfFile(pdfFilePath);
+                            storageFile = nusysFile;
                             complete = true;
                         }
-                        //complete = true;
-
-                        //var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                        //var count = 0;
-                        //foreach (var file in transferFiles)
-                        //{
-                        //    Debug.WriteLine(file.Path);
-
-                        //    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                        //    {
-                        //        var readFile = await FileIO.ReadTextAsync(file);
-                        //        //var nodeVm = _factory.CreateNewRichText(readFile);
-                        //        var nodeVm = Factory.CreateNewRichText(this, readFile);
-                        //        var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
-                        //        PositionNode(nodeVm, p.X, p.Y);
-                        //        NodeViewModelList.Add(nodeVm);
-                        //        AtomViewList.Add(nodeVm.View);
-                        //    });
-                        //}
                     };
                     outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_pptx.nusys");
                     await FileIO.WriteTextAsync(outputFile, storageFile.Path);
                     while (!complete) { }
+                    await ProcessPdfFile(storageFile);
                     break;
                 case ".docx":
                     folder = NuSysStorages.OfficeToPdfFolder;
@@ -124,18 +86,11 @@ namespace NuSysApp
                             if (string.IsNullOrEmpty(pdfFilePath)) continue;
                             Debug.WriteLine("received docx to pdf file path: " + pdfFilePath);
                             storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
-                            await ProcessPdfFile(storageFile);
                         }
                     };
                     await FileIO.WriteTextAsync(outputFile, storageFile.Path);
                     break;
             }
-        }
-
-        private async Task ProcessPdfFile(string pdfFilePath)
-        {
-            var storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
-            await ProcessPdfFile(storageFile);
         }
 
         private async Task ProcessPdfFile(StorageFile pdfStorageFile)
@@ -150,6 +105,21 @@ namespace NuSysApp
             for (var i = 0; i < PageCount; i++)
             {
                 this.InkContainer.Add(new InkStrokeContainer());
+            }
+        }
+
+        private static async Task ProcessPdfFile(StorageFile pdfStorageFile, PdfNodeViewModel pnvm)
+        {
+            pnvm.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
+            pnvm.PageCount = (uint)pnvm.RenderedPages.Count();
+            pnvm.CurrentPageNumber = 0;
+            var firstPage = pnvm.RenderedPages[0]; // to set the aspect ratio of the node
+            pnvm.Width = Constants.DefaultNodeSize * 3;
+            pnvm.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            pnvm.InkContainer.Capacity = (int)pnvm.PageCount;
+            for (var i = 0; i < pnvm.PageCount; i++)
+            {
+                pnvm.InkContainer.Add(new InkStrokeContainer());
             }
         }
 

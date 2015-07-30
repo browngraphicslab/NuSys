@@ -34,7 +34,6 @@ namespace MicrosoftOfficeInterop
             //watcher.Renamed += OnRenamed;
 
             Console.WriteLine("Press 'q' to quit the sample.");
-            //if (!File.Exists(FileToGenerate)) File.Create(generatedFile);
             File.WriteAllText(FileToGenerate, "generated text");
             while (Console.Read() != 'q') { }
         }
@@ -59,10 +58,11 @@ namespace MicrosoftOfficeInterop
                 switch (extension)
                 {
                     case ".pptx":
-                        var pathToPdfFile = OfficeInterop.SavePresentationAsPdf(pathToOfficeFile);
-                        pathToPdfFile = pathToPdfFile + ".pdf";
-                        Console.WriteLine("PDF PATH: " + pathToPdfFile);
-                        File.WriteAllText(DirToWatch + @"\path_to_pdf.nusys", pathToPdfFile);
+                        //var pathToPdfFile = OfficeInterop.SavePresentationAsPdf(pathToOfficeFile);
+                        OfficeInterop.SavePresentationAsPdf(pathToOfficeFile, DirToWatch + @"\convertedPDF.pdf");
+                        //pathToPdfFile = pathToPdfFile + ".pdf";
+                        //Console.WriteLine("PDF PATH: " + pathToPdfFile);
+                        //File.WriteAllText(DirToWatch + @"\path_to_pdf.nusys", pathToPdfFile);
                         break;
                     case ".docx":
                         //TODO
