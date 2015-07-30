@@ -18,6 +18,12 @@ function injectScript(tab) {
     chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
 }
 
+$("#reset").click(function () {
+    console.log("DDDdd")
+    chrome.storage.local.clear();
+    $("#container").empty();
+});
+
 function sendMessage(key) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { pastPage: key }, function (response) {
@@ -40,12 +46,15 @@ function showInsertion(data) {
         var title = document.createElement("h3");
         $(title).append("<span class='title'>" + data[val]["title"]);
         $(title).append("<span class='url'>" + data[val]["url"] + "</span>");
-        $(title).append("<button class='pastPage' type='button'>Open</button>");
-       // $(title).append("<span>" + data[val]["date"] + "</span>");
+        $(title).append("<button class='toRemove button' type='button'>Remove</button>");
+        $(title).append("<button class='pastPage button' type='button'>Open</button>");
+        // $(title).append("<span>" + data[val]["date"] + "</span>");
+
         $(title).find(".pastPage").click(function () {
             chrome.tabs.create({ 'url': data[val]["url"] }, injectScript);
             sendMessage(val);
         });
+
         var selections = document.createElement("div");
         $.each(data[val]["selections"], function (indx, v) {
             var res = v.split('//');
@@ -60,6 +69,15 @@ function showInsertion(data) {
         });
         $("#container").append(title);
         $("#container").append(selections);
+
+        $(title).find(".toRemove").click(function () {
+            console.log(data[val]);
+            $(title).remove();
+            $(selections).remove();
+            delete data[val];
+            console.log(data);
+            chrome.storage.local.remove(val);
+        });
     });
 
     $("#container").accordion({active: false,  collapsible: true});

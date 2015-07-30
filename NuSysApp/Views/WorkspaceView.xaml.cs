@@ -102,15 +102,7 @@ namespace NuSysApp
                 }
                 if (result.IsEmpty) { return;}
                 inkCanvas.InkPresenter.StrokeContainer.CopySelectedToClipboard();
-     //           var inkView = new InkNodeView(new InkNodeViewModel(vm));
-    //            ((InkNodeViewModel)inkView.DataContext).X = 0;
-   //             ((InkNodeViewModel)inkView.DataContext).Y = 0;
-  //              Matrix matrix = new Matrix(1, 0, 0, 1, result.X, result.Y);
-
-  //              ((InkNodeViewModel)inkView.DataContext).Transform.Matrix = matrix;
- //               vm.AtomViewList.Add(inkView);
-//                vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
-
+     
                 inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
                 p.X = result.X;
                 p.Y = result.Y;
