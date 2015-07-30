@@ -16,8 +16,8 @@ namespace NuSysApp
         {
             this.View = new ImageNodeView(this);
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DefaultNodeSize;
-            this.Height = Constants.DefaultNodeSize*igm.PixelHeight/igm.PixelWidth;//maintains aspect ratio
+            this.Width = igm.PixelWidth;
+            this.Height = igm.PixelHeight;//maintains aspect ratio
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;

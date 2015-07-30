@@ -112,6 +112,12 @@ namespace NuSysApp
 //                vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
 
                 inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                p.X = result.X;
+                p.Y = result.Y;
+                if (result.Width == 0 && result.Height == 0)
+                {
+                    return;
+                }
                 
             }
             
@@ -365,15 +371,24 @@ namespace NuSysApp
 
             var vm = (WorkspaceViewModel)this.DataContext;
             var compositeTransform = vm.CompositeTransform;
-            var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+     
+
 
             Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
-            compositeTransform.ScaleX *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240)/4;
-            compositeTransform.ScaleY *= (3+((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/ 240)/4;
 
-            compositeTransform.CenterX = center.X;
+            //////////////
+            var zoomspeed = 4;
+            var delta = ((3 + ((double) e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240)/240) - 4)/zoomspeed;
+            if (compositeTransform.ScaleX + delta > 0)
+            {
+                var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+                compositeTransform.ScaleX += delta;
+                compositeTransform.ScaleY += delta;
+                compositeTransform.CenterX = center.X;
             compositeTransform.CenterY = center.Y;
+            }
 
+            Debug.WriteLine(compositeTransform.ScaleX + "!!!!!!!!!!!!!!!!!" + compositeTransform.ScaleY);
             vm.CompositeTransform = compositeTransform;
         }
         private void FM_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
