@@ -33,49 +33,47 @@
             </Setter>
         </Style>
         <!-- Default style for Windows.UI.Xaml.Controls.FlyoutPresenter -->
-        <Style TargetType="FlyoutPresenter" x:Key="FloatingFlyout">
+        <!-- Default style for Windows.UI.Xaml.Controls.MenuFlyoutPresenter -->
+        <Style TargetType="MenuFlyoutPresenter" x:Key="FloatingFlyout">
             <Setter Property="RequestedTheme" Value="Light" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-            <Setter Property="IsTabStop" Value="False"/>
-            <Setter Property="Background" Value="{x:Null}"/>
-            <Setter Property="BorderBrush" Value="{x:Null}"/>
-            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}"/>
-            <Setter Property="Padding" Value="{ThemeResource FlyoutContentThemePadding}"/>
-            <Setter Property="MinWidth" Value="{ThemeResource FlyoutThemeMinWidth}"/>
-            <Setter Property="MaxWidth" Value="{ThemeResource FlyoutThemeMaxWidth}"/>
-            <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}"/>
-            <Setter Property="MaxHeight" Value="{ThemeResource FlyoutThemeMaxHeight}"/>
-            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="Background" Value="{x:Null}" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}" />
+            <Setter Property="Padding" Value="{ThemeResource MenuFlyoutPresenterThemePadding}" />
+            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
             <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False" />
+            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
             <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
+            <Setter Property="MinWidth" Value="{ThemeResource FlyoutThemeMinWidth}" />
+            <Setter Property="MaxWidth" Value="{ThemeResource FlyoutThemeMaxWidth}" />
+            <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}" />
+            <Setter Property="MaxHeight" Value="{ThemeResource FlyoutThemeMaxHeight}" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="FlyoutPresenter">
+                    <ControlTemplate TargetType="MenuFlyoutPresenter">
                         <Border Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer x:Name="ScrollViewer"
-                        ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}"
-                        HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                        HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                        VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                        VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                        AutomationProperties.AccessibilityView="Raw">
-                                <ContentPresenter Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          ContentTransitions="{TemplateBinding ContentTransitions}"
-                                          Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+                                  ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}"
+                                  AutomationProperties.AccessibilityView="Raw">
+                                <ItemsPresenter />
                             </ScrollViewer>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
     </Page.Resources>
     <Canvas Background="Transparent" ManipulationMode="All" >
         <Border RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
@@ -111,13 +109,18 @@
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
                 <Button.Flyout>
-                    <Flyout Placement="Right" FlyoutPresenterStyle="{StaticResource FloatingFlyout}">
+                    <MenuFlyout Placement="Right" MenuFlyoutPresenterStyle="{StaticResource FloatingFlyout}">
                         <MenuFlyoutItem x:Name="Erase" Style="{StaticResource FloatingFlyoutButton}">
                             <MenuFlyoutItem.Background>
                                 <ImageBrush ImageSource="eraser icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
                             </MenuFlyoutItem.Background>
                         </MenuFlyoutItem>
-                    </Flyout>
+                        <MenuFlyoutItem x:Name="Highlight" Style="{StaticResource FloatingFlyoutButton}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="highlighter icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
                 </Button.Flyout>
             </Button>
 

@@ -188,6 +188,7 @@
     <Content Include="Views\document icon.png" />
     <Content Include="Views\eraser icon.png" />
     <Content Include="Views\global ink icon.png" />
+    <Content Include="Views\highlighter icon.png" />
     <Content Include="Views\left icon.png" />
     <Content Include="Views\link icon.png" />
     <Content Include="Views\right icon.png" />
