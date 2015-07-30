@@ -252,6 +252,8 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            Erase.Opacity = 1;
+            Highlight.Opacity = 1;
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -266,6 +268,8 @@ namespace NuSysApp
             textButton.Opacity = .5;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            Erase.Opacity = 1;
+            Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.ToggleInk();
@@ -285,6 +289,8 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = .5;
             docButton.Opacity = 1;
+            Erase.Opacity = 1;
+            Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
@@ -455,11 +461,14 @@ namespace NuSysApp
             linkButton.Opacity = 0.5;
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
-            docButton.Opacity = 1;   
+            docButton.Opacity = 1;
+            Erase.Opacity = 1;
+            Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel) DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
+
     }
 
 
