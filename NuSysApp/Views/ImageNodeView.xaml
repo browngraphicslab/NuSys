@@ -39,6 +39,7 @@
                         <Style BasedOn="{StaticResource RadialMenu}" TargetType="MenuFlyoutPresenter"
                                x:Name="textnodemenu">
                             <Setter Property="Background" Value="#FF444444" />
+                            
                         </Style>
                     </MenuFlyout.MenuFlyoutPresenterStyle>
                 </MenuFlyout>
