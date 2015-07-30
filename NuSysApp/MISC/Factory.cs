@@ -29,11 +29,7 @@ namespace NuSysApp
         {
             var pnvm = new PdfNodeViewModel(vm);
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                await pnvm.InitializePdfNodeAsync(storageFile);
-            });
-            //await pnvm.InitializePdfNodeAsync(storageFile);
+            await pnvm.InitializePdfNodeAsync(storageFile);
             return pnvm;
         }
 
