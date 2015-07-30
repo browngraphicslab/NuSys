@@ -35,7 +35,8 @@
                 </ControlTemplate>
             </Button.Template>
             <Button.Flyout>
-                <MenuFlyout Placement="Left">
+                <MenuFlyout Placement="Right">
+                    <MenuFlyoutItem x:Name="editcc" Text="edic" ></MenuFlyoutItem>
                     <MenuFlyout.MenuFlyoutPresenterStyle>
                         <Style BasedOn="{StaticResource RadialMenu}" TargetType="MenuFlyoutPresenter"
                                x:Name="textnodemenu">
@@ -46,7 +47,7 @@
             </Button.Flyout>
         </Button>
         <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" IsHitTestVisible="{Binding IsEditingInk}"/>
-            <RichEditBox x:Name="textBlock" Height="576" IsEnabled="True" SelectionChanged="Rich_Tapped" IsTapEnabled="True" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
+        <RichEditBox x:Name="textBlock" Foreground="White" FontSize="12" FontFamily="Calabri" Height="576" IsEnabled="True" SelectionChanged="Rich_Tapped" IsTapEnabled="True" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
                      IsReadOnly="{Binding IsEditing, Converter={StaticResource IConverter}}" />
             <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
@@ -68,7 +69,7 @@
               Opacity=".5" ManipulationDelta="Resizer_ManipulationDelta" ManipulationMode="All" />
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="1"
                    StrokeDashArray="5" Opacity=".8"
-                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" VerticalAlignment="Bottom" />
 
     </Grid>
 

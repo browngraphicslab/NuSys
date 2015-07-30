@@ -14,7 +14,7 @@
             <Setter Property="Template" >
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid Width="100" Height="100" Opacity=".75" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" ManipulationMode="All" RenderTransform="{Binding FMTransform}">
+                        <Grid Width="100" Height="100" Opacity=".75">
                             <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
                         </Grid>
                     </ControlTemplate>
@@ -53,7 +53,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <Grid x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" Opacity=".75">
+        <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Background="Transparent" ManipulationMode="All" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -66,18 +66,18 @@
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            
-            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center">
+
+            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
                 <Button.Background>
                     <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
+            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center" Height="114" Margin="0,-5,0,-9">
                 <Button.Background>
                     <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
+            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center" Height="115" Margin="0,-6,0,-9">
                 <Button.Background>
                     <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
@@ -87,7 +87,7 @@
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>-->
-            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
+            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
