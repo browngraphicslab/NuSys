@@ -110,12 +110,12 @@
                 </Button.Background>
                 <Button.Flyout>
                     <MenuFlyout Placement="Right" MenuFlyoutPresenterStyle="{StaticResource FloatingFlyout}">
-                        <MenuFlyoutItem x:Name="Erase" Style="{StaticResource FloatingFlyoutButton}">
+                        <MenuFlyoutItem x:Name="Erase" Style="{StaticResource FloatingFlyoutButton}" Tapped="Erase_OnTapped">
                             <MenuFlyoutItem.Background>
                                 <ImageBrush ImageSource="eraser icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
                             </MenuFlyoutItem.Background>
                         </MenuFlyoutItem>
-                        <MenuFlyoutItem x:Name="Highlight" Style="{StaticResource FloatingFlyoutButton}">
+                        <MenuFlyoutItem x:Name="Highlight" Style="{StaticResource FloatingFlyoutButton}" Tapped="Highlight_OnTapped">
                             <MenuFlyoutItem.Background>
                                 <ImageBrush ImageSource="highlighter icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
                             </MenuFlyoutItem.Background>
