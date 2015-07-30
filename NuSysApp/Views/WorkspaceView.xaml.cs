@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -7,6 +8,7 @@ using System.Diagnostics;
 using Windows.UI.Popups;
 using System.Linq;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
@@ -300,6 +302,8 @@ namespace NuSysApp
             //OfficeInteropWord.GenerateTestDocument();
             var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
+            Debug.WriteLine("Path: " + storageFile.Path);
+            //storageFile = await StorageFile.GetFileFromPathAsync(storageFile.Path);
             var vm = (WorkspaceViewModel)DataContext;
             if (Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower()))
             {

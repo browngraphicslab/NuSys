@@ -1,5 +1,8 @@
+using System;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
+using Windows.UI.Core;
 
 namespace NuSysApp
 {
@@ -25,7 +28,12 @@ namespace NuSysApp
         public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(WorkspaceViewModel vm, StorageFile storageFile)
         {
             var pnvm = new PdfNodeViewModel(vm);
-            await pnvm.InitializePdfNodeAsync(storageFile);
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                await pnvm.InitializePdfNodeAsync(storageFile);
+            });
+            //await pnvm.InitializePdfNodeAsync(storageFile);
             return pnvm;
         }
 

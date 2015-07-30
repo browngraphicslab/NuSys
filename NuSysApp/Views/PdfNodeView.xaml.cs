@@ -74,7 +74,7 @@ namespace NuSysApp
             vm.Remove();
         }
 
-        private async void pageLeft_Click(object sender, RoutedEventArgs e)
+        private void pageLeft_Click(object sender, RoutedEventArgs e)
         {
 
             var vm = (PdfNodeViewModel)this.DataContext;
