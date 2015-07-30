@@ -10,17 +10,23 @@ namespace NuSysApp
     public class ImageNodeViewModel : NodeViewModel
     {
         private ImageModel _imgm;
-
+        private CompositeTransform _inkScale;
+      
         public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
         {
             this.View = new ImageNodeView(this);
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DefaultNodeSize;
-            this.Height = Constants.DefaultNodeSize*igm.PixelHeight/igm.PixelWidth;//maintains aspect ratio
+            this.Width = igm.PixelWidth;
+            this.Height = igm.PixelHeight;//maintains aspect ratio
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
+            var C = new CompositeTransform { 
+                ScaleX = 1,
+                ScaleY = 1
+            };
+            this.InkScale = C;
         }
 
         public ImageNodeViewModel(WorkspaceViewModel vm) : base(vm)
@@ -42,6 +48,11 @@ namespace NuSysApp
                 this.ImageModel = new ImageModel(bitmapImage, 0);
                 this.Width = Constants.DefaultNodeSize;
                 this.Height = Constants.DefaultNodeSize * bitmapImage.PixelHeight / bitmapImage.PixelWidth;
+            var C = new CompositeTransform { 
+                ScaleX = 1,
+                ScaleY = 1
+            };
+            this.InkScale = C;
             }
         }
 
@@ -58,6 +69,14 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
             }
+            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            {
+                return;
+            }
+            CompositeTransform ct = this. InkScale;
+            ct.ScaleX *= (newDx + Width) / Width;
+            ct.ScaleY *= (newDy + Height) / Height;
+            this.InkScale = ct;
             base.Resize(newDx, newDy);
         }
 
@@ -75,5 +94,18 @@ namespace NuSysApp
             }
         }
 
+        public CompositeTransform InkScale
+        {
+            get { return _inkScale; }
+            set
+            {
+                if (_inkScale == value)
+                {
+                    return;
+                }
+                _inkScale = value;
+                RaisePropertyChanged("InkScale");
+            }
+        }
     }
 }

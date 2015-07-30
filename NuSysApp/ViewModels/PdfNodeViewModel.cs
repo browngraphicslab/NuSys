@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -12,10 +13,12 @@ namespace NuSysApp
     {
 
         private BitmapImage _bitmapImage;
-        private List<BitmapImage> _renderedPages; 
+        private List<BitmapImage> _renderedPages;
         private PdfNodeModel _pdfNodeModel;
         private uint _currentPageNumber;
         private uint _pageCount;
+        private readonly WorkspaceViewModel _workspaceViewModel;
+        private CompositeTransform _inkScale;
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
         {
@@ -24,8 +27,17 @@ namespace NuSysApp
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
+            this.IsEditingInk = false;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
+            this.InkContainer = new List<InkStrokeContainer>();
+            this.inkManager = new InkManager();
+            _workspaceViewModel = workspaceViewModel;
+            var C = new CompositeTransform { 
+                ScaleX = 1,
+                ScaleY = 1
+            };
+            this.InkScale = C;
         }
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
         {
@@ -53,6 +65,11 @@ namespace NuSysApp
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
             this.Width = Constants.DefaultNodeSize * 3;
             this.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            this.InkContainer.Capacity = (int)this.PageCount;
+            for (var i = 0; i < PageCount; i++)
+            {
+                this.InkContainer.Add(new InkStrokeContainer());
+            }
         }
 
         public override void Resize(double dx, double dy)
@@ -68,6 +85,14 @@ namespace NuSysApp
                 newDx = dx; // WorkSpaceViewModel.ScaleX;
                 newDy = (dx /*/ WorkSpaceViewModel.ScaleY*/) * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
+            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            {
+                return;
+            }
+            CompositeTransform ct = this. InkScale;
+            ct.ScaleX *= (newDx + Width) / Width;
+            ct.ScaleY *= (newDy + Height) / Height;
+            this.InkScale = ct;
             base.Resize(newDx, newDy);
         }
 
@@ -128,6 +153,23 @@ namespace NuSysApp
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
+     //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+        public List<InkStrokeContainer> InkContainer { get; set; }
+        public InkManager inkManager { get; set; }
 
+
+        public CompositeTransform InkScale
+        {
+            get { return _inkScale; }
+            set
+            {
+                if (_inkScale == value)
+                {
+                    return;
+                }
+                _inkScale = value;
+                RaisePropertyChanged("InkScale");
+            }
+        }
     }
 }

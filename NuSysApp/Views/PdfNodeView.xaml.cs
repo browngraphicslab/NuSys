@@ -1,7 +1,12 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Collections.Generic;
+using System.IO;
+using Windows.Storage.Streams;
+using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -14,6 +19,10 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = pdfNodeViewModel;
             this.SetUpBindings();
+            inkCanvas.InkPresenter.IsInputEnabled = false;
+            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
+            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
+            
         }
         private void SetUpBindings()
         {
@@ -66,23 +75,47 @@ namespace NuSysApp
             vm.Remove();
         }
 
-        private void pageLeft_Click(object sender, RoutedEventArgs e)
+        private async void pageLeft_Click(object sender, RoutedEventArgs e)
         {
+
             var vm = (PdfNodeViewModel)this.DataContext;
             var pageNum = vm.CurrentPageNumber;
+            vm.InkContainer[(int)pageNum] = inkCanvas.InkPresenter.StrokeContainer;
             if (pageNum <= 0) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
             vm.CurrentPageNumber--;
+
+      //      foreach (InkStroke inkStroke in vm.InkContainer[(int)pageNum -1])
+      //      {
+      //          inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
+      //      }
+            inkCanvas.InkPresenter.StrokeContainer=vm.InkContainer[(int)vm.CurrentPageNumber];
         }
 
+        private void EditC_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (PdfNodeViewModel)this.DataContext;
+            vm.ToggleEditingC();
+            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
+        }
         private void pageRight_Click(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             var pageCount = vm.PageCount;
             var pageNum = vm.CurrentPageNumber;
+            vm.InkContainer[(int)pageNum] = inkCanvas.InkPresenter.StrokeContainer;
             if (pageNum >= (pageCount - 1)) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int) pageNum + 1];
             vm.CurrentPageNumber++;
+            inkCanvas.InkPresenter.StrokeContainer=vm.InkContainer[(int)vm.CurrentPageNumber];
         }
     }
 }

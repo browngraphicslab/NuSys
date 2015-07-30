@@ -29,7 +29,8 @@ namespace NuSysApp
             Ink,
             Erase,
             Image,
-            Pdf
+            Pdf,
+            InkSelect
         }; //enum created to switch between multiple modes in the appbar
 
         public enum LinkMode
@@ -220,9 +221,14 @@ namespace NuSysApp
                     break;
                 case Mode.Image:
                     vm = await Factory.CreateNewImage(this, (StorageFile)data);
+                    this.CurrentMode = Mode.Textnode;
                     break;
                 case Mode.Pdf:
                     vm = await Factory.CreateNewPdfNodeViewModel(this, (StorageFile)data);
+                    this.CurrentMode = Mode.Textnode;
+                    break;
+                case Mode.InkSelect:
+                    vm = Factory.CreateNewPromotedInk(this);
                     break;
                 default:
                     return;

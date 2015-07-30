@@ -1,4 +1,8 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -17,9 +21,11 @@ namespace NuSysApp
             this.DataContext = vm;
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
             this.InitializeComponent();
-            
-           
             this.SetUpBindings();
+             inkCanvas.InkPresenter.IsInputEnabled = false;
+            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
+            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
+           
         }
 
         #region Helper Methods
@@ -97,6 +103,39 @@ namespace NuSysApp
             RichTextNodeViewModel vm = (RichTextNodeViewModel)this.DataContext;
             vm.Remove();
         }
+
+        private void Rich_Tapped(object sender, RoutedEventArgs f)
+        {
+            int startSelection = textBlock.Document.Selection.StartPosition;
+            int endSelection = textBlock.Document.Selection.EndPosition;
+            string periodo = "";
+            textBlock.Document.GetText(TextGetOptions.UseCrlf, out periodo);
+            int eof = periodo.Length;
+            periodo = "";
+                ITextRange range = textBlock.Document.GetRange(--startSelection, endSelection);
+                range.GetText(TextGetOptions.UseCrlf, out periodo);
+            
+            Debug.WriteLine(periodo.Length);
+            string x = periodo.Trim();
+            x.Replace("HYPERLINK \" \"", "");
+            //string uriToLaunch = @"http://google.com";
+            //var uri = new Uri(uriToLaunch);
+            //Windows.System.Launcher.LaunchUriAsync(uri);
+
+            Debug.WriteLine(x);
+            //find the and then search through the .rtfio
+        }
+
+        //async void DefaultLaunch()
+        //{
+        //    //Launch the URI
+        //    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+        //    if (success)
+        //    {
+                
+        //    }
+        //    el
+        //}
 
     }
 }

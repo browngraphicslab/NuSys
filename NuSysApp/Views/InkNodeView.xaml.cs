@@ -1,5 +1,8 @@
-﻿using Windows.UI;
+﻿using System.Diagnostics;
+using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Input.Inking;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -104,6 +107,22 @@ namespace NuSysApp
             {
                 this.MyGrid.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
             }
+        }
+
+        public void UpdateInk()
+        {
+            var vm = (InkNodeViewModel)this.DataContext;
+            if (!this.inkCanvas.InkPresenter.StrokeContainer.CanPasteFromClipboard())
+            {
+                Debug.WriteLine("Could not promote ink");
+                vm.WorkSpaceViewModel.DeleteNode(vm);
+                return;
+            }
+            var rect = this.inkCanvas.InkPresenter.StrokeContainer.PasteFromClipboard(new Point(0,0));
+            
+            vm.Width = rect.Width;
+            vm.Height = rect.Height;
+            
         }
         #endregion Event Handlers
     }

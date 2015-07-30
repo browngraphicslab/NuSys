@@ -5,7 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
+    mc:Ignorable="d" PointerPressed="Page_PointerPressed" PointerReleased="WorkspaceView_OnPointerReleased" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
     ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" RightTapped="Page_RightTapped" >
 
@@ -14,9 +14,64 @@
             <Setter Property="Template" >
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid Width="100" Height="100" Opacity=".75" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" ManipulationMode="All" RenderTransform="{Binding FMTransform}">
+                        <Grid Width="100" Height="100" Opacity=".75">
                             <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
                         </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="MenuFlyoutItem" x:Key="FloatingFlyoutButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuFlyoutItem">
+                        <Grid Width="100" Height="100" Opacity=".75">
+                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Default style for Windows.UI.Xaml.Controls.FlyoutPresenter -->
+        <Style TargetType="FlyoutPresenter" x:Key="FloatingFlyout">
+            <Setter Property="RequestedTheme" Value="Light" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Background" Value="{x:Null}"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}"/>
+            <Setter Property="Padding" Value="{ThemeResource FlyoutContentThemePadding}"/>
+            <Setter Property="MinWidth" Value="{ThemeResource FlyoutThemeMinWidth}"/>
+            <Setter Property="MaxWidth" Value="{ThemeResource FlyoutThemeMaxWidth}"/>
+            <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}"/>
+            <Setter Property="MaxHeight" Value="{ThemeResource FlyoutThemeMaxHeight}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="FlyoutPresenter">
+                        <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="ScrollViewer"
+                        ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}"
+                        HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+                        HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                        VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+                        VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                        AutomationProperties.AccessibilityView="Raw">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          ContentTransitions="{TemplateBinding ContentTransitions}"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </ScrollViewer>
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -32,16 +87,6 @@
                 <RowDefinition />
                 <RowDefinition Height="0*" />
             </Grid.RowDefinitions>
-            <!--<Grid x:Name="lefttoolbar" HorizontalAlignment="Left" Margin="0,0,0,0" Width="50">
-            <StackPanel x:Name="stackpanel" Background="#FF15C3F2" Opacity="0.5" Width="50" HorizontalAlignment="Left"></StackPanel>
-            <Rectangle Fill="#FF15C3F2" HorizontalAlignment="Right" Margin="0,278,-10,278" Width="5" Opacity="0.5" 
-                       RadiusY="5.25" RadiusX="5.25" />
-            <Grid.Transitions>
-                <TransitionCollection>
-                    <EdgeUIThemeTransition Edge="Left"></EdgeUIThemeTransition>
-                </TransitionCollection>
-            </Grid.Transitions>
-        </Grid>-->
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -53,7 +98,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <Grid x:Name="FM" HorizontalAlignment="Left" Visibility="Collapsed" Opacity=".75">
+        <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Background="Transparent" ManipulationMode="All" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -65,19 +110,28 @@
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
+                <Button.Flyout>
+                    <Flyout Placement="Right" FlyoutPresenterStyle="{StaticResource FloatingFlyout}">
+                        <MenuFlyoutItem x:Name="Erase" Style="{StaticResource FloatingFlyoutButton}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="eraser icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                    </Flyout>
+                </Button.Flyout>
             </Button>
-            
-            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  HorizontalAlignment="Center">
+
+            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
                 <Button.Background>
-                    <ImageBrush ImageSource="link icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="select ink icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center">
+            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center" Height="114" Margin="0,-5,0,-9">
                 <Button.Background>
                     <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center">
+            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center" Height="115" Margin="0,-6,0,-9">
                 <Button.Background>
                     <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
@@ -87,7 +141,7 @@
                     <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>-->
-            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center">
+            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
