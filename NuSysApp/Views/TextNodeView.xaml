@@ -61,8 +61,8 @@
                 <Image Source="ms-appx:///Pics/xicon (1).png" />
             </Button.Content>
         </Button>
-        <Button x:Name="edit" VerticalAlignment="Stretch"  HorizontalAlignment="Right" Foreground="White"
-                FontFamily="Calibri" Content="edit" Click="Edit_Click" Margin="0,0,0,737">
+        <Button x:Name="edit" VerticalAlignment="Top" VerticalContentAlignment="Top" HorizontalAlignment="Right" Foreground="White"
+                FontFamily="Calibri" Content="edit" Click="Edit_Click" Height="30" >
         </Button>
         <Button x:Name="editC" VerticalAlignment="Top" HorizontalAlignment="Center" Foreground="White"
                 FontFamily="Calibri" Content="edit Ink" Click="EditC_Click" />
