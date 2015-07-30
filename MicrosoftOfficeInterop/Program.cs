@@ -6,14 +6,17 @@ namespace MicrosoftOfficeInterop
 {
     class Program
     {
-        private const string DirToWatch = @"C:\Users\Gary\Documents\NuSys\OfficeToPdf";
-        private const string FileToGenerate = DirToWatch + @"\bluh.nusys";
+        //private const string DirToWatch = @"C:\Users\Gary\Documents\NuSys\OfficeToPdf";
+        private static readonly string DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        private static readonly string DirToWatch = DocumentsPath + @"\NuSys\OfficeToPdf";
+        //private const string FileToGenerate = DirToWatch + @"\bluh.nusys";
         private static string _currentFilePath;
         private static string _previousFilePath;
         static void Main()
         {
             _currentFilePath = null;
             _previousFilePath = null;
+            //Console.WriteLine(DocumentsPath);
             Run();
         }
 
@@ -34,7 +37,7 @@ namespace MicrosoftOfficeInterop
             //watcher.Renamed += OnRenamed;
 
             Console.WriteLine("Press 'q' to quit the sample.");
-            File.WriteAllText(FileToGenerate, "generated text");
+            //File.WriteAllText(FileToGenerate, "generated text");
             while (Console.Read() != 'q') { }
         }
 
@@ -46,6 +49,9 @@ namespace MicrosoftOfficeInterop
             {
                 if (e.Name != "path_to_pptx.nusys") return;
                 _currentFilePath = File.ReadAllText(e.FullPath);
+
+                //File.Delete(e.FullPath);
+
                 if (_previousFilePath == _currentFilePath) return; // prevent repeated calls
                 _previousFilePath = _currentFilePath;
                 var pathToOfficeFile = _currentFilePath; // path to .docx/.pptx file
