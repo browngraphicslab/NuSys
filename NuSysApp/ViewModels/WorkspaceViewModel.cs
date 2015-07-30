@@ -247,9 +247,11 @@ namespace NuSysApp
                     break;
                 case Mode.Image:
                     vm = await Factory.CreateNewImage(this, (StorageFile)data);
+                    this.CurrentMode = Mode.Textnode;
                     break;
                 case Mode.Pdf:
                     vm = await Factory.CreateNewPdfNodeViewModel(this, (StorageFile)data);
+                    this.CurrentMode = Mode.Textnode;
                     break;
                 case Mode.InkSelect:
                     vm = Factory.CreateNewPromotedInk(this);

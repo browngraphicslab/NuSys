@@ -22,7 +22,8 @@ namespace NuSysApp
         private PdfNodeModel _pdfNodeModel;
         private uint _currentPageNumber;
         private uint _pageCount;
-        //private readonly WorkspaceViewModel _workspaceViewModel;
+        private readonly WorkspaceViewModel _workspaceViewModel;
+        private CompositeTransform _inkScale;
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
         {
@@ -36,7 +37,12 @@ namespace NuSysApp
             this.PageCount = 0;
             this.InkContainer = new List<InkStrokeContainer>();
             this.inkManager = new InkManager();
-            //_workspaceViewModel = workspaceViewModel;
+            _workspaceViewModel = workspaceViewModel;
+            var C = new CompositeTransform { 
+                ScaleX = 1,
+                ScaleY = 1
+            };
+            this.InkScale = C;
         }
 
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
@@ -161,6 +167,14 @@ namespace NuSysApp
                 newDx = dx; // WorkSpaceViewModel.ScaleX;
                 newDy = (dx /*/ WorkSpaceViewModel.ScaleY*/) * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
+            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            {
+                return;
+            }
+            CompositeTransform ct = this. InkScale;
+            ct.ScaleX *= (newDx + Width) / Width;
+            ct.ScaleY *= (newDy + Height) / Height;
+            this.InkScale = ct;
             base.Resize(newDx, newDy);
         }
 
@@ -226,5 +240,18 @@ namespace NuSysApp
         public InkManager inkManager { get; set; }
 
 
+        public CompositeTransform InkScale
+        {
+            get { return _inkScale; }
+            set
+            {
+                if (_inkScale == value)
+                {
+                    return;
+                }
+                _inkScale = value;
+                RaisePropertyChanged("InkScale");
+            }
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace NuSysApp
         {
             ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
-            vm.Resize((e.Delta.Scale - 1) * vm.Width, (e.Delta.Scale - 1) * vm.Height);//TO DO: POSSIBLY REMOVE THIS FEATURE FOR LACK OF CONSISTENCY
+       //     vm.Resize((e.Delta.Scale - 1) * vm.Width, (e.Delta.Scale - 1) * vm.Height);//TO DO: POSSIBLY REMOVE THIS FEATURE FOR LACK OF CONSISTENCY
             e.Handled = true;
         }
 
