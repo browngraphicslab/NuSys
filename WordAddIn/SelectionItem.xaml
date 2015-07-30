@@ -15,6 +15,7 @@
                 <Label FontSize="14 " FontFamily="Segoe UI Light" Content="{Binding SlideNumber}" />
             </StackPanel>
             <RichTextBox x:Name="rtb" Width="280" MaxHeight="200" IsHitTestVisible="False" />
+            <Image x:Name="img" Source="{Binding Thumbnail}" Width="Auto" MaxHeight="200" Stretch="Uniform"/>
         </StackPanel>
         <Separator VerticalAlignment="Bottom" Height="1"/>
     </Grid>
