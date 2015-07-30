@@ -8,7 +8,7 @@
         if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
             return StrokeType.Null;
         }
-        if (metrics.error > 20) {
+        if (metrics.error > 30) {
             return StrokeType.Scribble;
         }
         if (Math.abs(p1.y - p0.y) < 20) {

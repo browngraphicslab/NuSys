@@ -19,6 +19,7 @@
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
     <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}, Mode=OneTime}">
+        <!-- CornerRadius="3.5"-->
         <Button Opacity=".5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50"
                 Height="50"
                 Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}">
@@ -46,13 +47,12 @@
             </Button.Flyout>
         </Button>
         <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}"/>
-        <TextBlock Name="textBlock" TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top" Margin="1,60,1,1"
-                   FontSize="12" Foreground="White" FontFamily="Calibri"
-
+        <TextBlock Name="textBlock" TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top" Margin="20,60,20,1"
+                   FontSize="20" Foreground="White" FontFamily="Calibri"
                    Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}"
                    Text="{Binding Data, Mode=TwoWay}" />
         <TextBox x:Name="textBox" Foreground="White" TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top"
-                 Margin="-9, 58, 1, 1" BorderThickness="0" FontSize="12" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
+                 Margin="20, 57, 20, 1" BorderThickness="0" FontSize="20" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
                  Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}"
                  Background="Transparent" BorderBrush="Transparent" />
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
@@ -61,8 +61,9 @@
                 <Image Source="ms-appx:///Pics/xicon (1).png" />
             </Button.Content>
         </Button>
-        <Button x:Name="edit" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White"
-                FontFamily="Calibri" Content="edit" Click="Edit_Click" />
+        <Button x:Name="edit" VerticalAlignment="Top" VerticalContentAlignment="Top" HorizontalAlignment="Right" Foreground="White"
+                FontFamily="Calibri" Content="edit" Click="Edit_Click" Height="30" >
+        </Button>
         <Button x:Name="editC" VerticalAlignment="Top" HorizontalAlignment="Center" Foreground="White"
                 FontFamily="Calibri" Content="edit Ink" Click="EditC_Click" />
         <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"

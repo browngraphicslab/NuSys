@@ -20,7 +20,7 @@ class Main {
     isSelecting: boolean;
     isEnabled: boolean;
     rectangleArray = [];
-    objectKeyCount: number = 0;
+    objectKeyCount: number = Date.now();
 
     constructor() {
         console.log("Starting NuSys.");
@@ -244,11 +244,8 @@ class Main {
 
         this.inkCanvas = new InkCanvas(this.canvas);
         this.selection = new LineSelection(this.inkCanvas);    
-        
-        chrome.storage.local.get(null, (data) => {
-            console.log(data);
-            this.objectKeyCount = Object.keys(data).length;
-        });   
+
+        console.log(this.objectKeyCount);  
 
 
 
@@ -256,7 +253,8 @@ class Main {
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if (request.msg == "checkInjection")
-                    sendResponse({ toggleState: currToggle })
+                    sendResponse({ toggleState: currToggle , objectId: this.objectKeyCount})
+
                 if (request.toggleState == true) {
                     this.toggleEnabled(true);
                     console.log("show canvas");
