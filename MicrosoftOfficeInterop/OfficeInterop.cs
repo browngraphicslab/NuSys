@@ -14,16 +14,9 @@ namespace MicrosoftOfficeInterop
         public static string SavePresentationAsPdf(string filePath, string destinationPath = null)
         {
             var presentation = OpenPresentation(filePath, false);
-            string destination = null;
+            //string destination = null;
             //presentation?.SaveAs(destinationPath ?? filePath, PowerPoint.PpSaveAsFileType.ppSaveAsPDF);
-            if (destinationPath == null)
-            {
-                destination = filePath;
-            }
-            else
-            {
-                destination = destinationPath;
-            }
+            var destination = destinationPath ?? filePath;
             presentation.SaveAs(destination, PowerPoint.PpSaveAsFileType.ppSaveAsPDF);
             return destination;
         }

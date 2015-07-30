@@ -63,9 +63,12 @@ namespace NuSysApp
                     folderWatcher.FilesChanged += async () =>
                     {
                         var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
-                        foreach (var nusysFile in files.Where(file => file.Name == "convertedPDF.pdf"))
+                        foreach (var nusysFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
                         {
-                            storageFile = nusysFile;
+                            var pdfFilePath = await FileIO.ReadTextAsync(nusysFile);
+                            if (string.IsNullOrEmpty(pdfFilePath)) continue;
+                            Debug.WriteLine("received pptx to pdf file path: " + pdfFilePath);
+                            storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
                             complete = true;
                         }
                     };

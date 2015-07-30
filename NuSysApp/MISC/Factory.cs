@@ -28,12 +28,7 @@ namespace NuSysApp
         public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(WorkspaceViewModel vm, StorageFile storageFile)
         {
             var pnvm = new PdfNodeViewModel(vm);
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                await pnvm.InitializePdfNodeAsync(storageFile);
-            });
-            //await pnvm.InitializePdfNodeAsync(storageFile);
+            await pnvm.InitializePdfNodeAsync(storageFile);
             return pnvm;
         }
 
