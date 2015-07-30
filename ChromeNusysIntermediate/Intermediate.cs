@@ -69,6 +69,8 @@ namespace ChromeNusysIntermediate
                         var imgGoalH = imgH * 15;
                         var imgData = BitConverter.ToString(File.ReadAllBytes(imgPath)).Replace("-", "");
 
+                        File.Delete(imgPath);
+
                         imageRtf = Resources.image.ToString();
                         imageRtf = imageRtf.Replace("---IMG_W---", imgW.ToString());
                         imageRtf = imageRtf.Replace("---IMG_H---", imgH.ToString());

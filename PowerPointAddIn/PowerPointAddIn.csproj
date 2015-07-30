@@ -219,7 +219,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="icon2.png" />
+    <Content Include="icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="SelectionItem.xaml">

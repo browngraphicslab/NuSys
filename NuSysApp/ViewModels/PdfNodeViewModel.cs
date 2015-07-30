@@ -30,7 +30,6 @@ namespace NuSysApp
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
             this.InkContainer = new List<InkStrokeContainer>();
-            this.inkManager = new InkManager();
             _workspaceViewModel = workspaceViewModel;
         }
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
@@ -141,8 +140,6 @@ namespace NuSysApp
         }
      //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
         public List<InkStrokeContainer> InkContainer { get; set; }
-        public InkManager inkManager { get; set; }
-
 
     }
 }

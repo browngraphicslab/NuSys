@@ -80,7 +80,7 @@ namespace WordAddIn
 
         public Bitmap GetImage(Office.IRibbonControl control)
         {
-            return Properties.Resources.icon2; // resource Bitmap
+            return Properties.Resources.icon; // resource Bitmap
         }
 
         #endregion

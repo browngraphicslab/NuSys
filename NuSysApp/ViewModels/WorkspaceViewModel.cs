@@ -10,6 +10,9 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
+using System.Text;
 
 namespace NuSysApp
 {
@@ -71,8 +74,10 @@ namespace NuSysApp
             var result = await SetupDirectories();
             SetupChromeIntermediate();
             SetupWordTransfer();
-            SetupPowerPointTransfer();
+            SetupPowerPointTransfer();            
         }
+
+
 
         private async void SetupWordTransfer()
         {
@@ -86,7 +91,7 @@ namespace NuSysApp
                 await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
                     var readFile = await FileIO.ReadTextAsync(file);
-                    var nodeVm = _factory.CreateNewRichText(readFile);
+                    var nodeVm = Factory.CreateNewRichText(this, readFile);
                     var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                     PositionNode(nodeVm, p.X, p.Y);
                     NodeViewModelList.Add(nodeVm);
@@ -100,13 +105,18 @@ namespace NuSysApp
         {
             var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
             fw.FilesChanged += async delegate
-            {
-                // var file = await NuSysStorages.PowerPointTransferFolder.GetFileAsync("selection.nusys").AsTask();
-                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
+            {            
+                var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
+                if (foundUpdate == null)
+                {
+                    Debug.WriteLine("no update yet!");
+                    return;
+                }
+                await foundUpdate.DeleteAsync();
 
+                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                int count = 0;
-                Debug.WriteLine("COUNT: " + transferFiles.Count);
+
                 foreach (var file in transferFiles) { 
 
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
@@ -116,27 +126,26 @@ namespace NuSysApp
                         {
                             var str = lines[0];
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-                            var fileStream = await imageFile.OpenAsync(FileAccessMode.Read);
-                            var image = new BitmapImage();
-                            image.SetSource(fileStream);
-
-                            Debug.WriteLine("WIDTH: " + image.PixelWidth);
-
-                            var nodeVm = _factory.CreateNewImage(image);
+                            var nodeVm = await Factory.CreateNewImage(this, imageFile);
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
                             AtomViewList.Add(nodeVm.View);
-                        } else {
 
+                        } else {
                             var readFile = await FileIO.ReadTextAsync(file);
-                            var nodeVm = _factory.CreateNewRichText(readFile);
+                            var nodeVm = Factory.CreateNewRichText(this, readFile);
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
                             AtomViewList.Add(nodeVm.View);
                         }
                     });
+                }
+
+                foreach (var file in transferFiles)
+                {
+                    await file.DeleteAsync();
                 }
             };
         }
@@ -152,13 +161,17 @@ namespace NuSysApp
                 var count = 0;
                 foreach (var file in transferFiles)
                 {
-                    Debug.WriteLine(file.Path);
-
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        var readFile = await FileIO.ReadTextAsync(file);
+                        //var readFile = await FileIO.ReadTextAsync(file);
+                        IBuffer buffer = await FileIO.ReadBufferAsync(file);
+                        DataReader reader = DataReader.FromBuffer(buffer);
+                        byte[] fileContent = new byte[reader.UnconsumedBufferLength];
+                        reader.ReadBytes(fileContent);
+                        string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
+
                         //var nodeVm = _factory.CreateNewRichText(readFile);
-                        var nodeVm = Factory.CreateNewRichText(this, readFile);
+                        var nodeVm = Factory.CreateNewRichText(this, text);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -169,7 +182,7 @@ namespace NuSysApp
 
                 foreach (var file in transferFiles)
                 {
-                    await file.DeleteAsync();
+                  //  await file.DeleteAsync();
                 }
             };
         }

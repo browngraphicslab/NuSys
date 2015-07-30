@@ -11,16 +11,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing;
-using Microsoft.Office.Interop.PowerPoint;
+using Microsoft.Office.Interop.Word;
 using System.Drawing.Imaging;
+using GemBox.Document;
 
-namespace PowerPointAddIn
+namespace WordAddIn
 {
     /// <summary>
     /// Interaction logic for SidePane.xaml
@@ -52,13 +52,18 @@ namespace PowerPointAddIn
 
         private void OnSelectionAdded()
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
             var mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
 
             var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+            selection.Select();
             selection.Copy();
 
-            System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
+            var left = Globals.ThisAddIn.Application.Selection.get_Information(WdInformation.wdHorizontalPositionRelativeToPage);
+            var top = Globals.ThisAddIn.Application.Selection.get_Information(WdInformation.wdVerticalPositionRelativeToPage);
+
+
+            IDataObject data = Clipboard.GetDataObject();
+
             if (null != data)
             {
                 foreach (var f in data.GetFormats())
@@ -68,48 +73,31 @@ namespace PowerPointAddIn
 
                 string result = string.Empty;
                 var imgFileName = string.Format(@"{0}", Guid.NewGuid());
-                imgFileName = imgFileName + ".png";
+                imgFileName = imgFileName + ".png"; 
 
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Rtf))
+                if (data.GetDataPresent(System.Windows.DataFormats.Rtf))
                 {
-                    result = (string)data.GetData(System.Windows.Forms.DataFormats.Rtf);
+                    result = (string)data.GetData(System.Windows.DataFormats.Rtf);               
                 }
-                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Html))
-                {
-                    string html = (string)data.GetData(System.Windows.Forms.DataFormats.Html);
-                    var converter = new SautinSoft.HtmlToRtf();
-                    result = converter.ConvertString(html);
-                }
-                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    result = imgFileName;
-                    Bitmap bitmap = (data.GetData(System.Windows.Forms.DataFormats.Bitmap, true) as Bitmap);
-                    bitmap.Save(mediaDir + "\\" + imgFileName, System.Drawing.Imaging.ImageFormat.Png);
-                    System.IO.File.SetLastWriteTimeUtc(mediaDir + "\\" + imgFileName, DateTime.UtcNow);
-                }
-
-                Bitmap thumbnail = null;
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    result = imgFileName;
-                    thumbnail = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
-                    thumbnail.Save(mediaDir + "\\" + imgFileName, ImageFormat.Png);
-                }
+       
 
                 if (result == string.Empty)
                     return;
 
+                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
+                c.Author = "NuSys";
 
-                var imgSrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(thumbnail.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-
-                // Create a comment
-                var posX = selection.ShapeRange.Left;
-                var posY = selection.ShapeRange.Top;
-                var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
-                var c = currentSlide.Comments.Add(posX, posY, "NuSys", "NuSys", "This region to NuSys");
-                Selections.Add(new SelectionItem { Content = result, Comment = c, Slide = currentSlide, SlideNumber = currentSlide.SlideNumber, Thumbnail = imgSrc });
+                var doc = Globals.ThisAddIn.Application.ActiveDocument;
+                Selections.Add(new SelectionItem { Content = result, Comment = c, DOcument = doc});
+                
+                // Create a comment                
+                //var posX = selection.ShapeRange.Left;
+                //var posY = selection.ShapeRange.Top;
+                //var currentSlide = (Document)Globals.ThisAddIn.Application.ActiveDocument;
+                //var c = currentSlide.Comments.Add(posX, posY, "NuSys", "NuSys", "This region was added to NuSys");
             }
         }
+
 
         private void Send()
         {
