@@ -112,6 +112,12 @@ namespace NuSysApp
 //                vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
 
                 inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+                p.X = result.X;
+                p.Y = result.Y;
+                if (result.Width == 0 && result.Height == 0)
+                {
+                    return;
+                }
                 
             }
             

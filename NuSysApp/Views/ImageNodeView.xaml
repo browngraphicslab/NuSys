@@ -45,7 +45,7 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" RenderTransform="{Binding InkScale}"/>
+        <InkCanvas x:Name="inkCanvas" Height="{Binding ImageModel.PixelHeight}" Width="{Binding ImageModel.Image.PixelWidth}" RenderTransform="{Binding InkScale}"/>
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Click="delete_Click" Margin="10,10,0,0"
                 Background="#00000000">
             <Button.Content>
