@@ -96,7 +96,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Background="Transparent" ManipulationMode="All" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
+        <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent" ManipulationMode="All" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -136,7 +136,7 @@
             </Button>
             <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center" Height="115" Margin="0,-6,0,-9">
                 <Button.Background>
-                    <ImageBrush ImageSource="scribble icon (1).png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="scribble icon (2).png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
             <!--<Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
