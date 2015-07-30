@@ -59,10 +59,24 @@ class LineSelection implements ISelection {
 
     }
 
+
+    addWordTag(nodes): void {
+
+        console.log(nodes);
+
+        $.each(nodes, (index, value) =>{
+
+            if (value.nodeType == Node.TEXT_NODE) {
+                $(value).replaceWith($(value).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
+            }
+            else if (value.childNodes.length>0){
+                this.addWordTag(value.childNodes);
+            }
+        });
+    }
     analyzeContent(): void {
-        
+
         var stroke = this._brushStroke.stroke;
-        
         var pStart = stroke.points[0];
         var pEnd = stroke.points[stroke.points.length - 1];
 
@@ -82,11 +96,9 @@ class LineSelection implements ISelection {
                     $(this).replaceWith($(this).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
                 }
             });
-            var avgY = (pStart.y + pEnd.y) / 2;
-            nStart = document.elementFromPoint(pStart.x, avgY);
-            nEnd = document.elementFromPoint(pEnd.x, avgY);
-            console.log(nStart);
-            console.log(nEnd);
+
+            nStart = document.elementFromPoint(pStart.x, pStart.y);
+            nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
             this._range = new Range();
             this._range.setStart(nStart, 0);
             this._range.setEndAfter(nEnd);
@@ -94,7 +106,7 @@ class LineSelection implements ISelection {
 
             var frag = this._range.cloneContents();
             var result = "";
-            $.each(frag["children"], function() {
+            $.each(frag["children"], function () {
                 result += $(this)[0].outerHTML.replace(/<word>|<\/word>/g, " ");
             });
             result = result.replace(/\s\s+/g, ' ').trim();
@@ -104,6 +116,8 @@ class LineSelection implements ISelection {
             $(commonParent).replaceWith(original_content);
         }
     }
+
+    
 
     getContent(): string {
              return this._content;
