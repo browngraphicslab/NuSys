@@ -469,6 +469,61 @@ namespace NuSysApp
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
 
+        private bool _isErasing, _isHighlighting;
+        private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            _isErasing = !_isErasing;
+            if (_isErasing)
+            {
+                Erase.Opacity = 0.5;
+                Highlight.Opacity = 1;
+                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
+                    Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
+            }
+            else
+            {
+                Erase.Opacity = 1;
+                Highlight.Opacity = 1;
+                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
+                    Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
+            }
+
+        }
+
+        private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+
+            _isErasing = false;
+            _isHighlighting = !_isHighlighting;
+            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
+                    Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
+            if (_isHighlighting)
+            {
+                Erase.Opacity = 1;
+                Highlight.Opacity = 0.5;
+                _drawingAttributes = new InkDrawingAttributes
+                {
+                    Color = Windows.UI.Colors.Yellow,
+                    Size = new Windows.Foundation.Size(6, 6),
+                    IgnorePressure = false
+                };
+                inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);
+            }
+            else
+            {
+                Erase.Opacity = 1;
+                Highlight.Opacity = 1;
+                _drawingAttributes = new InkDrawingAttributes
+                {
+                    Color = Windows.UI.Colors.Black,
+                    Size = new Windows.Foundation.Size(2, 2),
+                    IgnorePressure = false
+                };
+                inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);
+            }
+        }
+
     }
 
 
