@@ -38,6 +38,7 @@ namespace MicrosoftOfficeInterop
 
             //Console.WriteLine("Press 'q' to quit the sample.");
             //while (Console.Read() != 'q') { }
+            while (true) { }
         }
 
         private static void OnChanged(object source, FileSystemEventArgs e)
