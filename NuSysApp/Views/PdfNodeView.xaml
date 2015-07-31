@@ -44,13 +44,7 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}"/>
-        <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Click="delete_Click" Margin="10,10,0,0"
-                Background="#00000000">
-            <Button.Content>
-                <Image Source="ms-appx:///Pics/xicon.png" />
-            </Button.Content>
-        </Button>
+        <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" RenderTransform="{Binding InkScale}"/>
         <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
             <Button.Content>
                 <Image Opacity=".5" Stretch="Uniform" Source="left icon.png" />
@@ -69,6 +63,12 @@
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Gray" StrokeThickness="1"
                    StrokeDashArray="5" Opacity=".8"
                    Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+        <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Click="delete_Click" Margin="10,10,0,0"
+                Background="#00000000">
+            <Button.Content>
+                <Image Source="ms-appx:///Pics/xicon.png" />
+            </Button.Content>
+        </Button>
     </Grid>
 
 </UserControl>

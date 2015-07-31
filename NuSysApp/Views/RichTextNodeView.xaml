@@ -17,8 +17,28 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
         <converters:BoolInvertConverter x:Key="IConverter"/>
-     </UserControl.Resources>
+        <Style x:Key="RadialMenu" TargetType="MenuFlyoutPresenter">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate x:Name="Menu" TargetType="MenuFlyoutPresenter">
+                        <Grid Height="241" Canvas.Left="-18" Canvas.Top="-13" Width="241">
+                            <Path Fill="White" Data="M239.916,120.5 C239.916,186.774 186.414,240.5 120.416,240.5 C54.4185,240.5 0.916473,186.774 0.916473,120.5 C0.916473,54.2258 54.4185,0.5 120.416,0.5 C186.414,0.5 239.916,54.2258 239.916,120.5 z M167.119,120.5 C167.119,145.905 146.479,166.5 121.018,166.5 C95.5568,166.5 74.9165,145.905 74.9165,120.5 C74.9165,95.0949 95.5568,74.5 121.018,74.5 C146.479,74.5 167.119,95.0949 167.119,120.5 z M120.916,0.5 L120.916,74.5 M121.916,166.667 L121.916,240.667 M240.667,120.583 L166.667,120.583 M74.5,121.583 L0.5,121.583 M205.828,35.6716 L153.502,87.9975 M89.0376,153.877 L36.7117,206.202 M36.0046,35.6716 L88.3305,87.9975 M154.21,152.462 L206.535,204.788" Stretch="Fill" Stroke="{TemplateBinding Background}" StrokeThickness="3" UseLayoutRounding="False" Margin="0,-0.167,-0.167,0"/>
+                            <MenuFlyoutItem Text="edit Ink" x:Name="Editc" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="72,12,0,0"/>
+                            <MenuFlyoutItem Text="edit" HorizontalAlignment="Right" VerticalAlignment="Top" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="0,12,71,0"/>
+                            <MenuFlyoutItem Text="button" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="20,67,0,0"/>
+                            <MenuFlyoutItem Text="button" HorizontalAlignment="Right" VerticalAlignment="Top" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="0,66,18,0"/>
+                            <MenuFlyoutItem Text="button" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="20,0,0,65"/>
+                            <MenuFlyoutItem Text="button" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="72,0,0,15"/>
+                            <MenuFlyoutItem Text="button" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="0,0,69,15"/>
+                            <MenuFlyoutItem Text="button" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="43" Background="{x:Null}" Foreground="#FF7C7C7C" FontSize="8" Margin="0,0,18,66"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}}">
+        <!-- CornerRadius="3.5"-->
         <Button Opacity=".5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50"
                 Height="50"
                 Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}">
@@ -35,7 +55,8 @@
                 </ControlTemplate>
             </Button.Template>
             <Button.Flyout>
-                <MenuFlyout Placement="Left">
+                <MenuFlyout Placement="Right">
+                    <MenuFlyoutItem x:Name="editcc" Text="edic" ></MenuFlyoutItem>
                     <MenuFlyout.MenuFlyoutPresenterStyle>
                         <Style BasedOn="{StaticResource RadialMenu}" TargetType="MenuFlyoutPresenter"
                                x:Name="textnodemenu">
@@ -46,7 +67,7 @@
             </Button.Flyout>
         </Button>
         <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" IsHitTestVisible="{Binding IsEditingInk}"/>
-            <RichEditBox x:Name="textBlock" Height="576" IsEnabled="True" SelectionChanged="Rich_Tapped" IsTapEnabled="True" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
+        <RichEditBox x:Name="textBlock" Opacity=".5" Background="Transparent" Foreground="White" FontSize="20" FontFamily="Calabri" Height="576" IsEnabled="True" SelectionChanged="Rich_Tapped" IsTapEnabled="True" VerticalAlignment="Top" Margin="1,60,1,1" BorderThickness="0" 
                      IsReadOnly="{Binding IsEditing, Converter={StaticResource IConverter}}" />
             <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
@@ -68,7 +89,7 @@
               Opacity=".5" ManipulationDelta="Resizer_ManipulationDelta" ManipulationMode="All" />
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="1"
                    StrokeDashArray="5" Opacity=".8"
-                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" VerticalAlignment="Bottom" />
 
     </Grid>
 

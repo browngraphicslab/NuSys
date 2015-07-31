@@ -6,6 +6,9 @@ namespace NuSysApp.MISC
 {
     public class FolderWatcher
     {
+        /// <summary>
+        /// Event activates when files are created, deleted, or modified
+        /// </summary>
         public event FilesChangedHandler FilesChanged;
         public delegate void FilesChangedHandler();
 

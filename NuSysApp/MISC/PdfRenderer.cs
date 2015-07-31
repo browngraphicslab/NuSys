@@ -28,18 +28,18 @@ namespace NuSysApp
             return src;
         }
 
-        public static async Task<uint> GetPageCount(StorageFile pdfStorageFile)
-        {
-            try
-            {
-                _pdfDocument = await PdfDocument.LoadFromFileAsync(pdfStorageFile);
-                return _pdfDocument.PageCount;
-            }
-            catch
-            {
-                throw new Exception("Can't get page count");
-            }
-        }
+        //public static async Task<uint> GetPageCount(StorageFile pdfStorageFile)
+        //{
+        //    try
+        //    {
+        //        _pdfDocument = await PdfDocument.LoadFromFileAsync(pdfStorageFile);
+        //        return _pdfDocument.PageCount;
+        //    }
+        //    catch
+        //    {
+        //        throw new Exception("Can't get page count");
+        //    }
+        //}
 
         public static async Task<List<BitmapImage>> RenderPdf(StorageFile pdfStorageFile, double zoomFactor = 1.0)
         {
@@ -79,7 +79,7 @@ namespace NuSysApp
             }
             catch
             {
-                System.Diagnostics.Debug.WriteLine("PDF rendering error caught D:");
+                Debug.WriteLine("PDF rendering error caught D:");
                 return null;
             }
             return null;
