@@ -20,11 +20,8 @@ namespace MicrosoftOfficeInterop
 
         public static void Run()
         {
-            //const string dirToWatch = @"C:\Users\Gary\Documents\NuSys\OfficeToPdf";
             var watcher = new FileSystemWatcher()
             {
-                //NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
-                //               NotifyFilters.DirectoryName,
                 NotifyFilter = NotifyFilters.LastWrite,
                 Path = DirToWatch,
                 Filter = "*.nusys",
@@ -36,31 +33,23 @@ namespace MicrosoftOfficeInterop
 
             watcher.Changed += OnChanged;
 
-            //Console.WriteLine("Press 'q' to quit the sample.");
-            //while (Console.Read() != 'q') { }
+            Console.WriteLine("Watching for Office to PDF conversion requests from NuSys...");
             while (true) { }
         }
 
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
-            // Specify what is done when a file is changed, created, or deleted.
-            Console.WriteLine("FILE CHANGED: " + e.FullPath + " " + e.ChangeType);
             try
             {
                 if (e.Name != "path_to_pptx.nusys") return;
                 _currentFilePath = File.ReadAllText(e.FullPath);
 
-                //File.Delete(e.FullPath);
-
                 if (_previousFilePath == _currentFilePath) return; // prevent repeated calls
                 _previousFilePath = _currentFilePath;
                 var pathToOfficeFile = _currentFilePath; // path to .docx/.pptx file
-                Console.WriteLine("CONTENTS: " + pathToOfficeFile);
                 if (pathToOfficeFile.Length < 6) return;
                 if (pathToOfficeFile.Last() != 'x') return;
-                var length = pathToOfficeFile.Length;
-                var extension = pathToOfficeFile.Substring(length - 5);
-                Console.WriteLine("EXTENSION: "+ extension);
+                var extension = pathToOfficeFile.Substring(pathToOfficeFile.Length - 5);
                 switch (extension)
                 {
                     case ".pptx":
