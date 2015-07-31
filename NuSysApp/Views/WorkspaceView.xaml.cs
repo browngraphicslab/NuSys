@@ -462,6 +462,7 @@ namespace NuSysApp
             docButton.Opacity = 1;
             Erase.Opacity = 1;
             Highlight.Opacity = 1;
+
             var vm = (WorkspaceViewModel) DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
