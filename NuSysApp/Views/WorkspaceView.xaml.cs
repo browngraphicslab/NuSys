@@ -252,8 +252,8 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
-            Erase.Opacity = 1;
-            Highlight.Opacity = 1;
+           // Erase.Opacity = 1;
+           // Highlight.Opacity = 1;
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -268,8 +268,8 @@ namespace NuSysApp
             textButton.Opacity = .5;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
-            Erase.Opacity = 1;
-            Highlight.Opacity = 1;
+           // Erase.Opacity = 1;
+           // Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.ToggleInk();
@@ -289,8 +289,8 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = .5;
             docButton.Opacity = 1;
-            Erase.Opacity = 1;
-            Highlight.Opacity = 1;
+           // Erase.Opacity = 1;
+           // Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
@@ -460,8 +460,8 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
-            Erase.Opacity = 1;
-            Highlight.Opacity = 1;
+           // Erase.Opacity = 1;
+           // Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel) DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
             inkCanvas.InkPresenter.IsInputEnabled = false;
@@ -473,15 +473,15 @@ namespace NuSysApp
             _isErasing = !_isErasing;
             if (_isErasing)
             {
-                Erase.Opacity = 0.5;
-                Highlight.Opacity = 1;
+             //   Erase.Opacity = 0.5;
+             //   Highlight.Opacity = 1;
                 inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
                     Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
             }
             else
             {
-                Erase.Opacity = 1;
-                Highlight.Opacity = 1;
+             //  Erase.Opacity = 1;
+             //   Highlight.Opacity = 1;
                 inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
                     Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
             }
@@ -498,8 +498,8 @@ namespace NuSysApp
                     Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
             if (_isHighlighting)
             {
-                Erase.Opacity = 1;
-                Highlight.Opacity = 0.5;
+              //  Erase.Opacity = 1;
+              //  Highlight.Opacity = 0.5;
                 _drawingAttributes = new InkDrawingAttributes
                 {
                     Color = Windows.UI.Colors.Yellow,
@@ -510,8 +510,8 @@ namespace NuSysApp
             }
             else
             {
-                Erase.Opacity = 1;
-                Highlight.Opacity = 1;
+              //  Erase.Opacity = 1;
+              //  Highlight.Opacity = 1;
                 _drawingAttributes = new InkDrawingAttributes
                 {
                     Color = Windows.UI.Colors.Black,

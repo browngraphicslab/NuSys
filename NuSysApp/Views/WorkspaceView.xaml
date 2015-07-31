@@ -108,7 +108,7 @@
                 <Button.Background>
                     <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-                <Button.Flyout>
+               <!-- <Button.Flyout>
                     <MenuFlyout Placement="Right" MenuFlyoutPresenterStyle="{StaticResource FloatingFlyout}">
                         <MenuFlyoutItem x:Name="Erase" Style="{StaticResource FloatingFlyoutButton}" Tapped="Erase_OnTapped">
                             <MenuFlyoutItem.Background>
@@ -121,7 +121,7 @@
                             </MenuFlyoutItem.Background>
                         </MenuFlyoutItem>
                     </MenuFlyout>
-                </Button.Flyout>
+                </Button.Flyout>-->
             </Button>
 
             <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
