@@ -26,6 +26,7 @@ namespace WordAddIn
         private int _slideNumber;
         private ScaleTransform _renderTransform;
         private ImageSource _thumbnail;
+        private Range _range;
 
         public SelectionItem()
         {
@@ -40,8 +41,8 @@ namespace WordAddIn
                 return;
 
             var selectionItem = (SelectionItem)sender;
-            selectionItem.Comment.Range.GoTo();
-            selectionItem.Comment.Range.Select();
+            selectionItem.Range.Select();
+
             // Globals.ThisAddIn.Application.ActiveWindow.View.GotoSlide(selectionItem.SlideNumber);
         }
 
@@ -50,16 +51,30 @@ namespace WordAddIn
             get { return _content; }
             set {
                 _content = value;
-                rtb.RenderTransform = new ScaleTransform(0.9, 0.9);
                 SetRtf(rtb, value);
-                
+                img.Visibility = Visibility.Collapsed;
+                rtb.Visibility = Visibility.Visible;
+
+                if (_content.IndexOf("goalw") > -1)
+                {
+                    Debug.WriteLine(_content.Substring(_content.IndexOf("goalw"),10));
+                }
             }
         }
 
         public ImageSource Thumbnail
         {
             get { return _thumbnail; }
-            set { _thumbnail = value; }
+            set { _thumbnail = value;
+                img.Visibility = Visibility.Visible;
+                rtb.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public Range Range
+        {
+            get { return _range; }
+            set { _range = value; }
         }
 
         public ScaleTransform RenderTransform

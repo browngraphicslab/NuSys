@@ -17,7 +17,6 @@ using System.Text;
 using System.IO;
 using Windows.Storage.Search;
 
-
 namespace NuSysApp
 {
     /// <summary>
@@ -152,16 +151,13 @@ namespace NuSysApp
                     await file.DeleteAsync();
                 }
             };
-
-            SetUpOfficeToPdfWatcher();
-
         }
+
         private void SetupChromeIntermediate()
         {
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
             fw.FilesChanged += async delegate
             {
-                //Debug.WriteLine("CONTENTS CHANGED! ");
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -170,14 +166,12 @@ namespace NuSysApp
                 {
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        //var readFile = await FileIO.ReadTextAsync(file);
                         IBuffer buffer = await FileIO.ReadBufferAsync(file);
                         DataReader reader = DataReader.FromBuffer(buffer);
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
 
-                        //var nodeVm = _factory.CreateNewRichText(readFile);
                         var nodeVm = Factory.CreateNewRichText(this, text);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
@@ -189,30 +183,17 @@ namespace NuSysApp
 
                 foreach (var file in transferFiles)
                 {
-                  //  await file.DeleteAsync();
+                    await file.DeleteAsync();
                 }
             };
         }
 
-        private static void SetUpOfficeToPdfWatcher()
-        {
-           var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
-            folderWatcher.FilesChanged += async delegate
-            {
-                var transferFiles = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
-                Debug.WriteLine("Number of files in OfficeToPdf: {0}", transferFiles.Count());
-                //foreach (var file in transferFiles)
-                //{
-                //    Debug.WriteLine("File name: " + file.Name);
-                //    Debug.WriteLine("File path: " + file.Path);
-                //    var fileContents = await FileIO.ReadTextAsync(file);
-                //    Debug.WriteLine("File contents: " + fileContents);
-                //}
-            };
-        }
 
         private static async Task<bool> SetupDirectories()
         {
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+           
             NuSysStorages.NuSysTempFolder =
                 await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.ChromeTransferFolder =
@@ -222,6 +203,7 @@ namespace NuSysApp
             NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_MEDIA_NAME);
             NuSysStorages.OfficeToPdfFolder =
                 await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
+
             return true;
         }
 
