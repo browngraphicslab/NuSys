@@ -110,7 +110,6 @@ namespace NuSysApp
                         var pngStorageFile = await tempStorageFolder.CreateFileAsync(Guid.NewGuid() + ".png", CreationCollisionOption.ReplaceExisting);
                         if (pngStorageFile != null)
                         {
-                            System.Diagnostics.Debug.WriteLine("RENDERING PDF");
                             var randomAccessStream = await pngStorageFile.OpenAsync(FileAccessMode.ReadWrite);
                             var pdfPageRenderOptions = new PdfPageRenderOptions();
 
