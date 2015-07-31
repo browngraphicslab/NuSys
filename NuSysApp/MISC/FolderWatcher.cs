@@ -28,9 +28,6 @@ namespace NuSysApp.MISC
 
         private void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
         {
-            //Debug.WriteLine("CONTENTS CHANGED! " + args);
-            //if (FilesChanged != null)
-            //    FilesChanged();
             FilesChanged?.Invoke();
         }
 

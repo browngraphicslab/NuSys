@@ -1,3 +1,5 @@
+
+﻿using System.Diagnostics;
 ﻿using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -125,17 +127,5 @@ namespace NuSysApp
             Debug.WriteLine(x);
             //find the and then search through the .rtfio
         }
-
-        //async void DefaultLaunch()
-        //{
-        //    //Launch the URI
-        //    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
-        //    if (success)
-        //    {
-                
-        //    }
-        //    el
-        //}
-
     }
 }

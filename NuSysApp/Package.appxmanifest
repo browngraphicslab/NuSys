@@ -46,6 +46,9 @@
           <uap:FileTypeAssociation Name="nusys">
             <uap:SupportedFileTypes>
               <uap:FileType>.nusys</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.pptx#3</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -63,6 +66,7 @@
 
   <Capabilities>
     <Capability Name="internetClient" />
+    <Capability Name="privateNetworkClientServer" />
     <uap:Capability Name="documentsLibrary" />
     <uap:Capability Name="picturesLibrary" />
   </Capabilities>

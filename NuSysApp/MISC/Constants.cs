@@ -11,6 +11,19 @@ namespace NuSysApp
     public class Constants
     {
         #region Folders and files
+        public static string FOLDER_NUSYS_TEMP = "NuSys";
+        public static string FOLDER_CHROME_TRANSFER_NAME = "ChromeTransfer";
+        public static string FOLDER_WORD_TRANSFER_NAME = "WordTransfer";
+        public static string FOLDER_POWERPOINT_TRANSFER_NAME = "PowerPointTransfer";
+        public static string FOLDER_MEDIA_NAME = "Media";
+        public static string FILE_CHROME_TRANSFER_NAME = "selections.nusys";
+        #endregion Folders and files
+
+        #region Node Dimensions
+        public const double DEFAULT_NODE_SIZE = 200;
+        public const double DEFAULT_ANNOTATION_SIZE = 100;
+        public const double EXTRA_PADDING_SPACE = 50;
+        public const double MIN_NODE_SIZE = 2;
         public static string FolderNusysTemp = "NuSys";
         public static string FolderChromeTransferName = "ChromeTransfer";
         public static string FileChromeTransferName = "selections.nusys";

@@ -36,7 +36,6 @@ namespace NuSysApp
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
             this.InkContainer = new List<InkStrokeContainer>();
-            this.inkManager = new InkManager();
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform { 
                 ScaleX = 1,
@@ -215,8 +214,6 @@ namespace NuSysApp
         }
      //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
         public List<InkStrokeContainer> InkContainer { get; set; }
-        public InkManager inkManager { get; set; }
-
 
         public CompositeTransform InkScale
         {

@@ -11,6 +11,9 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
+using System.Text;
 using System.IO;
 using Windows.Storage.Search;
 
@@ -73,27 +76,103 @@ namespace NuSysApp
         {
             /*var result = */await SetupDirectories();
             SetupChromeIntermediate();
-            SetUpOfficeToPdfWatcher();
+            SetupWordTransfer();
+            SetupPowerPointTransfer();            
         }
+
+
+
+        private async void SetupWordTransfer()
+        {
+            var fw = new FolderWatcher(NuSysStorages.WordTransferFolder);
+            fw.FilesChanged += async delegate
+            {
+                var file = await NuSysStorages.WordTransferFolder.GetFileAsync("selection.nusys").AsTask();
+
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    var readFile = await FileIO.ReadTextAsync(file);
+                    var nodeVm = Factory.CreateNewRichText(this, readFile);
+                    var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                    PositionNode(nodeVm, p.X, p.Y);
+                    NodeViewModelList.Add(nodeVm);
+                    AtomViewList.Add(nodeVm.View);
+                });
+                
+            };
+        }
+
+        private async void SetupPowerPointTransfer()
+        {
+            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
+            fw.FilesChanged += async delegate
+            {            
+                var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
+                if (foundUpdate == null)
+                {
+                    Debug.WriteLine("no update yet!");
+                    return;
+                }
+                await foundUpdate.DeleteAsync();
+
+                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+                foreach (var file in transferFiles) { 
+
+                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    {
+                        var lines = await FileIO.ReadLinesAsync(file);
+                        if (lines[0].EndsWith(".png"))
+                        {
+                            var str = lines[0];
+                            var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
+                            var nodeVm = await Factory.CreateNewImage(this, imageFile);
+                            var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                            PositionNode(nodeVm, p.X, p.Y);
+                            NodeViewModelList.Add(nodeVm);
+                            AtomViewList.Add(nodeVm.View);
+
+                        } else {
+                            var readFile = await FileIO.ReadTextAsync(file);
+                            var nodeVm = Factory.CreateNewRichText(this, readFile);
+                            var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                            PositionNode(nodeVm, p.X, p.Y);
+                            NodeViewModelList.Add(nodeVm);
+                            AtomViewList.Add(nodeVm.View);
+                        }
+                    });
+                }
+
+                foreach (var file in transferFiles)
+                {
+                    await file.DeleteAsync();
+                }
+            };
+        }
+
         private void SetupChromeIntermediate()
         {
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
             fw.FilesChanged += async delegate
             {
-                //Debug.WriteLine("CONTENTS CHANGED! ");
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
                 var count = 0;
                 foreach (var file in transferFiles)
                 {
-                    Debug.WriteLine(file.Path);
-
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        var readFile = await FileIO.ReadTextAsync(file);
-                        //var nodeVm = _factory.CreateNewRichText(readFile);
-                        var nodeVm = Factory.CreateNewRichText(this, readFile);
+                        IBuffer buffer = await FileIO.ReadBufferAsync(file);
+                        DataReader reader = DataReader.FromBuffer(buffer);
+                        byte[] fileContent = new byte[reader.UnconsumedBufferLength];
+                        reader.ReadBytes(fileContent);
+                        string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
+
+                        var nodeVm = Factory.CreateNewRichText(this, text);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -109,31 +188,22 @@ namespace NuSysApp
             };
         }
 
-        private static void SetUpOfficeToPdfWatcher()
-        {
-            var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
-            folderWatcher.FilesChanged += async delegate
-            {
-                var transferFiles = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
-                Debug.WriteLine("Number of files in OfficeToPdf: {0}", transferFiles.Count());
-                //foreach (var file in transferFiles)
-                //{
-                //    Debug.WriteLine("File name: " + file.Name);
-                //    Debug.WriteLine("File path: " + file.Path);
-                //    var fileContents = await FileIO.ReadTextAsync(file);
-                //    Debug.WriteLine("File contents: " + fileContents);
-                //}
-            };
-        }
 
         private static async Task<bool> SetupDirectories()
         {
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+           
             NuSysStorages.NuSysTempFolder =
                 await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.ChromeTransferFolder =
                 await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_WORD_TRANSFER_NAME);
+            NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_POWERPOINT_TRANSFER_NAME);
+            NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_MEDIA_NAME);
             NuSysStorages.OfficeToPdfFolder =
                 await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
+
             return true;
         }
 

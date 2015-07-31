@@ -173,6 +173,7 @@
     <PRIResource Include="Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\icon.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Pics\ink icon.png" />
     <Content Include="Pics\scribble icon.png" />
