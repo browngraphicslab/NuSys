@@ -58,13 +58,17 @@ namespace NuSysApp
                 case ".pptx":
                     var complete = false;
                     var folder = NuSysStorages.OfficeToPdfFolder;
+                    string previousPathToPdf = null;
                     folderWatcher.FilesChanged += async () =>
                     {
                         var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
                         foreach (var nusysFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
                         {
-                            var pdfFilePath = await FileIO.ReadTextAsync(nusysFile);
-
+                            var tempPath = await FileIO.ReadTextAsync(nusysFile);
+                            if (tempPath == previousPathToPdf) continue;
+                            previousPathToPdf = tempPath;
+                            var pdfFilePath = tempPath;
+                            
                             //await nusysFile.DeleteAsync();
 
                             if (string.IsNullOrEmpty(pdfFilePath)) continue;
