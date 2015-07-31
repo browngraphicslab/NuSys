@@ -80,10 +80,5 @@ namespace MicrosoftOfficeInterop
                 // ignore
             }
         }
-        private static void OnRenamed(object source, RenamedEventArgs e)
-        {
-            // Specify what is done when a file is renamed.
-            Console.WriteLine("File: {0} renamed to {1}", e.OldFullPath, e.FullPath);
-        }
     }
 }
