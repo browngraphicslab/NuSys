@@ -44,6 +44,11 @@ namespace NuSysApp
             this.InkScale = C;
         }
 
+        /// <summary>
+        /// Takes in a storageFile, converts it to PDF if possible, and opens the PDF in the workspace.
+        /// </summary>
+        /// <param name="storageFile"></param>
+        /// <returns></returns>
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
         {
             if (storageFile == null) return; // null if file explorer is closed by user
@@ -60,6 +65,12 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Takes in a storageFile (either .docx or .pptx), waits for OfficeInterop to convert
+        /// it to PDF, and opens the PDF in the workspace.
+        /// </summary>
+        /// <param name="storageFile"></param>
+        /// <returns></returns>
         private async Task WatchForOfficeConversions(StorageFile storageFile)
         {
             var taskComplete = false;
@@ -72,15 +83,10 @@ namespace NuSysApp
                 foreach (var pdfPathFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
                 {
                     var tempPath = await FileIO.ReadTextAsync(pdfPathFile);
-                    Debug.WriteLine("TEMP PATH: " + tempPath);
-                    Debug.WriteLine("PREVIOUS PATH: " + previousPathToPdf);
                     if (tempPath == previousPathToPdf) continue;
                     previousPathToPdf = tempPath;
                     var pdfFilePath = tempPath;
-                    Debug.WriteLine("APPROVED PATH: " + pdfFilePath);
-
                     if (string.IsNullOrEmpty(pdfFilePath)) continue;
-                    Debug.WriteLine("received office to pdf file path: " + pdfFilePath);
                     storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
                     taskComplete = true;
                 }
@@ -88,12 +94,16 @@ namespace NuSysApp
             var outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_office.nusys");
             await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
             while (!taskComplete) { } // loop until office file is converted and opened in workspace
-
-            await DeleteInteropTransferFiles(); // to prevent accidentally accidental conversions
+            await DeleteInteropTransferFiles(); // to prevent false file-change notifications
             await ProcessPdfFile(storageFile);
         }
 
-        private async Task DeleteInteropTransferFiles()
+        /// <summary>
+        /// Deletes all .nusys files involved in the office to PDF conversion process
+        /// in order to prevent false-flags and accidental creation of PDF nodes.
+        /// </summary>
+        /// <returns></returns>
+        private static async Task DeleteInteropTransferFiles()
         {
             var path = NuSysStorages.OfficeToPdfFolder.Path;
             var pathToOfficeFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_office.nusys");
@@ -103,6 +113,11 @@ namespace NuSysApp
         }
 
 
+        /// <summary>
+        /// Takes in a .pdf StorageFile and renders it in the workspace.
+        /// </summary>
+        /// <param name="pdfStorageFile"></param>
+        /// <returns></returns>
         private async Task ProcessPdfFile(StorageFile pdfStorageFile)
         {
             this.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
@@ -115,21 +130,6 @@ namespace NuSysApp
             for (var i = 0; i < PageCount; i++)
             {
                 this.InkContainer.Add(new InkStrokeContainer());
-            }
-        }
-
-        private static async Task ProcessPdfFile(StorageFile pdfStorageFile, PdfNodeViewModel pnvm)
-        {
-            pnvm.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
-            pnvm.PageCount = (uint)pnvm.RenderedPages.Count();
-            pnvm.CurrentPageNumber = 0;
-            var firstPage = pnvm.RenderedPages[0]; // to set the aspect ratio of the node
-            pnvm.Width = Constants.DefaultNodeSize * 3;
-            pnvm.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
-            pnvm.InkContainer.Capacity = (int)pnvm.PageCount;
-            for (var i = 0; i < pnvm.PageCount; i++)
-            {
-                pnvm.InkContainer.Add(new InkStrokeContainer());
             }
         }
 

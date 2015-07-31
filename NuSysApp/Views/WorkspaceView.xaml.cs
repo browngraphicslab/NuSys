@@ -305,7 +305,6 @@ namespace NuSysApp
         {
             var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
-            Debug.WriteLine("Path: " + storageFile.Path);
             var vm = (WorkspaceViewModel)DataContext;
             if (Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower()))
             {

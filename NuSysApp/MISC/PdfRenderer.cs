@@ -47,7 +47,6 @@ namespace NuSysApp
             {
                 _pdfDocument = await PdfDocument.LoadFromFileAsync(pdfStorageFile);
                 var numPages = _pdfDocument.PageCount;
-                Debug.WriteLine("number of pages: {0}", numPages);
                 var pages = new List<BitmapImage>();
                 if (_pdfDocument != null && numPages > 0)
                 {
