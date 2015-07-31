@@ -48,57 +48,60 @@ namespace NuSysApp
         {
             if (storageFile == null) return; // null if file explorer is closed by user
             var fileType = storageFile.FileType;
-            var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
             switch (fileType)
             {
                 case ".pdf":
                     await ProcessPdfFile(storageFile);
                     break;
-                case ".pptx":
-                    var complete = false;
-                    var folder = NuSysStorages.OfficeToPdfFolder;
-                    string previousPathToPdf = null;
-                    folderWatcher.FilesChanged += async () =>
-                    {
-                        var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
-                        foreach (var nusysFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
-                        {
-                            var tempPath = await FileIO.ReadTextAsync(nusysFile);
-                            if (tempPath == previousPathToPdf) continue;
-                            previousPathToPdf = tempPath;
-                            var pdfFilePath = tempPath;
-                            
-                            //await nusysFile.DeleteAsync();
-
-                            if (string.IsNullOrEmpty(pdfFilePath)) continue;
-                            Debug.WriteLine("received pptx to pdf file path: " + pdfFilePath);
-                            storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
-                            complete = true;
-                        }
-                    };
-                    var outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_pptx.nusys");
-                    await FileIO.WriteTextAsync(outputFile, storageFile.Path);
-                    while (!complete) { }
-                    await ProcessPdfFile(storageFile);
-                    break;
                 case ".docx":
-                    //folder = NuSysStorages.OfficeToPdfFolder;
-                    //outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_pptx.nusys");
-                    //folderWatcher.FilesChanged += async delegate
-                    //{
-                    //    var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
-                    //    foreach (var nusysFile in files.Where(file => file.Name == "path_docx_to_pdf.nusys"))
-                    //    {
-                    //        var pdfFilePath = await FileIO.ReadTextAsync(nusysFile);
-                    //        if (string.IsNullOrEmpty(pdfFilePath)) continue;
-                    //        Debug.WriteLine("received docx to pdf file path: " + pdfFilePath);
-                    //        storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
-                    //    }
-                    //};
-                    //await FileIO.WriteTextAsync(outputFile, storageFile.Path);
+                case ".pptx":
+                    await WatchForOfficeConversions(storageFile);
                     break;
             }
         }
+
+        private async Task WatchForOfficeConversions(StorageFile storageFile)
+        {
+            var taskComplete = false;
+            var folder = NuSysStorages.OfficeToPdfFolder;
+            string previousPathToPdf = null;
+            var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
+            folderWatcher.FilesChanged += async () =>
+            {
+                var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
+                foreach (var pdfPathFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
+                {
+                    var tempPath = await FileIO.ReadTextAsync(pdfPathFile);
+                    Debug.WriteLine("TEMP PATH: " + tempPath);
+                    Debug.WriteLine("PREVIOUS PATH: " + previousPathToPdf);
+                    if (tempPath == previousPathToPdf) continue;
+                    previousPathToPdf = tempPath;
+                    var pdfFilePath = tempPath;
+                    Debug.WriteLine("APPROVED PATH: " + pdfFilePath);
+
+                    if (string.IsNullOrEmpty(pdfFilePath)) continue;
+                    Debug.WriteLine("received office to pdf file path: " + pdfFilePath);
+                    storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
+                    taskComplete = true;
+                }
+            };
+            var outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_office.nusys");
+            await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
+            while (!taskComplete) { } // loop until office file is converted and opened in workspace
+
+            await DeleteInteropTransferFiles(); // to prevent accidentally accidental conversions
+            await ProcessPdfFile(storageFile);
+        }
+
+        private async Task DeleteInteropTransferFiles()
+        {
+            var path = NuSysStorages.OfficeToPdfFolder.Path;
+            var pathToOfficeFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_office.nusys");
+            var pathToPdfFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_pdf.nusys");
+            await pathToOfficeFile.DeleteAsync();
+            await pathToPdfFile.DeleteAsync();
+        }
+
 
         private async Task ProcessPdfFile(StorageFile pdfStorageFile)
         {

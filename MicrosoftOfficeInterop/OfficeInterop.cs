@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Core;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace MicrosoftOfficeInterop
 {
@@ -34,7 +35,23 @@ namespace MicrosoftOfficeInterop
             {
                 isVisibleState = MsoTriState.msoFalse;
             }
-            return pptApplication.Presentations.Open(filePath, readOnlyState, Untitled: MsoTriState.msoFalse, WithWindow: isVisibleState);
+            return pptApplication.Presentations.Open(filePath, readOnlyState, Untitled: MsoTriState.msoFalse,
+                WithWindow: isVisibleState);
+        }
+
+        /// <summary>
+        /// Saves Word document at specified filepath and returns the destination path.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="destinationPath"></param>
+        /// <returns></returns>
+        public static string SaveWordAsPdf(string filePath, string destinationPath = null)
+        {
+            var destination = destinationPath ?? filePath;
+            var wordApplication = new Word.ApplicationClass();
+            var wordDocument = wordApplication.Documents.Open(filePath, ReadOnly: true, Visible: false);
+            wordDocument?.ExportAsFixedFormat(destination, Word.WdExportFormat.wdExportFormatPDF);
+            return destination;
         }
     }
 }

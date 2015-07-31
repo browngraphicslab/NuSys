@@ -9,6 +9,7 @@ namespace MicrosoftOfficeInterop
     {
         private static readonly string DocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         private static readonly string DirToWatch = DocumentsPath + @"\NuSys\OfficeToPdf";
+        private static readonly string DirToWriteTo = DocumentsPath + @"\NuSys\Media";
         private static string _currentFilePath;
         private static string _previousFilePath;
         static void Main()
@@ -29,7 +30,7 @@ namespace MicrosoftOfficeInterop
             };
 
             File.Delete(DirToWatch + @"\path_to_pdf.nusys");
-            File.Delete(DirToWatch + @"\path_to_pptx.nusys");
+            File.Delete(DirToWatch + @"\path_to_office.nusys");
 
             watcher.Changed += OnChanged;
 
@@ -41,33 +42,62 @@ namespace MicrosoftOfficeInterop
         {
             try
             {
-                if (e.Name != "path_to_pptx.nusys") return;
+                if (e.Name != "path_to_office.nusys") return;
                 _currentFilePath = File.ReadAllText(e.FullPath);
-
                 if (_previousFilePath == _currentFilePath) return; // prevent repeated calls
                 _previousFilePath = _currentFilePath;
                 var pathToOfficeFile = _currentFilePath; // path to .docx/.pptx file
-                if (pathToOfficeFile.Length < 6) return;
-                if (pathToOfficeFile.Last() != 'x') return;
-                var extension = pathToOfficeFile.Substring(pathToOfficeFile.Length - 5);
-                switch (extension)
-                {
-                    case ".pptx":
-                        var pathToPdfFile = OfficeInterop.SavePresentationAsPdf(pathToOfficeFile);
-                        pathToPdfFile = pathToPdfFile + ".pdf";
-                        Console.WriteLine("PDF PATH: " + pathToPdfFile);
-                        File.WriteAllText(DirToWatch + @"\path_to_pdf.nusys", pathToPdfFile);
-                        Thread.Sleep(500);
-                        break;
-                    case ".docx":
-                        //TODO
-                        break;
-                }
+                ProcessOfficeFile(pathToOfficeFile);
             }
             catch
             {
                 // ignore
             }
+        }
+
+        private static void ProcessOfficeFile(string officeFilePath)
+        {
+            if (officeFilePath.Length < 6) return;
+            if (officeFilePath.Last() != 'x') return;
+            var extension = GetExtension(officeFilePath, 4);
+            switch (extension)
+            {
+                case ".pptx":
+                    ProcessPowerPointFile(officeFilePath);
+                    break;
+                case ".docx":
+                    ProcessWordFile(officeFilePath);
+                    break;
+            }
+            Thread.Sleep(500);
+        }
+
+        private static string GetExtension(string filePath, int extensionLength)
+        {
+            return filePath.Substring(filePath.Length - 1 - extensionLength);
+        }
+
+        private static string GetFileName(string filePath)
+        {
+            var startPos = filePath.LastIndexOf(@"\", StringComparison.Ordinal) + 1;
+            var endPos = filePath.LastIndexOf(".", StringComparison.Ordinal);
+            return filePath.Substring(startPos, endPos - startPos);
+        }
+
+        private static void ProcessPowerPointFile(string powerPointFilePath)
+        {
+            var pathToPdfFile = OfficeInterop.SavePresentationAsPdf(powerPointFilePath,
+                DirToWriteTo + @"\" + GetFileName(powerPointFilePath) + ".pdf");
+            File.WriteAllText(DirToWatch + @"\path_to_pdf.nusys", pathToPdfFile);
+            Console.WriteLine("Sent path: " + pathToPdfFile);
+        }
+
+        private static void ProcessWordFile(string wordFilePath)
+        {
+            var pathToPdfFile = OfficeInterop.SaveWordAsPdf(wordFilePath,
+                DirToWriteTo + @"\" + GetFileName(wordFilePath) + ".pdf");
+            File.WriteAllText(DirToWatch + @"\path_to_pdf.nusys", pathToPdfFile);
+            Console.WriteLine("Sent path: " + pathToPdfFile);
         }
     }
 }
