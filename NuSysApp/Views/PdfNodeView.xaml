@@ -25,7 +25,7 @@
                 <ControlTemplate>
                     <Grid>
                         <Ellipse Stroke="Gray" Fill="White" />
-                        <Image Source="ms-appx:///Pics/xicon.png" RenderTransformOrigin="0.5,0.5" Opacity=".5">
+                        <Image Source="ms-appx:///Assets/icon_x.png" RenderTransformOrigin="0.5,0.5" Opacity=".5">
                             <Image.RenderTransform>
                                 <CompositeTransform ScaleX="0.5" ScaleY="0.5" Rotation="45" />
                             </Image.RenderTransform>
@@ -47,12 +47,12 @@
         <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" RenderTransform="{Binding InkScale}"/>
         <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
             <Button.Content>
-                <Image Opacity=".5" Stretch="Uniform" Source="left icon.png" />
+                <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_left.png" />
             </Button.Content>
         </Button>
         <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="pageRight_Click">
             <Button.Content>
-                <Image Opacity=".5" Stretch="Uniform" Source="right icon.png" />
+                <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_right.png" />
             </Button.Content>
         </Button>
         <Button x:Name="editC" VerticalAlignment="Top" HorizontalAlignment="Center" Foreground="White"

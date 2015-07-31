@@ -175,27 +175,27 @@
   <ItemGroup>
     <Content Include="Assets\icon.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
-    <Content Include="Pics\ink icon.png" />
-    <Content Include="Pics\scribble icon.png" />
-    <Content Include="Pics\search icon.png" />
+    <Content Include="Assets\icon_ink.png" />
+    <Content Include="Assets\icon_scribble2.png" />
+    <Content Include="Assets\icon_search.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\Logo.scale-100.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-1001.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
-    <Content Include="Pics\xicon.png" />
-    <Content Include="Pics\xicon %281%29.png" />
-    <Content Include="Views\document icon.png" />
-    <Content Include="Views\eraser icon.png" />
-    <Content Include="Views\global ink icon.png" />
-    <Content Include="Views\highlighter icon.png" />
-    <Content Include="Views\left icon.png" />
-    <Content Include="Views\link icon.png" />
-    <Content Include="Views\right icon.png" />
-    <Content Include="Views\scribble icon %282%29.png" />
-    <Content Include="Views\select ink icon.png" />
-    <Content Include="Views\text icon.png" />
+    <Content Include="Assets\icon_x.png" />
+    <Content Include="Assets\icon_x2.png" />
+    <Content Include="Assets\icon_document.png" />
+    <Content Include="Assets\icon_eraser.png" />
+    <Content Include="Assets\icon_globalink.png" />
+    <Content Include="Assets\icon_highlighter.png" />
+    <Content Include="Assets\icon_left.png" />
+    <Content Include="Assets\icon_link.png" />
+    <Content Include="Assets\icon_right.png" />
+    <Content Include="Assets\icon_scribble.png" />
+    <Content Include="Assets\icon_selectink.png" />
+    <Content Include="Assets\icon_text.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -269,6 +269,9 @@
     <SDKReference Include="Microsoft.NET.CoreRuntime, Version=1.0">
       <Name>Microsoft .NET Core Runtime Package for Windows</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pics\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

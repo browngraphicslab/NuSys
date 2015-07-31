@@ -73,7 +73,7 @@
             <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
             <Button.Content>
-                <Image Source="ms-appx:///Pics/xicon (1).png" />
+                <Image Source="ms-appx:///Pics/xicon2.png" />
             </Button.Content>
         </Button>
         <Button x:Name="edit" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White"
