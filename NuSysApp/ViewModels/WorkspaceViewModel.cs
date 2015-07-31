@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
@@ -13,6 +14,8 @@ using NuSysApp.MISC;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using System.Text;
+using System.IO;
+using Windows.Storage.Search;
 
 namespace NuSysApp
 {
@@ -71,7 +74,7 @@ namespace NuSysApp
 
         private async void Init()
         {
-            var result = await SetupDirectories();
+            /*var result = */await SetupDirectories();
             SetupChromeIntermediate();
             SetupWordTransfer();
             SetupPowerPointTransfer();            
@@ -148,13 +151,16 @@ namespace NuSysApp
                     await file.DeleteAsync();
                 }
             };
+
+            SetUpOfficeToPdfWatcher();
+
         }
-        private async void SetupChromeIntermediate()
+        private void SetupChromeIntermediate()
         {
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
             fw.FilesChanged += async delegate
             {
-                Debug.WriteLine("CONTENTS CHANGED! ");
+                //Debug.WriteLine("CONTENTS CHANGED! ");
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
 
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -187,14 +193,40 @@ namespace NuSysApp
             };
         }
 
-        private async Task<bool> SetupDirectories()
+        private static void SetUpOfficeToPdfWatcher()
         {
 
+           
+            var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
+            folderWatcher.FilesChanged += async delegate
+            {
+                var transferFiles = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
+                Debug.WriteLine("Number of files in OfficeToPdf: {0}", transferFiles.Count());
+                //foreach (var file in transferFiles)
+                //{
+                //    Debug.WriteLine("File name: " + file.Name);
+                //    Debug.WriteLine("File path: " + file.Path);
+                //    var fileContents = await FileIO.ReadTextAsync(file);
+                //    Debug.WriteLine("File contents: " + fileContents);
+                //}
+            };
+        }
+
+        private static async Task<bool> SetupDirectories()
+        {
             NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+           
+            NuSysStorages.NuSysTempFolder =
+                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder =
+                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            NuSysStorages.OfficeToPdfFolder =
+                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
             NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_WORD_TRANSFER_NAME);
             NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_POWERPOINT_TRANSFER_NAME);
             NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_MEDIA_NAME);
+
 
             return true;
         }
@@ -312,7 +344,7 @@ namespace NuSysApp
                     break;
                 case Mode.Pdf:
                     vm = await Factory.CreateNewPdfNodeViewModel(this, (StorageFile)data);
-                    this.CurrentMode = Mode.Textnode;
+                    //this.CurrentMode = Mode.Textnode;
                     break;
                 case Mode.InkSelect:
                     vm = Factory.CreateNewPromotedInk(this);

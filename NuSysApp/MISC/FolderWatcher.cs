@@ -6,6 +6,9 @@ namespace NuSysApp.MISC
 {
     public class FolderWatcher
     {
+        /// <summary>
+        /// Event activates when files are created, deleted, or modified
+        /// </summary>
         public event FilesChangedHandler FilesChanged;
         public delegate void FilesChangedHandler();
 
@@ -25,6 +28,10 @@ namespace NuSysApp.MISC
 
         private void OnTransferFolderChange(IStorageQueryResultBase sender, object args)
         {
+
+            //Debug.WriteLine("CONTENTS CHANGED! " + args);
+            //if (FilesChanged != null)
+            //    FilesChanged();
             FilesChanged?.Invoke();
         }
 

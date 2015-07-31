@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -7,6 +8,7 @@ using System.Diagnostics;
 using Windows.UI.Popups;
 using System.Linq;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
@@ -301,9 +303,9 @@ namespace NuSysApp
         /// </summary>
         private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
         {
-            //OfficeInteropWord.GenerateTestDocument();
             var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
+            Debug.WriteLine("Path: " + storageFile.Path);
             var vm = (WorkspaceViewModel)DataContext;
             if (Constants.ImageFileTypes.Contains(storageFile.FileType.ToLower()))
             {
@@ -314,7 +316,7 @@ namespace NuSysApp
                 vm.CurrentMode = WorkspaceViewModel.Mode.Pdf;
             }
             else return;
-            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(this.ActualWidth/2, this.ActualHeight/2));
             await vm.CreateNewNode(p.X, p.Y, storageFile);
         }
 
