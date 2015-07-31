@@ -74,37 +74,12 @@ namespace NuSysApp
 
         private async void Init()
         {
-            /*var result = */await SetupDirectories();
+            await SetupDirectories();
             SetupChromeIntermediate();
-            SetupWordTransfer();
-            SetupPowerPointTransfer();            
+            SetupOfficeTransfer();            
         }
 
-
-
-        private async void SetupWordTransfer()
-        {
-            var fw = new FolderWatcher(NuSysStorages.WordTransferFolder);
-            fw.FilesChanged += async delegate
-            {
-                var file = await NuSysStorages.WordTransferFolder.GetFileAsync("selection.nusys").AsTask();
-
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    var readFile = await FileIO.ReadTextAsync(file);
-                    var nodeVm = Factory.CreateNewRichText(this, readFile);
-                    var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                    PositionNode(nodeVm, p.X, p.Y);
-                    NodeViewModelList.Add(nodeVm);
-                    AtomViewList.Add(nodeVm.View);
-                });
-                
-            };
-        }
-
-        private async void SetupPowerPointTransfer()
+        private async void SetupOfficeTransfer()
         {
             var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
             fw.FilesChanged += async delegate
