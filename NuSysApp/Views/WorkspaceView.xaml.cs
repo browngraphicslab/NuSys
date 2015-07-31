@@ -317,7 +317,7 @@ namespace NuSysApp
                 vm.CurrentMode = WorkspaceViewModel.Mode.Pdf;
             }
             else return;
-            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(0, 0));
+            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(this.ActualWidth/2, this.ActualHeight/2));
             await vm.CreateNewNode(p.X, p.Y, storageFile);
         }
 
