@@ -27,7 +27,7 @@
                 <ControlTemplate>
                     <Grid>
                         <Ellipse Stroke="Gray" Fill="White" />
-                        <Image Source="ms-appx:///Pics/xicon.png" RenderTransformOrigin="0.5,0.5" Opacity=".5">
+                        <Image Source="ms-appx:///Assets/icon_x.png" RenderTransformOrigin="0.5,0.5" Opacity=".5">
                             <Image.RenderTransform>
                                 <CompositeTransform ScaleX="0.5" ScaleY="0.5" Rotation="45" />
                             </Image.RenderTransform>
@@ -36,13 +36,17 @@
                 </ControlTemplate>
             </Button.Template>
             <Button.Flyout>
-                <MenuFlyout Placement="Left">
-                    <MenuFlyout.MenuFlyoutPresenterStyle>
-                        <Style BasedOn="{StaticResource RadialMenu}" TargetType="MenuFlyoutPresenter"
-                               x:Name="textnodemenu">
-                            <Setter Property="Background" Value="LightBlue" />
-                        </Style>
-                    </MenuFlyout.MenuFlyoutPresenterStyle>
+                <MenuFlyout Placement="Left" MenuFlyoutPresenterStyle="{StaticResource SubMenu}">
+                    <MenuFlyoutItem Style="{StaticResource SubMenuButton}">
+                        <MenuFlyoutItem.Background>
+                            <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
+                        </MenuFlyoutItem.Background>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Style="{StaticResource SubMenuButton}">
+                        <MenuFlyoutItem.Background>
+                            <ImageBrush ImageSource="ms-appx:///Assets/icon_scribble.png" Stretch="Uniform"></ImageBrush>
+                        </MenuFlyoutItem.Background>
+                    </MenuFlyoutItem>
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
