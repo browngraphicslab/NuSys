@@ -24,8 +24,7 @@ namespace NuSysApp
         #region Private Members
        
         private int penSize = Constants.InitialPenSize;
-        private InkDrawingAttributes _drawingAttributes; //initialized in SetUpInk()
-        private bool _isZooming;
+        private bool _isZooming, _isErasing, _isHighlighting;
         #endregion Private Members
 
         public WorkspaceView()
@@ -37,22 +36,21 @@ namespace NuSysApp
         }
 
         #region Helper Methods
-
-        
+ 
         //InkCanvas inkCanvas = null;
         /// <summary>
         /// Performs initial ink setup. 
         /// </summary>
         private void SetUpInk()
         {
-            _drawingAttributes = new InkDrawingAttributes
+            var drawingAttributes = new InkDrawingAttributes
             {
                 Color = Windows.UI.Colors.Black,
                 Size = new Windows.Foundation.Size(2, 2),
                 IgnorePressure = false
             };
             
-            inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);      
+            inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(drawingAttributes);      
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |   
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
             var vm = (WorkspaceViewModel)this.DataContext;
@@ -61,27 +59,92 @@ namespace NuSysApp
 
         }
         
-        private void ToggleInk()
+        /// <summary>
+        /// Sets global ink on or off
+        /// </summary>
+        /// <param name="ink"></param>
+        private void SetGlobalInk(bool ink)
         {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.Globalink)
+            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
+            inkCanvas.InkPresenter.IsInputEnabled = ink;
+        }
+
+        /// <summary>
+        /// Turns erasing on or off
+        /// </summary>
+        /// <param name="erase"></param>
+        private void SetErasing(bool erase)
+        {
+            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = erase
+                ? Windows.UI.Input.Inking.InkInputProcessingMode.Erasing
+                : Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
+        }
+
+        /// <summary>
+        /// Turns highlighting on or off
+        /// </summary>
+        /// <param name="highlight"></param>
+        private void SetHighlighting(bool highlight)
+        {
+            InkDrawingAttributes drawingAttributes;
+            _isErasing = false;
+            if (highlight)
             {
-                inkCanvas.InkPresenter.IsInputEnabled = true;
-                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
+                drawingAttributes = new InkDrawingAttributes
+                {
+                    Color = Windows.UI.Colors.Yellow,
+                    Size = new Windows.Foundation.Size(6, 6),
+                    IgnorePressure = false
+                };
             }
             else
             {
-                
-                inkCanvas.InkPresenter.IsInputEnabled = false; //when text button is clicked in the app bar, it disables the ink presenter using this line and the line above allows the TEXTNODE to be displayed on double tap
+                drawingAttributes = new InkDrawingAttributes
+                {
+                    Color = Windows.UI.Colors.Black,
+                    Size = new Windows.Foundation.Size(2, 2),
+                    IgnorePressure = false
+                };
             }
+            inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(drawingAttributes);
         }
 
         #endregion Helper Methods
-
         #region Event Handlers
-
         #region Page Handlers
+        private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
 
+            var vm = (WorkspaceViewModel)this.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+
+            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240) / 240);
+
+            //////////////
+            var zoomspeed = 4;
+            var delta = ((3 + ((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240) / 240) - 4) / zoomspeed;
+            if (compositeTransform.ScaleX + delta > 0)
+            {
+                var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+                compositeTransform.ScaleX += delta;
+                compositeTransform.ScaleY += delta;
+                compositeTransform.CenterX = center.X;
+                compositeTransform.CenterY = center.Y;
+            }
+
+            Debug.WriteLine(compositeTransform.ScaleX + "!!!!!!!!!!!!!!!!!" + compositeTransform.ScaleY);
+            vm.CompositeTransform = compositeTransform;
+        }
+
+        private void inkCanvas_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var menu = new PopupMenu();
+            menu.Commands.Add(new UICommand("Erase", (command) =>
+            {
+                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing; //when erase button is clicked in the appbar, erasing mode is enabled 
+            }));
+            //  inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing; 
+        }
 
         private async void Page_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
@@ -123,30 +186,37 @@ namespace NuSysApp
         private void Page_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
-            var FMT = new CompositeTransform();
+            var floatingMenuTransform = new CompositeTransform();
 
             var p = e.GetPosition(this);
-            FMT.TranslateX = p.X;
-            FMT.TranslateY = p.Y;
+            floatingMenuTransform.TranslateX = p.X;
+            floatingMenuTransform.TranslateY = p.Y;
 
-            vm.FMTransform = FMT;
+            vm.FMTransform = floatingMenuTransform;
 
             FM.Visibility = FM.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
             
         }
 
-        private Point _start;
+        /// <summary>
+        /// Handler gets called when the mouse (or touch) is pressed on the whiteboard. Unselects current
+        /// selection in workspace.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Page_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            WorkspaceViewModel vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (WorkspaceViewModel)this.DataContext;
             vm.ClearSelection();  
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
-            {
-                _start = e.GetCurrentPoint(this).Position;
-                return;
-            }
+            
         }
 
+        /// <summary>
+        /// This handler gets called when the mouse (or touch) is dragged across the workspace.
+        /// This handler contains pan and zoom functionality. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Page_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
@@ -155,14 +225,13 @@ namespace NuSysApp
             {
                 return;
             }
+
             var compositeTransform = vm.CompositeTransform;
             var tmpTranslate = new TranslateTransform
             {
                 X = compositeTransform.CenterX,
                 Y = compositeTransform.CenterY
             };
-
-
 
             var center = compositeTransform.Inverse.TransformPoint(e.Position);
 
@@ -198,62 +267,74 @@ namespace NuSysApp
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
             
-
             vm.CompositeTransform = compositeTransform;
-            /*
-            var x = e.Position.X - vm.TransformX;
-            var y = e.Position.Y - vm.TransformY;
-            Debug.WriteLine(x + ", " + y);
-            vm.Origin = new Point(x                 inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
-                await vm.CreateNewNode(p.X, p.Y,"");
-                vm.ClearSelection();/ 10000.0, y / 10000.0);
-            vm.ScaleX *= e.Delta.Scale;
-            vm.ScaleY *= e.Delta.Scale;    */
-            //  vm.TransformX += e.Delta.Translation.X / vm.ScaleX;
-            //  vm.TransformY += e.Delta.Translation.Y / vm.ScaleY;
-
 
             e.Handled = true;
         }
 
-
+        /// <summary>
+        /// Hanlder gets called when mouse (or touch) first starts manipulating workspace.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Page_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
             e.Container = this;
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Handler gest called when mouse (or touch) finishes manipulating workspace. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Page_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             _isZooming = false;
             e.Handled = true;
 
         }
+
+
         private void Page_ManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {
             e.Handled = true;
         }
 
-        private void inkCanvas_RightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            var menu = new PopupMenu();
-            menu.Commands.Add(new UICommand("Erase", (command) =>
-            {
-                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing; //when erase button is clicked in the appbar, erasing mode is enabled
-            }));
-          //  inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
-        }
         #endregion Page Handlers
-        #region App Bar Handlers
-        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        #region Floating Menu Handlers
+        private void FloatingMenu_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+
+            var compositeTransform = vm.FMTransform;
+
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            vm.FMTransform = compositeTransform;
+            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth || compositeTransform.TranslateY < -85 + FM.Children.Count * -100 || compositeTransform.TranslateY > this.ActualHeight)
+            {
+                FM.Visibility = Visibility.Collapsed;
+                e.Complete();
+            }
+            e.Handled = true;
+        }
+
+        private void FloatingMenu_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+        #endregion Floating Menu Handlers
+        #region Floating Menu Button Handlers
+        private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
-           // Erase.Opacity = 1;
-           // Highlight.Opacity = 1;
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -261,38 +342,51 @@ namespace NuSysApp
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
         }
 
-        private void AppBarButton_Click_Text(object sender, RoutedEventArgs e)
+        private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
+        {
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 0.5;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
+            var vm = (WorkspaceViewModel)DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
+            inkCanvas.InkPresenter.IsInputEnabled = false;
+        }
+
+        private void TextButton_Click(object sender, RoutedEventArgs e)
         {
             inkButton.Opacity = 1;
             linkButton.Opacity = 1;
             textButton.Opacity = .5;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
-           // Erase.Opacity = 1;
-           // Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
-            this.ToggleInk();
+            this.SetGlobalInk(false);
         }
 
-        private void AppBarButton_Click_Erase(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Curently unused.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EraseButton_Click(object sender, RoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
             inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
         }
 
-        private void AppBarButton_Click_Scribble(object sender, RoutedEventArgs e)
+        private void InkNodeButton_Click(object sender, RoutedEventArgs e)
         {
             inkButton.Opacity = 1;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
             scribbleButton.Opacity = .5;
             docButton.Opacity = 1;
-           // Erase.Opacity = 1;
-           // Highlight.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  //initializes ink canvas to be created to the viewmodel
+            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  
             inkCanvas.InkPresenter.IsInputEnabled = false;
         }
 
@@ -301,7 +395,7 @@ namespace NuSysApp
         /// in order to allow users to select PDF files from file explorer without disrupting other processes in the workspace.
         /// Currently, only PDFs contained in the Pictures library are accessible.
         /// </summary>
-        private async void AppBarButton_Click_Document(object sender, RoutedEventArgs e)
+        private async void DocumentButton_Click(object sender, RoutedEventArgs e)
         {
             var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
             if (storageFile == null) return;
@@ -319,6 +413,19 @@ namespace NuSysApp
             await vm.CreateNewNode(p.X, p.Y, storageFile);
         }
 
+        #endregion Floating Menu Button Handlers
+        #region Unused Handlers
+        private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            _isErasing = !_isErasing;
+            this.SetErasing(_isErasing);
+        }
+
+        private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            _isHighlighting = !_isHighlighting;
+            this.SetHighlighting(_isHighlighting);
+        }
         private void AppBarButton_Click_OFile(object sender, RoutedEventArgs e)
         {
             //TO DO
@@ -348,183 +455,7 @@ namespace NuSysApp
 
         }
 
-        private void MenuFlyoutItem_Click_Bezier(object sender, RoutedEventArgs e)
-        {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.Bezierlink;
-        }
-
-        private void MenuFlyoutItem_Click_Line(object sender, RoutedEventArgs e)
-        {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentLinkMode = WorkspaceViewModel.LinkMode.Linelink;
-        }
-
-        void AddButtonClick(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void Page_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
-        {
-
-            var vm = (WorkspaceViewModel)this.DataContext;
-            var compositeTransform = vm.CompositeTransform;
-     
-
-
-            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta +240)/240);
-
-            //////////////
-            var zoomspeed = 4;
-            var delta = ((3 + ((double) e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240)/240) - 4)/zoomspeed;
-            if (compositeTransform.ScaleX + delta > 0)
-            {
-                var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
-                compositeTransform.ScaleX += delta;
-                compositeTransform.ScaleY += delta;
-                compositeTransform.CenterX = center.X;
-            compositeTransform.CenterY = center.Y;
-            }
-
-            Debug.WriteLine(compositeTransform.ScaleX + "!!!!!!!!!!!!!!!!!" + compositeTransform.ScaleY);
-            vm.CompositeTransform = compositeTransform;
-        }
-        private void FM_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-
-            var vm = (WorkspaceViewModel)this.DataContext;
-
-            var compositeTransform = vm.FMTransform;
-
-            compositeTransform.TranslateX += e.Delta.Translation.X;
-            compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            vm.FMTransform = compositeTransform;
-            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth || compositeTransform.TranslateY < -85 + FM.Children.Count*-100 || compositeTransform.TranslateY > this.ActualHeight)
-            {
-                FM.Visibility = Visibility.Collapsed;
-                e.Complete();
-            }
-            e.Handled = true;
-        }
-
-        private void FM_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-        #endregion App Bar Handlers
-
+        #endregion Unused Handlers
         #endregion Event Handlers
-
-        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-
-        }
-
-        private Point _end;
-        private async void WorkspaceView_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = (WorkspaceViewModel) DataContext;
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
-            {
-                _end = e.GetCurrentPoint(this).Position;
-                _start = vm.CompositeTransform.Inverse.TransformPoint(_start);
-                _end = vm.CompositeTransform.Inverse.TransformPoint(_end);
-                var result = inkCanvas.InkPresenter.StrokeContainer.SelectWithLine(_start, _end);
-                inkCanvas.InkPresenter.StrokeContainer.CopySelectedToClipboard();
-              //  var inkView = new InkNodeView(new InkNodeViewModel(vm));
-             //   ((InkNodeViewModel)inkView.DataContext).X = 0;
-            //    ((InkNodeViewModel)inkView.DataContext).Y = 0;
-           //     Matrix matrix = new Matrix(1, 0, 0, 1, result.X, result.Y);
-
-           //     ((InkNodeViewModel)inkView.DataContext).Transform.Matrix = matrix;
-          //      vm.AtomViewList.Add(inkView);
-         //       vm.NodeViewModelList.Add((InkNodeViewModel)inkView.DataContext);
-
-         //       inkView.UpdateInk();
-        //        inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
-       //         Debug.WriteLine(result);
-                await vm.CreateNewNode(result.X, result.Y,"");
-                vm.ClearSelection();
-                inkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
-                return;
-            }
-        }
-
-        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            inkButton.Opacity = 1;
-            linkButton.Opacity = 0.5;
-            textButton.Opacity = 1;
-            scribbleButton.Opacity = 1;
-            docButton.Opacity = 1;
-
-           // Erase.Opacity = 1;
-           // Highlight.Opacity = 1;
-
-            var vm = (WorkspaceViewModel) DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
-            inkCanvas.InkPresenter.IsInputEnabled = false;
-        }
-
-        private bool _isErasing, _isHighlighting;
-        private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            _isErasing = !_isErasing;
-            if (_isErasing)
-            {
-             //   Erase.Opacity = 0.5;
-             //   Highlight.Opacity = 1;
-                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
-                    Windows.UI.Input.Inking.InkInputProcessingMode.Erasing;
-            }
-            else
-            {
-             //  Erase.Opacity = 1;
-             //   Highlight.Opacity = 1;
-                inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
-                    Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
-            }
-
-        }
-
-        private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-
-
-            _isErasing = false;
-            _isHighlighting = !_isHighlighting;
-            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode =
-                    Windows.UI.Input.Inking.InkInputProcessingMode.Inking;
-            if (_isHighlighting)
-            {
-              //  Erase.Opacity = 1;
-              //  Highlight.Opacity = 0.5;
-                _drawingAttributes = new InkDrawingAttributes
-                {
-                    Color = Windows.UI.Colors.Yellow,
-                    Size = new Windows.Foundation.Size(6, 6),
-                    IgnorePressure = false
-                };
-                inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);
-            }
-            else
-            {
-              //  Erase.Opacity = 1;
-              //  Highlight.Opacity = 1;
-                _drawingAttributes = new InkDrawingAttributes
-                {
-                    Color = Windows.UI.Colors.Black,
-                    Size = new Windows.Foundation.Size(2, 2),
-                    IgnorePressure = false
-                };
-                inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);
-            }
-        }
-
     }
-
-
-
 }
