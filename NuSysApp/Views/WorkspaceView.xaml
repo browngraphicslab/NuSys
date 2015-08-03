@@ -20,6 +20,56 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="MenuFlyoutItem" x:Key="FloatingFlyoutButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuFlyoutItem">
+                        <Grid Width="100" Height="100" Opacity=".75">
+                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="MenuFlyoutPresenter" x:Key="FloatingFlyout">
+            <Setter Property="RequestedTheme" Value="Light" />
+            <Setter Property="Background" Value="{x:Null}" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}" />
+            <Setter Property="Padding" Value="{ThemeResource MenuFlyoutPresenterThemePadding}" />
+            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False" />
+            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
+            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
+            <Setter Property="MinWidth" Value="{ThemeResource FlyoutThemeMinWidth}" />
+            <Setter Property="MaxWidth" Value="{ThemeResource FlyoutThemeMaxWidth}" />
+            <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}" />
+            <Setter Property="MaxHeight" Value="{ThemeResource FlyoutThemeMaxHeight}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuFlyoutPresenter">
+                        <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+                                  ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}"
+                                  AutomationProperties.AccessibilityView="Raw">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
     </Page.Resources>
     <Canvas Background="Transparent" ManipulationMode="All" >
@@ -45,7 +95,7 @@
         </Grid>
         <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent" ManipulationMode="All" ManipulationDelta="FloatingMenu_ManipulationDelta" ManipulationStarting="FloatingMenu_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
             <Grid.Resources>
-                <!--<ImageBrush x:Key="iconSelectInk" ImageSource="Assets/icon_selectink.png" Stretch="Uniform" />-->
+                <ImageBrush x:Key="iconSelectInk" ImageSource="icon_selectink.png" Stretch="Uniform" />
             </Grid.Resources>            
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
