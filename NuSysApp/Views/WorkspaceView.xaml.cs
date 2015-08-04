@@ -118,22 +118,26 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             var compositeTransform = vm.CompositeTransform;
 
-            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240) / 240);
+            var direction = Math.Sign((double) e.GetCurrentPoint(this).Properties.MouseWheelDelta);
 
-            //////////////
-            var zoomspeed = 4;
-            var delta = ((3 + ((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240) / 240) - 4) / zoomspeed;
-            if (compositeTransform.ScaleX + delta > 0)
+            Debug.WriteLine(direction);
+
+            var zoomspeed = 0.08 * direction;
+            var translateSpeed = 10;
+
+            if (compositeTransform.ScaleX + zoomspeed > 0.01)
             {
                 var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
-                compositeTransform.ScaleX += delta;
-                compositeTransform.ScaleY += delta;
-                compositeTransform.CenterX = center.X;
-                compositeTransform.CenterY = center.Y;
-            }
+                compositeTransform.ScaleX += zoomspeed;
+                compositeTransform.ScaleY += zoomspeed;
 
-            Debug.WriteLine(compositeTransform.ScaleX + "!!!!!!!!!!!!!!!!!" + compositeTransform.ScaleY);
-            vm.CompositeTransform = compositeTransform;
+                if (direction > 0)
+                {
+                    compositeTransform.CenterX = center.X;
+                    compositeTransform.CenterY = center.Y;
+                }
+                vm.CompositeTransform = compositeTransform;
+            }
         }
 
         private void inkCanvas_RightTapped(object sender, RightTappedRoutedEventArgs e)

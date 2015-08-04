@@ -97,7 +97,6 @@
     <None Include="Assets\paragraph.nusys" />
     <None Include="packages.config" />
     <None Include="project.json" />
-    <None Include="project.lock.json" />
     <None Include="ViewModels\.AtomViewModel.cs.swp" />
     <None Include="Views\BezierLink.xaml.cs.orig" />
     <None Include="Views\TextNodeView.xaml.cs.orig" />
