@@ -186,7 +186,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="PowerPointAddIn_1_TemporaryKey.pfx" />
     <None Include="PowerPointAddIn_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -243,7 +242,7 @@
     <ManifestKeyFile>PowerPointAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>089CFCA6A892B7390B31538CF51C1F6DE314EA53</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>CCE85F9A0638DF29FDE4452168813C0A29614D09</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -91,12 +91,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="NuSysApp.csproj.user" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Assets\paragraph.nusys" />
-    <None Include="obj\x86\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
     <None Include="packages.config" />
     <None Include="project.json" />
     <None Include="project.lock.json" />
@@ -111,9 +109,6 @@
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
     <Compile Include="MISC\Factory.cs" />
@@ -137,15 +132,6 @@
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="NodeToControlpoint1Converter.cs" />
-    <Compile Include="obj\x86\Debug\.g.cs" />
-    <Compile Include="obj\x86\Debug\App.g.cs" />
-    <Compile Include="obj\x86\Debug\App.g.i.cs" />
-    <Compile Include="obj\x86\Debug\MainPage.g.cs" />
-    <Compile Include="obj\x86\Debug\MainPage.g.i.cs" />
-    <Compile Include="obj\x86\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Include="obj\x86\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Include="obj\x86\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-    <Compile Include="obj\x86\Debug\XamlTypeInfo.g.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
@@ -185,7 +171,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="App1_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\icon.png" />
@@ -210,7 +195,6 @@
     <Content Include="Assets\SplashScreen.scale-1001.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
-    <Content Include="obj\x86\Debug\XamlSaveStateFile.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -225,10 +209,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\BezierLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -263,11 +243,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="bin\ARM\Debug\" />
-    <Folder Include="bin\x86\Debug\" />
-    <Folder Include="obj\ARM\Debug\" />
-    <Folder Include="obj\x86\Debug\intermediatexaml\" />
-    <Folder Include="obj\x86\Debug\TempPE\" />
     <Folder Include="Pics\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

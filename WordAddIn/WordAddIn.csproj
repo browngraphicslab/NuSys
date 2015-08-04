@@ -207,7 +207,6 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
-    <None Include="WordAddIn_1_TemporaryKey.pfx" />
     <None Include="WordAddIn_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -234,10 +233,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WordAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WordAddIn_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>E195714F68BE655E8BA740B74BE481FB199D67EA</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>475C64CD696BFF20BE24552474D6D7029BB4C01D</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
