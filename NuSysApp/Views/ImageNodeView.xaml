@@ -12,7 +12,8 @@
     RenderTransform="{Binding Transform}"
     ManipulationDelta="UserControl_ManipulationDelta" ManipulationMode="All"
     DoubleTapped="UserControl_DoubleTapped"
-    PointerPressed="UserControl_PointerPressed">
+    PointerPressed="UserControl_PointerPressed"
+    Background="Red">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />

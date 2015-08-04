@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
+  <ribbon>
+    <tabs>
+      <tab idMso="TabAddIns">
+        <group id="MyGroup" label="My Group">
+          <button id="textButton" size="large" label="Insert Text" screentip="Text" onAction="OnBtnClick" supertip="Inserts text at the cursor location." getImage="getImage"/>
+          <button id="sendButton" size="large" label="Send to NuSys" screentip="Text" onAction="OnBtnSendClick" supertip="Sends all selections to NuSys" getImage="getImage"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
+

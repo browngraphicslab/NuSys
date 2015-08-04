@@ -5,10 +5,9 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" PointerPressed="Page_PointerPressed" PointerReleased="WorkspaceView_OnPointerReleased" DoubleTapped="Page_DoubleTapped"
+    mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
     ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" RightTapped="Page_RightTapped" >
-
     <Page.Resources>
         <Style TargetType="Button" x:Key="FloatingButton" >
             <Setter Property="Template" >
@@ -32,8 +31,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <!-- Default style for Windows.UI.Xaml.Controls.FlyoutPresenter -->
-        <!-- Default style for Windows.UI.Xaml.Controls.MenuFlyoutPresenter -->
         <Style TargetType="MenuFlyoutPresenter" x:Key="FloatingFlyout">
             <Setter Property="RequestedTheme" Value="Light" />
             <Setter Property="Background" Value="{x:Null}" />
@@ -96,7 +93,10 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent" ManipulationMode="All" ManipulationDelta="FM_ManipulationDelta" ManipulationStarting="FM_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
+        <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent" ManipulationMode="All" ManipulationDelta="FloatingMenu_ManipulationDelta" ManipulationStarting="FloatingMenu_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
+            <Grid.Resources>
+                <ImageBrush x:Key="iconSelectInk" ImageSource="icon_selectink.png" Stretch="Uniform" />
+            </Grid.Resources>            
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -104,49 +104,29 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
+            <Button Grid.Row="0" x:Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
                 <Button.Background>
-                    <ImageBrush ImageSource="global ink icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-                <Button.Flyout>
-                    <MenuFlyout Placement="Right" MenuFlyoutPresenterStyle="{StaticResource FloatingFlyout}">
-                        <MenuFlyoutItem x:Name="Erase" Style="{StaticResource FloatingFlyoutButton}" Tapped="Erase_OnTapped">
-                            <MenuFlyoutItem.Background>
-                                <ImageBrush ImageSource="eraser icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
-                            </MenuFlyoutItem.Background>
-                        </MenuFlyoutItem>
-                        <MenuFlyoutItem x:Name="Highlight" Style="{StaticResource FloatingFlyoutButton}" Tapped="Highlight_OnTapped">
-                            <MenuFlyoutItem.Background>
-                                <ImageBrush ImageSource="highlighter icon.png" Stretch="Uniform" Opacity=".75"></ImageBrush>
-                            </MenuFlyoutItem.Background>
-                        </MenuFlyoutItem>
-                    </MenuFlyout>
-                </Button.Flyout>
-            </Button>
-
-            <Button Grid.Row="1" Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="UIElement_OnTapped" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
-                <Button.Background>
-                    <ImageBrush ImageSource="select ink icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_globalink.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Grid.Row="2" Name="textButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Text" HorizontalAlignment="Center" Height="114" Margin="0,-5,0,-9">
+            <Button Grid.Row="1" x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
                 <Button.Background>
-                    <ImageBrush ImageSource="text icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_selectink.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <Button Grid.Row="3" Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Scribble" HorizontalAlignment="Center" Height="115" Margin="0,-6,0,-9">
+            <Button Grid.Row="2" x:Name="textButton" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click" HorizontalAlignment="Center" Height="114" Margin="0,-5,0,-9">
                 <Button.Background>
-                    <ImageBrush ImageSource="scribble icon (2).png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
-            <!--<Button Style="{StaticResource FloatingButton}" Tapped="AddButtonClick" HorizontalAlignment="Center">
+            <Button Grid.Row="3" x:Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="InkNodeButton_Click" HorizontalAlignment="Center" Height="115" Margin="0,-6,0,-9">
                 <Button.Background>
-                    <ImageBrush ImageSource="image icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_scribble.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>-->
-            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="AppBarButton_Click_Document" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
+            </Button>
+            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
                 <Button.Background>
-                    <ImageBrush ImageSource="document icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
         </Grid>

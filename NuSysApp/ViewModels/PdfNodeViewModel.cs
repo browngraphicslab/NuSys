@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-
+using NuSysApp.MISC;
+using System.Diagnostics;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -31,7 +36,6 @@ namespace NuSysApp
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
             this.InkContainer = new List<InkStrokeContainer>();
-            this.inkManager = new InkManager();
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform { 
                 ScaleX = 1,
@@ -39,6 +43,12 @@ namespace NuSysApp
             };
             this.InkScale = C;
         }
+
+        /// <summary>
+        /// Takes in a storageFile, converts it to PDF if possible, and opens the PDF in the workspace.
+        /// </summary>
+        /// <param name="storageFile"></param>
+        /// <returns></returns>
         public async Task InitializePdfNodeAsync(StorageFile storageFile)
         {
             if (storageFile == null) return; // null if file explorer is closed by user
@@ -48,19 +58,70 @@ namespace NuSysApp
                 case ".pdf":
                     await ProcessPdfFile(storageFile);
                     break;
-                case ".pptx":
-                    //TODO
-                    break;
                 case ".docx":
-                    //TODO
+                case ".pptx":
+                    await WatchForOfficeConversions(storageFile);
                     break;
             }
         }
 
+        /// <summary>
+        /// Takes in a storageFile (either .docx or .pptx), waits for OfficeInterop to convert
+        /// it to PDF, and opens the PDF in the workspace.
+        /// </summary>
+        /// <param name="storageFile"></param>
+        /// <returns></returns>
+        private async Task WatchForOfficeConversions(StorageFile storageFile)
+        {
+            var taskComplete = false;
+            var folder = NuSysStorages.OfficeToPdfFolder;
+            string previousPathToPdf = null;
+            var folderWatcher = new FolderWatcher(NuSysStorages.OfficeToPdfFolder);
+            folderWatcher.FilesChanged += async () =>
+            {
+                var files = await NuSysStorages.OfficeToPdfFolder.GetFilesAsync();
+                foreach (var pdfPathFile in files.Where(file => file.Name == "path_to_pdf.nusys"))
+                {
+                    var tempPath = await FileIO.ReadTextAsync(pdfPathFile);
+                    if (tempPath == previousPathToPdf) continue;
+                    previousPathToPdf = tempPath;
+                    var pdfFilePath = tempPath;
+                    if (string.IsNullOrEmpty(pdfFilePath)) continue;
+                    storageFile = await StorageFile.GetFileFromPathAsync(pdfFilePath);
+                    taskComplete = true;
+                }
+            };
+            var outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_office.nusys");
+            await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
+            while (!taskComplete) { } // loop until office file is converted and opened in workspace
+            await DeleteInteropTransferFiles(); // to prevent false file-change notifications
+            await ProcessPdfFile(storageFile);
+        }
+
+        /// <summary>
+        /// Deletes all .nusys files involved in the office to PDF conversion process
+        /// in order to prevent false-flags and accidental creation of PDF nodes.
+        /// </summary>
+        /// <returns></returns>
+        private static async Task DeleteInteropTransferFiles()
+        {
+            var path = NuSysStorages.OfficeToPdfFolder.Path;
+            var pathToOfficeFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_office.nusys");
+            var pathToPdfFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_pdf.nusys");
+            await pathToOfficeFile.DeleteAsync();
+            await pathToPdfFile.DeleteAsync();
+        }
+
+
+        /// <summary>
+        /// Takes in a .pdf StorageFile and renders it in the workspace.
+        /// </summary>
+        /// <param name="pdfStorageFile"></param>
+        /// <returns></returns>
         private async Task ProcessPdfFile(StorageFile pdfStorageFile)
         {
-            this.PageCount = await PdfRenderer.GetPageCount(pdfStorageFile);
             this.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
+            this.PageCount = (uint)this.RenderedPages.Count();
             this.CurrentPageNumber = 0;
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
             this.Width = firstPage.PixelWidth;
@@ -77,7 +138,8 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = (dy /*/ WorkSpaceViewModel.ScaleX*/) * PdfNodeModel.RenderedPage.PixelWidth / PdfNodeModel.RenderedPage.PixelHeight;
+                newDx = (dy /*/
+                            WorkSpaceViewModel.ScaleX*/) * PdfNodeModel.RenderedPage.PixelWidth / PdfNodeModel.RenderedPage.PixelHeight;
                 newDy = dy;// WorkSpaceViewModel.ScaleY;
             }
             else
@@ -154,8 +216,6 @@ namespace NuSysApp
         }
      //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
         public List<InkStrokeContainer> InkContainer { get; set; }
-        public InkManager inkManager { get; set; }
-
 
         public CompositeTransform InkScale
         {
