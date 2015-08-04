@@ -95,7 +95,7 @@ namespace NuSysApp
             await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
             while (!taskComplete) { } // loop until office file is converted and opened in workspace
             await DeleteInteropTransferFiles(); // to prevent false file-change notifications
-            await ProcessPdfFile(storageFile);
+            await ProcessPdfFile(storageFile); // process the .pdf StorageFile
         }
 
         /// <summary>
@@ -108,8 +108,8 @@ namespace NuSysApp
             var path = NuSysStorages.OfficeToPdfFolder.Path;
             var pathToOfficeFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_office.nusys");
             var pathToPdfFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_pdf.nusys");
-            await pathToOfficeFile.DeleteAsync();
-            await pathToPdfFile.DeleteAsync();
+            await pathToOfficeFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            await pathToPdfFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
 
 

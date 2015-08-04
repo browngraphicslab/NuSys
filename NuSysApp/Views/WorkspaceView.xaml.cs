@@ -181,7 +181,9 @@ namespace NuSysApp
                 }
                 
             }
-            
+
+            if (vm.CurrentMode == WorkspaceViewModel.Mode.Pdf) return;
+
             await vm.CreateNewNode(p.X, p.Y,"");
             vm.ClearSelection();
             e.Handled = true;

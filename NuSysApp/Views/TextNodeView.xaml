@@ -16,206 +16,43 @@
     PointerReleased="UserControl_PointerReleased">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
-        <converters:BoolToVisibilityConverter x:Key="vConverter" />
-
-        <!-- Floating Flyout Menu Presenter -->
-        <Style TargetType="MenuFlyoutPresenter" x:Key="SubMenu">
-            <Setter Property="RequestedTheme" Value="Light" />
-            <Setter Property="Background" Value="{x:Null}" />
-            <Setter Property="BorderBrush" Value="{x:Null}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}" />
-            <Setter Property="Padding" Value="{ThemeResource MenuFlyoutPresenterThemePadding}" />
-            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False" />
-            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
-            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
-            <Setter Property="MinWidth" Value="{ThemeResource FlyoutThemeMinWidth}" />
-            <Setter Property="MaxWidth" Value="{ThemeResource FlyoutThemeMaxWidth}" />
-            <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}" />
-            <Setter Property="MaxHeight" Value="{ThemeResource FlyoutThemeMaxHeight}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="MenuFlyoutPresenter">
-                        <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer Padding="{TemplateBinding Padding}"
-                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-                                  ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}"
-                                  AutomationProperties.AccessibilityView="Raw">
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--Flyout Button-->
-        <Style TargetType="MenuFlyoutItem" x:Key="SubMenuButton">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Padding" Value="{ThemeResource MenuFlyoutItemThemePadding}" />
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Width" Value="85" />
-            <Setter Property="Height" Value="85" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="MenuFlyoutItem">
-                        <Border x:Name="LayoutRoot"
-                        Opacity=".75"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="PointerOver">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="InnerBorder"
-                                                                   Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemPointerOverBackgroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock"
-                                                                   Storyboard.TargetProperty="Foreground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemPointerOverForegroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Opacity">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value=".5"></DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Pressed">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="InnerBorder"
-                                                                   Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemPressedBackgroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock"
-                                                                   Storyboard.TargetProperty="Foreground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemPressedForegroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Opacity">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock"
-                                                                   Storyboard.TargetProperty="Foreground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemDisabledForegroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="FocusStates">
-                                    <VisualState x:Name="Focused">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
-                                                                   Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemFocusedBackgroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock"
-                                                                   Storyboard.TargetProperty="Foreground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemFocusedForegroundThemeBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Unfocused" />
-                                    <VisualState x:Name="PointerFocused" />
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="CheckPlaceholderStates">
-                                    <VisualState x:Name="NoPlaceholder" />
-                                    <VisualState x:Name="CheckPlaceholder">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextBlock"
-                                                                   Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource MenuFlyoutItemPlaceholderThemeThickness}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Border x:Name="InnerBorder" Padding="{TemplateBinding Padding}">
-                                <TextBlock x:Name="TextBlock"
-                                   Text="{TemplateBinding Text}"
-                                   TextTrimming="CharacterEllipsis"
-                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            </Border>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
+        <converters:BoolToVisibilityConverter x:Key="vConverter" />        
     </UserControl.Resources>
     <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}, Mode=OneTime}">
         <!-- CornerRadius="3.5"-->
-        <Button Opacity=".5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-25,-25,0,0" Width="50"
-                Height="50"
-                Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}">
-            <Button.Template>
-                <ControlTemplate>
-                    <Grid>
-                        <Ellipse Stroke="Gray" Fill="White" />
-                        <Image Source="ms-appx:///Assets/icon_x.png" RenderTransformOrigin="0.5,0.5" Opacity=".5">
-                            <Image.RenderTransform>
-                                <CompositeTransform ScaleX="0.5" ScaleY="0.5" Rotation="45" />
-                            </Image.RenderTransform>
-                        </Image>
-                    </Grid>
-                </ControlTemplate>
-            </Button.Template>
-            <Button.Flyout>
-                <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource SubMenu}" Placement="Left">
-                    <MenuFlyoutItem Style="{StaticResource SubMenuButton}">
-                        <MenuFlyoutItem.Background>
-                            <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
-                        </MenuFlyoutItem.Background>
-                    </MenuFlyoutItem>
-                </MenuFlyout>
-            </Button.Flyout>
-        </Button>
+        <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="3" Opacity=".8"
+                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
         <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}"/>
-        <TextBlock Name="textBlock" TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top" Margin="11,60,21,1"
+        <TextBlock Name="textBlock" TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top" Margin="20,60,20,20"
                    FontSize="20" Foreground="Black" FontFamily="Calibri" 
                    Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}"
                    Text="{Binding Data, Mode=TwoWay}" />
         <TextBox x:Name="textBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top"
-                 Margin="1,56,1,1" BorderThickness="0" FontSize="20" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
+                 Margin="20,56,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
                  Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}"
                  Background="Transparent" BorderBrush="Transparent" />
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
             <Button.Content>
-                <Image Source="ms-appx:///Pics/xicon2.png" />
+                <Image Source="ms-appx:///Assets/icon_x2.png" />
             </Button.Content>
         </Button>
-        <Button x:Name="edit" VerticalAlignment="Top" VerticalContentAlignment="Top" HorizontalAlignment="Right" Foreground="White"
-                FontFamily="Calibri" Content="edit" Click="Edit_Click" Height="30" >
-        </Button>
-        <Button x:Name="editC" VerticalAlignment="Top" HorizontalAlignment="Center" Foreground="White"
-                FontFamily="Calibri" Content="edit Ink" Click="EditC_Click" />
         <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
               Opacity=".5" ManipulationDelta="Resizer_ManipulationDelta" Canvas.ZIndex="20" ManipulationMode="All" />
-        <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="1"
-                   StrokeDashArray="5" Opacity=".8"
-                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+        <StackPanel x:Name="SubMenu" Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" 
+                    Orientation="Horizontal" Height="100" VerticalAlignment="Top" Opacity=".75" Margin="0,-100,0,0">
+            <MenuFlyoutItem x:Name="EditText" Click="Edit_Click" Style="{StaticResource SubMenuItem}">
+                <MenuFlyoutItem.Background>
+                    <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_text.png"></ImageBrush>
+                </MenuFlyoutItem.Background>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem x:Name="EditInk" Click="EditC_Click" Style="{StaticResource SubMenuItem}">
+                <MenuFlyoutItem.Background>
+                    <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>
+                </MenuFlyoutItem.Background>
+            </MenuFlyoutItem>
+        </StackPanel>
     </Grid>
 
 </UserControl>
