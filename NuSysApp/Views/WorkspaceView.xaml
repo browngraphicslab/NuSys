@@ -71,6 +71,7 @@
             </Setter>
         </Style>
 
+
     </Page.Resources>
     <Canvas Background="Transparent" ManipulationMode="All" >
         <Border RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
@@ -108,6 +109,24 @@
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_globalink.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
+                <Button.Flyout>
+                    <!-- change flyout - use stackpanel instead -->
+                    <Flyout FlyoutPresenterStyle="{StaticResource SubMenuPresenter}" Placement="Right">
+                        <StackPanel Orientation="Horizontal" Opacity=".75">
+                            <MenuFlyoutItem x:Name="Erase" Style="{StaticResource SubMenuItem}" Tapped="Erase_OnTapped">
+                                <MenuFlyoutItem.Background>
+                                    <ImageBrush ImageSource="ms-appx:///Assets/icon_eraser.png" Stretch="Uniform"></ImageBrush>
+                                </MenuFlyoutItem.Background>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem x:Name="Highlight" Style="{StaticResource SubMenuItem}" Tapped="Highlight_OnTapped">
+                                <MenuFlyoutItem.Background>
+                                    <ImageBrush ImageSource="ms-appx:///Assets/icon_highlighter.png" Stretch="Uniform"></ImageBrush>
+                                </MenuFlyoutItem.Background>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Style="{StaticResource SubMenuItem}"></MenuFlyoutItem>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
             </Button>
             <Button Grid.Row="1" x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
                 <Button.Background>
