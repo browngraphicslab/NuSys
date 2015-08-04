@@ -21,6 +21,8 @@ namespace MicrosoftOfficeInterop
 
         public static void Run()
         {
+            Directory.CreateDirectory(DocumentsPath).CreateSubdirectory("NuSys").CreateSubdirectory("OfficeToPdf");
+            Directory.CreateDirectory(DocumentsPath).CreateSubdirectory("NuSys").CreateSubdirectory("Media");
             var watcher = new FileSystemWatcher()
             {
                 NotifyFilter = NotifyFilters.LastWrite,

@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Collections.Generic;
@@ -18,7 +11,6 @@ using System.Diagnostics;
 using System.Drawing;
 using Microsoft.Office.Interop.Word;
 using System.Drawing.Imaging;
-using GemBox.Document;
 using System.Windows.Interop;
 
 
@@ -57,28 +49,9 @@ namespace WordAddIn
 
         private void OnSelectionAdded()
         {
-
-
-
             var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
             selection.Select();
-            selection.Copy();
-
-            /*
-            int left;
-            int top;
-            int width;
-            int height;
-
-            Globals.ThisAddIn.Application.ActiveWindow.GetPoint(out left, out top, out width, out height, selection.Range);
-
-            selection.Move();
-            var screenshot = CopyScreen();
-            var crop = new CroppedBitmap(screenshot, new Int32Rect(left, top, width, height));
-            var bitmapImage = BitmapFromSource(crop);
-            */
-            
-            
+            selection.Copy();          
            
             IDataObject data = Clipboard.GetDataObject();
 
