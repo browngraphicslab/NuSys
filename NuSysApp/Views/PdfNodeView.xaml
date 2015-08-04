@@ -44,7 +44,9 @@
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
-        <InkCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" RenderTransform="{Binding InkScale}"/>
+        <Canvas  Background="DarkGreen" Width="{Binding PdfNodeModel.RenderedPage.PixelWidth}" Height="{Binding PdfNodeModel.RenderedPage.PixelHeight}" RenderTransform="{Binding InkScale}" RenderTransformOrigin="0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Name="ICB" Opacity="0.25" >
+            <InkCanvas x:Name="inkCanvas" Height="{Binding PdfNodeModel.RenderedPage.PixelHeight}" Width="{Binding PdfNodeModel.RenderedPage.PixelWidth}" />
+        </Canvas>
         <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
             <Button.Content>
                 <Image Opacity=".5" Stretch="Uniform" Source="left icon.png" />

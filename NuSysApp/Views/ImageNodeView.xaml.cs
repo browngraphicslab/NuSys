@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -33,6 +34,7 @@ namespace NuSysApp
         #region Event Handlers
         private void UserControl_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+
             ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
        //     vm.Resize((e.Delta.Scale - 1) * vm.Width, (e.Delta.Scale - 1) * vm.Height);//TO DO: POSSIBLY REMOVE THIS FEATURE FOR LACK OF CONSISTENCY
@@ -42,6 +44,7 @@ namespace NuSysApp
         private void Resizer_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
+            Debug.WriteLine(ICB.ActualHeight+" ICB" + inkCanvas.ActualHeight);
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true;
         }

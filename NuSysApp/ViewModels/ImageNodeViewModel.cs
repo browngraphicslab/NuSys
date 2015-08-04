@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -11,7 +12,7 @@ namespace NuSysApp
     {
         private ImageModel _imgm;
         private CompositeTransform _inkScale;
-      
+
         public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
         {
             this.View = new ImageNodeView(this);
@@ -22,9 +23,12 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
-            var C = new CompositeTransform { 
+            var C = new CompositeTransform
+            {
                 ScaleX = 1,
-                ScaleY = 1
+                ScaleY = 1,
+                CenterX = 0,
+                CenterY = 0
             };
             this.InkScale = C;
         }
@@ -46,13 +50,14 @@ namespace NuSysApp
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
                 this.ImageModel = new ImageModel(bitmapImage, 0);
-                this.Width = Constants.DefaultNodeSize;
-                this.Height = Constants.DefaultNodeSize * bitmapImage.PixelHeight / bitmapImage.PixelWidth;
-            var C = new CompositeTransform { 
-                ScaleX = 1,
-                ScaleY = 1
-            };
-            this.InkScale = C;
+                this.Width = bitmapImage.PixelWidth;
+                this.Height = bitmapImage.PixelHeight;
+                var C = new CompositeTransform
+                {
+                    ScaleX = 1,
+                    ScaleY = 1
+                };
+                this.InkScale = C;
             }
         }
 
@@ -69,13 +74,14 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
             }
-            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSize || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Width <= Constants.MinNodeSize)
             {
                 return;
             }
-            CompositeTransform ct = this. InkScale;
-            ct.ScaleX *= (newDx + Width) / Width;
-            ct.ScaleY *= (newDy + Height) / Height;
+            CompositeTransform ct = this.InkScale;
+            Debug.WriteLine(newDx + "LLLL" + newDy);
+            ct.ScaleX *= (Width + newDx / WorkSpaceViewModel.CompositeTransform.ScaleX) / Width;
+            ct.ScaleY *= (Height + newDy / WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             this.InkScale = ct;
             base.Resize(newDx, newDy);
         }

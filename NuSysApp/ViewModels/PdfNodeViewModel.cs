@@ -63,8 +63,8 @@ namespace NuSysApp
             this.RenderedPages = await PdfRenderer.RenderPdf(pdfStorageFile);
             this.CurrentPageNumber = 0;
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
-            this.Width = Constants.DefaultNodeSize * 3;
-            this.Height = Constants.DefaultNodeSize * 3 * firstPage.PixelHeight / firstPage.PixelWidth;
+            this.Width = firstPage.PixelWidth;
+            this.Height = firstPage.PixelHeight;
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
@@ -85,14 +85,13 @@ namespace NuSysApp
                 newDx = dx; // WorkSpaceViewModel.ScaleX;
                 newDy = (dx /*/ WorkSpaceViewModel.ScaleY*/) * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
-            if (newDx + Width <= Constants.MinNodeSize || newDy + Width <= Constants.MinNodeSize)
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSize || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Width <= Constants.MinNodeSize)
             {
                 return;
             }
-            CompositeTransform ct = this. InkScale;
-            ct.ScaleX *= (newDx + Width) / Width;
-            ct.ScaleY *= (newDy + Height) / Height;
-            this.InkScale = ct;
+            CompositeTransform ct = this.InkScale;
+            ct.ScaleX *= (Width + newDx / WorkSpaceViewModel.CompositeTransform.ScaleX) / Width;
+            ct.ScaleY *= (Height + newDy / WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             base.Resize(newDx, newDy);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -258,6 +259,7 @@ namespace NuSysApp
             get { return _width; }
             set
             {
+                
                 if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
