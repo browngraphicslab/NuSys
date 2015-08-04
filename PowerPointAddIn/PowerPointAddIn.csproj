@@ -171,7 +171,6 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="FineSelection.cs" />
     <Compile Include="NuSysRibbon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -198,7 +197,6 @@
     <Compile Include="SelectionItem.xaml.cs">
       <DependentUpon>SelectionItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SelectionViewModel.cs" />
     <Compile Include="SidePane.xaml.cs">
       <DependentUpon>SidePane.xaml</DependentUpon>
     </Compile>
