@@ -337,7 +337,9 @@ namespace NuSysApp
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
             this.SetErasing(false);
+            _isErasing = false;
             this.SetHighlighting(false);
+            _isHighlighting = false;
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
