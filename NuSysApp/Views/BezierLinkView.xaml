@@ -14,7 +14,7 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
     </UserControl.Resources>
     <Grid>
-        <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1">
+        <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1" CompositeMode="MinBlend">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
