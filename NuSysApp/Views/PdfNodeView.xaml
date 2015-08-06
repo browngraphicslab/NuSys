@@ -16,6 +16,17 @@
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
+
+        <Storyboard x:Name="slideout">
+            <DoubleAnimation Duration="0:0:0.1" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.1" To="-93.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.1" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+        </Storyboard>
+        <Storyboard x:Name="slidein">
+            <DoubleAnimation Duration="0:0:0.1" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.1" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+        </Storyboard>
+        
     </UserControl.Resources>
     <Grid Name="MyGrid" BorderBrush="LightBlue" BorderThickness="1">
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="LightBlue" StrokeThickness="3" Opacity=".8"
@@ -43,8 +54,11 @@
                 <Image Source="ms-appx:///Assets/icon_x.png" />
             </Button.Content>
         </Button>
-        <StackPanel x:Name="SubMenu" Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" 
-                    Orientation="Horizontal" Height="100" VerticalAlignment="Top" Opacity=".75" Margin="0,-100,0,0">
+        <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" 
+                    Orientation="Horizontal" Height="100" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0">
+            <StackPanel.RenderTransform>
+                <CompositeTransform/>
+            </StackPanel.RenderTransform>
             <MenuFlyoutItem x:Name="EditInk" Click="EditC_Click" Style="{StaticResource SubMenuItem}">
                 <MenuFlyoutItem.Background>
                     <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>

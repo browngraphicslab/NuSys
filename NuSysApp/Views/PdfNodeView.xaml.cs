@@ -59,7 +59,14 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.ToggleSelection();
-
+            if (vm.IsSelected == true)
+            {
+                slideout.Begin();
+            }
+            else
+            {
+                slidein.Begin();
+            }
             e.Handled = true;
 
         }
