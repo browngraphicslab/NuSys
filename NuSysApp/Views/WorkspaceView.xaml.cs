@@ -151,21 +151,15 @@ namespace NuSysApp
             var zoomspeed = direction < 0 ? 0.95 : 1.05;//0.08 * direction;
             var translateSpeed = 10;
 
-   //         if (compositeTransform.ScaleX * zoomspeed > 0.01)
-  //          {
                 var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
                 compositeTransform.ScaleX *= zoomspeed;
                 compositeTransform.ScaleY *= zoomspeed;
 
-               // if (direction > 0)
-              //  {
                     compositeTransform.CenterX = cent.X;
                     compositeTransform.CenterY = cent.Y;
-              //  }
                 vm.CompositeTransform = compositeTransform;
             Debug.WriteLine("<" + compositeTransform.CenterX+","+compositeTransform.CenterY+">");
   
-  //              /          }
         }
 
         private void inkCanvas_RightTapped(object sender, RightTappedRoutedEventArgs e)
