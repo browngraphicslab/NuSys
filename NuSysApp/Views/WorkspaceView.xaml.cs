@@ -118,22 +118,48 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             var compositeTransform = vm.CompositeTransform;
 
-            Debug.WriteLine(((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240) / 240);
-
-            //////////////
-            var zoomspeed = 4;
-            var delta = ((3 + ((double)e.GetCurrentPoint(this).Properties.MouseWheelDelta + 240) / 240) - 4) / zoomspeed;
-            if (compositeTransform.ScaleX + delta > 0)
+            var tmpTranslate = new TranslateTransform
             {
-                var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
-                compositeTransform.ScaleX += delta;
-                compositeTransform.ScaleY += delta;
-                compositeTransform.CenterX = center.X;
-                compositeTransform.CenterY = center.Y;
-            }
+                X = compositeTransform.CenterX,
+                Y = compositeTransform.CenterY
+            };
 
-            Debug.WriteLine(compositeTransform.ScaleX + "!!!!!!!!!!!!!!!!!" + compositeTransform.ScaleY);
-            vm.CompositeTransform = compositeTransform;
+            var cent = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+
+            var localPoint = tmpTranslate.Inverse.TransformPoint(cent);
+
+            //Now scale the point in local space
+            localPoint.X *= compositeTransform.ScaleX;
+            localPoint.Y *= compositeTransform.ScaleY;
+
+            //Transform local space into world space again
+            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+
+            //Take the actual scaling...
+            var distance = new Point(
+                worldPoint.X - cent.X,
+                worldPoint.Y - cent.Y);
+
+            //...amd balance the jump of the changed scaling origin by changing the translation            
+
+            compositeTransform.TranslateX += distance.X;
+            compositeTransform.TranslateY += distance.Y;
+            var direction = Math.Sign((double) e.GetCurrentPoint(this).Properties.MouseWheelDelta);
+
+            Debug.WriteLine(direction);
+
+            var zoomspeed = direction < 0 ? 0.95 : 1.05;//0.08 * direction;
+            var translateSpeed = 10;
+
+                var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(this).Position);
+                compositeTransform.ScaleX *= zoomspeed;
+                compositeTransform.ScaleY *= zoomspeed;
+
+                    compositeTransform.CenterX = cent.X;
+                    compositeTransform.CenterY = cent.Y;
+                vm.CompositeTransform = compositeTransform;
+            Debug.WriteLine("<" + compositeTransform.CenterX+","+compositeTransform.CenterY+">");
+  
         }
 
         private void inkCanvas_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -332,6 +358,10 @@ namespace NuSysApp
         #region Floating Menu Button Handlers
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
+            this.SetErasing(false);
+            _isErasing = false;
+            this.SetHighlighting(false);
+            _isHighlighting = false;
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
@@ -340,8 +370,7 @@ namespace NuSysApp
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
-            inkCanvas.InkPresenter.IsInputEnabled = true;
-            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
+            this.SetGlobalInk(true);
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)

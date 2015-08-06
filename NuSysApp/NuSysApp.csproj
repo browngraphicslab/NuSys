@@ -17,7 +17,11 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>App1_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>81B6B30B934A1D53478C22381925FDE21CF7F329</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>C:\Users\phili_n4ua7ts\Desktop\</AppxPackageDir>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -95,9 +99,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Assets\paragraph.nusys" />
+    <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="project.json" />
-    <None Include="project.lock.json" />
     <None Include="ViewModels\.AtomViewModel.cs.swp" />
     <None Include="Views\BezierLink.xaml.cs.orig" />
     <None Include="Views\TextNodeView.xaml.cs.orig" />

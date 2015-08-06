@@ -95,7 +95,7 @@ namespace NuSysApp
             await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
             while (!taskComplete) { } // loop until office file is converted and opened in workspace
             await DeleteInteropTransferFiles(); // to prevent false file-change notifications
-            await ProcessPdfFile(storageFile); // process the .pdf StorageFile
+            await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace NuSysApp
             var path = NuSysStorages.OfficeToPdfFolder.Path;
             var pathToOfficeFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_office.nusys");
             var pathToPdfFile = await StorageFile.GetFileFromPathAsync(path + @"\path_to_pdf.nusys");
-            await pathToOfficeFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            await pathToOfficeFile.DeleteAsync(StorageDeleteOption.PermanentDelete); // PermanentDelete bypasses the Recycle Bin
             await pathToPdfFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
 
@@ -138,14 +138,13 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = (dy /*/
-                            WorkSpaceViewModel.ScaleX*/) * PdfNodeModel.RenderedPage.PixelWidth / PdfNodeModel.RenderedPage.PixelHeight;
-                newDy = dy;// WorkSpaceViewModel.ScaleY;
+                newDx = dy * PdfNodeModel.RenderedPage.PixelWidth / PdfNodeModel.RenderedPage.PixelHeight;
+                newDy = dy;
             }
             else
             {
-                newDx = dx; // WorkSpaceViewModel.ScaleX;
-                newDy = (dx /*/ WorkSpaceViewModel.ScaleY*/) * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
+                newDx = dx;
+                newDy = dx * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSize || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Width <= Constants.MinNodeSize)
             {

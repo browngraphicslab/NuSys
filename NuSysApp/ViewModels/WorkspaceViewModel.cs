@@ -58,8 +58,6 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             this.CurrentMode = Mode.Textnode;
             this.CurrentLinkMode = LinkMode.Bezierlink;
-            //_factory = new Factory(this);
-
 
             Init();
             var c = new CompositeTransform

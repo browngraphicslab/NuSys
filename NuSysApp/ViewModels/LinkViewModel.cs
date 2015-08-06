@@ -105,6 +105,10 @@ namespace NuSysApp
             this.AnchorX = (int)(line.X1 + dx);
             this.AnchorY = (int)(line.Y1 + dy);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
+            foreach (var link in LinkList)
+            {
+                link.UpdateAnchor();
+            }
         }
     }
 }
