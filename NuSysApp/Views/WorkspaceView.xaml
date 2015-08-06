@@ -74,6 +74,7 @@
 
     </Page.Resources>
     <Canvas Background="Transparent" ManipulationMode="All" >
+        
         <Border RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
             <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" x:Name="inkCanvas">
             </InkCanvas>
