@@ -41,7 +41,7 @@
         <TextBox x:Name="textBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Height="{Binding Height}" VerticalAlignment="Top"
                  Margin="20,58,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
                  Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}"
-                 Background="Transparent" BorderBrush="Transparent" />
+                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" />
         <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
                 Background="#00000000">
             <Button.Content>
