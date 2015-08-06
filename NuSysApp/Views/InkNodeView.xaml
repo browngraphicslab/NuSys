@@ -18,7 +18,7 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <Grid Name="MyGrid" Background="{Binding IsSelected, Converter={StaticResource sConverter}, Mode=OneTime}">
+    <Grid Name="MyGrid" Background="PeachPuff">
         <!-- CornerRadius="3.5"-->
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="3" Opacity=".8"
                    Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
@@ -27,7 +27,7 @@
               FontSize="12" Foreground="White"< FontFamily="Calibri" Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}" Text="{Binding Data, Mode=TwoWay}"/>
         <TextBox x:Name="textBox" Foreground="White" TextWrapping="Wrap" Height="200" VerticalAlignment="Top" Margin="10, 50, 0, 0" FontSize="12" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
                      Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}" Background="Transparent" BorderBrush="Transparent"/>-->
-        <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Click="delete_Click" Margin="10,10,0,0">
+        <Button x:Name="delete" Height="50" Width="50" VerticalAlignment="Top" Click="delete_Click" Margin="10,10,0,0" Background="{x:Null}">
             <Button.Content>
                 <Image Source="ms-appx:///Assets/icon_x2.png" />
             </Button.Content>
