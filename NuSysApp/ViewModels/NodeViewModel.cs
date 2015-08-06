@@ -65,8 +65,16 @@ namespace NuSysApp
         /// <param name="dy"></param>
         public virtual void Resize(double dx, double dy)
         {
-            this.Width += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            this.Height += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            double changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            double changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            if (this.Width > Constants.MIN_NODE_SIZE_X || changeX > 0)
+            {
+                this.Width += changeX;
+            }
+            if (this.Height > Constants.MIN_NODE_SIZE_Y || changeY > 0)
+            {
+                this.Height += changeY;
+            }
             this.UpdateAnchor();
         }
 
