@@ -27,6 +27,10 @@ namespace NuSysApp
         public override void Remove()
         {
             WorkSpaceViewModel.DeleteNode(this);
+            if (this.IsSelected)
+            {
+                WorkSpaceViewModel.ClearSelection();
+            }
         }
 
         public void Translate(double dx, double dy)
