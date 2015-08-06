@@ -336,6 +336,10 @@ namespace NuSysApp
         #region Floating Menu Button Handlers
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
+            this.SetErasing(false);
+            _isErasing = false;
+            this.SetHighlighting(false);
+            _isHighlighting = false;
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
@@ -344,8 +348,7 @@ namespace NuSysApp
             Canvas.SetZIndex(inkCanvas, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
-            inkCanvas.InkPresenter.IsInputEnabled = true;
-            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.Inking; //input can be changed using this line erasing works the same way, but instead the input is changed to erasing instead of inking
+            this.SetGlobalInk(true);
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
