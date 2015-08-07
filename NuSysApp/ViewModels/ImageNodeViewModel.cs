@@ -84,6 +84,7 @@ namespace NuSysApp
             ct.ScaleX *= (Width + newDx / WorkSpaceViewModel.CompositeTransform.ScaleX) / Width;
             ct.ScaleY *= (Height + newDy / WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             this.InkScale = ct;
+
             base.Resize(newDx, newDy);
         }
 

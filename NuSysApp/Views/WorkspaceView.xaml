@@ -1,8 +1,9 @@
 ﻿<Page
     x:Class="NuSysApp.WorkspaceView"
+    x:Name="mainFrame"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:NuSysApp"
+    xmlns:local="using:NuSysApp.MISC"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
@@ -73,13 +74,11 @@
 
 
     </Page.Resources>
-    <Canvas Background="Transparent" ManipulationMode="All" >
-        
-        <Border RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
-            <InkCanvas IsRightTapEnabled="True" RightTapped="inkCanvas_RightTapped" x:Name="inkCanvas">
-            </InkCanvas>
+    <Canvas Background="Transparent">
+        <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
+            <local:InqCanvas x:Name="inkCanvas" Background="Transparent" />
         </Border>
-        <Grid x:Name="maingrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
+        <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="0*" />

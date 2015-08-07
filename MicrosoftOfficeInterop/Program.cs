@@ -53,7 +53,7 @@ namespace MicrosoftOfficeInterop
             }
             catch
             {
-                // ignore
+                System.Diagnostics.Debug.WriteLine("can't access file but continuing anyways...");
             }
         }
 
