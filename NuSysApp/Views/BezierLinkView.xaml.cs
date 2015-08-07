@@ -17,6 +17,7 @@ namespace NuSysApp
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             this.UpdateControlPoints();
+            Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
         }
 
         /// <summary>

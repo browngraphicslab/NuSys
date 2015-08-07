@@ -24,6 +24,8 @@ namespace NuSysApp
         public const double DEFAULT_ANNOTATION_SIZE = 100;
         public const double EXTRA_PADDING_SPACE = 50;
         public const double MIN_NODE_SIZE = 2;
+        public const double MIN_NODE_SIZE_X = 150;
+        public const double MIN_NODE_SIZE_Y = 110;
         public static string FolderNusysTemp = "NuSys";
         public static string FolderChromeTransferName = "ChromeTransfer";
         public static string FileChromeTransferName = "selections.nusys";
