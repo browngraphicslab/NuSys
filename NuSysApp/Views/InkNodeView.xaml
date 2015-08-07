@@ -18,20 +18,47 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
         <Storyboard x:Name="slideout">
-            <DoubleAnimation Duration="0:0:0.1" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.1" To="-93.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.1" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="-93.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Name="slidein">
-            <DoubleAnimation Duration="0:0:0.1" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.1" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
     </UserControl.Resources>
     <Grid Name="MyGrid" Background="LightSalmon" Opacity=".75">
         <!-- CornerRadius="3.5"-->
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="White" StrokeThickness="3" Opacity=".8"
                    Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+
+        <StackPanel x:Name="SubMenu"  RenderTransformOrigin="0.5,0.5" IsHitTestVisible="False"
+                    Orientation="Horizontal" Height="100" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0">
+            <StackPanel.RenderTransform>
+                <CompositeTransform/>
+            </StackPanel.RenderTransform>
+            <MenuFlyoutItem x:Name="EditInk" Click="Edit_Click" Style="{StaticResource SubMenuItem}">
+                <MenuFlyoutItem.Background>
+                    <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>
+                </MenuFlyoutItem.Background>
+            </MenuFlyoutItem>
+        </StackPanel>
         <local:InqCanvas x:Name="inkCanvas" Width="{Binding Width}" Height="{Binding Height}" Background="Transparent"/>
+
         <!--<TextBlock Name="textBlock" TextWrapping="Wrap" Height="200" VerticalAlignment="Top" Margin="10,50,0,0" 
               FontSize="12" Foreground="White"< FontFamily="Calibri" Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}" Text="{Binding Data, Mode=TwoWay}"/>
         <TextBox x:Name="textBox" Foreground="White" TextWrapping="Wrap" Height="200" VerticalAlignment="Top" Margin="10, 50, 0, 0" FontSize="12" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
@@ -44,17 +71,6 @@
         <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
               Opacity=".5" ManipulationDelta="Resizer_ManipulationDelta" ManipulationMode="All"  />
-        <StackPanel x:Name="SubMenu"  RenderTransformOrigin="0.5,0.5" 
-                    Orientation="Horizontal" Height="100" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0">
-            <StackPanel.RenderTransform>
-                <CompositeTransform/>
-            </StackPanel.RenderTransform>
-            <MenuFlyoutItem x:Name="EditInk" Click="Edit_Click" Style="{StaticResource SubMenuItem}">
-                <MenuFlyoutItem.Background>
-                    <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>
-                </MenuFlyoutItem.Background>
-            </MenuFlyoutItem>
-        </StackPanel>
     </Grid>
 
 </UserControl>

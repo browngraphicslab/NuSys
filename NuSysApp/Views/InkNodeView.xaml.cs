@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Input.Inking;
@@ -23,6 +24,7 @@ namespace NuSysApp
             this.DataContext = vm;
             this.SetUpBindings();   
             this.SetUpInk();
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
         }
 
         #region Helper Methods
@@ -125,6 +127,23 @@ namespace NuSysApp
             vm.Width = rect.Width;
             vm.Height = rect.Height;
         }
+
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (InkNodeViewModel)this.DataContext;
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                }
+                else
+                {
+                    slidein.Begin();
+                }
+            }
+        }
+
         #endregion Event Handlers
     }
 }
