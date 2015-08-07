@@ -39,8 +39,7 @@ namespace NuSysApp
             
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
-            SetGlobalInk(true);
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
 
         }
 
