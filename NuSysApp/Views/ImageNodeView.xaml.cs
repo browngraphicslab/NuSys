@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -15,6 +16,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.SetUpBindings();
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
             inkCanvas.InkPresenter.IsInputEnabled = false;
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
@@ -53,7 +55,14 @@ namespace NuSysApp
         {
             ImageNodeViewModel vm = (ImageNodeViewModel)this.DataContext;
             vm.ToggleSelection();
-
+            if (vm.IsSelected == true)
+            {
+                slideout.Begin();
+            }
+            else
+            {
+                slidein.Begin();
+            }
             e.Handled = true;
 
         }
@@ -82,6 +91,23 @@ namespace NuSysApp
                 ManipulationMode = ManipulationModes.All;
             }
         }
+
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (ImageNodeViewModel)this.DataContext;
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                }
+                else
+                {
+                    slidein.Begin();
+                }
+            }
+        }
+
         #endregion Event Handlers
     }
 }
