@@ -6,7 +6,7 @@
     RequestedTheme="Light">
 
     <Application.Resources>
-        
+
         <!-- radial menu style -->
         <Style x:Key="RadialMenu" TargetType="MenuFlyoutPresenter">
             <Setter Property="Template">

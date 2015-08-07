@@ -1,4 +1,5 @@
-﻿using Windows.UI;
+﻿using System.ComponentModel;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -19,10 +20,10 @@ namespace NuSysApp
             this.DataContext = vm;
             _isEditing = false; //sets the text block to be in front of textbox so no editing is possible
             this.SetUpBindings();
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
             inkCanvas.InkPresenter.IsInputEnabled = false;
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
-
         }
 
         #region Helper Methods
@@ -64,14 +65,6 @@ namespace NuSysApp
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
             vm.ToggleSelection();
-            if (vm.IsSelected == true)
-            {
-                slideout.Begin();
-            }
-            else
-            {
-                slidein.Begin();
-            }
             e.Handled = true;
 
         }
@@ -126,5 +119,23 @@ namespace NuSysApp
                 this.textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
+
+        
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (TextNodeViewModel)this.DataContext;
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                }
+                else
+                {
+                    slidein.Begin();
+                }
+            }
+        }
+       
     }
 }

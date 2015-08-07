@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using Windows.Foundation;
@@ -260,7 +261,7 @@ namespace NuSysApp
             set
             {
                 
-                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting to small
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
                 }
@@ -289,7 +290,6 @@ namespace NuSysApp
                 RaisePropertyChanged("Height");
             }
         }
-
 
         /// <summary>
         /// X-coordinate of this atom's anchor

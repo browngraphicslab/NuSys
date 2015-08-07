@@ -120,6 +120,7 @@
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
+    <Compile Include="MISC\InqCanvas.cs" />
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
     <Compile Include="MISC\OfficeInteropWord.cs" />
@@ -246,9 +247,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pics\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

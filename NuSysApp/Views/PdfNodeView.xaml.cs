@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
@@ -19,6 +20,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = pdfNodeViewModel;
             this.SetUpBindings();
+            pdfNodeViewModel.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
             inkCanvas.InkPresenter.IsInputEnabled = false;
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
             Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
@@ -124,5 +126,22 @@ namespace NuSysApp
             vm.CurrentPageNumber++;
             inkCanvas.InkPresenter.StrokeContainer=vm.InkContainer[(int)vm.CurrentPageNumber];
         }
+
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (PdfNodeViewModel)this.DataContext;
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                }
+                else
+                {
+                    slidein.Begin();
+                }
+            }
+        }
+
     }
 }
