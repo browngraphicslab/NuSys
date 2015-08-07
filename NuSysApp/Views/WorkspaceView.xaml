@@ -70,7 +70,7 @@
     </Page.Resources>
     <Canvas Background="Transparent">
         <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
-            <local:InqCanvas x:Name="inkCanvas" Background="Transparent" />
+            <local:InqCanvas x:Name="inkCanvas" Background="Transparent" IsEnabled="False" />
         </Border>
         <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
             <Grid.RowDefinitions>

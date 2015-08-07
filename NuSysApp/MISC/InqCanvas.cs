@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -28,13 +29,17 @@ namespace NuSysApp.MISC
 
         public InqCanvas():base()
         {
-        }       
-
+            NuSysApp.MISC.Clip.SetToBounds(this, true);           
+        }
         
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (_isInkingEnabled && !_isErasing)
             {
+                Debug.WriteLine("Pressed " + Parent);
+
+                CapturePointer(e.Pointer);
+
                 _currentStroke = new Polyline();
                 _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(this).Properties.Pressure, 2);
                 if (_isHighlighting)
@@ -61,6 +66,8 @@ namespace NuSysApp.MISC
                 _inkManager.ProcessPointerDown(e.GetCurrentPoint(this));
                 _isDrawing = true;
             }
+
+            e.Handled = true;
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -72,17 +79,21 @@ namespace NuSysApp.MISC
             var currentPoint = e.GetCurrentPoint(this);
             _currentStroke.Points.Add(new Point(currentPoint.Position.X, currentPoint.Position.Y));
             _isDrawing = true;
+            e.Handled = true;
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             if (_isInkingEnabled && !_isErasing)
             {
+                Debug.WriteLine("Released " + Parent);
+                ReleasePointerCapture(e.Pointer);
                 _inkManager.ProcessPointerUp(e.GetCurrentPoint(this));
                 var inkStrokes = _inkManager.GetStrokes();
                 _strokes.Add(inkStrokes[inkStrokes.Count-1], _currentStroke);
                 _isDrawing = false;
             }
+            e.Handled = true;
         }
         
         /// <summary>
@@ -164,6 +175,9 @@ namespace NuSysApp.MISC
             }
             set
             {
+                if (Parent == null)
+                    return;
+
                 if (value ==true)
                 {
                     PointerPressed += OnPointerPressed;

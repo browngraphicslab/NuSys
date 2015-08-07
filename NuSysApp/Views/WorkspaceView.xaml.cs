@@ -37,14 +37,11 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
 
-            
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
-            SetGlobalInk(true);
+
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             _subMenuOpen = false;
-
-
         }
 
         #region Helper Methods
