@@ -331,6 +331,7 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             Canvas.SetZIndex(inkBorder, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -354,9 +355,15 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             var vm = (WorkspaceViewModel)DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
             SetGlobalInk(false);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
@@ -366,9 +373,15 @@ namespace NuSysApp
             textButton.Opacity = .5;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.SetGlobalInk(false);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         /// <summary>
@@ -390,9 +403,15 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = .5;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  
-          //  _isInkingEnabled = false;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;
+            //  _isInkingEnabled = false;
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         /// <summary>
@@ -416,6 +435,11 @@ namespace NuSysApp
             else return;
             var p = vm.CompositeTransform.Inverse.TransformPoint(new Point((ActualWidth - Constants.DefaultNodeSize)/2, (ActualHeight - Constants.DefaultNodeSize) / 2));
             await vm.CreateNewNode(p.X, p.Y, storageFile);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         #endregion Floating Menu Button Handlers
@@ -433,5 +457,23 @@ namespace NuSysApp
         }
         
         #endregion Unused Handlers
+
+        private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            idleButton.Opacity = .5;
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 1;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+            this.SetGlobalInk(false);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
+        }
     }
 }

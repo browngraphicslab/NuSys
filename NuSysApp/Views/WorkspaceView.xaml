@@ -90,6 +90,11 @@
         </Grid>
         <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent" ManipulationMode="All" ManipulationDelta="FloatingMenu_ManipulationDelta" ManipulationStarting="FloatingMenu_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
             <StackPanel>
+                <Button x:Name="idleButton" Style="{StaticResource FloatingButton}" Tapped="Idle_OnTapped" HorizontalAlignment="Center" Height="100" Content="idle">
+                    <Button.Background>
+                        <ImageBrush ImageSource="idle icon.png" Stretch="Uniform"></ImageBrush>
+                    </Button.Background>
+                </Button>
                 <Button x:Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Height="100" Content="global ink" Foreground="White">
                     <Button.Background>
                         <ImageBrush ImageSource="ms-appx:///Assets/icon_globalink.png" Stretch="Uniform"></ImageBrush>
@@ -116,7 +121,7 @@
                     </Button.Background>
                 </Button>
             </StackPanel> 
-            <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="100" Opacity="0" IsHitTestVisible="False">
+            <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="300" Opacity="0" IsHitTestVisible="False">
                 <StackPanel.RenderTransform>
                     <CompositeTransform/>
                 </StackPanel.RenderTransform>
