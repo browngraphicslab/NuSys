@@ -55,14 +55,6 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private void Edit_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void EditC_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
         /// <summary>
         /// This handler makes sure that double tap events don't get interpreted as single tap events first.
         /// </summary>

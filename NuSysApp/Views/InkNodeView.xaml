@@ -57,8 +57,8 @@
                 </MenuFlyoutItem.Background>
             </MenuFlyoutItem>
         </StackPanel>
-        <local:InqCanvas x:Name="inkCanvas" Width="{Binding Width}" Height="{Binding Height}" Background="Transparent"/>
-
+        <Image x:Name="inkImage" />
+            <local:InqCanvas x:Name="inkCanvas" Width="{Binding Width}" Height="{Binding Height}" Background="Transparent"/>
         <!--<TextBlock Name="textBlock" TextWrapping="Wrap" Height="200" VerticalAlignment="Top" Margin="10,50,0,0" 
               FontSize="12" Foreground="White"< FontFamily="Calibri" Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}" Text="{Binding Data, Mode=TwoWay}"/>
         <TextBox x:Name="textBox" Foreground="White" TextWrapping="Wrap" Height="200" VerticalAlignment="Top" Margin="10, 50, 0, 0" FontSize="12" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
