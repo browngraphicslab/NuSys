@@ -26,7 +26,8 @@ namespace NuSysApp
         #region Private Members
        
         private int penSize = Constants.InitialPenSize;
-        private bool _isZooming, _isErasing, _isHighlighting, _subMenuOpen;
+
+        private bool _isZooming, _subMenuOpen;
 
         #endregion Private Members
 
@@ -36,14 +37,11 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
 
-            
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
-            SetGlobalInk(true);
+
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             _subMenuOpen = false;
-
-
         }
 
         #region Helper Methods
@@ -322,16 +320,13 @@ namespace NuSysApp
         #region Floating Menu Button Handlers
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
-        //    this.SetErasing(false);
-            _isErasing = false;
-        //    this.SetHighlighting(false);
-            _isHighlighting = false;
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
             idleButton.Opacity = 1;
+            inkCanvas.SetErasing(false);
             Canvas.SetZIndex(inkBorder, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -446,14 +441,16 @@ namespace NuSysApp
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
-            _isErasing = true;
-           // this.SetErasing(_isErasing);
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
+            inkCanvas.SetErasing(true);
+
         }
 
         private void Highlight_OnTapped(object sender, RoutedEventArgs e)
         {
-            _isHighlighting = true;
-          //  this.SetHighlighting(_isHighlighting);
+            inkCanvas.SetHighlighting(true);
         }
         
         #endregion Unused Handlers
