@@ -116,7 +116,7 @@
                     </Button.Background>
                 </Button>
             </StackPanel> 
-            <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="100" Opacity="0">
+            <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="100" Opacity="0" IsHitTestVisible="False">
                 <StackPanel.RenderTransform>
                     <CompositeTransform/>
                 </StackPanel.RenderTransform>
