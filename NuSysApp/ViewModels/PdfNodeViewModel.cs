@@ -93,10 +93,7 @@ namespace NuSysApp
             };
             var outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_office.nusys");
             await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
-            while (!taskComplete)  // loop until office file is converted and opened in workspace
-            {
-                await Task.Delay(50);
-            }
+            while (!taskComplete) { await Task.Delay(50); } // loop until office file is converted and opened in workspace
             await DeleteInteropTransferFiles(); // to prevent false file-change notifications
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
