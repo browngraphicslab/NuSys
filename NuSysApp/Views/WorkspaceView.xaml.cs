@@ -26,7 +26,7 @@ namespace NuSysApp
         #region Private Members
        
         private int penSize = Constants.InitialPenSize;
-        private bool _isZooming, _isErasing, _isHighlighting;
+        private bool _isZooming;
 
         #endregion Private Members
 
@@ -320,15 +320,12 @@ namespace NuSysApp
         #region Floating Menu Button Handlers
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
-        //    this.SetErasing(false);
-            _isErasing = false;
-        //    this.SetHighlighting(false);
-            _isHighlighting = false;
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            inkCanvas.SetErasing(false);
             Canvas.SetZIndex(inkBorder, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
@@ -410,16 +407,16 @@ namespace NuSysApp
 
         private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            _isErasing = true;
-           // this.SetErasing(_isErasing);
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
+            inkCanvas.SetErasing(true);
             inkButton.Flyout.Hide();
         }
 
         private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            _isHighlighting = true;
-          //  this.SetHighlighting(_isHighlighting);
             inkButton.Flyout.Hide();
+            inkCanvas.SetHighlighting(true);
         }
         
         #endregion Unused Handlers

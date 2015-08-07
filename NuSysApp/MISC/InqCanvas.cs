@@ -22,7 +22,8 @@ namespace NuSysApp.MISC
         private bool _isDrawing = false;
         private bool _isInkingEnabled = false;
         private Polyline _currentStroke;
-        private bool _isErasing;
+        private bool _isErasing = false;
+        private bool _isHighlighting = false;
         private Dictionary<InkStroke, Polyline> _strokes = new Dictionary<InkStroke, Polyline>();
 
         public InqCanvas():base()
@@ -36,7 +37,15 @@ namespace NuSysApp.MISC
             {
                 _currentStroke = new Polyline();
                 _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(this).Properties.Pressure, 2);
-                _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
+                if (_isHighlighting)
+                {
+                    _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
+                }
+                else
+                {
+                    _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
+                }
+                
                 _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
                 {
                     if (_isErasing)
@@ -45,6 +54,8 @@ namespace NuSysApp.MISC
                         _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
                     }
                 };
+
+                PointerPoint p = e.GetCurrentPoint(this);
 
                 Children.Add(_currentStroke);
                 _inkManager.ProcessPointerDown(e.GetCurrentPoint(this));
@@ -78,45 +89,28 @@ namespace NuSysApp.MISC
         /// Turns erasing on or off
         /// </summary>
         /// <param name="erase"></param>
-        private void SetErasing(bool erase)
+        public void SetErasing(bool erase)
         {
+            _isErasing = erase;
             if (erase)
-            {
+            { 
                 _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Erasing;
             }
             else
             {
                 _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Inking;
             }
+            _isHighlighting = false;
         }
 
         /// <summary>
         /// Turns highlighting on or off
         /// </summary>
         /// <param name="highlight"></param>
-        private void SetHighlighting(bool highlight)
+        public void SetHighlighting(bool highlight)
         {
-            InkDrawingAttributes drawingAttributes;
+            _isHighlighting = highlight;
             _isErasing = false;
-            if (highlight)
-            {
-                drawingAttributes = new InkDrawingAttributes
-                {
-                    Color = Windows.UI.Colors.Yellow,
-                    Size = new Windows.Foundation.Size(6, 6),
-                    IgnorePressure = false
-                };
-            }
-            else
-            {
-                drawingAttributes = new InkDrawingAttributes
-                {
-                    Color = Windows.UI.Colors.Black,
-                    Size = new Windows.Foundation.Size(2, 2),
-                    IgnorePressure = false
-                };
-            }
-            _inkManager.SetDefaultDrawingAttributes((drawingAttributes));
         }
 
         public void RemoveByInkStroke(InkStroke stroke)
