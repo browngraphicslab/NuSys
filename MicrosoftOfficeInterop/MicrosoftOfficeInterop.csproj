@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4D7BC424-7650-4D8B-AE2F-7C0FC7A3F290}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MicrosoftOfficeInterop</RootNamespace>
     <AssemblyName>MicrosoftOfficeInterop</AssemblyName>
