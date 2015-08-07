@@ -26,7 +26,8 @@ namespace NuSysApp
         #region Private Members
        
         private int penSize = Constants.InitialPenSize;
-        private bool _isZooming;
+
+        private bool _isZooming, _subMenuOpen;
 
         #endregion Private Members
 
@@ -41,6 +42,8 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
             SetGlobalInk(true);
+            _subMenuOpen = false;
+
 
         }
 
@@ -330,6 +333,16 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
             this.SetGlobalInk(true);
+            if (_subMenuOpen == false)
+            {
+                slideout.Begin();
+                _subMenuOpen = true;
+            } else if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
+            
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
@@ -405,17 +418,17 @@ namespace NuSysApp
 
         #endregion Floating Menu Button Handlers
 
-        private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
+
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
             inkCanvas.SetErasing(true);
-            inkButton.Flyout.Hide();
+
         }
 
-        private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void Highlight_OnTapped(object sender, RoutedEventArgs e)
         {
-            inkButton.Flyout.Hide();
             inkCanvas.SetHighlighting(true);
         }
         
