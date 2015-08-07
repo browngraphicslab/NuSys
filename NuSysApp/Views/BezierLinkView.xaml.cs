@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -52,6 +53,14 @@ namespace NuSysApp
             var vm = (LinkViewModel) this.DataContext;
             vm.ToggleSelection();
             e.Handled = true;
+        }
+
+        private void Edit_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void EditC_Click(object sender, RoutedEventArgs e)
+        {
         }
 
         /// <summary>
