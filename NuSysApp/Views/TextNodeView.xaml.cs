@@ -1,3 +1,4 @@
+using System.Diagnostics;
 ﻿using System.ComponentModel;
 using Windows.UI;
 using Windows.UI.Xaml;
