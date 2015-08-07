@@ -15,62 +15,56 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid Width="100" Height="100" Opacity=".75">
-                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
+                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1" Name="rectangle"/>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="rectangle"
+                                                                   Storyboard.TargetProperty="Opacity">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value=".5" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="rectangle"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style TargetType="MenuFlyoutItem" x:Key="FloatingFlyoutButton">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="MenuFlyoutItem">
-                        <Grid Width="100" Height="100" Opacity=".75">
-                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="MenuFlyoutPresenter" x:Key="FloatingFlyout">
-            <Setter Property="RequestedTheme" Value="Light" />
-            <Setter Property="Background" Value="{x:Null}" />
-            <Setter Property="BorderBrush" Value="{x:Null}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource FlyoutBorderThemeThickness}" />
-            <Setter Property="Padding" Value="{ThemeResource MenuFlyoutPresenterThemePadding}" />
-            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False" />
-            <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False" />
-            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
-            <Setter Property="MinWidth" Value="{ThemeResource FlyoutThemeMinWidth}" />
-            <Setter Property="MaxWidth" Value="{ThemeResource FlyoutThemeMaxWidth}" />
-            <Setter Property="MinHeight" Value="{ThemeResource FlyoutThemeMinHeight}" />
-            <Setter Property="MaxHeight" Value="{ThemeResource FlyoutThemeMaxHeight}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="MenuFlyoutPresenter">
-                        <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer Padding="{TemplateBinding Padding}"
-                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-                                  ZoomMode="{TemplateBinding ScrollViewer.ZoomMode}"
-                                  AutomationProperties.AccessibilityView="Raw">
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+
+        <Storyboard x:Name="slideout">
+            <DoubleAnimation Duration="0:0:0.2" To="125" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="slidein">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
 
 
     </Page.Resources>
@@ -95,59 +89,48 @@
             </ItemsControl>
         </Grid>
         <Grid x:Name="FM" RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent" ManipulationMode="All" ManipulationDelta="FloatingMenu_ManipulationDelta" ManipulationStarting="FloatingMenu_ManipulationStarting" HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
-            <Grid.Resources>
-                <ImageBrush x:Key="iconSelectInk" ImageSource="icon_selectink.png" Stretch="Uniform" />
-            </Grid.Resources>            
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <Button Grid.Row="0" x:Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Content="global ink" Foreground="White">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_globalink.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-                <Button.Flyout>
-                    <!-- change flyout - use stackpanel instead -->
-                    <Flyout FlyoutPresenterStyle="{StaticResource SubMenuPresenter}" Placement="Right">
-                        <StackPanel Orientation="Horizontal" Opacity=".75">
-                            <MenuFlyoutItem x:Name="Erase" Style="{StaticResource SubMenuItem}" Tapped="Erase_OnTapped">
-                                <MenuFlyoutItem.Background>
-                                    <ImageBrush ImageSource="ms-appx:///Assets/icon_eraser.png" Stretch="Uniform"></ImageBrush>
-                                </MenuFlyoutItem.Background>
-                            </MenuFlyoutItem>
-                            <MenuFlyoutItem x:Name="Highlight" Style="{StaticResource SubMenuItem}" Tapped="Highlight_OnTapped">
-                                <MenuFlyoutItem.Background>
-                                    <ImageBrush ImageSource="ms-appx:///Assets/icon_highlighter.png" Stretch="Uniform"></ImageBrush>
-                                </MenuFlyoutItem.Background>
-                            </MenuFlyoutItem>
-                            <MenuFlyoutItem Style="{StaticResource SubMenuItem}"></MenuFlyoutItem>
-                        </StackPanel>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
-            <Button Grid.Row="1" x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="106" Margin="0,0,0,-6">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_selectink.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
-            <Button Grid.Row="2" x:Name="textButton" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click" HorizontalAlignment="Center" Height="114" Margin="0,-5,0,-9">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
-            <Button Grid.Row="3" x:Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="InkNodeButton_Click" HorizontalAlignment="Center" Height="115" Margin="0,-6,0,-9">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_scribble.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
-            <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
+            <StackPanel>
+                <Button x:Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Height="100" Content="global ink" Foreground="White">
+                    <Button.Background>
+                        <ImageBrush ImageSource="ms-appx:///Assets/icon_globalink.png" Stretch="Uniform"></ImageBrush>
+                    </Button.Background>
+                </Button>
+                <Button x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                    <Button.Background>
+                        <ImageBrush ImageSource="ms-appx:///Assets/icon_selectink.png" Stretch="Uniform"></ImageBrush>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="textButton" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                    <Button.Background>
+                        <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="InkNodeButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                    <Button.Background>
+                        <ImageBrush ImageSource="ms-appx:///Assets/icon_scribble.png" Stretch="Uniform"></ImageBrush>
+                    </Button.Background>
+                </Button>
+                <Button Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                    <Button.Background>
+                        <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
+                    </Button.Background>
+                </Button>
+            </StackPanel> 
+            <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="100" Opacity="0">
+                <StackPanel.RenderTransform>
+                    <CompositeTransform/>
+                </StackPanel.RenderTransform>
+                <MenuFlyoutItem x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource SubMenuItem}">
+                    <MenuFlyoutItem.Background>
+                        <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_eraser.png"></ImageBrush>
+                    </MenuFlyoutItem.Background>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem x:Name="Highlight" Click="Highlight_OnTapped" Style="{StaticResource SubMenuItem}">
+                    <MenuFlyoutItem.Background>
+                        <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_highlighter.png" ></ImageBrush>
+                    </MenuFlyoutItem.Background>
+                </MenuFlyoutItem>
+            </StackPanel>
         </Grid>
     </Canvas>
 </Page>

@@ -26,7 +26,7 @@ namespace NuSysApp
         #region Private Members
        
         private int penSize = Constants.InitialPenSize;
-        private bool _isZooming, _isErasing, _isHighlighting;
+        private bool _isZooming, _isErasing, _isHighlighting, _subMenuOpen;
 
         #endregion Private Members
 
@@ -36,11 +36,11 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
 
-            
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
 
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+            _subMenuOpen = false;
         }
 
         #region Helper Methods
@@ -332,6 +332,16 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
             this.SetGlobalInk(true);
+            if (_subMenuOpen == false)
+            {
+                slideout.Begin();
+                _subMenuOpen = true;
+            } else if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
+            
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
@@ -407,18 +417,16 @@ namespace NuSysApp
 
         #endregion Floating Menu Button Handlers
 
-        private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
             _isErasing = true;
            // this.SetErasing(_isErasing);
-            inkButton.Flyout.Hide();
         }
 
-        private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void Highlight_OnTapped(object sender, RoutedEventArgs e)
         {
             _isHighlighting = true;
           //  this.SetHighlighting(_isHighlighting);
-            inkButton.Flyout.Hide();
         }
         
         #endregion Unused Handlers
