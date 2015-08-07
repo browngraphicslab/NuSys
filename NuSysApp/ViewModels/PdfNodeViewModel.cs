@@ -93,7 +93,7 @@ namespace NuSysApp
             };
             var outputFile = await StorageUtil.CreateFileIfNotExists(folder, "path_to_office.nusys");
             await FileIO.WriteTextAsync(outputFile, storageFile.Path); // write path to office file
-            while (!taskComplete) { } // loop until office file is converted and opened in workspace
+            while (!taskComplete) { await Task.Delay(50); } // loop until office file is converted and opened in workspace
             await DeleteInteropTransferFiles(); // to prevent false file-change notifications
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
@@ -146,7 +146,7 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
-            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSize || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Width <= Constants.MinNodeSize)
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MIN_NODE_SIZE_X || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MIN_NODE_SIZE_Y)
             {
                 return;
             }
