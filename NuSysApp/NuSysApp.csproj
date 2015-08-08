@@ -98,19 +98,18 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\idle icon.png" />
+    <Content Include="Assets\icon_idle.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="project.json" />
-    <None Include="ViewModels\.AtomViewModel.cs.swp" />
-    <None Include="Views\BezierLink.xaml.cs.orig" />
-    <None Include="Views\TextNodeView.xaml.cs.orig" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\DrawInqMode.cs" />
+    <Compile Include="Components\IInqMode.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
@@ -122,7 +121,7 @@
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
-    <Compile Include="MISC\InqCanvas.cs" />
+    <Compile Include="Components\InqCanvas.cs" />
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
     <Compile Include="MISC\OfficeInteropWord.cs" />
@@ -149,28 +148,38 @@
     <Compile Include="ViewModels\RichTextNodeViewModel.cs" />
     <Compile Include="ViewModels\TextNodeViewModel.cs" />
     <Compile Include="ViewModels\WorkspaceViewModel.cs" />
-    <Compile Include="Views\BezierLinkView.xaml.cs">
+    <Compile Include="Views\Links\BezierLinkView.xaml.cs">
       <DependentUpon>BezierLinkView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImageNodeView.xaml.cs">
+    <Compile Include="Views\FloatingMenu.xaml.cs">
+      <DependentUpon>FloatingMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Nodes\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InkNodeView.xaml.cs">
+    <Compile Include="Views\Nodes\InkNodeView.xaml.cs">
       <DependentUpon>InkNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LineLinkView.xaml.cs">
+    <Compile Include="Views\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PdfNodeView.xaml.cs">
+    <Compile Include="Views\Nodes\PdfNodeView.xaml.cs">
       <DependentUpon>PdfNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RichTextNodeView.xaml.cs">
+    <Compile Include="Views\Nodes\RichTextNodeView.xaml.cs">
       <DependentUpon>RichTextNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TextNodeView.xaml.cs">
+    <Compile Include="Views\Nodes\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WorkspaceView.xaml.cs">
+    <Compile Include="Views\Workspace\AddNodeMode.cs" />
+    <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
+    <Compile Include="Views\Workspace\GlobalInkMode.cs" />
+    <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
+    <Compile Include="Views\Workspace\MultiMode.cs" />
+    <Compile Include="Views\Workspace\PanZoomMode.cs" />
+    <Compile Include="Views\Workspace\SelectMode.cs" />
+    <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -216,35 +225,39 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\BezierLinkView.xaml">
+    <Page Include="Views\Links\BezierLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ImageNodeView.xaml">
+    <Page Include="Views\FloatingMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Nodes\ImageNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\InkNodeView.xaml">
+    <Page Include="Views\Nodes\InkNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\LineLinkView.xaml">
+    <Page Include="Views\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PdfNodeView.xaml">
+    <Page Include="Views\Nodes\PdfNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RichTextNodeView.xaml">
+    <Page Include="Views\Nodes\RichTextNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\TextNodeView.xaml">
+    <Page Include="Views\Nodes\TextNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\WorkspaceView.xaml">
+    <Page Include="Views\Workspace\WorkspaceView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

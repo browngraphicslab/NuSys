@@ -30,6 +30,7 @@ namespace NuSysApp
 
         public enum Mode
         {
+            Select,
             Textnode,
             Globalink,
             Ink,
@@ -276,28 +277,42 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(double xCoordinate, double yCoordinate, object data = null)
+        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
-            NodeViewModel vm;
-            switch (this.CurrentMode)
+            NodeViewModel vm = null;
+            switch (type)
             {
-                case Mode.Textnode:
-                    vm = Factory.CreateNewText(this, "Enter text here");
+                case NodeType.TEXT:
+                    vm = new TextNodeViewModel(this);
                     break;
-                case Mode.Ink:
-                    vm = Factory.CreateNewInk(this);
+                case NodeType.INK:
+                    vm = new InkNodeViewModel(this);
                     break;
-                case Mode.Image:
-                    vm = await Factory.CreateNewImage(this, (StorageFile)data);
-                    this.CurrentMode = Mode.Textnode;
+                case NodeType.DOCUMENT:
+                    var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
+                    if (storageFile == null)
+                        return;
+                    
+                    if (Constants.ImageFileTypes.Contains( storageFile.FileType))
+                    {
+                        var imgVM = new ImageNodeViewModel(this);
+                        await imgVM.InitializeImageNodeAsync(storageFile);
+                        vm = imgVM;
+                    }
+
+                    if (Constants.PdfFileTypes.Contains(storageFile.FileType))
+                    {
+                        var pdfVM = new PdfNodeViewModel(this);
+                        await pdfVM.InitializePdfNodeAsync(storageFile);
+                        vm = pdfVM;
+                    }
                     break;
-                case Mode.Pdf:
-                    vm = await Factory.CreateNewPdfNodeViewModel(this, (StorageFile)data);
-                    //this.CurrentMode = Mode.Textnode;
-                    break;
-                case Mode.InkSelect:
-                    vm = Factory.CreateNewPromotedInk(this);
-                    break;
+
+
+
+                //   case Mode.InkSelect:
+                //      vm = Factory.CreateNewPromotedInk(this);
+                //      break;
                 default:
                     return;
             }

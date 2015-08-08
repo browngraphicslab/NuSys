@@ -14,85 +14,67 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuSysApp.MISC
+namespace NuSysApp
 {
-    
+
     public class InqCanvas : Canvas
     {
+        private bool _isEnabled;
         private InkManager _inkManager = new InkManager();
-        private bool _isDrawing = false;
-        private bool _isInkingEnabled = false;
-        private Polyline _currentStroke;
-        private bool _isErasing = false;
-        private bool _isHighlighting = false;
+        private uint _pointerId = uint.MaxValue;
+        private IInqMode _mode = new DrawInqMode();
         private Dictionary<InkStroke, Polyline> _strokes = new Dictionary<InkStroke, Polyline>();
 
-        public InqCanvas():base()
+        public InqCanvas() : base()
         {
-            NuSysApp.MISC.Clip.SetToBounds(this, true);           
+            NuSysApp.MISC.Clip.SetToBounds(this, true);
         }
-        
+
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (_isInkingEnabled && !_isErasing)
+            if (_pointerId != uint.MaxValue)
             {
-                Debug.WriteLine("Pressed " + Parent);
-
-                CapturePointer(e.Pointer);
-
-                _currentStroke = new Polyline();
-                _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(this).Properties.Pressure, 2);
-                if (_isHighlighting)
-                {
-                    _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
-                }
-                else
-                {
-                    _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
-                }
-                
-                _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
-                {
-                    if (_isErasing)
-                    {
-                        Children.Remove(o as Polyline);
-                        _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
-                    }
-                };
-
-                PointerPoint p = e.GetCurrentPoint(this);
-
-                Children.Add(_currentStroke);
-                _inkManager.ProcessPointerDown(e.GetCurrentPoint(this));
-                _isDrawing = true;
+                e.Handled = true;
+                return;
             }
+
+            _pointerId = e.Pointer.PointerId;
+            CapturePointer(e.Pointer);
+            PointerMoved += OnPointerMoved;
+            PointerReleased += OnPointerReleased;
+
+            _mode.OnPointerPressed(this, e);
 
             e.Handled = true;
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (_isErasing || !_isDrawing || !_isInkingEnabled)
+            if (e.Pointer.PointerId != _pointerId)
+            {
+                e.Handled = true;
                 return;
+            }
 
-            _inkManager.ProcessPointerUpdate(e.GetCurrentPoint(this));
-            var currentPoint = e.GetCurrentPoint(this);
-            _currentStroke.Points.Add(new Point(currentPoint.Position.X, currentPoint.Position.Y));
-            _isDrawing = true;
+            _mode.OnPointerMoved(this, e);
             e.Handled = true;
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (_isInkingEnabled && !_isErasing)
+            if (e.Pointer.PointerId != _pointerId)
             {
-                Debug.WriteLine("Released " + Parent);
-                ReleasePointerCapture(e.Pointer);
-                _inkManager.ProcessPointerUp(e.GetCurrentPoint(this));
-                var inkStrokes = _inkManager.GetStrokes();
-                _strokes.Add(inkStrokes[inkStrokes.Count-1], _currentStroke);
-                _isDrawing = false;
+                e.Handled = true;
+                return;
             }
+
+            PointerMoved -= OnPointerMoved;
+            PointerReleased -= OnPointerReleased;
+            _pointerId = uint.MaxValue;
+            ReleasePointerCapture(e.Pointer);
+
+            _mode.OnPointerReleased(this, e);
+
             e.Handled = true;
         }
         
@@ -102,7 +84,7 @@ namespace NuSysApp.MISC
         /// <param name="erase"></param>
         public void SetErasing(bool erase)
         {
-            _isErasing = erase;
+          //  _isErasing = erase;
             if (erase)
             { 
                 _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Erasing;
@@ -111,7 +93,7 @@ namespace NuSysApp.MISC
             {
                 _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Inking;
             }
-            _isHighlighting = false;
+           // _isHighlighting = false;
         }
 
         /// <summary>
@@ -120,8 +102,8 @@ namespace NuSysApp.MISC
         /// <param name="highlight"></param>
         public void SetHighlighting(bool highlight)
         {
-            _isHighlighting = highlight;
-            _isErasing = false;
+           // _isHighlighting = highlight;
+           //.. _isErasing = false;
         }
 
         public void RemoveByInkStroke(InkStroke stroke)
@@ -154,11 +136,13 @@ namespace NuSysApp.MISC
 
                 pl.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
                 {
+                    /*
                     if (_isErasing)
                     {
                         Children.Remove(o as Polyline);
                         _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
                     }
+                    */
                 };
 
 
@@ -171,7 +155,7 @@ namespace NuSysApp.MISC
         public bool IsEnabled {
             get
             {
-                return _isInkingEnabled;
+                return _isEnabled;
             }
             set
             {
@@ -181,15 +165,14 @@ namespace NuSysApp.MISC
                 if (value ==true)
                 {
                     PointerPressed += OnPointerPressed;
-                    PointerMoved += OnPointerMoved;
-                    PointerReleased += OnPointerReleased;
+
                 } else
                 {
                     PointerPressed -= OnPointerPressed;
                     PointerMoved -= OnPointerMoved;
                     PointerReleased -= OnPointerReleased;
                 }
-                _isInkingEnabled = value;
+                _isEnabled = value;
             }
         }
 
@@ -198,6 +181,14 @@ namespace NuSysApp.MISC
             get
             {
                 return _inkManager;
+            }
+        }
+
+        internal Dictionary<InkStroke, Polyline> Strokes
+        {
+            get
+            {
+                return _strokes;
             }
         }
     }
