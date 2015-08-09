@@ -9,7 +9,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
+using System;
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -24,21 +26,15 @@ namespace NuSysApp
             this.SetUpBindings();   
             this.SetUpInk();
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
+
         }
 
         #region Helper Methods
 
         private void SetUpInk()
         {
-            _drawingAttributes = new InkDrawingAttributes();
-            _drawingAttributes.Color = Windows.UI.Colors.Black;
-            _drawingAttributes.Size = new Windows.Foundation.Size(2, 2);
-            _drawingAttributes.IgnorePressure = false;
-            inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(_drawingAttributes);
-            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
-            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch;
-            inkCanvas.InkPresenter.IsInputEnabled = ((InkNodeViewModel)this.DataContext).IsEditing;//only accept input if node is currently being edited
         }
+
         private void SetUpBindings()
         {
             var leftBinding = new Binding
@@ -90,11 +86,32 @@ namespace NuSysApp
 
         }
 
-        private void Edit_Click(object sender, RoutedEventArgs e)
+        private async void Edit_Click(object sender, RoutedEventArgs e)
         {
             InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
             vm.ToggleEditing();
-            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditing;   
+            inkCanvas.IsEnabled = vm.IsEditing;
+            if (ManipulationMode == ManipulationModes.All)
+            {
+                ManipulationMode = ManipulationModes.None;
+            }
+            else
+            {
+                ManipulationMode = ManipulationModes.All;
+            }
+            if (vm.IsEditing)
+            {
+
+                inkImage.Visibility = Visibility.Collapsed;
+                inkCanvas.Visibility = Visibility.Visible;
+            } else
+            {
+                var rtb = new RenderTargetBitmap();
+                await rtb.RenderAsync(inkCanvas);
+                inkImage.Source = rtb;
+                inkImage.Visibility = Visibility.Visible;
+                inkCanvas.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void UserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -119,19 +136,11 @@ namespace NuSysApp
         }
 
         public void UpdateInk()
-        {
+        {   
             var vm = (InkNodeViewModel)this.DataContext;
-            if (!this.inkCanvas.InkPresenter.StrokeContainer.CanPasteFromClipboard())
-            {
-                Debug.WriteLine("Could not promote ink");
-                vm.WorkSpaceViewModel.DeleteNode(vm);
-                return;
-            }
-            var rect = this.inkCanvas.InkPresenter.StrokeContainer.PasteFromClipboard(new Point(0,0));
-            
+            var rect = inkCanvas.PasteManagedStrokes();
             vm.Width = rect.Width;
             vm.Height = rect.Height;
-            
         }
 
         private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)

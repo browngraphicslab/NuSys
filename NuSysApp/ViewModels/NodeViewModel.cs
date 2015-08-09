@@ -68,14 +68,14 @@ namespace NuSysApp
         {
             double changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
             double changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-
-            if (this.Width + changeX > Constants.MIN_NODE_SIZE_X && 
-                this.Height + changeY > Constants.MIN_NODE_SIZE_Y)
+            if (this.Width > Constants.MIN_NODE_SIZE_X || changeX > 0)
             {
                 this.Width += changeX;
+            }
+            if (this.Height > Constants.MIN_NODE_SIZE_Y || changeY > 0)
+            {
                 this.Height += changeY;
             }
-
             this.UpdateAnchor();
         }
 

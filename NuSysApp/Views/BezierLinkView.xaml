@@ -8,13 +8,15 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     xmlns:converters="using:NuSysApp"
+    ManipulationMode="All"
     DoubleTapped="BezierLinkView_OnDoubleTapped"
     PointerPressed="BezierLinkView_OnPointerPressed">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
     </UserControl.Resources>
+
     <Grid>
-        <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1" CompositeMode="SourceOver" Canvas.ZIndex="0">
+        <Path Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity="0.1" CompositeMode="SourceOver">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
@@ -38,8 +40,6 @@
                     </PathGeometry.Figures>
                 </PathGeometry>
             </Path.Data>
-
         </Path>
-
     </Grid>
 </UserControl>

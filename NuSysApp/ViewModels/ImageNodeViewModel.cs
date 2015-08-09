@@ -75,7 +75,7 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
             }
-            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSize || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Width <= Constants.MinNodeSize)
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MIN_NODE_SIZE_X || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MIN_NODE_SIZE_Y)
             {
                 return;
             }
@@ -84,6 +84,7 @@ namespace NuSysApp
             ct.ScaleX *= (Width + newDx / WorkSpaceViewModel.CompositeTransform.ScaleX) / Width;
             ct.ScaleY *= (Height + newDy / WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             this.InkScale = ct;
+
             base.Resize(newDx, newDy);
         }
 
