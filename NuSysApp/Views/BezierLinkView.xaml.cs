@@ -9,14 +9,19 @@ namespace NuSysApp
 {
     public sealed partial class BezierLinkView : UserControl
     {
+        private LinkViewModel _vm;
+
         public BezierLinkView(LinkViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            
+            _vm = vm;
             //Universal apps does not support multiple databinding, so this is a workarround. 
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             this.UpdateControlPoints();
+            this.UpdateEndPoints();
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
         }
 
@@ -34,7 +39,7 @@ namespace NuSysApp
         /// Updates the location of the bezier controlpoints. 
         /// Do not call this method outside of this class.
         /// </summary>
-        private void UpdateControlPoints()
+        private void UpdateControlPoints() //use this example
         {
             var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
@@ -45,6 +50,28 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+
+            this.UpdateEndPoints();
+        }
+
+        //RaisePropertychanged to the anchor - atom_propertyChanged
+        //Update endpoints based on intersection
+        private void UpdateEndPoints()
+        {
+            var vm = (LinkViewModel)this.DataContext;
+            var atom1 = vm.Atom1;
+            var atom2 = vm.Atom2;
+            var anchor1 = atom1.Anchor;
+            var anchor2 = atom2.Anchor;
+
+            pathfigure.StartPoint = new Point(anchor1.X-100, anchor1.Y+100);
+            curve.Point3 = new Point(anchor2.X -100, anchor2.Y + 100);
+
+            //Get rid of data binding in BezierLinkView.xaml - done
+            //Calculate the intersection point of the line with atom1 and the line of atom2
+            //Also need to add back type checking
+            //pathfigure.StartPoint = atom1 edge
+            //curve.Point3 = atom2 edge
         }
 
         private void BezierLinkView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
