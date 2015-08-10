@@ -126,7 +126,6 @@ namespace NuSysApp
                     {
                         vm.ToggleEditingInk();
                         inkCanvas.IsEnabled = vm.IsEditingInk;
-                    }
                     if (ManipulationMode == ManipulationModes.All)
                     {
                         ManipulationMode = ManipulationModes.None;
@@ -134,6 +133,7 @@ namespace NuSysApp
                     else
                     {
                         ManipulationMode = ManipulationModes.All;
+                    }
                     }
                 }
                 if (vm.GetType() == typeof (TextNodeViewModel))
