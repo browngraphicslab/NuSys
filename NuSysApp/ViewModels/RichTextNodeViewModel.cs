@@ -22,7 +22,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.View = new RichTextNodeView(this);
+            this.View = new RichTextNodeView2(this);
         }
 
         #region Public Properties

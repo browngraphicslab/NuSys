@@ -28,18 +28,6 @@ namespace NuSysApp
 
         private readonly Factory _factory;
 
-        public enum Mode
-        {
-            Select,
-            Textnode,
-            Globalink,
-            Ink,
-            Erase,
-            Image,
-            Pdf,
-            InkSelect
-        }; //enum created to switch between multiple modes in the appbar
-
         public enum LinkMode
         {
             Linelink,
@@ -57,7 +45,6 @@ namespace NuSysApp
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedAtomViewModel = null;
-            this.CurrentMode = Mode.Textnode;
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             Init();
@@ -266,7 +253,7 @@ namespace NuSysApp
         /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
-            if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
+           // if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
             if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
 
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
@@ -342,7 +329,7 @@ namespace NuSysApp
 
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
-        public Mode CurrentMode { get; set; }
+        //public Mode CurrentMode { get; set; }
 
         public LinkMode CurrentLinkMode { get; set; }
 

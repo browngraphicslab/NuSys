@@ -28,6 +28,6 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <local:FloatingMenu x:Name="FM" ModeChange="OnModeChange" ManipulationMode="All" ManipulationDelta="FloatingMenu_ManipulationDelta"/>
+        <local:FloatingMenu x:Name="floatingMenu" ModeChange="OnModeChange" />
     </Canvas>
 </Page>

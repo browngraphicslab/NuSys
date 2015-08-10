@@ -15,7 +15,7 @@ namespace NuSysApp
 
         public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
         {
-            this.View = new ImageNodeView(this);
+            this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
 
             this.Width = igm.PixelWidth;
@@ -36,7 +36,7 @@ namespace NuSysApp
 
         public ImageNodeViewModel(WorkspaceViewModel vm) : base(vm)
         {
-            this.View = new ImageNodeView(this);
+            this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
@@ -80,7 +80,6 @@ namespace NuSysApp
                 return;
             }
             CompositeTransform ct = this.InkScale;
-            Debug.WriteLine(newDx + "LLLL" + newDy);
             ct.ScaleX *= (Width + newDx / WorkSpaceViewModel.CompositeTransform.ScaleX) / Width;
             ct.ScaleY *= (Height + newDy / WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             this.InkScale = ct;

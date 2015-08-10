@@ -113,6 +113,7 @@
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="CustomControl1.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
@@ -154,8 +155,14 @@
     <Compile Include="Views\FloatingMenu.xaml.cs">
       <DependentUpon>FloatingMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Nodes\ImageNodeView2.xaml.cs">
+      <DependentUpon>ImageNodeView2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Nodes\InkNodeView2.xaml.cs">
+      <DependentUpon>InkNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\InkNodeView.xaml.cs">
       <DependentUpon>InkNodeView.xaml</DependentUpon>
@@ -163,14 +170,21 @@
     <Compile Include="Views\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Nodes\NodeTemplate.cs" />
     <Compile Include="Views\Nodes\PdfNodeView.xaml.cs">
       <DependentUpon>PdfNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Nodes\RichTextNodeView2.xaml.cs">
+      <DependentUpon>RichTextNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\RichTextNodeView.xaml.cs">
       <DependentUpon>RichTextNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Nodes\TextNodeView2.xaml.cs">
+      <DependentUpon>TextNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\AddNodeMode.cs" />
     <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
@@ -225,6 +239,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Links\BezierLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -233,7 +251,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Nodes\ImageNodeView2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Nodes\ImageNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Nodes\InkNodeView2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -249,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Nodes\RichTextNodeView2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Nodes\RichTextNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -256,6 +286,10 @@
     <Page Include="Views\Nodes\TextNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Nodes\TextNodeView2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Workspace\WorkspaceView.xaml">
       <Generator>MSBuild:Compile</Generator>

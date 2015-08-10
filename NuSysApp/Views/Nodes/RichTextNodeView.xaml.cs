@@ -86,7 +86,7 @@ namespace NuSysApp
         private void EditC_Click(object sender, RoutedEventArgs e)
         {
             var vm = (RichTextNodeViewModel)this.DataContext;
-            vm.ToggleEditingC();
+            vm.ToggleEditingInk();
             inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
             if (ManipulationMode == ManipulationModes.All)
             {

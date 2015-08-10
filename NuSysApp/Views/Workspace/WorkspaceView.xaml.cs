@@ -60,6 +60,11 @@ namespace NuSysApp
             get { return inqCanvas; }
         }
 
+        public FloatingMenu FloatingMenu
+        {
+            get { return floatingMenu; }
+        }
+
         public bool IsManipulationEnabled
         {
             get
@@ -80,28 +85,6 @@ namespace NuSysApp
                 _isManipulationEnabled = value;                
             }
         }
-
-        #region Floating Menu Handlers
-        private void FloatingMenu_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            var compositeTransform = vm.FMTransform;
-
-            compositeTransform.TranslateX += e.Delta.Translation.X;
-            compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            /*
-            vm.FMTransform = compositeTransform;
-            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth || compositeTransform.TranslateY < -85 + FM.Children.Count * -100 || compositeTransform.TranslateY > this.ActualHeight)
-            {
-              //  FM.Visibility = Visibility.Collapsed;
-                e.Complete();
-            }
-            */
-            e.Handled = true;
-        }
-
-        #endregion Floating Menu Handlers
 
         private void OnModeChange(Options mode)
         {

@@ -48,12 +48,6 @@ namespace NuSysApp
         #endregion Helper Methods
 
         #region Event Handlers
-        private void UserControl_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
-            vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
-            e.Handled = true;
-        }
 
         private void Resizer_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -61,46 +55,21 @@ namespace NuSysApp
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true;
         }
-        
-        private void UserControl_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
-            vm.ToggleSelection();
-            e.Handled = true;
-
-        }
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
             vm.ToggleEditing();
-            if (ManipulationMode == ManipulationModes.All)
-            {
-                ManipulationMode = ManipulationModes.None;
-            }
-            else
-            {
-                ManipulationMode = ManipulationModes.All;
-            }
-            #endregion Event Handlers
         }
+
+        #endregion Event Handlers
+
         private void EditC_Click(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
-            vm.ToggleEditingC();
-            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;   
-            if (ManipulationMode == ManipulationModes.All)
-            {
-                ManipulationMode = ManipulationModes.None;
-            }
-            else
-            {
-                ManipulationMode = ManipulationModes.All;
-            }
-        }
-        private void UserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            e.Handled = true;
+            
+            vm.ToggleEditingInk();
+            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;
         }
 
         private void delete_Click(object sender, RoutedEventArgs e)

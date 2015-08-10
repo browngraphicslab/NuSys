@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -77,19 +79,18 @@ namespace NuSysApp.Views.Workspace
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
+           
             e.Container = _view;
             e.Handled = true;
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var vm = (WorkspaceViewModel)_view.DataContext;
-
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect || vm.CurrentMode == WorkspaceViewModel.Mode.Globalink)
-            {
-                e.Handled = true;
+            if (((FrameworkElement)e.OriginalSource).DataContext != _view.DataContext) {
                 return;
             }
+
+            var vm = (WorkspaceViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
             var tmpTranslate = new TranslateTransform

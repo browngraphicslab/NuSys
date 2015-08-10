@@ -58,7 +58,7 @@ namespace NuSysApp
            
            
         }
-        public void ToggleEditingC()
+        public void ToggleEditingInk()
         {
             this.IsEditingInk = !this.IsEditingInk;
         }
@@ -85,7 +85,7 @@ namespace NuSysApp
         public abstract void UpdateAnchor();
 
         #endregion Other Methods
-
+        
         #region Public Properties
 
         /// <summary>
