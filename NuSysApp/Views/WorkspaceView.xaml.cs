@@ -408,6 +408,12 @@ namespace NuSysApp
 
         #endregion Floating Menu Button Handlers
 
+        private void CanvasControl_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+        {
+            //args.DrawingSession.DrawEllipse(155, 115, 80, 30, Colors.Black, 3);
+            //args.DrawingSession.DrawText("Hello, world!", 100, 100, Colors.Yellow);
+        }
+
         private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             _isErasing = true;
@@ -423,5 +429,28 @@ namespace NuSysApp
         }
         
         #endregion Unused Handlers
+
+        private async void Cortana_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            //var vm = (WorkspaceViewModel)DataContext;
+            //vm.ClearSelection();
+            //vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+            //var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(500, 100));
+            //await vm.CreateNewNode(p.X, p.Y, "");
+            var transcription = await Cortana.RunRecognizer();
+            switch (transcription.ToLower())
+            {
+                case "open document":
+                    DocumentButton_Click(sender, e);
+                    break;
+                case "create text":
+                    var vm = (WorkspaceViewModel)DataContext;
+                    vm.ClearSelection();
+                    vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(500, 100));
+                    await vm.CreateNewNode(p.X, p.Y, "");
+                    break;
+            }
+        }
     }
 }

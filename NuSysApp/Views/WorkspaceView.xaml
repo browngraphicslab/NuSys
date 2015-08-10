@@ -6,6 +6,7 @@
     xmlns:local="using:NuSysApp.MISC"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d" PointerPressed="Page_PointerPressed" DoubleTapped="Page_DoubleTapped"
     ManipulationDelta="Page_ManipulationDelta" ManipulationStarting="Page_ManipulationStarting"
     ManipulationInertiaStarting="Page_ManipulationInertiaStarting" ManipulationCompleted="Page_ManipulationCompleted" PointerWheelChanged="Page_PointerWheelChanged" RightTapped="Page_RightTapped" >
@@ -83,6 +84,7 @@
                 <RowDefinition />
                 <RowDefinition Height="0*" />
             </Grid.RowDefinitions>
+            <!--<canvas:CanvasControl x:Name="canvasControl" ClearColor="CornflowerBlue" Draw="CanvasControl_Draw"/>-->
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -99,6 +101,7 @@
                 <ImageBrush x:Key="iconSelectInk" ImageSource="icon_selectink.png" Stretch="Uniform" />
             </Grid.Resources>            
             <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -144,6 +147,11 @@
                 </Button.Background>
             </Button>
             <Button Grid.Row="4" Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
+            <Button Grid.Row="5" Name="cortanaButton" Style="{StaticResource FloatingButton}" Tapped="Cortana_OnTapped" HorizontalAlignment="Center" Height="106" Margin="0,-6,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>

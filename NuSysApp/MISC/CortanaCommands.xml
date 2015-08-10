@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.1">
+  <CommandSet xml:lang="en-us" Name="englishCommands">
+    <CommandPrefix> Banana, </CommandPrefix>
+    <Example> Create text </Example>
+
+    <Command Name="createNode">
+      <Example> create text </Example>
+      <ListenFor> create {nodeType} </ListenFor>
+      <Feedback> Creating {nodeType} </Feedback>
+      <Navigate/>
+    </Command>
+
+    <PhraseList Label="nodeType">
+      <Item> Text </Item>
+      <Item> Ink </Item>
+    </PhraseList>
+
+    <!--<PhraseTopic Label="newNode" Scenario="Search">
+      <Subject>Node</Subject>
+    </PhraseTopic>-->
+  </CommandSet>
+
+  <!-- Other CommandSets for other languages -->
+
+</VoiceCommands>

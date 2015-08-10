@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
+using Windows.ApplicationModel.VoiceCommands;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -17,6 +19,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Storage;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -55,7 +58,6 @@ namespace NuSysApp
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -92,6 +94,86 @@ namespace NuSysApp
             }
             // Ensure the current window is active
             Window.Current.Activate();
+
+            //var storageFile =
+            //    await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///MISC/CortanaCommands.xml"));
+            //if (storageFile == null) return;
+            //await VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(storageFile);
+
+        }
+
+        ///// <summary>
+        ///// Invoked when the application is activated.
+        ///// </summary>
+        ///// <param name="e">Details about the launch request and process.</param>
+        //protected override void OnActivated(IActivatedEventArgs e)
+        //{
+        //    // Was the app activated by a voice command?
+        //    if (e.Kind != Windows.ApplicationModel.Activation.ActivationKind.VoiceCommand)
+        //    {
+        //        return;
+        //    }
+
+        //    var commandArgs = e as VoiceCommandActivatedEventArgs;
+        //    var speechRecognitionResult = commandArgs.Result;
+
+        //    // The commandMode is either "voice" or "text", and it indicates how the voice command was entered by the user.
+        //    // We should respect "text" mode by providing feedback in a silent form.
+        //    var commandMode = this.SemanticInterpretation("commandMode", speechRecognitionResult);
+
+        //    // If so, get the name of the voice command, the actual text spoken, and the value of Command/Navigate@Target.
+        //    var voiceCommandName = speechRecognitionResult.RulePath[0];
+        //    var textSpoken = speechRecognitionResult.Text;
+        //    var navigationTarget = this.SemanticInterpretation("NavigationTarget", speechRecognitionResult);
+
+        //    var navigateToPageType = typeof(WorkspaceView);
+        //    var navigationParameterString = string.Empty;
+
+        //    switch (voiceCommandName)
+        //    {
+        //        case "showASection":
+        //        case "goToASection":
+        //            string newspaperSection = this.SemanticInterpretation("newspaperSection", speechRecognitionResult);
+        //            navigateToPageType = typeof(ShowASectionPage);
+        //            navigationParameterString = string.Format("{0}|{1}", commandMode, newspaperSection);
+        //            break;
+
+        //        case "message":
+        //        case "text":
+        //            string contact = this.SemanticInterpretation("contact", speechRecognitionResult);
+        //            string msgText = this.SemanticInterpretation("msgText", speechRecognitionResult);
+        //            navigateToPageType = typeof(MessagePage);
+        //            navigationParameterString = string.Format("{0}|{1}|{2}", commandMode, contact, msgText);
+        //            break;
+
+        //        case "playAMovie":
+        //            string movieSearch = this.SemanticInterpretation("movieSearch", speechRecognitionResult);
+        //            navigateToPageType = typeof(PlayAMoviePage);
+        //            navigationParameterString = string.Format("{0}|{1}", commandMode, movieSearch);
+        //            break;
+
+        //        default:
+        //            // There is no match for the voice command name.
+        //            break;
+        //    }
+
+        //    this.EnsureRootFrame(e.PreviousExecutionState);
+        //    if (!this.rootFrame.Navigate(navigateToPageType, navigationParameterString))
+        //    {
+        //        throw new Exception("Failed to create voice command page");
+        //    }
+        //}
+
+        private string SemanticInterpretation(string key, Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult)
+        {
+            if (speechRecognitionResult.SemanticInterpretation.Properties.ContainsKey(key))
+            {
+                return speechRecognitionResult.SemanticInterpretation.Properties[key][0];
+            }
+            else
+            {
+                return "unknown";
+            }
         }
 
         /// <summary>
