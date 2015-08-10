@@ -113,7 +113,7 @@ namespace NuSysApp
             double topY = atom.Anchor.Y + (.5 * atom.Height);
             double bottomY = atom.Anchor.Y - (.5 * atom.Height);
             double leftX = atom.Anchor.X - (.5 * atom.Width);
-            double rightX = atom.Anchor.X + (.5 * atom.Height);
+            double rightX = atom.Anchor.X + (.5 * atom.Width);
 
             //anchor coords of atom
             double x0 = atom.Anchor.X;

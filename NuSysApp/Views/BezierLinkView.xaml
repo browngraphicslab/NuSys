@@ -16,7 +16,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <Path Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity="0.1" CompositeMode="SourceOver">
+        <Path Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity="0.6" CompositeMode="SourceOver">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
