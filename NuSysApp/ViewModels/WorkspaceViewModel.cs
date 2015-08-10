@@ -255,7 +255,7 @@ namespace NuSysApp
         {
            // if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
             if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
-
+            if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
             LinkViewModelList.Add(vm);
