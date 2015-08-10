@@ -40,7 +40,6 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            Debug.WriteLine("dione initializing");
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -97,7 +96,7 @@ namespace NuSysApp
                     SetViewMode(new MultiMode(this, new GlobalInkMode(this),  new FloatingMenuMode(this)));
                     break;
                 case Options.ADD_TEXT_NODE:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.TEXT), new FloatingMenuMode(this)));
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.TEXT), new FloatingMenuMode(this)));
                     break;
                 case Options.ADD_INK_NODE:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.INK), new FloatingMenuMode(this)));

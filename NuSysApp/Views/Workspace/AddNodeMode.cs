@@ -36,49 +36,6 @@ namespace NuSysApp.Views.Workspace
             await vm.CreateNewNode(_nodeType, p.X, p.Y, "");
             vm.ClearSelection();
             e.Handled = true;
-
-
-
-            /*
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.InkSelect)
-            {
-                int d = 20;
-
-                var point1 = new Point(p.X - d, p.Y - d);
-                var point2 = new Point(p.X + d, p.Y - d);
-                var point3 = new Point(p.X + d, p.Y + d);
-                var point4 = new Point(p.X - d, p.Y + d);
-
-
-                var result = _view.InqCanvas.Manager.SelectWithLine(point1, point3);
-                if (result.IsEmpty)
-                {
-                    result = _view.InqCanvas.Manager.SelectWithLine(point2, point4);
-                }
-
-                if (result.IsEmpty) { return; }
-
-                foreach (var inkStroke in _view.InqCanvas.Manager.GetStrokes())
-                {
-                    if (inkStroke.Selected)
-                    {
-                        _view.InqCanvas.RemoveByInkStroke(inkStroke);
-                    }
-                }
-
-                _view.InqCanvas.Manager.CopySelectedToClipboard();
-                _view.InqCanvas.Manager.DeleteSelected();
-                p.X = result.X;
-                p.Y = result.Y;
-                if (result.Width == 0 && result.Height == 0)
-                {
-                    return;
-                }
-            }
-
-            if (vm.CurrentMode == WorkspaceViewModel.Mode.Pdf) return;
-            */
-   
         }
     }
 }

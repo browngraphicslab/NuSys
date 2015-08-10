@@ -21,7 +21,6 @@ namespace NuSysApp.Views.Workspace
             _view.PointerPressed += OnPointerPressed;
 
             _view.ManipulationMode = ManipulationModes.All;
-           // _view.ManipulationDelta += OnManipulationDelta;
         }
 
         public override void Deactivate()
@@ -31,7 +30,6 @@ namespace NuSysApp.Views.Workspace
             _view.DoubleTapped -= OnDoubleTapped;
 
             _view.ManipulationMode = ManipulationModes.None;
-           // _view.ManipulationDelta -= OnManipulationDelta;
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -46,17 +44,14 @@ namespace NuSysApp.Views.Workspace
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            try { 
-                var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-                Debug.WriteLine(dc);
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (dc is NodeViewModel)
+            {
                 var vm = (NodeViewModel)dc;
                 vm.ToggleSelection();
-            } catch(Exception ex)
-            {
-                Debug.WriteLine("canvas clicked");
             }
+
             e.Handled = true;
         }
-
     }
 }

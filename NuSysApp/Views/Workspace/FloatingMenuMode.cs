@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,14 @@ namespace NuSysApp.Views.Workspace
 
         protected void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (!(dc is WorkspaceViewModel))
+            {
+                e.Handled = true;
+                return;
+            }
+
             var vm = (WorkspaceViewModel)_view.DataContext;
             var floatingMenuTransform = new CompositeTransform();
 

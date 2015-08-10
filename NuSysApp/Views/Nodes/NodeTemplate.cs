@@ -17,13 +17,13 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    [TemplatePart(Name = "inkCanvas", Type =typeof(InkCanvas))]
+    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvas))]
     [TemplatePart(Name = "btnDelete", Type = typeof(Button))]
     [TemplatePart(Name = "resizer", Type = typeof(Path))]
     [TemplatePart(Name = "bg", Type = typeof(Grid))]
     public sealed class NodeTemplate : ContentControl
     {
-        public InkCanvas inkCanvas;
+        public InqCanvas inkCanvas;
         public Button btnDelete;
         public Path resizer;
         public Grid bg;
@@ -51,11 +51,8 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
-            inkCanvas = (InkCanvas)GetTemplateChild("inkCanvas");
-            inkCanvas.InkPresenter.IsInputEnabled = false;
-            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Mouse |
-            Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Touch; //This line is setting the Devices that can be used to display ink
-
+            inkCanvas = (InqCanvas)GetTemplateChild("inkCanvas");
+           
             bg = (Grid)GetTemplateChild("bg");
             
             btnDelete = (Button)GetTemplateChild("btnDelete");
@@ -86,7 +83,7 @@ namespace NuSysApp
 
             var vm = (NodeViewModel)this.DataContext;
             vm.ToggleEditingInk();
-            inkCanvas.InkPresenter.IsInputEnabled = vm.IsEditingInk;
+            inkCanvas.IsEnabled = vm.IsEditingInk;
         }
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
