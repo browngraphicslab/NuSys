@@ -37,8 +37,8 @@ namespace NuSysApp
                 var webSearchGrammar = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.WebSearch,
                     "webSearch");
 
-                speechRecognizer.UIOptions.AudiblePrompt = "Say what you want to search for...";
-                speechRecognizer.UIOptions.ExampleText = @"Ex. 'weather for London'";
+                speechRecognizer.UIOptions.AudiblePrompt = "Say a command...";
+                speechRecognizer.UIOptions.ExampleText = @"Ex. 'open document' or 'create [node type]'";
                 speechRecognizer.Constraints.Add(webSearchGrammar);
 
                 // Compile the dictation grammar by default.
@@ -71,64 +71,65 @@ namespace NuSysApp
             }
         }
 
-        public async void ContinuousInput()
-        {
-            this._dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-            this._speechRecognizer = new SpeechRecognizer();
-            var result = await _speechRecognizer.CompileConstraintsAsync();
-            this._speechRecognizer.ContinuousRecognitionSession.ResultGenerated += ContinuousRecognitionSession_ResultGenerated;
-            this._speechRecognizer.ContinuousRecognitionSession.Completed += ContinuousRecognitionSession_Completed;
-        }
-        private async void ContinuousRecognitionSession_ResultGenerated(SpeechContinuousRecognitionSession sender, SpeechContinuousRecognitionResultGeneratedEventArgs args)
-        {
+        //public async void ContinuousInput()
+        //{
+        //    this._dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+        //    this._speechRecognizer = new SpeechRecognizer();
+        //    var result = await _speechRecognizer.CompileConstraintsAsync();
+        //    this._speechRecognizer.ContinuousRecognitionSession.ResultGenerated += ContinuousRecognitionSession_ResultGenerated;
+        //    this._speechRecognizer.ContinuousRecognitionSession.Completed += ContinuousRecognitionSession_Completed;
+        //}
+        //private async void ContinuousRecognitionSession_ResultGenerated(SpeechContinuousRecognitionSession sender, SpeechContinuousRecognitionResultGeneratedEventArgs args)
+        //{
 
-            if (args.Result.Confidence == SpeechRecognitionConfidence.Medium ||
-              args.Result.Confidence == SpeechRecognitionConfidence.High)
-            {
-                _dictatedTextBuilder.Append(args.Result.Text + " ");
+        //    if (args.Result.Confidence == SpeechRecognitionConfidence.Medium ||
+        //      args.Result.Confidence == SpeechRecognitionConfidence.High)
+        //    {
+        //        _dictatedTextBuilder.Append(args.Result.Text + " ");
 
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    ShowMessage(_dictatedTextBuilder.ToString());
-                    //btnClearText.IsEnabled = true;
-                });
-            }
-            else
-            {
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    ShowMessage(_dictatedTextBuilder.ToString());
-                });
-            }
-        }
-        private async void ContinuousRecognitionSession_Completed(
-  SpeechContinuousRecognitionSession sender,
-  SpeechContinuousRecognitionCompletedEventArgs args)
-        {
-            if (args.Status == SpeechRecognitionResultStatus.Success) return;
-            if (args.Status == SpeechRecognitionResultStatus.TimeoutExceeded)
-            {
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    //rootPage.NotifyUser(
-                    //  "Automatic Time Out of Dictation",
-                    //  NotifyType.StatusMessage);
+        //        await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        //        {
+        //            ShowMessage(_dictatedTextBuilder.ToString());
+        //            //btnClearText.IsEnabled = true;
+        //        });
+        //    }
+        //    else
+        //    {
+        //        await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        //        {
+        //            ShowMessage(_dictatedTextBuilder.ToString());
+        //        });
+        //    }
+        //}
 
-                    //DictationButtonText.Text = " Continuous Recognition";
-                    ShowMessage(_dictatedTextBuilder.ToString());
-                });
-            }
-            else
-            {
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    //rootPage.NotifyUser(
-                    //  "Continuous Recognition Completed: " + args.Status.ToString(),
-                    //  NotifyType.StatusMessage);
+        //private async void ContinuousRecognitionSession_Completed(
+        //    SpeechContinuousRecognitionSession sender,
+        //    SpeechContinuousRecognitionCompletedEventArgs args)
+        //{
+        //    if (args.Status == SpeechRecognitionResultStatus.Success) return;
+        //    if (args.Status == SpeechRecognitionResultStatus.TimeoutExceeded)
+        //    {
+        //        await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        //        {
+        //            //rootPage.NotifyUser(
+        //            //  "Automatic Time Out of Dictation",
+        //            //  NotifyType.StatusMessage);
 
-                    //DictationButtonText.Text = " Continuous Recognition";
-                });
-            }
-        }
+        //            //DictationButtonText.Text = " Continuous Recognition";
+        //            ShowMessage(_dictatedTextBuilder.ToString());
+        //        });
+        //    }
+        //    else
+        //    {
+        //        await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        //        {
+        //            //rootPage.NotifyUser(
+        //            //  "Continuous Recognition Completed: " + args.Status.ToString(),
+        //            //  NotifyType.StatusMessage);
+
+        //            //DictationButtonText.Text = " Continuous Recognition";
+        //        });
+        //    }
+        //}
     }
 }

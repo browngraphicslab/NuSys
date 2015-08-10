@@ -26,7 +26,8 @@ namespace NuSysApp
         #region Private Members
        
         private int penSize = Constants.InitialPenSize;
-        private bool _isZooming, _isErasing, _isHighlighting;
+
+        private bool _isZooming, _subMenuOpen;
 
         #endregion Private Members
 
@@ -36,12 +37,11 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             this.SetUpInk();
 
-            
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
-            SetGlobalInk(true);
 
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+            _subMenuOpen = false;
         }
 
         #region Helper Methods
@@ -320,19 +320,27 @@ namespace NuSysApp
         #region Floating Menu Button Handlers
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
-        //    this.SetErasing(false);
-            _isErasing = false;
-        //    this.SetHighlighting(false);
-            _isHighlighting = false;
             inkButton.Opacity = .5;
             linkButton.Opacity = 1;
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
+            inkCanvas.SetErasing(false);
             Canvas.SetZIndex(inkBorder, -2);
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Globalink;
             this.SetGlobalInk(true);
+            if (_subMenuOpen == false)
+            {
+                slideout.Begin();
+                _subMenuOpen = true;
+            } else if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
+            
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
@@ -342,9 +350,15 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             var vm = (WorkspaceViewModel)DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.InkSelect;  //initializes ink canvas to be created to the viewmodel
             SetGlobalInk(false);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
@@ -354,9 +368,15 @@ namespace NuSysApp
             textButton.Opacity = .5;
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
             vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
             this.SetGlobalInk(false);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         /// <summary>
@@ -378,9 +398,15 @@ namespace NuSysApp
             textButton.Opacity = 1;
             scribbleButton.Opacity = .5;
             docButton.Opacity = 1;
+            idleButton.Opacity = 1;
             var vm = (WorkspaceViewModel)this.DataContext;
-            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;  
-          //  _isInkingEnabled = false;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Ink;
+            //  _isInkingEnabled = false;
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         /// <summary>
@@ -404,52 +430,68 @@ namespace NuSysApp
             else return;
             var p = vm.CompositeTransform.Inverse.TransformPoint(new Point((ActualWidth - Constants.DefaultNodeSize)/2, (ActualHeight - Constants.DefaultNodeSize) / 2));
             await vm.CreateNewNode(p.X, p.Y, storageFile);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
         }
 
         #endregion Floating Menu Button Handlers
 
-        private void CanvasControl_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+        private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
-            //args.DrawingSession.DrawEllipse(155, 115, 80, 30, Colors.Black, 3);
-            //args.DrawingSession.DrawText("Hello, world!", 100, 100, Colors.Yellow);
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Erase;
+            inkCanvas.SetErasing(true);
+
         }
 
-        private void Erase_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void Highlight_OnTapped(object sender, RoutedEventArgs e)
         {
-            _isErasing = true;
-           // this.SetErasing(_isErasing);
-            inkButton.Flyout.Hide();
-        }
-
-        private void Highlight_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            _isHighlighting = true;
-          //  this.SetHighlighting(_isHighlighting);
-            inkButton.Flyout.Hide();
+            inkCanvas.SetHighlighting(true);
         }
         
         #endregion Unused Handlers
 
-        private async void Cortana_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void CortanaButton_Click(object sender, TappedRoutedEventArgs e)
         {
-            //var vm = (WorkspaceViewModel)DataContext;
-            //vm.ClearSelection();
-            //vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
-            //var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(500, 100));
-            //await vm.CreateNewNode(p.X, p.Y, "");
             var transcription = await Cortana.RunRecognizer();
+
+            var vm = (WorkspaceViewModel)DataContext;
+            var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(500, 100));
+
             switch (transcription.ToLower())
             {
                 case "open document":
                     DocumentButton_Click(sender, e);
                     break;
                 case "create text":
-                    var vm = (WorkspaceViewModel)DataContext;
-                    vm.ClearSelection();
                     vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
-                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(500, 100));
                     await vm.CreateNewNode(p.X, p.Y, "");
                     break;
+                case "create ink":
+                    vm.CurrentMode = WorkspaceViewModel.Mode.Ink;
+                    await vm.CreateNewNode(p.X, p.Y, "");
+                    break;
+            }
+        }
+        private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            idleButton.Opacity = .5;
+            inkButton.Opacity = 1;
+            linkButton.Opacity = 1;
+            textButton.Opacity = 1;
+            scribbleButton.Opacity = 1;
+            docButton.Opacity = 1;
+            var vm = (WorkspaceViewModel)this.DataContext;
+            vm.CurrentMode = WorkspaceViewModel.Mode.Textnode;
+            this.SetGlobalInk(false);
+            if (_subMenuOpen == true)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
             }
         }
     }

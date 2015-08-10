@@ -20,6 +20,7 @@ namespace NuSysApp
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
         {
+            this.AtomType = Constants.node;
         }
 
         #region Node Manipulations
@@ -53,7 +54,7 @@ namespace NuSysApp
         /// </summary>
         public override void UpdateAnchor()
         {
-            this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2);
+            this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2); //this is the midpoint
             this.AnchorY = (int) (this.Y + this.Transform.Matrix.OffsetY + this.Height/2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }

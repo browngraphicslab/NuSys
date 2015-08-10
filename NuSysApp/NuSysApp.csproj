@@ -98,6 +98,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\idle icon.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
@@ -113,6 +114,7 @@
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
     <Compile Include="MISC\Cortana.cs" />

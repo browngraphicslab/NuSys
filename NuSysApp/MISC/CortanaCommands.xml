@@ -15,10 +15,6 @@
       <Item> Text </Item>
       <Item> Ink </Item>
     </PhraseList>
-
-    <!--<PhraseTopic Label="newNode" Scenario="Search">
-      <Subject>Node</Subject>
-    </PhraseTopic>-->
   </CommandSet>
 
   <!-- Other CommandSets for other languages -->

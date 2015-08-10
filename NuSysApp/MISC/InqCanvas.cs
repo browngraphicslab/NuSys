@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -22,21 +23,34 @@ namespace NuSysApp.MISC
         private bool _isDrawing = false;
         private bool _isInkingEnabled = false;
         private Polyline _currentStroke;
-        private bool _isErasing;
+        private bool _isErasing = false;
+        private bool _isHighlighting = false;
         private Dictionary<InkStroke, Polyline> _strokes = new Dictionary<InkStroke, Polyline>();
 
         public InqCanvas():base()
         {
-        }       
-
+            NuSysApp.MISC.Clip.SetToBounds(this, true);           
+        }
         
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (_isInkingEnabled && !_isErasing)
             {
+                Debug.WriteLine("Pressed " + Parent);
+
+                CapturePointer(e.Pointer);
+
                 _currentStroke = new Polyline();
                 _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(this).Properties.Pressure, 2);
-                _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
+                if (_isHighlighting)
+                {
+                    _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
+                }
+                else
+                {
+                    _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
+                }
+                
                 _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
                 {
                     if (_isErasing)
@@ -46,10 +60,14 @@ namespace NuSysApp.MISC
                     }
                 };
 
+                PointerPoint p = e.GetCurrentPoint(this);
+
                 Children.Add(_currentStroke);
                 _inkManager.ProcessPointerDown(e.GetCurrentPoint(this));
                 _isDrawing = true;
             }
+
+            e.Handled = true;
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -61,62 +79,49 @@ namespace NuSysApp.MISC
             var currentPoint = e.GetCurrentPoint(this);
             _currentStroke.Points.Add(new Point(currentPoint.Position.X, currentPoint.Position.Y));
             _isDrawing = true;
+            e.Handled = true;
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             if (_isInkingEnabled && !_isErasing)
             {
+                Debug.WriteLine("Released " + Parent);
+                ReleasePointerCapture(e.Pointer);
                 _inkManager.ProcessPointerUp(e.GetCurrentPoint(this));
                 var inkStrokes = _inkManager.GetStrokes();
                 _strokes.Add(inkStrokes[inkStrokes.Count-1], _currentStroke);
                 _isDrawing = false;
             }
+            e.Handled = true;
         }
         
         /// <summary>
         /// Turns erasing on or off
         /// </summary>
         /// <param name="erase"></param>
-        private void SetErasing(bool erase)
+        public void SetErasing(bool erase)
         {
+            _isErasing = erase;
             if (erase)
-            {
+            { 
                 _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Erasing;
             }
             else
             {
                 _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Inking;
             }
+            _isHighlighting = false;
         }
 
         /// <summary>
         /// Turns highlighting on or off
         /// </summary>
         /// <param name="highlight"></param>
-        private void SetHighlighting(bool highlight)
+        public void SetHighlighting(bool highlight)
         {
-            InkDrawingAttributes drawingAttributes;
+            _isHighlighting = highlight;
             _isErasing = false;
-            if (highlight)
-            {
-                drawingAttributes = new InkDrawingAttributes
-                {
-                    Color = Windows.UI.Colors.Yellow,
-                    Size = new Windows.Foundation.Size(6, 6),
-                    IgnorePressure = false
-                };
-            }
-            else
-            {
-                drawingAttributes = new InkDrawingAttributes
-                {
-                    Color = Windows.UI.Colors.Black,
-                    Size = new Windows.Foundation.Size(2, 2),
-                    IgnorePressure = false
-                };
-            }
-            _inkManager.SetDefaultDrawingAttributes((drawingAttributes));
         }
 
         public void RemoveByInkStroke(InkStroke stroke)
@@ -170,6 +175,9 @@ namespace NuSysApp.MISC
             }
             set
             {
+                if (Parent == null)
+                    return;
+
                 if (value ==true)
                 {
                     PointerPressed += OnPointerPressed;

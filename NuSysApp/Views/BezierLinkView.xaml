@@ -8,13 +8,15 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     xmlns:converters="using:NuSysApp"
+    ManipulationMode="All"
     DoubleTapped="BezierLinkView_OnDoubleTapped"
     PointerPressed="BezierLinkView_OnPointerPressed">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
     </UserControl.Resources>
+
     <Grid>
-        <Path Stroke="#FF9C9C9C" StrokeThickness="30" Opacity="0.1" CompositeMode="MinBlend">
+        <Path Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity="0.1" CompositeMode="SourceOver">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
@@ -22,7 +24,7 @@
 
                             <!--this startpoint should be bound to node centerpoint-->
 
-                            <PathFigure x:Name="pathfigure" StartPoint="{Binding Atom1.Anchor}">
+                            <PathFigure x:Name="pathfigure">
                                 <PathFigure.Segments>
                                     <PathSegmentCollection>
 
@@ -30,8 +32,7 @@
                                         <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
                                             node on the other end of the link -->
 
-                                        <BezierSegment x:Name="curve"
-                                                       Point3="{Binding Atom2.Anchor}" />
+                                        <BezierSegment x:Name="curve"/>
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>
@@ -39,8 +40,6 @@
                     </PathGeometry.Figures>
                 </PathGeometry>
             </Path.Data>
-
         </Path>
-
     </Grid>
 </UserControl>

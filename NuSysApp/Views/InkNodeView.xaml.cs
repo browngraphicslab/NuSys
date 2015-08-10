@@ -9,8 +9,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-
+using System;
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -25,6 +26,7 @@ namespace NuSysApp
             this.SetUpBindings();   
             this.SetUpInk();
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
+
         }
 
         #region Helper Methods
@@ -84,10 +86,11 @@ namespace NuSysApp
 
         }
 
-        private void Edit_Click(object sender, RoutedEventArgs e)
+        private async void Edit_Click(object sender, RoutedEventArgs e)
         {
             InkNodeViewModel vm = (InkNodeViewModel)this.DataContext;
             vm.ToggleEditing();
+            inkCanvas.IsEnabled = vm.IsEditing;
             if (ManipulationMode == ManipulationModes.All)
             {
                 ManipulationMode = ManipulationModes.None;
@@ -96,7 +99,19 @@ namespace NuSysApp
             {
                 ManipulationMode = ManipulationModes.All;
             }
-            inkCanvas.IsEnabled = vm.IsEditing;   
+            if (vm.IsEditing)
+            {
+
+                inkImage.Visibility = Visibility.Collapsed;
+                inkCanvas.Visibility = Visibility.Visible;
+            } else
+            {
+                var rtb = new RenderTargetBitmap();
+                await rtb.RenderAsync(inkCanvas);
+                inkImage.Source = rtb;
+                inkImage.Visibility = Visibility.Visible;
+                inkCanvas.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void UserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -140,6 +155,19 @@ namespace NuSysApp
                 else
                 {
                     slidein.Begin();
+                    if (vm.IsEditingInk == true)
+                    {
+                        vm.ToggleEditingC();
+                        inkCanvas.IsEnabled = false;
+                    }
+                }
+                if (ManipulationMode == ManipulationModes.All)
+                {
+                    ManipulationMode = ManipulationModes.None;
+                }
+                else
+                {
+                    ManipulationMode = ManipulationModes.All;
                 }
             }
         }
