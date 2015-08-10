@@ -346,6 +346,11 @@ namespace NuSysApp
             }
         }
 
+        public string AtomType
+        {
+            get; set;
+        }
+
         #endregion Public Properties
     }
 }

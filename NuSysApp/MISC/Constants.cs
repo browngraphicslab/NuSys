@@ -57,6 +57,12 @@ namespace NuSysApp
         public static Color SelectedColor = Color.FromArgb(200, DefaultColor.R, DefaultColor.G, DefaultColor.B);
         #endregion Color
 
+        #region AtomType
+        public const string node = "Node";
+        public const string link = "Link";
+
+        #endregion AtomType
+
         //global ink
 
         public const int InitialPenSize = 4;

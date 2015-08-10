@@ -29,6 +29,8 @@ namespace NuSysApp
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
 
+            this.AtomType = Constants.link;
+
             var line = this.LineRepresentation;
             this.AnchorX = (int) (line.X2 + (Math.Abs(line.X2 - line.X1)/2));
             this.AnchorY = (int) (line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));

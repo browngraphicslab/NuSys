@@ -24,7 +24,7 @@
 
                             <!--this startpoint should be bound to node centerpoint-->
 
-                            <PathFigure x:Name="pathfigure" StartPoint="{Binding Atom1.Anchor}">
+                            <PathFigure x:Name="pathfigure">
                                 <PathFigure.Segments>
                                     <PathSegmentCollection>
 
@@ -33,7 +33,7 @@
                                             node on the other end of the link -->
 
                                         <BezierSegment x:Name="curve"
-                                                       Point3="{Binding Atom2.Anchor}" />
+                                                        />
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>

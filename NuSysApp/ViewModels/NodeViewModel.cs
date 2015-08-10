@@ -20,6 +20,7 @@ namespace NuSysApp
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
         {
+            this.AtomType = Constants.node;
         }
 
         #region Node Manipulations
