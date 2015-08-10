@@ -122,6 +122,28 @@ namespace NuSysApp
                 else
                 {
                     slidein.Begin();
+                    if (vm.IsEditingInk == true)
+                    {
+                        vm.ToggleEditingInk();
+                        inkCanvas.IsEnabled = vm.IsEditingInk;
+                    }
+                    if (ManipulationMode == ManipulationModes.All)
+                    {
+                        ManipulationMode = ManipulationModes.None;
+                    }
+                    else
+                    {
+                        ManipulationMode = ManipulationModes.All;
+                    }
+                }
+                if (vm.GetType() == typeof (TextNodeViewModel))
+                {
+
+                    if (vm.IsEditing == true)
+                    {
+                        vm.ToggleEditing();
+                        vm.IsEditing = false;
+                    }
                 }
             }
         }
