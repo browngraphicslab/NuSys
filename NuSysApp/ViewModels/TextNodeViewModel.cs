@@ -21,7 +21,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.View = new TextNodeView(this);
+            this.View = new TextNodeView2(this);
         }
 
         #region Public Properties

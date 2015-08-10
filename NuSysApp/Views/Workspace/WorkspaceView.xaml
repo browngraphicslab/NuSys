@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="NuSysApp.WorkspaceView"
+    x:Name="mainFrame"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="OnLoaded">
+    <Canvas Background="Transparent">
+        <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
+            <local:InqCanvas x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
+        </Border>
+        <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="0*" />
+            </Grid.RowDefinitions>
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Beige"   x:Name="canvas">
+
+                        </Canvas>
+
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Grid>
+        <local:FloatingMenu x:Name="floatingMenu" ModeChange="OnModeChange" />
+    </Canvas>
+</Page>

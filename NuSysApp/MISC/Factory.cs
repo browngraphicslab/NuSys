@@ -8,11 +8,6 @@ namespace NuSysApp
 {
     public class Factory
     {
-        public static TextNodeViewModel CreateNewText(WorkspaceViewModel vm,  string data)
-        {
-            return new TextNodeViewModel(vm) { Data = data };
-        }
-
         public static RichTextNodeViewModel CreateNewRichText(WorkspaceViewModel vm, string html)
         {
             return new RichTextNodeViewModel(vm) { Data = html };
@@ -39,7 +34,7 @@ namespace NuSysApp
         public static InkNodeViewModel CreateNewPromotedInk(WorkspaceViewModel vm)
         {
             var inkNode = new InkNodeViewModel(vm);
-            ((InkNodeView)inkNode.View).UpdateInk();
+            ((InkNodeView2)inkNode.View).UpdateInk();
             return inkNode;
         }
     }

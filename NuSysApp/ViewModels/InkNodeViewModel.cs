@@ -14,14 +14,13 @@ namespace NuSysApp
 
         public InkNodeViewModel(WorkspaceViewModel vm): base(vm)
         {
-            this.View = new InkNodeView(this);
+            this.View = new InkNodeView2(this);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; 
             this.Height = Constants.DefaultNodeSize; 
             this.IsSelected = false;
             this.IsEditing = false; 
         }
-
        
     }
 }
