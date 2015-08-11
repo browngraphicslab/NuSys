@@ -9,6 +9,14 @@ namespace NuSysApp
 {
     class Cortana
     {
+        public event EventHandler CommandIssued;
+
+        protected virtual void OnCommandIssued(EventArgs e)
+        {
+            var handler = CommandIssued;
+            handler?.Invoke(this, e);
+        }
+
         private const uint HResultPrivacyStatementDeclined = 0x80045509;
         private SpeechRecognizer _speechRecognizer;
         // Speech events may originate from a thread other than the UI thread.

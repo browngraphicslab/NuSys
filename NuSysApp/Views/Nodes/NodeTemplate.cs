@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
 
@@ -33,9 +25,11 @@ namespace NuSysApp
             this.DefaultStyleKey = typeof(NodeTemplate);
         }
 
-        public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu", typeof(object),    typeof(NodeTemplate), new PropertyMetadata(null));
+        public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
+            typeof (object), typeof (NodeTemplate), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
+        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof (object),
+            typeof (NodeTemplate), new PropertyMetadata(null));
 
         public object SubMenu
         {

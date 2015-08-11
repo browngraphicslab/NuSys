@@ -38,7 +38,9 @@ namespace NuSysApp.Views.Workspace
             floatingMenuTransform.TranslateY = p.Y;
             vm.FMTransform = floatingMenuTransform;
 
-            _view.FloatingMenu.Visibility = _view.FloatingMenu.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            _view.FloatingMenu.Visibility = _view.FloatingMenu.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
     }
 }

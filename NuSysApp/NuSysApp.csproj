@@ -174,6 +174,7 @@
       <DependentUpon>TextNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\AddNodeMode.cs" />
+    <Compile Include="Views\Workspace\CortanaMode.cs" />
     <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
     <Compile Include="Views\Workspace\GlobalInkMode.cs" />
     <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />

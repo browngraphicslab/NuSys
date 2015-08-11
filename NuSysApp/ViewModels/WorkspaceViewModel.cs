@@ -11,11 +11,8 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using System.Text;
-using System.IO;
-using Windows.Storage.Search;
 
 namespace NuSysApp
 {
@@ -294,9 +291,6 @@ namespace NuSysApp
                         vm = pdfVM;
                     }
                     break;
-
-
-
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;

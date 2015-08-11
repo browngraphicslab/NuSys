@@ -115,7 +115,7 @@ namespace NuSysApp.Views.Workspace
                 worldPoint.X - center.X,
                 worldPoint.Y - center.Y);
 
-            //...amd balance the jump of the changed scaling origin by changing the translation            
+            //...and balance the jump of the changed scaling origin by changing the translation            
 
             compositeTransform.TranslateX += distance.X;
             compositeTransform.TranslateY += distance.Y;

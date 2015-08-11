@@ -61,15 +61,8 @@ namespace NuSysApp
 
             set
             {
-                if (value)
-                {
-                    mainFrame.ManipulationMode = ManipulationModes.None;
-                }
-                else
-                {
-                    mainFrame.ManipulationMode = ManipulationModes.All;
-                }
-                _isManipulationEnabled = value;                
+                mainFrame.ManipulationMode = value ? ManipulationModes.None : ManipulationModes.All;
+                _isManipulationEnabled = value;
             }
         }
 
