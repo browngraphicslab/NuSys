@@ -6,7 +6,6 @@ namespace NuSysApp
 {
     public class GroupViewModel: NodeViewModel
     {
-        private double _currentX, _currentY;
         public GroupViewModel(WorkspaceViewModel vm): base(vm)
         {
             AtomViewList = new ObservableCollection<UserControl>();
@@ -19,8 +18,6 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.View = new GroupView(this);
-            _currentX = 0;
-            _currentY = 0;
         }
 
         public void AddNode(NodeViewModel toAdd)
@@ -28,34 +25,47 @@ namespace NuSysApp
             AtomViewList.Add(toAdd.View);
             NodeViewModelList.Add(toAdd);
             toAdd.Transform = new MatrixTransform();
-            Canvas.SetLeft(toAdd.View, _currentX);
-            Canvas.SetTop(toAdd.View, _currentY);
+            ArrangeNodes();
             Canvas.SetZIndex(toAdd.View, 10);
-            if (Height < _currentY + toAdd.Height + 20)
-            {
-                Height = _currentY + toAdd.Height+ 20;
-            }
-            if (Width < _currentX + toAdd.Width+ 20)
-            {
-                Width = _currentX + toAdd.Width+ 20;
-            }
-            if (AtomViewList.Count % 3 == 0)
-            {
-                _currentX = 0;
-                _currentY += toAdd.Height + 20;
-            }
-            else
-            {
-                _currentX += toAdd.Width + 20;
-            }
 
             //TODO Handle links
         }
         
+        public void ArrangeNodes()
+        {
+
+            var currentX = 0.0;
+            var currentY = 0.0;
+            for (var i = 0; i < AtomViewList.Count;i++) {
+                var toArr = NodeViewModelList[i];
+                Canvas.SetLeft(toArr.View, currentX);
+                Canvas.SetTop(toArr.View, currentY);
+
+                if (Height < currentY + toArr.Height + 20)
+                {
+                    Height = currentY + toArr.Height + 20;
+                }
+                if (Width < currentX + toArr.Width + 20)
+                {
+                    Width = currentX + toArr.Width + 20;
+                }
+                if (i % 3 == 2)
+                {
+                    currentX = 0;
+                    currentY += toArr.Height + 20;
+                }
+                else
+                {
+                    currentX += toArr.Width + 20;
+                }
+            }
+        }
+
         public void RemoveNode(NodeViewModel toRemove)
         {
             this.AtomViewList.Remove(toRemove.View);
             NodeViewModelList.Remove(toRemove);
+            ArrangeNodes();
             //TODO Handle links
         }
 
