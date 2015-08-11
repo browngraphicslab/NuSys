@@ -209,6 +209,7 @@
     <Content Include="Assets\icon_x.png" />
     <Content Include="Assets\icon_x2.png" />
     <Content Include="Assets\Logo.scale-100.png" />
+    <Content Include="Assets\mic icon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-1001.png" />
