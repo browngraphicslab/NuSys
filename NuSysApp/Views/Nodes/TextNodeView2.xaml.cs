@@ -44,7 +44,9 @@ namespace NuSysApp
         {
             var vm = (TextNodeViewModel)this.DataContext;
             vm.CreateAnnotation();
-            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm, e.GetCurrentPoint(this).RawPosition.X, e.GetCurrentPoint(this).RawPosition.Y); //TODO Eventually need to remove this
+            var container = VisualTreeHelper.GetParent(this) as UIElement;
+            var p = vm.WorkSpaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(vm.Transform.Matrix.OffsetX, vm.Transform.Matrix.OffsetY));
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm, p.X, p.Y); //TODO Eventually need to remove 
             if (vm.IsAnnotation)
             {
                 nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));

@@ -199,12 +199,12 @@ namespace NuSysApp
             {
                 var x = node.Transform.Matrix.OffsetX;
                 var y = node.Transform.Matrix.OffsetY;
-                if (x > node.ParentGroup.Width + 50 || y > node.ParentGroup.Height + 50)
+                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
                 {
                     node.ParentGroup.RemoveNode(node);
                     NodeViewModelList.Add(node);
                     AtomViewList.Add(node.View);
-                    PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + 200, node.ParentGroup.Transform.Matrix.OffsetY + 200);
+                    PositionNode(node, xCoordinate, yCoordinate);
                     node.ParentGroup = null;
                     return false;
                 }
