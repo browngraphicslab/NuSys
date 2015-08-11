@@ -57,6 +57,7 @@ namespace NuSysApp
             }
 
             _mode.OnPointerMoved(this, e);
+            
             e.Handled = true;
         }
 
@@ -127,7 +128,7 @@ namespace NuSysApp
                 var minY = points.Min(em => em.Position.Y);
 
                 foreach (var point in stroke.GetInkPoints())
-                {
+                { 
                     pl.StrokeThickness = Math.Max(4.0 * point.Pressure, 2);
                     pl.Stroke = new SolidColorBrush(Colors.Black);
                     pl.Points.Add(new Point(point.Position.X - minX, point.Position.Y - minY));
@@ -182,6 +183,10 @@ namespace NuSysApp
             {
                 return _inkManager;
             }
+            set
+            {
+                _inkManager = value;
+            }
         }
 
         internal Dictionary<InkStroke, Polyline> Strokes
@@ -189,6 +194,10 @@ namespace NuSysApp
             get
             {
                 return _strokes;
+            }
+            set
+            {
+                _strokes = value;
             }
         }
     }

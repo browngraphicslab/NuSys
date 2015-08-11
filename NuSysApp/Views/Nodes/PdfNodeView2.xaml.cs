@@ -30,5 +30,51 @@ namespace NuSysApp
         {
             nodeTpl.ToggleInkMode();
         }
+
+
+        private void pageLeft_Click(object sender, RoutedEventArgs e)
+        {
+
+            var vm = (PdfNodeViewModel)this.DataContext;
+            var pageNum = vm.CurrentPageNumber;
+            var tempChild = new List<UIElement>();
+            for (var i = 0; i < inkCanvas.Children.Count; i++)
+            {
+                tempChild.Add(inkCanvas.Children.ElementAt(i));
+            }
+            vm.InkContainer[(int)pageNum] = tempChild;
+            inkCanvas.Children.Clear();
+            if (pageNum <= 0) return;
+            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
+            vm.CurrentPageNumber--;
+
+            //      foreach (InkStroke inkStroke in vm.InkContainer[(int)pageNum -1])
+            //      {
+            //          inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
+            //      }
+            for (var i = 0; i < vm.InkContainer[(int)vm.CurrentPageNumber].Count; i++) {
+                inkCanvas.Children.Add(vm.InkContainer[(int)vm.CurrentPageNumber][i]);
+            }
+        }
+
+        private void pageRight_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (PdfNodeViewModel)this.DataContext;
+            var pageCount = vm.PageCount;
+            var pageNum = vm.CurrentPageNumber;
+            var tempChild = new List<UIElement>();
+            for (var i = 0; i < inkCanvas.Children.Count; i++)
+            {
+                tempChild.Add(inkCanvas.Children.ElementAt(i));
+            }
+            vm.InkContainer[(int)pageNum] = tempChild;
+            inkCanvas.Children.Clear();
+            if (pageNum >= (pageCount - 1)) return;
+            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
+            vm.CurrentPageNumber++;
+            for (var i = 0; i < vm.InkContainer[(int)vm.CurrentPageNumber].Count; i++) {
+                inkCanvas.Children.Add(vm.InkContainer[(int)vm.CurrentPageNumber][i]);
+            }
+        }
     }
 }
