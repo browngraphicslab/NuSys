@@ -28,7 +28,7 @@ namespace NuSysApp
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             var vm = (GroupViewModel)this.DataContext;
-            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove this
+            var hasIntersection = vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove this
         }
     }
 }
