@@ -217,7 +217,7 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
-            //1. Remove all the node's links
+            //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
             {
@@ -225,15 +225,22 @@ namespace NuSysApp
                 toDelete.Add(linkVm);
             }
 
-            foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
+            foreach (var linkVm in toDelete) //second loop avoids concurrent modification error
             {
                 linkVm.Remove();
                 nodeVM.LinkList.Remove(linkVm);
             }
 
-            //2. Remove the node itself 
-            AtomViewList.Remove(nodeVM.View);
-            NodeViewModelList.Remove(nodeVM);
+            if (nodeVM.ParentGroup == null)
+            {
+                AtomViewList.Remove(nodeVM.View);
+                NodeViewModelList.Remove(nodeVM);
+            }
+            else
+            {
+                nodeVM.ParentGroup.RemoveNode(nodeVM);
+            }
+           
         }
 
         /// <summary>
@@ -332,8 +339,10 @@ namespace NuSysApp
             {
                 var group = groupVm;
                 this.AtomViewList.Remove(node1.View);
-                this.NodeViewModelList.Remove(node1);
+                this.NodeViewModelList.Remove(node1); 
                 groupVm.AddNode(node1);
+                node1.ParentGroup = groupVm;
+                node2.ParentGroup = groupVm;
                 return;
             }
 
@@ -358,6 +367,9 @@ namespace NuSysApp
             groupVm.AddNode(node2);
             this.AtomViewList.Remove(node2.View);
             this.NodeViewModelList.Remove(node2);
+
+            node1.ParentGroup = groupVm;
+            node2.ParentGroup = groupVm;
         }
 
         private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)

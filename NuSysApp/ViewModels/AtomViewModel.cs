@@ -351,6 +351,8 @@ namespace NuSysApp
             get; set;
         }
 
+        public GroupViewModel ParentGroup { get; set; }
+
         #endregion Public Properties
     }
 }
