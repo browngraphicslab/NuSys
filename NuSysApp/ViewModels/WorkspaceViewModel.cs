@@ -345,6 +345,10 @@ namespace NuSysApp
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
         {
+            if (node1 is GroupViewModel)
+            {
+                return; //TODO this is temporary until we fix everything else
+            }
             //Check if group already exists
             var groupVm = node2 as GroupViewModel;
             if (groupVm != null)
@@ -383,7 +387,7 @@ namespace NuSysApp
             node2.ParentGroup = groupVm;
         }
 
-        private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
+        public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
             vm.X = 0;
             vm.Y = 0;

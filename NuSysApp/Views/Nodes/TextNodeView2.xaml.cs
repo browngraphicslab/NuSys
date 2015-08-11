@@ -45,7 +45,7 @@ namespace NuSysApp
             var vm = (TextNodeViewModel)this.DataContext;
             vm.CreateAnnotation();
             var container = VisualTreeHelper.GetParent(this) as UIElement;
-            var p = vm.WorkSpaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(vm.Transform.Matrix.OffsetX, vm.Transform.Matrix.OffsetY));
+            var p = vm.WorkSpaceViewModel.CompositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(container).Position);
             vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm, p.X, p.Y); //TODO Eventually need to remove 
             if (vm.IsAnnotation)
             {

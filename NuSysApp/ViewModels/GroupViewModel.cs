@@ -33,6 +33,8 @@ namespace NuSysApp
         
         public void ArrangeNodes()
         {
+            this.Width = Constants.MIN_NODE_SIZE_X;
+            this.Height = Constants.MIN_NODE_SIZE_Y;
 
             var currentX = 0.0;
             var currentY = 0.0;
@@ -66,6 +68,21 @@ namespace NuSysApp
             this.AtomViewList.Remove(toRemove.View);
             NodeViewModelList.Remove(toRemove);
             ArrangeNodes();
+            if (NodeViewModelList.Count == 0)
+            {
+                WorkSpaceViewModel.DeleteNode(this);
+            }
+            else if (NodeViewModelList.Count == 1)
+            {
+                var lastNode = NodeViewModelList[0];
+                this.AtomViewList.Remove(lastNode.View);
+                NodeViewModelList.Remove(lastNode);
+                WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
+                WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
+                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
+                lastNode.ParentGroup = null;
+                WorkSpaceViewModel.DeleteNode(this);
+            }
             //TODO Handle links
         }
 
