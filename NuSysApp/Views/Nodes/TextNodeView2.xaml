@@ -13,7 +13,7 @@
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
     PointerReleased="OnPointerReleased"
-    IsDoubleTapEnabled="True">    
+    IsDoubleTapEnabled="True">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
