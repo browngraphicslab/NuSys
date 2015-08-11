@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components;
 
 namespace NuSysApp
 {
@@ -22,6 +23,17 @@ namespace NuSysApp
             _currentStroke = new Polyline();
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
             _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
+            _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
+            {
+                
+                if (inqCanvas.Mode is EraseInqMode)
+                {
+                    inqCanvas.Children.Remove(o as Polyline);
+                    inqCanvas.Manager.SelectWithLine(e2.GetCurrentPoint(inqCanvas).Position, e2.GetCurrentPoint(inqCanvas).Position);
+                    inqCanvas.Manager.DeleteSelected();
+                }
+                
+            };
             inqCanvas.Children.Add(_currentStroke);
         }
 
