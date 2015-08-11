@@ -40,8 +40,10 @@ namespace NuSysApp
             var currentY = 0.0;
             for (var i = 0; i < AtomViewList.Count;i++) {
                 var toArr = NodeViewModelList[i];
-                Canvas.SetLeft(toArr.View, currentX);
-                Canvas.SetTop(toArr.View, currentY);
+                var mat = toArr.Transform.Matrix;
+                mat.OffsetX = currentX;
+                mat.OffsetY = currentY;
+                toArr.Transform.Matrix = mat;
 
                 if (Height < currentY + toArr.Height + 20)
                 {
