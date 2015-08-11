@@ -193,8 +193,22 @@ namespace NuSysApp
             return false;
         }
 
-        public bool CheckForNodeNodeIntersection(NodeViewModel node)
+        public bool CheckForNodeNodeIntersection(NodeViewModel node, double xCoordinate,double yCoordinate)
         {
+            if (node.ParentGroup != null)
+            {
+                var x = node.Transform.Matrix.OffsetX;
+                var y = node.Transform.Matrix.OffsetY;
+                if (x > node.ParentGroup.Width + 50 || y > node.ParentGroup.Height + 50)
+                {
+                    node.ParentGroup.RemoveNode(node);
+                    NodeViewModelList.Add(node);
+                    AtomViewList.Add(node.View);
+                    PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + 200, node.ParentGroup.Transform.Matrix.OffsetY + 200);
+                    node.ParentGroup = null;
+                    return false;
+                }
+            }
             foreach (var node2 in NodeViewModelList)
             {
                 var rect1 = Geometry.NodeToBoudingRect(node);
@@ -208,9 +222,7 @@ namespace NuSysApp
             }
             return false;
         }
-
-        
-
+       
         /// <summary>
         /// Deletes a given node from the workspace, and their links.
         /// </summary> 
