@@ -28,9 +28,7 @@ namespace NuSysApp
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             var vm = (GroupViewModel)this.DataContext;
-            var container = VisualTreeHelper.GetParent(this) as UIElement;
-            var p = vm.WorkSpaceViewModel.CompositeTransform.Inverse.TransformPoint(new Point(vm.Transform.Matrix.OffsetX, vm.Transform.Matrix.OffsetY));
-            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm, p.X, p.Y); //TODO Eventually need to remove 
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
             e.Handled = true;
         }
     }
