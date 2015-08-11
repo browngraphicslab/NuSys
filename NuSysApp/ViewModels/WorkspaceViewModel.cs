@@ -354,7 +354,6 @@ namespace NuSysApp
                 this.NodeViewModelList.Remove(node1); 
                 groupVm.AddNode(node1);
                 node1.ParentGroup = groupVm;
-                node2.ParentGroup = groupVm;
                 return;
             }
 

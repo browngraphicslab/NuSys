@@ -29,6 +29,7 @@ namespace NuSysApp
         {
             var vm = (GroupViewModel)this.DataContext;
             vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm, e.GetCurrentPoint(this).RawPosition.X, e.GetCurrentPoint(this).RawPosition.Y); //TODO Eventually need to remove 
+            e.Handled = true;
         }
     }
 }
