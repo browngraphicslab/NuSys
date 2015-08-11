@@ -70,20 +70,21 @@ namespace NuSysApp
             this.AtomViewList.Remove(toRemove.View);
             NodeViewModelList.Remove(toRemove);
             ArrangeNodes();
-            if (NodeViewModelList.Count == 0)
+            switch (NodeViewModelList.Count)
             {
-                WorkSpaceViewModel.DeleteNode(this);
-            }
-            else if (NodeViewModelList.Count == 1)
-            {
-                var lastNode = NodeViewModelList[0];
-                this.AtomViewList.Remove(lastNode.View);
-                NodeViewModelList.Remove(lastNode);
-                WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
-                WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
-                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
-                lastNode.ParentGroup = null;
-                WorkSpaceViewModel.DeleteNode(this);
+                case 0:
+                    WorkSpaceViewModel.DeleteNode(this);
+                    break;
+                case 1:
+                    var lastNode = NodeViewModelList[0];
+                    this.AtomViewList.Remove(lastNode.View);
+                    NodeViewModelList.Remove(lastNode);
+                    WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
+                    WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
+                    WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
+                    lastNode.ParentGroup = null;
+                    WorkSpaceViewModel.DeleteNode(this);
+                    break;
             }
             //TODO Handle links
         }

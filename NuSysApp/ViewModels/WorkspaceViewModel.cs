@@ -193,7 +193,7 @@ namespace NuSysApp
             return false;
         }
 
-        public bool CheckForNodeNodeIntersection(NodeViewModel node, double xCoordinate,double yCoordinate)
+        public bool CheckForNodeNodeIntersection(NodeViewModel node)
         {
             if (node.ParentGroup != null)
             {
@@ -204,7 +204,7 @@ namespace NuSysApp
                     node.ParentGroup.RemoveNode(node);
                     NodeViewModelList.Add(node);
                     AtomViewList.Add(node.View);
-                    PositionNode(node, xCoordinate, yCoordinate);
+                    PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     node.ParentGroup = null;
                     return false;
                 }
