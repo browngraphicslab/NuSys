@@ -36,8 +36,8 @@ namespace NuSysApp
             this.Width = Constants.MIN_NODE_SIZE_X;
             this.Height = Constants.MIN_NODE_SIZE_Y;
 
-            var currentX = 0.0;
-            var currentY = 0.0;
+            var currentX = 75.0;
+            var currentY = 75.0;
             for (var i = 0; i < AtomViewList.Count;i++) {
                 var toArr = NodeViewModelList[i];
                 var mat = toArr.Transform.Matrix;
@@ -45,22 +45,22 @@ namespace NuSysApp
                 mat.OffsetY = currentY;
                 toArr.Transform.Matrix = mat;
 
-                if (Height < currentY + toArr.Height + 20)
+                if (Height < currentY + toArr.Height + 75)
                 {
-                    Height = currentY + toArr.Height + 20;
+                    Height = currentY + toArr.Height + 75;
                 }
-                if (Width < currentX + toArr.Width + 20)
+                if (Width < currentX + toArr.Width + 75)
                 {
-                    Width = currentX + toArr.Width + 20;
+                    Width = currentX + toArr.Width + 75;
                 }
                 if (i % 3 == 2)
                 {
-                    currentX = 0;
-                    currentY += toArr.Height + 20;
+                    currentX = 75;
+                    currentY += toArr.Height + 75;
                 }
                 else
                 {
-                    currentX += toArr.Width + 20;
+                    currentX += toArr.Width + 75;
                 }
             }
         }
