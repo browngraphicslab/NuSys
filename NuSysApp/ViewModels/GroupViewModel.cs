@@ -33,8 +33,8 @@ namespace NuSysApp
         
         public void ArrangeNodes()
         {
-            this.Width = Constants.MIN_NODE_SIZE_X;
-            this.Height = Constants.MIN_NODE_SIZE_Y;
+            this.Width = Constants.MinNodeSizeX;
+            this.Height = Constants.MinNodeSizeY;
 
             var currentX = 75.0;
             var currentY = 75.0;
