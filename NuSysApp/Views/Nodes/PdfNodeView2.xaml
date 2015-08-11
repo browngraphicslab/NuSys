@@ -28,7 +28,20 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
+            <Grid>
+                <local:InqCanvas x:Name="inkCanvas"/>
             <Image Margin="3,3,3,3" Source="{Binding PdfNodeModel.RenderedPage}" Stretch="Uniform"/>
+                <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
+                <Button.Content>
+                    <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_left.png" />
+                </Button.Content>
+            </Button>
+            <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="pageRight_Click">
+                <Button.Content>
+                    <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_right.png" />
+                </Button.Content>
+            </Button>
+            </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </UserControl>
