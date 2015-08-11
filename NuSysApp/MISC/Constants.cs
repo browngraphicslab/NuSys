@@ -53,7 +53,7 @@ namespace NuSysApp
         #endregion Ink Node
 
         #region Color
-        public static Color DefaultColor = Color.FromArgb(100, 0, 76, 153);
+        public static Color DefaultColor = Color.FromArgb(20, 0, 76, 153);
         public static Color SelectedColor = Color.FromArgb(200, DefaultColor.R, DefaultColor.G, DefaultColor.B);
         #endregion Color
 

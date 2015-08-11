@@ -18,7 +18,7 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl">
+    <local:NodeTemplate x:Name="nodeTpl" Background="RoyalBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <MenuFlyoutItem x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}">

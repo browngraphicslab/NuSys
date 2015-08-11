@@ -44,6 +44,7 @@ namespace NuSysApp
         {
             var vm = (TextNodeViewModel)this.DataContext;
             vm.CreateAnnotation();
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove this
             if (vm.IsAnnotation)
             {
                 nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));

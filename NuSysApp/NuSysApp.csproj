@@ -140,6 +140,9 @@
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
+    <Compile Include="Views\Nodes\GroupView.xaml.cs">
+      <DependentUpon>GroupView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
     <Compile Include="ViewModels\InkNodeViewModel.cs" />
     <Compile Include="ViewModels\LinkViewModel.cs" />
@@ -154,6 +157,7 @@
     <Compile Include="Views\FloatingMenu.xaml.cs">
       <DependentUpon>FloatingMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="Views\Nodes\ImageNodeView2.xaml.cs">
       <DependentUpon>ImageNodeView2.xaml</DependentUpon>
     </Compile>
@@ -233,6 +237,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Nodes\GroupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Links\BezierLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -193,6 +193,24 @@ namespace NuSysApp
             return false;
         }
 
+        public bool CheckForNodeNodeIntersection(NodeViewModel node)
+        {
+            foreach (var node2 in NodeViewModelList)
+            {
+                var rect1 = Geometry.NodeToBoudingRect(node);
+                var rect2 = Geometry.NodeToBoudingRect(node2);
+                rect1.Intersect(rect2);//stores intersection rectangle in rect1
+                if (node != node2 && !rect1.IsEmpty)
+                {
+                    CreateNewGroup(node, node2);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        
+
         /// <summary>
         /// Deletes a given node from the workspace, and their links.
         /// </summary> 
@@ -295,8 +313,6 @@ namespace NuSysApp
                     }
                     break;
 
-
-
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
@@ -306,6 +322,42 @@ namespace NuSysApp
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             PositionNode(vm, xCoordinate, yCoordinate);
+        }
+
+        public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
+        {
+            //Check if group already exists
+            var groupVm = node2 as GroupViewModel;
+            if (groupVm != null)
+            {
+                var group = groupVm;
+                this.AtomViewList.Remove(node1.View);
+                this.NodeViewModelList.Remove(node1);
+                groupVm.AddNode(node1);
+                return;
+            }
+
+            //Create new group, because no group exists
+            groupVm = new GroupViewModel(this);
+
+            //Set location to node2's location
+            var xCoordinate = node2.Transform.Matrix.OffsetX;
+            var yCoordinate = node2.Transform.Matrix.OffsetY;
+          
+            //Add group to workspace
+            NodeViewModelList.Add(groupVm);
+            AtomViewList.Add(groupVm.View);
+            PositionNode(groupVm, xCoordinate, yCoordinate);
+
+            //Add the first node
+            groupVm.AddNode(node1);
+            this.AtomViewList.Remove(node1.View);
+            this.NodeViewModelList.Remove(node1);
+
+            //Add the second node
+            groupVm.AddNode(node2);
+            this.AtomViewList.Remove(node2.View);
+            this.NodeViewModelList.Remove(node2);
         }
 
         private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
