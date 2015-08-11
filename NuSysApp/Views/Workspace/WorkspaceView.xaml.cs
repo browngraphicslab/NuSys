@@ -78,19 +78,27 @@ namespace NuSysApp
             switch (mode)
             {
                 case Options.Select:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new FloatingMenuMode(this)));
                     break;
                 case Options.GlobalInk:
-                    SetViewMode(new MultiMode(this, new GlobalInkMode(this),  new FloatingMenuMode(this)));
+                    SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.AddTextNode:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.TEXT), new FloatingMenuMode(this)));
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
+                        new FloatingMenuMode(this)));
                     break;
                 case Options.AddInkNode:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.INK), new FloatingMenuMode(this)));
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
                     break;
                 case Options.Document:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.DOCUMENT), new FloatingMenuMode(this)));
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
+                    break;
+                case Options.Cortana:
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new FloatingMenuMode(this)));
                     break;
             }
         }

@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml.Input;
+﻿using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml.Input;
 
 namespace NuSysApp.Views.Workspace
 {
@@ -24,12 +26,20 @@ namespace NuSysApp.Views.Workspace
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var vm = (WorkspaceViewModel)_view.DataContext;
-            var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
+            await AddNode(e.GetPosition(_view));
+            e.Handled = true;
+        }
 
+        /// <summary>
+        /// Further abstraction to be used by Cortana to manually add nodes
+        /// </summary>
+        /// <param name="pos">The position to place the node</param>
+        private async Task AddNode(Point pos) 
+        {
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
             await vm.CreateNewNode(_nodeType, p.X, p.Y, "");
             vm.ClearSelection();
-            e.Handled = true;
         }
     }
 }

@@ -269,13 +269,13 @@ namespace NuSysApp
             NodeViewModel vm = null;
             switch (type)
             {
-                case NodeType.TEXT:
+                case NodeType.Text:
                     vm = new TextNodeViewModel(this);
                     break;
-                case NodeType.INK:
+                case NodeType.Ink:
                     vm = new InkNodeViewModel(this);
                     break;
-                case NodeType.DOCUMENT:
+                case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                     if (storageFile == null)
                         return;
