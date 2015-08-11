@@ -114,7 +114,7 @@
             </Setter>
         </Style>
 
-        <Style TargetType="MenuFlyoutItem" x:Key="TextMenuItem">
+        <Style TargetType="Button" x:Key="TextMenuItem">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
@@ -124,7 +124,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="MenuFlyoutItem">
+                    <ControlTemplate TargetType="Button">
                         <Grid Width="40" Height="40">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
