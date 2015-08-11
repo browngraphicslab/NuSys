@@ -27,7 +27,7 @@ namespace NuSysApp
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
         {
-            this.View = new PdfNodeView(this);
+            this.View = new PdfNodeView2(this);
             this.PdfNodeModel = new PdfNodeModel(0);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
