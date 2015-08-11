@@ -18,7 +18,7 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl">
+    <local:NodeTemplate x:Name="nodeTpl" Background="BlanchedAlmond">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <MenuFlyoutItem x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}">
@@ -35,6 +35,51 @@
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid>
+                <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Height="50" Margin="0,10,10,0">
+                    <StackPanel RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="50" VerticalAlignment="Top" Opacity="100" 
+                                IsHitTestVisible="True" Visibility="{Binding IsEditing, ConverterParameter=false, Converter={StaticResource vConverter}}">
+                        <MenuFlyoutItem x:Name="Bold" Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                    <ImageBrush ImageSource="ms-appx:///Assets/bold.png" Stretch="Uniform"></ImageBrush>
+                               </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="Italic"  Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="ms-appx:///Assets/italic.png"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="Underline" Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="ms-appx:///Assets/underline.png"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                        <Button Height="50" Width="50" Padding="0" Background="{x:Null}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Button.Content>
+                                <Ellipse Height="35" Width="35" Fill="Black" Margin="0,0,0,0"></Ellipse>
+                            </Button.Content>
+                        </Button>
+                        <MenuFlyoutItem x:Name="FontSize" Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="ms-appx:///Assets/font size.png"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="Link" Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="ms-appx:///Assets/link.png"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="Image" Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="ms-appx:///Assets/image.png"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="Bullets" Style="{StaticResource TextMenuItem}">
+                            <MenuFlyoutItem.Background>
+                                <ImageBrush ImageSource="ms-appx:///Assets/bullets.png"></ImageBrush>
+                            </MenuFlyoutItem.Background>
+                        </MenuFlyoutItem>
+                    </StackPanel>
+                </Grid>
                 <TextBlock Name="textBlock" TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" Margin="30,60,20,20"
                        FontSize="20" Foreground="Black" FontFamily="Calibri" 
                        Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}"

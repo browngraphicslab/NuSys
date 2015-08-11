@@ -32,6 +32,10 @@ namespace NuSysApp
         private void OnEditClick(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            if (vm.IsEditingInk == true)
+            {
+                nodeTpl.ToggleInkMode();
+            }
             vm.ToggleEditing();
         }
 

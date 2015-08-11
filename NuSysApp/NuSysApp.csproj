@@ -98,7 +98,13 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\bold.png" />
+    <Content Include="Assets\bullets.png" />
     <Content Include="Assets\icon_idle.png" />
+    <Content Include="Assets\font size.png" />
+    <Content Include="Assets\image.png" />
+    <Content Include="Assets\link.png" />
+    <Content Include="Views\Nodes\link icon.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
@@ -206,11 +212,13 @@
     <Content Include="Assets\icon_text.png" />
     <Content Include="Assets\icon_x.png" />
     <Content Include="Assets\icon_x2.png" />
+    <Content Include="Assets\italic.png" />
     <Content Include="Assets\Logo.scale-100.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-1001.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
+    <Content Include="Assets\underline.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
     <Content Include="MISC\CortanaCommands.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
