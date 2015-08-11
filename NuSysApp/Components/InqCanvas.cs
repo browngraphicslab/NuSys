@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components;
 
 namespace NuSysApp
 {
@@ -85,16 +86,14 @@ namespace NuSysApp
         /// <param name="erase"></param>
         public void SetErasing(bool erase)
         {
-          //  _isErasing = erase;
             if (erase)
-            { 
-                _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Erasing;
+            {
+                _mode = new EraseInqMode();
             }
             else
             {
-                _inkManager.Mode = Windows.UI.Input.Inking.InkManipulationMode.Inking;
+                _mode = new DrawInqMode();
             }
-           // _isHighlighting = false;
         }
 
         /// <summary>
@@ -103,8 +102,15 @@ namespace NuSysApp
         /// <param name="highlight"></param>
         public void SetHighlighting(bool highlight)
         {
-           // _isHighlighting = highlight;
-           //.. _isErasing = false;
+
+            if (highlight)
+            {
+                _mode = new HighlightInqMode();
+            }
+            else
+            {
+                _mode = new DrawInqMode();
+            }
         }
 
         public void RemoveByInkStroke(InkStroke stroke)
@@ -187,6 +193,11 @@ namespace NuSysApp
             {
                 _inkManager = value;
             }
+        }
+
+        public IInqMode Mode
+        {
+            get { return _mode; }
         }
 
         internal Dictionary<InkStroke, Polyline> Strokes

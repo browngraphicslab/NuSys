@@ -76,6 +76,7 @@ namespace NuSysApp
                     break;
                 case Options.GlobalInk:
                     SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
+                    InqCanvas.SetErasing(false);
                     break;
                 case Options.AddTextNode:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
@@ -92,6 +93,12 @@ namespace NuSysApp
                 case Options.Cortana:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new FloatingMenuMode(this)));
+                    break;
+                case Options.Erase:
+                    InqCanvas.SetErasing(true);
+                    break;
+                case Options.Highlight:
+                    InqCanvas.SetHighlighting(true);
                     break;
             }
         }
