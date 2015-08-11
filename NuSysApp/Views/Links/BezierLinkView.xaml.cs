@@ -56,7 +56,7 @@ namespace NuSysApp
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
 
-            if (atom1.AtomType == Constants.node)
+            if (atom1.AtomType == Constants.Node)
             {
                 pathfigure.StartPoint = this.findIntersection(atom1, curve.Point3);
             }
@@ -64,7 +64,7 @@ namespace NuSysApp
             {
                 pathfigure.StartPoint = atom1.Anchor;
             }
-            if (atom2.AtomType == Constants.node)
+            if (atom2.AtomType == Constants.Node)
             {
                 curve.Point3 = this.findIntersection(atom2, pathfigure.StartPoint);
             }
