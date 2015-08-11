@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI.Xaml.Input;
+﻿using Windows.UI.Xaml.Input;
 
 namespace NuSysApp.Views.Workspace
 {
     public class AddNodeMode : AbstractWorkspaceViewMode
     {
-        NodeType _nodeType;
+        readonly NodeType _nodeType;
 
         public AddNodeMode(WorkspaceView view, NodeType nodeType) : base(view) {
             _nodeType = nodeType;

@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.UI.Input.Inking;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using System.Diagnostics;
-using Windows.UI.Popups;
-using System.Linq;
-using Windows.Foundation;
-using Windows.Storage;
-using Windows.UI.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using Windows.UI;
 using NuSysApp.Views.Workspace;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -89,19 +77,19 @@ namespace NuSysApp
         {
             switch (mode)
             {
-                case Options.SELECT:
+                case Options.Select:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
                     break;
-                case Options.GLOBAL_INK:
+                case Options.GlobalInk:
                     SetViewMode(new MultiMode(this, new GlobalInkMode(this),  new FloatingMenuMode(this)));
                     break;
-                case Options.ADD_TEXT_NODE:
+                case Options.AddTextNode:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.TEXT), new FloatingMenuMode(this)));
                     break;
-                case Options.ADD_INK_NODE:
+                case Options.AddInkNode:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.INK), new FloatingMenuMode(this)));
                     break;
-                case Options.DOCUMENT:
+                case Options.Document:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.DOCUMENT), new FloatingMenuMode(this)));
                     break;
             }

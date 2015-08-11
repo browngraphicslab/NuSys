@@ -26,7 +26,7 @@ namespace NuSysApp
         {
             this.Atom1 = atom1;
             this.Atom2 = atom2;
-            this.AtomType = Constants.link;
+            this.AtomType = Constants.Link;
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
             

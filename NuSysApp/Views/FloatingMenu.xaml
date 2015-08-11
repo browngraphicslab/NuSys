@@ -98,6 +98,11 @@
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
+            <Button Name="cortanaButton" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
         </StackPanel>
         <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="300" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
