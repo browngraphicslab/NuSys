@@ -164,8 +164,8 @@
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\NodeTemplate.cs" />
-    <Compile Include="Views\Nodes\PdfNodeView.xaml.cs">
-      <DependentUpon>PdfNodeView.xaml</DependentUpon>
+    <Compile Include="Views\Nodes\PdfNodeView2.xaml.cs">
+      <DependentUpon>PdfNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\RichTextNodeView2.xaml.cs">
       <DependentUpon>RichTextNodeView2.xaml</DependentUpon>
@@ -254,7 +254,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\PdfNodeView.xaml">
+    <Page Include="Views\Nodes\PdfNodeView2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
