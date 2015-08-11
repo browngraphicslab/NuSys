@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,7 +8,7 @@ namespace NuSysApp
 {
     
     public enum Options {
-        SELECT, GLOBAL_INK, ADD_TEXT_NODE, ADD_INK_NODE, DOCUMENT, PROMOTE_INK
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Highlight
     }
 
 
@@ -47,66 +36,72 @@ namespace NuSysApp
 
             btn.Opacity = 0.75;
 
-            if (_subMenuOpen == true)
-            {
-                slidein.Begin();
-                _subMenuOpen = false;
-            }
+            if (!_subMenuOpen) return;
+            slidein.Begin();
+            _subMenuOpen = false;
         }
 
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.GLOBAL_INK);
-            if (_subMenuOpen == false)
-            {
-                slideout.Begin();
-                _subMenuOpen = true;
-            }
+            ModeChange?.Invoke(Options.GlobalInk);
+            if (_subMenuOpen) return;
+            slideout.Begin();
+            _subMenuOpen = true;
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.GLOBAL_INK);
+            ModeChange?.Invoke(Options.GlobalInk);
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.ADD_TEXT_NODE);
+            ModeChange?.Invoke(Options.AddTextNode);
         }
 
 
         private void EraseButton_Click(object sender, RoutedEventArgs e)
         {
+            SetActive((Button)sender);
+            ModeChange?.Invoke((Options.Erase));
         }
 
         private void InkNodeButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.ADD_INK_NODE);
+            ModeChange?.Invoke(Options.AddInkNode);
         }
 
         private async void DocumentButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.DOCUMENT);
+            ModeChange?.Invoke(Options.Document);
+        }
+
+        private async void CortanaButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetActive((Button) sender);
+            ModeChange?.Invoke(Options.Cortana);
         }
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
+            ModeChange?.Invoke((Options.Erase));
         }
 
         private void Highlight_OnTapped(object sender, RoutedEventArgs e)
         {
+            ModeChange?.Invoke((Options.Highlight));
         }
 
 
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.SELECT);
+            ModeChange?.Invoke(Options.Select);
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

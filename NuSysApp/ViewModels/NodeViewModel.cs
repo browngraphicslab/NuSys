@@ -20,7 +20,7 @@ namespace NuSysApp
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
         {
-            this.AtomType = Constants.node;
+            this.AtomType = Constants.Node;
         }
 
         #region Node Manipulations
@@ -68,11 +68,11 @@ namespace NuSysApp
         {
             double changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
             double changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            if (this.Width > Constants.MIN_NODE_SIZE_X || changeX > 0)
+            if (this.Width > Constants.MinNodeSizeX || changeX > 0)
             {
                 this.Width += changeX;
             }
-            if (this.Height > Constants.MIN_NODE_SIZE_Y || changeY > 0)
+            if (this.Height > Constants.MinNodeSizeY || changeY > 0)
             {
                 this.Height += changeY;
             }

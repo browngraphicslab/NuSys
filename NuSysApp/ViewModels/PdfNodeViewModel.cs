@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
@@ -27,7 +28,7 @@ namespace NuSysApp
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
         {
-            this.View = new PdfNodeView(this);
+            this.View = new PdfNodeView2(this);
             this.PdfNodeModel = new PdfNodeModel(0);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
@@ -35,7 +36,7 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<InkStrokeContainer>();
+            this.InkContainer = new List<List<UIElement>>();
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform { 
                 ScaleX = 1,
@@ -129,7 +130,8 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new InkStrokeContainer());
+                this.InkContainer.Add(new List<UIElement>());
+                
             }
         }
 
@@ -146,7 +148,7 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
             }
-            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MIN_NODE_SIZE_X || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MIN_NODE_SIZE_Y)
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
                 return;
             }
@@ -214,7 +216,7 @@ namespace NuSysApp
             }
         }
      //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<InkStrokeContainer> InkContainer { get; set; }
+        public List<List<UIElement>> InkContainer { get; set; }
 
         public CompositeTransform InkScale
         {

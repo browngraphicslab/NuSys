@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace NuSysApp.Views.Workspace
 {
     public class MultiMode : AbstractWorkspaceViewMode
     {
-        private List<AbstractWorkspaceViewMode> _modes = new List<AbstractWorkspaceViewMode>();
+        private readonly List<AbstractWorkspaceViewMode> _modes = new List<AbstractWorkspaceViewMode>();
 
         public MultiMode(WorkspaceView view, params AbstractWorkspaceViewMode[] modes):base(view)
         {
