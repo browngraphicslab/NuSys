@@ -10,7 +10,8 @@
     Width="{Binding Width}"
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
-    IsDoubleTapEnabled="True">
+    IsDoubleTapEnabled="True"
+    PointerReleased="OnPointerReleased">
 
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />

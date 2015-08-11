@@ -156,5 +156,11 @@ namespace NuSysApp
             }
         }
 
+        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = (PdfNodeViewModel)this.DataContext;
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove   
+            e.Handled = true;
+        }
     }
 }
