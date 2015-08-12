@@ -38,21 +38,22 @@
                 <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Height="50" Margin="0,10,10,0">
                     <StackPanel RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="50" VerticalAlignment="Top" Opacity="100" 
                                 IsHitTestVisible="True" Visibility="{Binding IsEditing, ConverterParameter=false, Converter={StaticResource vConverter}}">
-                        <Button x:Name="Bold" Style="{StaticResource TextMenuItem}">
+                        <Button x:Name="Bold" Style="{StaticResource TextMenuItem}" Click="FormatText">
                             <Button.Background>
                                     <ImageBrush ImageSource="ms-appx:///Assets/bold.png" Stretch="Uniform"></ImageBrush>
                                </Button.Background>
                         </Button>
-                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}">
+                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}" Click="FormatText">
                             <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/italic.png"></ImageBrush>
+                                <ImageBrush ImageSource="ms-appx:///Assets/italic.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}">
+                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}" Click="FormatText">
                             <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/underline.png"></ImageBrush>
+                                <ImageBrush ImageSource="ms-appx:///Assets/underline.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
+                        
                         <Button Height="50" Width="50" Padding="0" Style="{StaticResource TextMenuItem}">
                             <Button.Content>
                                 <Ellipse Height="35" Width="35" Fill="Black" Margin="0,0,0,0"></Ellipse>
@@ -60,34 +61,44 @@
                         </Button>
                         <Button x:Name="FontSize" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/font size.png"></ImageBrush>
+                                <ImageBrush ImageSource="ms-appx:///Assets/font size.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
                         <Button x:Name="Link" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/link.png"></ImageBrush>
+                                <ImageBrush ImageSource="ms-appx:///Assets/link.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
                         <Button x:Name="Image" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/image.png"></ImageBrush>
+                                <ImageBrush ImageSource="ms-appx:///Assets/image.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
                         <Button x:Name="Bullets" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/bullets.png"></ImageBrush>
+                                <ImageBrush ImageSource="ms-appx:///Assets/bullets.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
                     </StackPanel>
                 </Grid>
-                <TextBlock Name="textBlock" TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" Margin="30,60,20,20"
+                <RichTextBlock Name="textBlock" TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" Margin="30,60,20,20"
                        FontSize="20" Foreground="Black" FontFamily="Calibri" 
                        Visibility="{Binding IsEditing,  ConverterParameter=true, Converter={StaticResource vConverter}}"
-                       Text="{Binding Data, Mode=TwoWay}" IsHitTestVisible="False" />
-                <TextBox x:Name="textBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top"
+                       IsHitTestVisible="False">
+                    <Paragraph>
+                        <Run Text="{Binding Data, Mode=TwoWay}"></Run>
+                    </Paragraph>
+                </RichTextBlock>
+                <!--<TextBox x:Name="oldTextBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top"
                      Margin="20,58,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" Text="{Binding Data, Mode=TwoWay}"
                      Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}"
-                     Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" />
+                     Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" />-->
+                <RichEditBox x:Name="textBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top"
+                     Margin="20,58,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" PlaceholderText="{Binding Data, Mode=TwoWay}" 
+                     Visibility="{Binding IsEditing,  ConverterParameter=false, Converter={StaticResource vConverter}}"
+                     Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True"> 
+                    
+                </RichEditBox>
             </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>

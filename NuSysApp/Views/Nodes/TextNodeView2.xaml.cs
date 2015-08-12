@@ -44,6 +44,11 @@ namespace NuSysApp
             nodeTpl.ToggleInkMode();            
         }
 
+        private void FormatText(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             var vm = (TextNodeViewModel)this.DataContext;
