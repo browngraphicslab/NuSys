@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -6,6 +7,7 @@ namespace NuSysApp
 {
     public class GroupViewModel: NodeViewModel
     {
+        private double _margin;
         public GroupViewModel(WorkspaceViewModel vm): base(vm)
         {
             AtomViewList = new ObservableCollection<UserControl>();
@@ -19,6 +21,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.View = new GroupView(this);
+            _margin = 75;
         }
 
         public void AddNode(NodeViewModel toAdd)
@@ -26,42 +29,74 @@ namespace NuSysApp
             AtomViewList.Add(toAdd.View);
             NodeViewModelList.Add(toAdd);
             toAdd.Transform = new MatrixTransform();
-            ArrangeNodes();
-            Canvas.SetZIndex(toAdd.View, 10);
+            ArrangeNodesInGrid();
 
             //TODO Handle links
         }
-        
-        public void ArrangeNodes()
+         
+        public override void Resize(double dx, double dy)
+        {
+            base.Resize(dx, dy);
+            //var minWidth = NodeViewModelList.Count*(Constants.MinNodeSizeX+75);
+            //var minHeight = NodeViewModelList.Count * (Constants.MinNodeSizeY + 75);
+            //var resizeX = minWidth - this.Width;
+            //var resizeY = minWidth - this.Height;
+            //if (resizeX > resizeY)
+            //{
+            //    if (resizeX > 0)
+            //    {
+            //        ResizeGroupMembers(-resizeX, -resizeX);
+            //    }
+            //}
+            //else 
+            //{
+            //    if (resizeY > 0)
+            //    {
+            //        ResizeGroupMembers(-resizeY, -resizeY);
+            //    }
+            //}
+            foreach (var node in this.NodeViewModelList)
+            {
+                node.Resize(dx, dx);
+                
+            }
+            _margin += dx;
+            this.ArrangeNodesInGrid();
+        }
+
+       
+        private void ArrangeNodesInGrid()
         {
             this.Width = Constants.MinNodeSizeX;
             this.Height = Constants.MinNodeSizeY;
 
-            var currentX = 75.0;
-            var currentY = 75.0;
+            _margin = 75;
+            var currentX = _margin;
+            var currentY = _margin;
             for (var i = 0; i < AtomViewList.Count;i++) {
                 var toArr = NodeViewModelList[i];
+
                 var mat = toArr.Transform.Matrix;
                 mat.OffsetX = currentX;
                 mat.OffsetY = currentY;
                 toArr.Transform.Matrix = mat;
-
-                if (Height < currentY + toArr.Height + 75)
+                
+                if (Height < currentY + toArr.Height + _margin)
                 {
-                    Height = currentY + toArr.Height + 75;
+                    Height = currentY + toArr.Height + _margin;
                 }
-                if (Width < currentX + toArr.Width + 75)
+                if (Width < currentX + toArr.Width + _margin)
                 {
-                    Width = currentX + toArr.Width + 75;
+                    Width = currentX + toArr.Width + _margin;
                 }
                 if (i % 3 == 2)
                 {
-                    currentX = 75;
-                    currentY += toArr.Height + 75;
+                    currentX = _margin;
+                    currentY += toArr.Height + _margin;
                 }
                 else
                 {
-                    currentX += toArr.Width + 75;
+                    currentX += toArr.Width + _margin;
                 }
             }
         }
@@ -70,7 +105,7 @@ namespace NuSysApp
         {
             this.AtomViewList.Remove(toRemove.View);
             NodeViewModelList.Remove(toRemove);
-            ArrangeNodes();
+            ArrangeNodesInGrid();
             switch (NodeViewModelList.Count)
             {
                 case 0:
