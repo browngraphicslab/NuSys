@@ -304,6 +304,7 @@ namespace NuSysApp
         public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
+            Debug.WriteLine("In CreateNewNode");
             switch (type)
             {
                 case NodeType.Text:
@@ -340,6 +341,7 @@ namespace NuSysApp
             }
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
+            Debug.WriteLine("adding node at " + xCoordinate +", " + yCoordinate);
             PositionNode(vm, xCoordinate, yCoordinate);
         }
 

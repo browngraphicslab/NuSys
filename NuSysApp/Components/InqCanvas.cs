@@ -24,7 +24,7 @@ namespace NuSysApp
         private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private Dictionary<InkStroke, Polyline> _strokes = new Dictionary<InkStroke, Polyline>();
+        private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
 
         public InqCanvas() : base()
         {
@@ -113,12 +113,12 @@ namespace NuSysApp
             }
         }
 
-        public void RemoveByInkStroke(InkStroke stroke)
-        {
-            var line = _strokes[stroke];
-            if (line != null)
-                Children.Remove(line);
-        }
+        //public void RemoveByInkStroke(InkStroke stroke)
+        //{
+        //    var line = _strokes[stroke];
+        //    if (line != null)
+        //        Children.Remove(line);
+        //}
 
         public Rect PasteManagedStrokes()
         {
@@ -200,7 +200,7 @@ namespace NuSysApp
             get { return _mode; }
         }
 
-        internal Dictionary<InkStroke, Polyline> Strokes
+        internal Dictionary<Polyline, InkStroke> Strokes
         {
             get
             {

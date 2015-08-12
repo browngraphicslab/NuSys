@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 
@@ -38,6 +39,7 @@ namespace NuSysApp.Views.Workspace
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
+            Debug.WriteLine("text node at " + p.X + ", " + p.Y);
             await vm.CreateNewNode(nodeType, p.X, p.Y, "");
             vm.ClearSelection();
         }
