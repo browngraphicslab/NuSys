@@ -23,6 +23,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            Canvas.SetZIndex(this, -1);
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
