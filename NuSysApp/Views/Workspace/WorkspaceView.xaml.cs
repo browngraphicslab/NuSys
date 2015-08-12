@@ -104,6 +104,9 @@ namespace NuSysApp
                 case Options.DOCUMENT:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.DOCUMENT), new FloatingMenuMode(this)));
                     break;
+                case Options.SAVE:
+                    SetViewMode(new MultiMode(this, new SaveMode(this)));
+                    break;
             }
         }
     }

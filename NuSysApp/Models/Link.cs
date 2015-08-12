@@ -1,4 +1,6 @@
 ﻿
+using SQLite.Net.Attributes;
+
 namespace NuSysApp
 {
     public class Link
@@ -10,6 +12,8 @@ namespace NuSysApp
             _inNode = inNode;
             _outNode = outNode;
         }
+
+        public int ID { get; set; }
 
         /// <summary>
         /// Removes an edge.
@@ -37,6 +41,5 @@ namespace NuSysApp
             _inNode.StartLines.Remove(this);
             _inNode.ConnectedNodes.Remove(_outNode);
         }
-
     }
 }

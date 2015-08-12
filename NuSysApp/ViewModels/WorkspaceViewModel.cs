@@ -16,6 +16,7 @@ using Windows.Storage.Streams;
 using System.Text;
 using System.IO;
 using Windows.Storage.Search;
+using SQLite.Net.Async;
 
 namespace NuSysApp
 {
@@ -48,6 +49,7 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             Init();
+
             var c = new CompositeTransform
             {
                 TranslateX = (-1)*(Constants.MaxCanvasSize),
@@ -62,7 +64,7 @@ namespace NuSysApp
         {
             await SetupDirectories();
             SetupChromeIntermediate();
-            SetupOfficeTransfer();            
+            SetupOfficeTransfer();
         }
 
         private async void SetupOfficeTransfer()
@@ -282,7 +284,7 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains( storageFile.FileType))
                     {
-                        var imgVM = new ImageNodeViewModel(this);
+                        var imgVM = new ImageNodeViewModel(this, null);
                         await imgVM.InitializeImageNodeAsync(storageFile);
                         vm = imgVM;
                     }
@@ -306,6 +308,30 @@ namespace NuSysApp
             NodeViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             PositionNode(vm, xCoordinate, yCoordinate);
+        }
+
+        public async Task SaveWorkspace()
+        {
+            //SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
+            //SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
+            //MyConnection.CreateTableAsync<string>();
+            //MyConnection.InsertAsync(this.CreateXML());
+            this.CreateXML();
+        }
+
+        public string CreateXML()
+        {
+            string XML = null;
+            foreach (var vm in NodeViewModelList)
+            {
+
+            }
+
+            foreach (var vm in LinkViewModelList)
+            {
+
+            }
+            return XML;
         }
 
         private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
@@ -361,6 +387,7 @@ namespace NuSysApp
                 RaisePropertyChanged("FMTransform");
             }
         }
+
         #endregion Public Members
 
     }

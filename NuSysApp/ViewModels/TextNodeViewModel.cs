@@ -12,7 +12,8 @@ namespace NuSysApp
 
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
         {
-            _node = new TextNode("Hello oOrld", 0);
+            _node = new TextNode("Enter text here", 0);
+            this.Model = (Atom) _node;
             this.Data = "Enter text here";
             _node.Text = this.Data;
             this.Transform = new MatrixTransform();
@@ -38,6 +39,11 @@ namespace NuSysApp
                 RaisePropertyChanged("Data");
                 _node.Text = _data; //Remove once model is actually integrated
             }
+        }
+
+        public override Atom Model
+        {
+            get; set;
         }
 
 

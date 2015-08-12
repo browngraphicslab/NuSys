@@ -23,7 +23,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.ImageModel = new ImageModel(igm, 0);
+            this.Model = new ImageModel(igm, 0);
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -50,7 +50,7 @@ namespace NuSysApp
             {
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
-                this.ImageModel = new ImageModel(bitmapImage, 0);
+                this.Model = new ImageModel(bitmapImage, 0);
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;
                 var C = new CompositeTransform
@@ -67,13 +67,13 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * ImageModel.Image.PixelWidth / ImageModel.Image.PixelHeight;
+                newDx = dy * Model.Image.PixelWidth / Model.Image.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
+                newDy = dx * Model.Image.PixelHeight / Model.Image.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MIN_NODE_SIZE_X || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MIN_NODE_SIZE_Y)
             {
@@ -87,7 +87,7 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public ImageModel ImageModel
+        public ImageModel Model
         {
             get { return _imgm; }
             set

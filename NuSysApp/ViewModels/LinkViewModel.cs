@@ -95,6 +95,12 @@ namespace NuSysApp
             }
         }
 
+        public Link Model
+        {
+            get { return Model; }
+            set { Model = value; }
+        }
+
         public Line LineRepresentation
             => new Line() {X1 = Atom1.AnchorX, X2 = Atom2.AnchorX, Y1 = Atom1.AnchorY, Y2 = Atom2.AnchorY};
 

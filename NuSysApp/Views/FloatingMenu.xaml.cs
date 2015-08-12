@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -19,7 +20,7 @@ namespace NuSysApp
 {
     
     public enum Options {
-        SELECT, GLOBAL_INK, ADD_TEXT_NODE, ADD_INK_NODE, DOCUMENT, PROMOTE_INK
+        SELECT, GLOBAL_INK, ADD_TEXT_NODE, ADD_INK_NODE, DOCUMENT, PROMOTE_INK, SAVE
     }
 
 
@@ -44,6 +45,7 @@ namespace NuSysApp
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
             idleButton.Opacity = 1;
+            saveButton.Opacity = 1;
 
             btn.Opacity = 0.75;
 
@@ -94,6 +96,13 @@ namespace NuSysApp
             ModeChange?.Invoke(Options.DOCUMENT);
         }
 
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Save on tapped");
+            SetActive((Button)sender);
+            ModeChange?.Invoke(Options.SAVE);
+        }
+
         private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
         }
@@ -101,7 +110,6 @@ namespace NuSysApp
         private void Highlight_OnTapped(object sender, RoutedEventArgs e)
         {
         }
-
 
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
