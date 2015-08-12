@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace NuSysApp
@@ -22,7 +23,7 @@ namespace NuSysApp
 
         private async Task ProcessCommand(string command)
         {
-            switch (command)
+            switch (command.ToLower())
             {
                 case "open document":
                     await AddNodeMode.AddNode(_view, _placementPos, NodeType.Document);

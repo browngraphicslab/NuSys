@@ -35,7 +35,7 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
-            await vm.CreateNewNode(nodeType, p.X, p.Y, "");
+            await vm.CreateNewNode(nodeType, p.X, p.Y);
             vm.ClearSelection();
         }
     }

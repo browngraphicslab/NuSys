@@ -300,7 +300,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate)
         {
             NodeViewModel vm = null;
             switch (type)
@@ -313,10 +313,9 @@ namespace NuSysApp
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                    if (storageFile == null)
-                        return;
+                    if (storageFile == null) return;
                     
-                    if (Constants.ImageFileTypes.Contains( storageFile.FileType))
+                    if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
                         var imgVM = new ImageNodeViewModel(this);
                         await imgVM.InitializeImageNodeAsync(storageFile);
@@ -337,8 +336,11 @@ namespace NuSysApp
                     return;
             }
             NodeViewModelList.Add(vm);
-            AtomViewList.Add(vm.View);
-            PositionNode(vm, xCoordinate, yCoordinate);
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionNode(vm, xCoordinate, yCoordinate);
+            }
         }
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
