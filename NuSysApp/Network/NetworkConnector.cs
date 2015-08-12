@@ -34,9 +34,9 @@ namespace NuSysApp
             await listener.BindEndpointAsync(new HostName(this.LocalIPAddress()), _TCPInputPort);
 
             DatagramSocket socket = new DatagramSocket();
+            socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
-            socket.ConnectAsync(new HostName(this.LocalIPAddress()), _UDPPort);
-            this.sendMassUDPMessage("this is a test");
+
             Debug.WriteLine("done");
         }
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
