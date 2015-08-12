@@ -11,7 +11,6 @@ namespace NuSysApp
             Image = img;
         }
 
-        [Column("Image")]
         public BitmapImage Image
         {
             get { return _image; }

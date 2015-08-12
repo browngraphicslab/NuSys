@@ -14,6 +14,7 @@ namespace NuSysApp
 
         public InkNodeViewModel(WorkspaceViewModel vm): base(vm)
         {
+            this.Model = new Node(0);
             this.View = new InkNodeView2(this);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; 
@@ -21,6 +22,11 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false; 
         }
-       
+
+        public override Atom Model
+        {
+            get; set;
+        }
+
     }
 }

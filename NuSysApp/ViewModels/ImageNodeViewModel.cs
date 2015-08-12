@@ -14,15 +14,14 @@ namespace NuSysApp
 
         public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
         {
+            this.Model = (Atom)new ImageModel(igm, 0);
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
-
             this.Width = igm.PixelWidth;
             this.Height = igm.PixelHeight;
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.Model = new ImageModel(igm, 0);
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -66,13 +65,13 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * Model.Image.PixelWidth / Model.Image.PixelHeight;
+                newDx = dy * ImageModel.Image.PixelWidth / ImageModel.Image.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * Model.Image.PixelHeight / Model.Image.PixelWidth;
+                newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
@@ -86,7 +85,7 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public ImageModel Model
+        public ImageModel ImageModel
         {
             get { return _imgm; }
             set
@@ -99,6 +98,8 @@ namespace NuSysApp
                 RaisePropertyChanged("ImageModel");
             }
         }
+
+        public override Atom Model { get; set; }
 
         public CompositeTransform InkScale
         {
