@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -73,6 +74,7 @@ namespace NuSysApp
             _margin = 75;
             var currentX = _margin;
             var currentY = _margin;
+            var columnCount = Math.Round(Math.Sqrt(AtomViewList.Count));
             for (var i = 0; i < AtomViewList.Count;i++) {
                 var toArr = NodeViewModelList[i];
 
@@ -89,7 +91,7 @@ namespace NuSysApp
                 {
                     Width = currentX + toArr.Width + _margin;
                 }
-                if (i % 3 == 2)
+                if ((i + 1 )% columnCount == 0)
                 {
                     currentX = _margin;
                     currentY += toArr.Height + _margin;
