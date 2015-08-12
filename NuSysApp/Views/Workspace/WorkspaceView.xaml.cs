@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using NuSysApp.Views.Workspace;
@@ -30,16 +31,17 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
+            await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
         }
 
-        private void SetViewMode(AbstractWorkspaceViewMode mode)
+        private async Task SetViewMode(AbstractWorkspaceViewMode mode)
         {
-            _mode?.Deactivate();
+            var deactivate = _mode?.Deactivate();
+            if (deactivate != null) await deactivate;
             _mode = mode;
-            _mode.Activate();
+            await _mode.Activate();
         }
 
         public InqCanvas InqCanvas
@@ -66,32 +68,32 @@ namespace NuSysApp
             }
         }
 
-        private void OnModeChange(Options mode)
+        private async void OnModeChange(Options mode)
         {
             switch (mode)
             {
                 case Options.Select:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new FloatingMenuMode(this)));
                     break;
                 case Options.GlobalInk:
-                    SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
                     InqCanvas.SetErasing(false);
                     break;
                 case Options.AddTextNode:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
                         new FloatingMenuMode(this)));
                     break;
                 case Options.AddInkNode:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
                     break;
                 case Options.Document:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
                 case Options.Cortana:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new CortanaMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.Erase:

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -16,7 +12,7 @@ namespace NuSysApp.Views.Workspace
 
         public PanZoomMode(WorkspaceView view) : base(view) { }
 
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.ManipulationMode = ManipulationModes.All;
             _view.ManipulationDelta += OnManipulationDelta;
@@ -24,7 +20,7 @@ namespace NuSysApp.Views.Workspace
             _view.PointerWheelChanged += OnPointerWheelChanged;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.ManipulationMode = ManipulationModes.None;
             _view.ManipulationDelta -= OnManipulationDelta;

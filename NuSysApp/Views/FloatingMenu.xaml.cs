@@ -85,25 +85,6 @@ namespace NuSysApp
         {
             SetActive((Button) sender);
             ModeChange?.Invoke(Options.Cortana);
-
-            //await new CortanaMode().Init(); // WON'T WORK, NEED VIEW
-
-            //var recognizer = new Cortana();
-            //var command = await recognizer.RunRecognizer();
-            //switch (command)
-            //{
-            //    case "open document":
-            //        ////var view = new WorkspaceView();
-            //        //AddNodeMode.AddNode(view, new Point(500, 100), NodeType.Document);
-            //        ModeChange?.Invoke(Options.Document);
-            //        break;
-            //    case "create text":
-
-            //        break;
-            //    case "create ink":
-
-            //        break;
-            //}
         }
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)

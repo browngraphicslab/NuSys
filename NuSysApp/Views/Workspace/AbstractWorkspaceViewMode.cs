@@ -1,4 +1,6 @@
 ﻿
+using System.Threading.Tasks;
+
 namespace NuSysApp
 {
     public abstract class AbstractWorkspaceViewMode
@@ -10,8 +12,8 @@ namespace NuSysApp
             _view = view;
         }
 
-        public abstract void Activate();
-        public abstract void Deactivate();
+        public abstract Task Activate();
+        public abstract Task Deactivate();
         
     }
 }

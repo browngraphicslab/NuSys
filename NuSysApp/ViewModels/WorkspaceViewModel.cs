@@ -190,13 +190,43 @@ namespace NuSysApp
             return false;
         }
 
+        public bool CheckForNodeNodeIntersection(NodeViewModel node)
+        {
+            if (node.ParentGroup != null)
+            {
+                var x = node.Transform.Matrix.OffsetX;
+                var y = node.Transform.Matrix.OffsetY;
+                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
+                {
+                    node.ParentGroup.RemoveNode(node);
+                    NodeViewModelList.Add(node);
+                    AtomViewList.Add(node.View);
+                    PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
+                    node.ParentGroup = null;
+                    return false;
+                }
+            }
+            foreach (var node2 in NodeViewModelList)
+            {
+                var rect1 = Geometry.NodeToBoudingRect(node);
+                var rect2 = Geometry.NodeToBoudingRect(node2);
+                rect1.Intersect(rect2);//stores intersection rectangle in rect1
+                if (node != node2 && !rect1.IsEmpty)
+                {
+                    CreateNewGroup(node, node2);
+                    return true;
+                }
+            }
+            return false;
+        }
+       
         /// <summary>
         /// Deletes a given node from the workspace, and their links.
         /// </summary> 
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
-            //1. Remove all the node's links
+            //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
             {
@@ -204,15 +234,22 @@ namespace NuSysApp
                 toDelete.Add(linkVm);
             }
 
-            foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
+            foreach (var linkVm in toDelete) //second loop avoids concurrent modification error
             {
                 linkVm.Remove();
                 nodeVM.LinkList.Remove(linkVm);
             }
 
-            //2. Remove the node itself 
-            AtomViewList.Remove(nodeVM.View);
-            NodeViewModelList.Remove(nodeVM);
+            if (nodeVM.ParentGroup == null)
+            {
+                AtomViewList.Remove(nodeVM.View);
+                NodeViewModelList.Remove(nodeVM);
+            }
+            else
+            {
+                nodeVM.ParentGroup.RemoveNode(nodeVM);
+            }
+           
         }
 
         /// <summary>
@@ -302,7 +339,51 @@ namespace NuSysApp
             PositionNode(vm, xCoordinate, yCoordinate);
         }
 
-        private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
+        public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
+        {
+            if (node1 is GroupViewModel)
+            {
+                return; //TODO this is temporary until we fix everything else
+            }
+            //Check if group already exists
+            var groupVm = node2 as GroupViewModel;
+            if (groupVm != null)
+            {
+                var group = groupVm;
+                this.AtomViewList.Remove(node1.View);
+                this.NodeViewModelList.Remove(node1); 
+                groupVm.AddNode(node1);
+                node1.ParentGroup = groupVm;
+                return;
+            }
+
+            //Create new group, because no group exists
+            groupVm = new GroupViewModel(this);
+
+            //Set location to node2's location
+            var xCoordinate = node2.Transform.Matrix.OffsetX;
+            var yCoordinate = node2.Transform.Matrix.OffsetY;
+          
+            //Add group to workspace
+            NodeViewModelList.Add(groupVm);
+            AtomViewList.Add(groupVm.View);
+            PositionNode(groupVm, xCoordinate, yCoordinate);
+
+            //Add the first node
+            groupVm.AddNode(node1);
+            this.AtomViewList.Remove(node1.View);
+            this.NodeViewModelList.Remove(node1);
+
+            //Add the second node
+            groupVm.AddNode(node2);
+            this.AtomViewList.Remove(node2.View);
+            this.NodeViewModelList.Remove(node2);
+
+            node1.ParentGroup = groupVm;
+            node2.ParentGroup = groupVm;
+        }
+
+        public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
             vm.X = 0;
             vm.Y = 0;

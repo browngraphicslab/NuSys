@@ -2,7 +2,7 @@
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class AddNodeMode : AbstractWorkspaceViewMode
     {
@@ -12,13 +12,13 @@ namespace NuSysApp.Views.Workspace
             _nodeType = nodeType;
         }
         
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.IsRightTapEnabled = true;
             _view.RightTapped += OnRightTapped;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.IsRightTapEnabled = false;
             _view.RightTapped -= OnRightTapped;
@@ -30,11 +30,8 @@ namespace NuSysApp.Views.Workspace
             e.Handled = true;
         }
 
-        /// <summary>
-        /// Further abstraction to be used by Cortana to manually add nodes
-        /// </summary>
-        /// <param name="pos">The position to place the node</param>
-        private static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType) 
+        // This method is public because it's also used in CortanaMode.cs
+        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType) 
         {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);

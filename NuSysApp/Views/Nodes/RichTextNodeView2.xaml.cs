@@ -52,5 +52,12 @@ namespace NuSysApp
 
             //find the and then search through the .rtfio
         }
+
+        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = (RichTextNodeViewModel)this.DataContext;
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove   
+            e.Handled = true;
+        }
     }
 }

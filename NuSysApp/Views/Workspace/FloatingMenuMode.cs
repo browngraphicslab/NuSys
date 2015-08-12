@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -8,13 +9,13 @@ namespace NuSysApp.Views.Workspace
     {
         public FloatingMenuMode(WorkspaceView view) : base(view) { }
 
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.IsDoubleTapEnabled = false;
             _view.DoubleTapped -= OnDoubleTapped;
