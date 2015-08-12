@@ -20,6 +20,7 @@ namespace NuSysApp
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
+
         { 
             this.AtomType = Constants.Node;
         }

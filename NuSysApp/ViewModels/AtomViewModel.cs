@@ -258,7 +258,6 @@ namespace NuSysApp
             get { return Model.Width; }
             set
             {
-                
                 if (Model.Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
@@ -344,10 +343,7 @@ namespace NuSysApp
             }
         }
 
-        public String AtomType
-        {
-            get; set;
-        }
+        public String AtomType { get; set; }
 
         public GroupViewModel ParentGroup { get; set; }
 

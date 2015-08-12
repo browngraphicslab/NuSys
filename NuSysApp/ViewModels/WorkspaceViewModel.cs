@@ -402,16 +402,19 @@ namespace NuSysApp
 
         public string CreateXML()
         {
-            string XML = null;
-            foreach (var vm in NodeViewModelList)
+            string XML = "";
+            foreach (var nodeVM in NodeViewModelList)
+            {
+                Atom currModel = nodeVM.Model;
+                XML = XML + "<" + nodeVM.AtomType + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX + 
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height + "'>";
+            }
+
+            foreach (var linkVM in LinkViewModelList)
             {
 
             }
-
-            foreach (var vm in LinkViewModelList)
-            {
-
-            }
+            Debug.WriteLine(XML);
             return XML;
         }
 
