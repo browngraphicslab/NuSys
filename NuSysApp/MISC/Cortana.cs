@@ -9,12 +9,12 @@ namespace NuSysApp
 {
     class Cortana
     {
-        public event EventHandler CommandIssued;
+        public delegate void CortanaCommandIssuedHandler(string command);
+        public event CortanaCommandIssuedHandler CortanaCommandIssuedEvent;
 
-        protected virtual void OnCommandIssued(EventArgs e)
+        protected virtual void OnCortanaCommandIssued(string command)
         {
-            var handler = CommandIssued;
-            handler?.Invoke(this, e);
+            CortanaCommandIssuedEvent?.Invoke(command);
         }
 
         private const uint HResultPrivacyStatementDeclined = 0x80045509;
@@ -24,18 +24,14 @@ namespace NuSysApp
         // UI in a thread-safe manner.
         private CoreDispatcher _dispatcher;
         private StringBuilder _dictatedTextBuilder;
-        public Cortana()
-        {
-            
-        }
 
-        public static async void ShowMessage(string message)
-        {
-            var messageDialog = new Windows.UI.Popups.MessageDialog(message, "Text spoken");
-            await messageDialog.ShowAsync();
-        }
+        //public async void ShowMessage(string message)
+        //{
+        //    var messageDialog = new Windows.UI.Popups.MessageDialog(message, "Text spoken");
+        //    await messageDialog.ShowAsync();
+        //}
 
-        public static async Task<string> RunRecognizer()
+        public async Task<string> RunRecognizer()
         {
             try
             {
@@ -59,6 +55,7 @@ namespace NuSysApp
                 var result = speechRecognitionResult.Text;
                 //var messageDialog = new Windows.UI.Popups.MessageDialog(result, "Text spoken");
                 //await messageDialog.ShowAsync();
+                OnCortanaCommandIssued(result);
                 return result;
             }
             catch (Exception exception)

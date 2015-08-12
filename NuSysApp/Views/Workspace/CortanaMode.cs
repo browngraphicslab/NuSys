@@ -12,22 +12,29 @@ namespace NuSysApp
 
         public CortanaMode(WorkspaceView view) : base(view)
         {
+            //var voiceRecognizer = new Cortana();
+            //var voiceCommandEvent = new Cortana();
+            //voiceCommandEvent.CortanaCommandIssuedEvent += Cortana.CortanaCommandIssuedHandler("");
             
+        }
+
+        public async Task Init()
+        {
+            ProcessCommand(await new Cortana().RunRecognizer());
         }
 
         public override void Activate()
         {
-            
+            //TODO
         }
 
         public override void Deactivate()
         {
-            
+            //TODO
         }
 
         private async void ProcessCommand(string command)
         {
-            //CommandIssued?.Invoke(command);
             switch (command)
             {
                 case "open document":

@@ -33,7 +33,7 @@ namespace NuSysApp
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
-        } 
+        }
 
         private void SetViewMode(AbstractWorkspaceViewMode mode)
         {
@@ -92,7 +92,7 @@ namespace NuSysApp
                     break;
                 case Options.Cortana:
                     SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                        new FloatingMenuMode(this)));
+                        new CortanaMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.Erase:
                     InqCanvas.SetErasing(true);
