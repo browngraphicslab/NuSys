@@ -15,13 +15,11 @@ namespace NuSysApp
         #region Private Members      
 
         private Color _color; //currently unused
-        private Node _node;
         
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
-
-        { 
+        {
             this.AtomType = Constants.Node;
         }
 

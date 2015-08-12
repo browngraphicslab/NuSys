@@ -16,7 +16,6 @@ namespace NuSysApp
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             this.AtomType = Constants.Node;
-            this.Model = (Atom)new Node(0);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -43,6 +42,8 @@ namespace NuSysApp
          
         public override void Resize(double dx, double dy)
         {
+          
+
             var trans = LocalTransform;
             var scale = dx < dy ? (Width + dx) / Width : (Height + dy) / Height;
             trans.ScaleX *= scale;

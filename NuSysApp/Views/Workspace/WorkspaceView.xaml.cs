@@ -102,9 +102,6 @@ namespace NuSysApp
                 case Options.Highlight:
                     InqCanvas.SetHighlighting(true);
                     break;
-                case Options.Save:
-                    await SetViewMode(new MultiMode(this, new SaveMode(this)));
-                    break;
             }
         }
     }

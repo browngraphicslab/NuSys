@@ -14,14 +14,15 @@ namespace NuSysApp
 
         public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
         {
-            this.Model = (Atom)new ImageModel(igm, 0);
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
+
             this.Width = igm.PixelWidth;
             this.Height = igm.PixelHeight;
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.ImageModel = new ImageModel(igm, 0);
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -48,7 +49,7 @@ namespace NuSysApp
             {
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
-                this.Model = new ImageModel(bitmapImage, 0);
+                this.ImageModel = new ImageModel(bitmapImage, 0);
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;
                 var C = new CompositeTransform
@@ -98,8 +99,6 @@ namespace NuSysApp
                 RaisePropertyChanged("ImageModel");
             }
         }
-
-        public override Atom Model { get; set; }
 
         public CompositeTransform InkScale
         {

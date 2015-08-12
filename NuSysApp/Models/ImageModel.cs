@@ -1,5 +1,4 @@
-﻿using SQLite.Net.Attributes;
-using Windows.UI.Xaml.Media.Imaging;
+﻿using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
@@ -10,7 +9,6 @@ namespace NuSysApp
         {
             Image = img;
         }
-
         public BitmapImage Image
         {
             get { return _image; }

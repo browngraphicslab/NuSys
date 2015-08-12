@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
 
 namespace NuSysApp
 {
-    public class Node : Atom
+    public class Node
     {
         public Node(int id)
         {
@@ -40,5 +38,7 @@ namespace NuSysApp
         public List<Link> EndLines { get; }
 
         public List<Node> ConnectedNodes { get; }
+
+        public int ID { get; }
     }
 }

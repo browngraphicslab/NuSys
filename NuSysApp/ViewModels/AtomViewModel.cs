@@ -10,13 +10,17 @@ namespace NuSysApp
     public abstract class AtomViewModel : BaseINPC
     {
         #region Private Members      
+
+        private int _x, _y;
+        private double _width, _height;
+
         //anchor points are centers of nodes
         private int _anchorX, _anchorY;
         private Point _anchor;
 
         private bool _isSelected, _isEditing,_isEditingInk;
         private UserControl _view;
-
+        private MatrixTransform _transform;
         #endregion Private Members
 
         protected AtomViewModel(WorkspaceViewModel vm)
@@ -113,7 +117,9 @@ namespace NuSysApp
                 else
                 {
                     _clippedParent = value;
-                }   
+                }
+                
+                
             }
         }
 
@@ -196,24 +202,19 @@ namespace NuSysApp
             }
         }
 
-        public virtual Atom Model
-        {
-            get; set;
-        }
-
         /// <summary>
-        /// X-coordinate of this atom
-        /// </summary>
-        public int X
+            /// X-coordinate of this atom
+            /// </summary>
+            public int X
         {
-            get { return Model.X; }
+            get { return _x; }
             set
             {
-                if (Model.X == value)
+                if (_x == value)
                 {
                     return;
                 }
-                Model.X = value;
+                _x = value;
                 RaisePropertyChanged("X");
             }
         }
@@ -223,29 +224,29 @@ namespace NuSysApp
         /// </summary>
         public int Y
         {
-            get { return Model.Y; }
+            get { return _y; }
             set
             {
-                if (Model.Y == value)
+                if (_y == value)
                 {
                     return;
                 }
 
-                Model.Y = value;
+                _y = value;
                 RaisePropertyChanged("Y");
             }
         }
 
         public MatrixTransform Transform
         {
-            get { return Model.Transform; }
+            get { return _transform; }
             set
             {
-                if (Model.Transform == value)
+                if (_transform == value)
                 {
                     return;
                 }
-                Model.Transform = value;
+                _transform = value;
 
                 RaisePropertyChanged("Transform");
             }
@@ -255,15 +256,16 @@ namespace NuSysApp
         /// </summary>
         public double Width
         {
-            get { return Model.Width; }
+            get { return _width; }
             set
             {
-                if (Model.Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
+                
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
                 }
 
-                Model.Width = value;
+                _width = value;
 
                 RaisePropertyChanged("Width");
             }
@@ -274,15 +276,15 @@ namespace NuSysApp
         /// </summary>
         public double Height
         {
-            get { return Model.Height; }
+            get { return _height; }
             set
             {
-                if (Model.Height == value || value < Constants.MinNodeSize) //prevent atom from getting too small
+                if (_height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
                 }
 
-                Model.Height = value;
+                _height = value;
 
                 RaisePropertyChanged("Height");
             }
@@ -343,7 +345,10 @@ namespace NuSysApp
             }
         }
 
-        public String AtomType { get; set; }
+        public String AtomType
+        {
+            get; set;
+        }
 
         public GroupViewModel ParentGroup { get; set; }
 

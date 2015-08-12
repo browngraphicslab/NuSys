@@ -1,5 +1,4 @@
-﻿using SQLite.Net.Attributes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
@@ -32,7 +31,6 @@ namespace NuSysApp
             }
         }
         
-        [Column("PageCount")]
         public uint PageCount { get; set; }
     }
 }

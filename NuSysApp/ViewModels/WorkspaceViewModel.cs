@@ -13,9 +13,6 @@ using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
 using Windows.Storage.Streams;
 using System.Text;
-using System.IO;
-using Windows.Storage.Search;
-using SQLite.Net.Async;
 
 namespace NuSysApp
 {
@@ -48,7 +45,6 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             Init();
-
             var c = new CompositeTransform
             {
                 TranslateX = (-1)*(Constants.MaxCanvasSize),
@@ -63,7 +59,7 @@ namespace NuSysApp
         {
             await SetupDirectories();
             SetupChromeIntermediate();
-            SetupOfficeTransfer();
+            SetupOfficeTransfer();            
         }
 
         private async void SetupOfficeTransfer()
@@ -321,7 +317,7 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM = new ImageNodeViewModel(this, null);
+                        var imgVM = new ImageNodeViewModel(this);
                         await imgVM.InitializeImageNodeAsync(storageFile);
                         vm = imgVM;
                     }
@@ -391,33 +387,6 @@ namespace NuSysApp
             node2.ParentGroup = groupVm;
         }
 
-        public async Task SaveWorkspace()
-        {
-            //SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
-            //SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
-            //MyConnection.CreateTableAsync<string>();
-            //MyConnection.InsertAsync(this.CreateXML());
-            this.CreateXML();
-        }
-
-        public string CreateXML()
-        {
-            string XML = "";
-            foreach (var nodeVM in NodeViewModelList)
-            {
-                Atom currModel = nodeVM.Model;
-                XML = XML + "<" + nodeVM.AtomType + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX + 
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height + "'>";
-            }
-
-            foreach (var linkVM in LinkViewModelList)
-            {
-
-            }
-            Debug.WriteLine(XML);
-            return XML;
-        }
-
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
             vm.X = 0;
@@ -471,7 +440,6 @@ namespace NuSysApp
                 RaisePropertyChanged("FMTransform");
             }
         }
-
         #endregion Public Members
 
     }

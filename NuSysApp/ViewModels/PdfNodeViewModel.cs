@@ -23,7 +23,6 @@ namespace NuSysApp
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
         {
-            this.Model = new PdfNodeModel(0);
             this.View = new PdfNodeView2(this);
             this.PdfNodeModel = new PdfNodeModel(0);
             this.Transform = new MatrixTransform();
@@ -166,11 +165,6 @@ namespace NuSysApp
                 _pdfNodeModel = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
-        }
-
-        public override Atom Model
-        {
-            get; set;
         }
 
         public BitmapImage RenderedBitmapImage
