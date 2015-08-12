@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
+﻿using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -31,7 +19,7 @@ namespace NuSysApp
 
         private void OnEditClick(object sender, RoutedEventArgs e)
         {
-            TextNodeViewModel vm = (TextNodeViewModel)this.DataContext;
+            var vm = (TextNodeViewModel)this.DataContext;
             vm.ToggleEditing();
         }
 
@@ -44,12 +32,14 @@ namespace NuSysApp
         {
             var vm = (TextNodeViewModel)this.DataContext;
             vm.CreateAnnotation();
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
             if (vm.IsAnnotation)
             {
                 nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
-                this.textBlock.Foreground = new SolidColorBrush(Colors.Black);
+
                 this.textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
+            e.Handled = true;
         }
 
     }

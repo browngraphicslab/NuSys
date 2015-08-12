@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.UI.Input.Inking;
+﻿using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using System.Diagnostics;
-using Windows.UI.Popups;
-using System.Linq;
-using Windows.Foundation;
-using Windows.Storage;
-using Windows.UI.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using Windows.UI;
 using NuSysApp.Views.Workspace;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -42,16 +31,17 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
-        } 
+            await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
+        }
 
-        private void SetViewMode(AbstractWorkspaceViewMode mode)
+        private async Task SetViewMode(AbstractWorkspaceViewMode mode)
         {
-            _mode?.Deactivate();
+            var deactivate = _mode?.Deactivate();
+            if (deactivate != null) await deactivate;
             _mode = mode;
-            _mode.Activate();
+            await _mode.Activate();
         }
 
         public InqCanvas InqCanvas
@@ -73,39 +63,47 @@ namespace NuSysApp
 
             set
             {
-                if (value)
-                {
-                    mainFrame.ManipulationMode = ManipulationModes.None;
-                }
-                else
-                {
-                    mainFrame.ManipulationMode = ManipulationModes.All;
-                }
-                _isManipulationEnabled = value;                
+                mainFrame.ManipulationMode = value ? ManipulationModes.None : ManipulationModes.All;
+                _isManipulationEnabled = value;
             }
         }
 
-        private void OnModeChange(Options mode)
+        private async void OnModeChange(Options mode)
         {
             switch (mode)
             {
-                case Options.SELECT:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
+                case Options.Select:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new FloatingMenuMode(this)));
                     break;
-                case Options.GLOBAL_INK:
-                    SetViewMode(new MultiMode(this, new GlobalInkMode(this),  new FloatingMenuMode(this)));
+                case Options.GlobalInk:
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
+                    InqCanvas.SetErasing(false);
                     break;
-                case Options.ADD_TEXT_NODE:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.TEXT), new FloatingMenuMode(this)));
+                case Options.AddTextNode:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
+                        new FloatingMenuMode(this)));
                     break;
-                case Options.ADD_INK_NODE:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.INK), new FloatingMenuMode(this)));
+                case Options.AddInkNode:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
                     break;
-                case Options.DOCUMENT:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new AddNodeMode(this, NodeType.DOCUMENT), new FloatingMenuMode(this)));
+                case Options.Document:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
-                case Options.SAVE:
-                    SetViewMode(new MultiMode(this, new SaveMode(this)));
+                case Options.Cortana:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new CortanaMode(this), new FloatingMenuMode(this)));
+                    break;
+                case Options.Erase:
+                    InqCanvas.SetErasing(true);
+                    break;
+                case Options.Highlight:
+                    InqCanvas.SetHighlighting(true);
+                    break;
+                case Options.Save:
+                    await SetViewMode(new MultiMode(this, new SaveMode(this)));
                     break;
             }
         }

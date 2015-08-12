@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -14,13 +9,13 @@ namespace NuSysApp.Views.Workspace
     {
         public FloatingMenuMode(WorkspaceView view) : base(view) { }
 
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.IsDoubleTapEnabled = false;
             _view.DoubleTapped -= OnDoubleTapped;
@@ -44,7 +39,9 @@ namespace NuSysApp.Views.Workspace
             floatingMenuTransform.TranslateY = p.Y;
             vm.FMTransform = floatingMenuTransform;
 
-            _view.FloatingMenu.Visibility = _view.FloatingMenu.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            _view.FloatingMenu.Visibility = _view.FloatingMenu.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
     }
 }

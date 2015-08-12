@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
 using System.Threading.Tasks;
 
 namespace NuSysApp.Views.Workspace
@@ -11,12 +8,12 @@ namespace NuSysApp.Views.Workspace
 
         public GlobalInkMode(WorkspaceView view) : base(view) { }
 
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.InqCanvas.IsEnabled = true;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.InqCanvas.IsEnabled = false;
         }

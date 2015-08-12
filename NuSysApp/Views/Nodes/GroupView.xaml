@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="NuSysApp.ImageNodeView2"
+    x:Class="NuSysApp.GroupView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -17,18 +17,18 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl">
-        <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Horizontal">
-                <MenuFlyoutItem x:Name="btnEditInk" Click="OnEditInk" Style="{StaticResource SubMenuItem}">
-                    <MenuFlyoutItem.Background>
-                        <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>
-                    </MenuFlyoutItem.Background>
-                </MenuFlyoutItem>
-            </StackPanel>
-        </local:NodeTemplate.SubMenu>
+    <local:NodeTemplate x:Name="nodeTpl" Background="#9CE38F" RenderTransform="{Binding LocalTransform}">
         <local:NodeTemplate.Inner>
-            <Image Margin="3,3,3,3" Source="{Binding ImageModel.Image}" Stretch="Uniform"/>
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Red" x:Name="canvas">
+
+                        </Canvas>
+
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </UserControl>

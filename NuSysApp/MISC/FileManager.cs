@@ -11,7 +11,6 @@ namespace NuSysApp
         public static async Task<StorageFile> PromptUserForFile(IEnumerable<string> allowedFileTypes = null, PickerViewMode viewMode = PickerViewMode.Thumbnail)
         {
             var fileOpenPicker = new FileOpenPicker {ViewMode = viewMode};
-            //fileOpenPicker.FileTypeFilter.Clear();
             if (allowedFileTypes != null)
             {
                 foreach (var fileType in allowedFileTypes)

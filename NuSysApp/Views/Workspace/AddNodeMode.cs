@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class AddNodeMode : AbstractWorkspaceViewMode
     {
-        NodeType _nodeType;
+        readonly NodeType _nodeType;
 
         public AddNodeMode(WorkspaceView view, NodeType nodeType) : base(view) {
             _nodeType = nodeType;
         }
         
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.IsRightTapEnabled = true;
             _view.RightTapped += OnRightTapped;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.IsRightTapEnabled = false;
             _view.RightTapped -= OnRightTapped;
@@ -30,12 +26,17 @@ namespace NuSysApp.Views.Workspace
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var vm = (WorkspaceViewModel)_view.DataContext;
-            var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-
-            await vm.CreateNewNode(_nodeType, p.X, p.Y, "");
-            vm.ClearSelection();
+            await AddNode(_view, e.GetPosition(_view), _nodeType);
             e.Handled = true;
+        }
+
+        // This method is public because it's also used in CortanaMode.cs
+        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType) 
+        {
+            var vm = (WorkspaceViewModel)view.DataContext;
+            var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
+            await vm.CreateNewNode(nodeType, p.X, p.Y);
+            vm.ClearSelection();
         }
     }
 }

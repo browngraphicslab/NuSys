@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -75,7 +74,7 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * Model.Image.PixelHeight / Model.Image.PixelWidth;
             }
-            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MIN_NODE_SIZE_X || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MIN_NODE_SIZE_Y)
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
                 return;
             }

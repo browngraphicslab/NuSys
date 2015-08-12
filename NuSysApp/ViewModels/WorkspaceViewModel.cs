@@ -11,7 +11,6 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using System.Text;
 using System.IO;
@@ -154,16 +153,16 @@ namespace NuSysApp
 
         private static async Task<bool> SetupDirectories()
         {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FOLDER_NUSYS_TEMP);
-            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_CHROME_TRANSFER_NAME);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
            
             NuSysStorages.NuSysTempFolder =
                 await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.ChromeTransferFolder =
                 await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
-            NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_WORD_TRANSFER_NAME);
-            NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_POWERPOINT_TRANSFER_NAME);
-            NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FOLDER_MEDIA_NAME);
+            NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderWordTransferName);
+            NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderPowerpointTransferName);
+            NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
             NuSysStorages.OfficeToPdfFolder =
                 await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
 
@@ -181,10 +180,11 @@ namespace NuSysApp
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
+                
                 var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
-                    if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
+                    if (link.IsVisible && Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
                         link.Annotation = node;
@@ -195,13 +195,44 @@ namespace NuSysApp
             return false;
         }
 
+        public bool CheckForNodeNodeIntersection(NodeViewModel node)
+        {
+            if (node.ParentGroup != null)
+            {
+                var x = node.Transform.Matrix.OffsetX;
+                var y = node.Transform.Matrix.OffsetY;
+                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
+                {
+                    node.ParentGroup.RemoveNode(node);
+                    NodeViewModelList.Add(node);
+                    AtomViewList.Add(node.View);
+                    PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
+                    node.ParentGroup = null;
+                    node.UpdateAnchor();
+                    return false;
+                }
+            }
+            foreach (var node2 in NodeViewModelList)
+            {
+                var rect1 = Geometry.NodeToBoudingRect(node);
+                var rect2 = Geometry.NodeToBoudingRect(node2);
+                rect1.Intersect(rect2);//stores intersection rectangle in rect1
+                if (node != node2 && !rect1.IsEmpty)
+                {
+                    CreateNewGroup(node, node2);
+                    return true;
+                }
+            }
+            return false;
+        }
+       
         /// <summary>
         /// Deletes a given node from the workspace, and their links.
         /// </summary> 
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
-            //1. Remove all the node's links
+            //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
             {
@@ -209,15 +240,22 @@ namespace NuSysApp
                 toDelete.Add(linkVm);
             }
 
-            foreach (var linkVm in toDelete)  //second loop avoids concurrent modification error
+            foreach (var linkVm in toDelete) //second loop avoids concurrent modification error
             {
                 linkVm.Remove();
                 nodeVM.LinkList.Remove(linkVm);
             }
 
-            //2. Remove the node itself 
-            AtomViewList.Remove(nodeVM.View);
-            NodeViewModelList.Remove(nodeVM);
+            if (nodeVM.ParentGroup == null)
+            {
+                AtomViewList.Remove(nodeVM.View);
+                NodeViewModelList.Remove(nodeVM);
+            }
+            else
+            {
+                nodeVM.ParentGroup.RemoveNode(nodeVM);
+            }
+           
         }
 
         /// <summary>
@@ -266,23 +304,22 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate)
         {
             NodeViewModel vm = null;
             switch (type)
             {
-                case NodeType.TEXT:
+                case NodeType.Text:
                     vm = new TextNodeViewModel(this);
                     break;
-                case NodeType.INK:
+                case NodeType.Ink:
                     vm = new InkNodeViewModel(this);
                     break;
-                case NodeType.DOCUMENT:
+                case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                    if (storageFile == null)
-                        return;
+                    if (storageFile == null) return;
                     
-                    if (Constants.ImageFileTypes.Contains( storageFile.FileType))
+                    if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
                         var imgVM = new ImageNodeViewModel(this, null);
                         await imgVM.InitializeImageNodeAsync(storageFile);
@@ -296,9 +333,6 @@ namespace NuSysApp
                         vm = pdfVM;
                     }
                     break;
-
-
-
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
@@ -306,8 +340,55 @@ namespace NuSysApp
                     return;
             }
             NodeViewModelList.Add(vm);
-            AtomViewList.Add(vm.View);
-            PositionNode(vm, xCoordinate, yCoordinate);
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionNode(vm, xCoordinate, yCoordinate);
+            }
+        }
+
+        public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
+        {
+            if (node1 is GroupViewModel)
+            {
+                return; //TODO this is temporary until we fix everything else
+            }
+            //Check if group already exists
+            var groupVm = node2 as GroupViewModel;
+            if (groupVm != null)
+            {
+                var group = groupVm;
+                this.AtomViewList.Remove(node1.View);
+                this.NodeViewModelList.Remove(node1); 
+                groupVm.AddNode(node1);
+                node1.ParentGroup = groupVm;
+                return;
+            }
+
+            //Create new group, because no group exists
+            groupVm = new GroupViewModel(this);
+
+            //Set location to node2's location
+            var xCoordinate = node2.Transform.Matrix.OffsetX;
+            var yCoordinate = node2.Transform.Matrix.OffsetY;
+          
+            //Add group to workspace
+            NodeViewModelList.Add(groupVm);
+            AtomViewList.Add(groupVm.View);
+            PositionNode(groupVm, xCoordinate, yCoordinate);
+
+            //Add the first node
+            groupVm.AddNode(node1);
+            this.AtomViewList.Remove(node1.View);
+            this.NodeViewModelList.Remove(node1);
+
+            //Add the second node
+            groupVm.AddNode(node2);
+            this.AtomViewList.Remove(node2.View);
+            this.NodeViewModelList.Remove(node2);
+
+            node1.ParentGroup = groupVm;
+            node2.ParentGroup = groupVm;
         }
 
         public async Task SaveWorkspace()
@@ -334,7 +415,7 @@ namespace NuSysApp
             return XML;
         }
 
-        private static void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
+        public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
             vm.X = 0;
             vm.Y = 0;

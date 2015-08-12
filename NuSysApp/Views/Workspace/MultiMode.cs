@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NuSysApp.Views.Workspace
 {
     public class MultiMode : AbstractWorkspaceViewMode
     {
-        private List<AbstractWorkspaceViewMode> _modes = new List<AbstractWorkspaceViewMode>();
+        private readonly List<AbstractWorkspaceViewMode> _modes = new List<AbstractWorkspaceViewMode>();
 
         public MultiMode(WorkspaceView view, params AbstractWorkspaceViewMode[] modes):base(view)
         {
             _modes.AddRange(modes);
         }
 
-        public override void Activate()
+        public override async Task Activate()
         {
-            _modes.ForEach((m) => m.Activate());
+            _modes.ForEach(async (m) => await m.Activate());
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
-            _modes.ForEach((m) => m.Deactivate());
+            _modes.ForEach(async (m) => await m.Deactivate());
         }
     }
 }

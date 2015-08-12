@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -349,6 +348,8 @@ namespace NuSysApp
         {
             get; set;
         }
+
+        public GroupViewModel ParentGroup { get; set; }
 
         #endregion Public Properties
     }

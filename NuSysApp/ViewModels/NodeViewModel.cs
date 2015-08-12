@@ -21,7 +21,7 @@ namespace NuSysApp
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
         { 
-            this.AtomType = Constants.node;
+            this.AtomType = Constants.Node;
         }
 
         #region Node Manipulations
@@ -35,19 +35,23 @@ namespace NuSysApp
             }
         }
 
-        public void Translate(double dx, double dy)
+        public virtual void Translate(double dx, double dy)
         {
             if (IsAnnotation){return;}
-            var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
-            transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            Transform = new MatrixTransform();
-            this.Transform.Matrix = transMat;
-            this.UpdateAnchor();
-            foreach (var link in LinkList)
+            if (!this.IsEditing)
             {
-                link.UpdateAnchor();
+                var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
+                transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+                transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+                Transform = new MatrixTransform();
+                this.Transform.Matrix = transMat;
+                this.UpdateAnchor();
+                foreach (var link in LinkList)
+                {
+                    link.UpdateAnchor();
+                }
             }
+            
         }
 
         /// <summary>
@@ -67,13 +71,13 @@ namespace NuSysApp
         /// <param name="dy"></param>
         public virtual void Resize(double dx, double dy)
         {
-            double changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            double changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            if (this.Width > Constants.MIN_NODE_SIZE_X || changeX > 0)
+            var changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            var changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            if (this.Width > Constants.MinNodeSizeX || changeX > 0)
             {
                 this.Width += changeX;
             }
-            if (this.Height > Constants.MIN_NODE_SIZE_Y || changeY > 0)
+            if (this.Height > Constants.MinNodeSizeY || changeY > 0)
             {
                 this.Height += changeY;
             }

@@ -109,6 +109,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\DrawInqMode.cs" />
+    <Compile Include="Components\EraseInqMode.cs" />
+    <Compile Include="Components\HighlightInqMode.cs" />
     <Compile Include="Components\IInqMode.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
@@ -141,6 +143,9 @@
     <Compile Include="MVVM Helpers\SQLiteDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
+    <Compile Include="Views\Nodes\GroupView.xaml.cs">
+      <DependentUpon>GroupView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
     <Compile Include="ViewModels\InkNodeViewModel.cs" />
     <Compile Include="ViewModels\LinkViewModel.cs" />
@@ -155,6 +160,7 @@
     <Compile Include="Views\FloatingMenu.xaml.cs">
       <DependentUpon>FloatingMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="Views\Nodes\ImageNodeView2.xaml.cs">
       <DependentUpon>ImageNodeView2.xaml</DependentUpon>
     </Compile>
@@ -165,8 +171,8 @@
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\NodeTemplate.cs" />
-    <Compile Include="Views\Nodes\PdfNodeView.xaml.cs">
-      <DependentUpon>PdfNodeView.xaml</DependentUpon>
+    <Compile Include="Views\Nodes\PdfNodeView2.xaml.cs">
+      <DependentUpon>PdfNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\RichTextNodeView2.xaml.cs">
       <DependentUpon>RichTextNodeView2.xaml</DependentUpon>
@@ -175,12 +181,13 @@
       <DependentUpon>TextNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\AddNodeMode.cs" />
-    <Compile Include="Views\Workspace\SaveMode.cs" />
+    <Compile Include="Views\Workspace\CortanaMode.cs" />
     <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
     <Compile Include="Views\Workspace\GlobalInkMode.cs" />
     <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
+    <Compile Include="Views\Workspace\SaveMode.cs" />
     <Compile Include="Views\Workspace\SelectMode.cs" />
     <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>
@@ -209,6 +216,7 @@
     <Content Include="Assets\icon_x.png" />
     <Content Include="Assets\icon_x2.png" />
     <Content Include="Assets\Logo.scale-100.png" />
+    <Content Include="Assets\mic icon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-1001.png" />
@@ -236,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Nodes\GroupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Links\BezierLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -256,7 +268,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\PdfNodeView.xaml">
+    <Page Include="Views\Nodes\PdfNodeView2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
