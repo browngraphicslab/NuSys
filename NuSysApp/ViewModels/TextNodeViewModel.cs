@@ -10,11 +10,12 @@ namespace NuSysApp
         private string _data;
         #endregion Private Members
 
-        public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
+        public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text) : base(workSpaceViewModel)
         {
-            _node = new TextNode("Enter text here", 0);
+
             this.Model = (Atom) _node;
-            this.Data = "Enter text here";
+            _node = new TextNode("Hello oOrld", 0);
+            this.Data = text ?? "Enter text here";
             _node.Text = this.Data;
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs

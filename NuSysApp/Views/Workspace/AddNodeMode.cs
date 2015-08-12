@@ -31,11 +31,11 @@ namespace NuSysApp
         }
 
         // This method is public because it's also used in CortanaMode.cs
-        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType) 
+        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType, object data = null) 
         {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
-            await vm.CreateNewNode(nodeType, p.X, p.Y);
+            await vm.CreateNewNode(nodeType, p.X, p.Y, data);
             vm.ClearSelection();
         }
     }
