@@ -49,9 +49,10 @@
     <Content Include="old\src\StrokeClassifier.js" />
     <Content Include="old\src\UnknownSelection.js" />
     <Content Include="old\src\Vector2.js" />
+    <Content Include="out\AllSelections.html" />
     <Content Include="out\assets\brush.png" />
     <Content Include="out\assets\icon.png" />
-    <Content Include="out\HashMap.js" />
+    <Content Include="out\InsertSelections.js" />
     <Content Include="out\jquery.js" />
     <Content Include="out\NuSysChromeExtension.js" />
     <Content Include="Scripts\src\app.css" />
@@ -66,9 +67,9 @@
     <Content Include="README.md" />
     <Content Include="out\manifest.json" />
     <Content Include="packages.config" />
-    <Content Include="out\NuSysChromeExtension.js.map" />
     <Content Include="old\manifest.json" />
     <Content Include="old\README.md" />
+    <Content Include="out\NuSysChromeExtension.js.map" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Data.Html;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Imaging;
@@ -42,10 +39,8 @@ namespace NuSysApp
                         }
                     }
 
-                    Image i = new Image();
-                    i.Source = new BitmapImage(new Uri(url, UriKind.Absolute));
-                    InlineUIContainer imageContainer = new InlineUIContainer();
-                    imageContainer.Child = i;
+                    Image i = new Image {Source = new BitmapImage(new Uri(url, UriKind.Absolute))};
+                    InlineUIContainer imageContainer = new InlineUIContainer {Child = i};
                     Paragraph imageParagraph = new Paragraph();
                     imageParagraph.Inlines.Add(imageContainer);
                     rtBlocks.Add(imageParagraph);
@@ -56,8 +51,7 @@ namespace NuSysApp
                 else if (node.Name.Equals("a"))
                 {
                     Hyperlink link = new Hyperlink();
-                    Run linkText = new Run();
-                    linkText.Text = node.InnerText;
+                    Run linkText = new Run {Text = node.InnerText};
                     lastLinkText = node.InnerText;
                     link.Inlines.Add(linkText);
                     string uri = node.Attributes["href"].Value;

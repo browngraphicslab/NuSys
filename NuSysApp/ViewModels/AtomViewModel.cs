@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -15,9 +18,9 @@ namespace NuSysApp
         private int _anchorX, _anchorY;
         private Point _anchor;
 
-        private bool _isSelected, _isEditing;
+        private bool _isSelected, _isEditing,_isEditingInk;
         private UserControl _view;
-
+        private MatrixTransform _transform;
         #endregion Private Members
 
         protected AtomViewModel(WorkspaceViewModel vm)
@@ -51,8 +54,13 @@ namespace NuSysApp
         public void ToggleEditing()
         {
             this.IsEditing = !this.IsEditing;
+           
+           
         }
-
+        public void ToggleEditingInk()
+        {
+            this.IsEditingInk = !this.IsEditingInk;
+        }
         /// <summary>
         /// Adds a link to this atom.
         /// </summary>
@@ -76,7 +84,7 @@ namespace NuSysApp
         public abstract void UpdateAnchor();
 
         #endregion Other Methods
-
+        
         #region Public Properties
 
         /// <summary>
@@ -84,10 +92,47 @@ namespace NuSysApp
         /// </summary>
         public ObservableCollection<LinkViewModel> LinkList { get; set; }
 
+        
+
         /// <summary>
         /// Accessor only reference to the workspace in which the atom is contained
         /// </summary>
         public WorkspaceViewModel WorkSpaceViewModel { get; }
+
+        private AtomViewModel _clippedParent;
+        public AtomViewModel ClippedParent
+        {
+            get { return _clippedParent; }
+            set
+            {
+                if (_clippedParent == null)
+                {
+                    _clippedParent = value;
+                    _clippedParent.PropertyChanged += parent_PropertyChanged;
+                    parent_PropertyChanged(null, null);
+                    this.Width = Constants.DefaultAnnotationSize*2;
+                    this.Height = Constants.DefaultAnnotationSize;
+                    
+                }
+                else
+                {
+                    _clippedParent = value;
+                }
+                
+                
+            }
+        }
+
+        private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
+            transMat.OffsetX = ClippedParent.AnchorX - this.Width/2 ;
+            transMat.OffsetY = ClippedParent.AnchorY - this.Height/2;
+            Transform = new MatrixTransform();
+            this.Transform.Matrix = transMat;
+        }
+
+        public bool IsAnnotation { get; set; }
 
         /// <summary>
         /// indicates whether node is selected.
@@ -123,6 +168,20 @@ namespace NuSysApp
                 RaisePropertyChanged("IsEditing");
             }
         }
+        public bool IsEditingInk
+        {
+            get { return _isEditingInk; }
+            set
+            {
+                if (_isEditingInk == value)
+                {
+                    return;
+                }
+                _isEditingInk = value;
+                RaisePropertyChanged("IsEditingInk");
+            }
+        }
+
 
         /// <summary>
         /// sets and gets view, to be applied specifically in the child classes of nodeviewmodel.
@@ -178,6 +237,20 @@ namespace NuSysApp
             }
         }
 
+        public MatrixTransform Transform
+        {
+            get { return _transform; }
+            set
+            {
+                if (_transform == value)
+                {
+                    return;
+                }
+                _transform = value;
+
+                RaisePropertyChanged("Transform");
+            }
+        }
         /// <summary>
         /// Width of this atom
         /// </summary>
@@ -186,7 +259,8 @@ namespace NuSysApp
             get { return _width; }
             set
             {
-                if (_width == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
+                
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
                 }
@@ -205,7 +279,7 @@ namespace NuSysApp
             get { return _height; }
             set
             {
-                if (_height == value || value < Constants.MIN_NODE_SIZE) //prevent atom from getting to small
+                if (_height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
                 }
@@ -215,7 +289,6 @@ namespace NuSysApp
                 RaisePropertyChanged("Height");
             }
         }
-
 
         /// <summary>
         /// X-coordinate of this atom's anchor
@@ -271,6 +344,13 @@ namespace NuSysApp
                 RaisePropertyChanged("Anchor");
             }
         }
+
+        public String AtomType
+        {
+            get; set;
+        }
+
+        public GroupViewModel ParentGroup { get; set; }
 
         #endregion Public Properties
     }

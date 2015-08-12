@@ -16,7 +16,6 @@
 
     drawStroke(stroke: Stroke, inkCanvas: InkCanvas) {
         if (this._rect != null) {
-            console.log(this._rect);
             stroke = new Stroke();
             stroke.points.push({ x: this._rect.x, y: this._rect.y });
             stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });

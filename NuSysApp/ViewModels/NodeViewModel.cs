@@ -1,7 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using Windows.Foundation;
+﻿using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -17,13 +15,12 @@ namespace NuSysApp
         #region Private Members      
 
         private Color _color; //currently unused
-
-        private MatrixTransform _transform;
-
+        
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
         {
+            this.AtomType = Constants.Node;
         }
 
         #region Node Manipulations
@@ -31,20 +28,29 @@ namespace NuSysApp
         public override void Remove()
         {
             WorkSpaceViewModel.DeleteNode(this);
+            if (this.IsSelected)
+            {
+                WorkSpaceViewModel.ClearSelection();
+            }
         }
 
-        public void Translate(double dx, double dy)
+        public virtual void Translate(double dx, double dy)
         {
-            var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
-            transMat.OffsetX += dx;
-            transMat.OffsetY += dy;
-            Transform = new MatrixTransform();
-            this.Transform.Matrix = transMat;
-            this.UpdateAnchor();
-            foreach (var link in LinkList)
+            if (IsAnnotation){return;}
+            if (!this.IsEditing)
             {
-                link.UpdateAnchor();
+                var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
+                transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+                transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+                Transform = new MatrixTransform();
+                this.Transform.Matrix = transMat;
+                this.UpdateAnchor();
+                foreach (var link in LinkList)
+                {
+                    link.UpdateAnchor();
+                }
             }
+            
         }
 
         /// <summary>
@@ -52,7 +58,7 @@ namespace NuSysApp
         /// </summary>
         public override void UpdateAnchor()
         {
-            this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2);
+            this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2); //this is the midpoint
             this.AnchorY = (int) (this.Y + this.Transform.Matrix.OffsetY + this.Height/2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }
@@ -62,33 +68,36 @@ namespace NuSysApp
         /// </summary>
         /// <param name="dx"></param>
         /// <param name="dy"></param>
-        public void Resize(double dx, double dy)
+        public virtual void Resize(double dx, double dy)
         {
-            this.Width += dx;
-            this.Height += dy;
+            var changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            var changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            if (this.Width > Constants.MinNodeSizeX || changeX > 0)
+            {
+                this.Width += changeX;
+            }
+            if (this.Height > Constants.MinNodeSizeY || changeY > 0)
+            {
+                this.Height += changeY;
+            }
             this.UpdateAnchor();
-            
         }
 
-        
+
+        public void CreateAnnotation()
+        {
+            if (this.LinkList.Count > 0) return;
+
+            if (this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
+            {
+                this.IsAnnotation = true;
+            }
+        }
         #endregion Node Manipulations
 
         #region Public Properties
 
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-
-                RaisePropertyChanged("Transform");
-            }
-        }
+     
 
         /// <summary>
         /// color of node

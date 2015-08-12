@@ -1,37 +1,41 @@
-﻿namespace NuSysApp
+using System;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.Storage;
+using Windows.UI.Core;
+
+namespace NuSysApp
 {
     public class Factory
     {
-        WorkspaceViewModel _workSpaceViewModel;
-        public Factory(WorkspaceViewModel vm)
+        public static RichTextNodeViewModel CreateNewRichText(WorkspaceViewModel vm, string html)
         {
-            _workSpaceViewModel = vm;
+            return new RichTextNodeViewModel(vm) { Data = html };
         }
 
-        public TextNodeViewModel CreateNewText(string data)
+        public async static Task<ImageNodeViewModel> CreateNewImage(WorkspaceViewModel vm, StorageFile storageFile)
         {
-            TextNodeViewModel textVM = new TextNodeViewModel(_workSpaceViewModel);
-            textVM.Data = data;
-            return textVM;
+            var invm = new ImageNodeViewModel(vm);
+            await invm.InitializeImageNodeAsync(storageFile);
+            return invm;
         }
 
-        public RichTextNodeViewModel CreateNewRichText(string html)
+        public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(WorkspaceViewModel vm, StorageFile storageFile)
         {
-            RichTextNodeViewModel richTextVM = new RichTextNodeViewModel(_workSpaceViewModel);
-            richTextVM.Data = html;
-            return richTextVM;
+            var pnvm = new PdfNodeViewModel(vm);
+            await pnvm.InitializePdfNodeAsync(storageFile);
+            return pnvm;
         }
 
-
-        public InkNodeViewModel CreateNewInk()
+        public static InkNodeViewModel CreateNewInk(WorkspaceViewModel vm)
         {
-            return new InkNodeViewModel(_workSpaceViewModel);
+            return new InkNodeViewModel(vm);
         }
-   
-        public NodeViewModel CreateFromDataString(string data)
+        public static InkNodeViewModel CreateNewPromotedInk(WorkspaceViewModel vm)
         {
-            //TO DO
-            return null;
+            var inkNode = new InkNodeViewModel(vm);
+            ((InkNodeView2)inkNode.View).UpdateInk();
+            return inkNode;
         }
     }
 

@@ -5,46 +5,104 @@
  value "popup.html".
  -->
 <html>
-  <head>
-       <script src="jquery.js"></script>
+<head>
+    <script src="jquery.js"></script>
+    <script src="jquery-ui.min.js"></script>
 
     <title>nusys selection toolbar</title>
     <style>
+        body {
+            font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+            background-color: white;
+            margin: 0;
+            color: #424242;
+            overflow-y: scroll;
+            background-color: #f5f5f1;
+        }
 
-      body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
-        min-width : 800px;
-        width: 90%;
-        position: relative;
-        zoom:50%;
-      }
+        h1 {
+            margin-bottom: 2em;
+        }
 
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        text-overflow: ellipsis;
-/*        overflow: hidden;
-        max-width: 400px; */
-      }
+        .content {
+            position: relative;
+            margin: 0 auto;
+            width:100%;
+            height: 100%;
+            padding: 50px 100px;
 
-      #send{
-            margin:0 auto;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        #container {
+            width: 90%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        #container h3 {
+            font-size: 18px;
             display:block;
-            height:50px;
-      }
-      #view{
-            margin:0 auto;
+            position: relative;
+            cursor: pointer;
+            background-color: white;
+            padding: 20px 20px;
+            border-radius: 10px;
+            border: 2px solid #424242;
+        }
+
+         #container div {
             display:block;
-            height:50px;
-      }
+            padding: 20px 20px;
+            box-sizing: border-box;
+        }
+
+        .url {
+            font-family: Courier New, Courier, monospace;
+            font-size: 12px;
+            display: block;
+        }
+
+        .title {
+            font-size: 16px;
+            display: block;
+        }
+
+        .button {
+            position: absolute;
+            top:20px;
+            font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+            font-weight:bold;
+                        right: 20px;
+
+        }
+
+        #reset{
+            top: -75px;
+            position: relative;
+            left: 700px;
+        }
+
+        .pastPage {        
+            top: 10px;
+           
+        }
+        .toRemove {
+            top:40px;
+        }
+
+        .ui-state-focus { outline: none; }
+
+      
     </style>
-  </head>
-  <body>
-
-     <div id="container"></div>
-     <script type="text/javascript" src="InsertSelections.js"></script>
-
-  </body>
+</head>
+<body>
+    <div class="content">
+        <h1>Your Selections</h1>
+        <button class="button" id='reset' type='button'>Remove All</button>
+        <li id="container"></li>
+        <script type="text/javascript" src="InsertSelections.js"></script>
+    </div>
+</body>
 </html>
-

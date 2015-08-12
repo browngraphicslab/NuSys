@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -9,15 +10,21 @@ namespace NuSysApp
 {
     public sealed partial class BezierLinkView : UserControl
     {
+        private LinkViewModel _vm;
+
         public BezierLinkView(LinkViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
-
+            
+            _vm = vm;
             //Universal apps does not support multiple databinding, so this is a workarround. 
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
+            curve.Point3 = new Point(vm.Atom2.Anchor.X, vm.Atom2.Anchor.Y);
             this.UpdateControlPoints();
+            this.UpdateEndPoints();
+            Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
         }
 
         /// <summary>
@@ -34,7 +41,7 @@ namespace NuSysApp
         /// Updates the location of the bezier controlpoints. 
         /// Do not call this method outside of this class.
         /// </summary>
-        private void UpdateControlPoints()
+        private void UpdateControlPoints() //use this example
         {
             var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
@@ -45,13 +52,118 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+
+            this.UpdateEndPoints();
         }
+
+        private void UpdateEndPoints()
+        {
+            var vm = (LinkViewModel)this.DataContext;
+            var atom1 = vm.Atom1;
+            var atom2 = vm.Atom2;
+
+            if(atom1.AtomType == Constants.node)
+            {
+                pathfigure.StartPoint = this.findIntersection(atom1, curve.Point3);
+            }
+            else //atom is a link - this link anchors to atom1's anchor point
+            {
+                pathfigure.StartPoint = atom1.Anchor;
+            }
+            if (atom2.AtomType == Constants.node)
+            {
+                curve.Point3 = this.findIntersection(atom2, pathfigure.StartPoint);
+            }
+            else //atom2 is a link - this link anchors to atom2's anchor (midpoint)
+            {
+                curve.Point3 = atom2.Anchor;
+            }
+            
+        }
+
+        ///<summary>CalcY returns the y coord of the intersection between two lines 
+        /// Use for finding the intersection between a line and the right/left edges of a square
+        /// </summary>
+        private double calcY(double xVal, double x0, double y0, double x1, double y1)
+        {
+            if (x0 == x1) //vertical line
+            {
+                return y0;
+            }
+            return y0 + (xVal - x0) * (y1 - y0) / (x1 - x0);
+        }
+
+        ///<summary> calcX returns the x coord of the intersection between two lines
+        /// Use for finding the intersection between a line and the top/bottom edges of a square
+        /// </summary
+        private double calcX(double yVal, double x0, double y0, double x1, double y1)
+        {
+            return x0 + (yVal - y0) * (x1 - x0) / (y1 - y0);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="atom"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
+        private Point findIntersection(AtomViewModel atom, Point endpoint)
+        {
+            //Coords of rectangle
+            double topY = atom.Anchor.Y + (.5 * atom.Height);
+            double bottomY = atom.Anchor.Y - (.5 * atom.Height);
+            double leftX = atom.Anchor.X - (.5 * atom.Width);
+            double rightX = atom.Anchor.X + (.5 * atom.Width);
+
+            //anchor coords of atom
+            double x0 = atom.Anchor.X;
+            double y0 = atom.Anchor.Y;
+
+            //other endpoint
+            double x1 = endpoint.X;
+            double y1 = endpoint.Y;
+
+            //intersection values of line with rectangle
+            double topXIntersect = calcX(topY, x0, y0, x1, y1);
+            double bottomXIntersect = calcX(bottomY, x0, y0, x1, y1);
+            double leftYIntersect = calcY(leftX, x0, y0, x1, y1);
+            double rightYIntersect = calcY(rightX, x0, y0, x1, y1);
+
+            if (topXIntersect <= rightX && topXIntersect >= leftX && ((topY >= y1 && topY <= y0) || (topY <= y1 && topY >= y0))) //intersects with top of square
+            {
+                return new Point(topXIntersect, topY);
+            }
+            else if (bottomXIntersect <= rightX && bottomXIntersect >= leftX && ((bottomY >= y1 && bottomY <= y0) || (bottomY <= y1 && bottomY >= y0))) //intersects with bottom of square
+            {
+                return new Point(bottomXIntersect, bottomY);
+            }
+            else if(rightYIntersect<=topY && rightYIntersect >= bottomY && ((rightX>=x1 && rightX<= x0) || (rightX<=x1 && rightX>=x0)))  //intersects with right of square
+            {
+                return new Point(rightX, rightYIntersect);
+            }
+            else //if(leftYIntersect <= topY && leftYIntersect >= bottomY) - intersects with left of square
+            {
+                 return new Point(leftX, leftYIntersect);
+            }
+
+        }
+
 
         private void BezierLinkView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (LinkViewModel) this.DataContext;
             vm.ToggleSelection();
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// This handler makes sure that double tap events don't get interpreted as single tap events first.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BezierLinkView_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            e.Handled = true; 
         }
     }
 }

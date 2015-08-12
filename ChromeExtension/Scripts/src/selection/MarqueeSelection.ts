@@ -16,14 +16,18 @@ class MarqueeSelection implements ISelection {
     _selected: Element = null;
     _ct: number = 0;
     _content: string = null;
+    _offsetY: number = 0;
 
 
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
         this._inkCanvas = inkCanvas;
+
+
         
         if (fromActiveStroke) {
 
             var stroke = inkCanvas._activeStroke.stroke;
+            this._offsetY = stroke.documentOffsetY;
             this._startX = stroke.points[0].x;
             this._startY = stroke.points[0].y;
             this._mouseX = stroke.points[stroke.points.length - 1].x;
@@ -45,6 +49,7 @@ class MarqueeSelection implements ISelection {
     }
 
     update(x: number, y: number): void {
+
         this._mouseX = x;
         this._mouseY = y;
 
@@ -85,15 +90,13 @@ class MarqueeSelection implements ISelection {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
-     //   this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
-        console.log(this._parentList);
         this.analyzeContent();
     }
 
     deselect(): void {
-    	        if (!this._inkCanvas.removeBrushStroke(this._brushStroke))
-            console.log(this);
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
     }
 
     getNextElement(el: Element): void{
@@ -133,7 +136,6 @@ class MarqueeSelection implements ISelection {
         }
         if (nextY > 0) {
             if (document.body.contains(this._inkCanvas._canvas)) {
-                console.log("///////Y/////");
                 document.body.removeChild(this._inkCanvas._canvas);
             }
             element = document.elementFromPoint(this._startX, this._mouseY-nextY + 1);
@@ -186,13 +188,11 @@ class MarqueeSelection implements ISelection {
     }
 
     getBoundingRect(): Rectangle {
-        return new Rectangle(this._marqueeX1, this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
+        return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     }
     
 
     analyzeContent(): void {
-
-        console.log("analyzing content");
         if (this._parentList.length != 1) {
             for (var i = 1; i < this._parentList.length; i++) {
                 var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
@@ -258,11 +258,9 @@ class MarqueeSelection implements ISelection {
                 rectX["left"] + rectX["width"] <= this._marqueeX2 &&
                 rectX["top"] >= this._marqueeY1 &&
                 rectX["top"] + rectX["height"] <= this._marqueeY2) {
-                //console.log("TRUE");
                 this.setTextStyle(myEl, el);
                 return true;
             }
-            //console.log("FALSE");
             return false;
         }
     }
@@ -358,10 +356,6 @@ class MarqueeSelection implements ISelection {
             ay2 = rectX["top"] + rectX["height"];
         }
 
-        /*
-         //console.log(ax1+","+ay1+","+ax2+","+ay2);
-         //console.log(bx1+","+bx2+","+by1+","+by2);*/
-
         if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
             return true;
         }
@@ -369,7 +363,6 @@ class MarqueeSelection implements ISelection {
     }
 
     getContent(): string {
-        console.log(this._content);
         return this._content;
 
     }

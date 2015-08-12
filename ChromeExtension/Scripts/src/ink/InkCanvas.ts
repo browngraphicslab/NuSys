@@ -30,6 +30,7 @@ class InkCanvas {
         this._activeStroke = new BrushStroke(this._brush, new Stroke());
         this._activeStroke.stroke.documentOffsetY = window.pageYOffset;
 
+
         var first = stroke.points[0];
         var last = stroke.points[stroke.points.length - 1];
 

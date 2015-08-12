@@ -2,6 +2,8 @@ var port;
 var localPort;
 var selectedContent = new Array();
 
+//var isEnabled = false;
+
 chrome.runtime.onStartup.addListener(startConnection());
 
 port.onDisconnect.addListener(function() {
