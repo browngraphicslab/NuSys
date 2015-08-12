@@ -18,7 +18,7 @@ namespace NuSysApp
         #region Private Members
   
         private AtomViewModel _atom1, _atom2;
-
+        private bool _isVisible;
         #endregion Private members
 
         public LinkViewModel(AtomViewModel atom1,
@@ -29,7 +29,7 @@ namespace NuSysApp
             this.AtomType = Constants.Link;
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
-            
+            this.IsVisible = true;
 
             var line = this.LineRepresentation;
 
@@ -115,6 +115,21 @@ namespace NuSysApp
                 link.UpdateAnchor();
             }
         }
+
+        public bool IsVisible 
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (_isVisible == value)
+                {
+                    return;
+                }
+                _isVisible = value;
+                RaisePropertyChanged("IsVisible");
+            }
+        }
+
 
     }
 }

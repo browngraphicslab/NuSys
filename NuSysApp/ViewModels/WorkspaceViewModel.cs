@@ -179,10 +179,11 @@ namespace NuSysApp
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
+                
                 var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
-                    if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
+                    if (link.IsVisible && Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
                         link.Annotation = node;
@@ -206,6 +207,7 @@ namespace NuSysApp
                     AtomViewList.Add(node.View);
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     node.ParentGroup = null;
+                    node.UpdateAnchor();
                     return false;
                 }
             }
