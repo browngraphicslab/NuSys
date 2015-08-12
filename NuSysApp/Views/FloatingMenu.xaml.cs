@@ -97,7 +97,6 @@ namespace NuSysApp
             ModeChange?.Invoke((Options.Highlight));
         }
 
-
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             SetActive((Button)sender);
@@ -114,7 +113,8 @@ namespace NuSysApp
 
             /*
             vm.FMTransform = compositeTransform;
-            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth || compositeTransform.TranslateY < -85 + FM.Children.Count * -100 || compositeTransform.TranslateY > this.ActualHeight)
+            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth
+                || compositeTransform.TranslateY < -85 + FM.Children.Count * -100 || compositeTransform.TranslateY > this.ActualHeight)
             {
                 FM.Visibility = Visibility.Collapsed;
                 e.Complete();

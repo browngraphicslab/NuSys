@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp.Views.Workspace
@@ -7,7 +8,7 @@ namespace NuSysApp.Views.Workspace
     {
         public SelectMode(WorkspaceView view) : base(view) { }
 
-        public override void Activate()
+        public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
@@ -16,7 +17,7 @@ namespace NuSysApp.Views.Workspace
             _view.ManipulationMode = ManipulationModes.All;
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
             _view.IsDoubleTapEnabled = false;
             _view.PointerPressed -= OnPointerPressed;

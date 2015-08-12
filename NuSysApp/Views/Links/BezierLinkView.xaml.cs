@@ -41,16 +41,34 @@ namespace NuSysApp
         /// </summary>
         private void UpdateControlPoints()
         {
+            this.UpdateEndPoints();
+
             var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
             var anchor1 = atom1.Anchor;
             var anchor2 = atom2.Anchor;
             var distanceX = anchor1.X - anchor2.X;
+            var distanceY = anchor1.Y - anchor2.Y;
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
-            this.UpdateEndPoints();
+
+            if(atom2.AtomType == Constants.Node)
+            {
+                if((anchor2.Y >= curve.Point3.Y && anchor2.Y >= pathfigure.StartPoint.Y) || (anchor2.Y<=curve.Point3.Y && anchor2.Y <= pathfigure.StartPoint.Y))
+                {
+                    curve.Point2 = new Point(anchor1.X - distanceX / 2, curve.Point3.Y);
+                }
+            }
+
+            if (atom1.AtomType == Constants.Node)
+            {
+                if ((anchor1.Y >= curve.Point3.Y && anchor1.Y >= pathfigure.StartPoint.Y) || (anchor1.Y <= curve.Point3.Y && anchor1.Y <= pathfigure.StartPoint.Y))
+                {
+                    curve.Point1 = new Point(anchor2.X + distanceX / 2, pathfigure.StartPoint.Y);
+                }
+            }
         }
 
         private void UpdateEndPoints()
@@ -101,8 +119,8 @@ namespace NuSysApp
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="atom"></param>
-        /// <param name="endpoint"></param>
+        /// <param name="atom"> Atom whose edge the link will bind to</param>
+        /// <param name="endpoint">The other endpoint of the bezier curve</param>
         /// <returns></returns>
         private Point findIntersection(AtomViewModel atom, Point endpoint)
         {
@@ -153,7 +171,6 @@ namespace NuSysApp
                 {
                     newEndPt = new Point(leftX, leftYIntersect);
                 }
-
             }
 
             return newEndPt;
