@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NuSysApp.Views.Workspace
 {
@@ -11,14 +12,14 @@ namespace NuSysApp.Views.Workspace
             _modes.AddRange(modes);
         }
 
-        public override void Activate()
+        public override async Task Activate()
         {
-            _modes.ForEach((m) => m.Activate());
+            _modes.ForEach(async (m) => await m.Activate());
         }
 
-        public override void Deactivate()
+        public override async Task Deactivate()
         {
-            _modes.ForEach((m) => m.Deactivate());
+            _modes.ForEach(async (m) => await m.Deactivate());
         }
     }
 }
