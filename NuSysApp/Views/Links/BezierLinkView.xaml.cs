@@ -101,8 +101,8 @@ namespace NuSysApp
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="atom"></param>
-        /// <param name="endpoint"></param>
+        /// <param name="atom"> Atom whose edge the link will bind to</param>
+        /// <param name="endpoint">The other endpoint of the bezier curve</param>
         /// <returns></returns>
         private Point findIntersection(AtomViewModel atom, Point endpoint)
         {
@@ -153,7 +153,6 @@ namespace NuSysApp
                 {
                     newEndPt = new Point(leftX, leftYIntersect);
                 }
-
             }
 
             return newEndPt;
