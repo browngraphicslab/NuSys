@@ -17,9 +17,9 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl" Background="Linen">
+    <local:NodeTemplate x:Name="nodeTpl" Background="#9CE38F" RenderTransform="{Binding LocalTransform}">
         <local:NodeTemplate.Inner>
-            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Red" x:Name="canvas">
