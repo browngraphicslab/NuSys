@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
-using System.Diagnostics;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {

@@ -11,11 +11,8 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using System.Text;
-using System.IO;
-using Windows.Storage.Search;
 
 namespace NuSysApp
 {
@@ -179,10 +176,11 @@ namespace NuSysApp
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
+                
                 var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
-                    if (Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
+                    if (link.IsVisible && Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
                         link.Annotation = node;
@@ -206,6 +204,7 @@ namespace NuSysApp
                     AtomViewList.Add(node.View);
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     node.ParentGroup = null;
+                    node.UpdateAnchor();
                     return false;
                 }
             }
@@ -315,10 +314,9 @@ namespace NuSysApp
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                    if (storageFile == null)
-                        return;
+                    if (storageFile == null) return;
                     
-                    if (Constants.ImageFileTypes.Contains( storageFile.FileType))
+                    if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
                         var imgVM = new ImageNodeViewModel(this);
                         await imgVM.InitializeImageNodeAsync(storageFile);
@@ -332,7 +330,6 @@ namespace NuSysApp
                         vm = pdfVM;
                     }
                     break;
-
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
@@ -340,9 +337,12 @@ namespace NuSysApp
                     return;
             }
             NodeViewModelList.Add(vm);
-            AtomViewList.Add(vm.View);
-            Debug.WriteLine("adding node at " + xCoordinate +", " + yCoordinate);
-            PositionNode(vm, xCoordinate, yCoordinate);
+
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionNode(vm, xCoordinate, yCoordinate);
+            }
         }
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)

@@ -10,13 +10,15 @@
     xmlns:converters="using:NuSysApp"
     ManipulationMode="All"
     DoubleTapped="BezierLinkView_OnDoubleTapped"
-    PointerPressed="BezierLinkView_OnPointerPressed">
+    PointerPressed="BezierLinkView_OnPointerPressed"
+    IsHitTestVisible="{Binding IsVisible}">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
+        <converters:BoolToVisibilityConverter x:Key="bConverter"/>
     </UserControl.Resources>
 
-    <Grid>
-        <Path Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity="0.1" CompositeMode="SourceOver">
+    <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
+        <Path x:Name="BezierLink" Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity=".85" CompositeMode="SourceOver">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>

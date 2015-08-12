@@ -1,8 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -38,16 +41,34 @@ namespace NuSysApp
         /// </summary>
         private void UpdateControlPoints()
         {
+            this.UpdateEndPoints();
+
             var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
             var anchor1 = atom1.Anchor;
             var anchor2 = atom2.Anchor;
             var distanceX = anchor1.X - anchor2.X;
+            var distanceY = anchor1.Y - anchor2.Y;
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
-            this.UpdateEndPoints();
+
+            if(atom2.AtomType == Constants.Node)
+            {
+                if((anchor2.Y >= curve.Point3.Y && anchor2.Y >= pathfigure.StartPoint.Y) || (anchor2.Y<=curve.Point3.Y && anchor2.Y <= pathfigure.StartPoint.Y))
+                {
+                    curve.Point2 = new Point(anchor1.X - distanceX / 2, curve.Point3.Y);
+                }
+            }
+
+            if (atom1.AtomType == Constants.Node)
+            {
+                if ((anchor1.Y >= curve.Point3.Y && anchor1.Y >= pathfigure.StartPoint.Y) || (anchor1.Y <= curve.Point3.Y && anchor1.Y <= pathfigure.StartPoint.Y))
+                {
+                    curve.Point1 = new Point(anchor2.X + distanceX / 2, pathfigure.StartPoint.Y);
+                }
+            }
         }
 
         private void UpdateEndPoints()
@@ -73,6 +94,7 @@ namespace NuSysApp
                 curve.Point3 = atom2.Anchor;
             }
 
+
         }
 
         ///<summary>CalcY returns the y coord of the intersection between two lines 
@@ -97,8 +119,8 @@ namespace NuSysApp
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="atom"></param>
-        /// <param name="endpoint"></param>
+        /// <param name="atom"> Atom whose edge the link will bind to</param>
+        /// <param name="endpoint">The other endpoint of the bezier curve</param>
         /// <returns></returns>
         private Point findIntersection(AtomViewModel atom, Point endpoint)
         {
@@ -122,23 +144,41 @@ namespace NuSysApp
             double leftYIntersect = calcY(leftX, x0, y0, x1, y1);
             double rightYIntersect = calcY(rightX, x0, y0, x1, y1);
 
-            if (topXIntersect <= rightX && topXIntersect >= leftX && ((topY >= y1 && topY <= y0) || (topY <= y1 && topY >= y0))) //intersects with top of square
+            Point newEndPt = new Point();
+
+
+            if (topXIntersect <= rightX && topXIntersect >= leftX && ((topY >= y1 && topY <= y0) || (topY <= y1 && topY >= y0) || (topY >= y1 && topY >= y0))) //intersects with top of square
             {
-                return new Point(topXIntersect, topY);
-            }
-            else if (bottomXIntersect <= rightX && bottomXIntersect >= leftX && ((bottomY >= y1 && bottomY <= y0) || (bottomY <= y1 && bottomY >= y0))) //intersects with bottom of square
-            {
-                return new Point(bottomXIntersect, bottomY);
-            }
-            else if (rightYIntersect <= topY && rightYIntersect >= bottomY && ((rightX >= x1 && rightX <= x0) || (rightX <= x1 && rightX >= x0)))  //intersects with right of square
-            {
-                return new Point(rightX, rightYIntersect);
-            }
-            else //if(leftYIntersect <= topY && leftYIntersect >= bottomY) - intersects with left of square
-            {
-                return new Point(leftX, leftYIntersect);
+                newEndPt= new Point(topXIntersect, topY);
             }
 
+            if (bottomXIntersect <= rightX && bottomXIntersect >= leftX && ((bottomY >= y1 && bottomY <= y0) || (bottomY <= y1 && bottomY >= y0) || (bottomY <= y1 && bottomY <= y0))) //intersects with bottom of square
+            {
+                if(this.calcDistance(newEndPt, endpoint) > this.calcDistance(new Point(bottomXIntersect, bottomY), endpoint))
+                {
+                    newEndPt = new Point(bottomXIntersect, bottomY);
+                }
+            }
+
+            if (rightYIntersect <= topY && rightYIntersect >= bottomY && ((rightX >= x1 && rightX <= x0) || (rightX <= x1 && rightX >= x0) || (rightX >= x1 && rightX >= x0)))  //intersects with right of square
+            {
+                newEndPt = new Point(rightX, rightYIntersect);
+            }
+
+            if (leftYIntersect <= topY && leftYIntersect >= bottomY && ((leftX >= x1 && leftX <= x0) || (leftX <= x1 && leftX >= x0) || (leftX <= x1 && leftX <= x0))) //intersects with left of square
+            {
+                if (this.calcDistance(newEndPt, endpoint) > this.calcDistance(new Point(leftX, leftYIntersect), endpoint))
+                {
+                    newEndPt = new Point(leftX, leftYIntersect);
+                }
+            }
+
+            return newEndPt;
+        }
+
+        private double calcDistance(Point pt1, Point pt2)
+        {
+            return Math.Sqrt(Math.Pow(pt1.X - pt2.X, 2) + Math.Pow(pt1.Y - pt2.Y, 2));
         }
 
         private void BezierLinkView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

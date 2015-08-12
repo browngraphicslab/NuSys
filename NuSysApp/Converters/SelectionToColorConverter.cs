@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
@@ -10,9 +11,9 @@ namespace NuSysApp
         {
             if ((bool)value)
             {
-                return new SolidColorBrush(Constants.SelectedColor);
+                return new SolidColorBrush(Color.FromArgb(100, 111, 138, 150));
             }
-            return new SolidColorBrush(Constants.DefaultColor);
+            return new SolidColorBrush(Color.FromArgb(100, 189, 204, 212));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
