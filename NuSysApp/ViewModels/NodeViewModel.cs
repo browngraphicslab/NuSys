@@ -37,16 +37,20 @@ namespace NuSysApp
         public virtual void Translate(double dx, double dy)
         {
             if (IsAnnotation){return;}
-            var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
-            transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            Transform = new MatrixTransform();
-            this.Transform.Matrix = transMat;
-            this.UpdateAnchor();
-            foreach (var link in LinkList)
+            if (!this.IsEditing)
             {
-                link.UpdateAnchor();
+                var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
+                transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+                transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+                Transform = new MatrixTransform();
+                this.Transform.Matrix = transMat;
+                this.UpdateAnchor();
+                foreach (var link in LinkList)
+                {
+                    link.UpdateAnchor();
+                }
             }
+            
         }
 
         /// <summary>
