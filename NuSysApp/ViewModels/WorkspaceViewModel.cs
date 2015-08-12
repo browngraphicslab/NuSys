@@ -206,6 +206,7 @@ namespace NuSysApp
                     AtomViewList.Add(node.View);
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     node.ParentGroup = null;
+                    node.UpdateAnchor();
                     return false;
                 }
             }
