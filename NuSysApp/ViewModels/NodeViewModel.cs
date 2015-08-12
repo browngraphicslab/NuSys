@@ -34,7 +34,7 @@ namespace NuSysApp
             }
         }
 
-        public void Translate(double dx, double dy)
+        public virtual void Translate(double dx, double dy)
         {
             if (IsAnnotation){return;}
             var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;

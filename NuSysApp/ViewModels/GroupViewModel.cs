@@ -31,7 +31,10 @@ namespace NuSysApp
             NodeViewModelList.Add(toAdd);
             toAdd.Transform = new MatrixTransform();
             ArrangeNodesInGrid();
-
+            foreach (var link in toAdd.LinkList)
+            {
+                link.IsVisible = false;
+            }
             //TODO Handle links
         }
          
@@ -58,14 +61,12 @@ namespace NuSysApp
             //}
             foreach (var node in this.NodeViewModelList)
             {
-                node.Resize(dx, dx);
-                
+                node.Resize(dx, dx);              
             }
             _margin += dx;
             this.ArrangeNodesInGrid();
         }
 
-       
         private void ArrangeNodesInGrid()
         {
             this.Width = Constants.MinNodeSizeX;
@@ -105,6 +106,12 @@ namespace NuSysApp
 
         public void RemoveNode(NodeViewModel toRemove)
         {
+            foreach (var link in toRemove.LinkList)
+            {
+                link.IsVisible = true;
+                link.UpdateAnchor();
+            }
+            toRemove.UpdateAnchor();
             this.AtomViewList.Remove(toRemove.View);
             NodeViewModelList.Remove(toRemove);
             ArrangeNodesInGrid();
@@ -122,6 +129,12 @@ namespace NuSysApp
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
                     lastNode.ParentGroup = null;
                     WorkSpaceViewModel.DeleteNode(this);
+                    foreach (var link in lastNode.LinkList)
+                    {
+                        link.IsVisible = true;
+                        link.UpdateAnchor();
+                    }
+                    lastNode.UpdateAnchor();
                     break;
             }
             //TODO Handle links
