@@ -33,6 +33,7 @@ namespace NuSysApp
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
             idleButton.Opacity = 1;
+            cortanaButton.Opacity = 1;
 
             btn.Opacity = 0.75;
 

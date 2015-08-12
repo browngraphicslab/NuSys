@@ -119,6 +119,7 @@
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
     <Compile Include="MISC\Cortana.cs" />
+    <Compile Include="MISC\CortanaContinuousRecognizer.cs" />
     <Compile Include="MISC\Factory.cs" />
     <Compile Include="MISC\FileManager.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
