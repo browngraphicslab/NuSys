@@ -9,6 +9,7 @@ namespace NuSysApp
     public class GroupViewModel: NodeViewModel
     {
         private double _margin;
+        private CompositeTransform _localTransform;
         public GroupViewModel(WorkspaceViewModel vm): base(vm)
         {
             AtomViewList = new ObservableCollection<UserControl>();
@@ -23,6 +24,7 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.View = new GroupView(this);
             _margin = 75;
+            this.LocalTransform = new CompositeTransform();
         }
 
         public void AddNode(NodeViewModel toAdd)
@@ -37,7 +39,6 @@ namespace NuSysApp
          
         public override void Resize(double dx, double dy)
         {
-            base.Resize(dx, dy);
             //var minWidth = NodeViewModelList.Count*(Constants.MinNodeSizeX+75);
             //var minHeight = NodeViewModelList.Count * (Constants.MinNodeSizeY + 75);
             //var resizeX = minWidth - this.Width;
@@ -56,11 +57,22 @@ namespace NuSysApp
             //        ResizeGroupMembers(-resizeY, -resizeY);
             //    }
             //}
-            foreach (var node in this.NodeViewModelList)
-            {
-                node.Resize(dx, dx);
-                
-            }
+            //            foreach (var node in this.NodeViewModelList)
+            //            {
+            //                node.Resize(dx, dx);
+            //                
+            //            }
+
+            var trans = LocalTransform;
+            var scale = dx < dy ? (Width + dx) / Width : (Height + dy) / Height;
+            trans.ScaleX *= scale;
+            trans.ScaleY *= scale;
+            LocalTransform = trans;
+            //var transmat = Transform.Matrix;
+            //transmat.M11 *= scale;
+            //transmat.M22 *= scale;
+            //Transform.Matrix = transmat;
+            base.Resize(dx, dy);
             _margin += dx;
             this.ArrangeNodesInGrid();
         }
@@ -75,6 +87,7 @@ namespace NuSysApp
             var currentX = _margin;
             var currentY = _margin;
             var columnCount = Math.Round(Math.Sqrt(AtomViewList.Count));
+            columnCount = 2 > columnCount ? 2 : columnCount;
             for (var i = 0; i < AtomViewList.Count;i++) {
                 var toArr = NodeViewModelList[i];
 
@@ -130,5 +143,19 @@ namespace NuSysApp
         public ObservableCollection<UserControl> AtomViewList { get; private set;}
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; private set; }
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; private set; }
+
+        public CompositeTransform LocalTransform
+        {
+            get { return _localTransform; }
+            set
+            {
+                if (_localTransform == value)
+                {
+                    return;
+                }
+                _localTransform = value;
+                RaisePropertyChanged("LocalTransform");
+            }
+        }
     }
 }
