@@ -37,7 +37,8 @@ namespace NuSysApp
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(WorkspaceView));
+            //this.Frame.Navigate(typeof(WorkspaceView));
+            _networkConnector.sendMassUDPMessage("test from button");
         }
     }
 }

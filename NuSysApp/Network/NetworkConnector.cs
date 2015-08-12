@@ -36,7 +36,8 @@ namespace NuSysApp
             DatagramSocket socket = new DatagramSocket();
             socket.MessageReceived += this.DatagramMessageRecieved;
             socket.ConnectAsync(new HostName(this.LocalIPAddress()), _UDPPort);
-
+            this.sendMassUDPMessage("this is a test");
+            Debug.WriteLine("done");
         }
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
@@ -60,12 +61,14 @@ namespace NuSysApp
                 Debug.WriteLine("Exception caught during TCP connection recieve at IP " + this.LocalIPAddress() + " with error code: " + e.Message);
                 return;
             }
+            Debug.WriteLine("TCP connection recieve at IP " + this.LocalIPAddress() + " with message: " + message);
         }
 
         private List<string> GetOtherIPs()
         {
             List<string> ips = new List<string>();
             ips.Add("10.38.22.71");
+            ips.Add("10.38.22.74");
             return ips;//TODO add in Phil's php script
         }
 
@@ -103,6 +106,7 @@ namespace NuSysApp
                 Debug.WriteLine("Exception caught during message recieve at IP "+this.LocalIPAddress()+" with error code: "+e.Message);
                 return;
             }
+            Debug.WriteLine("UDP packet recieve at IP " + this.LocalIPAddress() + " with message: " + message);
         }
         public async void SendTCPMessage(string message, string recievingIP, string outport)
         {
