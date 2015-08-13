@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
 using Windows.Storage.Streams;
 using System.Text;
+using SQLite.Net.Async;
 
 namespace NuSysApp
 {
@@ -397,11 +398,13 @@ namespace NuSysApp
 
         public async Task SaveWorkspace()
         {
-            //SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
-            //SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
-            //MyConnection.CreateTableAsync<string>();
-            //MyConnection.InsertAsync(this.CreateXML());
-            this.CreateXML();
+            SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
+            SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
+            MyConnection.CreateTableAsync<XMLFile>();
+            XMLFile currWorkspace = new XMLFile();
+            currWorkspace.toXML = this.CreateXML();
+            MyConnection.InsertAsync(currWorkspace);
+            Debug.WriteLine(this.CreateXML());
         }
 
         public string CreateXML()
@@ -410,10 +413,6 @@ namespace NuSysApp
             string XML = "";
             foreach (NodeViewModel nodeVM in NodeViewModelList)
             {
-                /*Node currModel = nodeVM.Model;
-                XML = XML + "<" + nodeVM.AtomType + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height + "'>";*/
-
                 XML = XML + nodeVM.CreateXML();
             }
 
@@ -421,7 +420,6 @@ namespace NuSysApp
             {
 
             }
-            Debug.WriteLine(XML);
             return XML;
         }
 

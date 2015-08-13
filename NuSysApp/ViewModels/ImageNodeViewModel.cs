@@ -94,7 +94,7 @@ namespace NuSysApp
 
             XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
                     "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'Image='" + currModel.Image + "'content='" + currModel.Content + "'>";
+                    "'Image='" + currModel.GetContentSource() + "'content='" + currModel.Content + "'>";
             return XML;
 
         }

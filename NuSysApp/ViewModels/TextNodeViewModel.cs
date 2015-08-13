@@ -13,10 +13,7 @@ namespace NuSysApp
 
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text) : base(workSpaceViewModel)
         {
-            _node = new TextNode("Hello oOrld", 0);
-            this.Model = _node;
-            this.Data = text ?? "Enter text here";
-            _node.Text = this.Data;
+            this.Model = new TextNode(text ?? "Enter text here", 0);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -33,12 +30,11 @@ namespace NuSysApp
         /// </summary>
         public string Data
         {
-            get { return _data; }
+            get { return ((TextNode)this.Model).Text; }
             set
             {
-                _data = value;
+                ((TextNode)this.Model).Text = value;
                 RaisePropertyChanged("Data");
-                _node.Text = _data; //Remove once model is actually integrated
             }
         }
 
@@ -51,7 +47,6 @@ namespace NuSysApp
                     "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
             return XML;
         }
-
 
         #endregion Public Properties
     }
