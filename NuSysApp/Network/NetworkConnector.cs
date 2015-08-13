@@ -370,7 +370,7 @@ namespace NuSysApp
                         _joiningMembers.Add(message,new Tuple<bool,List<Packet>>(false,new List<Packet>()));//add new joining member
                     }
                     break;
-                case "1":// response to initial request = "The host is the following person"
+                case "1":// response to initial request = "The host is the following person" ex: message = "10.10.10.10"
                     if (_hostIP != message)
                     {
                         _hostIP = message;
@@ -378,6 +378,7 @@ namespace NuSysApp
                         {
                             this.makeHost();
                         }
+                        Debug.WriteLine("Host returned and SET to be: "+message);
                     }
                     break;
                 case "2":
@@ -389,7 +390,7 @@ namespace NuSysApp
                 case "4":
 
                     break;
-                case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6\"
+                case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
                         if (true)//TODO make into 'this contains an object with key number: message'
