@@ -54,7 +54,7 @@ namespace NuSysApp
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
         {
             SetActive((Button)sender);
-            ModeChange?.Invoke(Options.GlobalInk);
+            ModeChange?.Invoke(Options.PromoteInk);
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)

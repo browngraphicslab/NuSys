@@ -24,7 +24,7 @@ namespace NuSysApp
         private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private Dictionary<InkStroke, Polyline> _strokes = new Dictionary<InkStroke, Polyline>();
+        private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
 
         public InqCanvas() : base()
         {
@@ -113,18 +113,18 @@ namespace NuSysApp
             }
         }
 
-        public void RemoveByInkStroke(InkStroke stroke)
-        {
-            var line = _strokes[stroke];
-            if (line != null)
-                Children.Remove(line);
-        }
+        //public void RemoveByInkStroke(InkStroke stroke)
+        //{
+        //    var line = _strokes[stroke];
+        //    if (line != null)
+        //        Children.Remove(line);
+        //}
 
         public Rect PasteManagedStrokes()
         {
             var rect = Manager.PasteFromClipboard(new Point(0, 0));
             var strokes = _inkManager.GetStrokes();
-
+            this.Background = new SolidColorBrush(Colors.Black);
             foreach (var stroke in strokes)
             {
                 var pl = new Polyline();
@@ -134,7 +134,7 @@ namespace NuSysApp
                 var minY = points.Min(em => em.Position.Y);
 
                 foreach (var point in stroke.GetInkPoints())
-                { 
+                {
                     pl.StrokeThickness = Math.Max(4.0 * point.Pressure, 2);
                     pl.Stroke = new SolidColorBrush(Colors.Black);
                     pl.Points.Add(new Point(point.Position.X - minX, point.Position.Y - minY));
@@ -152,7 +152,7 @@ namespace NuSysApp
                     */
                 };
 
-
+                
                 Children.Add(pl);
             }
 
@@ -200,7 +200,7 @@ namespace NuSysApp
             get { return _mode; }
         }
 
-        internal Dictionary<InkStroke, Polyline> Strokes
+        internal Dictionary<Polyline, InkStroke> Strokes
         {
             get
             {

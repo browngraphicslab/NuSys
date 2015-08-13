@@ -21,7 +21,7 @@ namespace NuSysApp
             this.Width = Constants.DefaultNodeSize; 
             this.Height = Constants.DefaultNodeSize; 
             this.IsSelected = false;
-            this.IsEditing = false; 
+            this.IsEditing = false;
         }
 
         public override string CreateXML()
