@@ -17,7 +17,7 @@ namespace NuSysApp
         public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
         {
             _node = new RichTextNode("Hello oOrld", 0);
-            
+            this.Model = _node;
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -45,11 +45,10 @@ namespace NuSysApp
         }
 
         public override string CreateXML()
-        {
-            
+        { 
             string XML = "";
-            Node currModel = (Node) _node;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)_node.Transform.Matrix.OffsetX +
+            RichTextNode currModel = (RichTextNode) _node;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
                     "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
                     "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
             return XML;
@@ -57,5 +56,5 @@ namespace NuSysApp
 
     }
     #endregion Public Properties
-}
+
 }

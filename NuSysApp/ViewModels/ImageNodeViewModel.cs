@@ -16,13 +16,14 @@ namespace NuSysApp
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
-
+            //this.Model = new ImageModel
             this.Width = igm.PixelWidth;
             this.Height = igm.PixelHeight;
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
+            this.Model = this.ImageModel;
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -88,10 +89,17 @@ namespace NuSysApp
 
         public override string CreateXML()
         {
-            throw new NotImplementedException();
+            string XML = "";
+            ImageModel currModel = (ImageModel)this.Model;
+
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'Image='" + currModel.Image + "'content='" + currModel.Content + "'>";
+            return XML;
+
         }
 
-        public ImageModel ImageModel
+    public ImageModel ImageModel
         {
             get { return _imgm; }
             set

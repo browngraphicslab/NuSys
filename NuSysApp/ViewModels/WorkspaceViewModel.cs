@@ -289,8 +289,16 @@ namespace NuSysApp
         /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
-           // if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
-            if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
+            var vm1 = atomVm1 as NodeViewModel;
+            if (vm1 != null && vm1.IsAnnotation)
+            {
+                return;
+            }
+            var vm2 = atomVm2 as NodeViewModel;
+            if (vm2 != null && vm2.IsAnnotation)
+            {
+                return;
+            }
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
@@ -385,6 +393,36 @@ namespace NuSysApp
 
             node1.ParentGroup = groupVm;
             node2.ParentGroup = groupVm;
+        }
+
+        public async Task SaveWorkspace()
+        {
+            //SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
+            //SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
+            //MyConnection.CreateTableAsync<string>();
+            //MyConnection.InsertAsync(this.CreateXML());
+            this.CreateXML();
+        }
+
+        public string CreateXML()
+        {
+            Debug.WriteLine("Called CreateXML in workspace");
+            string XML = "";
+            foreach (NodeViewModel nodeVM in NodeViewModelList)
+            {
+                /*Node currModel = nodeVM.Model;
+                XML = XML + "<" + nodeVM.AtomType + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height + "'>";*/
+
+                XML = XML + nodeVM.CreateXML();
+            }
+
+            foreach (var linkVM in LinkViewModelList)
+            {
+
+            }
+            Debug.WriteLine(XML);
+            return XML;
         }
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)

@@ -25,6 +25,7 @@ namespace NuSysApp
         {
             this.View = new PdfNodeView2(this);
             this.PdfNodeModel = new PdfNodeModel(0);
+            this.Model = this.PdfNodeModel;
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
@@ -155,7 +156,12 @@ namespace NuSysApp
 
         public override string CreateXML()
         {
-            throw new NotImplementedException();
+            string XML = "";
+            PdfNodeModel currModel = (PdfNodeModel)this.Model;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height
+                    + "'content='" + currModel.Content + "'>";
+            return XML;
         }
 
         public PdfNodeModel PdfNodeModel

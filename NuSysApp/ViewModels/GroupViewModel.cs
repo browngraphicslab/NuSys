@@ -16,6 +16,7 @@ namespace NuSysApp
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             this.AtomType = Constants.Node;
+            this.Model = new Node(0);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -131,7 +132,18 @@ namespace NuSysApp
 
         public override string CreateXML()
         {
-            throw new NotImplementedException();
+            string XML = "";
+            Node currModel = this.Model;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'content='" + currModel.Content + "'>";
+
+            foreach(NodeViewModel nodevm in NodeViewModelList)
+            {
+                XML = XML+ nodevm.CreateXML();
+            }
+
+            return XML;
         }
 
         public ObservableCollection<UserControl> AtomViewList { get; private set;}
