@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Windows.UI;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -51,5 +52,7 @@ namespace NuSysApp
         public double Width { get; set; }
 
         public double Height { get; set; }
+
+        public Color Color { get; set; }
     }
 }

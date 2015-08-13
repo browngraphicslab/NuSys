@@ -15,7 +15,6 @@ namespace NuSysApp
     {
         #region Private Members      
 
-        private Color _color; //currently unused //MOVE TO ATOM
         private bool _isEditing,_isEditingInk;
         private AtomViewModel _clippedParent;
         #endregion Private Members
@@ -141,26 +140,6 @@ namespace NuSysApp
             transMat.OffsetY = ClippedParent.AnchorY - this.Height / 2;
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
-        }
-
-
-        /// <summary>
-        /// color of node
-        /// </summary>
-        public Color Color
-        {
-            get { return _color; }
-            set
-            {
-                if (_color == value)
-                {
-                    return;
-                }
-
-                _color = value;
-
-                RaisePropertyChanged("Color");
-            }
         }
 
         public bool IsAnnotation { get; set; }

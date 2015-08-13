@@ -103,6 +103,11 @@
                     <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
+            <Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
         </StackPanel>
         <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="300" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>

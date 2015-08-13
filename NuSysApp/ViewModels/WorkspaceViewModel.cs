@@ -395,6 +395,33 @@ namespace NuSysApp
             node2.ParentGroup = groupVm;
         }
 
+        public async Task SaveWorkspace()
+        {
+            //SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
+            //SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
+            //MyConnection.CreateTableAsync<string>();
+            //MyConnection.InsertAsync(this.CreateXML());
+            this.CreateXML();
+        }
+
+        public string CreateXML()
+        {
+            string XML = "";
+            foreach (var nodeVM in NodeViewModelList)
+            {
+                Node currModel = nodeVM.Model;
+                XML = XML + "<" + nodeVM.AtomType + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height + "'>";
+            }
+
+            foreach (var linkVM in LinkViewModelList)
+            {
+
+            }
+            Debug.WriteLine(XML);
+            return XML;
+        }
+
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
             vm.X = 0;

@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     
     public enum Options {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Highlight
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Highlight, Save
     }
 
 
@@ -33,6 +33,7 @@ namespace NuSysApp
             scribbleButton.Opacity = 1;
             docButton.Opacity = 1;
             idleButton.Opacity = 1;
+            saveButton.Opacity = 1;
 
             btn.Opacity = 0.75;
 
@@ -85,6 +86,11 @@ namespace NuSysApp
         {
             SetActive((Button) sender);
             ModeChange?.Invoke(Options.Cortana);
+        }
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetActive((Button)sender);
+            ModeChange?.Invoke(Options.Save);
         }
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)

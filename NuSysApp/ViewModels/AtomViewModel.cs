@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -108,7 +109,26 @@ namespace NuSysApp
 
                 RaisePropertyChanged("View");
             }
-        }    
+        }
+
+        /// <summary>
+        /// color of node
+        /// </summary>
+        public Color Color
+        {
+            get { return Model.Color; }
+            set
+            {
+                if (Model.Color == value)
+                {
+                    return;
+                }
+
+                Model.Color = value;
+
+                RaisePropertyChanged("Color");
+            }
+        }
 
         public MatrixTransform Transform
         {
@@ -180,10 +200,9 @@ namespace NuSysApp
             }
         }
 
-        public String AtomType
-        {
-            get; set;
-        }
+        public Atom Model { get; set; }
+
+        public String AtomType { get; set; }
 
         #endregion Public Properties
     }
