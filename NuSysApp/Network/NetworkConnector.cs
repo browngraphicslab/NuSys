@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,32 +13,70 @@ using Windows.Storage.Streams;
 
 namespace NuSysApp
 {
-    class NetworkConnector
+    public class NetworkConnector
     {
         private string _UDPPort = "2156";
         private string _TCPInputPort = "302";
-        private List<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets;
+        private string _TCPOutputPort = "1500";
+        private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets;
+        private HashSet<string> _otherIPs;
+        private string _hostIP;
+        private string _localIP;
+        private WorkSpaceModel _workspaceModel;
+        private Hashtable _locksOut;
+
         public NetworkConnector()
         {
             this.Init();
         }
         private async void Init()
         {
-            _UDPOutSockets = new List<Tuple<DatagramSocket, DataWriter>>();
-            foreach (string ip in GetOtherIPs())
+            _localIP  = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
+            _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
+            _otherIPs = new HashSet<string>();
+            List<string> ips = GetOtherIPs();
+            if (ips.Count == 1)
             {
-                this.AddUDPSocket(ip);
+                this.makeHost();
+            }
+            else
+            {
+                foreach (string ip in GetOtherIPs())
+                {
+                    this.addIP(ip);
+                }
             }
 
             StreamSocketListener listener = new StreamSocketListener();
             listener.ConnectionReceived += this.TCPConnectionRecieved;
-            await listener.BindEndpointAsync(new HostName(this.LocalIPAddress()), _TCPInputPort);
+            await listener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
 
             DatagramSocket socket = new DatagramSocket();
             socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
 
             Debug.WriteLine("done");
+        }
+
+        private void makeHost()
+        {
+            _hostIP = _localIP;
+            
+            //ToDo add in other host responsibilities
+        }
+
+        public WorkSpaceModel WorkspaceModel
+        {
+            get { return _workspaceModel; }
+            set { _workspaceModel = value; }
+        }
+        private void addIP(string ip)
+        {
+            if (!_otherIPs.Contains(ip) && ip != this._localIP) ;
+            {
+                _otherIPs.Add(ip);
+                AddUDPSocket(ip);
+            }
         }
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
@@ -49,7 +88,7 @@ namespace NuSysApp
                 uint fieldCount = await reader.LoadAsync(sizeof (uint));
                 if (fieldCount != sizeof (uint))
                 {
-                    Debug.WriteLine("TCP connection recieved at IP "+this.LocalIPAddress()+" but socket closed before full stream was read");
+                    Debug.WriteLine("TCP connection recieved at IP "+this._localIP+" but socket closed before full stream was read");
                     return;
                 }
                 uint stringLength = reader.ReadUInt32();
@@ -58,10 +97,10 @@ namespace NuSysApp
             }
             catch(Exception e)
             {
-                Debug.WriteLine("Exception caught during TCP connection recieve at IP " + this.LocalIPAddress() + " with error code: " + e.Message);
+                Debug.WriteLine("Exception caught during TCP connection recieve at IP " + this._localIP + " with error code: " + e.Message);
                 return;
             }
-            Debug.WriteLine("TCP connection recieve at IP " + this.LocalIPAddress() + " with message: " + message);
+            Debug.WriteLine("TCP connection recieve at IP " + this._localIP + " with message: " + message);
         }
 
         private List<string> GetOtherIPs()
@@ -70,14 +109,6 @@ namespace NuSysApp
             ips.Add("10.38.22.71");
             ips.Add("10.38.22.74");
             return ips;//TODO add in Phil's php script
-        }
-
-        public string LocalIPAddress()
-        {
-            HostName localHostName = NetworkInformation.GetHostNames().FirstOrDefault(h =>
-                    h.IPInformation != null &&
-                    h.IPInformation.NetworkAdapter != null);
-            return localHostName.RawName;
         }
 
         private void AddUDPSocket(string ip)
@@ -103,12 +134,12 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception caught during message recieve at IP "+this.LocalIPAddress()+" with error code: "+e.Message);
+                Debug.WriteLine("Exception caught during message recieve at IP "+this._localIP+" with error code: "+e.Message);
                 return;
             }
-            Debug.WriteLine("UDP packet recieve at IP " + this.LocalIPAddress() + " with message: " + message);
+            Debug.WriteLine("UDP packet recieve at IP " + this._localIP + " with message: " + message);
         }
-        public async void SendTCPMessage(string message, string recievingIP, string outport)
+        public async Task SendTCPMessage(string message, string recievingIP, string outport)
         {
             try
             {
@@ -123,19 +154,27 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception caught during TCP message send at IP " + this.LocalIPAddress() + " with error code: " + e.Message);
+                Debug.WriteLine("Exception caught during TCP message send at IP " + this._localIP + " with error code: " + e.Message);
                 return;
             }
         }
 
-        public async Task sendMassUDPMessage(string message)
+        public async Task SendMassUDPMessage(string message)
         {
             foreach (Tuple<DatagramSocket,DataWriter> tup in this._UDPOutSockets)
             {
-                await this.SendUDPMessage(message, tup.Item1, tup.Item2);
+                await this.SendUDPMessage(message, tup.Item2);
             }
         }
-        private async Task SendUDPMessage(string message, DatagramSocket socket, DataWriter writer)
+
+        public async Task SendMassTCPMessage(string message)
+        {
+            foreach (string ip in _otherIPs)
+            {
+                await this.SendTCPMessage(message, ip, _TCPOutputPort);
+            }
+        }
+        public async Task SendUDPMessage(string message, DataWriter writer)
         {
             writer.WriteString(message);
             await writer.StoreAsync();

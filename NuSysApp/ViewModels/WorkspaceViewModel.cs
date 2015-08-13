@@ -24,7 +24,7 @@ namespace NuSysApp
         #region Private Members
 
         private readonly Factory _factory;
-
+        private WorkSpaceModel _workSpaceModel;
         public enum LinkMode
         {
             Linelink,
@@ -38,6 +38,7 @@ namespace NuSysApp
 
         public WorkspaceViewModel()
         {
+            _workSpaceModel = new WorkSpaceModel();
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
@@ -54,6 +55,10 @@ namespace NuSysApp
             FMTransform = new CompositeTransform();
         }
 
+        public WorkSpaceModel WorkSpaceModel
+        {
+            get { return _workSpaceModel; }
+        }
 
         private async void Init()
         {

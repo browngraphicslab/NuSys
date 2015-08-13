@@ -11,7 +11,7 @@
         <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="500">
             Next
         </Button>
-        <TextBlock Name="TextBlock" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="150" Width="250" TextAlignment="Center">
+        <TextBlock Name="TextBlock" HorizontalAlignment="Center" VerticalAlignment="Top" Height="150" Width="250" TextAlignment="Center">
             wait please...
         </TextBlock>
     </Grid>
