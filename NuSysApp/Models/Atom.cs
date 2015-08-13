@@ -13,5 +13,7 @@ namespace NuSysApp
         { }
 
         public Color Color { get; set; }
+
+        public int ID { get; set; }
     } 
 }

@@ -19,6 +19,7 @@ namespace NuSysApp
         private bool _isSelected;
         private UserControl _view;
         private MatrixTransform _transform;
+
         #endregion Private Members
 
         protected AtomViewModel(WorkspaceViewModel vm)
@@ -112,7 +113,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// color of node
+        /// color of the atom
         /// </summary>
         public Color Color
         {

@@ -6,8 +6,14 @@ namespace NuSysApp
         public RichTextNode(string data, int id): base(id)
         {
             Text = data;
+            this.NodeType = "RichTextNode";
         }
 
         public string Text { get; set; }
+
+        public override string GetContentSource()
+        {
+            return Text;
+        }
     }
 }

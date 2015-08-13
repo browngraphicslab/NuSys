@@ -16,13 +16,13 @@ namespace NuSysApp
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
-
             this.Width = igm.PixelWidth;
             this.Height = igm.PixelHeight;
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
+            this.Model = ImageModel;
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -50,6 +50,7 @@ namespace NuSysApp
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
                 this.ImageModel = new ImageModel(bitmapImage, 0);
+                ImageModel.FilePath = storageFile.Path;
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;
                 var C = new CompositeTransform

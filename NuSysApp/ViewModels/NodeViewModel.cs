@@ -266,9 +266,7 @@ namespace NuSysApp
 
         public GroupViewModel ParentGroup { get; set; }
 
-        public virtual Node Model
-        { get; set; }
-
+        public virtual Node Model { get; set; }
 
         #endregion Public Properties
     }

@@ -42,8 +42,6 @@ namespace NuSysApp
          
         public override void Resize(double dx, double dy)
         {
-          
-
             var trans = LocalTransform;
             var scale = dx < dy ? (Width + dx) / Width : (Height + dy) / Height;
             trans.ScaleX *= scale;

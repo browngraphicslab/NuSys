@@ -14,7 +14,6 @@ namespace NuSysApp
         {
             _node = new TextNode("Hello oOrld", 0);
             this.Data = text ?? "Enter text here";
-            //this.Data = "Enter text here";
             _node.Text = this.Data;
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs

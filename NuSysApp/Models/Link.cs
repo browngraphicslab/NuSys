@@ -9,34 +9,11 @@ namespace NuSysApp
         {
             _inNode = inNode;
             _outNode = outNode;
+            InNodeID = inNode.ID;
+            OutNodeID = outNode.ID;
         }
 
-        /// <summary>
-        /// Removes an edge.
-        /// </summary>
-        public void Delete()
-        {
-            this.DeleteFromIn();
-            this.DeleteFromOut();
-        }
-
-        /// <summary>
-        /// Removes an incoming edge.
-        /// </summary>
-        public void DeleteFromIn()
-        {
-            _outNode.EndLines.Remove(this);
-            _outNode.ConnectedNodes.Remove(_inNode);
-        }
-
-        /// <summary>
-        /// Removes an incoming edge.
-        /// </summary>
-        public void DeleteFromOut()
-        {
-            _inNode.StartLines.Remove(this);
-            _inNode.ConnectedNodes.Remove(_outNode);
-        }
-
+        public int InNodeID { get; set; }
+        public int OutNodeID { get; set; }
     }
 }
