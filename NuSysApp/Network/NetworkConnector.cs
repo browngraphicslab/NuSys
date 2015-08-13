@@ -20,7 +20,7 @@ namespace NuSysApp
     {
         private string _UDPPort = "2156";
         private string _TCPInputPort = "302";
-        private string _TCPOutputPort = "302";
+        private string _TCPOutputPort = "322";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
         private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
