@@ -19,12 +19,45 @@ namespace NuSysApp
         private string _TCPInputPort = "302";
         private string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets;
+        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; 
         private HashSet<string> _otherIPs;
         private string _hostIP;
         private string _localIP;
         private WorkSpaceModel _workspaceModel;
+        private Dictionary<string, DataWriter> _addressToWriter; 
         private Hashtable _locksOut;
 
+        private enum PacketType
+        {
+            UDP,
+            TCP
+        }
+
+        private class Packet
+        {
+            private string _message;
+            private PacketType _type;
+            private NetworkConnector _network;
+            public Packet(NetworkConnector network,string message, PacketType type)
+            {
+                _network = network;
+                _message = message;
+                _type = type;
+            }
+
+            public async void send(string address)
+            {
+                switch (_type)
+                {
+                    case PacketType.TCP:
+                        await _network.SendTCPMessage(_message, address);
+                        break;
+                    case PacketType.UDP:
+                        await _network.SendUDPMessage(_message, _network._addressToWriter[address]);
+                        break;
+                }
+            }
+        }
         public NetworkConnector()
         {
             this.Init();
@@ -32,9 +65,15 @@ namespace NuSysApp
         private async void Init()
         {
             _localIP  = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
+
+            Debug.WriteLine("local IP: " + _localIP);
+
+            _locksOut = new Hashtable();
+            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
+            _addressToWriter = new Dictionary<string, DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
-            Debug.WriteLine("local IP: "+_localIP);
             _otherIPs = new HashSet<string>();
+
             List<string> ips = GetOtherIPs();
             if (ips.Count == 1)
             {
@@ -61,7 +100,8 @@ namespace NuSysApp
         private void makeHost()
         {
             _hostIP = _localIP;
-            
+            _locksOut = new Hashtable();
+            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             //ToDo add in other host responsibilities
         }
 
@@ -81,7 +121,7 @@ namespace NuSysApp
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             DataReader reader = new DataReader(args.Socket.InputStream);
-            string ip = args.Socket.Information.LocalAddress.RawName;
+            string ip = args.Socket.Information.RemoteAddress.RawName;
             string message;
             try
             {
@@ -101,14 +141,13 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve at IP " + this._localIP + " with message: " + message);
-            await this.MessageRecieved(ip,message);
+            await this.MessageRecieved(ip,message,PacketType.TCP);
         }
 
         private List<string> GetOtherIPs()
         {
             List<string> ips = new List<string>();
-            ips.Add("10.38.22.71");
-            ips.Add("10.38.22.71");
+            ips.Add("10.38.62.23");
             return ips;//TODO add in Phil's php script
         }
 
@@ -118,10 +157,11 @@ namespace NuSysApp
             socket.ConnectAsync(new HostName(ip), _UDPPort);
             DataWriter writer =  new DataWriter(socket.OutputStream);
             _UDPOutSockets.Add(new Tuple<DatagramSocket,DataWriter>(socket,writer));
+            _addressToWriter.Add(ip,writer);
         }
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            string ip = sender.Information.LocalAddress.RawName;
+            string ip = sender.Information.RemoteAddress.RawName;
             string message;
             try
             {
@@ -139,7 +179,7 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("UDP packet recieve at IP " + this._localIP + " with message: " + message);
-            await this.MessageRecieved(ip,message);
+            await this.MessageRecieved(ip,message,PacketType.UDP);
         }
 
         public async Task SendTCPMessage(string message, string recievingIP)
@@ -186,21 +226,20 @@ namespace NuSysApp
             writer.WriteString(message);
             await writer.StoreAsync();
         }
-
-        private async Task MessageRecieved(string ip, string message)
+        private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
             string type = message.Substring(0, 7);
             switch (type)//OMG IM SWITCHING ON A STRING
             {
                 case "SPECIAL":
-                    await this.HandleSpecialMessage(ip,message.Substring(7));
+                    await this.HandleSpecialMessage(ip,message.Substring(7),packetType);
                     break;
                 default:
-                    await this.HandleRegularMessage(ip,message);
+                    await this.HandleRegularMessage(ip,message,packetType);
                     break;
             }
         }
-        private async Task HandleSpecialMessage(string ip, string message)
+        private async Task HandleSpecialMessage(string ip, string message,PacketType packetType)
         {
             int indexOfColon = message.IndexOf(":");
             if (indexOfColon == -1)
@@ -209,16 +248,26 @@ namespace NuSysApp
                 return;
             }
             string type = message.Substring(0, indexOfColon);
-            message = message.Substring(indexOfColon);
+            message = message.Substring(indexOfColon+1);
             switch (type)
             {
                 case "0":
                     this.addIP(message);
                     await this.SendTCPMessage("SPECIAL1:" + _hostIP,ip);
+                    if (_hostIP == _localIP)
+                    {
+                        _joiningMembers.Add(message,new Tuple<bool,List<Packet>>(false,new List<Packet>()));//add new joining member
+                    }
                     break;
                 case "1":
-                    _hostIP = message;
-                    this.makeHost();
+                    if (_hostIP != message)
+                    {
+                        _hostIP = message;
+                        if (message == _localIP)
+                        {
+                            this.makeHost();
+                        }
+                    }
                     break;
                 case "2":
 
@@ -232,9 +281,20 @@ namespace NuSysApp
             }
         }
 
-        private async Task HandleRegularMessage(string ip, string message)
+        private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
-            Debug.WriteLine(_localIP + " handled message: "+message);
+
+            foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers) // keeps track of messages sent durig initial loading into workspace
+            {
+                kvp.Value.Item2.Add(new Packet(this,message,packetType));
+                if (packetType == PacketType.TCP && !kvp.Value.Item1)
+                {
+                    Tuple<bool, List<Packet>> tup = new Tuple<bool, List<Packet>>(true, kvp.Value.Item2);
+                    _joiningMembers[kvp.Key] = tup;
+                }
+            }
+
+            Debug.WriteLine(_localIP + " handled message: " + message);
         }
     }
 }
