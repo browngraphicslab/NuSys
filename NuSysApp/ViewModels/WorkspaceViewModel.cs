@@ -315,7 +315,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null, bool tellNetwork = true, string id = "0")
+        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             switch (type)
@@ -350,14 +350,7 @@ namespace NuSysApp
                 default:
                     return;
             }
-            if (tellNetwork)
-            {
-                await this.nodeAdd(vm.Model); //COMPLETELY TEMPORARY FOR TESTING PURPOSES
-            }
-            else
-            {
-                _idDict.Add(id, vm.Model);
-            }
+            this.nodeNetAdd(vm.Model); //COMPLETELY TEMPORARY FOR TESTING PURPOSES
             NodeViewModelList.Add(vm);
             if (vm != null)
             {
@@ -469,13 +462,9 @@ namespace NuSysApp
         {
             _networkConnector = n;
         }
-        public async Task nodeAdd(Node n)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        public async Task nodeNetAdd(Node n)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
         {
-            string id = await _networkConnector.makeNode(n.X,n.Y,n.Width,n.Height);
-            if (id != "0")
-            {
-                _idDict.Add(id, n);
-            }
+            await _networkConnector.makeNode(n.X,n.Y,n.Width,n.Height);
         }
         public void nodeMove(string id,int x, int y, double width, double height)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
         {
@@ -485,7 +474,14 @@ namespace NuSysApp
         {
             if (!_idDict.ContainsKey(dict["id"]))
             {
-                this.CreateNewNode(NodeType.Text, Int32.Parse(dict["x"]), Int32.Parse(dict["y"]), null, false, dict["id"]);
+                NodeViewModel vm = new TextNodeViewModel(this,null);
+                NodeViewModelList.Add(vm);
+                if (vm != null)
+                {
+                    AtomViewList.Add(vm.View);
+                    PositionNode(vm, Int32.Parse(dict["x"]), Int32.Parse(dict["y"]));
+                }
+                _idDict.Add(dict["id"],vm.Model);
             }
             Node n = _idDict[dict["id"]];
             n.X = Int32.Parse(dict["x"]);
