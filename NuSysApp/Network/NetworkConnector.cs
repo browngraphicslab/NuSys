@@ -32,9 +32,6 @@ namespace NuSysApp
         private Dictionary<string, StreamSocket> _addressToStreamSockets;  
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
 
-
-        private int _id = 5;//COMPLETELY TEMPORARY FOR TESTING PURPOSES
-
         public enum PacketType
         {
             UDP,
@@ -131,7 +128,6 @@ namespace NuSysApp
             set
             {
                 _workspaceViewModel = value; 
-                _workspaceViewModel.setNetworkConnector(this);
             }
         }
         private async Task addIP(string ip)
@@ -519,23 +515,13 @@ namespace NuSysApp
             Dictionary<string, string> properties = parseOutProperties(message);
             if (properties.ContainsKey("id"))
             {
-                int id = Int32.Parse(properties["id"]);
-                if (id == 0 && _localIP == _hostIP) //if unID'd node
-                {
-                    id = _id++;
-                    properties["id"] = id.ToString();
-                        //TODO send mass TCP message to everyone, instantiating a new node
-                    await SendMassTCPMessage(MakeSubMessageFromDict(properties));
-                }
-                _workspaceViewModel.moveNode(properties);
+                
             }
             else
             {
                 Debug.WriteLine("ERROR: properties of message didn't contain ID.  message: "+message);
                 return;
             }
-
-
             Debug.WriteLine(_localIP + " handled message: " + message);
         }
 
@@ -566,40 +552,6 @@ namespace NuSysApp
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
-        }
-        public async void moveNode(string id, int x, int y)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
-        {
-            Dictionary<string,string> dict = new Dictionary<string, string>();
-            dict.Add("id", id);
-            dict.Add("x", x.ToString());
-            dict.Add("y", y.ToString());
-            this.SendMassUDPMessage(this.MakeSubMessageFromDict(dict));
-        }
-
-        public async Task<string> makeNode(int x, int y, double width, double height)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
-        {
-            int id = 0;
-            if (_localIP == _hostIP)
-            {
-                id = _id++;
-            }
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("x", x.ToString());
-            dict.Add("y", y.ToString());
-            dict.Add("width", width.ToString());
-            dict.Add("height", height.ToString());
-            dict.Add("id", id.ToString());
-            string m = this.MakeSubMessageFromDict(dict);
-
-            if (_localIP != _hostIP)
-            {
-                await SendTCPMessage(m, _hostIP);
-            }
-            else
-            {
-                await this.SendMassTCPMessage(m);
-            }
-            return id.ToString();
         }
     }
 }
