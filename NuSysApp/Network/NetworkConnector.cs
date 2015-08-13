@@ -34,7 +34,8 @@ namespace NuSysApp
         public enum PacketType
         {
             UDP,
-            TCP
+            TCP,
+            Both
         }
 
         private class Packet //private class to store messages for later
@@ -286,11 +287,17 @@ namespace NuSysApp
             }
             
         }
+        private async Task SendUpdateForNode(string nodeId, string sendToIP)
+        {
+            //TODO make this method get the current status of node nodeId and send full TCP update to IP adress sendToIP
+        }
 
         public async Task SendMessage(string ip, string message, PacketType packetType)
         {
             await SendMessage(ip, message, packetType, false);
         }
+
+
         public async Task SendMessage(string ip, string message, PacketType packetType, bool mass)
         {
             switch (packetType)
@@ -318,6 +325,10 @@ namespace NuSysApp
                         await SendUDPMessage(message, _addressToWriter[ip].Item1);
                         return;
                     }
+                    break;
+                case PacketType.Both:
+                    await this.SendMessage(ip, message, PacketType.UDP);
+                    await this.SendMessage(ip, message, PacketType.TCP);
                     break;
                 default:
                     Debug.WriteLine("Message send failed because the PacketType was incorrect.  Message: " + message);
@@ -351,7 +362,7 @@ namespace NuSysApp
             message = message.Substring(indexOfColon+1);
             switch (type)
             {
-                case "0":
+                case "0"://inital request = "I'm joining with my IP, who's the host?"
                     await this.addIP(message);
                     await this.SendTCPMessage("SPECIAL1:" + _hostIP,ip);
                     if (_hostIP == _localIP)
@@ -359,7 +370,7 @@ namespace NuSysApp
                         _joiningMembers.Add(message,new Tuple<bool,List<Packet>>(false,new List<Packet>()));//add new joining member
                     }
                     break;
-                case "1":
+                case "1":// response to initial request = "The host is the following person"
                     if (_hostIP != message)
                     {
                         _hostIP = message;
@@ -377,6 +388,97 @@ namespace NuSysApp
                     break;
                 case "4":
 
+                    break;
+                case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6\"
+                    if (_hostIP == _localIP)
+                    {
+                        if (true)//TODO make into 'this contains an object with key number: message'
+                        {
+                            if (!_locksOut.ContainsKey(message))
+                            {
+                                _locksOut.Add(message,ip);
+                            }
+                            await SendMessage(ip, "SPECIAL6:" +message+"="+ _locksOut[message], packetType);
+                            return;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("ERROR: Recieved a request for a lock for id: " + message +
+                                        " which is an invalid id");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ERROR: Recieved a request for a lock for id: " + message +
+                                        " when this machine isn't the Host");
+                        return;
+                    }
+                    break;
+                case "6"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
+                    var parts = message.Split("=".ToCharArray());
+                    if (parts.Length != 2)
+                    {
+                        Debug.WriteLine("Recieved Lock request response that was incorrectly formatted.  message: "+message);
+                        return;
+                    }
+                    string lockId = parts[0];
+                    string lockHolder = parts[1];
+                    if (false)//TODO make into 'this does not contain an object with key number: lockId'
+                    {
+                        Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
+                                        " which has an invalid id");
+                        return;
+                    }
+                    if (lockHolder != _localIP)
+                    {
+                        //TODO Cancel movement of node
+                        //then
+                        SendMessage(_hostIP, "SPECIAL8:" + lockId, PacketType.TCP);
+                        return;
+                    }
+                    return;
+                    break;
+                case "7"://Returning lock  ex: message = "6"
+                    if (_localIP == _hostIP)
+                    {
+                        if (_locksOut.ContainsKey(message))
+                        {
+                            _locksOut.Remove(message);
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Recieved a return lock request with message: " + message +
+                                        " when the lock wasnt out"); 
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ERROR: Recieved a return lock request with message: " + message +
+                                        " when this machine isn't the Host");
+                        return;
+                    }
+                    break;
+                case "8"://Request full node update for certain id -- HOST ONLY ex: message = "6"
+                    if (_localIP == _hostIP)
+                    {
+                        if (false) //TODO make into 'this does not contain an object with key number: message'
+                        {
+                            Debug.WriteLine("ERROR: Recieved a request for a node update with: " + message +
+                                            " which has an invalid id");
+                            return;
+                        }
+                        else
+                        {
+                            await this.SendUpdateForNode(message, ip);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ERROR: Recieved a request for a full node update with message: " + message +
+                                        " when this machine isn't the Host");
+                        return;
+                    }
                     break;
             }
         }
