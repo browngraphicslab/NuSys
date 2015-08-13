@@ -105,7 +105,6 @@ namespace NuSysApp
             socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
-            await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             Debug.WriteLine("done");
         }
 
@@ -522,6 +521,8 @@ namespace NuSysApp
                 Debug.WriteLine("ERROR: properties of message didn't contain ID.  message: "+message);
                 return;
             }
+
+
             Debug.WriteLine(_localIP + " handled message: " + message);
         }
 
