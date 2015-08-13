@@ -256,7 +256,7 @@ namespace NuSysApp
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
                 await writer.StoreAsync();
-                //writer.DetachStream();
+                writer.DetachStream();
                 writer.Dispose();
             }
             catch (Exception e)
@@ -378,7 +378,10 @@ namespace NuSysApp
             {
                 case "0"://inital request = "I'm joining with my IP, who's the host?"
                     await this.addIP(message);
-                    await this.SendTCPMessage("SPECIAL1:" + _hostIP,ip);
+                    if (_hostIP != null)
+                    {
+                        await this.SendTCPMessage("SPECIAL1:" + _hostIP, ip);
+                    }
                     if (_hostIP == _localIP)
                     {
                         _joiningMembers.Add(message,new Tuple<bool,List<Packet>>(false,new List<Packet>()));//add new joining member
