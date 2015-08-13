@@ -42,7 +42,7 @@ namespace NuSysApp
         }
 
         public void UpdateInk()
-        {   
+        {
             var vm = (InkNodeViewModel)this.DataContext;
             var rect = nodeTpl.inkCanvas.PasteManagedStrokes();
             vm.Width = rect.Width;

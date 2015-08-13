@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
@@ -8,7 +9,7 @@ namespace NuSysApp.Views.Workspace
     {
         public SaveMode(WorkspaceView view) : base(view)
         {
- 
+
         }
 
         public override async Task Activate()
@@ -19,7 +20,7 @@ namespace NuSysApp.Views.Workspace
 
         public override async Task Deactivate()
         {
-            
+
         }
 
     }

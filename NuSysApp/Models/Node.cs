@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -10,26 +12,6 @@ namespace NuSysApp
             StartLines = new List<Link>();
             EndLines = new List<Link>();
             ID = id;
-        }
-        
-        public void ConnectNodes(Node node)
-        {
-            if (!this.ConnectedNodes.Contains(node))
-            {
-                var connector = new Link(this, node);
-            }
-        }
-
-        public void Delete()
-        {
-            foreach(var connect in this.StartLines) 
-            {
-                connect.DeleteFromOut();
-            }
-            foreach(var connect in this.EndLines)
-            {
-                connect.DeleteFromIn();
-            }
         }
 
         public Content Content { set; get; }
@@ -51,5 +33,14 @@ namespace NuSysApp
         public double Width { get; set; }
 
         public double Height { get; set; }
+
+        public string NodeType { get; set; }
+
+        public virtual string GetContentSource()
+        {
+            return null;
+        }
+
+
     }
 }

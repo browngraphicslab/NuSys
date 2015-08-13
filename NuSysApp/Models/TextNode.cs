@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.Threading.Tasks;
+
 namespace NuSysApp
 {
     public class TextNode : Node
@@ -6,8 +9,14 @@ namespace NuSysApp
         public TextNode(string data, int id): base(id)
         {
             Text = data;
+            this.NodeType = "TextNode";
         }
 
         public string Text { get; set; }
+
+        public override string GetContentSource()
+        {
+            return Text;
+        }
     }
 }

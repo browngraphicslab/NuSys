@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Xml;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
@@ -15,7 +17,6 @@ namespace NuSysApp
     {
         #region Private Members      
 
-        private Color _color; //currently unused //MOVE TO ATOM
         private bool _isEditing,_isEditingInk;
         private AtomViewModel _clippedParent;
         #endregion Private Members
@@ -143,26 +144,6 @@ namespace NuSysApp
             this.Transform.Matrix = transMat;
         }
 
-
-        /// <summary>
-        /// color of node
-        /// </summary>
-        public Color Color
-        {
-            get { return _color; }
-            set
-            {
-                if (_color == value)
-                {
-                    return;
-                }
-
-                _color = value;
-
-                RaisePropertyChanged("Color");
-            }
-        }
-
         public bool IsAnnotation { get; set; }
 
         /// <summary>
@@ -254,6 +235,39 @@ namespace NuSysApp
             }
         }
 
+        public abstract string CreateXML();
+
+        public abstract XmlElement WriteXML(XmlDocument doc);
+
+        public List<XmlAttribute> getBasicXML(XmlDocument doc)
+        {
+            List<XmlAttribute> basicXml = new List<XmlAttribute>();
+
+            //create xml attribute nodes
+            XmlAttribute id = doc.CreateAttribute("id");
+            id.Value = this.Model.ID.ToString();
+
+            XmlAttribute x = doc.CreateAttribute("x");
+            x.Value = this.Model.X.ToString();
+
+            XmlAttribute y = doc.CreateAttribute("y");
+            y.Value = this.Model.Y.ToString();
+
+            XmlAttribute height = doc.CreateAttribute("height");
+            height.Value = this.Model.Height.ToString();
+
+            XmlAttribute width = doc.CreateAttribute("width");
+            width.Value = this.Model.Width.ToString();
+
+            //append to list and return
+            basicXml.Add(id);
+            basicXml.Add(x);
+            basicXml.Add(y);
+            basicXml.Add(height);
+            basicXml.Add(width);
+
+            return basicXml;
+        }
 
         /// <summary>
         /// indicates whether node is editable.
@@ -287,9 +301,7 @@ namespace NuSysApp
 
         public GroupViewModel ParentGroup { get; set; }
 
-        public virtual Node Model
-        { get; set; }
-
+        public virtual Node Model { get; set; }
 
         #endregion Public Properties
     }

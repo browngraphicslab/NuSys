@@ -1,4 +1,7 @@
-﻿using Windows.UI.Xaml.Media;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -12,10 +15,7 @@ namespace NuSysApp
 
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text) : base(workSpaceViewModel)
         {
-            _node = new TextNode("Hello oOrld", 0);
-            this.Data = text ?? "Enter text here";
-            //this.Data = "Enter text here";
-            _node.Text = this.Data;
+            this.Model = new TextNode(text ?? "Enter text here", 0);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -32,15 +32,48 @@ namespace NuSysApp
         /// </summary>
         public string Data
         {
-            get { return _data; }
+            get { return ((TextNode)this.Model).Text; }
             set
             {
-                _data = value;
+                ((TextNode)this.Model).Text = value;
                 RaisePropertyChanged("Data");
-                _node.Text = _data; //Remove once model is actually integrated
             }
         }
 
+        public override string CreateXML()
+        {
+            string XML = "";
+            TextNode currModel = (TextNode)this.Model;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
+            return XML;
+        }
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+
+            TextNode currModel = (TextNode)this.Model;
+
+            //XmlElement 
+            XmlElement textNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
+            //doc.AppendChild(textNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach(XmlAttribute attr in basicXml)
+            {
+                textNode.SetAttributeNode(attr);
+            }
+            
+            //Text
+            XmlAttribute text = doc.CreateAttribute("text");
+            text.Value = currModel.Text;
+            textNode.SetAttributeNode(text);
+
+            return textNode;
+           
+        }
 
         #endregion Public Properties
     }

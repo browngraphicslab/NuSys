@@ -8,11 +8,19 @@ namespace NuSysApp
         public ImageModel(BitmapImage img, int id) : base(id)
         {
             Image = img;
+            this.NodeType = "ImageNode";
         }
         public BitmapImage Image
         {
             get { return _image; }
             set { _image = value; }
+        }
+
+        public string FilePath { get; set; }
+
+        public override string GetContentSource()
+        {
+            return FilePath;
         }
     }
 }
