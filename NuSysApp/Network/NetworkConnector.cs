@@ -251,11 +251,10 @@ namespace NuSysApp
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
                 await writer.StoreAsync();
-                writer.Dispose();
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception caught during TCP message send at IP " + this._localIP + " with error code: " + e.Message);
+                Debug.WriteLine("Exception caught during TCP message send TO IP " + recievingIP + " with error code: " + e.Message);
                 return;
             }
         }

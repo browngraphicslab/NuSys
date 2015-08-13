@@ -315,7 +315,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null, bool tellNetwork = true, string id = "0")
         {
             NodeViewModel vm = null;
             switch (type)
@@ -350,7 +350,14 @@ namespace NuSysApp
                 default:
                     return;
             }
-            this.nodeAdd(vm.Model);//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+            if (tellNetwork)
+            {
+                await this.nodeAdd(vm.Model); //COMPLETELY TEMPORARY FOR TESTING PURPOSES
+            }
+            else
+            {
+                _idDict.Add(id, vm.Model);
+            }
             NodeViewModelList.Add(vm);
             if (vm != null)
             {
@@ -465,7 +472,10 @@ namespace NuSysApp
         public async Task nodeAdd(Node n)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
         {
             string id = await _networkConnector.makeNode(n.X,n.Y,n.Width,n.Height);
-            _idDict.Add(id, n);
+            if (id != "0")
+            {
+                _idDict.Add(id, n);
+            }
         }
         public void nodeMove(string id,int x, int y, double width, double height)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
         {
@@ -473,14 +483,13 @@ namespace NuSysApp
         }
         public void moveNode(Dictionary<string, string> dict)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
         {
-            if (dict["id"] == "0")
+            if (!_idDict.ContainsKey(dict["id"]))
             {
-                this.CreateNewNode(NodeType.Text, Int32.Parse(dict["x"]), Int32.Parse(dict["y"]));
+                this.CreateNewNode(NodeType.Text, Int32.Parse(dict["x"]), Int32.Parse(dict["y"]), null, false, dict["id"]);
             }
             Node n = _idDict[dict["id"]];
             n.X = Int32.Parse(dict["x"]);
             n.Y = Int32.Parse(dict["y"]);
         }
-
     }
 }
