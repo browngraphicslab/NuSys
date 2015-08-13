@@ -551,7 +551,7 @@ namespace NuSysApp
             string m = "<";
             foreach (KeyValuePair<string, string> kvp in dict)
             {
-                m += kvp.Key + "=" + kvp.Value + "s,";
+                m += kvp.Key + "=" + kvp.Value + ",";
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
