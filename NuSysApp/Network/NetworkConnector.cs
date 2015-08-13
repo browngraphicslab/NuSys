@@ -27,9 +27,12 @@ namespace NuSysApp
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
-        private WorkSpaceModel _workspaceModel;
+        private WorkspaceViewModel _workspaceViewModel;
         private Dictionary<string, Tuple<DataWriter,DataWriter>> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
+
+
+        private int _id = 5;//COMPLETELY TEMPORARY FOR TESTING PURPOSES
 
         public enum PacketType
         {
@@ -119,10 +122,14 @@ namespace NuSysApp
             //ToDo add in other host responsibilities
         }
 
-        public WorkSpaceModel WorkspaceModel
+        public WorkspaceViewModel WorkspaceViewModel
         {
-            get { return _workspaceModel; }
-            set { _workspaceModel = value; }
+            get { return _workspaceViewModel; }
+            set
+            {
+                _workspaceViewModel = value; 
+                _workspaceViewModel.setNetworkConnector(this);
+            }
         }
         private async Task addIP(string ip)
         {
@@ -499,8 +506,90 @@ namespace NuSysApp
                     }
                 }
             }
+            Dictionary<string, string> properties = parseOutProperties(message);
+            if (properties.ContainsKey("id"))
+            {
+                int id = Int32.Parse(properties["id"]);
+                if (id == 0 && _localIP == _hostIP) //if unID'd node
+                {
+                    id = _id++;
+                    properties["id"] = id.ToString();
+                        //TODO send mass TCP message to everyone, instantiating a new node
+                    await SendMassTCPMessage(MakeSubMessageFromDict(properties));
+                }
+                _workspaceViewModel.moveNode(properties);
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: properties of message didn't contain ID.  message: "+message);
+                return;
+            }
+
 
             Debug.WriteLine(_localIP + " handled message: " + message);
+        }
+
+        private Dictionary<string, string> parseOutProperties(string message)
+        {
+            message = message.Substring(1, message.Length - 2);
+            string[] parts = message.Split(",".ToCharArray());
+            Dictionary<string,string> props = new Dictionary<string, string>();
+            foreach (string part in parts)
+            {
+                string[] subParts = part.Split('=');
+                if (subParts.Length != 2)
+                {
+                    Debug.WriteLine("Error, property formatted wrong in message: " + message);
+                    continue;
+                }
+                props.Add(subParts[0], subParts[1]);
+            }
+            return props;
+        }
+
+        private string MakeSubMessageFromDict(Dictionary<string, string> dict)
+        {
+            string m = "<";
+            foreach (KeyValuePair<string, string> kvp in dict)
+            {
+                m += kvp.Key + "=" + kvp.Value + "s,";
+            }
+            m = m.Substring(0, m.Length - 1) + ">";
+            return m;
+        }
+        public async void moveNode(string id, int x, int y)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        {
+            Dictionary<string,string> dict = new Dictionary<string, string>();
+            dict.Add("id", id);
+            dict.Add("x", x.ToString());
+            dict.Add("y", y.ToString());
+            this.SendMassUDPMessage(this.MakeSubMessageFromDict(dict));
+        }
+
+        public async Task<string> makeNode(int x, int y, double width, double height)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        {
+            int id = 0;
+            if (_localIP == _hostIP)
+            {
+                id = _id++;
+            }
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("x", x.ToString());
+            dict.Add("y", y.ToString());
+            dict.Add("width", width.ToString());
+            dict.Add("height", height.ToString());
+            dict.Add("id", id.ToString());
+            string m = this.MakeSubMessageFromDict(dict);
+
+            if (_localIP != _hostIP)
+            {
+                await SendTCPMessage(m, _hostIP);
+            }
+            else
+            {
+                await this.SendMassTCPMessage(m);
+            }
+            return id.ToString();
         }
     }
 }

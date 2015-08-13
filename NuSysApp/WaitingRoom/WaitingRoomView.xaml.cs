@@ -38,7 +38,7 @@ namespace NuSysApp
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(WorkspaceView));
-            //_networkConnector.WorkspaceModel = ((WorkSpaceModel)((WorkspaceView) this.Frame.Content).DataContext);
+            _networkConnector.WorkspaceViewModel = (WorkspaceViewModel) ((WorkspaceView)this.Frame.Content).DataContext;
             //_networkConnector.sendMassUDPMessage("test from button");
             // _networkConnector.SendTCPMessage("tcp message!", "10.38.22.71","302");
         }

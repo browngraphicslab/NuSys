@@ -25,6 +25,8 @@ namespace NuSysApp
 
         private readonly Factory _factory;
         private WorkSpaceModel _workSpaceModel;
+        private NetworkConnector _networkConnector;//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        private Dictionary<string, Node> _idDict;//COMPLETELY TEMPORARY FOR TESTING PURPOSES
         public enum LinkMode
         {
             Linelink,
@@ -348,6 +350,7 @@ namespace NuSysApp
                 default:
                     return;
             }
+            this.nodeAdd(vm.Model);//COMPLETELY TEMPORARY FOR TESTING PURPOSES
             NodeViewModelList.Add(vm);
             if (vm != null)
             {
@@ -454,6 +457,30 @@ namespace NuSysApp
             }
         }
         #endregion Public Members
+
+        public void setNetworkConnector(NetworkConnector n)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        {
+            _networkConnector = n;
+        }
+        public async Task nodeAdd(Node n)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        {
+            string id = await _networkConnector.makeNode(n.X,n.Y,n.Width,n.Height);
+            _idDict.Add(id, n);
+        }
+        public void nodeMove(string id,int x, int y, double width, double height)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        {
+
+        }
+        public void moveNode(Dictionary<string, string> dict)//COMPLETELY TEMPORARY FOR TESTING PURPOSES
+        {
+            if (dict["id"] == "0")
+            {
+                this.CreateNewNode(NodeType.Text, Int32.Parse(dict["x"]), Int32.Parse(dict["y"]));
+            }
+            Node n = _idDict[dict["id"]];
+            n.X = Int32.Parse(dict["x"]);
+            n.Y = Int32.Parse(dict["y"]);
+        }
 
     }
 }
