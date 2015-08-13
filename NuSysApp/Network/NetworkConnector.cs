@@ -29,6 +29,7 @@ namespace NuSysApp
         private string _localIP;
         private WorkspaceViewModel _workspaceViewModel;
         private Dictionary<string, Tuple<DataWriter,DataWriter>> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
+        private Dictionary<string, StreamSocket> _addressToStreamSockets;  
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
 
 
@@ -83,6 +84,7 @@ namespace NuSysApp
             _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string, Tuple<DataWriter, DataWriter>>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
+            _addressToStreamSockets = new Dictionary<string, StreamSocket>();
             _TCPOutSockets = new HashSet<Tuple<StreamSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
 
@@ -105,6 +107,7 @@ namespace NuSysApp
             DatagramSocket socket = new DatagramSocket();
             socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
+            await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             Debug.WriteLine("done");
         }
@@ -206,6 +209,7 @@ namespace NuSysApp
             await TCPsocket.ConnectAsync(new HostName(ip), _TCPOutputPort);
             DataWriter TCPwriter = new DataWriter(TCPsocket.OutputStream);
             _TCPOutSockets.Add(new Tuple<StreamSocket, DataWriter>(TCPsocket, TCPwriter));
+            _addressToStreamSockets.Add(ip,TCPsocket);
 
             if (_addressToWriter.ContainsKey(ip))
             {
@@ -245,12 +249,15 @@ namespace NuSysApp
         }
         public async Task SendTCPMessage(string message, string recievingIP, string outport)
         {
+            Debug.Write("attempting to TCP send message: "+message+" to IP: "+recievingIP);
             try
             {
-                DataWriter writer = _addressToWriter[recievingIP].Item2;
+                DataWriter writer = new DataWriter(_addressToStreamSockets[recievingIP].OutputStream);
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
                 await writer.StoreAsync();
+                //writer.DetachStream();
+                writer.Dispose();
             }
             catch (Exception e)
             {
@@ -281,6 +288,7 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
+            Debug.Write("attempting to UDP send message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
         }
