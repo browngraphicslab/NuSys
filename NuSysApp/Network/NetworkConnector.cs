@@ -17,7 +17,7 @@ namespace NuSysApp
     {
         private string _UDPPort = "2156";
         private string _TCPInputPort = "302";
-        private string _TCPOutputPort = "1500";
+        private string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets;
         private HashSet<string> _otherIPs;
         private string _hostIP;
@@ -33,6 +33,7 @@ namespace NuSysApp
         {
             _localIP  = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
+            Debug.WriteLine("local IP: "+_localIP);
             _otherIPs = new HashSet<string>();
             List<string> ips = GetOtherIPs();
             if (ips.Count == 1)
@@ -41,7 +42,7 @@ namespace NuSysApp
             }
             else
             {
-                foreach (string ip in GetOtherIPs())
+                foreach (string ip in ips)
                 {
                     this.addIP(ip);
                 }
@@ -50,11 +51,9 @@ namespace NuSysApp
             StreamSocketListener listener = new StreamSocketListener();
             listener.ConnectionReceived += this.TCPConnectionRecieved;
             await listener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
-
             DatagramSocket socket = new DatagramSocket();
             socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
-
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             Debug.WriteLine("done");
         }
@@ -102,14 +101,14 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve at IP " + this._localIP + " with message: " + message);
-            this.MessageRecieved(ip,message);
+            await this.MessageRecieved(ip,message);
         }
 
         private List<string> GetOtherIPs()
         {
             List<string> ips = new List<string>();
             ips.Add("10.38.22.71");
-            ips.Add("10.38.22.74");
+            ips.Add("10.38.22.71");
             return ips;//TODO add in Phil's php script
         }
 
@@ -140,7 +139,7 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("UDP packet recieve at IP " + this._localIP + " with message: " + message);
-            this.MessageRecieved(ip,message);
+            await this.MessageRecieved(ip,message);
         }
 
         public async Task SendTCPMessage(string message, string recievingIP)
@@ -209,9 +208,9 @@ namespace NuSysApp
                 Debug.WriteLine("ERROR: message recieved was formatted wrong");
                 return;
             }
-            string type = message.Substring(0, indexOfColon + 1);
-            message = message.Substring(indexOfColon + 1);
-            switch (message.Substring(0, 1))
+            string type = message.Substring(0, indexOfColon);
+            message = message.Substring(indexOfColon);
+            switch (type)
             {
                 case "0":
                     this.addIP(message);
