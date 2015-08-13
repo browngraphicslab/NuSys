@@ -79,7 +79,7 @@ namespace NuSysApp
 
             if (atom1.AtomType == Constants.Node)
             {
-                pathfigure.StartPoint = this.findIntersection(atom1, curve.Point3);
+                pathfigure.StartPoint = this.findIntersection((NodeViewModel)atom1, curve.Point3);
             }
             else //atom is a link - this link anchors to atom1's anchor point
             {
@@ -87,7 +87,7 @@ namespace NuSysApp
             }
             if (atom2.AtomType == Constants.Node)
             {
-                curve.Point3 = this.findIntersection(atom2, pathfigure.StartPoint);
+                curve.Point3 = this.findIntersection((NodeViewModel)atom2, pathfigure.StartPoint);
             }
             else //atom2 is a link - this link anchors to atom2's anchor (midpoint)
             {
@@ -122,17 +122,17 @@ namespace NuSysApp
         /// <param name="atom"> Atom whose edge the link will bind to</param>
         /// <param name="endpoint">The other endpoint of the bezier curve</param>
         /// <returns></returns>
-        private Point findIntersection(AtomViewModel atom, Point endpoint)
+        private Point findIntersection(NodeViewModel node, Point endpoint)
         {
             //Coords of rectangle
-            double topY = atom.Anchor.Y + (.5 * atom.Height);
-            double bottomY = atom.Anchor.Y - (.5 * atom.Height);
-            double leftX = atom.Anchor.X - (.5 * atom.Width);
-            double rightX = atom.Anchor.X + (.5 * atom.Width);
+            double topY = node.Anchor.Y + (.5 * node.Height);
+            double bottomY = node.Anchor.Y - (.5 * node.Height);
+            double leftX = node.Anchor.X - (.5 * node.Width);
+            double rightX = node.Anchor.X + (.5 * node.Width);
 
             //anchor coords of atom
-            double x0 = atom.Anchor.X;
-            double y0 = atom.Anchor.Y;
+            double x0 = node.Anchor.X;
+            double y0 = node.Anchor.Y;
 
             //other endpoint
             double x1 = endpoint.X;

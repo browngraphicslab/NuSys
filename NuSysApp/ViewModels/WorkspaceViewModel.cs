@@ -13,6 +13,9 @@ using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
 using Windows.Storage.Streams;
 using System.Text;
+using SQLite.Net.Async;
+using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -290,8 +293,16 @@ namespace NuSysApp
         /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
-           // if (CurrentMode != Mode.Textnode && CurrentMode != Mode.Ink) return;
-            if (atomVm1.IsAnnotation || atomVm2.IsAnnotation) return;
+            var vm1 = atomVm1 as NodeViewModel;
+            if (vm1 != null && vm1.IsAnnotation)
+            {
+                return;
+            }
+            var vm2 = atomVm2 as NodeViewModel;
+            if (vm2 != null && vm2.IsAnnotation)
+            {
+                return;
+            }
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this);
 
@@ -304,13 +315,16 @@ namespace NuSysApp
         public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
+            Debug.WriteLine("In CreateNewNode");
             switch (type)
             {
                 case NodeType.Text:
                     vm = new TextNodeViewModel(this, (string)data);
                     break;
                 case NodeType.Ink:
+
                     vm = new InkNodeViewModel(this);
+                    
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
@@ -337,11 +351,23 @@ namespace NuSysApp
                     return;
             }
             NodeViewModelList.Add(vm);
+
             if (vm != null)
             {
                 AtomViewList.Add(vm.View);
                 PositionNode(vm, xCoordinate, yCoordinate);
+                if (data is InkStroke)
+                {
+
+                    vm.View.Loaded += InkNodeView_PromoteInk;
+                }
             }
+        }
+
+        private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
+        {
+            (o as InkNodeView2).UpdateInk();
+            (o as InkNodeView2).Loaded -= InkNodeView_PromoteInk;
         }
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
@@ -386,6 +412,33 @@ namespace NuSysApp
 
             node1.ParentGroup = groupVm;
             node2.ParentGroup = groupVm;
+        }
+
+        public async Task SaveWorkspace()
+        {
+            SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
+            SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
+            MyConnection.CreateTableAsync<XMLFile>();
+            XMLFile currWorkspace = new XMLFile();
+            currWorkspace.toXML = this.CreateXML();
+            MyConnection.InsertAsync(currWorkspace);
+            Debug.WriteLine(this.CreateXML());
+        }
+
+        public string CreateXML()
+        {
+            Debug.WriteLine("Called CreateXML in workspace");
+            string XML = "";
+            foreach (NodeViewModel nodeVM in NodeViewModelList)
+            {
+                XML = XML + nodeVM.CreateXML();
+            }
+
+            foreach (var linkVM in LinkViewModelList)
+            {
+
+            }
+            return XML;
         }
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)

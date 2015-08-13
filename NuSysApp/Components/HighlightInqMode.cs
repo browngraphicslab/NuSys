@@ -47,7 +47,7 @@ namespace NuSysApp.Components
         {
             inqCanvas.Manager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var inkStrokes = inqCanvas.Manager.GetStrokes();
-            inqCanvas.Strokes.Add(inkStrokes[inkStrokes.Count - 1], _currentStroke);
+            inqCanvas.Strokes.Add(_currentStroke, inkStrokes[inkStrokes.Count - 1]);
         }
     }
 }

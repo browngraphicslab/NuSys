@@ -16,6 +16,7 @@ namespace NuSysApp
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             this.AtomType = Constants.Node;
+            this.Model = new Node(0);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -42,8 +43,6 @@ namespace NuSysApp
          
         public override void Resize(double dx, double dy)
         {
-          
-
             var trans = LocalTransform;
             var scale = dx < dy ? (Width + dx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + dy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             trans.ScaleX *= scale;
@@ -124,7 +123,22 @@ namespace NuSysApp
             }
             return false;
         }
-       
+        public override string CreateXML()
+        {
+            string XML = "";
+            Node currModel = this.Model;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'content='" + currModel.Content + "'>";
+
+            foreach(NodeViewModel nodevm in NodeViewModelList)
+            {
+                XML = XML+ nodevm.CreateXML();
+            }
+
+            return XML;
+        }
+
         public ObservableCollection<UserControl> AtomViewList { get; private set;}
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; private set; }
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; private set; }
