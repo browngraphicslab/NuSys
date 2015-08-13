@@ -56,7 +56,7 @@ namespace NuSysApp
             if (vm.IsAnnotation)
             {
                 nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
-                this.textBlock.Foreground = new SolidColorBrush(Colors.Black);
+                //this.textBlock.Foreground = new SolidColorBrush(Colors.Black);
                 this.textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
         }

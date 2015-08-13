@@ -114,8 +114,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\RichEditBoxExtended.cs" />
     <Compile Include="Components\DrawInqMode.cs" />
     <Compile Include="Components\IInqMode.cs" />
+    <Compile Include="Components\RichTextBlockBinder.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
