@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Media;
+﻿using System;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -13,6 +14,7 @@ namespace NuSysApp
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text) : base(workSpaceViewModel)
         {
             _node = new TextNode("Hello oOrld", 0);
+            this.Model = _node;
             this.Data = text ?? "Enter text here";
             _node.Text = this.Data;
             this.Transform = new MatrixTransform();
@@ -38,6 +40,16 @@ namespace NuSysApp
                 RaisePropertyChanged("Data");
                 _node.Text = _data; //Remove once model is actually integrated
             }
+        }
+
+        public override string CreateXML()
+        {
+            string XML = "";
+            TextNode currModel = (TextNode)this.Model;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
+            return XML;
         }
 
 

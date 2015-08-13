@@ -234,6 +234,9 @@ namespace NuSysApp
         }
 
 
+        public abstract string CreateXML();
+
+
         /// <summary>
         /// indicates whether node is editable.
         /// </summary>

@@ -22,7 +22,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
-            this.Model = ImageModel;
+            this.Model = this.ImageModel;
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -87,7 +87,19 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public ImageModel ImageModel
+        public override string CreateXML()
+        {
+            string XML = "";
+            ImageModel currModel = (ImageModel)this.Model;
+
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'Image='" + currModel.Image + "'content='" + currModel.Content + "'>";
+            return XML;
+
+        }
+
+    public ImageModel ImageModel
         {
             get { return _imgm; }
             set
