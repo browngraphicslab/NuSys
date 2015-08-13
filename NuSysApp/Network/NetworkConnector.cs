@@ -102,6 +102,8 @@ namespace NuSysApp
             _hostIP = _localIP;
             _locksOut = new Hashtable();
             _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
+
+            Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
             //ToDo add in other host responsibilities
         }
 
