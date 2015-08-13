@@ -55,6 +55,7 @@ namespace NuSysApp
             socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
 
+            await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             Debug.WriteLine("done");
         }
 
@@ -101,6 +102,7 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve at IP " + this._localIP + " with message: " + message);
+            this.MessageRecieved(ip,message);
         }
 
         private List<string> GetOtherIPs()
@@ -138,6 +140,12 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("UDP packet recieve at IP " + this._localIP + " with message: " + message);
+            this.MessageRecieved(ip,message);
+        }
+
+        public async Task SendTCPMessage(string message, string recievingIP)
+        {
+            await SendTCPMessage(message, recievingIP, _TCPOutputPort);
         }
         public async Task SendTCPMessage(string message, string recievingIP, string outport)
         {
@@ -178,6 +186,56 @@ namespace NuSysApp
         {
             writer.WriteString(message);
             await writer.StoreAsync();
+        }
+
+        private async Task MessageRecieved(string ip, string message)
+        {
+            string type = message.Substring(0, 7);
+            switch (type)//OMG IM SWITCHING ON A STRING
+            {
+                case "SPECIAL":
+                    await this.HandleSpecialMessage(ip,message.Substring(7));
+                    break;
+                default:
+                    await this.HandleRegularMessage(ip,message);
+                    break;
+            }
+        }
+        private async Task HandleSpecialMessage(string ip, string message)
+        {
+            int indexOfColon = message.IndexOf(":");
+            if (indexOfColon == -1)
+            {
+                Debug.WriteLine("ERROR: message recieved was formatted wrong");
+                return;
+            }
+            string type = message.Substring(0, indexOfColon + 1);
+            message = message.Substring(indexOfColon + 1);
+            switch (message.Substring(0, 1))
+            {
+                case "0":
+                    this.addIP(message);
+                    await this.SendTCPMessage("SPECIAL1:" + _hostIP,ip);
+                    break;
+                case "1":
+                    _hostIP = message;
+                    this.makeHost();
+                    break;
+                case "2":
+
+                    break;
+                case "3":
+
+                    break;
+                case "4":
+
+                    break;
+            }
+        }
+
+        private async Task HandleRegularMessage(string ip, string message)
+        {
+            Debug.WriteLine(_localIP + " handled message: "+message);
         }
     }
 }
