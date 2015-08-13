@@ -139,10 +139,10 @@ namespace NuSysApp
             }
             catch(Exception e)
             {
-                Debug.WriteLine("Exception caught during TCP connection recieve at IP " + this._localIP + " with error code: " + e.Message);
+                Debug.WriteLine("Exception caught during TCP connection recieve FROM IP " + ip + " with error code: " + e.Message);
                 return;
             }
-            Debug.WriteLine("TCP connection recieve at IP " + this._localIP + " with message: " + message);
+            Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
             await this.MessageRecieved(ip,message,PacketType.TCP);
         }
 
@@ -176,7 +176,7 @@ namespace NuSysApp
             {
                 var result = args.GetDataStream();
                 var resultStream = result.AsStreamForRead(1024);
-
+                
                 using (var reader = new StreamReader(resultStream))
                 {
                     message = await reader.ReadToEndAsync();
@@ -184,10 +184,10 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception caught during message recieve at IP "+this._localIP+" with error code: "+e.Message);
+                Debug.WriteLine("Exception caught during message recieve FROM IP "+ip+" with error code: "+e.Message);
                 return;
             }
-            Debug.WriteLine("UDP packet recieve at IP " + this._localIP + " with message: " + message);
+            Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
             await this.MessageRecieved(ip,message,PacketType.UDP);
         }
 
@@ -237,14 +237,24 @@ namespace NuSysApp
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
+            string[] miniStrings = message.Split("&&".ToCharArray());
+            foreach (string subMessage in miniStrings)
+            {
+                await this.HandleSubMessage(ip, subMessage, packetType);
+            }
+            
+        }
+
+        private async Task HandleSubMessage(string ip, string message, PacketType packetType)
+        {
             string type = message.Substring(0, 7);
             switch (type)//OMG IM SWITCHING ON A STRING
             {
                 case "SPECIAL":
-                    await this.HandleSpecialMessage(ip,message.Substring(7),packetType);
+                    await this.HandleSpecialMessage(ip, message.Substring(7), packetType);
                     break;
                 default:
-                    await this.HandleRegularMessage(ip,message,packetType);
+                    await this.HandleRegularMessage(ip, message, packetType);
                     break;
             }
         }
@@ -292,14 +302,17 @@ namespace NuSysApp
 
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
-
-            foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers) // keeps track of messages sent durig initial loading into workspace
+            if (_localIP == _hostIP)
             {
-                kvp.Value.Item2.Add(new Packet(this,message,packetType));
-                if (packetType == PacketType.TCP && !kvp.Value.Item1)
+                foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers)
+                    // keeps track of messages sent durig initial loading into workspace
                 {
-                    Tuple<bool, List<Packet>> tup = new Tuple<bool, List<Packet>>(true, kvp.Value.Item2);
-                    _joiningMembers[kvp.Key] = tup;
+                    kvp.Value.Item2.Add(new Packet(this, message, packetType));
+                    if (packetType == PacketType.TCP && !kvp.Value.Item1)
+                    {
+                        Tuple<bool, List<Packet>> tup = new Tuple<bool, List<Packet>>(true, kvp.Value.Item2);
+                        _joiningMembers[kvp.Key] = tup;
+                    }
                 }
             }
 
