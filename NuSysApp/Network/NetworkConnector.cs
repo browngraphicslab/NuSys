@@ -157,7 +157,14 @@ namespace NuSysApp
             socket.ConnectAsync(new HostName(ip), _UDPPort);
             DataWriter writer =  new DataWriter(socket.OutputStream);
             _UDPOutSockets.Add(new Tuple<DatagramSocket,DataWriter>(socket,writer));
-            _addressToWriter.Add(ip,writer);
+            if (_addressToWriter.ContainsKey(ip))
+            {
+                _addressToWriter[ip] = writer;
+            }
+            else
+            {
+                _addressToWriter.Add(ip, writer);
+            }
         }
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
