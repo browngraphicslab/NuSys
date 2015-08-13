@@ -211,6 +211,7 @@ namespace NuSysApp
                     node.UpdateAnchor();
                     return false;
                 }
+                node.ParentGroup.CheckNodeIntersection(node);
             }
             foreach (var node2 in NodeViewModelList)
             {
