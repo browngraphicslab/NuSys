@@ -22,13 +22,14 @@ namespace NuSysApp
         private string _TCPInputPort = "302";
         private string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
+        private HashSet<Tuple<StreamSocket, DataWriter>> _TCPOutSockets; //the set of all UDP output sockets and the writers that send their data
         private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
         private WorkSpaceModel _workspaceModel;
-        private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
-        private HashSet<string> _locksOut;//The hashset of locks currently given out.  the string represents the IP that holds it
+        private Dictionary<string, Tuple<DataWriter,DataWriter>> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
+        private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
 
         public enum PacketType
         {
@@ -74,10 +75,11 @@ namespace NuSysApp
 
             Debug.WriteLine("local IP: " + _localIP);
 
-            _locksOut = new HashSet<string>();
+            _locksOut = new Dictionary<string, string>();
             _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
-            _addressToWriter = new Dictionary<string, DataWriter>();
+            _addressToWriter = new Dictionary<string, Tuple<DataWriter, DataWriter>>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
+            _TCPOutSockets = new HashSet<Tuple<StreamSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
 
             List<string> ips = GetOtherIPs();
@@ -89,7 +91,7 @@ namespace NuSysApp
             {
                 foreach (string ip in ips)
                 {
-                    this.addIP(ip);
+                    await this.addIP(ip);
                 }
             }
 
@@ -109,7 +111,7 @@ namespace NuSysApp
         private void makeHost()
         {
             _hostIP = _localIP;
-            _locksOut = new HashSet<string>();
+            _locksOut = new Dictionary<string, string>();
             _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
 
             Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
@@ -121,12 +123,12 @@ namespace NuSysApp
             get { return _workspaceModel; }
             set { _workspaceModel = value; }
         }
-        private void addIP(string ip)
+        private async Task addIP(string ip)
         {
             if (!_otherIPs.Contains(ip) && ip != this._localIP) 
             {
                 _otherIPs.Add(ip);
-                AddUDPSocket(ip);
+                await AddSocket(ip);
             }
         }
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
@@ -185,19 +187,25 @@ namespace NuSysApp
             return ips;//TODO add in Phil's php script
         }
 
-        private void AddUDPSocket(string ip)
+        private async Task AddSocket(string ip)
         {
-            DatagramSocket socket = new DatagramSocket();
-            socket.ConnectAsync(new HostName(ip), _UDPPort);
-            DataWriter writer =  new DataWriter(socket.OutputStream);
-            _UDPOutSockets.Add(new Tuple<DatagramSocket,DataWriter>(socket,writer));
+            DatagramSocket UDPsocket = new DatagramSocket();
+            UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
+            DataWriter UDPwriter = new DataWriter(UDPsocket.OutputStream);
+            _UDPOutSockets.Add(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter));
+
+            StreamSocket TCPsocket = new StreamSocket();
+            await TCPsocket.ConnectAsync(new HostName(ip), _TCPOutputPort);
+            DataWriter TCPwriter = new DataWriter(TCPsocket.OutputStream);
+            _TCPOutSockets.Add(new Tuple<StreamSocket, DataWriter>(TCPsocket, TCPwriter));
+
             if (_addressToWriter.ContainsKey(ip))
             {
-                _addressToWriter[ip] = writer;
+                _addressToWriter[ip] = new Tuple<DataWriter, DataWriter>(UDPwriter,TCPwriter);
             }
             else
             {
-                _addressToWriter.Add(ip, writer);
+                _addressToWriter.Add(ip, new Tuple<DataWriter, DataWriter>(UDPwriter, TCPwriter));
             }
         }
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
@@ -231,14 +239,11 @@ namespace NuSysApp
         {
             try
             {
-                StreamSocket socket = new StreamSocket();
-                await socket.ConnectAsync(new HostName(recievingIP), outport);
-                DataWriter writer = new DataWriter(socket.OutputStream);
+                DataWriter writer = _addressToWriter[recievingIP].Item2;
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
                 await writer.StoreAsync();
                 writer.Dispose();
-                socket.Dispose();
             }
             catch (Exception e)
             {
@@ -265,7 +270,7 @@ namespace NuSysApp
 
         public async Task SendUDPMessage(string message, string ip)
         {
-            await this.SendUDPMessage(message, _addressToWriter[ip]);
+            await this.SendUDPMessage(message, _addressToWriter[ip].Item1);
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
@@ -310,7 +315,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        await SendUDPMessage(message, _addressToWriter[ip]);
+                        await SendUDPMessage(message, _addressToWriter[ip].Item1);
                         return;
                     }
                     break;
