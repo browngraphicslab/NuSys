@@ -352,7 +352,7 @@ namespace NuSysApp
             switch (type)
             {
                 case "0":
-                    this.addIP(message);
+                    await this.addIP(message);
                     await this.SendTCPMessage("SPECIAL1:" + _hostIP,ip);
                     if (_hostIP == _localIP)
                     {
