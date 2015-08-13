@@ -142,8 +142,6 @@
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
-    <Compile Include="ViewModels\IAtom.cs" />
-    <Compile Include="ViewModels\ILinkable.cs" />
     <Compile Include="Views\Nodes\GroupView.xaml.cs">
       <DependentUpon>GroupView.xaml</DependentUpon>
     </Compile>

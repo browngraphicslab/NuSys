@@ -26,7 +26,6 @@ namespace NuSysApp
             LinkList = new ObservableCollection<LinkViewModel>();
         }
 
-      
         #region Atom Manipulations
 
         /// <summary>
@@ -37,8 +36,7 @@ namespace NuSysApp
             this.IsSelected = !this.IsSelected;
             WorkSpaceViewModel.SetSelection(this);
         }
-
-        
+  
         /// <summary>
         /// Adds a link to this atom.
         /// </summary>
@@ -110,9 +108,7 @@ namespace NuSysApp
 
                 RaisePropertyChanged("View");
             }
-        }
-
-       
+        }    
 
         public MatrixTransform Transform
         {

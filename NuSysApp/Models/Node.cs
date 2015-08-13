@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -40,5 +41,15 @@ namespace NuSysApp
         public List<Node> ConnectedNodes { get; }
 
         public int ID { get; }
+
+        public int X { get; set; }
+
+        public int Y { get; set; }
+
+        public MatrixTransform Transform { get; set; }
+
+        public double Width { get; set; }
+
+        public double Height { get; set; }
     }
 }
