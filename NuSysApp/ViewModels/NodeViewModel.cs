@@ -1,4 +1,5 @@
-﻿using Windows.Foundation;
+﻿using System.ComponentModel;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 
@@ -14,8 +15,11 @@ namespace NuSysApp
     {
         #region Private Members      
 
-        private Color _color; //currently unused
-        
+        private Color _color; //currently unused //MOVE TO ATOM
+        private int _x, _y;
+        private double _width, _height;
+        private bool _isEditing,_isEditingInk;
+        private AtomViewModel _clippedParent;
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm): base(vm)
@@ -51,6 +55,19 @@ namespace NuSysApp
                 }
             }
             
+        }
+        /// <summary>
+        /// toggles editing ability of nodes.
+        /// </summary>
+        public void ToggleEditing()
+        {
+            this.IsEditing = !this.IsEditing;
+
+
+        }
+        public void ToggleEditingInk()
+        {
+            this.IsEditingInk = !this.IsEditingInk;
         }
 
         /// <summary>
@@ -97,7 +114,38 @@ namespace NuSysApp
 
         #region Public Properties
 
-     
+        public AtomViewModel ClippedParent//TODO move to link
+        {
+            get { return _clippedParent; }
+            set
+            {
+                if (_clippedParent == null)
+                {
+                    _clippedParent = value;
+                    _clippedParent.PropertyChanged += parent_PropertyChanged;
+                    parent_PropertyChanged(null, null);
+                    this.Width = Constants.DefaultAnnotationSize * 2;
+                    this.Height = Constants.DefaultAnnotationSize;
+
+                }
+                else
+                {
+                    _clippedParent = value;
+                }
+
+
+            }
+        }
+
+        private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
+            transMat.OffsetX = ClippedParent.AnchorX - this.Width / 2;
+            transMat.OffsetY = ClippedParent.AnchorY - this.Height / 2;
+            Transform = new MatrixTransform();
+            this.Transform.Matrix = transMat;
+        }
+
 
         /// <summary>
         /// color of node
@@ -118,6 +166,114 @@ namespace NuSysApp
             }
         }
 
+        public bool IsAnnotation { get; set; }
+
+        /// <summary>
+        /// X-coordinate of this atom
+        /// </summary>
+        public int X
+        {
+            get { return _x; }
+            set
+            {
+                if (_x == value)
+                {
+                    return;
+                }
+                _x = value;
+                RaisePropertyChanged("X");
+            }
+        }
+
+        /// <summary>
+        /// Y-coordinate of this atom
+        /// </summary>
+        public int Y
+        {
+            get { return _y; }
+            set
+            {
+                if (_y == value)
+                {
+                    return;
+                }
+
+                _y = value;
+                RaisePropertyChanged("Y");
+            }
+        }
+
+        /// <summary>
+        /// Width of this atom
+        /// </summary>
+        public double Width
+        {
+            get { return _width; }
+            set
+            {
+
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
+                {
+                    return;
+                }
+
+                _width = value;
+
+                RaisePropertyChanged("Width");
+            }
+        }
+
+        /// <summary>
+        /// Height of this atom
+        /// </summary>
+        public double Height
+        {
+            get { return _height; }
+            set
+            {
+                if (_height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
+                {
+                    return;
+                }
+
+                _height = value;
+
+                RaisePropertyChanged("Height");
+            }
+        }
+
+
+        /// <summary>
+        /// indicates whether node is editable.
+        /// </summary>
+        public bool IsEditing
+        {
+            get { return _isEditing; }
+            set
+            {
+                if (_isEditing == value)
+                {
+                    return;
+                }
+                _isEditing = value;
+                RaisePropertyChanged("IsEditing");
+            }
+        }
+        public bool IsEditingInk
+        {
+            get { return _isEditingInk; }
+            set
+            {
+                if (_isEditingInk == value)
+                {
+                    return;
+                }
+                _isEditingInk = value;
+                RaisePropertyChanged("IsEditingInk");
+            }
+        }
+
+        public GroupViewModel ParentGroup { get; set; }
         #endregion Public Properties
     }
 }
