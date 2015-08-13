@@ -188,6 +188,7 @@
     <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
+    <Compile Include="Views\Workspace\PromoteInkMode.cs" />
     <Compile Include="Views\Workspace\SaveMode.cs" />
     <Compile Include="Views\Workspace\SelectMode.cs" />
     <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">

@@ -84,6 +84,9 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
                         new FloatingMenuMode(this)));
                     break;
+                case Options.PromoteInk:
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new PromoteInkMode(this)));
+                    break;
                 case Options.AddInkNode:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
