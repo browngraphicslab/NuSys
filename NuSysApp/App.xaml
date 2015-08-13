@@ -6,6 +6,17 @@
     RequestedTheme="Light">
 
     <Application.Resources>
+        
+        <SolidColorBrush x:Key="ComboBoxItemDisabledForegroundThemeBrush" Color="White" />
+        <SolidColorBrush x:Key="ComboBoxItemPointerOverBackgroundThemeBrush" Color="LightBlue" />
+        <SolidColorBrush x:Key="ComboBoxItemPointerOverForegroundThemeBrush" Color="White" />
+        <SolidColorBrush x:Key="ComboBoxItemPressedBackgroundThemeBrush" Color="LightBlue"/>
+        <SolidColorBrush x:Key="ComboBoxItemPressedForegroundThemeBrush" Color="White"/>
+        <SolidColorBrush x:Key="ComboBoxItemSelectedBackgroundThemeBrush" Color="LightBlue" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedForegroundThemeBrush" Color="White" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledBackgroundThemeBrush" Color="LightBlue" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledForegroundThemeBrush" Color="White" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedPointerOverBackgroundThemeBrush" Color="LightBlue" />
 
         <!-- radial menu style -->
         <Style x:Key="RadialMenu" TargetType="MenuFlyoutPresenter">

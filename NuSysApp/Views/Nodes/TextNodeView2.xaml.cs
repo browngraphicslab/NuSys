@@ -24,15 +24,6 @@ namespace NuSysApp
     public sealed partial class TextNodeView2 : UserControl
     {
 
-        public enum Formats
-        {
-            BOLD,
-            ITALIC,
-            UNDERLINE,
-            COLOR,
-            SIZE
-        }
-
         public TextNodeView2(TextNodeViewModel vm)
         {
             this.InitializeComponent();
@@ -59,9 +50,82 @@ namespace NuSysApp
             ITextSelection selected = textBox.Document.Selection;
             if (selected != null)
             {
-                ITextCharacterFormat format = selected.CharacterFormat;
-                format.Bold = FormatEffect.Toggle;
-                selected.CharacterFormat = format;
+                ITextCharacterFormat characterFormat = selected.CharacterFormat;
+                if (sender == Bold)
+                {
+                    characterFormat.Bold = FormatEffect.Toggle;
+                }
+                if (sender == Italic)
+                {
+                    characterFormat.Italic = FormatEffect.Toggle;
+                }
+                if (sender == Underline)
+                {
+                    if (characterFormat.Underline == UnderlineType.Single)
+                    {
+                        characterFormat.Underline = UnderlineType.None;
+                    }
+                    else
+                    {
+                        characterFormat.Underline = UnderlineType.Single;
+                    }
+                }
+                if (sender == Size8)
+                {
+                    characterFormat.Size = 8;
+                }
+                if (sender == Size12)
+                {
+                    characterFormat.Size = 12;
+                }
+                if (sender == Size14)
+                {
+                    characterFormat.Size = 14;
+                }
+                if (sender == Size18)
+                {
+                    characterFormat.Size = 18;
+                }
+                if (sender == Size24)
+                {
+                    characterFormat.Size = 24;
+                }
+                if (sender == Red)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,0,0);
+                }
+                if (sender == Orange)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,128,0);
+                }
+                if (sender == Yellow)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,255,0);
+                }
+                if (sender == Green)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100, 0, 255, 0);
+                }
+                if (sender == Blue)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100, 0, 0, 255);
+                }
+                if (sender == Purple)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,127,0,255);
+                }
+                if (sender == Black)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100, 0, 0, 0);
+                }
+                if (sender == White)
+                {
+                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,255,255);
+                }
+                
+
+                selected.CharacterFormat = characterFormat;
+
             }
         }
 
@@ -71,8 +135,8 @@ namespace NuSysApp
             vm.CreateAnnotation();
             if (vm.IsAnnotation)
             {
-                nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
-                this.textBox.Foreground = new SolidColorBrush(Colors.Black);
+                //nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
+                //this.textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
 

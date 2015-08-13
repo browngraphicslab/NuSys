@@ -148,26 +148,52 @@
                                 <ImageBrush ImageSource="ms-appx:///Assets/bold.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}">
+                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}" Click="FormatText">
                             <Button.Background>
                                 <ImageBrush ImageSource="ms-appx:///Assets/italic.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}">
+                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}" Click="FormatText">
                             <Button.Background>
                                 <ImageBrush ImageSource="ms-appx:///Assets/underline.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-                        <Button Height="50" Width="50" Padding="0" Style="{StaticResource TextMenuItem}">
+                        <!--<Button Height="50" Width="50" Padding="0" Style="{StaticResource TextMenuItem}">
                             <Button.Content>
                                 <Ellipse Height="35" Width="35" Fill="Black" Margin="0,0,0,0"></Ellipse>
                             </Button.Content>
-                        </Button>
-                        <Button x:Name="FontSize" Style="{StaticResource TextMenuItem}">
+                        </Button>-->
+                        <ComboBox x:Name="Color" Margin="0,10,2,0" PlaceholderText="color">
+                            <ComboBoxItem x:Name="Red" Background="FloralWhite" Content="red" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Orange" Background="FloralWhite" Content="orange" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Yellow" Background="FloralWhite" Content="yellow" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Green" Background="FloralWhite" Content="green" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Blue" Background="FloralWhite" Content="blue" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Purple" Background="FloralWhite" Content="purple" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Black" Background="FloralWhite" Content="black" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="White" Background="FloralWhite" Content="white" Tapped="FormatText"></ComboBoxItem>
+                        </ComboBox>
+                        <ComboBox x:Name="FontSize" Margin="2,10,0,0" PlaceholderText="size">
+                            <ComboBoxItem x:Name="Size8" Background="FloralWhite" Content="8" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Size12" Background="FloralWhite" Content="12" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Size14" Background="FloralWhite" Content="14" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Size18" Background="FloralWhite" Content="18" Tapped="FormatText"></ComboBoxItem>
+                            <ComboBoxItem x:Name="Size24" Background="FloralWhite" Content="24" Tapped="FormatText"></ComboBoxItem>
+                        </ComboBox>
+                        <!--<Button x:Name="FontSize" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
                                 <ImageBrush ImageSource="ms-appx:///Assets/font size.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
-                        </Button>
+                            <Button.Flyout>
+                                <MenuFlyout Placement="Bottom">
+                                    <MenuFlyoutItem x:Name="Size8" Text="8" Click="FormatText"></MenuFlyoutItem>
+                                    <MenuFlyoutItem x:Name="Size12" Text="12" Click="FormatText"></MenuFlyoutItem>
+                                    <MenuFlyoutItem x:Name="Size14" Text="14" Click="FormatText"></MenuFlyoutItem>
+                                    <MenuFlyoutItem x:Name="Size18" Text="18" Click="FormatText"></MenuFlyoutItem>
+                                    <MenuFlyoutItem x:Name="Size24" Text="24" Click="FormatText"></MenuFlyoutItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>-->
                         <Button x:Name="Link" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
                                 <ImageBrush ImageSource="ms-appx:///Assets/link.png" Stretch="Uniform"></ImageBrush>
@@ -186,7 +212,7 @@
                     </StackPanel>
                 </Grid>
                 <local:RichEditBoxExtended x:Name="textBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top"
-                     Margin="20,58,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" RtfText="{Binding Data, Mode=TwoWay}" 
+                     Margin="20,58,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" RtfText="{Binding Data, Mode=TwoWay}"
                      IsEnabled="{Binding IsEditing}"
                      Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True">
 
