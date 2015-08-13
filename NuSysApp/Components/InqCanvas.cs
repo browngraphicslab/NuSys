@@ -124,7 +124,7 @@ namespace NuSysApp
         {
             var rect = Manager.PasteFromClipboard(new Point(0, 0));
             var strokes = _inkManager.GetStrokes();
-
+            this.Background = new SolidColorBrush(Colors.Black);
             foreach (var stroke in strokes)
             {
                 var pl = new Polyline();
@@ -134,7 +134,7 @@ namespace NuSysApp
                 var minY = points.Min(em => em.Position.Y);
 
                 foreach (var point in stroke.GetInkPoints())
-                { 
+                {
                     pl.StrokeThickness = Math.Max(4.0 * point.Pressure, 2);
                     pl.Stroke = new SolidColorBrush(Colors.Black);
                     pl.Points.Add(new Point(point.Position.X - minX, point.Position.Y - minY));
@@ -152,7 +152,7 @@ namespace NuSysApp
                     */
                 };
 
-
+                
                 Children.Add(pl);
             }
 

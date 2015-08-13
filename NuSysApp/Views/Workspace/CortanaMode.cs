@@ -6,10 +6,8 @@ namespace NuSysApp
 {
     public class CortanaMode : AbstractWorkspaceViewMode
     {
-        private readonly Point _placementPos = new Point(500, 100);
-        public CortanaMode(WorkspaceView view) : base(view)
-        {
-        }
+        private readonly Point _defaultPlacementPos = new Point(500, 100);
+        public CortanaMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
         {
@@ -17,22 +15,23 @@ namespace NuSysApp
             await ProcessCommand(command);
         }
 
-        public override async Task Deactivate()
-        {
-        }
+        public override async Task Deactivate() { }
 
         private async Task ProcessCommand(string command)
         {
             switch (command.ToLower())
             {
                 case "open document":
-                    await AddNodeMode.AddNode(_view, _placementPos, NodeType.Document);
+                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Document);
                     break;
                 case "create text":
-                    await AddNodeMode.AddNode(_view, _placementPos, NodeType.Text);
+                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text);
                     break;
                 case "create ink":
-                    await AddNodeMode.AddNode(_view, _placementPos, NodeType.Ink);
+                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Ink);
+                    break;
+                default:
+                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, command);
                     break;
             }
         }

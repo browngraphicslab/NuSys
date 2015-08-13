@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
 using Windows.Storage.Streams;
 using System.Text;
+using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -307,10 +309,12 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this);
+                    vm = new TextNodeViewModel(this, (string)data);
                     break;
                 case NodeType.Ink:
+
                     vm = new InkNodeViewModel(this);
+                    
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
@@ -342,7 +346,18 @@ namespace NuSysApp
             {
                 AtomViewList.Add(vm.View);
                 PositionNode(vm, xCoordinate, yCoordinate);
+                if (data is InkStroke)
+                {
+
+                    vm.View.Loaded += InkNodeView_PromoteInk;
+                }
             }
+        }
+
+        private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
+        {
+            (o as InkNodeView2).UpdateInk();
+            (o as InkNodeView2).Loaded -= InkNodeView_PromoteInk;
         }
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)

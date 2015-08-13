@@ -27,7 +27,7 @@ namespace NuSysApp
                 await speechRecognizer.CompileConstraintsAsync();
 
                 // Start recognition.
-                var speechRecognitionResult = await speechRecognizer.RecognizeWithUIAsync(); //????!!!??!?!?!?!?!?!??? (crashes after 2-3 successful commands)
+                var speechRecognitionResult = await speechRecognizer.RecognizeWithUIAsync(); //????!!!??!?!?!?!?!?!??? (crashes after 2 successful commands)
                 // Do something with the recognition result.
                 var result = speechRecognitionResult.Text;
                 return result;
