@@ -129,6 +129,11 @@ namespace NuSysApp
             //TODO Handle links
         }
 
+        public override string CreateXML()
+        {
+            throw new NotImplementedException();
+        }
+
         public ObservableCollection<UserControl> AtomViewList { get; private set;}
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; private set; }
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; private set; }

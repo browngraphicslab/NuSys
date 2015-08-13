@@ -1,4 +1,5 @@
-﻿using Windows.UI.Text;
+﻿using System;
+using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -16,6 +17,7 @@ namespace NuSysApp
         public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
         {
             _node = new RichTextNode("Hello oOrld", 0);
+            
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -41,6 +43,19 @@ namespace NuSysApp
                 rtb.Document.SetText(TextSetOptions.FormatRtf, _data);
             }
         }
-        #endregion Public Properties
+
+        public override string CreateXML()
+        {
+            
+            string XML = "";
+            Node currModel = (Node) _node;
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)_node.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
+            return XML;
+        }
+
     }
+    #endregion Public Properties
+}
 }

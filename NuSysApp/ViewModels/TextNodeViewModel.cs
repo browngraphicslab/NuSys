@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Media;
+﻿using System;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -39,6 +40,11 @@ namespace NuSysApp
                 RaisePropertyChanged("Data");
                 _node.Text = _data; //Remove once model is actually integrated
             }
+        }
+
+        public override string CreateXML()
+        {
+            throw new NotImplementedException();
         }
 
 

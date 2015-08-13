@@ -86,6 +86,11 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
+        public override string CreateXML()
+        {
+            throw new NotImplementedException();
+        }
+
         public ImageModel ImageModel
         {
             get { return _imgm; }

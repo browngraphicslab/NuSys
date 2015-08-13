@@ -118,6 +118,8 @@ namespace NuSysApp
             }
         }
 
+        public abstract string CreateXML();
+
         #endregion Public Properties
     }
 }

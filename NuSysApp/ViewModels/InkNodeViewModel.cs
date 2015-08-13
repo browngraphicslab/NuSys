@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Media;
+﻿using System;
+using Windows.UI.Xaml.Media;
 
 
 
@@ -21,6 +22,10 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false; 
         }
-       
+
+        public override string CreateXML()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

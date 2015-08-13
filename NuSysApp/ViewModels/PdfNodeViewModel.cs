@@ -153,6 +153,11 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
+        public override string CreateXML()
+        {
+            throw new NotImplementedException();
+        }
+
         public PdfNodeModel PdfNodeModel
         {
             get { return _pdfNodeModel; }
