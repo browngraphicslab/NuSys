@@ -300,13 +300,13 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate)
+        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this);
+                    vm = new TextNodeViewModel(this, (string)data);
                     break;
                 case NodeType.Ink:
                     vm = new InkNodeViewModel(this);
