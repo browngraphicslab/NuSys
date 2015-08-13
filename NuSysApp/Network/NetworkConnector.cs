@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+
 
 namespace NuSysApp
 {
@@ -18,34 +21,37 @@ namespace NuSysApp
         private string _UDPPort = "2156";
         private string _TCPInputPort = "302";
         private string _TCPOutputPort = "302";
-        private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets;
-        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; 
-        private HashSet<string> _otherIPs;
+        private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
+        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
+        private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
         private WorkSpaceModel _workspaceModel;
-        private Dictionary<string, DataWriter> _addressToWriter; 
-        private Hashtable _locksOut;
+        private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
+        private HashSet<string> _locksOut;//The hashset of locks currently given out.  the string represents the IP that holds it
 
-        private enum PacketType
+        public enum PacketType
         {
             UDP,
             TCP
         }
 
-        private class Packet
+        private class Packet //private class to store messages for later
         {
             private string _message;
             private PacketType _type;
             private NetworkConnector _network;
-            public Packet(NetworkConnector network,string message, PacketType type)
+            public Packet(NetworkConnector network,string message, PacketType type)//set all the params
             {
                 _network = network;
                 _message = message;
                 _type = type;
             }
 
-            public async void send(string address)
+            /*
+            *send message by passing in an address
+            */
+            public async void send(string address)//and send later on
             {
                 switch (_type)
                 {
@@ -53,14 +59,14 @@ namespace NuSysApp
                         await _network.SendTCPMessage(_message, address);
                         break;
                     case PacketType.UDP:
-                        await _network.SendUDPMessage(_message, _network._addressToWriter[address]);
+                        await _network.SendUDPMessage(_message, address);
                         break;
                 }
             }
         }
         public NetworkConnector()
         {
-            this.Init();
+            this.Init();//to call an async method
         }
         private async void Init()
         {
@@ -68,7 +74,7 @@ namespace NuSysApp
 
             Debug.WriteLine("local IP: " + _localIP);
 
-            _locksOut = new Hashtable();
+            _locksOut = new HashSet<string>();
             _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string, DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
@@ -97,10 +103,13 @@ namespace NuSysApp
             Debug.WriteLine("done");
         }
 
+        /*
+        * this will make  
+        */
         private void makeHost()
         {
             _hostIP = _localIP;
-            _locksOut = new Hashtable();
+            _locksOut = new HashSet<string>();
             _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
 
             Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
@@ -148,8 +157,31 @@ namespace NuSysApp
 
         private List<string> GetOtherIPs()
         {
-            List<string> ips = new List<string>();
-            ips.Add("10.38.62.23");
+            string URL = "http://aint.ch/nusys/clients.php";
+            string urlParameters = "?action=add&ip="+_localIP;
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(URL);
+
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            string people = "";
+
+            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var d = response.Content.ReadAsStringAsync().Result;
+                people = d;
+            }
+            else
+            {
+                Debug.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+            }
+            Debug.WriteLine("in workspace: "+people);
+            var split = people.Split(",".ToCharArray());
+
+            List<string> ips = split.ToList();
             return ips;//TODO add in Phil's php script
         }
 
@@ -230,6 +262,11 @@ namespace NuSysApp
                 await this.SendTCPMessage(message, ip, _TCPOutputPort);
             }
         }
+
+        public async Task SendUDPMessage(string message, string ip)
+        {
+            await this.SendUDPMessage(message, _addressToWriter[ip]);
+        }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
             writer.WriteString(message);
@@ -243,6 +280,45 @@ namespace NuSysApp
                 await this.HandleSubMessage(ip, subMessage, packetType);
             }
             
+        }
+
+        public async Task SendMessage(string ip, string message, PacketType packetType)
+        {
+            await SendMessage(ip, message, packetType, false);
+        }
+        public async Task SendMessage(string ip, string message, PacketType packetType, bool mass)
+        {
+            switch (packetType)
+            {
+                case PacketType.TCP:
+                    if (mass)
+                    {
+                        await SendMassTCPMessage(message);
+                        return;
+                    }
+                    else
+                    {
+                        await SendTCPMessage(message, ip);
+                        return;
+                    }
+                    break;
+                case PacketType.UDP:
+                    if (mass)
+                    {
+                        await SendMassUDPMessage(message);
+                        return;
+                    }
+                    else
+                    {
+                        await SendUDPMessage(message, _addressToWriter[ip]);
+                        return;
+                    }
+                    break;
+                default:
+                    Debug.WriteLine("Message send failed because the PacketType was incorrect.  Message: " + message);
+                    return;
+                    break;
+            }
         }
 
         private async Task HandleSubMessage(string ip, string message, PacketType packetType)
