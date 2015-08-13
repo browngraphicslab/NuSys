@@ -148,17 +148,16 @@
                                 <ImageBrush ImageSource="ms-appx:///Assets/bold.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}" Click="FormatText">
+                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}">
                             <Button.Background>
                                 <ImageBrush ImageSource="ms-appx:///Assets/italic.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}" Click="FormatText">
+                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}">
                             <Button.Background>
                                 <ImageBrush ImageSource="ms-appx:///Assets/underline.png" Stretch="Uniform"></ImageBrush>
                             </Button.Background>
                         </Button>
-
                         <Button Height="50" Width="50" Padding="0" Style="{StaticResource TextMenuItem}">
                             <Button.Content>
                                 <Ellipse Height="35" Width="35" Fill="Black" Margin="0,0,0,0"></Ellipse>

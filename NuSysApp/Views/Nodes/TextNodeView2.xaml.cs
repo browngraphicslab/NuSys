@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,6 +23,15 @@ namespace NuSysApp
 {
     public sealed partial class TextNodeView2 : UserControl
     {
+
+        public enum Formats
+        {
+            BOLD,
+            ITALIC,
+            UNDERLINE,
+            COLOR,
+            SIZE
+        }
 
         public TextNodeView2(TextNodeViewModel vm)
         {
@@ -46,7 +56,13 @@ namespace NuSysApp
 
         private void FormatText(object sender, RoutedEventArgs e)
         {
-            
+            ITextSelection selected = textBox.Document.Selection;
+            if (selected != null)
+            {
+                ITextCharacterFormat format = selected.CharacterFormat;
+                format.Bold = FormatEffect.Toggle;
+                selected.CharacterFormat = format;
+            }
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -56,7 +72,6 @@ namespace NuSysApp
             if (vm.IsAnnotation)
             {
                 nodeTpl.bg.Background = new SolidColorBrush(Color.FromArgb(100, 255, 235, 205));
-                //this.textBlock.Foreground = new SolidColorBrush(Colors.Black);
                 this.textBox.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
