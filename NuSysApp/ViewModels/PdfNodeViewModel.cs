@@ -31,6 +31,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.NodeType = Constants.NodeType.pdf;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
             this.InkContainer = new List<List<UIElement>>();
@@ -155,22 +156,12 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public override string CreateXML()
-        {
-            string XML = "";
-            PdfNodeModel currModel = (PdfNodeModel)this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height
-                    + "'content='" + currModel.Content + "'>";
-            return XML;
-        }
-
         public override XmlElement WriteXML(XmlDocument doc)
         {
             PdfNodeModel currModel = (PdfNodeModel)this.Model;
 
             //XmlElement 
-            XmlElement pdfNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
+            XmlElement pdfNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
             doc.AppendChild(pdfNode);
 
             //Other attributes - id, x, y, height, width

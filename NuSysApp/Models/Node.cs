@@ -34,7 +34,7 @@ namespace NuSysApp
 
         public double Height { get; set; }
 
-        public string NodeType { get; set; }
+        public Constants.NodeType NodeType { get; set; }
 
         public virtual string GetContentSource()
         {

@@ -62,8 +62,6 @@ namespace NuSysApp
         public void ToggleEditing()
         {
             this.IsEditing = !this.IsEditing;
-
-
         }
         public void ToggleEditingInk()
         {
@@ -99,7 +97,6 @@ namespace NuSysApp
             }
             this.UpdateAnchor();
         }
-
 
         public void CreateAnnotation()
         {
@@ -204,7 +201,6 @@ namespace NuSysApp
             get { return Model.Width; }
             set
             {
-
                 if (Model.Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
@@ -235,8 +231,6 @@ namespace NuSysApp
             }
         }
 
-        public abstract string CreateXML();
-
         public abstract XmlElement WriteXML(XmlDocument doc);
 
         public List<XmlAttribute> getBasicXML(XmlDocument doc)
@@ -244,22 +238,26 @@ namespace NuSysApp
             List<XmlAttribute> basicXml = new List<XmlAttribute>();
 
             //create xml attribute nodes
+            XmlAttribute type = doc.CreateAttribute("nodeType");
+            type.Value = this.Model.NodeType.ToString();
+
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = this.Model.ID.ToString();
 
             XmlAttribute x = doc.CreateAttribute("x");
-            x.Value = this.Model.X.ToString();
+            x.Value = ((int) this.Model.Transform.Matrix.OffsetX).ToString();
 
             XmlAttribute y = doc.CreateAttribute("y");
-            y.Value = this.Model.Y.ToString();
+            y.Value = ((int) this.Model.Transform.Matrix.OffsetY).ToString();
 
             XmlAttribute height = doc.CreateAttribute("height");
-            height.Value = this.Model.Height.ToString();
+            height.Value = ((int) this.Model.Height).ToString();
 
             XmlAttribute width = doc.CreateAttribute("width");
-            width.Value = this.Model.Width.ToString();
+            width.Value = ((int) this.Model.Width).ToString();
 
             //append to list and return
+            basicXml.Add(type);
             basicXml.Add(id);
             basicXml.Add(x);
             basicXml.Add(y);
@@ -268,6 +266,8 @@ namespace NuSysApp
 
             return basicXml;
         }
+
+        
 
         /// <summary>
         /// indicates whether node is editable.
@@ -297,6 +297,15 @@ namespace NuSysApp
                 _isEditingInk = value;
                 RaisePropertyChanged("IsEditingInk");
             }
+        }
+
+        public Constants.NodeType NodeType {
+            get { return this.Model.NodeType; }
+            set
+            {
+                this.Model.NodeType = value;
+            }
+
         }
 
         public GroupViewModel ParentGroup { get; set; }

@@ -26,6 +26,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.View = new GroupView(this);
+            this.NodeType = Constants.NodeType.group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
         }
@@ -46,14 +47,30 @@ namespace NuSysApp
         public override void Resize(double dx, double dy)
         {
             var trans = LocalTransform;
-            var scale = dx < dy ? (Width + dx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + dy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
+            var newDx = 0.0;
+            var newDy = 0.0;
+            if (dx > dy)
+            {
+                newDx = dy * Width / Height;
+                newDy = dy;
+            }
+            else
+            {
+                newDx = dx;
+                newDy = dx * Height / Width;
+            }
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
+            {
+                return;
+            }
+            var scale = newDx < newDy ? (Width + newDx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + newDy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             trans.ScaleX *= scale;
             trans.ScaleY *= scale;
             LocalTransform = trans;
             
-            base.Resize(dx, dy);
-            _margin += dx;
-           // this.ArrangeNodesInGrid();
+            _margin += newDx;
+            (View as GroupView).ArrangeNodesInGrid();
+            base.Resize(newDx , newDy );
         }
 
 
@@ -125,29 +142,14 @@ namespace NuSysApp
             }
             return false;
         }
-        public override string CreateXML()
-        {
-            string XML = "";
-            Node currModel = this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'content='" + currModel.Content + "'>";
-
-            foreach(NodeViewModel nodevm in NodeViewModelList)
-            {
-                XML = XML+ nodevm.CreateXML();
-            }
-
-            return XML;
-        }
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
             Node currModel = this.Model;
 
             //Main XmlElement 
-            XmlElement groupNode = doc.CreateElement(string.Empty, "groupNode", string.Empty); //TODO: Change how we determine node type for name
-            doc.AppendChild(groupNode);
+            XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
