@@ -7,6 +7,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
 using Windows.UI.Xaml;
+using System.Xml;
+using Windows.UI.Input.Inking;
 
 namespace NuSysApp
 {
@@ -21,20 +23,22 @@ namespace NuSysApp
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
 
-        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
+        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, int id) : base(workspaceViewModel, id)
         {
             this.View = new PdfNodeView2(this);
-            this.PdfNodeModel = new PdfNodeModel(0);
+            this.PdfNodeModel = new PdfNodeModel(id);
             this.Model = this.PdfNodeModel;
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            this.NodeType = Constants.NodeType.pdf;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<List<UIElement>>();
+            this.InkContainer = new List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>>();
             _workspaceViewModel = workspaceViewModel;
-            var C = new CompositeTransform { 
+            var C = new CompositeTransform {
                 ScaleX = 1,
                 ScaleY = 1
             };
@@ -126,8 +130,8 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new List<UIElement>());
-                
+                this.InkContainer.Add(new Dictionary<Windows.UI.Xaml.Shapes.Polyline, InkStroke>());
+
             }
         }
 
@@ -154,14 +158,22 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public override string CreateXML()
+        public override XmlElement WriteXML(XmlDocument doc)
         {
-            string XML = "";
             PdfNodeModel currModel = (PdfNodeModel)this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height
-                    + "'content='" + currModel.Content + "'>";
-            return XML;
+
+            //XmlElement 
+            XmlElement pdfNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            doc.AppendChild(pdfNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                pdfNode.SetAttributeNode(attr);
+            }
+
+            return pdfNode;
         }
 
         public PdfNodeModel PdfNodeModel
@@ -221,8 +233,8 @@ namespace NuSysApp
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
-     //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<List<UIElement>> InkContainer { get; set; }
+        //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+        public List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>> InkContainer { get; set; }
 
         public CompositeTransform InkScale
         {

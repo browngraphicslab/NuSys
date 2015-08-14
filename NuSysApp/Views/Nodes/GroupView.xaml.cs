@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,7 +25,11 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             Canvas.SetZIndex(this, -1);
-            (this.DataContext as GroupViewModel).NodeViewModelList.CollectionChanged += AtomViewList_CollectionChanged;
+            var groupViewModel = this.DataContext as GroupViewModel;
+            if (groupViewModel != null)
+            {
+                groupViewModel.NodeViewModelList.CollectionChanged += AtomViewList_CollectionChanged;
+            }
         }
 
         private void AtomViewList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -32,7 +37,7 @@ namespace NuSysApp
             ArrangeNodesInGrid();
         }
 
-        private void ArrangeNodesInGrid()
+        public void ArrangeNodesInGrid()
         {
             var vm = this.DataContext as GroupViewModel;
             var AtomViewList = vm.NodeViewModelList;
@@ -40,7 +45,8 @@ namespace NuSysApp
             vm.Width = Constants.MinNodeSizeX;
             vm.Height = Constants.MinNodeSizeY;
 
-            var _margin = 75.0;
+            var scale = vm.LocalTransform.ScaleX;
+            var _margin = 75.0 ;
             var currentX = _margin;
             var currentY = _margin;
             var columnCount = Math.Round(Math.Sqrt(AtomViewList.Count));
@@ -54,7 +60,7 @@ namespace NuSysApp
                 mat.OffsetY = currentY;
                 toArr.Transform.Matrix = mat;
                 heightToAdd = heightToAdd < toArr.Height ? toArr.Height : heightToAdd;
-                if (vm.Height < currentY + toArr.Height + _margin)
+                if (vm.Height < currentY + toArr.Height  + _margin)
                 {
                     vm.Height = currentY + toArr.Height + _margin;
                     Height = currentY + toArr.Height + _margin;
@@ -75,6 +81,10 @@ namespace NuSysApp
                     currentX += toArr.Width + _margin;
                 }
             }
+            vm.Height *= scale;
+            vm.Width *= scale;
+            Height *= scale;
+            Width *= scale;
             this.DataContext = vm;
         }
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
