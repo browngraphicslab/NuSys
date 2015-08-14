@@ -70,9 +70,8 @@ namespace NuSysApp
             
             _margin += newDx;
             (View as GroupView).ArrangeNodesInGrid();
-            base.Resize(newDx , newDy );
+            base.Resize(newDx, newDy);
         }
-
 
         public void RemoveNode(NodeViewModel toRemove)
         {
@@ -165,8 +164,6 @@ namespace NuSysApp
             {
                 groupNode.AppendChild(nodevm.WriteXML(doc));
             }
-
-
             return groupNode;
         }
 
