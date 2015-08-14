@@ -5,9 +5,9 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class Node
+    public class Node : Atom
     {
-        public Node(int id)
+        public Node(int id) : base()
         {
             StartLines = new List<Link>();
             EndLines = new List<Link>();

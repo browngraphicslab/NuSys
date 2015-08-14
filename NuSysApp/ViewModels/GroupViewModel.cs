@@ -39,7 +39,7 @@ namespace NuSysApp
           //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
-                link.IsVisible = false;
+                link.SetVisibility(false);
             }
             //TODO Handle links
         }
@@ -101,8 +101,10 @@ namespace NuSysApp
                     WorkSpaceViewModel.DeleteNode(this);
                     foreach (var link in lastNode.LinkList)
                     {
-                        link.IsVisible = true;
+                        link.SetVisibility(true);
                         link.UpdateAnchor();
+                        link.Atom1.UpdateAnchor();
+                        link.Atom2.UpdateAnchor();
                     }
                     lastNode.UpdateAnchor();
                     break;
@@ -145,7 +147,7 @@ namespace NuSysApp
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
-            Node currModel = this.Model;
+            Atom currModel = this.Model;
 
             //Main XmlElement 
             XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name

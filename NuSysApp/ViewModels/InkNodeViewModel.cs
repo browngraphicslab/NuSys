@@ -29,7 +29,7 @@ namespace NuSysApp
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
-            Node currModel = this.Model;
+            Atom currModel = this.Model;
 
             //Main XmlElement 
             XmlElement inkNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name

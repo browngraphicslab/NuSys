@@ -22,6 +22,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.NodeType = Constants.NodeType.text;
+            //this.Color = Windows.UI.Color.FromArgb(255, 255, 235, 205);
         }
 
         #region Public Properties

@@ -19,7 +19,6 @@ namespace NuSysApp
         #region Private Members
   
         private AtomViewModel _atom1, _atom2;
-        private bool _isVisible;
         #endregion Private members
 
         public LinkViewModel(AtomViewModel atom1,
@@ -34,8 +33,6 @@ namespace NuSysApp
             this.Model = new Link(atom1.Model, atom2.Model);
             this.Model.InNodeID = atom1.Model.ID;
             this.Model.OutNodeID = atom2.Model.ID;
-            
-
             var line = this.LineRepresentation;
 
             this.AnchorX = (int) (line.X2 + (Math.Abs(line.X2 - line.X1)/2));
