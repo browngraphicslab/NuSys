@@ -22,6 +22,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.NodeType = Constants.NodeType.text;
             this.View = new TextNodeView2(this);
         }
 
@@ -40,24 +41,14 @@ namespace NuSysApp
             }
         }
 
-        public override string CreateXML()
-        {
-            string XML = "";
-            TextNode currModel = (TextNode)this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
-            return XML;
-        }
-
         public override XmlElement WriteXML(XmlDocument doc)
         {
 
             TextNode currModel = (TextNode)this.Model;
 
             //XmlElement 
-            XmlElement textNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
-            //doc.AppendChild(textNode);
+            XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
