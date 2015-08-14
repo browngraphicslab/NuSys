@@ -43,7 +43,7 @@ namespace NuSysApp.Views.Workspace
         {
             Polyline line = sender as Polyline;
             var inkStroke = _view.InqCanvas.Strokes[line];
-            _view.InqCanvas.Manager.SelectWithLine(inkStroke.GetInkPoints().First().Position, inkStroke.GetInkPoints()[1].Position);
+            _view.InqCanvas.Manager.SelectWithLine(inkStroke.GetInkPoints().First().Position, inkStroke.GetInkPoints().Last().Position);
             if (inkStroke.Selected)
             {
                 _view.InqCanvas.Manager.CopySelectedToClipboard();
@@ -52,7 +52,6 @@ namespace NuSysApp.Views.Workspace
                 var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
                 Debug.WriteLine("click at " + p.X + ", " + p.Y);
                 await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, inkStroke);
-                _view.InqCanvas.Manager.DeleteSelected();
             }
         }
 
