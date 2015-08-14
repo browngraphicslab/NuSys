@@ -438,7 +438,7 @@ namespace NuSysApp
             dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
-            Debug.WriteLine(currWorkspaceXml.XmlToString(this.getXml()));
+            //Debug.WriteLine(currWorkspaceXml.XmlToString(this.getXml()));
             dbConnection.InsertAsync(currWorkspaceXml);
         }
 
