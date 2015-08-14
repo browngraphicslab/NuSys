@@ -42,5 +42,14 @@ namespace NuSysApp
             //_networkConnector.sendMassUDPMessage("test from button");
             // _networkConnector.SendTCPMessage("tcp message!", "10.38.22.71","302");
         }
+
+        private void TCP_OnClick(object sender, RoutedEventArgs e)
+        {
+            _networkConnector.SendMassTCPMessage("TCP Test!");
+        }
+        private void UDP_OnClick(object sender, RoutedEventArgs e)
+        {
+            _networkConnector.SendMassUDPMessage("TCP Test!");
+        }
     }
 }
