@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -16,13 +18,13 @@ namespace NuSysApp
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
-
             this.Width = igm.PixelWidth;
             this.Height = igm.PixelHeight;
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.ImageModel = new ImageModel(igm, 0);
+            this.Model = this.ImageModel;
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -50,6 +52,7 @@ namespace NuSysApp
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
                 this.ImageModel = new ImageModel(bitmapImage, 0);
+                ImageModel.FilePath = storageFile.Path;
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;
                 var C = new CompositeTransform
@@ -84,6 +87,41 @@ namespace NuSysApp
             this.InkScale = ct;
 
             base.Resize(newDx, newDy);
+        }
+
+        public override string CreateXML()
+        {
+            string XML = "";
+            ImageModel currModel = (ImageModel)this.Model;
+
+            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
+                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
+                    "'Image='" + currModel.GetContentSource() + "'content='" + currModel.Content + "'>";
+            return XML;
+
+        }
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            ImageModel currModel = (ImageModel)this.Model;
+
+            //Main XmlElement 
+            XmlElement imageNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: fix how we get element name
+            doc.AppendChild(imageNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                imageNode.SetAttributeNode(attr);
+            }
+
+            //Source for image
+            XmlAttribute source = doc.CreateAttribute("Source");
+            source.Value = currModel.FilePath;
+            imageNode.SetAttributeNode(source);
+
+            return imageNode;
         }
 
         public ImageModel ImageModel
