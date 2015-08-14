@@ -222,7 +222,7 @@ namespace NuSysApp
         }
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            string ip = sender.Information.RemoteAddress.RawName;
+            string ip = args.RemoteAddress.RawName;
             string message;
             try
             {
