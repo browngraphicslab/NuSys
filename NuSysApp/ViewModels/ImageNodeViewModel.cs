@@ -23,6 +23,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = Constants.NodeType.image; //Also sets model value
             this.ImageModel = new ImageModel(igm, 0);
             this.Model = this.ImageModel;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -12,7 +13,7 @@ namespace NuSysApp
         public Atom()
         { }
 
-        public Color Color { get; set; }
+        public SolidColorBrush Color { get; set; }
 
         public int ID { get; set; }
     } 
