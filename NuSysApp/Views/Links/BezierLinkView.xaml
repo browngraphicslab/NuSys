@@ -18,7 +18,7 @@
     </UserControl.Resources>
 
     <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
-        <Path x:Name="BezierLink" Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity=".85" CompositeMode="SourceOver">
+        <Path x:Name="BezierLink" Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity=".85" CompositeMode="MinBlend">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>

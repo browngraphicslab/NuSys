@@ -58,6 +58,8 @@ namespace NuSysApp
             this.ManipulationMode = ManipulationModes.All;
             this.ManipulationDelta += OnManipulationDelta;
 
+            this.PointerReleased += OnPointerReleased;
+
             var vm = (NodeViewModel)this.DataContext;
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
 
@@ -97,6 +99,18 @@ namespace NuSysApp
         {
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            e.Handled = true;
+        }
+        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.CreateAnnotation();
+            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
+//            if (vm.IsAnnotation)
+//            {
+//                SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
+//                nodeTpl.Background = backgroundColorBrush;
+//            }
             e.Handled = true;
         }
 

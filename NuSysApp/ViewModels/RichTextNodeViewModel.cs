@@ -16,9 +16,9 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
+        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel, int id) : base(workSpaceViewModel, id)
         {
-            _node = new RichTextNode("Hello oOrld", 0);
+            _node = new RichTextNode("Hello oOrld", id);
             this.Model = _node;
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
@@ -26,6 +26,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.NodeType = Constants.NodeType.richText;
             this.View = new RichTextNodeView2(this);
         }
 
@@ -46,24 +47,14 @@ namespace NuSysApp
             }
         }
 
-        public override string CreateXML()
-        { 
-            string XML = "";
-            RichTextNode currModel = (RichTextNode) _node;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
-            return XML;
-        }
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
             RichTextNode currModel = (RichTextNode)this.Model;
 
             //XmlElement 
-            XmlElement richTextNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
-            doc.AppendChild(richTextNode);
-
+            XmlElement richTextNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
             foreach (XmlAttribute attr in basicXml)

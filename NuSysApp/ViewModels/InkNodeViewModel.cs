@@ -15,35 +15,24 @@ namespace NuSysApp
     public class InkNodeViewModel : NodeViewModel
     {
 
-        public InkNodeViewModel(WorkspaceViewModel vm): base(vm)
+        public InkNodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.View = new InkNodeView2(this);
-            this.Model = new Node(0);
+            this.Model = new Node(id);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; 
-            this.Height = Constants.DefaultNodeSize; 
+            this.Height = Constants.DefaultNodeSize;
+            this.NodeType = Constants.NodeType.ink; 
             this.IsSelected = false;
             this.IsEditing = false;
         }
 
-        public override string CreateXML()
-        {
-            string XML = "";
-            Node currModel = (Node)this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'content='" + currModel.Content + "'>";
-            return XML;
-
-    }
-
         public override XmlElement WriteXML(XmlDocument doc)
         {
-            Node currModel = this.Model;
+            Atom currModel = this.Model;
 
             //Main XmlElement 
-            XmlElement inkNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
-            doc.AppendChild(inkNode);
+            XmlElement inkNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
