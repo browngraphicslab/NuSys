@@ -31,6 +31,7 @@ namespace NuSysApp
         private string _hostIP;
         private string _localIP;
         private DatagramSocket _UDPsocket;
+        private StreamSocketListener _TCPlistener;
         private WorkspaceViewModel _workspaceViewModel;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
@@ -99,9 +100,9 @@ namespace NuSysApp
                 }
             }
 
-            StreamSocketListener listener = new StreamSocketListener();
-            listener.ConnectionReceived += this.TCPConnectionRecieved;
-            await listener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
+            _TCPlistener = new StreamSocketListener();
+            _TCPlistener.ConnectionReceived += this.TCPConnectionRecieved;
+            await _TCPlistener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
 
             _UDPsocket = new DatagramSocket();
             await _UDPsocket.BindServiceNameAsync(_UDPPort);
