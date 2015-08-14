@@ -108,7 +108,6 @@ namespace NuSysApp
             await _UDPsocket.BindServiceNameAsync(_UDPPort);
             _UDPsocket.MessageReceived += this.DatagramMessageRecieved;
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
-            Debug.WriteLine("done");
         }
 
         /*
@@ -226,6 +225,12 @@ namespace NuSysApp
             await this.MessageRecieved(ip,message,PacketType.TCP);
         }
 
+        public string GetID(string senderIP)
+        {
+            string hash = senderIP.Replace(@".", "") + "#";
+            string now = DateTime.UtcNow.Ticks.ToString();
+            return hash + now;
+        }
         private List<string> GetOtherIPs()
         {
             string URL = "http://aint.ch/nusys/clients.php";
@@ -372,6 +377,10 @@ namespace NuSysApp
             await SendMessage(ip, message, packetType, false);
         }
 
+        public async Task SendMessageToHost(string message, PacketType packetType = PacketType.TCP)
+        {
+            await SendMessage(_hostIP, message, packetType, false);
+        }
 
         public async Task SendMessage(string ip, string message, PacketType packetType, bool mass)
         {
@@ -570,6 +579,23 @@ namespace NuSysApp
 
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
+            if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
+            {
+                if (message.IndexOf("id=0,") != -1)
+                {
+                    message = message.Replace(@"id=0,", "id=" + GetID(ip) + ',');
+                    await HandleRegularMessage(ip, message, packetType);
+                    await SendMassTCPMessage(message);
+                    return;
+                }
+                if (message.IndexOf("id=0>") != -1)
+                {
+                    message = message.Replace(@"id=0>", "id=" + GetID(ip) + '>');
+                    await HandleRegularMessage(ip, message, packetType);
+                    await SendMassTCPMessage(message);
+                    return;
+                }
+            }
             if (_localIP == _hostIP)
             {
                 foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers)
