@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -20,16 +21,20 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Storage;
+using System.Net.Http;
+using Windows.Networking.Connectivity;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
 namespace NuSysApp
 {
+
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     sealed partial class App : Application
     {
+        private NetworkConnector _networkConnector; //TODO find better way than have instance variable
         /// <summary>
         /// Allows tracking page views, exceptions and other telemetry through the Microsoft Application Insights service.
         /// </summary>
@@ -91,6 +96,7 @@ namespace NuSysApp
                 // configuring the new page by passing required information as a navigation
                 // parameter
                 rootFrame.Navigate(typeof(WaitingRoomView), e.Arguments);
+                _networkConnector = ((WaitingRoomView)rootFrame.Content).NetworkConnector;
             }
             // Ensure the current window is active
             Window.Current.Activate();
@@ -196,6 +202,21 @@ namespace NuSysApp
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            string URL = "http://aint.ch/nusys/clients.php";
+            string urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName; 
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(URL);
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+            _networkConnector.RemoveIP(
+                NetworkInformation.GetHostNames()
+                    .FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null)
+                    .RawName);
+
+
+
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }

@@ -35,6 +35,10 @@ namespace NuSysApp
             _networkConnector = new NetworkConnector();   
         }
 
+        public NetworkConnector NetworkConnector
+        {
+            get { return _networkConnector; }
+        }
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(WorkspaceView));

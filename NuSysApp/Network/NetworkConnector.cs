@@ -26,7 +26,6 @@ namespace NuSysApp
         private string _TCPInputPort = "302";
         private string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
-        private HashSet<Tuple<StreamSocket, DataWriter>> _TCPOutSockets; //the set of all UDP output sockets and the writers that send their data
         private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
@@ -85,7 +84,6 @@ namespace NuSysApp
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string,DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
-            _TCPOutSockets = new HashSet<Tuple<StreamSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
 
             List<string> ips = GetOtherIPs();
@@ -147,6 +145,47 @@ namespace NuSysApp
                 await AddSocket(ip);
             }
         }
+        internal async Task RemoveIP(string ip)
+        {
+            if (_otherIPs.Contains(ip))
+            {
+                _otherIPs.Remove(ip);
+            }
+            if (_addressToWriter.ContainsKey(ip))
+            {
+                _addressToWriter.Remove(ip);
+            }
+            foreach (Tuple<DatagramSocket,DataWriter> tup in _UDPOutSockets)
+            {
+                if (tup.Item1.Information.RemoteAddress.RawName == ip)
+                {
+                    _UDPOutSockets.Remove(tup);
+                    break;
+                }
+            }
+            HashSet<KeyValuePair<string,string>> set = new HashSet<KeyValuePair<string, string>>();
+            if (_locksOut.ContainsValue(ip))
+            {
+                foreach (KeyValuePair<string, string> kvp in _locksOut)
+                {
+                    if (kvp.Value == ip)
+                    {
+                        set.Add(kvp);
+                    }
+                }
+            }
+            foreach (KeyValuePair<string, string> kvp in set)
+            {
+                _locksOut.Remove(kvp.Key);
+            }
+            Tuple<bool, List<Packet>> items;
+            if (_joiningMembers.ContainsKey(ip))
+            {
+                _joiningMembers.TryRemove(ip, out items);
+            }
+            Debug.WriteLine("Removed IP: "+ip+".  List now is: "+_otherIPs.ToString());
+        }
+
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             DataReader reader = new DataReader(args.Socket.InputStream);
