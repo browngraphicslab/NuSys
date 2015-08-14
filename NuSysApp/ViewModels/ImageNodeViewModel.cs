@@ -14,7 +14,7 @@ namespace NuSysApp
         private ImageModel _imgm;
         private CompositeTransform _inkScale;
 
-        public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
+        public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm, int id) : base(vm, id)
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
@@ -25,7 +25,7 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = Constants.NodeType.image; //Also sets model value
-            this.ImageModel = new ImageModel(igm, 0);
+            this.ImageModel = new ImageModel(igm, id); //TO-DO get rid of this and just have one model
             this.Model = this.ImageModel;
             
             var C = new CompositeTransform
@@ -38,7 +38,7 @@ namespace NuSysApp
             this.InkScale = C;
         }
 
-        public ImageNodeViewModel(WorkspaceViewModel vm) : base(vm)
+        public ImageNodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();

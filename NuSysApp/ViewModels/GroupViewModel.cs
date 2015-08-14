@@ -12,13 +12,13 @@ namespace NuSysApp
     {
         private double _margin;
         private CompositeTransform _localTransform;
-        public GroupViewModel(WorkspaceViewModel vm): base(vm)
+        public GroupViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             this.AtomType = Constants.Node;
-            this.Model = new Node(0);
+            this.Model = new Node(id);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -71,9 +71,8 @@ namespace NuSysApp
             
             _margin += newDx;
             (View as GroupView).ArrangeNodesInGrid();
-            base.Resize(newDx , newDy );
+            base.Resize(newDx, newDy);
         }
-
 
         public void RemoveNode(NodeViewModel toRemove)
         {
@@ -166,8 +165,6 @@ namespace NuSysApp
             {
                 groupNode.AppendChild(nodevm.WriteXML(doc));
             }
-
-
             return groupNode;
         }
 

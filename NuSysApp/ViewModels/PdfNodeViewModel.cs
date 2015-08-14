@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
 using Windows.UI.Xaml;
 using System.Xml;
+using Windows.UI.Input.Inking;
 
 namespace NuSysApp
 {
@@ -22,10 +23,10 @@ namespace NuSysApp
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
 
-        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
+        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, int id) : base(workspaceViewModel, id)
         {
             this.View = new PdfNodeView2(this);
-            this.PdfNodeModel = new PdfNodeModel(0);
+            this.PdfNodeModel = new PdfNodeModel(id);
             this.Model = this.PdfNodeModel;
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
@@ -35,9 +36,9 @@ namespace NuSysApp
             this.NodeType = Constants.NodeType.pdf;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<List<UIElement>>();
+            this.InkContainer = new List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>>();
             _workspaceViewModel = workspaceViewModel;
-            var C = new CompositeTransform { 
+            var C = new CompositeTransform {
                 ScaleX = 1,
                 ScaleY = 1
             };
@@ -129,8 +130,8 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new List<UIElement>());
-                
+                this.InkContainer.Add(new Dictionary<Windows.UI.Xaml.Shapes.Polyline, InkStroke>());
+
             }
         }
 
@@ -232,8 +233,8 @@ namespace NuSysApp
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
-     //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<List<UIElement>> InkContainer { get; set; }
+        //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
+        public List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>> InkContainer { get; set; }
 
         public CompositeTransform InkScale
         {

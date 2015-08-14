@@ -1,10 +1,11 @@
 ﻿
 namespace NuSysApp
 {
-    public class Link
+    public class Link : Atom
     {
-        public Link(Node inNode, Node outNode)
+        public Link(Node inNode, Node outNode, int id) : base(id)
         {
+            ID = id;
             InNodeID = inNode.ID;
             OutNodeID = outNode.ID;
         }
