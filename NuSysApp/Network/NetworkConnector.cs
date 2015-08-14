@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,7 +24,7 @@ namespace NuSysApp
         private string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
         private HashSet<Tuple<StreamSocket, DataWriter>> _TCPOutSockets; //the set of all UDP output sockets and the writers that send their data
-        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
+        private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
@@ -78,7 +79,7 @@ namespace NuSysApp
             Debug.WriteLine("local IP: " + _localIP);
 
             _locksOut = new Dictionary<string, string>();
-            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string, Tuple<DataWriter, DataWriter>>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _addressToStreamSockets = new Dictionary<string, StreamSocket>();
@@ -115,7 +116,7 @@ namespace NuSysApp
         {
             _hostIP = _localIP;
             _locksOut = new Dictionary<string, string>();
-            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
 
             Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
             //ToDo add in other host responsibilities
@@ -294,9 +295,10 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
-            Debug.WriteLine("attempting to UDP send message: " + message);
+            Debug.WriteLine("attempting to send UDP message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
+            Debug.WriteLine("Sent UDP message: " + message);
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
@@ -390,7 +392,10 @@ namespace NuSysApp
                     }
                     if (_hostIP == _localIP)
                     {
-                        _joiningMembers.Add(message,new Tuple<bool,List<Packet>>(false,new List<Packet>()));//add new joining member
+                        if (!_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))//add new joining member
+                        {
+                            Debug.WriteLine("Adding of joining member failed concurrency");
+                        }
                     }
                     break;
                 case "1":// response to initial request = "The host is the following person" ex: message = "10.10.10.10"
