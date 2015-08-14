@@ -127,7 +127,8 @@ namespace NuSysApp
             get { return _workspaceViewModel; }
             set
             {
-                _workspaceViewModel = value; 
+                _workspaceViewModel = value;
+                _workspaceViewModel.NetworkConnector = this;
             }
         }
 
@@ -570,13 +571,21 @@ namespace NuSysApp
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
         }
-        public void moveNode(double x, double y)
+
+        private double lastx = 0;
+        private double lasty = 0;
+        public async void moveNode(double x, double y)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("x",x.ToString());
-            dict.Add("y", x.ToString());
-            string s = MakeSubMessageFromDict(dict);
-            SendMassUDPMessage(s);
+            if (x != 0 && y != 0 && lastx!=x && lasty !=y)
+            {
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+                dict.Add("x", x.ToString());
+                dict.Add("y", x.ToString());
+                lastx = x;
+                lasty = y;
+                string s = MakeSubMessageFromDict(dict);
+                await SendMassUDPMessage(s);
+            }
         }
     }
 }
