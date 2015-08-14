@@ -22,8 +22,7 @@
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" RenderTransform="{Binding LocalTransform}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas HorizontalAlignment="Left" Background="Red" x:Name="canvas" RenderTransform="{Binding LocalTransform}">
-                        </Canvas>
+                        <Canvas HorizontalAlignment="Left" Background="Red" x:Name="canvas"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
