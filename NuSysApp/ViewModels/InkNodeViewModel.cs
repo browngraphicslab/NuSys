@@ -34,8 +34,7 @@ namespace NuSysApp
                     "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
                     "'content='" + currModel.Content + "'>";
             return XML;
-
-    }
+        }
 
         public override XmlElement WriteXML(XmlDocument doc)
         {

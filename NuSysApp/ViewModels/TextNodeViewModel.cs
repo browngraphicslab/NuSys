@@ -16,13 +16,13 @@ namespace NuSysApp
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text) : base(workSpaceViewModel)
         {
             this.Model = new TextNode(text ?? "Enter text here", 0);
-            this.Transform = new MatrixTransform();
+            this.View = new TextNodeView2(this);
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.View = new TextNodeView2(this);
+            this.Transform = new MatrixTransform();
         }
 
         #region Public Properties

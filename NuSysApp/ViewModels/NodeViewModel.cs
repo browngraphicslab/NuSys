@@ -244,16 +244,16 @@ namespace NuSysApp
             id.Value = this.Model.ID.ToString();
 
             XmlAttribute x = doc.CreateAttribute("x");
-            x.Value = this.Model.X.ToString();
+            x.Value = ((int) this.Model.Transform.Matrix.OffsetX).ToString();
 
             XmlAttribute y = doc.CreateAttribute("y");
-            y.Value = this.Model.Y.ToString();
+            y.Value = ((int) this.Model.Transform.Matrix.OffsetY).ToString();
 
             XmlAttribute height = doc.CreateAttribute("height");
-            height.Value = this.Model.Height.ToString();
+            height.Value = ((int) this.Model.Height).ToString();
 
             XmlAttribute width = doc.CreateAttribute("width");
-            width.Value = this.Model.Width.ToString();
+            width.Value = ((int) this.Model.Width).ToString();
 
             //append to list and return
             basicXml.Add(id);
