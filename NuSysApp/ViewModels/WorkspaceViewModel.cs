@@ -18,6 +18,8 @@ using SQLite.Net.Async;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using System.Xml;
+using System.IO;
+using SQLite.Net;
 
 namespace NuSysApp
 {
@@ -416,22 +418,26 @@ namespace NuSysApp
 
         public async Task SaveWorkspace()
         {
+            // clear the existing table so that there is always only one workspace to load, just for testing purposes
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
+            dbConnection.DropTableAsync<XmlFileHelper>();
+
+            // recreate the table to store the xml file of the current workspace
             dbConnection.CreateTableAsync<XmlFileHelper>();
-            XmlFileHelper currWorkspace = new XmlFileHelper();
-            currWorkspace.toXML = currWorkspace.XmlToString(this.getXML());
-            dbConnection.InsertAsync(currWorkspace);
+            XmlFileHelper currWorkspaceXml = new XmlFileHelper();
+            currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
+            dbConnection.InsertAsync(currWorkspaceXml);
         }
 
         public async Task LoadWorkspace()
         {
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
-            var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 7);
+            var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
             query.FirstOrDefaultAsync().ContinueWith((t) => 
-            t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXML)));
+            t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXml)));
         }
 
-        public XmlDocument getXML()
+        public XmlDocument getXml()
         {
             //Document declaration
             XmlDocument doc = new XmlDocument();
