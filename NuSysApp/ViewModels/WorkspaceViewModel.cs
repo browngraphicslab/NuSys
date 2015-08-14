@@ -32,6 +32,7 @@ namespace NuSysApp
 
         private readonly Factory _factory;
         private SQLiteDatabase myDB;
+        private int idCounter;
 
         public enum LinkMode
         {
@@ -52,6 +53,7 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
+            idCounter = 0;
 
             Init();
             var c = new CompositeTransform
@@ -96,7 +98,8 @@ namespace NuSysApp
                         {
                             var str = lines[0];
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-                            var nodeVm = await Factory.CreateNewImage(this, imageFile);
+                            var nodeVm = await Factory.CreateNewImage(this, imageFile, idCounter);
+                            idCounter++;
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
@@ -104,7 +107,8 @@ namespace NuSysApp
 
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
-                            var nodeVm = Factory.CreateNewRichText(this, readFile);
+                            var nodeVm = Factory.CreateNewRichText(this, readFile, idCounter);
+                            idCounter++;
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
@@ -139,7 +143,8 @@ namespace NuSysApp
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
 
-                        var nodeVm = Factory.CreateNewRichText(this, text);
+                        var nodeVm = Factory.CreateNewRichText(this, text, idCounter);
+                        idCounter++;
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -308,7 +313,9 @@ namespace NuSysApp
                 return;
             }
             if (atomVm1 == atomVm2) return;
-            var vm = new LinkViewModel(atomVm1, atomVm2, this);
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
+            idCounter++;
+            Debug.WriteLine(idCounter);
 
             LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
@@ -322,10 +329,13 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data);
+                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    idCounter++;
+                    Debug.WriteLine(idCounter);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel(this);
+                    vm = new InkNodeViewModel(this, idCounter);
+                    idCounter++;
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
@@ -333,16 +343,18 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM = new ImageNodeViewModel(this);
+                        var imgVM = new ImageNodeViewModel(this, idCounter);
                         await imgVM.InitializeImageNodeAsync(storageFile);
                         vm = imgVM;
+                        idCounter++;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {
-                        var pdfVM = new PdfNodeViewModel(this);
+                        var pdfVM = new PdfNodeViewModel(this, idCounter);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
+                        idCounter++;
                     }
                     break;
                 //   case Mode.InkSelect:
@@ -391,7 +403,8 @@ namespace NuSysApp
             }
 
             //Create new group, because no group exists
-            groupVm = new GroupViewModel(this);
+            groupVm = new GroupViewModel(this, idCounter);
+            idCounter++;
 
             //Set location to node2's location
             var xCoordinate = node2.Transform.Matrix.OffsetX;
@@ -480,7 +493,6 @@ namespace NuSysApp
         //public Mode CurrentMode { get; set; }
 
         public LinkMode CurrentLinkMode { get; set; }
-
 
         public CompositeTransform CompositeTransform
         {

@@ -26,7 +26,7 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected AtomViewModel(WorkspaceViewModel vm)
+        protected AtomViewModel(WorkspaceViewModel vm, int id)
         {
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
@@ -143,6 +143,12 @@ namespace NuSysApp
 
                 RaisePropertyChanged("Color");
             }
+        }
+
+        public int ID
+        {
+            get { return Model.ID; }
+            set { Model.ID = value; }
         }
 
         public MatrixTransform Transform

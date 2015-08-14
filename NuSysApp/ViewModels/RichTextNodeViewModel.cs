@@ -16,9 +16,9 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel) : base(workSpaceViewModel)
+        public RichTextNodeViewModel(WorkspaceViewModel workSpaceViewModel, int id) : base(workSpaceViewModel, id)
         {
-            _node = new RichTextNode("Hello oOrld", 0);
+            _node = new RichTextNode("Hello oOrld", id);
             this.Model = _node;
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs

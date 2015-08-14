@@ -11,9 +11,9 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text) : base(workSpaceViewModel)
+        public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text, int id) : base(workSpaceViewModel, id)
         {
-            this.Model = new TextNode(text ?? "Enter text here", 0);
+            this.Model = new TextNode(text ?? "Enter text here", id);
             this.View = new TextNodeView2(this);    
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs

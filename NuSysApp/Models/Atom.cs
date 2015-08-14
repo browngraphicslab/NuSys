@@ -9,8 +9,10 @@ namespace NuSysApp
 {
     public abstract class Atom
     {
-        public Atom()
-        { }
+        public Atom(int id)
+        {
+            ID = id;
+        }
 
         public Color Color { get; set; }
 

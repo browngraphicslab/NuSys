@@ -22,10 +22,10 @@ namespace NuSysApp
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
 
-        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel) : base(workspaceViewModel)
+        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, int id) : base(workspaceViewModel, id)
         {
             this.View = new PdfNodeView2(this);
-            this.PdfNodeModel = new PdfNodeModel(0);
+            this.PdfNodeModel = new PdfNodeModel(id);
             this.Model = this.PdfNodeModel;
             this.Transform = new MatrixTransform();
             this.IsSelected = false;

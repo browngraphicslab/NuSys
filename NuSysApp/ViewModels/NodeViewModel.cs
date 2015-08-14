@@ -21,10 +21,10 @@ namespace NuSysApp
         private AtomViewModel _clippedParent;
         #endregion Private Members
 
-        protected NodeViewModel(WorkspaceViewModel vm): base(vm)
+        protected NodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.AtomType = Constants.Node;
-            this.Model = new Node(0);
+            this.Model = new Node(id);
         }
 
         #region Node Manipulations
@@ -149,6 +149,12 @@ namespace NuSysApp
         }
 
         public bool IsAnnotation { get; set; }
+
+        public int id
+        {
+            get { return Model.ID; }
+            set { Model.ID = value; }
+        }
 
         /// <summary>
         /// X-coordinate of this atom
