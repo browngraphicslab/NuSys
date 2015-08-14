@@ -17,6 +17,7 @@ using System.Xml;
 using SQLite.Net.Async;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
+using System.Xml;
 
 namespace NuSysApp
 {
@@ -28,6 +29,7 @@ namespace NuSysApp
         #region Private Members
 
         private readonly Factory _factory;
+        private SQLiteDatabase myDB;
 
         public enum LinkMode
         {
@@ -36,7 +38,6 @@ namespace NuSysApp
         }
 
         private CompositeTransform _compositeTransform, _fMTransform;
-        
 
         #endregion Private Members
 
@@ -47,6 +48,8 @@ namespace NuSysApp
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedAtomViewModel = null;
             this.CurrentLinkMode = LinkMode.Bezierlink;
+
+            myDB = new SQLiteDatabase("NuSysTest.sqlite");
 
             Init();
             var c = new CompositeTransform
@@ -63,7 +66,7 @@ namespace NuSysApp
         {
             await SetupDirectories();
             SetupChromeIntermediate();
-            SetupOfficeTransfer();            
+            SetupOfficeTransfer();       
         }
 
         private async void SetupOfficeTransfer()
@@ -142,14 +145,12 @@ namespace NuSysApp
                     });
                 }
 
-
                 foreach (var file in transferFiles)
                 {
                     await file.DeleteAsync();
                 }
             };
         }
-
 
         private static async Task<bool> SetupDirectories()
         {
@@ -313,23 +314,20 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<NodeViewModel> CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
-            Debug.WriteLine("In CreateNewNode");
             switch (type)
             {
                 case NodeType.Text:
                     vm = new TextNodeViewModel(this, (string)data);
                     break;
                 case NodeType.Ink:
-
                     vm = new InkNodeViewModel(this);
-                    
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                    if (storageFile == null) return;
+                    if (storageFile == null) return null;
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
@@ -349,7 +347,7 @@ namespace NuSysApp
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
                 default:
-                    return;
+                    return null;
             }
             NodeViewModelList.Add(vm);
 
@@ -363,6 +361,7 @@ namespace NuSysApp
                     vm.View.Loaded += InkNodeView_PromoteInk;
                 }
             }
+            return vm;
         }
 
         private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
@@ -417,20 +416,19 @@ namespace NuSysApp
 
         public async Task SaveWorkspace()
         {
-            SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
-            SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
-            MyConnection.CreateTableAsync<XMLFile>();
-            XMLFile currWorkspace = new XMLFile();
-            currWorkspace.toXML = this.CreateXML();
-            MyConnection.InsertAsync(currWorkspace);
-            Debug.WriteLine(currWorkspace.toXML);
+            SQLiteAsyncConnection dbConnection = myDB.DBConnection;
+            dbConnection.CreateTableAsync<XmlFileHelper>();
+            XmlFileHelper currWorkspace = new XmlFileHelper();
+            currWorkspace.toXML = currWorkspace.XmlToString(this.getXML());
+            dbConnection.InsertAsync(currWorkspace);
         }
 
-        public string CreateXML()
+        public async Task LoadWorkspace()
         {
-            String xml = this.getXML().OuterXml.ToString();
-            Debug.WriteLine(xml);
-            return xml;
+            SQLiteAsyncConnection dbConnection = myDB.DBConnection;
+            var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 7);
+            query.FirstOrDefaultAsync().ContinueWith((t) => 
+            t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXML)));
         }
 
         public XmlDocument getXML()
@@ -444,16 +442,13 @@ namespace NuSysApp
             XmlElement parent = doc.CreateElement(string.Empty, "Parent", string.Empty);
             doc.AppendChild(parent);
 
-
             for (int i = 0; i < NodeViewModelList.Count; i++)
             {
                 XmlElement ele = NodeViewModelList[i].WriteXML(doc);
                 parent.AppendChild(ele);
             }
-                return doc;
-            
-          }
-            
+            return doc;
+        }
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
