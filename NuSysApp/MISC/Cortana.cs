@@ -16,19 +16,18 @@ namespace NuSysApp
                 // Create an instance of SpeechRecognizer.
                 var speechRecognizer = new SpeechRecognizer();
 
-                //var webSearchGrammar = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.WebSearch,
-                //    "webSearch");
+                var webSearchGrammar = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.WebSearch,
+                    "webSearch");
 
                 speechRecognizer.UIOptions.AudiblePrompt = "Say a command...";
                 speechRecognizer.UIOptions.ExampleText = @"Ex. 'open document' or 'create [node type]'";
-                //speechRecognizer.Constraints.Add(webSearchGrammar);
+                speechRecognizer.Constraints.Add(webSearchGrammar);
 
                 // Compile the dictation grammar by default.
                 await speechRecognizer.CompileConstraintsAsync();
 
                 // Start recognition.
                 var speechRecognitionResult = await speechRecognizer.RecognizeWithUIAsync(); //????!!!??!?!?!?!?!?!??? (crashes after 2 successful commands)
-                //var speechRecognitionResult = await speechRecognizer.RecognizeAsync();
                 // Do something with the recognition result.
                 var result = speechRecognitionResult.Text;
                 return result;
