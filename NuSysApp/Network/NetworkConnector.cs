@@ -106,7 +106,7 @@ namespace NuSysApp
             listener.ConnectionReceived += this.TCPConnectionRecieved;
             await listener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
             DatagramSocket socket = new DatagramSocket();
-            socket.BindServiceNameAsync(_UDPPort);
+            await socket.BindServiceNameAsync(_UDPPort);
             socket.MessageReceived += this.DatagramMessageRecieved;
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             Debug.WriteLine("done");
