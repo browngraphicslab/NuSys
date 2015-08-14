@@ -235,8 +235,6 @@ namespace NuSysApp
             }
         }
 
-        public abstract string CreateXML();
-
         public abstract XmlElement WriteXML(XmlDocument doc);
 
         public List<XmlAttribute> getBasicXML(XmlDocument doc)
@@ -244,6 +242,9 @@ namespace NuSysApp
             List<XmlAttribute> basicXml = new List<XmlAttribute>();
 
             //create xml attribute nodes
+            XmlAttribute type = doc.CreateAttribute("nodeType");
+            type.Value = this.Model.NodeType.ToString();
+
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = this.Model.ID.ToString();
 
@@ -260,6 +261,7 @@ namespace NuSysApp
             width.Value = this.Model.Width.ToString();
 
             //append to list and return
+            basicXml.Add(type);
             basicXml.Add(id);
             basicXml.Add(x);
             basicXml.Add(y);
@@ -268,6 +270,8 @@ namespace NuSysApp
 
             return basicXml;
         }
+
+        
 
         /// <summary>
         /// indicates whether node is editable.
@@ -297,6 +301,15 @@ namespace NuSysApp
                 _isEditingInk = value;
                 RaisePropertyChanged("IsEditingInk");
             }
+        }
+
+        public Constants.NodeType NodeType {
+            get { return this.Model.NodeType; }
+            set
+            {
+                this.Model.NodeType = value;
+            }
+
         }
 
         public GroupViewModel ParentGroup { get; set; }
