@@ -36,6 +36,8 @@ namespace NuSysApp
 
         public Constants.NodeType NodeType { get; set; }
 
+        public GroupViewModel ParentGroup { get; set; }
+
         public virtual string GetContentSource()
         {
             return null;

@@ -244,6 +244,9 @@ namespace NuSysApp
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = this.Model.ID.ToString();
 
+            XmlAttribute groupID = doc.CreateAttribute("groupID");
+            groupID.Value = this.Model.ParentGroup.Model.ID.ToString();
+
             XmlAttribute x = doc.CreateAttribute("x");
             x.Value = ((int) this.Model.Transform.Matrix.OffsetX).ToString();
 
@@ -308,7 +311,16 @@ namespace NuSysApp
 
         }
 
-        public GroupViewModel ParentGroup { get; set; }
+        public GroupViewModel ParentGroup {
+            get
+            {
+                return this.Model.ParentGroup;
+            }
+            set
+            {
+                this.Model.ParentGroup = value;
+            }
+        }
 
         public virtual Node Model { get; set; }
 
