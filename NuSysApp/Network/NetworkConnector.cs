@@ -145,7 +145,20 @@ namespace NuSysApp
                 await AddSocket(ip);
             }
         }
-        internal async Task RemoveIP(string ip)
+
+        public async Task TellRemoveIP(string ip)
+        {
+            if (_otherIPs.Count > 0)
+            {
+                if (_localIP == _hostIP)
+                {
+                    //TODO tell everyone to stop actions and wait
+                    SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);
+                }
+                SendMassTCPMessage("SPECIAL9:" + _localIP);
+            }
+        }
+        private async Task RemoveIP(string ip)
         {
             if (_otherIPs.Contains(ip))
             {
@@ -547,6 +560,9 @@ namespace NuSysApp
                                         " when this machine isn't the Host");
                         return;
                     }
+                    break;
+                case "9"://Tell others to remove IP from self ex: message = "10.10.10.10"
+                    RemoveIP(message);
                     break;
             }
         }

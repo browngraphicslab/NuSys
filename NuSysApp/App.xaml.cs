@@ -210,7 +210,7 @@ namespace NuSysApp
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response = client.GetAsync(urlParameters).Result;
-            _networkConnector.RemoveIP(
+            _networkConnector.TellRemoveIP(
                 NetworkInformation.GetHostNames()
                     .FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null)
                     .RawName);
