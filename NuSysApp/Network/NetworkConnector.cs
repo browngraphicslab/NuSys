@@ -300,10 +300,10 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
-            //Debug.WriteLine("attempting to send UDP message: " + message);
+            Debug.WriteLine("attempting to send UDP message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
-            //Debug.WriteLine("Sent UDP message: " + message);
+            Debug.WriteLine("Sent UDP message: " + message);
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
@@ -535,7 +535,10 @@ namespace NuSysApp
             Dictionary<string, string> properties = parseOutProperties(message);
             if (properties.ContainsKey("id") || true)//TODO remove the true
             {
-                _workspaceViewModel.moveNode(double.Parse(properties["x"]), double.Parse(properties["y"]));
+                if (properties.ContainsKey("x"))
+                {
+                    _workspaceViewModel.moveNode(double.Parse(properties["x"]), double.Parse(properties["y"]));
+                }
             }
             else
             {
