@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -46,6 +48,31 @@ namespace NuSysApp
                     "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
                     "'Text='" + currModel.Text + "'content='" + currModel.Content + "'>";
             return XML;
+        }
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+
+            TextNode currModel = (TextNode)this.Model;
+
+            //XmlElement 
+            XmlElement textNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
+            //doc.AppendChild(textNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach(XmlAttribute attr in basicXml)
+            {
+                textNode.SetAttributeNode(attr);
+            }
+            
+            //Text
+            XmlAttribute text = doc.CreateAttribute("text");
+            text.Value = currModel.Text;
+            textNode.SetAttributeNode(text);
+
+            return textNode;
+           
         }
 
         #endregion Public Properties

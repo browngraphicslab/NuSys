@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -99,7 +101,30 @@ namespace NuSysApp
 
         }
 
-    public ImageModel ImageModel
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            ImageModel currModel = (ImageModel)this.Model;
+
+            //Main XmlElement 
+            XmlElement imageNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: fix how we get element name
+            doc.AppendChild(imageNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                imageNode.SetAttributeNode(attr);
+            }
+
+            //Source for image
+            XmlAttribute source = doc.CreateAttribute("Source");
+            source.Value = currModel.FilePath;
+            imageNode.SetAttributeNode(source);
+
+            return imageNode;
+        }
+
+        public ImageModel ImageModel
         {
             get { return _imgm; }
             set

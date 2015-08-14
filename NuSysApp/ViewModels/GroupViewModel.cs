@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Xml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -30,10 +32,10 @@ namespace NuSysApp
 
         public void AddNode(NodeViewModel toAdd)
         {
+            toAdd.Transform = new MatrixTransform();
             AtomViewList.Add(toAdd.View);
             NodeViewModelList.Add(toAdd);
-            toAdd.Transform = new MatrixTransform();
-            ArrangeNodesInGrid();
+          //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
                 link.IsVisible = false;
@@ -44,53 +46,16 @@ namespace NuSysApp
         public override void Resize(double dx, double dy)
         {
             var trans = LocalTransform;
-            var scale = dx < dy ? (Width + dx) / Width : (Height + dy) / Height;
+            var scale = dx < dy ? (Width + dx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + dy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             trans.ScaleX *= scale;
             trans.ScaleY *= scale;
             LocalTransform = trans;
             
             base.Resize(dx, dy);
             _margin += dx;
-            this.ArrangeNodesInGrid();
+           // this.ArrangeNodesInGrid();
         }
 
-        private void ArrangeNodesInGrid()
-        {
-            this.Width = Constants.MinNodeSizeX;
-            this.Height = Constants.MinNodeSizeY;
-
-            _margin = 75;
-            var currentX = _margin;
-            var currentY = _margin;
-            var columnCount = Math.Round(Math.Sqrt(AtomViewList.Count));
-            columnCount = 2 > columnCount ? 2 : columnCount;
-            for (var i = 0; i < AtomViewList.Count;i++) {
-                var toArr = NodeViewModelList[i];
-
-                var mat = toArr.Transform.Matrix;
-                mat.OffsetX = currentX;
-                mat.OffsetY = currentY;
-                toArr.Transform.Matrix = mat;
-                
-                if (Height < currentY + toArr.Height + _margin)
-                {
-                    Height = currentY + toArr.Height + _margin;
-                }
-                if (Width < currentX + toArr.Width + _margin)
-                {
-                    Width = currentX + toArr.Width + _margin;
-                }
-                if ((i + 1 )% columnCount == 0)
-                {
-                    currentX = _margin;
-                    currentY += toArr.Height + _margin;
-                }
-                else
-                {
-                    currentX += toArr.Width + _margin;
-                }
-            }
-        }
 
         public void RemoveNode(NodeViewModel toRemove)
         {
@@ -102,7 +67,7 @@ namespace NuSysApp
             toRemove.UpdateAnchor();
             this.AtomViewList.Remove(toRemove.View);
             NodeViewModelList.Remove(toRemove);
-            ArrangeNodesInGrid();
+         //   ArrangeNodesInGrid();
             switch (NodeViewModelList.Count)
             {
                 case 0:
@@ -128,6 +93,38 @@ namespace NuSysApp
             //TODO Handle links
         }
 
+        public bool CheckNodeIntersection(NodeViewModel node) { 
+            for (var i = 0; i < NodeViewModelList.Count; i++)
+            {
+                var node2 = NodeViewModelList[i];
+                var rect2 = Geometry.NodeToBoudingRect(node2);
+                var rect1 = Geometry.NodeToBoudingRect(node);
+                rect1.Intersect(rect2);//stores intersection rectangle in rect1
+                if (node != node2 && !rect1.IsEmpty)
+                {
+                    NodeViewModelList.Remove(node);
+                    AtomViewList.Remove(node.View);
+                    if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
+                    {
+                        if (NodeViewModelList.Count <= i+1)
+                        {
+                            NodeViewModelList.Add(node);
+                            AtomViewList.Add(node.View);
+                            return true;
+                        }
+                        NodeViewModelList.Insert(i+1, node);
+                        AtomViewList.Insert(i+1,node.View);
+                    }
+                    else
+                    {
+                        NodeViewModelList.Insert(i, node);
+                        AtomViewList.Insert(i,node.View);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
         public override string CreateXML()
         {
             string XML = "";
@@ -142,6 +139,31 @@ namespace NuSysApp
             }
 
             return XML;
+        }
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            Node currModel = this.Model;
+
+            //Main XmlElement 
+            XmlElement groupNode = doc.CreateElement(string.Empty, "groupNode", string.Empty); //TODO: Change how we determine node type for name
+            doc.AppendChild(groupNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                groupNode.SetAttributeNode(attr);
+            }
+
+            //get nodes within groups
+            foreach(NodeViewModel nodevm in NodeViewModelList)
+            {
+                groupNode.AppendChild(nodevm.WriteXML(doc));
+            }
+
+
+            return groupNode;
         }
 
         public ObservableCollection<UserControl> AtomViewList { get; private set;}

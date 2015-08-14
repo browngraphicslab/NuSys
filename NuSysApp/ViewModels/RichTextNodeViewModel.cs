@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -54,6 +56,28 @@ namespace NuSysApp
             return XML;
         }
 
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            RichTextNode currModel = (RichTextNode)this.Model;
+
+            //XmlElement 
+            XmlElement richTextNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
+            doc.AppendChild(richTextNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                richTextNode.SetAttributeNode(attr);
+            }
+
+            //Text
+            XmlAttribute text = doc.CreateAttribute("text");
+            text.Value = currModel.Text;
+            richTextNode.SetAttributeNode(text);
+
+            return richTextNode;
+        }
     }
     #endregion Public Properties
 

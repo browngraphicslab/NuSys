@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 using Windows.UI.Xaml.Media;
 
 
@@ -34,5 +36,23 @@ namespace NuSysApp
             return XML;
 
     }
-}
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            Node currModel = this.Model;
+
+            //Main XmlElement 
+            XmlElement inkNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
+            doc.AppendChild(inkNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                inkNode.SetAttributeNode(attr);
+            }
+
+            return inkNode;
+        }
+    }
 }
