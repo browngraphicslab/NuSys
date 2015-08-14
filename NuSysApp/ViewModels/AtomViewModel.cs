@@ -20,7 +20,9 @@ namespace NuSysApp
         private UserControl _view;
         private MatrixTransform _transform;
 
+
         private bool _isVisible;
+
 
         #endregion Private Members
 
