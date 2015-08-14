@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.MISC;
 using Windows.UI.Xaml;
+using System.Xml;
 
 namespace NuSysApp
 {
@@ -162,6 +163,24 @@ namespace NuSysApp
                     "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height
                     + "'content='" + currModel.Content + "'>";
             return XML;
+        }
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            PdfNodeModel currModel = (PdfNodeModel)this.Model;
+
+            //XmlElement 
+            XmlElement pdfNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: Change how we determine node type for name
+            doc.AppendChild(pdfNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                pdfNode.SetAttributeNode(attr);
+            }
+
+            return pdfNode;
         }
 
         public PdfNodeModel PdfNodeModel

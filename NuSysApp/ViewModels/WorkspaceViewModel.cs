@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media;
 using NuSysApp.MISC;
 using Windows.Storage.Streams;
 using System.Text;
+using System.Xml;
 using SQLite.Net.Async;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
@@ -422,24 +423,73 @@ namespace NuSysApp
             XMLFile currWorkspace = new XMLFile();
             currWorkspace.toXML = this.CreateXML();
             MyConnection.InsertAsync(currWorkspace);
-            Debug.WriteLine(this.CreateXML());
+            Debug.WriteLine(currWorkspace.toXML);
         }
 
         public string CreateXML()
         {
-            Debug.WriteLine("Called CreateXML in workspace");
+            //Debug.WriteLine("Called CreateXML in workspace");
             string XML = "";
-            foreach (NodeViewModel nodeVM in NodeViewModelList)
+            /*foreach (NodeViewModel nodeVM in NodeViewModelList)
             {
                 XML = XML + nodeVM.CreateXML();
-            }
+            }*/
 
             foreach (var linkVM in LinkViewModelList)
             {
 
             }
+
+            //Debug.WriteLine(XML);
+            this.saveXML();
+
             return XML;
         }
+
+        public XmlDocument saveXML()
+        {
+            //Document declaration
+            XmlDocument doc = new XmlDocument();
+            //XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
+            //XmlElement root = doc.DocumentElement;
+            //doc.InsertBefore(xmlDeclaration, root);
+
+            XmlElement parent = doc.CreateElement(string.Empty, "Parent", string.Empty);
+            doc.AppendChild(parent);
+
+
+            for (int i = 0; i < NodeViewModelList.Count; i++)
+            {
+                XmlElement ele = NodeViewModelList[i].WriteXML(doc);
+                parent.AppendChild(ele);
+            }
+
+            //doc.AppendChild(NodeViewModelList[0].WriteXML(doc));
+            //doc.AppendChild(NodeViewModelList[1].WriteXML(doc));
+                  
+            /*XmlElement element1 = doc.CreateElement(string.Empty, "body", string.Empty);
+                    doc.AppendChild(element1);
+
+                    XmlElement element2 = doc.CreateElement(string.Empty, "level1", string.Empty);
+                    element1.AppendChild(element2);
+
+                    XmlElement element3 = doc.CreateElement(string.Empty, "level2", string.Empty);
+                    XmlText text1 = doc.CreateTextNode("text");
+                    element3.AppendChild(text1);
+                    element2.AppendChild(element3);
+
+                    XmlElement element4 = doc.CreateElement(string.Empty, "level2", string.Empty);
+                    XmlText text2 = doc.CreateTextNode("other text");
+                    element4.AppendChild(text2);
+                    element2.AppendChild(element4);
+                    */
+                Debug.Write(doc.OuterXml);
+                return doc;
+
+
+
+          }
+            
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {

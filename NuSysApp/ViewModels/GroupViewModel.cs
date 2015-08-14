@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Xml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -137,6 +139,31 @@ namespace NuSysApp
             }
 
             return XML;
+        }
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+            Node currModel = this.Model;
+
+            //Main XmlElement 
+            XmlElement groupNode = doc.CreateElement(string.Empty, "groupNode", string.Empty); //TODO: Change how we determine node type for name
+            doc.AppendChild(groupNode);
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                groupNode.SetAttributeNode(attr);
+            }
+
+            //get nodes within groups
+            foreach(NodeViewModel nodevm in NodeViewModelList)
+            {
+                groupNode.AppendChild(nodevm.WriteXML(doc));
+            }
+
+
+            return groupNode;
         }
 
         public ObservableCollection<UserControl> AtomViewList { get; private set;}
