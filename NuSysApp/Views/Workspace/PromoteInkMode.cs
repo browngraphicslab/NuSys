@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -40,14 +39,13 @@ namespace NuSysApp.Views.Workspace
         }
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            Polyline line = sender as Polyline;
-            var inkStroke = _view.InqCanvas.Strokes[line];
-            _view.InqCanvas.Manager.SelectWithLine(inkStroke.GetInkPoints().First().Position, inkStroke.GetInkPoints().Last().Position);
+        {            
+            var inkStroke = _view.InqCanvas.Strokes[sender as Polyline];
+            _view.InqCanvas.Manager.SelectWithLine(e.GetPosition(_view.InqCanvas), e.GetPosition(_view.InqCanvas));
             if (inkStroke.Selected)
             {
                 _view.InqCanvas.Manager.CopySelectedToClipboard();
-                _view.InqCanvas.Children.Remove(line);
+                _view.InqCanvas.Children.Remove(sender as Polyline);
                 var vm = (WorkspaceViewModel)_view.DataContext;
                 var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
                 Debug.WriteLine("click at " + p.X + ", " + p.Y);
