@@ -153,9 +153,9 @@ namespace NuSysApp
                 if (_localIP == _hostIP)
                 {
                     //TODO tell everyone to stop actions and wait
-                    SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);
+                    await SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);
                 }
-                SendMassTCPMessage("SPECIAL9:" + _localIP);
+                await SendMassTCPMessage("SPECIAL9:" + _localIP);
             }
         }
         private async Task RemoveIP(string ip)
