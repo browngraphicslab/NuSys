@@ -3,7 +3,7 @@ namespace NuSysApp
 {
     public class Link
     {
-        public Link(Node inNode, Node outNode)
+        public Link(Atom inNode, Atom outNode)
         {
             InNodeID = inNode.ID;
             OutNodeID = outNode.ID;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Xml;
 using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 
@@ -30,6 +31,10 @@ namespace NuSysApp
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
             this.IsVisible = true;
+            this.Model = new Link(atom1.Model, atom2.Model);
+            this.Model.InNodeID = atom1.Model.ID;
+            this.Model.OutNodeID = atom2.Model.ID;
+            
 
             var line = this.LineRepresentation;
 
@@ -128,6 +133,28 @@ namespace NuSysApp
                 _isVisible = value;
                 RaisePropertyChanged("IsVisible");
             }
+        }
+        
+        public Link Model { get; set; }
+
+        public XmlElement WriteXML(XmlDocument doc)
+        {
+
+            Link linkModel = this.Model;
+
+            //XmlElement 
+            XmlElement link = doc.CreateElement(string.Empty, "Link", string.Empty); //TODO: Change how we determine node type for name
+
+            //Atoms that this link is bound to
+            XmlAttribute id1 = doc.CreateAttribute("atomID1");
+            id1.Value = this.Model.InNodeID.ToString();
+            link.SetAttributeNode(id1);
+
+            XmlAttribute id2 = doc.CreateAttribute("atomID2");
+            id2.Value = this.Model.OutNodeID.ToString();
+            link.SetAttributeNode(id2);
+
+            return link;
         }
 
 

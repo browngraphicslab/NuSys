@@ -447,6 +447,12 @@ namespace NuSysApp
                 XmlElement ele = NodeViewModelList[i].WriteXML(doc);
                 parent.AppendChild(ele);
             }
+
+            for(int i=0; i<LinkViewModelList.Count; i++)
+            {
+                XmlElement ele = LinkViewModelList[i].WriteXML(doc);
+                parent.AppendChild(ele);
+            }
             return doc;
         }
 

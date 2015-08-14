@@ -22,7 +22,7 @@ namespace NuSysApp
 
         public List<Node> ConnectedNodes { get; }
 
-        public int ID { get; }
+        public int ID { get; set; } //TODO: Make this a readonly property again.
 
         public int X { get; set; }
 

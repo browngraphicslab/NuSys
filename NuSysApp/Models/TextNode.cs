@@ -9,6 +9,7 @@ namespace NuSysApp
         public TextNode(string data, int id): base(id)
         {
             Text = data;
+            this.ID = id;
         }
 
         public string Text { get; set; }
