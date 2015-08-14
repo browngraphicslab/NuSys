@@ -45,11 +45,11 @@ namespace NuSysApp
 
         private void TCP_OnClick(object sender, RoutedEventArgs e)
         {
-            _networkConnector.SendMassTCPMessage("TCP Test!");
+            _networkConnector.SendMassTCPMessage("TCP Test from "+_networkConnector.LocalIP);
         }
         private void UDP_OnClick(object sender, RoutedEventArgs e)
         {
-            _networkConnector.SendMassUDPMessage("TCP Test!");
+            _networkConnector.SendMassUDPMessage("UDP Test from " + _networkConnector.LocalIP);
         }
     }
 }

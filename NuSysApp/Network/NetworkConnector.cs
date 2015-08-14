@@ -129,6 +129,11 @@ namespace NuSysApp
                 _workspaceViewModel = value; 
             }
         }
+
+        public string LocalIP
+        {
+            get { return _localIP; }
+        }
         private async Task addIP(string ip)
         {
             if (!_otherIPs.Contains(ip) && ip != this._localIP) 
