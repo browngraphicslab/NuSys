@@ -33,7 +33,6 @@ namespace NuSysApp
 
             //Main XmlElement 
             XmlElement inkNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-            
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
