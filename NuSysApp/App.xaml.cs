@@ -199,7 +199,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
@@ -210,7 +210,7 @@ namespace NuSysApp
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response = client.GetAsync(urlParameters).Result;
-            _networkConnector.TellRemoveIP(
+            await _networkConnector.TellRemoveIP(
                 NetworkInformation.GetHostNames()
                     .FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null)
                     .RawName);
