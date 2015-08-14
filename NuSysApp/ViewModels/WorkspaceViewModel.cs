@@ -315,7 +315,6 @@ namespace NuSysApp
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
             idCounter++;
-            Debug.WriteLine(idCounter);
 
             LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
@@ -438,7 +437,6 @@ namespace NuSysApp
             dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
-            //Debug.WriteLine(currWorkspaceXml.XmlToString(this.getXml()));
             dbConnection.InsertAsync(currWorkspaceXml);
         }
 

@@ -48,7 +48,6 @@ namespace NuSysApp.Views.Workspace
                 _view.InqCanvas.Children.Remove(sender as Polyline);
                 var vm = (WorkspaceViewModel)_view.DataContext;
                 var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-                Debug.WriteLine("click at " + p.X + ", " + p.Y);
                 await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, inkStroke);
             }
         }
