@@ -7,11 +7,10 @@ namespace NuSysApp
 {
     public class Node : Atom
     {
-        public Node(int id) : base()
+        public Node(int id) : base (id)
         {
             StartLines = new List<Link>();
             EndLines = new List<Link>();
-            ID = id;
         }
 
         public Content Content { set; get; }
@@ -21,8 +20,6 @@ namespace NuSysApp
         public List<Link> EndLines { get; }
 
         public List<Node> ConnectedNodes { get; }
-
-        public int ID { get; set; } //TODO: Make this a readonly property again.
 
         public int X { get; set; }
 

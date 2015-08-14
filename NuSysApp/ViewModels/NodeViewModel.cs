@@ -21,10 +21,10 @@ namespace NuSysApp
         private AtomViewModel _clippedParent;
         #endregion Private Members
 
-        protected NodeViewModel(WorkspaceViewModel vm): base(vm)
+        protected NodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.AtomType = Constants.Node;
-            //(Node)this.Model = new Node(0);
+            this.Model = new Node(id);
         }
 
         #region Node Manipulations
@@ -37,8 +37,6 @@ namespace NuSysApp
                 WorkSpaceViewModel.ClearSelection();
             }
         }
-
-        public virtual Node Model { get; set; }
 
         public virtual void Translate(double dx, double dy)
         {
@@ -152,6 +150,12 @@ namespace NuSysApp
 
         public bool IsAnnotation { get; set; }
 
+        public int id
+        {
+            get { return Model.ID; }
+            set { Model.ID = value; }
+        }
+
         /// <summary>
         /// X-coordinate of this atom
         /// </summary>
@@ -253,7 +257,7 @@ namespace NuSysApp
             id.Value = this.Model.ID.ToString();
 
             XmlAttribute groupID = doc.CreateAttribute("groupID");
-            groupID.Value = this.Model.ParentGroup.Model.ID.ToString();
+            groupID.Value = ((Node)this.Model).ParentGroup.Model.ID.ToString();
 
             XmlAttribute x = doc.CreateAttribute("x");
             x.Value = ((int) ((Node)this.Model).Transform.Matrix.OffsetX).ToString();
@@ -322,11 +326,11 @@ namespace NuSysApp
         public GroupViewModel ParentGroup {
             get
             {
-                return this.Model.ParentGroup;
+                return ((Node)this.Model).ParentGroup;
             }
             set
             {
-                this.Model.ParentGroup = value;
+                ((Node)this.Model).ParentGroup = value;
             }
         }
 

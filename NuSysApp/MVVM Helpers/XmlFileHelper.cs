@@ -1,6 +1,7 @@
 ﻿using SQLite.Net.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,8 +19,8 @@ namespace NuSysApp
         [Column("ID"), PrimaryKey, AutoIncrement]
         public int ID { get; set; }
 
-        [Column("toXML")]
-        public String toXML { get; set; }
+        [Column("toXml")]
+        public String toXml { get; set; }
 
         public void CreateXml()
         {
@@ -28,13 +29,8 @@ namespace NuSysApp
 
         public string XmlToString(XmlDocument xmlDoc)
         {
-            using (var stringWriter = new StringWriter())
-            using (var xmlTextWriter = XmlWriter.Create(stringWriter))
-            {
-                xmlDoc.WriteTo(xmlTextWriter);
-                xmlTextWriter.Flush();
-                return stringWriter.GetStringBuilder().ToString();
-            }
+            Debug.WriteLine(xmlDoc.OuterXml);
+            return xmlDoc.OuterXml;
         }
 
         public XmlDocument StringToXml(string rawXml)
@@ -50,7 +46,7 @@ namespace NuSysApp
             XmlNodeList NodeList = parent.ChildNodes;
             foreach (XmlNode node in NodeList)
             {
-                string currType = node.Name;
+                string currType = node.Attributes.GetNamedItem("nodeType").Value;
                 //currNode.ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
                 int X = Convert.ToInt32(node.Attributes.GetNamedItem("x").Value);
                 int Y = Convert.ToInt32(node.Attributes.GetNamedItem("y").Value);
