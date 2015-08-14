@@ -581,7 +581,7 @@ namespace NuSysApp
             {
                 Dictionary<string, string> dict = new Dictionary<string, string>();
                 dict.Add("x", x.ToString());
-                dict.Add("y", x.ToString());
+                dict.Add("y", y.ToString());
                 string s = MakeSubMessageFromDict(dict);
                 await SendMassUDPMessage(s);
             }
