@@ -155,14 +155,14 @@ namespace NuSysApp
         /// </summary>
         public int X
         {
-            get { return Model.X; }
+            get { return ((Node)Model).X; }
             set
             {
-                if (Model.X == value)
+                if (((Node)Model).X == value)
                 {
                     return;
                 }
-                Model.X = value;
+                ((Node)Model).X = value;
                 RaisePropertyChanged("X");
             }
         }
@@ -172,29 +172,29 @@ namespace NuSysApp
         /// </summary>
         public int Y
         {
-            get { return Model.Y; }
+            get { return ((Node)Model).Y; }
             set
             {
-                if (Model.Y == value)
+                if (((Node)Model).Y == value)
                 {
                     return;
                 }
 
-                Model.Y = value;
+                ((Node)Model).Y = value;
                 RaisePropertyChanged("Y");
             }
         }
 
         public MatrixTransform Transform
         {
-            get { return Model.Transform; }
+            get { return ((Node)Model).Transform; }
             set
             {
-                if (Model.Transform == value)
+                if (((Node)Model).Transform == value)
                 {
                     return;
                 }
-                Model.Transform = value;
+                ((Node)Model).Transform = value;
 
                 RaisePropertyChanged("Transform");
             }
@@ -205,15 +205,14 @@ namespace NuSysApp
         /// </summary>
         public double Width
         {
-            get { return Model.Width; }
+            get { return ((Node)Model).Width; }
             set
             {
-                if (Model.Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
+                if (((Node)Model).Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
                 }
-
-                Model.Width = value;
+                ((Node)Model).Width = value;
 
                 RaisePropertyChanged("Width");
             }
@@ -224,15 +223,15 @@ namespace NuSysApp
         /// </summary>
         public double Height
         {
-            get { return Model.Height; }
+            get { return ((Node)Model).Height; }
             set
             {
-                if (Model.Height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
+                if (((Node)Model).Height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
                 }
 
-                Model.Height = value;
+                ((Node)Model).Height = value;
 
                 RaisePropertyChanged("Height");
             }
@@ -246,22 +245,22 @@ namespace NuSysApp
 
             //create xml attribute nodes
             XmlAttribute type = doc.CreateAttribute("nodeType");
-            type.Value = this.Model.NodeType.ToString();
+            type.Value = ((Node)this.Model).NodeType.ToString();
 
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = this.Model.ID.ToString();
 
             XmlAttribute x = doc.CreateAttribute("x");
-            x.Value = ((int) this.Model.Transform.Matrix.OffsetX).ToString();
+            x.Value = ((int) ((Node)this.Model).Transform.Matrix.OffsetX).ToString();
 
             XmlAttribute y = doc.CreateAttribute("y");
-            y.Value = ((int) this.Model.Transform.Matrix.OffsetY).ToString();
+            y.Value = ((int) ((Node)this.Model).Transform.Matrix.OffsetY).ToString();
 
             XmlAttribute height = doc.CreateAttribute("height");
-            height.Value = ((int) this.Model.Height).ToString();
+            height.Value = ((int)((Node)this.Model).Height).ToString();
 
             XmlAttribute width = doc.CreateAttribute("width");
-            width.Value = ((int) this.Model.Width).ToString();
+            width.Value = ((int)((Node)this.Model).Width).ToString();
 
             //append to list and return
             basicXml.Add(type);
@@ -307,17 +306,15 @@ namespace NuSysApp
         }
 
         public Constants.NodeType NodeType {
-            get { return this.Model.NodeType; }
+            get { return ((Node)this.Model).NodeType; }
             set
             {
-                this.Model.NodeType = value;
+                ((Node)this.Model).NodeType = value;
             }
 
         }
 
         public GroupViewModel ParentGroup { get; set; }
-
-        public virtual Node Model { get; set; }
 
         #endregion Public Properties
     }
