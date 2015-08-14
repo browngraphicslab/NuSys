@@ -12,20 +12,22 @@ namespace NuSysApp
     {
         private double _margin;
         private CompositeTransform _localTransform;
-        public GroupViewModel(WorkspaceViewModel vm): base(vm)
+        public GroupViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             this.AtomType = Constants.Node;
-            this.Model = new Node(0);
+            this.Model = new Node(id);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             this.View = new GroupView(this);
+            this.NodeType = Constants.NodeType.group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
         }
@@ -38,7 +40,7 @@ namespace NuSysApp
           //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
-                link.IsVisible = false;
+                link.SetVisibility(false);
             }
             //TODO Handle links
         }
@@ -46,16 +48,31 @@ namespace NuSysApp
         public override void Resize(double dx, double dy)
         {
             var trans = LocalTransform;
-            var scale = dx < dy ? (Width + dx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + dy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
+            var newDx = 0.0;
+            var newDy = 0.0;
+            if (dx > dy)
+            {
+                newDx = dy * Width / Height;
+                newDy = dy;
+            }
+            else
+            {
+                newDx = dx;
+                newDy = dx * Height / Width;
+            }
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
+            {
+                return;
+            }
+            var scale = newDx < newDy ? (Width + newDx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + newDy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             trans.ScaleX *= scale;
             trans.ScaleY *= scale;
             LocalTransform = trans;
             
-            base.Resize(dx, dy);
-            _margin += dx;
-           // this.ArrangeNodesInGrid();
+            _margin += newDx;
+            (View as GroupView).ArrangeNodesInGrid();
+            base.Resize(newDx, newDy);
         }
-
 
         public void RemoveNode(NodeViewModel toRemove)
         {
@@ -84,8 +101,10 @@ namespace NuSysApp
                     WorkSpaceViewModel.DeleteNode(this);
                     foreach (var link in lastNode.LinkList)
                     {
-                        link.IsVisible = true;
+                        link.SetVisibility(true);
                         link.UpdateAnchor();
+                        link.Atom1.UpdateAnchor();
+                        link.Atom2.UpdateAnchor();
                     }
                     lastNode.UpdateAnchor();
                     break;
@@ -125,29 +144,14 @@ namespace NuSysApp
             }
             return false;
         }
-        public override string CreateXML()
-        {
-            string XML = "";
-            Node currModel = this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'content='" + currModel.Content + "'>";
-
-            foreach(NodeViewModel nodevm in NodeViewModelList)
-            {
-                XML = XML+ nodevm.CreateXML();
-            }
-
-            return XML;
-        }
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
-            Node currModel = this.Model;
+            Atom currModel = this.Model;
 
             //Main XmlElement 
-            XmlElement groupNode = doc.CreateElement(string.Empty, "groupNode", string.Empty); //TODO: Change how we determine node type for name
-            doc.AppendChild(groupNode);
+            XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
@@ -161,8 +165,6 @@ namespace NuSysApp
             {
                 groupNode.AppendChild(nodevm.WriteXML(doc));
             }
-
-
             return groupNode;
         }
 

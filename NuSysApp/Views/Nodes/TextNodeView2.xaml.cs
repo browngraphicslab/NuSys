@@ -1,4 +1,3 @@
-
 ﻿using Windows.UI;
 ﻿using System;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace NuSysApp
         public TextNodeView2(TextNodeViewModel vm)
         {
             this.InitializeComponent();
-            this.DataContext = vm;          
+            this.DataContext = vm;
         }
 
         private void OnEditClick(object sender, RoutedEventArgs e)
@@ -127,18 +126,18 @@ namespace NuSysApp
             }
         }
 
-        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = (TextNodeViewModel)this.DataContext;
-            vm.CreateAnnotation();
-            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
-            if (vm.IsAnnotation)
-            {
-                SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
-                nodeTpl.Background = backgroundColorBrush;
-            }
-            e.Handled = true;
-        }
+//        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+//        {
+//            var vm = (TextNodeViewModel)this.DataContext;
+//            vm.CreateAnnotation();
+//            vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
+//            if (vm.IsAnnotation)
+//            {
+//                SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
+//                nodeTpl.Background = backgroundColorBrush;
+//            }
+//            e.Handled = true;
+//        }
 
     }
 }

@@ -37,13 +37,11 @@ namespace NuSysApp
 
             var vm = (PdfNodeViewModel)this.DataContext;
             var pageNum = vm.CurrentPageNumber;
-            var tempChild = new List<UIElement>();
-            for (var i = 0; i < inkCanvas.Children.Count; i++)
-            {
-                tempChild.Add(inkCanvas.Children.ElementAt(i));
-            }
-            vm.InkContainer[(int)pageNum] = tempChild;
+
+            vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
+            inkCanvas.Strokes.Clear();
             inkCanvas.Children.Clear();
+            inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
             if (pageNum <= 0) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
             vm.CurrentPageNumber--;
@@ -52,9 +50,7 @@ namespace NuSysApp
             //      {
             //          inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
             //      }
-            for (var i = 0; i < vm.InkContainer[(int)vm.CurrentPageNumber].Count; i++) {
-                inkCanvas.Children.Add(vm.InkContainer[(int)vm.CurrentPageNumber][i]);
-            }
+                inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
 
         private void pageRight_Click(object sender, RoutedEventArgs e)
@@ -62,19 +58,14 @@ namespace NuSysApp
             var vm = (PdfNodeViewModel)this.DataContext;
             var pageCount = vm.PageCount;
             var pageNum = vm.CurrentPageNumber;
-            var tempChild = new List<UIElement>();
-            for (var i = 0; i < inkCanvas.Children.Count; i++)
-            {
-                tempChild.Add(inkCanvas.Children.ElementAt(i));
-            }
-            vm.InkContainer[(int)pageNum] = tempChild;
+            vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
+            inkCanvas.Strokes.Clear();
             inkCanvas.Children.Clear();
+            inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
             if (pageNum >= (pageCount - 1)) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
             vm.CurrentPageNumber++;
-            for (var i = 0; i < vm.InkContainer[(int)vm.CurrentPageNumber].Count; i++) {
-                inkCanvas.Children.Add(vm.InkContainer[(int)vm.CurrentPageNumber][i]);
-            }
+            inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
     }
 }

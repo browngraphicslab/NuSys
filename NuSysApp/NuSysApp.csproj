@@ -104,6 +104,8 @@
     <Content Include="Assets\font size.png" />
     <Content Include="Assets\image.png" />
     <Content Include="Assets\link.png" />
+    <Content Include="Assets\load icon.png" />
+    <Content Include="Assets\save icon.png" />
     <Content Include="Views\Nodes\link icon.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -150,7 +152,7 @@
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="MVVM Helpers\SQLiteDatabase.cs" />
-    <Compile Include="MVVM Helpers\XMLFile.cs" />
+    <Compile Include="MVVM Helpers\XmlFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="Views\Nodes\GroupView.xaml.cs">

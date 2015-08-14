@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Xml;
 using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 
@@ -16,14 +17,14 @@ namespace NuSysApp
     public class LinkViewModel : AtomViewModel
     {
         #region Private Members
-  
+
         private AtomViewModel _atom1, _atom2;
-        private bool _isVisible;
         #endregion Private members
 
         public LinkViewModel(AtomViewModel atom1,
-            AtomViewModel atom2, WorkspaceViewModel workspace): base(workspace)
+            AtomViewModel atom2, WorkspaceViewModel workspace, int id) : base(workspace, id)
         {
+            this.Model = new Link(atom1.Model, atom2.Model, id);
             this.Atom1 = atom1;
             this.Atom2 = atom2;
             this.AtomType = Constants.Link;
@@ -33,12 +34,12 @@ namespace NuSysApp
 
             var line = this.LineRepresentation;
 
-            this.AnchorX = (int) (line.X2 + (Math.Abs(line.X2 - line.X1)/2));
-            this.AnchorY = (int) (line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
+            this.AnchorX = (int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2));
+            this.AnchorY = (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
 
             switch (workspace.CurrentLinkMode)
-            { 
+            {
                 case WorkspaceViewModel.LinkMode.Bezierlink:
                     this.View = new BezierLinkView(this);
                     break;
@@ -63,7 +64,7 @@ namespace NuSysApp
             this.Annotation?.Remove();
         }
 
-#endregion Link Manipulation Methods
+        #endregion Link Manipulation Methods
 
         #region Public Properties
         public NodeViewModel Annotation { get; set; }
@@ -98,7 +99,6 @@ namespace NuSysApp
         public Line LineRepresentation
             => new Line() {X1 = Atom1.AnchorX, X2 = Atom2.AnchorX, Y1 = Atom1.AnchorY, Y2 = Atom2.AnchorY};
 
-
         #endregion Public Properties
 
         public override void UpdateAnchor()
@@ -128,6 +128,27 @@ namespace NuSysApp
                 _isVisible = value;
                 RaisePropertyChanged("IsVisible");
             }
+        }
+        
+
+        public XmlElement WriteXML(XmlDocument doc)
+        {
+
+            Link linkModel = (Link) this.Model;
+
+            //XmlElement 
+            XmlElement link = doc.CreateElement(string.Empty, "Link", string.Empty); //TODO: Change how we determine node type for name
+
+            //Atoms that this link is bound to
+            XmlAttribute id1 = doc.CreateAttribute("atomID1");
+            id1.Value = ((Link)this.Model).InAtomID.ToString();
+            link.SetAttributeNode(id1);
+
+            XmlAttribute id2 = doc.CreateAttribute("atomID2");
+            id2.Value = ((Link)this.Model).OutAtomID.ToString();
+            link.SetAttributeNode(id2);
+
+            return link;
         }
 
 
