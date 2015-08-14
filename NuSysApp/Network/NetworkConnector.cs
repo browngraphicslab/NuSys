@@ -544,7 +544,7 @@ namespace NuSysApp
             }
 
 
-            Debug.WriteLine(_localIP + " handled message: " + message);
+            //Debug.WriteLine(_localIP + " handled message: " + message);
         }
 
         private Dictionary<string, string> parseOutProperties(string message)
@@ -575,18 +575,13 @@ namespace NuSysApp
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
         }
-
-        private double lastx = 0;
-        private double lasty = 0;
         public async void moveNode(double x, double y)
         {
-            if (x != 0 && y != 0 && lastx!=x && lasty !=y)
+            if (x != 0 && y != 0)
             {
                 Dictionary<string, string> dict = new Dictionary<string, string>();
                 dict.Add("x", x.ToString());
                 dict.Add("y", x.ToString());
-                lastx = x;
-                lasty = y;
                 string s = MakeSubMessageFromDict(dict);
                 await SendMassUDPMessage(s);
             }
