@@ -12,7 +12,6 @@ namespace NuSysApp
     {
         public Atom(int id)
         {
-            ID = id;
         }
 
         public SolidColorBrush Color { get; set; }

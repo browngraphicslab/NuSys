@@ -20,19 +20,15 @@ namespace NuSysApp
         private UserControl _view;
         private MatrixTransform _transform;
 
-
         public bool _isVisible;
-
 
         #endregion Private Members
 
         protected AtomViewModel(WorkspaceViewModel vm, int id)
         {
-            //this.Model = new Atom(id);
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
-            this.IsVisible = true;
-           
+            this.IsVisible = true;  
         }
 
         #region Atom Manipulations

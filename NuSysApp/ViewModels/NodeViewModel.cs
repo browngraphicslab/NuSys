@@ -24,7 +24,6 @@ namespace NuSysApp
         protected NodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.AtomType = Constants.Node;
-            this.Model = new Node(id);
         }
 
         #region Node Manipulations
