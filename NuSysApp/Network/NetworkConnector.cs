@@ -252,12 +252,10 @@ namespace NuSysApp
             Debug.Write("attempting to TCP send message: "+message+" to IP: "+recievingIP);
             try
             {
-                DataWriter writer = new DataWriter(_addressToStreamSockets[recievingIP].OutputStream);
+                DataWriter writer = _addressToWriter[recievingIP].Item2;
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
                 await writer.StoreAsync();
-                writer.DetachStream();
-                writer.Dispose();
             }
             catch (Exception e)
             {
@@ -288,7 +286,7 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
-            Debug.Write("attempting to UDP send message: " + message);
+            Debug.WriteLine("attempting to UDP send message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
         }
