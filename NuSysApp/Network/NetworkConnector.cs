@@ -31,6 +31,7 @@ namespace NuSysApp
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
+        private DatagramSocket _UDPsocket;
         private WorkspaceViewModel _workspaceViewModel;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
@@ -103,9 +104,10 @@ namespace NuSysApp
             StreamSocketListener listener = new StreamSocketListener();
             listener.ConnectionReceived += this.TCPConnectionRecieved;
             await listener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
-            DatagramSocket socket = new DatagramSocket();
-            await socket.BindServiceNameAsync(_UDPPort);
-            socket.MessageReceived += this.DatagramMessageRecieved;
+
+            _UDPsocket = new DatagramSocket();
+            await _UDPsocket.BindServiceNameAsync(_UDPPort);
+            _UDPsocket.MessageReceived += this.DatagramMessageRecieved;
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
             Debug.WriteLine("done");
         }
