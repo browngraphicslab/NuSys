@@ -12,6 +12,7 @@ namespace NuSysApp
         public override async Task Activate()
         {
             var command = await Cortana.RunRecognizer();
+            //var command = await new CortanaContinuousRecognition().RunContinuousRecognizerAndReturnResult();
             await ProcessCommand(command);
         }
 
