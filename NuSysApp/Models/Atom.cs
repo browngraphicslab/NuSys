@@ -11,7 +11,6 @@ namespace NuSysApp
     {
         public Atom(int id)
         {
-            ID = id;
         }
 
         public Color Color { get; set; }

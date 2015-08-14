@@ -302,20 +302,19 @@ namespace NuSysApp
         /// <param name="atomVM2"></param>
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
-            var vm1 = atomVm1 as NodeViewModel;
-            if (vm1 != null && vm1.IsAnnotation)
+            var vm1 = atomVm1 as AtomViewModel;
+            if (vm1 != null && vm1.AtomType == Constants.Node && ((NodeViewModel)vm1).IsAnnotation)
             {
                 return;
             }
-            var vm2 = atomVm2 as NodeViewModel;
-            if (vm2 != null && vm2.IsAnnotation)
+            var vm2 = atomVm2 as AtomViewModel;
+            if (vm2 != null && vm2.AtomType == Constants.Node && ((NodeViewModel)vm2).IsAnnotation)
             {
                 return;
             }
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
             idCounter++;
-            Debug.WriteLine(idCounter);
 
             LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);

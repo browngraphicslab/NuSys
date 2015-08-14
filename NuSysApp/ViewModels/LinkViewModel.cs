@@ -24,16 +24,13 @@ namespace NuSysApp
         public LinkViewModel(AtomViewModel atom1,
             AtomViewModel atom2, WorkspaceViewModel workspace, int id) : base(workspace, id)
         {
-            this.Model = new Link((Node)atom1.Model, (Node)atom2.Model, id);
+            this.Model = new Link(atom1.Model, atom2.Model, id);
             this.Atom1 = atom1;
             this.Atom2 = atom2;
-            this.ID = id;
             this.AtomType = Constants.Link;
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
             this.IsVisible = true;
-            this.Model.InNodeID = atom1.Model.ID;
-            this.Model.OutNodeID = atom2.Model.ID;
 
             var line = this.LineRepresentation;
 
@@ -99,14 +96,6 @@ namespace NuSysApp
             }
         }
 
-        public int ID
-        {
-            get { return Model.ID; }
-            set { Model.ID = value; }
-        }
-
-        public Link Model { get; set; }
-
         public Line LineRepresentation
             => new Line() {X1 = Atom1.AnchorX, X2 = Atom2.AnchorX, Y1 = Atom1.AnchorY, Y2 = Atom2.AnchorY};
 
@@ -145,18 +134,18 @@ namespace NuSysApp
         public XmlElement WriteXML(XmlDocument doc)
         {
 
-            Link linkModel = this.Model;
+            Link linkModel = (Link) this.Model;
 
             //XmlElement 
             XmlElement link = doc.CreateElement(string.Empty, "Link", string.Empty); //TODO: Change how we determine node type for name
 
             //Atoms that this link is bound to
             XmlAttribute id1 = doc.CreateAttribute("atomID1");
-            id1.Value = this.Model.InNodeID.ToString();
+            id1.Value = ((Link)this.Model).InAtomID.ToString();
             link.SetAttributeNode(id1);
 
             XmlAttribute id2 = doc.CreateAttribute("atomID2");
-            id2.Value = this.Model.OutNodeID.ToString();
+            id2.Value = ((Link)this.Model).OutAtomID.ToString();
             link.SetAttributeNode(id2);
 
             return link;
