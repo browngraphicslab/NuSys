@@ -25,7 +25,7 @@ namespace NuSysApp
         public TextNodeView2(TextNodeViewModel vm)
         {
             this.InitializeComponent();
-            this.DataContext = vm;          
+            this.DataContext = vm;
         }
 
         private void OnEditClick(object sender, RoutedEventArgs e)

@@ -39,7 +39,7 @@ namespace NuSysApp
           //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
-                link.IsVisible = false;
+                link.SetVisibility(false);
             }
             //TODO Handle links
         }
@@ -47,14 +47,30 @@ namespace NuSysApp
         public override void Resize(double dx, double dy)
         {
             var trans = LocalTransform;
-            var scale = dx < dy ? (Width + dx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + dy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
+            var newDx = 0.0;
+            var newDy = 0.0;
+            if (dx > dy)
+            {
+                newDx = dy * Width / Height;
+                newDy = dy;
+            }
+            else
+            {
+                newDx = dx;
+                newDy = dx * Height / Width;
+            }
+            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
+            {
+                return;
+            }
+            var scale = newDx < newDy ? (Width + newDx/WorkSpaceViewModel.CompositeTransform.ScaleX) / Width : (Height + newDy/ WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             trans.ScaleX *= scale;
             trans.ScaleY *= scale;
             LocalTransform = trans;
             
-            base.Resize(dx, dy);
-            _margin += dx;
+            _margin += newDx;
             (View as GroupView).ArrangeNodesInGrid();
+            base.Resize(newDx , newDy );
         }
 
 
@@ -85,8 +101,10 @@ namespace NuSysApp
                     WorkSpaceViewModel.DeleteNode(this);
                     foreach (var link in lastNode.LinkList)
                     {
-                        link.IsVisible = true;
+                        link.SetVisibility(true);
                         link.UpdateAnchor();
+                        link.Atom1.UpdateAnchor();
+                        link.Atom2.UpdateAnchor();
                     }
                     lastNode.UpdateAnchor();
                     break;
@@ -129,7 +147,7 @@ namespace NuSysApp
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
-            Node currModel = this.Model;
+            Atom currModel = this.Model;
 
             //Main XmlElement 
             XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
