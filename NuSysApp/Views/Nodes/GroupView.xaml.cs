@@ -24,7 +24,11 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             Canvas.SetZIndex(this, -1);
-            (this.DataContext as GroupViewModel).NodeViewModelList.CollectionChanged += AtomViewList_CollectionChanged;
+            var groupViewModel = this.DataContext as GroupViewModel;
+            if (groupViewModel != null)
+            {
+                groupViewModel.NodeViewModelList.CollectionChanged += AtomViewList_CollectionChanged;
+            }
         }
 
         private void AtomViewList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
