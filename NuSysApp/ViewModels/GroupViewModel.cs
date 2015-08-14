@@ -38,7 +38,7 @@ namespace NuSysApp
           //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
-                link.IsVisible = false;
+                link.SetVisibility(false);
             }
             //TODO Handle links
         }
@@ -84,7 +84,7 @@ namespace NuSysApp
                     WorkSpaceViewModel.DeleteNode(this);
                     foreach (var link in lastNode.LinkList)
                     {
-                        link.IsVisible = true;
+                        link.SetVisibility(true);
                         link.UpdateAnchor();
                     }
                     lastNode.UpdateAnchor();
