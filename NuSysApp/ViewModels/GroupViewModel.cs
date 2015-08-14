@@ -26,6 +26,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.View = new GroupView(this);
+            this.NodeType = Constants.NodeType.group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
         }
@@ -125,29 +126,14 @@ namespace NuSysApp
             }
             return false;
         }
-        public override string CreateXML()
-        {
-            string XML = "";
-            Node currModel = this.Model;
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'content='" + currModel.Content + "'>";
-
-            foreach(NodeViewModel nodevm in NodeViewModelList)
-            {
-                XML = XML+ nodevm.CreateXML();
-            }
-
-            return XML;
-        }
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
             Node currModel = this.Model;
 
             //Main XmlElement 
-            XmlElement groupNode = doc.CreateElement(string.Empty, "groupNode", string.Empty); //TODO: Change how we determine node type for name
-            doc.AppendChild(groupNode);
+            XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);

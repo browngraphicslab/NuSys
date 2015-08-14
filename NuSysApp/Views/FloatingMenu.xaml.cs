@@ -22,21 +22,22 @@ namespace NuSysApp
         public FloatingMenu()
         {
             this.InitializeComponent();
-            SetActive(idleButton);
+            SetOpacityActive(idleButton);
         }
 
-        public void SetActive(Button btn)
+        public void SetOpacityActive(Button btnToActivate)
         {
-            inkButton.Opacity = 1;
-            linkButton.Opacity = 1;
-            textButton.Opacity = 1;
-            scribbleButton.Opacity = 1;
-            docButton.Opacity = 1;
-            idleButton.Opacity = 1;
-            saveButton.Opacity = 1;
-
-            btn.Opacity = 0.75;
-
+            // Buttons to deactivate
+            inkButton.Opacity      = Constants.ButtonDeactivatedOpacity;
+            linkButton.Opacity     = Constants.ButtonDeactivatedOpacity;
+            textButton.Opacity     = Constants.ButtonDeactivatedOpacity;
+            scribbleButton.Opacity = Constants.ButtonDeactivatedOpacity;
+            docButton.Opacity      = Constants.ButtonDeactivatedOpacity;
+            idleButton.Opacity     = Constants.ButtonDeactivatedOpacity;
+            saveButton.Opacity     = Constants.ButtonDeactivatedOpacity;
+            // Button to activate
+            btnToActivate.Opacity  = Constants.ButtonActivatedOpacity;
+            // Close all open submenus
             if (!_subMenuOpen) return;
             slidein.Begin();
             _subMenuOpen = false;
@@ -44,7 +45,7 @@ namespace NuSysApp
 
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.GlobalInk);
             if (_subMenuOpen) return;
             slideout.Begin();
@@ -53,43 +54,43 @@ namespace NuSysApp
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.PromoteInk);
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.AddTextNode);
         }
 
 
         private void EraseButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke((Options.Erase));
         }
 
         private void InkNodeButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.AddInkNode);
         }
 
         private async void DocumentButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.Document);
         }
 
         private async void CortanaButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button) sender);
+            SetOpacityActive((Button) sender);
             ModeChange?.Invoke(Options.Cortana);
         }
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.Save);
         }
 
@@ -105,7 +106,7 @@ namespace NuSysApp
 
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetOpacityActive((Button)sender);
             ModeChange?.Invoke(Options.Select);
         }
 
