@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
 using Windows.UI;
@@ -41,6 +42,10 @@ namespace NuSysApp
         public virtual void Translate(double dx, double dy, bool network = false)
         {
             if (IsAnnotation){return;}
+            if (!network)//NETWORK TEST
+            {
+                WorkSpaceViewModel.NetworkConnector.moveNode(dx, dy);
+            }
             if (!this.IsEditing)
             {
                 var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
@@ -53,10 +58,6 @@ namespace NuSysApp
                 {
                     link.UpdateAnchor();
                 }
-            }
-            if (!network)//NETWORK TEST
-            {
-                WorkSpaceViewModel.NetworkConnector.moveNode(dx,dy);
             }
             
         }

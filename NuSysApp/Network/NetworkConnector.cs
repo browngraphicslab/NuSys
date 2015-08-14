@@ -8,11 +8,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 
 
 namespace NuSysApp
@@ -230,7 +233,7 @@ namespace NuSysApp
             {
                 var result = args.GetDataStream();
                 var resultStream = result.AsStreamForRead(1024);
-                
+
                 using (var reader = new StreamReader(resultStream))
                 {
                     message = await reader.ReadToEndAsync();
@@ -238,11 +241,12 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception caught during message recieve FROM IP "+ip+" with error code: "+e.Message);
+                Debug.WriteLine("Exception caught during message recieve FROM IP " + ip + " with error code: " +
+                                e.Message);
                 return;
             }
-            Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
-            await this.MessageRecieved(ip,message,PacketType.UDP);
+            //Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
+            await this.MessageRecieved(ip, message, PacketType.UDP);
         }
 
         public async Task SendTCPMessage(string message, string recievingIP)
@@ -296,10 +300,10 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
-            Debug.WriteLine("attempting to send UDP message: " + message);
+            //Debug.WriteLine("attempting to send UDP message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
-            Debug.WriteLine("Sent UDP message: " + message);
+            //Debug.WriteLine("Sent UDP message: " + message);
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {

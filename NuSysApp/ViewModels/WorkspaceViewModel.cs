@@ -558,12 +558,25 @@ namespace NuSysApp
         }
         #endregion Public Members
 
-        public void moveNode(double dx, double dy)//NETWORK TEST
+        public async void moveNode(double dx, double dy)//NETWORK TEST
         {
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
             foreach (NodeViewModel n in NodeViewModelList)
             {
-                n.Translate(dx,dy,true);
-            }
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    n.Translate(dx, dy, true);
+                });
+            }/*
+            foreach (NodeViewModel n in NodeViewModelList)
+            {
+                lock (n)
+                {
+                    Canvas.SetLeft(n.View,Canvas.GetLeft(n.View)+dx);
+                    Canvas.SetTop(n.View, Canvas.GetTop(n.View) + dy);
+                }
+            }*/
         }
     }
 }
