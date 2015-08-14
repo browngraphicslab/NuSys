@@ -7,11 +7,10 @@ namespace NuSysApp
 {
     public class Node : Atom
     {
-        public Node(int id) : base()
+        public Node(int id) : base (id)
         {
             StartLines = new List<Link>();
             EndLines = new List<Link>();
-            ID = id;
         }
 
         public Content Content { set; get; }
@@ -21,8 +20,6 @@ namespace NuSysApp
         public List<Link> EndLines { get; }
 
         public List<Node> ConnectedNodes { get; }
-
-        public int ID { get; }
 
         public int X { get; set; }
 
@@ -35,6 +32,8 @@ namespace NuSysApp
         public double Height { get; set; }
 
         public Constants.NodeType NodeType { get; set; }
+
+        public GroupViewModel ParentGroup { get; set; }
 
         public virtual string GetContentSource()
         {

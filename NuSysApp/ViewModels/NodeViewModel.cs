@@ -21,10 +21,10 @@ namespace NuSysApp
         private AtomViewModel _clippedParent;
         #endregion Private Members
 
-        protected NodeViewModel(WorkspaceViewModel vm): base(vm)
+        protected NodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.AtomType = Constants.Node;
-            this.Model = new Node(0);
+            this.Model = new Node(id);
         }
 
         #region Node Manipulations
@@ -150,6 +150,12 @@ namespace NuSysApp
 
         public bool IsAnnotation { get; set; }
 
+        public int id
+        {
+            get { return Model.ID; }
+            set { Model.ID = value; }
+        }
+
         /// <summary>
         /// X-coordinate of this atom
         /// </summary>
@@ -250,6 +256,12 @@ namespace NuSysApp
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = this.Model.ID.ToString();
 
+            if (ParentGroup != null)
+            {
+                XmlAttribute groupID = doc.CreateAttribute("groupID");
+                groupID.Value = ((Node)this.Model).ParentGroup.Model.ID.ToString();
+            }
+
             XmlAttribute x = doc.CreateAttribute("x");
             x.Value = ((int) ((Node)this.Model).Transform.Matrix.OffsetX).ToString();
 
@@ -314,7 +326,16 @@ namespace NuSysApp
 
         }
 
-        public GroupViewModel ParentGroup { get; set; }
+        public GroupViewModel ParentGroup {
+            get
+            {
+                return ((Node)this.Model).ParentGroup;
+            }
+            set
+            {
+                ((Node)this.Model).ParentGroup = value;
+            }
+        }
 
         #endregion Public Properties
     }
