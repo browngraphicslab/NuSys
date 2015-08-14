@@ -249,13 +249,21 @@ namespace NuSysApp
         }
         public async Task SendTCPMessage(string message, string recievingIP, string outport)
         {
-            Debug.Write("attempting to TCP send message: "+message+" to IP: "+recievingIP);
+            Debug.WriteLine("attempting to send TCP message: "+message+" to IP: "+recievingIP);
             try
             {
-                DataWriter writer = _addressToWriter[recievingIP].Item2;
+                StreamSocket TCPsocket = new StreamSocket();
+                await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPOutputPort);
+                DataWriter writer = new DataWriter(TCPsocket.OutputStream);
+
+
+                //DataWriter writer = _addressToWriter[recievingIP].Item2;
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
                 await writer.StoreAsync();
+                writer.Dispose();
+                TCPsocket.Dispose();
+                Debug.WriteLine("Sent TCP message: " + message + " to IP: " + recievingIP);
             }
             catch (Exception e)
             {
