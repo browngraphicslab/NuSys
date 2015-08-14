@@ -17,7 +17,7 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
+    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <MenuFlyoutItem x:Name="EditInk" Click="OnEditClick" Style="{StaticResource SubMenuItem}">

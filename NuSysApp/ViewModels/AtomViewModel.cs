@@ -131,7 +131,7 @@ namespace NuSysApp
         /// <summary>
         /// color of the atom
         /// </summary>
-        public Color Color
+        public SolidColorBrush Color
         {
             get { return Model.Color; }
             set
