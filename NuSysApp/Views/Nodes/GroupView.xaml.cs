@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,7 +25,11 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             Canvas.SetZIndex(this, -1);
-            (this.DataContext as GroupViewModel).NodeViewModelList.CollectionChanged += AtomViewList_CollectionChanged;
+            var groupViewModel = this.DataContext as GroupViewModel;
+            if (groupViewModel != null)
+            {
+                groupViewModel.NodeViewModelList.CollectionChanged += AtomViewList_CollectionChanged;
+            }
         }
 
         private void AtomViewList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

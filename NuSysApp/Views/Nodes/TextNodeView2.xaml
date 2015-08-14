@@ -12,7 +12,6 @@
     Width="{Binding Width}"
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
-    PointerReleased="OnPointerReleased"
     IsDoubleTapEnabled="True">
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
@@ -123,7 +122,7 @@
 
 
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl" Background="BlanchedAlmond">
+    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <MenuFlyoutItem x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}">

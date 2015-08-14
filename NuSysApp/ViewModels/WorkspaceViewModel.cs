@@ -315,7 +315,11 @@ namespace NuSysApp
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
             idCounter++;
-
+            if ((vm1.AtomType == Constants.Node && ((NodeViewModel)vm1).ParentGroup != null) || 
+                (vm1.AtomType == Constants.Node && ((NodeViewModel)vm2).ParentGroup != null))
+            {
+                vm.IsVisible = false;
+            }
             LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);

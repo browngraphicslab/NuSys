@@ -13,7 +13,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
-                    <Grid Name="bg"  Background="{TemplateBinding Background}" Opacity=".75">
+                    <Grid Name="bg" Background="{TemplateBinding Background}">
                         <Grid.Resources>
                             <Storyboard x:Key="slideout" x:Name="slideout">
                                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>

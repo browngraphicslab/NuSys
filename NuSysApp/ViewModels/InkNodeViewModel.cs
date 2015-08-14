@@ -25,6 +25,7 @@ namespace NuSysApp
             this.NodeType = Constants.NodeType.ink; 
             this.IsSelected = false;
             this.IsEditing = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175,173,216,230));
         }
 
         public override XmlElement WriteXML(XmlDocument doc)

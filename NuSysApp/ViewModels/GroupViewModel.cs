@@ -25,6 +25,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             this.View = new GroupView(this);
             this.NodeType = Constants.NodeType.group;
             _margin = 75;
@@ -70,9 +71,8 @@ namespace NuSysApp
             
             _margin += newDx;
             (View as GroupView).ArrangeNodesInGrid();
-            base.Resize(newDx , newDy );
+            base.Resize(newDx, newDy);
         }
-
 
         public void RemoveNode(NodeViewModel toRemove)
         {
@@ -165,8 +165,6 @@ namespace NuSysApp
             {
                 groupNode.AppendChild(nodevm.WriteXML(doc));
             }
-
-
             return groupNode;
         }
 
