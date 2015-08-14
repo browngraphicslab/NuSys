@@ -38,7 +38,7 @@ namespace NuSysApp
             }
         }
 
-        public virtual void Translate(double dx, double dy)
+        public virtual void Translate(double dx, double dy, bool network = false)
         {
             if (IsAnnotation){return;}
             if (!this.IsEditing)
@@ -53,6 +53,10 @@ namespace NuSysApp
                 {
                     link.UpdateAnchor();
                 }
+            }
+            if (!network)//NETWORK TEST
+            {
+                WorkSpaceViewModel.NetworkConnector.moveNode(dx,dy);
             }
             
         }

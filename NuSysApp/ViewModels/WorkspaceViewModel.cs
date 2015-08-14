@@ -29,6 +29,14 @@ namespace NuSysApp
 
         private readonly Factory _factory;
         private WorkSpaceModel _workSpaceModel;
+
+        private NetworkConnector _networkConnector;//NETWORK TEST
+
+        public NetworkConnector NetworkConnector//NETWORK TEST
+        {
+            set { _networkConnector = value; }
+            get { return _networkConnector; }
+        }
         public enum LinkMode
         {
             Linelink,
@@ -37,7 +45,6 @@ namespace NuSysApp
 
         private CompositeTransform _compositeTransform, _fMTransform;
         
-
         #endregion Private Members
 
         public WorkspaceViewModel()
@@ -550,5 +557,13 @@ namespace NuSysApp
             }
         }
         #endregion Public Members
+
+        public void moveNode(double dx, double dy)//NETWORK TEST
+        {
+            foreach (NodeViewModel n in NodeViewModelList)
+            {
+                n.Translate(dx,dy,true);
+            }
+        }
     }
 }

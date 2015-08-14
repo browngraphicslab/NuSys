@@ -528,9 +528,9 @@ namespace NuSysApp
                 }
             }
             Dictionary<string, string> properties = parseOutProperties(message);
-            if (properties.ContainsKey("id"))
+            if (properties.ContainsKey("id") || true)//TODO remove the true
             {
-                
+                _workspaceViewModel.moveNode(double.Parse(properties["x"]), double.Parse(properties["y"]));
             }
             else
             {
@@ -569,6 +569,14 @@ namespace NuSysApp
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
+        }
+        public void moveNode(double x, double y)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("x",x.ToString());
+            dict.Add("y", x.ToString());
+            string s = MakeSubMessageFromDict(dict);
+            SendMassUDPMessage(s);
         }
     }
 }
