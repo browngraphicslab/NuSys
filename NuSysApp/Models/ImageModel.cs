@@ -7,7 +7,6 @@ namespace NuSysApp
         public ImageModel(BitmapImage img, int id) : base(id)
         {
             this.Image = img;
-            this.NodeType = "ImageNode";
         }
         public BitmapImage Image { get; set; }
 
