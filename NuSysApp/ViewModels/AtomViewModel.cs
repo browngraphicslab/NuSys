@@ -19,7 +19,7 @@ namespace NuSysApp
         private bool _isSelected;
         private UserControl _view;
         private MatrixTransform _transform;
-
+         
         #endregion Private Members
 
         protected AtomViewModel(WorkspaceViewModel vm)

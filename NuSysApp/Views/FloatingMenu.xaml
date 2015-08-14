@@ -103,9 +103,16 @@
                     <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
+            <!-- just for testing -->
+            <!--<Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/save icon.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>-->
+            <!-- just for testing -->
             <Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
+                    <ImageBrush ImageSource="ms-appx:///Assets/load icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
             </Button>
         </StackPanel>

@@ -104,6 +104,8 @@
     <Content Include="Assets\font size.png" />
     <Content Include="Assets\image.png" />
     <Content Include="Assets\link.png" />
+    <Content Include="Assets\load icon.png" />
+    <Content Include="Assets\save icon.png" />
     <Content Include="Views\Nodes\link icon.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
