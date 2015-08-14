@@ -47,20 +47,21 @@ namespace NuSysApp
             foreach (XmlNode node in NodeList)
             {
                 string currType = node.Attributes.GetNamedItem("nodeType").Value;
-                //currNode.ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
+                int ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
                 int X = Convert.ToInt32(node.Attributes.GetNamedItem("x").Value);
                 int Y = Convert.ToInt32(node.Attributes.GetNamedItem("y").Value);
                 int width = Convert.ToInt32(node.Attributes.GetNamedItem("width").Value);
                 int height = Convert.ToInt32(node.Attributes.GetNamedItem("height").Value);
                 switch (currType)
                 {
-                    case "NuSysApp.TextNode":
+                    case "text":
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                            () => {
-                               string text = node.Attributes.GetNamedItem("text").Value;
-                               NodeViewModel newNodeVm = vm.CreateNewNode(NodeType.Text, X, Y, text).Result;
+                               //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
+                               NodeViewModel newNodeVm = vm.CreateNewNode(NodeType.Text, X, Y).Result;
                                newNodeVm.Width = width;
                                newNodeVm.Height = height;
+                               newNodeVm.ID = ID;
                            });
                             break;
                     case "Image":

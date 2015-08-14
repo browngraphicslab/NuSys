@@ -331,7 +331,6 @@ namespace NuSysApp
                 case NodeType.Text:
                     vm = new TextNodeViewModel(this, (string)data, idCounter);
                     idCounter++;
-                    Debug.WriteLine(idCounter);
                     break;
                 case NodeType.Ink:
                     vm = new InkNodeViewModel(this, idCounter);
@@ -439,6 +438,7 @@ namespace NuSysApp
             dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
+            Debug.WriteLine(currWorkspaceXml.XmlToString(this.getXml()));
             dbConnection.InsertAsync(currWorkspaceXml);
         }
 
