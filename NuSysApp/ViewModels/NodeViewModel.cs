@@ -44,8 +44,15 @@ namespace NuSysApp
             if (!this.IsEditing)
             {
                 var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
+                if (ParentGroup == null)
+                {
                 transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
                 transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+                } else
+                {
+                    transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX / ParentGroup.LocalTransform.ScaleX ;
+                transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY/ ParentGroup.LocalTransform.ScaleX;
+                }
                 Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
                 this.UpdateAnchor();

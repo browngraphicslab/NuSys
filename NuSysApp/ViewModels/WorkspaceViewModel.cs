@@ -200,8 +200,8 @@ namespace NuSysApp
         {
             if (node.ParentGroup != null)
             {
-                var x = node.Transform.Matrix.OffsetX;
-                var y = node.Transform.Matrix.OffsetY;
+                var x = node.Transform.Matrix.OffsetX * node.ParentGroup.LocalTransform.ScaleX;
+                var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
                 if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
                 {
                     node.ParentGroup.RemoveNode(node);
