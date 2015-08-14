@@ -28,7 +28,7 @@ namespace NuSysApp
             this.AtomType = Constants.Link;
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
-            this.IsVisible = true;
+           
 
             var line = this.LineRepresentation;
 

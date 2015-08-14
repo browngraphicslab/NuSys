@@ -87,6 +87,8 @@ namespace NuSysApp
                     {
                         link.SetVisibility(true);
                         link.UpdateAnchor();
+                        link.Atom1.UpdateAnchor();
+                        link.Atom2.UpdateAnchor();
                     }
                     lastNode.UpdateAnchor();
                     break;
