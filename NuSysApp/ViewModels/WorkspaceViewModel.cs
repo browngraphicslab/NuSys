@@ -16,6 +16,7 @@ using System.Text;
 using SQLite.Net.Async;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
+using System.Xml;
 
 namespace NuSysApp
 {
@@ -27,6 +28,7 @@ namespace NuSysApp
         #region Private Members
 
         private readonly Factory _factory;
+        private SQLiteDatabase myDB;
 
         public enum LinkMode
         {
@@ -35,7 +37,6 @@ namespace NuSysApp
         }
 
         private CompositeTransform _compositeTransform, _fMTransform;
-        
 
         #endregion Private Members
 
@@ -46,6 +47,8 @@ namespace NuSysApp
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedAtomViewModel = null;
             this.CurrentLinkMode = LinkMode.Bezierlink;
+
+            myDB = new SQLiteDatabase("NuSysTestt.sqlite");
 
             Init();
             var c = new CompositeTransform
@@ -62,7 +65,7 @@ namespace NuSysApp
         {
             await SetupDirectories();
             SetupChromeIntermediate();
-            SetupOfficeTransfer();            
+            SetupOfficeTransfer();       
         }
 
         private async void SetupOfficeTransfer()
@@ -148,7 +151,6 @@ namespace NuSysApp
                 }
             };
         }
-
 
         private static async Task<bool> SetupDirectories()
         {
@@ -415,18 +417,26 @@ namespace NuSysApp
 
         public async Task SaveWorkspace()
         {
-            SQLiteDatabase MyDB = new SQLiteDatabase("NuSys.sqlite");
-            SQLiteAsyncConnection MyConnection = MyDB.DBConnection;
-            MyConnection.CreateTableAsync<XMLFile>();
-            XMLFile currWorkspace = new XMLFile();
+            SQLiteAsyncConnection dbConnection = myDB.DBConnection;
+            dbConnection.CreateTableAsync<XmlFileHelper>();
+            XmlFileHelper currWorkspace = new XmlFileHelper();
             currWorkspace.toXML = this.CreateXML();
-            MyConnection.InsertAsync(currWorkspace);
-            Debug.WriteLine(this.CreateXML());
+            dbConnection.InsertAsync(currWorkspace);
+        }
+
+        public async Task LoadWorkspace()
+        {
+            SQLiteAsyncConnection dbConnection = myDB.DBConnection;
+            var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
+            query.ToListAsync().ContinueWith((t) =>
+            {
+                foreach (var file in t.Result)
+                    Debug.WriteLine("File: " + file.toXML);
+            });
         }
 
         public string CreateXML()
         {
-            Debug.WriteLine("Called CreateXML in workspace");
             string XML = "";
             foreach (NodeViewModel nodeVM in NodeViewModelList)
             {

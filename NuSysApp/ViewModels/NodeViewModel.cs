@@ -60,8 +60,6 @@ namespace NuSysApp
         public void ToggleEditing()
         {
             this.IsEditing = !this.IsEditing;
-
-
         }
         public void ToggleEditingInk()
         {
@@ -97,7 +95,6 @@ namespace NuSysApp
             }
             this.UpdateAnchor();
         }
-
 
         public void CreateAnnotation()
         {
@@ -202,7 +199,6 @@ namespace NuSysApp
             get { return Model.Width; }
             set
             {
-
                 if (Model.Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
