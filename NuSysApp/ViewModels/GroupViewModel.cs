@@ -49,9 +49,9 @@ namespace NuSysApp
             trans.ScaleY *= scale;
             LocalTransform = trans;
             
-            base.Resize(dx, dy);
+            base.Resize(dx/ trans.ScaleX, dy/ trans.ScaleY);
             _margin += dx;
-           // this.ArrangeNodesInGrid();
+            (View as GroupView).ArrangeNodesInGrid();
         }
 
 

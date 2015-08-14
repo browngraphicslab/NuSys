@@ -32,7 +32,7 @@ namespace NuSysApp
             ArrangeNodesInGrid();
         }
 
-        private void ArrangeNodesInGrid()
+        public void ArrangeNodesInGrid()
         {
             var vm = this.DataContext as GroupViewModel;
             var AtomViewList = vm.NodeViewModelList;
@@ -40,9 +40,11 @@ namespace NuSysApp
             vm.Width = Constants.MinNodeSizeX;
             vm.Height = Constants.MinNodeSizeY;
 
-            var _margin = 75.0;
+            var scale = vm.LocalTransform.ScaleX;
+            var _margin = 75.0 * scale;
             var currentX = _margin;
             var currentY = _margin;
+            scale = 1;
             var columnCount = Math.Round(Math.Sqrt(AtomViewList.Count));
             columnCount = 2 > columnCount ? 2 : columnCount;
             var heightToAdd = 0.0;
@@ -54,25 +56,25 @@ namespace NuSysApp
                 mat.OffsetY = currentY;
                 toArr.Transform.Matrix = mat;
                 heightToAdd = heightToAdd < toArr.Height ? toArr.Height : heightToAdd;
-                if (vm.Height < currentY + toArr.Height + _margin)
+                if (vm.Height < currentY + toArr.Height * scale + _margin)
                 {
-                    vm.Height = currentY + toArr.Height + _margin;
-                    Height = currentY + toArr.Height + _margin;
+                    vm.Height = currentY + toArr.Height * scale+ _margin;
+                    Height = currentY + toArr.Height * scale+ _margin;
                 }
-                if (vm.Width < currentX + toArr.Width + _margin)
+                if (vm.Width < currentX + toArr.Width * scale+ _margin)
                 {
-                    vm.Width = currentX + toArr.Width + _margin;
-                    Width = currentX + toArr.Width + _margin;
+                    vm.Width = currentX + toArr.Width * scale+ _margin;
+                    Width = currentX + toArr.Width * scale+ _margin;
                 }
                 if ((i + 1) % columnCount == 0)
                 {
                     currentX = _margin;
-                    currentY += heightToAdd + _margin;
+                    currentY += heightToAdd * scale+ _margin;
                     heightToAdd = 0;
                 }
                 else
                 {
-                    currentX += toArr.Width + _margin;
+                    currentX += toArr.Width * scale+ _margin;
                 }
             }
             this.DataContext = vm;

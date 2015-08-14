@@ -17,12 +17,12 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl" Background="#9CE38F" RenderTransform="{Binding LocalTransform}">
+    <local:NodeTemplate x:Name="nodeTpl" Background="#9CE38F" >
         <local:NodeTemplate.Inner>
-            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" >
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" RenderTransform="{Binding LocalTransform}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Red" x:Name="canvas">
+                        <Canvas  HorizontalAlignment="Left" Background="Red" x:Name="canvas">
                         </Canvas>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
