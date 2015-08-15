@@ -33,6 +33,7 @@ namespace NuSysApp
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
         private WorkspaceViewModel _workspaceViewModel;
+        private WorkSpaceModel _workSpaceModel;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
 
@@ -133,6 +134,11 @@ namespace NuSysApp
             }
         }
 
+        public WorkSpaceModel WorkSpaceModel
+        {
+            get { return _workSpaceModel; }
+            set { _workSpaceModel = value; }
+        }
         public string LocalIP
         {
             get { return _localIP; }
@@ -609,18 +615,9 @@ namespace NuSysApp
                     }
                 }
             }
-            Dictionary<string, string> properties = parseOutProperties(message);
-            if (properties.ContainsKey("id") || true)//TODO remove the true
+            if (message[0] == '<' && message[message.Length - 1] == '>')
             {
-                if (properties.ContainsKey("x"))
-                {
-                    _workspaceViewModel.moveNode(double.Parse(properties["x"]), double.Parse(properties["y"]));
-                }
-            }
-            else
-            {
-                Debug.WriteLine("ERROR: properties of message didn't contain ID.  message: "+message);
-                return;
+                _workSpaceModel.HandleMessage(message);
             }
 
 

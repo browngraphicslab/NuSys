@@ -39,13 +39,9 @@ namespace NuSysApp
             }
         }
 
-        public virtual void Translate(double dx, double dy, bool network = false)
+        public virtual void Translate(double dx, double dy)
         {
             if (IsAnnotation){return;}
-            if (!network)//NETWORK TEST
-            {
-                WorkSpaceViewModel.NetworkConnector.moveNode(dx, dy);
-            }
             if (!this.IsEditing)
             {
                 var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;

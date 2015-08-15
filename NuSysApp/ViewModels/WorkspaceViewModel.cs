@@ -34,7 +34,12 @@ namespace NuSysApp
 
         public NetworkConnector NetworkConnector//NETWORK TEST
         {
-            set { _networkConnector = value; }
+            set
+            {
+                _networkConnector = value;
+                _workSpaceModel.NetworkConnector = value;
+                _networkConnector.WorkSpaceModel = _workSpaceModel;
+            }
             get { return _networkConnector; }
         }
         public enum LinkMode
@@ -49,7 +54,7 @@ namespace NuSysApp
 
         public WorkspaceViewModel()
         {
-            _workSpaceModel = new WorkSpaceModel();
+            _workSpaceModel = new WorkSpaceModel(this);
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
@@ -325,7 +330,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<Node> CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             Debug.WriteLine("In CreateNewNode");
@@ -341,7 +346,7 @@ namespace NuSysApp
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                    if (storageFile == null) return;
+                    if (storageFile == null) return null;
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
@@ -361,20 +366,25 @@ namespace NuSysApp
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
                 default:
-                    return;
+                    return null;
             }
-            NodeViewModelList.Add(vm);
 
-            if (vm != null)
+            if (await _workSpaceModel.SendMessageToHost("<id=0,x=" + xCoordinate.ToString() + ",y=" + yCoordinate.ToString() + ",type=node,nodeType=" + type.ToString() + ">")) 
             {
-                AtomViewList.Add(vm.View);
-                PositionNode(vm, xCoordinate, yCoordinate);
-                if (data is InkStroke)
-                {
+                NodeViewModelList.Add(vm);
 
-                    vm.View.Loaded += InkNodeView_PromoteInk;
+                if (vm != null)
+                {
+                    AtomViewList.Add(vm.View);
+                    PositionNode(vm, xCoordinate, yCoordinate);
+                    if (data is InkStroke)
+                    {
+
+                        vm.View.Loaded += InkNodeView_PromoteInk;
+                    }
                 }
             }
+            return vm.Model;
         }
 
         private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
@@ -557,26 +567,5 @@ namespace NuSysApp
             }
         }
         #endregion Public Members
-
-        public async void moveNode(double dx, double dy)//NETWORK TEST
-        {
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-
-            foreach (NodeViewModel n in NodeViewModelList)
-            {
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    n.Translate(dx, dy, true);
-                });
-            }/*
-            foreach (NodeViewModel n in NodeViewModelList)
-            {
-                lock (n)
-                {
-                    Canvas.SetLeft(n.View,Canvas.GetLeft(n.View)+dx);
-                    Canvas.SetTop(n.View, Canvas.GetTop(n.View) + dy);
-                }
-            }*/
-        }
     }
 }

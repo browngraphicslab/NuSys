@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
@@ -41,6 +42,17 @@ namespace NuSysApp
             return null;
         }
 
+        public async Task Update(Dictionary<string, string> props)
+        {
+            if (props.ContainsKey("x"))
+            {
+                X = Int32.Parse(props["x"]);
+            }
+            if (props.ContainsKey("y"))
+            {
+                X = Int32.Parse(props["y"]);
+            }
+        }
 
     }
 }
