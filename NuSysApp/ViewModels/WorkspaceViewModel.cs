@@ -368,20 +368,16 @@ namespace NuSysApp
                 default:
                     return null;
             }
+            NodeViewModelList.Add(vm);
 
-            if (await _workSpaceModel.SendMessageToHost("<id=0,x=" + xCoordinate.ToString() + ",y=" + yCoordinate.ToString() + ",type=node,nodeType=" + type.ToString() + ">")) 
+            if (vm != null)
             {
-                NodeViewModelList.Add(vm);
-
-                if (vm != null)
+                AtomViewList.Add(vm.View);
+                PositionNode(vm, xCoordinate, yCoordinate);
+                if (data is InkStroke)
                 {
-                    AtomViewList.Add(vm.View);
-                    PositionNode(vm, xCoordinate, yCoordinate);
-                    if (data is InkStroke)
-                    {
 
-                        vm.View.Loaded += InkNodeView_PromoteInk;
-                    }
+                    vm.View.Loaded += InkNodeView_PromoteInk;
                 }
             }
             return vm.Model;

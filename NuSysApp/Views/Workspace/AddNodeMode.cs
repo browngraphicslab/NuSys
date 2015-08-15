@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
@@ -36,8 +37,12 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
-
-            await vm.CreateNewNode(nodeType, p.X, p.Y, data);
+            string s = "";
+            if (data != null)
+            {
+                s = ",data=" + data.ToString();
+            }
+            await vm.WorkSpaceModel.SendMessageToHost("<id=0,x=" + p.X + ",y=" + p.Y + ",type=node,nodeType=" + nodeType.ToString() +s+">");
             vm.ClearSelection();
         }
     }

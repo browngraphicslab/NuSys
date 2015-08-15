@@ -116,14 +116,12 @@ namespace NuSysApp
             }
         }
 
-        public async Task<bool> SendMessageToHost(string message)
+        public async Task SendMessageToHost(string message)
         {
             if (!_isNetwork)
             {
                 await _networkConnector.SendMessageToHost(message);
-                return false;
             }
-            return true;
         }
     }
 }
