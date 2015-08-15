@@ -12,7 +12,7 @@ namespace NuSysApp
         #region Private Members
 
         #endregion Private Members
-
+        
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text, int id) : base(workSpaceViewModel, id)
         {
             this.Model = new TextNode(text ?? "Enter text here", id);
