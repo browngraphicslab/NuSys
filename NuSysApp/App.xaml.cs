@@ -203,17 +203,7 @@ namespace NuSysApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            string URL = "http://aint.ch/nusys/clients.php";
-            string urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName; 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
-            await _networkConnector.TellRemoveIP(
-                NetworkInformation.GetHostNames()
-                    .FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null)
-                    .RawName);
+            await _networkConnector.Disconnect();
 
 
 

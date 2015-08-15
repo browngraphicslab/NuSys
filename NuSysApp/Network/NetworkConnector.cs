@@ -97,7 +97,7 @@ namespace NuSysApp
             {
                 foreach (string ip in ips)
                 {
-                    await this.addIP(ip);
+                    await this.AddIP(ip);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace NuSysApp
         {
             get { return _localIP; }
         }
-        private async Task addIP(string ip)
+        private async Task AddIP(string ip)
         {
             if (!_otherIPs.Contains(ip) && ip != this._localIP) 
             {
@@ -152,7 +152,18 @@ namespace NuSysApp
             }
         }
 
-        public async Task TellRemoveIP(string ip)
+        public async Task Disconnect()
+        {
+            string URL = "http://aint.ch/nusys/clients.php";
+            string urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(URL);
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+            this.TellRemoveIP(this.LocalIP);
+        }
+        private async Task TellRemoveIP(string ip)
         {
             if (_otherIPs.Count > 0)
             {
@@ -453,12 +464,12 @@ namespace NuSysApp
             switch (type)
             {
                 case "0"://inital request = "I'm joining with my IP, who's the host?"
-                    await this.addIP(message);
+                    await this.AddIP(message);
                     if (_hostIP != null)
                     {
                         await this.SendTCPMessage("SPECIAL1:" + _hostIP, ip);
                     }
-                    if (_hostIP == _localIP)
+                    if (_hostIP == _localIP && message != _localIP) ;
                     {
                         if (!_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))//add new joining member
                         {

@@ -67,9 +67,8 @@ namespace NuSysApp
                     double y = 0;
                     if (props.ContainsKey("nodeType"))
                     {
-                        int t;
-                        Int32.TryParse(props["nodeType"], out t);
-                        type = (NodeType)t;
+                        string t = props["nodeType"];
+                        type = (NodeType)Enum.Parse(typeof(NodeType),t);
                     }
                     if (props.ContainsKey("x"))
                     {
