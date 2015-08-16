@@ -32,11 +32,11 @@ namespace NuSysApp
         private string _localIP;
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
-        private WorkspaceViewModel _workspaceViewModel;
         private WorkSpaceModel _workSpaceModel;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
-
+        private HashSet<string> _localLocks;
+        private bool _caughtUp = false;
         public void Start()
         {
             Debug.WriteLine("Starting Network Connection");
@@ -59,10 +59,15 @@ namespace NuSysApp
                 _type = type;
             }
 
+            public string Message
+            {
+                get { return _message; } 
+            }
+
             /*
             *send message by passing in an address
             */
-            public async void send(string address)//and send later on
+            public async Task send(string address)//and send later on
             {
                 switch (_type)
                 {
@@ -74,6 +79,11 @@ namespace NuSysApp
                         break;
                 }
             }
+        }
+
+        public bool isReady()
+        {
+            return _caughtUp;
         }
         public NetworkConnector()
         {
@@ -90,6 +100,7 @@ namespace NuSysApp
             _addressToWriter = new Dictionary<string,DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
+            _localLocks = new HashSet<string>();
 
             List<string> ips = GetOtherIPs();
             if (ips.Count == 1)
@@ -122,7 +133,7 @@ namespace NuSysApp
             _hostIP = _localIP;
             _locksOut = new Dictionary<string, string>();
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
-
+            _caughtUp = true;
             Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
             //ToDo add in other host responsibilities
         }
@@ -234,7 +245,7 @@ namespace NuSysApp
             await this.MessageRecieved(ip,message,PacketType.TCP);
         }
 
-        public string GetID(string senderIP)
+        private string GetID(string senderIP)
         {
             string hash = senderIP.Replace(@".", "") + "#";
             string now = DateTime.UtcNow.Ticks.ToString();
@@ -369,12 +380,19 @@ namespace NuSysApp
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
-            string[] miniStrings = message.Split("&&".ToCharArray());
-            foreach (string subMessage in miniStrings)
+            if (message.Substring(0, 7) != "SPECIAL")
             {
-                await this.HandleSubMessage(ip, subMessage, packetType);
+                string[] miniStrings = message.Split("&&".ToCharArray());
+                foreach (string subMessage in miniStrings)
+                {
+                    await this.HandleSubMessage(ip, subMessage, packetType);
+                }
             }
-            
+            else
+            {
+                await this.HandleSubMessage(ip, message, packetType);
+            }
+
         }
         private async Task SendUpdateForNode(string nodeId, string sendToIP)
         {
@@ -468,9 +486,20 @@ namespace NuSysApp
                     }
                     if (_hostIP == _localIP && message != _localIP) ;
                     {
-                        if (!_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))//add new joining member
+                        if (_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))
+                            //add new joining member
+                        {
+                            string m = _workSpaceModel.GetFullWorkspace();
+                            await SendTCPMessage("SPECIAL2:"+m, ip);
+                            return;
+                        }
+                        else
                         {
                             Debug.WriteLine("Adding of joining member failed concurrency");
+                            await SendTCPMessage("SPECIAL2:FAIL", ip);
+                            await HandleSpecialMessage(_localIP,"SPECIAL9:" + ip,PacketType.TCP);
+                            await SendMassTCPMessage("SPECIAL9:" + ip);
+                            return;
                         }
                     }
                     break;
@@ -483,16 +512,86 @@ namespace NuSysApp
                             this.makeHost();
                         }
                         Debug.WriteLine("Host returned and SET to be: "+message);
+                        return;
                     }
                     break;
-                case "2":
-
+                case "2"://the message sent from host to tell other workspace to catch up.  message is formatted just like regular messages
+                    if (_localIP == _hostIP)
+                    {
+                        Debug.WriteLine("ERROR: host (this) recieved catch up message from IP: "+ip+".  This shouldn't happen EVER");
+                        return;
+                    }
+                    await MessageRecieved(ip, message, packetType);
+                    await SendMessageToHost("SPECIAL3:DONE");
+                    return;
                     break;
-                case "3":
+                case "3":// response to catch up = "I am done catching up" ex: message = "DONE"
+                    if (_localIP == _hostIP)
+                    {
+                        if (message == "DONE")
+                        {
+                            if (_joiningMembers.ContainsKey(ip))
+                            {
+                                if (_joiningMembers[ip].Item1)
+                                {
+                                    string ret = "";
+                                    foreach (Packet p in _joiningMembers[ip].Item2)
+                                    {
+                                        ret += p.Message+"&&";
+                                    }
+                                    ret = ret.Substring(0, ret.Length - 2);
+                                    await SendTCPMessage("SPECIAL2:" + ret,ip);
+                                    _joiningMembers[ip].Item2.Clear();
+                                    return;
+                                }
+                                else
+                                {
+                                    await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    foreach (Packet p in _joiningMembers[ip].Item2)
+                                    {
+                                        await p.send(ip);
+                                    }
+                                    Tuple<bool, List<Packet>> nothing;
+                                    if (_joiningMembers.TryRemove(ip, out nothing))//remove the joining member
+                                    {
+                                        nothing = null; //seems so weird writing this
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("ERROR: Failed to remove joining member after they caught up.  probably concurrency error");
+                                        return;
+                                    }
 
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("ERROR: The host recieved caught-up message from somebody who wasn't known to be joining.  from IP: "+ip);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine("ERROR: Non-host recieved 'caught-up' message from IP: " + ip + ".  This shouldn't happen EVER");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ERROR: Non-host recieved 'caught-up with what you wanted' message from IP: "+ip+ ".  This shouldn't happen EVER");
+                        return;
+                    }
                     break;
-                case "4":
-
+                case "4": //Sent by Host only, "you are caught up and ready to join". message is simply the number of catch-up UDP packets also being sent
+                    if (_localIP == _hostIP)
+                    {
+                        Debug.WriteLine("ERROR: Host recieved 'caught-up' message from IP: " + ip + ".  This shouldn't happen EVER");
+                        return;
+                    }
+                    this._caughtUp = true;
+                    Debug.WriteLine("Ready to Join Workspace");
+                    return;
                     break;
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
@@ -659,17 +758,6 @@ namespace NuSysApp
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
-        }
-        public async void moveNode(double x, double y)
-        {
-            if (x != 0 && y != 0)
-            {
-                Dictionary<string, string> dict = new Dictionary<string, string>();
-                dict.Add("x", x.ToString());
-                dict.Add("y", y.ToString());
-                string s = MakeSubMessageFromDict(dict);
-                await SendMassUDPMessage(s);
-            }
         }
     }
 }

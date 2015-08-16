@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -23,6 +24,7 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class WaitingRoomView : Page
     {
+        public WorkspaceView _workspaceView;
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -31,10 +33,18 @@ namespace NuSysApp
 
         public async void Init()
         {
+            _workspaceView = new WorkspaceView();
         }
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(WorkspaceView));
+            if (Globals.Network.isReady())
+            {
+                this.Frame.Navigate(typeof (WorkspaceView), _workspaceView);
+            }
+            else
+            {
+                Debug.WriteLine("Can't join workspace yet, it's not synced with host");
+            }
         }
 
         private void TCP_OnClick(object sender, RoutedEventArgs e)
