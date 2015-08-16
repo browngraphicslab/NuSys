@@ -20,7 +20,7 @@ namespace NuSysApp
         {
             StartLines = new List<Link>();
             EndLines = new List<Link>();
-            ID = id;
+            _ID = id;
             _debounceDict = new DebouncingDictionary(id.ToString());
         }
 
@@ -34,11 +34,7 @@ namespace NuSysApp
         public string ID
         {
             get { return _ID; }
-            set
-            {
-                _ID = value;
-            } 
-        } //TODO not have id be settable, ACTUALLY IMPLEMENT THEM
+        }
 
         public int X
         {
