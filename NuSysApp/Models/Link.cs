@@ -3,14 +3,14 @@ namespace NuSysApp
 {
     public class Link : Atom
     {
-        public Link(Node inNode, Node outNode, int id) : base(id)
+        public Link(Atom inAtom, Atom outAtom, int id) : base(id)
         {
+            InAtomID = inAtom.ID;
+            OutAtomID = outAtom.ID;
             ID = id;
-            InNodeID = inNode.ID;
-            OutNodeID = outNode.ID;
         }
 
-        public int InNodeID { get; set; }
-        public int OutNodeID { get; set; }
+        public int InAtomID { get; set; }
+        public int OutAtomID { get; set; }
     }
 }

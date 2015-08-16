@@ -294,12 +294,12 @@ namespace NuSysApp
         public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             var vm1 = atomVm1 as NodeViewModel;
-            if (vm1 != null && vm1.IsAnnotation)
+            if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
             {
                 return;
             }
             var vm2 = atomVm2 as NodeViewModel;
-            if (vm2 != null && vm2.IsAnnotation)
+            if (vm2 != null && ((NodeViewModel)vm2).IsAnnotation)
             {
                 return;
             }
@@ -307,7 +307,8 @@ namespace NuSysApp
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
             idCounter++;
 
-            if (vm1.ParentGroup != null || vm2.ParentGroup != null)
+
+            if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
                 vm.IsVisible = false;
             }
