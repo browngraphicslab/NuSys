@@ -8,20 +8,12 @@ using NuSysApp.Network;
 
 namespace NuSysApp
 {
-    public class Node
+    public class Node : Atom
     {
-        private string _ID;
-        private int _X;
-        private int _Y;
-        private double _Width;
-        private double _Height;
-        private DebouncingDictionary _debounceDict;
-        public Node(string id)
+        public Node(string id) : base (id)
         {
             StartLines = new List<Link>();
             EndLines = new List<Link>();
-            _ID = id;
-            _debounceDict = new DebouncingDictionary(id.ToString());
         }
 
         public Content Content { set; get; }
@@ -31,65 +23,19 @@ namespace NuSysApp
         public List<Link> EndLines { get; }
         
         public List<Node> ConnectedNodes { get; }
-        public string ID
-        {
-            get { return _ID; }
-        }
+        public int X { get; set; }
 
-        public int X
-        {
-            get { return _X; }
-            set
-            {
-                if (_X != value)
-                {
-                    _X = value;
-                    _debounceDict.Add("x", _X.ToString());
-                }
-            } 
-        }
-
-        public int Y
-        {
-            get { return _Y; }
-            set
-            {
-                if (_Y != value)
-                {
-                    _Y = value;
-                    _debounceDict.Add("y", _Y.ToString());
-                }
-            }
-        }
+        public int Y{get; set; }
 
         public MatrixTransform Transform { get; set; }
 
-        public double Width {
-            get { return _Width; }
-            set
-            {
-                if (_Width != value)
-                {
-                    _Width = value;
-                    _debounceDict.Add("width", _Width.ToString());
-                }
-            }
-        }
+        public double Width {get; set; }
 
-        public double Height
-        {
-            get { return _Height; }
-            set
-            {
-                if (_Height != value)
-                {
-                    _Height = value;
-                    _debounceDict.Add("height", _Height.ToString());
-                }
-            }
-        }
+        public double Height { get; set; }
 
-        public string NodeType { get; set; }
+        public Constants.NodeType NodeType { get; set; }
+
+        public GroupViewModel ParentGroup { get; set; }
 
         public virtual string GetContentSource()
         {

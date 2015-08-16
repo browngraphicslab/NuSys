@@ -52,9 +52,23 @@ namespace NuSysApp
         public const string Link = "Link";
         #endregion AtomType
 
+        #region Node Type
+        public enum NodeType
+        {
+            text,
+            image,
+            ink,
+            pdf,
+            richText,
+            group
+        }
+        #endregion Node Type
+
         public const int InitialPenSize = 4;
 
         public const int MaxCanvasSize = 100000;
+        public const double ButtonActivatedOpacity = 1.0;
+        public const double ButtonDeactivatedOpacity = 0.75;
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg" };
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf", ".pptx", ".docx" };

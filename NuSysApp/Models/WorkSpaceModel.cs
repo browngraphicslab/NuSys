@@ -71,13 +71,14 @@ namespace NuSysApp
                     {
                         double.TryParse(props["y"], out y);
                     }
-                    Node a = await _workspaceViewModel.CreateNewNode(props["id"],type, x, y);
-                    if (a == null)
+                    NodeViewModel vm = await _workspaceViewModel.CreateNewNode(props["id"],type, x, y);
+                    Node node = (Node)vm.Model;
+                    if (node == null)
                     {
                         _isNetwork = false;
                         return;
                     }
-                    _idDict.Add(id, a);
+                    _idDict.Add(id, node);
                 }
                 _isNetwork = false;
             });

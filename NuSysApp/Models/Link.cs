@@ -1,19 +1,15 @@
 ﻿
 namespace NuSysApp
 {
-    public class Link
+    public class Link : Atom
     {
-        private readonly Node _inNode, _outNode;
-
-        public Link(Node inNode, Node outNode)
+        public Link(Atom inAtom, Atom outAtom, string id) : base(id)
         {
-            _inNode = inNode;
-            _outNode = outNode;
-            InNodeID = inNode.ID;
-            OutNodeID = outNode.ID;
+            InAtomID = inAtom.ID;
+            OutAtomID = outAtom.ID;
+            ID = id;
         }
-
-        public string InNodeID { get; set; }
-        public string OutNodeID { get; set; }
+        public string InAtomID { get; set; }
+        public string OutAtomID { get; set; }
     }
 }

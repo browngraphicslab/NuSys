@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace NuSysApp
 {
@@ -9,7 +10,7 @@ namespace NuSysApp
         public TextNode(string data, string id): base(id)
         {
             Text = data;
-            this.NodeType = "TextNode";
+            this.ID = id;
         }
 
         public string Text { get; set; }

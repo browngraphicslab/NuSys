@@ -20,15 +20,27 @@ namespace NuSysApp
         private UserControl _view;
         private MatrixTransform _transform;
 
+        public bool _isVisible;
+
         #endregion Private Members
 
-        protected AtomViewModel(WorkspaceViewModel vm)
+        protected AtomViewModel(WorkspaceViewModel vm, string id)
         {
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
+            this.IsVisible = true;  
         }
 
         #region Atom Manipulations
+
+        public void SetVisibility(bool visible)
+        {
+            this.IsVisible = visible;
+            foreach (var link in LinkList)
+            {
+                link.SetVisibility(visible);
+            }
+        }
 
         /// <summary>
         /// toggles selection of the node
@@ -115,7 +127,7 @@ namespace NuSysApp
         /// <summary>
         /// color of the atom
         /// </summary>
-        public Color Color
+        public SolidColorBrush Color
         {
             get { return Model.Color; }
             set
@@ -129,6 +141,12 @@ namespace NuSysApp
 
                 RaisePropertyChanged("Color");
             }
+        }
+
+        public string ID
+        {
+            get { return Model.ID; }
+            set { Model.ID = value; }
         }
 
         public MatrixTransform Transform
@@ -205,6 +223,19 @@ namespace NuSysApp
 
         public String AtomType { get; set; }
 
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (_isVisible == value)
+                {
+                    return;
+                }
+                _isVisible = value;
+                RaisePropertyChanged("IsVisible");
+            }
+        }
         #endregion Public Properties
     }
 }

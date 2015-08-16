@@ -12,7 +12,6 @@ namespace NuSysApp
         private uint _currentPageNum;
         public PdfNodeModel(string id) : base(id)
         {
-            this.NodeType = "PdfNode";
         }
 
         //public string FilePath { get; set; }

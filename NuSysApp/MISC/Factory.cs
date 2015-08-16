@@ -12,21 +12,18 @@ namespace NuSysApp
         {
             return new RichTextNodeViewModel(vm, id) { Data = html };
         }
-
         public async static Task<ImageNodeViewModel> CreateNewImage(WorkspaceViewModel vm, string id, StorageFile storageFile)
         {
             var invm = new ImageNodeViewModel(vm, id);
             await invm.InitializeImageNodeAsync(storageFile);
             return invm;
         }
-
         public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(WorkspaceViewModel vm, string id, StorageFile storageFile)
         {
             var pnvm = new PdfNodeViewModel(vm, id);
             await pnvm.InitializePdfNodeAsync(storageFile);
             return pnvm;
         }
-
         public static InkNodeViewModel CreateNewInk(WorkspaceViewModel vm, string id)
         {
             return new InkNodeViewModel(vm, id);

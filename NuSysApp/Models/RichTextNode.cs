@@ -6,7 +6,6 @@ namespace NuSysApp
         public RichTextNode(string data, string id): base(id)
         {
             Text = data;
-            this.NodeType = "RichTextNode";
         }
 
         public string Text { get; set; }

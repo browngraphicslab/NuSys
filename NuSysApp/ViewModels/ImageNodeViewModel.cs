@@ -23,8 +23,11 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.ImageModel = new ImageModel(igm, id);
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            this.NodeType = Constants.NodeType.image; //Also sets model value
+            this.ImageModel = new ImageModel(igm, id); //TO-DO get rid of this and just have one model
             this.Model = this.ImageModel;
+            
             var C = new CompositeTransform
             {
                 ScaleX = 1,
@@ -34,7 +37,6 @@ namespace NuSysApp
             };
             this.InkScale = C;
         }
-
         public ImageNodeViewModel(WorkspaceViewModel vm, string id) : base(vm, id)
         {
             this.View = new ImageNodeView2(this);
@@ -90,25 +92,12 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public override string CreateXML()
-        {
-            string XML = "";
-            ImageModel currModel = (ImageModel)this.Model;
-
-            XML = XML + "<" + " id='" + currModel.ID + "' x='" + (int)currModel.Transform.Matrix.OffsetX +
-                    "' y='" + (int)currModel.Transform.Matrix.OffsetY + "' width='" + (int)currModel.Width + "' height='" + (int)currModel.Height +
-                    "'Image='" + currModel.GetContentSource() + "'content='" + currModel.Content + "'>";
-            return XML;
-
-        }
-
         public override XmlElement WriteXML(XmlDocument doc)
         {
             ImageModel currModel = (ImageModel)this.Model;
 
             //Main XmlElement 
-            XmlElement imageNode = doc.CreateElement(string.Empty, currModel.GetType().ToString(), string.Empty); //TODO: fix how we get element name
-            doc.AppendChild(imageNode);
+            XmlElement imageNode = doc.CreateElement(string.Empty, "Node", string.Empty); 
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);
