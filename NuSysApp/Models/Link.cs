@@ -1,4 +1,7 @@
 ﻿
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace NuSysApp
 {
     public class Link : Atom
@@ -11,5 +14,18 @@ namespace NuSysApp
         }
         public string InAtomID { get; set; }
         public string OutAtomID { get; set; }
+
+        public void Update(Dictionary<string, string> props)
+        {
+            if (props.ContainsKey("id1"))
+            {
+                this.InAtomID = props["id1"];
+            }
+            if (props.ContainsKey("id2"))
+            {
+                this.InAtomID = props["id2"];
+            }
+            base.Update(props);
+        }
     }
 }

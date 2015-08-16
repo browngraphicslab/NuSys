@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp.Network
 {
-    class DebouncingDictionary
+    public class DebouncingDictionary
     {
         private Dictionary<string, string> _dict;
         private int _debounceTime = 100;
@@ -33,20 +33,23 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!_timing)
+            if (!Globals.Network.WorkSpaceModel.Locked)
             {
-                _timing = true;
-                _dict.Add(id, value);
-                _timer = new Timer(new TimerCallback(sendMessage), null, _debounceTime, Timeout.Infinite);
-            }
-            else
-            {
-                if (_dict.ContainsKey(id))
+                if (!_timing)
                 {
-                    _dict[id] = value;
-                    return;
+                    _timing = true;
+                    _dict.Add(id, value);
+                    _timer = new Timer(new TimerCallback(sendMessage), null, _debounceTime, Timeout.Infinite);
                 }
-                _dict.Add(id, value);
+                else
+                {
+                    if (_dict.ContainsKey(id))
+                    {
+                        _dict[id] = value;
+                        return;
+                    }
+                    _dict.Add(id, value);
+                }
             }
         }
 

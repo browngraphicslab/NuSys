@@ -10,6 +10,8 @@ namespace NuSysApp
 {
     public class Node : Atom
     {
+        private int _x;
+        private int _y;
         public Node(string id) : base (id)
         {
             StartLines = new List<Link>();
@@ -23,15 +25,39 @@ namespace NuSysApp
         public List<Link> EndLines { get; }
         
         public List<Node> ConnectedNodes { get; }
-        public int X { get; set; }
 
-        public int Y{get; set; }
+        public int X
+        {
+            get
+            {
+                return _x;
+            }
+            set
+            {
+                _x = value;
+                this.DebounceDict.Add("x",_x.ToString());
+            }
+        }
+
+
+        public int Y
+        {
+            get
+            {
+                return _y;
+            }
+            set
+            {
+                _y = value;
+                this.DebounceDict.Add("y", _y.ToString());
+            }
+        }
 
         public MatrixTransform Transform { get; set; }
 
-        public double Width {get; set; }
+        public double Width { get; set; }
 
-        public double Height { get; set; }
+        public double Height{get; set; }
 
         public Constants.NodeType NodeType { get; set; }
 
@@ -42,7 +68,7 @@ namespace NuSysApp
             return null;
         }
 
-        public async Task Update(Dictionary<string, string> props)
+        public void Update(Dictionary<string, string> props)
         {
             if (props.ContainsKey("x"))
             {
@@ -60,7 +86,9 @@ namespace NuSysApp
             {
                 Height = Double.Parse(props["height"]);
             }
+            base.Update(props);
         }
+
 
     }
 }

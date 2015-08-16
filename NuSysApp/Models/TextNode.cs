@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI;
 
@@ -18,6 +19,16 @@ namespace NuSysApp
         public override string GetContentSource()
         {
             return Text;
+        }
+
+        public void Update(Dictionary<string, string> props)
+        {
+            if (props.ContainsKey("text"))
+            {
+                Text = props["text"];
+                this.DebounceDict.Add("text",Text);
+            }
+            base.Update(props);
         }
     }
 }

@@ -141,6 +141,7 @@ namespace NuSysApp
         public WorkSpaceModel WorkSpaceModel
         {
             set { _workSpaceModel = value; }
+            get { return _workSpaceModel; }
         }
         public string LocalIP
         {
@@ -231,6 +232,7 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("TCP connection recieved at IP "+this._localIP+" but socket closed before full stream was read");
                     await SendMassTCPMessage("SPECIAL9:" + ip);
+                    await RemoveIP(ip);
                     return;
                 }
                 uint stringLength = reader.ReadUInt32();
