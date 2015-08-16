@@ -17,8 +17,8 @@ namespace NuSysApp
 
         public InkNodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
-            this.View = new InkNodeView2(this);
             this.Model = new Node(id);
+            this.View = new InkNodeView2(this);
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; 
             this.Height = Constants.DefaultNodeSize;
