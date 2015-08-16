@@ -380,18 +380,26 @@ namespace NuSysApp
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
-            if (message.Substring(0, 7) != "SPECIAL")
+            if (message.Length > 0)
             {
-                string[] miniStrings = message.Split("&&".ToCharArray());
-                foreach (string subMessage in miniStrings)
+                if (message.Substring(0, 7) != "SPECIAL")
                 {
-                    await this.HandleSubMessage(ip, subMessage, packetType);
+                    string[] miniStrings = message.Split("&&".ToCharArray());
+                    foreach (string subMessage in miniStrings)
+                    {
+                        await this.HandleSubMessage(ip, subMessage, packetType);
+                    }
+                }
+                else
+                {
+                    await this.HandleSubMessage(ip, message, packetType);
                 }
             }
             else
             {
-                await this.HandleSubMessage(ip, message, packetType);
+                Debug.WriteLine("Recieved message of length 0 from IP: "+ip);
             }
+            return;
 
         }
         private async Task SendUpdateForNode(string nodeId, string sendToIP)
@@ -490,7 +498,14 @@ namespace NuSysApp
                             //add new joining member
                         {
                             string m = _workSpaceModel.GetFullWorkspace();
-                            await SendTCPMessage("SPECIAL2:"+m, ip);
+                            if (m.Length > 0)
+                            {
+                                await SendTCPMessage("SPECIAL2:" + m, ip);
+                            }
+                            else
+                            {
+                                await SendTCPMessage("SPECIAL4:0",ip);
+                            }
                             return;
                         }
                         else

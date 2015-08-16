@@ -119,24 +119,28 @@ namespace NuSysApp
 
         public string GetFullWorkspace()
         {
-            string ret = "";
-            foreach (KeyValuePair<string, Node> kvp in _idDict)
+            if (_idDict.Count > 0)
             {
-                ret += '<';
-                Node node = kvp.Value;
-                List<Tuple<string,double>> parts = new List<Tuple<string, double>>();
-                parts.Add(new Tuple<string,double>("x",node.X));
-                parts.Add(new Tuple<string, double>("y", node.Y));
-                parts.Add(new Tuple<string, double>("width", node.Width));
-                parts.Add(new Tuple<string, double>("height", node.Height));
-                foreach (Tuple<string, double> tup in parts)
+                string ret = "";
+                foreach (KeyValuePair<string, Node> kvp in _idDict)
                 {
-                    ret += tup.Item1 + '=' + tup.Item2 + ',';
+                    ret += '<';
+                    Node node = kvp.Value;
+                    List<Tuple<string, double>> parts = new List<Tuple<string, double>>();
+                    parts.Add(new Tuple<string, double>("x", node.X));
+                    parts.Add(new Tuple<string, double>("y", node.Y));
+                    parts.Add(new Tuple<string, double>("width", node.Width));
+                    parts.Add(new Tuple<string, double>("height", node.Height));
+                    foreach (Tuple<string, double> tup in parts)
+                    {
+                        ret += tup.Item1 + '=' + tup.Item2 + ',';
+                    }
+                    ret += "id=" + node.ID + ">&&";
                 }
-                ret += "id="+node.ID + ">&&";
+                ret = ret.Substring(0, ret.Length - 2);
+                return ret;
             }
-            ret = ret.Substring(0, ret.Length - 2);
-            return ret;
+            return "";
         }
     }
 }
