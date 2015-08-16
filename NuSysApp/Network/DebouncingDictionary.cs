@@ -53,7 +53,7 @@ namespace NuSysApp.Network
         private void sendMessage(object stateInfo)
         {
             string message = MakeSubMessageFromDict(_dict);
-            //_workspaceModel.UpdateNetwork(message);
+            Globals.Network.SendMassUDPMessage(message);
             _timing = false;
             _dict.Clear();
         }
