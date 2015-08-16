@@ -13,7 +13,7 @@ namespace NuSysApp
             OutNodeID = outNode.ID;
         }
 
-        public int InNodeID { get; set; }
-        public int OutNodeID { get; set; }
+        public string InNodeID { get; set; }
+        public string OutNodeID { get; set; }
     }
 }

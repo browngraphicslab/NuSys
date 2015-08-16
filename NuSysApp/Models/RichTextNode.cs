@@ -3,7 +3,7 @@ namespace NuSysApp
 {
     public class RichTextNode : Node
     {
-        public RichTextNode(string data, int id): base(id)
+        public RichTextNode(string data, string id): base(id)
         {
             Text = data;
             this.NodeType = "RichTextNode";

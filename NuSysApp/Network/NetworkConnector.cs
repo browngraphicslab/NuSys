@@ -37,6 +37,11 @@ namespace NuSysApp
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
 
+        public void Start()
+        {
+            Debug.WriteLine("Starting Network Connection");
+        }
+
         public enum PacketType
         {
             UDP,
@@ -48,10 +53,8 @@ namespace NuSysApp
         {
             private string _message;
             private PacketType _type;
-            private NetworkConnector _network;
-            public Packet(NetworkConnector network,string message, PacketType type)//set all the params
+            public Packet(string message, PacketType type)//set all the params
             {
-                _network = network;
                 _message = message;
                 _type = type;
             }
@@ -64,10 +67,10 @@ namespace NuSysApp
                 switch (_type)
                 {
                     case PacketType.TCP:
-                        await _network.SendTCPMessage(_message, address);
+                        await Globals.Network.SendTCPMessage(_message, address);
                         break;
                     case PacketType.UDP:
-                        await _network.SendUDPMessage(_message, address);
+                        await Globals.Network.SendUDPMessage(_message, address);
                         break;
                 }
             }
@@ -124,19 +127,8 @@ namespace NuSysApp
             //ToDo add in other host responsibilities
         }
 
-        public WorkspaceViewModel WorkspaceViewModel
-        {
-            get { return _workspaceViewModel; }
-            set
-            {
-                _workspaceViewModel = value;
-                _workspaceViewModel.NetworkConnector = this;
-            }
-        }
-
         public WorkSpaceModel WorkSpaceModel
         {
-            get { return _workSpaceModel; }
             set { _workSpaceModel = value; }
         }
         public string LocalIP
@@ -396,6 +388,11 @@ namespace NuSysApp
 
         public async Task SendMessageToHost(string message, PacketType packetType = PacketType.TCP)
         {
+            if (_localIP == _hostIP)
+            {
+                await MessageRecieved(_localIP, message, packetType);
+                return;
+            }
             await SendMessage(_hostIP, message, packetType, false);
         }
 
@@ -618,7 +615,7 @@ namespace NuSysApp
                 foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers)
                     // keeps track of messages sent durig initial loading into workspace
                 {
-                    kvp.Value.Item2.Add(new Packet(this, message, packetType));
+                    kvp.Value.Item2.Add(new Packet(message, packetType));
                     if (packetType == PacketType.TCP && !kvp.Value.Item1)
                     {
                         Tuple<bool, List<Packet>> tup = new Tuple<bool, List<Packet>>(true, kvp.Value.Item2);

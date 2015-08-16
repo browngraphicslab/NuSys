@@ -34,7 +34,6 @@ namespace NuSysApp
     /// </summary>
     sealed partial class App : Application
     {
-        private NetworkConnector _networkConnector; //TODO find better way than have instance variable
         /// <summary>
         /// Allows tracking page views, exceptions and other telemetry through the Microsoft Application Insights service.
         /// </summary>
@@ -46,6 +45,7 @@ namespace NuSysApp
         /// </summary>
         public App()
         {
+            Globals.Network.Start();
             TelemetryClient = new Microsoft.ApplicationInsights.TelemetryClient();
 
             this.InitializeComponent();
@@ -96,7 +96,6 @@ namespace NuSysApp
                 // configuring the new page by passing required information as a navigation
                 // parameter
                 rootFrame.Navigate(typeof(WaitingRoomView), e.Arguments);
-                _networkConnector = ((WaitingRoomView)rootFrame.Content).NetworkConnector;
             }
             // Ensure the current window is active
             Window.Current.Activate();
@@ -203,7 +202,7 @@ namespace NuSysApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            await _networkConnector.Disconnect();
+            await Globals.Network.Disconnect();
 
 
 

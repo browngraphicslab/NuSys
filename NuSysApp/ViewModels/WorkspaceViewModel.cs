@@ -29,19 +29,6 @@ namespace NuSysApp
 
         private readonly Factory _factory;
         private WorkSpaceModel _workSpaceModel;
-
-        private NetworkConnector _networkConnector;//NETWORK TEST
-
-        public NetworkConnector NetworkConnector//NETWORK TEST
-        {
-            set
-            {
-                _networkConnector = value;
-                _workSpaceModel.NetworkConnector = value;
-                _networkConnector.WorkSpaceModel = _workSpaceModel;
-            }
-            get { return _networkConnector; }
-        }
         public enum LinkMode
         {
             Linelink,
@@ -108,7 +95,7 @@ namespace NuSysApp
                         {
                             var str = lines[0];
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-                            var nodeVm = await Factory.CreateNewImage(this, imageFile);
+                            var nodeVm = await Factory.CreateNewImage(this,"null" ,imageFile);//TODO FIX THE ID'S HERE
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
@@ -116,7 +103,7 @@ namespace NuSysApp
 
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
-                            var nodeVm = Factory.CreateNewRichText(this, readFile);
+                            var nodeVm = Factory.CreateNewRichText(this, "null", readFile);
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
@@ -151,7 +138,7 @@ namespace NuSysApp
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
 
-                        var nodeVm = Factory.CreateNewRichText(this, text);
+                        var nodeVm = Factory.CreateNewRichText(this, "null", text);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
@@ -330,18 +317,18 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        public async Task<Node> CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<Node> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             Debug.WriteLine("In CreateNewNode");
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data);
+                    vm = new TextNodeViewModel(this, id, (string)data);
                     break;
                 case NodeType.Ink:
 
-                    vm = new InkNodeViewModel(this);
+                    vm = new InkNodeViewModel(this, id);
                     
                     break;
                 case NodeType.Document:
@@ -350,14 +337,14 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM = new ImageNodeViewModel(this);
+                        var imgVM = new ImageNodeViewModel(this, id);
                         await imgVM.InitializeImageNodeAsync(storageFile);
                         vm = imgVM;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {
-                        var pdfVM = new PdfNodeViewModel(this);
+                        var pdfVM = new PdfNodeViewModel(this, id);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
                     }
@@ -408,7 +395,7 @@ namespace NuSysApp
             }
 
             //Create new group, because no group exists
-            groupVm = new GroupViewModel(this);
+            groupVm = new GroupViewModel(this, "null");//TODO FIX ID'S HERE
 
             //Set location to node2's location
             var xCoordinate = node2.Transform.Matrix.OffsetX;

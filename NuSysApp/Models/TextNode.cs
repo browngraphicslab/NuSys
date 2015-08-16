@@ -6,7 +6,7 @@ namespace NuSysApp
 {
     public class TextNode : Node
     {
-        public TextNode(string data, int id): base(id)
+        public TextNode(string data, string id): base(id)
         {
             Text = data;
             this.NodeType = "TextNode";

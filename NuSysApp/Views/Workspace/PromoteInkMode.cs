@@ -49,7 +49,8 @@ namespace NuSysApp.Views.Workspace
                 var vm = (WorkspaceViewModel)_view.DataContext;
                 var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
                 Debug.WriteLine("click at " + p.X + ", " + p.Y);
-                await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, inkStroke);
+                await vm.WorkSpaceModel.SendMessageToHost("<id=0,x=" + p.X + ",y=" + p.Y + ",type=node,nodeType=" + NodeType.Ink.ToString() + ">");
+                //await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, inkStroke);
             }
         }
 

@@ -13,8 +13,8 @@ namespace NuSysApp
     {
         private ImageModel _imgm;
         private CompositeTransform _inkScale;
-
-        public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm) : base(vm)
+        private string _id;//TODO REMOVE THIS TERRIBLE CODING SHIT
+        public ImageNodeViewModel(WorkspaceViewModel vm, string id, BitmapImage igm) : base(vm, id)
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
@@ -23,7 +23,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.ImageModel = new ImageModel(igm, 0);
+            this.ImageModel = new ImageModel(igm, id);
             this.Model = this.ImageModel;
             var C = new CompositeTransform
             {
@@ -35,12 +35,13 @@ namespace NuSysApp
             this.InkScale = C;
         }
 
-        public ImageNodeViewModel(WorkspaceViewModel vm) : base(vm)
+        public ImageNodeViewModel(WorkspaceViewModel vm, string id) : base(vm, id)
         {
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
+            _id = id;
         }
 
         public async Task InitializeImageNodeAsync(StorageFile storageFile)
@@ -51,7 +52,7 @@ namespace NuSysApp
             {
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
-                this.ImageModel = new ImageModel(bitmapImage, 0);
+                this.ImageModel = new ImageModel(bitmapImage,_id);
                 ImageModel.FilePath = storageFile.Path;
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;

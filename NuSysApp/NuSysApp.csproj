@@ -115,6 +115,7 @@
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
+    <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
     <Compile Include="MVVM Helpers\SQLiteDatabase.cs" />
     <Compile Include="MVVM Helpers\XMLFile.cs" />

@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using NuSysApp.Network;
 
 namespace NuSysApp
 {
     public class Node
     {
-        public Node(int id)
+        private string _ID;
+        private int _X;
+        private int _Y;
+        private double _Width;
+        private double _Height;
+        private DebouncingDictionary _debounceDict;
+        public Node(string id)
         {
             StartLines = new List<Link>();
             EndLines = new List<Link>();
             ID = id;
+            _debounceDict = new DebouncingDictionary(id.ToString());
         }
 
         public Content Content { set; get; }
@@ -20,20 +29,57 @@ namespace NuSysApp
         public List<Link> StartLines { get; }
 
         public List<Link> EndLines { get; }
-
+        
         public List<Node> ConnectedNodes { get; }
+        public string ID
+        {
+            get { return _ID; }
+            set
+            {
+                _ID = value;
+            } 
+        } //TODO not have id be settable, ACTUALLY IMPLEMENT THEM
 
-        public int ID { get; }
+        public int X
+        {
+            get { return _X; }
+            set
+            {
+                _X = value;
+                _debounceDict.Add("x", _X.ToString());
+            } 
+        }
 
-        public int X { get; set; }
-
-        public int Y { get; set; }
+        public int Y
+        {
+            get { return _Y; }
+            set
+            {
+                _Y = value;
+                _debounceDict.Add("y", _Y.ToString());
+            }
+        }
 
         public MatrixTransform Transform { get; set; }
 
-        public double Width { get; set; }
+        public double Width {
+            get { return _Width; }
+            set
+            {
+                _Width = value;
+                _debounceDict.Add("width", _Width.ToString());
+            }
+        }
 
-        public double Height { get; set; }
+        public double Height
+        {
+            get { return _Height; }
+            set
+            {
+                _Height = value;
+                _debounceDict.Add("height", _Height.ToString());
+            }
+        }
 
         public string NodeType { get; set; }
 
@@ -50,7 +96,15 @@ namespace NuSysApp
             }
             if (props.ContainsKey("y"))
             {
-                X = Int32.Parse(props["y"]);
+                Y = Int32.Parse(props["y"]);
+            }
+            if (props.ContainsKey("width"))
+            {
+                Width = Int32.Parse(props["width"]);
+            }
+            if (props.ContainsKey("height"))
+            {
+                Height = Int32.Parse(props["height"]);
             }
         }
 

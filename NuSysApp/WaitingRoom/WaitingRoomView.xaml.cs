@@ -23,7 +23,6 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class WaitingRoomView : Page
     {
-        private NetworkConnector _networkConnector;
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -32,28 +31,19 @@ namespace NuSysApp
 
         public async void Init()
         {
-            _networkConnector = new NetworkConnector();   
-        }
-
-        public NetworkConnector NetworkConnector
-        {
-            get { return _networkConnector; }
         }
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(WorkspaceView));
-            _networkConnector.WorkspaceViewModel = (WorkspaceViewModel) ((WorkspaceView)this.Frame.Content).DataContext;
-            //_networkConnector.sendMassUDPMessage("test from button");
-            // _networkConnector.SendTCPMessage("tcp message!", "10.38.22.71","302");
         }
 
         private void TCP_OnClick(object sender, RoutedEventArgs e)
         {
-            _networkConnector.SendMassTCPMessage("TCP Test from "+_networkConnector.LocalIP);
+            Globals.Network.SendMassTCPMessage("TCP Test from "+Globals.Network.LocalIP);
         }
         private void UDP_OnClick(object sender, RoutedEventArgs e)
         {
-            _networkConnector.SendMassUDPMessage("UDP Test from " + _networkConnector.LocalIP);
+            Globals.Network.SendMassUDPMessage("UDP Test from " + Globals.Network.LocalIP);
         }
     }
 }

@@ -22,10 +22,10 @@ namespace NuSysApp
         private AtomViewModel _clippedParent;
         #endregion Private Members
 
-        protected NodeViewModel(WorkspaceViewModel vm): base(vm)
+        protected NodeViewModel(WorkspaceViewModel vm, string id): base(vm)
         {
             this.AtomType = Constants.Node;
-            this.Model = new Node(0);
+            this.Model = new Node(id);
         }
 
         #region Node Manipulations

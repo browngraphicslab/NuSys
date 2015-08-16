@@ -13,7 +13,6 @@ namespace NuSysApp
         //Node _selectedNode;
         Dictionary<int, Node> _nodeDict;
         private Dictionary<string, Node> _idDict;
-        private NetworkConnector _networkConnector;
         private WorkspaceViewModel _workspaceViewModel;
         private int _currentId;
         private bool _isNetwork = false;
@@ -24,15 +23,9 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Node>();
             _workspaceViewModel = vm;
             _currentId = 0;
-           // _factory = new Factory(this);
+            Globals.Network.WorkSpaceModel = this;
+            // _factory = new Factory(this);
         }
-
-        public NetworkConnector NetworkConnector
-        {
-            get {return _networkConnector; }
-            set { _networkConnector = value; }
-        }
-
         public void CreateNewTextNode(string data)
         {
             //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
@@ -78,7 +71,7 @@ namespace NuSysApp
                     {
                         double.TryParse(props["y"], out y);
                     }
-                    Node a = await _workspaceViewModel.CreateNewNode(type, x, y);
+                    Node a = await _workspaceViewModel.CreateNewNode(props["id"],type, x, y);
                     if (a == null)
                     {
                         _isNetwork = false;
@@ -112,7 +105,7 @@ namespace NuSysApp
         {
             if (!_isNetwork)
             {
-                await _networkConnector.SendMassUDPMessage(message);
+                await Globals.Network.SendMassUDPMessage(message);
             }
         }
 
@@ -120,7 +113,7 @@ namespace NuSysApp
         {
             if (!_isNetwork)
             {
-                await _networkConnector.SendMessageToHost(message);
+                await Globals.Network.SendMessageToHost(message);
             }
         }
     }
