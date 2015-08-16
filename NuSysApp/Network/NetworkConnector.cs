@@ -230,6 +230,7 @@ namespace NuSysApp
                 if (fieldCount != sizeof (uint))
                 {
                     Debug.WriteLine("TCP connection recieved at IP "+this._localIP+" but socket closed before full stream was read");
+                    await SendMassTCPMessage("SPECIAL9:" + ip);
                     return;
                 }
                 uint stringLength = reader.ReadUInt32();
