@@ -112,11 +112,11 @@ namespace NuSysApp
             }
             if (props.ContainsKey("width"))
             {
-                Width = Int32.Parse(props["width"]);
+                Width = Double.Parse(props["width"]);
             }
             if (props.ContainsKey("height"))
             {
-                Height = Int32.Parse(props["height"]);
+                Height = Double.Parse(props["height"]);
             }
         }
 
