@@ -388,7 +388,10 @@ namespace NuSysApp
                     string[] miniStrings = message.Split("&&".ToCharArray());
                     foreach (string subMessage in miniStrings)
                     {
-                        await this.HandleSubMessage(ip, subMessage, packetType);
+                        if (subMessage.Length > 0)
+                        {
+                            await this.HandleSubMessage(ip, subMessage, packetType);
+                        }
                     }
                 }
                 else
