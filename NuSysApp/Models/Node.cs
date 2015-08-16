@@ -45,8 +45,11 @@ namespace NuSysApp
             get { return _X; }
             set
             {
-                _X = value;
-                _debounceDict.Add("x", _X.ToString());
+                if (_X != value)
+                {
+                    _X = value;
+                    _debounceDict.Add("x", _X.ToString());
+                }
             } 
         }
 
@@ -55,8 +58,11 @@ namespace NuSysApp
             get { return _Y; }
             set
             {
-                _Y = value;
-                _debounceDict.Add("y", _Y.ToString());
+                if (_Y != value)
+                {
+                    _Y = value;
+                    _debounceDict.Add("y", _Y.ToString());
+                }
             }
         }
 
@@ -66,8 +72,11 @@ namespace NuSysApp
             get { return _Width; }
             set
             {
-                _Width = value;
-                _debounceDict.Add("width", _Width.ToString());
+                if (_Width != value)
+                {
+                    _Width = value;
+                    _debounceDict.Add("width", _Width.ToString());
+                }
             }
         }
 
@@ -76,8 +85,11 @@ namespace NuSysApp
             get { return _Height; }
             set
             {
-                _Height = value;
-                _debounceDict.Add("height", _Height.ToString());
+                if (_Height != value)
+                {
+                    _Height = value;
+                    _debounceDict.Add("height", _Height.ToString());
+                }
             }
         }
 

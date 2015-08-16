@@ -54,6 +54,7 @@ namespace NuSysApp.Network
         {
             string message = MakeSubMessageFromDict(_dict);
             Globals.Network.SendMassUDPMessage(message);
+            _timer.Dispose();
             _timing = false;
             _dict.Clear();
         }
