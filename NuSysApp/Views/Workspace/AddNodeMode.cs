@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
-            await Globals.Network.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data==null ? null : data.ToString());
+            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data==null ? null : data.ToString());
             vm.ClearSelection();
         }
     }

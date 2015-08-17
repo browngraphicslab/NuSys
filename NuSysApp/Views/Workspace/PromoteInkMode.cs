@@ -56,7 +56,7 @@ namespace NuSysApp.Views.Workspace
                 }
                 plines += "' thickness='"+pl.StrokeThickness+"' stroke='"+pl.Stroke.ToString()+"'/>";
             }
-            await Globals.Network.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
+            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
         }
     }
 }

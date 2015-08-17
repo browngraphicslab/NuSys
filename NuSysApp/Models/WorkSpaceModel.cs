@@ -26,7 +26,7 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Atom>();
             _workspaceViewModel = vm;
             _currentId = 0;
-            Globals.Network.WorkSpaceModel = this;
+            NetworkConnector.Instance.WorkSpaceModel = this;
             // _factory = new Factory(this);
         }
         public void CreateNewTextNode(string data)

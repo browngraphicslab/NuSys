@@ -277,7 +277,7 @@ namespace NuSysApp
                 SelectedAtomViewModel = selected;
                 return;
             }
-            Globals.Network.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
+            NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
             selected.IsSelected = false;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
@@ -476,9 +476,6 @@ namespace NuSysApp
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
-            vm.X = 0;
-            vm.Y = 0;
-
             var transMat = ((MatrixTransform)vm.View.RenderTransform).Matrix;
             transMat.OffsetX = xCoordinate;
             transMat.OffsetY = yCoordinate;

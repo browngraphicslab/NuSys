@@ -22,9 +22,10 @@ namespace NuSysApp
 {
     public class NetworkConnector
     {
-        private string _UDPPort = "2156";
-        private string _TCPInputPort = "302";
-        private string _TCPOutputPort = "302";
+        #region Private Members
+        private const string _UDPPort = "2156";
+        private const string _TCPInputPort = "302";
+        private const string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
         private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
@@ -32,16 +33,16 @@ namespace NuSysApp
         private string _localIP;
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
-        private WorkSpaceModel _workSpaceModel;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
         private HashSet<string> _localLocks;
         private bool _caughtUp = false;
-        public void Start()
-        {
-            Debug.WriteLine("Starting Network Connection");
-        }
 
+        private static volatile NetworkConnector _instance;
+        private static readonly object _syncRoot = new Object();
+        #endregion Private Members
+
+        #region Public Members
         public enum PacketType
         {
             UDP,
@@ -49,57 +50,45 @@ namespace NuSysApp
             Both
         }
 
-        private class Packet //private class to store messages for later
+        public static NetworkConnector Instance
         {
-            private string _message;
-            private PacketType _type;
-            public Packet(string message, PacketType type)//set all the params
+            get
             {
-                _message = message;
-                _type = type;
-            }
-
-            public string Message
-            {
-                get { return _message; } 
-            }
-
-            /*
-            *send message by passing in an address
-            */
-            public async Task send(string address)//and send later on
-            {
-                switch (_type)
+                if (_instance == null)
                 {
-                    case PacketType.TCP:
-                        await Globals.Network.SendTCPMessage(_message, address);
-                        break;
-                    case PacketType.UDP:
-                        await Globals.Network.SendUDPMessage(_message, address);
-                        break;
+                    lock (_syncRoot)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new NetworkConnector();
+                        }
+                    }
                 }
+                return _instance;
             }
         }
+        #endregion
+
+        private NetworkConnector()//pls keep this private or shit won't work anymore
+        {
+            this.Init();// Constructor can't contain async code, so it delegates to helper method
+        }
+   
         /*
-        * returns whether the current connector is caught up with the overall network.  only used in waiting room
+        * Returns whether the current connector is caught up with the overall network.  only used in waiting room
         */
-        public bool isReady()
+        public bool IsReady()//TODO temporary
         {
             return _caughtUp;
         }
+       
         /*
-        * constructor
-        */
-        public NetworkConnector()
-        {
-            this.Init();//to call an async method
-        }
-        /*
-        * essentially an async constructor
+        * Essentially an async constructor
         */
         private async void Init()
         {
-            _localIP  = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
+            _localIP  = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null 
+            && h.IPInformation.NetworkAdapter != null).RawName;
 
             Debug.WriteLine("local IP: " + _localIP);
 
@@ -110,10 +99,10 @@ namespace NuSysApp
             _otherIPs = new HashSet<string>();
             _localLocks = new HashSet<string>();
 
-            List<string> ips = GetOtherIPs();
+            var ips = GetOtherIPs();
             if (ips.Count == 1)
             {
-                this.makeHost();
+                this.MakeHost();
             }
             else
             {
@@ -137,7 +126,7 @@ namespace NuSysApp
         /*
         * this will make this network connection the host, forcibly
         */
-        private void makeHost()
+        private void MakeHost()//TODO temporary
         {
             _hostIP = _localIP;
             _locksOut = new Dictionary<string, string>();
@@ -151,10 +140,8 @@ namespace NuSysApp
         * gets and sets the workspace model that the network connector communicates with
         */
         public WorkSpaceModel WorkSpaceModel//might be able to get rid of _workspaceModel
-        {
-            set { _workSpaceModel = value; }
-            get { return _workSpaceModel; }
-        }
+        { set; get; }
+
         public string LocalIP//Returns the local IP
         {
             get { return _localIP; }
@@ -177,13 +164,12 @@ namespace NuSysApp
         */
         public async Task Disconnect()//called by the closing of the application
         {
-            string URL = "http://aint.ch/nusys/clients.php";
-            string urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
+            var URL = "http://aint.ch/nusys/clients.php";
+            var urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
+            var client = new HttpClient {BaseAddress = new Uri(URL)};
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+            var response = client.GetAsync(urlParameters).Result;
             this.TellRemoveIP(LocalIP);
         }
         /*
@@ -222,10 +208,10 @@ namespace NuSysApp
                     break;
                 }
             }
-            HashSet<KeyValuePair<string,string>> set = new HashSet<KeyValuePair<string, string>>();//create a list of lcoks that need to be removed
+            var set = new HashSet<KeyValuePair<string, string>>();//create a list of lcoks that need to be removed
             if (_locksOut.ContainsValue(ip))
             {
-                foreach (KeyValuePair<string, string> kvp in _locksOut)
+                foreach (var kvp in _locksOut)
                 {
                     if (kvp.Value == ip)
                     {
@@ -233,13 +219,13 @@ namespace NuSysApp
                     }
                 }
             }
-            foreach (KeyValuePair<string, string> kvp in set)
+            foreach (var kvp in set)
             {
                 _locksOut.Remove(kvp.Key);//remove each item in that list from the _locksOut set
             }
-            Tuple<bool, List<Packet>> items;
             if (_joiningMembers.ContainsKey(ip))
             {
+                Tuple<bool, List<Packet>> items;
                 _joiningMembers.TryRemove(ip, out items);//if that IP was joining, remove it
             }
             Debug.WriteLine("Removed IP: "+ip+".  List now is: "+_otherIPs.ToString());
@@ -249,12 +235,12 @@ namespace NuSysApp
         */
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            DataReader reader = new DataReader(args.Socket.InputStream);
-            string ip = args.Socket.Information.RemoteAddress.RawName;//get the remote IP address
+            var reader = new DataReader(args.Socket.InputStream);
+            var ip = args.Socket.Information.RemoteAddress.RawName;//get the remote IP address
             string message;
             try
             {
-                uint fieldCount = await reader.LoadAsync(sizeof (uint));
+                var fieldCount = await reader.LoadAsync(sizeof (uint));
                 if (fieldCount != sizeof (uint))
                 {
                     Debug.WriteLine("TCP connection recieved at IP "+this._localIP+" but socket closed before full stream was read");
@@ -262,8 +248,8 @@ namespace NuSysApp
                     await SendMassTCPMessage("SPECIAL9:" + ip);
                     return;
                 }
-                uint stringLength = reader.ReadUInt32();
-                uint actualLength = await reader.LoadAsync(stringLength);//Read the incoming message
+                var stringLength = reader.ReadUInt32();
+                var actualLength = await reader.LoadAsync(stringLength);//Read the incoming message
                 message = reader.ReadString(actualLength);
             }
             catch(Exception e)
@@ -281,8 +267,8 @@ namespace NuSysApp
         {
             if (_localIP == _hostIP)
             {
-                string hash = senderIP.Replace(@".", "") + "#";
-                string now = DateTime.UtcNow.Ticks.ToString();
+                var hash = senderIP.Replace(@".", "") + "#";
+                var now = DateTime.UtcNow.Ticks.ToString();
                 return hash + now;
             }
             else
@@ -297,18 +283,17 @@ namespace NuSysApp
         */
         private List<string> GetOtherIPs()
         {
-            string URL = "http://aint.ch/nusys/clients.php";
-            string urlParameters = "?action=add&ip="+_localIP;
+            const string URL = "http://aint.ch/nusys/clients.php";
+            var urlParameters = "?action=add&ip="+_localIP;
 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
+            var client = new HttpClient {BaseAddress = new Uri(URL)};
 
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
 
-            string people = "";
+            var people = "";
 
-            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+            var response = client.GetAsync(urlParameters).Result;
             if (response.IsSuccessStatusCode)
             {
                 var d = response.Content.ReadAsStringAsync().Result;//gets the response from the php script
@@ -321,7 +306,7 @@ namespace NuSysApp
             Debug.WriteLine("in workspace: "+people);
             var split = people.Split(",".ToCharArray());
 
-            List<string> ips = split.ToList();
+            var ips = split.ToList();
             return ips;
         }
         /*
@@ -329,9 +314,9 @@ namespace NuSysApp
         */
         private async Task AddSocket(string ip)
         {
-            DatagramSocket UDPsocket = new DatagramSocket();
+            var UDPsocket = new DatagramSocket();
             UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
-            DataWriter UDPwriter = new DataWriter(UDPsocket.OutputStream);
+            var UDPwriter = new DataWriter(UDPsocket.OutputStream);
             _UDPOutSockets.Add(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter));
 
             if (_addressToWriter.ContainsKey(ip))
@@ -348,7 +333,7 @@ namespace NuSysApp
         */
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            string ip = args.RemoteAddress.RawName;//get the remote IP
+            var ip = args.RemoteAddress.RawName;//get the remote IP
             string message;
             try
             {
@@ -384,9 +369,9 @@ namespace NuSysApp
             //Debug.WriteLine("attempting to send TCP message: "+message+" to IP: "+recievingIP);
             try
             {
-                StreamSocket TCPsocket = new StreamSocket();
+                var TCPsocket = new StreamSocket();
                 await TCPsocket.ConnectAsync(new HostName(recievingIP), outport);
-                DataWriter writer = new DataWriter(TCPsocket.OutputStream);
+                var writer = new DataWriter(TCPsocket.OutputStream);
 
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
@@ -406,17 +391,17 @@ namespace NuSysApp
         */
         private async Task SendMassUDPMessage(string message)
         {
-            foreach (Tuple<DatagramSocket,DataWriter> tup in this._UDPOutSockets)//iterates through everyone
+            foreach (var tup in this._UDPOutSockets)//iterates through everyone
             {
                 await this.SendUDPMessage(message, tup.Item2);
             }
         }
         /*
-        * sends TCP Streamss to everyone except self.  
+        * sends TCP Streams to everyone except self.  
         */
         private async Task SendMassTCPMessage(string message)
         {
-            foreach (string ip in _otherIPs)
+            foreach (var ip in _otherIPs)
             {
                 await this.SendTCPMessage(message, ip, _TCPOutputPort);
             }
@@ -435,10 +420,8 @@ namespace NuSysApp
         */
         private async Task SendUDPMessage(string message, DataWriter writer)
         {
-            //Debug.WriteLine("attempting to send UDP message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
-            //Debug.WriteLine("Sent UDP message: " + message);
         }
 
         /*
@@ -516,8 +499,8 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL")//if not a special message
                 {
-                    string[] miniStrings = message.Split("&&".ToCharArray());//break up message into subparts
-                    foreach (string subMessage in miniStrings)
+                    var miniStrings = message.Split("&&".ToCharArray());//break up message into subparts
+                    foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
                         {
@@ -550,7 +533,7 @@ namespace NuSysApp
         */
         private async Task HandleSubMessage(string ip, string message, PacketType packetType)
         {
-            string type = message.Substring(0, 7);
+            var type = message.Substring(0, 7);
             switch (type)//OMG IM SWITCHING ON A STRING
             {
                 case "SPECIAL":
@@ -561,18 +544,19 @@ namespace NuSysApp
                     break;
             }
         }
+
         /*
         * Handles SPECIAL messages.  Read each switch case for specifics
         */
         private async Task HandleSpecialMessage(string ip, string message,PacketType packetType)
         {
-            int indexOfColon = message.IndexOf(":");
+            var indexOfColon = message.IndexOf(":");
             if (indexOfColon == -1)
             {
                 Debug.WriteLine("ERROR: message recieved was formatted wrong");
                 return;
             }
-            string type = message.Substring(0, indexOfColon);
+            var type = message.Substring(0, indexOfColon);
             message = message.Substring(indexOfColon+1);
             switch (type)
             {
@@ -587,7 +571,7 @@ namespace NuSysApp
                         if (_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))
                             //add new joining member
                         {
-                            string m = _workSpaceModel.GetFullWorkspace();
+                            var m = WorkSpaceModel.GetFullWorkspace();
                             if (m.Length > 0)
                             {
                                 await SendTCPMessage("SPECIAL2:" + m, ip);
@@ -614,7 +598,7 @@ namespace NuSysApp
                         _hostIP = message;
                         if (message == _localIP)
                         {
-                            this.makeHost();
+                            this.MakeHost();
                         }
                         Debug.WriteLine("Host returned and SET to be: "+message);
                         return;
@@ -639,8 +623,8 @@ namespace NuSysApp
                             {
                                 if (_joiningMembers[ip].Item1)
                                 {
-                                    string ret = "";
-                                    foreach (Packet p in _joiningMembers[ip].Item2)
+                                    var ret = "";
+                                    foreach (var p in _joiningMembers[ip].Item2)
                                     {
                                         ret += p.Message+"&&";
                                     }
@@ -652,14 +636,14 @@ namespace NuSysApp
                                 else
                                 {
                                     await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
-                                    foreach (Packet p in _joiningMembers[ip].Item2)
+                                    foreach (var p in _joiningMembers[ip].Item2)
                                     {
-                                        await p.send(ip);
+                                        await p.Send(ip);
                                     }
                                     Tuple<bool, List<Packet>> nothing;
                                     if (_joiningMembers.TryRemove(ip, out nothing))//remove the joining member
                                     {
-                                        nothing = null; //seems so weird writing this
+                                        nothing = null; //seems so weird writing this. Yeah it's definitely weird, TRANT
                                     }
                                     else
                                     {
@@ -696,12 +680,11 @@ namespace NuSysApp
                     }
                     this._caughtUp = true;
                     Debug.WriteLine("Ready to Join Workspace");
-                    return;
-                    break;
+                    return;     
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (true)//TODO make into 'this contains an object with key number: message'
+                        if (this.WorkSpaceModel.HasAtom(message))
                         {
                             if (!_locksOut.ContainsKey(message))
                             {
@@ -730,8 +713,8 @@ namespace NuSysApp
                         Debug.WriteLine("Recieved Lock request response that was incorrectly formatted.  message: "+message);
                         return;
                     }
-                    string lockId = parts[0];
-                    string lockHolder = parts[1];
+                    var lockId = parts[0];
+                    var lockHolder = parts[1];
                     if (false)//TODO make into 'this does not contain an object with key number: lockId'
                     {
                         Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
@@ -793,13 +776,13 @@ namespace NuSysApp
                     RemoveIP(message);
                     break;
                 case "10":
-                    if (_workSpaceModel.HasAtom(message))
+                    if (WorkSpaceModel.HasAtom(message))
                     {
                         if (_hostIP == _localIP)
                         {
                             await SendMassTCPMessage("SPECIAL10:" + message);
                         }
-                        _workSpaceModel.RemoveNode(message);
+                        WorkSpaceModel.RemoveNode(message);
                         return;
                     }
                     else
@@ -844,36 +827,36 @@ namespace NuSysApp
             }
             if (_localIP == _hostIP)//if host, add a new packet and store it in every joining member's stack of updates
             {
-                foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers)
+                foreach (var  kvp in _joiningMembers)
                     // keeps track of messages sent durig initial loading into workspace
                 {
                     kvp.Value.Item2.Add(new Packet(message, packetType));
                     if (packetType == PacketType.TCP && !kvp.Value.Item1)
                     {
-                        Tuple<bool, List<Packet>> tup = new Tuple<bool, List<Packet>>(true, kvp.Value.Item2);
+                        var tup = new Tuple<bool, List<Packet>>(true, kvp.Value.Item2);
                         _joiningMembers[kvp.Key] = tup;
                     }
                 }
             }
             if (message[0] == '<' && message[message.Length - 1] == '>')
             {
-                _workSpaceModel.HandleMessage(message);
+                WorkSpaceModel.HandleMessage(message);
             }
-
-
-            //Debug.WriteLine(_localIP + " handled message: " + message);
         }
+
         /*
         * parses message to dictionary of properties.  POSSIBLE DEPRICATED
         */
         private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
         {
             message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(",,".ToCharArray());
-            Dictionary<string,string> props = new Dictionary<string, string>();
-            foreach (string part in parts)
+
+            var parts = message.Split(",,".ToCharArray());
+            var props = new Dictionary<string, string>();
+            foreach (var part in parts)
+
             {
-                string[] subParts = part.Split('=');
+                var subParts = part.Split('=');
                 if (subParts.Length != 2)
                 {
                     Debug.WriteLine("Error, property formatted wrong in message: " + message);
@@ -889,8 +872,8 @@ namespace NuSysApp
         */
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
         {
-            string m = "<";
-            foreach (KeyValuePair<string, string> kvp in dict)
+            var m = "<";
+            foreach (var kvp in dict)
             {
                 m += kvp.Key + "=" + kvp.Value + ",,";
             }
@@ -905,7 +888,7 @@ namespace NuSysApp
         {
             if (properties.ContainsKey("id"))
             {
-                if (_workSpaceModel.HasAtom(properties["id"]))
+                if (WorkSpaceModel.HasAtom(properties["id"]))
                 {
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassUDPMessage(message);
@@ -930,7 +913,8 @@ namespace NuSysApp
         {
             if (x != "" && y != "" && nodeType != "")
             {
-                string s = "";
+
+                var s = "";
                 if (data != null && data!="null" && data!="")
                 {
                     s = ",,data=" + data;
@@ -957,6 +941,34 @@ namespace NuSysApp
             {
                 Debug.WriteLine("ERROR: tried to create node with invalid arguments.  ID1: " + id1 + "  ID2: " + id2);
                 return;
+            }
+        }
+
+        private class Packet //private class to store messages for later
+        {
+            private readonly PacketType _type;
+            public Packet(string message, PacketType type)//set all the params
+            {
+                Message = message;
+                _type = type;
+            }
+
+            public string Message { get; }
+
+            /*
+            *send message by passing in an address
+            */
+            public async Task Send(string address)//TODO temporary and send later on 
+            {
+                switch (_type)
+                {
+                    case PacketType.TCP:
+                        await NetworkConnector.Instance.SendTCPMessage(Message, address);
+                        break;
+                    case PacketType.UDP:
+                        await NetworkConnector.Instance.SendUDPMessage(Message, address);
+                        break;
+                }
             }
         }
     }
