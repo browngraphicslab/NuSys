@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.Foundation;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -65,6 +68,7 @@ namespace NuSysApp
                         NodeType type = NodeType.Text;
                         double x = 0;
                         double y = 0;
+                        object data = null;
                         if (props.ContainsKey("nodeType"))
                         {
                             string t = props["nodeType"];
@@ -78,7 +82,15 @@ namespace NuSysApp
                         {
                             double.TryParse(props["y"], out y);
                         }
-                        NodeViewModel vm = await _workspaceViewModel.CreateNewNode(props["id"], type, x, y);
+                        if (props.ContainsKey("data"))
+                        {
+                            string d = props["data"];
+                            if (d.Substring(0, 10).Contains("polyline"))
+                            {
+                                data = ParseToPolyline(d);
+                            }
+                        }
+                        NodeViewModel vm = await _workspaceViewModel.CreateNewNode(props["id"], type, x, y, data);
                         Node node = (Node) vm.Model;
                         if (node == null)
                         {
@@ -113,6 +125,42 @@ namespace NuSysApp
             });
         }
 
+        private Polyline[] ParseToPolyline(string s)
+        {
+            List<Polyline> polys = new List<Polyline>();
+            string[] parts = s.Split("><".ToCharArray());
+            foreach (string part in parts)
+            {
+                Polyline poly = new Polyline();
+                string[] subparts = part.Split(" ".ToCharArray());
+                foreach (string subpart in subparts)
+                {
+                    if (subpart.Substring(0, 6) == "points")
+                    {
+                        string innerPoints = subpart.Substring(8, subpart.Length - 9);
+                        string[] points = innerPoints.Split(";".ToCharArray());
+                        foreach (string p in points)
+                        {
+                            string[] coords = p.Split(",".ToCharArray());
+                            Point point = new Point(double.Parse(coords[0]),double.Parse(coords[1]));
+                            poly.Points.Add(point);
+                        }
+                    }
+                    else if (subpart.Substring(0, 9) == "thickness")
+                    {
+                        string sp = subpart.Substring(11, subpart.Length - 12);
+                        poly.StrokeThickness = double.Parse(sp);
+                    }
+                    else if (subpart.Substring(0, 6) == "stroke")
+                    {
+                        string sp = subpart.Substring(8, subpart.Length - 10);
+                        //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
+                    }
+                }
+                polys.Add(poly);
+            }
+            return polys.ToArray();
+        }
         public bool HasAtom(string id)
         {
             return _idDict.ContainsKey(id);
