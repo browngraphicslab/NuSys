@@ -20,7 +20,7 @@ namespace NuSysApp.Network
             _atomID = atomID;
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
-            _timer.Tick += sendMessage;
+            _timer.Tick += SendMessage;
 
         }
         public DebouncingDictionary(string atomID, int milliSecondDebounce)
@@ -29,7 +29,7 @@ namespace NuSysApp.Network
             _atomID = atomID;
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, milliSecondDebounce);
-            _timer.Tick += sendMessage;
+            _timer.Tick += SendMessage;
         }
 
 
@@ -55,23 +55,13 @@ namespace NuSysApp.Network
             }
         }
 
-        private async void sendMessage(object sender, object e)
+        private async void SendMessage(object sender, object e)
         {
             _timer.Stop();
-            string message = MakeSubMessageFromDict(_dict);
-            await Globals.Network.SendMassUDPMessage(message);
+            _dict.Add("id",_atomID);
+            await Globals.Network.QuickUpdateAtom(_dict);
             _timing = false;
             _dict.Clear();
-        }
-        private string MakeSubMessageFromDict(Dictionary<string, string> dict)
-        {
-            string m = "<";
-            foreach (KeyValuePair<string, string> kvp in dict)
-            {
-                m += kvp.Key + "=" + kvp.Value + ",";
-            }
-            m+="id="+_atomID+">";
-            return m;
         }
     }
 }

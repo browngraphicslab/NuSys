@@ -772,7 +772,7 @@ namespace NuSysApp
             //Debug.WriteLine(_localIP + " handled message: " + message);
         }
 
-        private Dictionary<string, string> ParseOutProperties(string message)
+        private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
         {
             message = message.Substring(1, message.Length - 2);
             string[] parts = message.Split(",".ToCharArray());
@@ -799,6 +799,28 @@ namespace NuSysApp
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
+        }
+
+        public async Task QuickUpdateAtom(Dictionary<string, string> properties)
+        {
+            if (properties.ContainsKey("id"))
+            {
+                if (_workSpaceModel.HasAtom(properties["id"]))
+                {
+                    string message = MakeSubMessageFromDict(properties);
+                    await SendMassUDPMessage(message);
+                }
+                else
+                {
+                    Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an VALID ID. ID: "+properties["id"]);
+                    return;
+                }
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an ID.  ");
+                return;
+            }
         }
     }
 }
