@@ -4,32 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace NuSysApp.Network
 {
     public class DebouncingDictionary
     {
         private Dictionary<string, string> _dict;
-        private int _debounceTime = 100;
         private bool _timing = false;
-        private Timer _timer;
+        private DispatcherTimer _timer;
         private string _atomID;
         public DebouncingDictionary(string atomID)
         {
             _dict = new Dictionary<string, string>();
             _atomID = atomID;
+            _timer = new DispatcherTimer();
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            _timer.Tick += sendMessage;
+
         }
         public DebouncingDictionary(string atomID, int milliSecondDebounce)
         {
-            _debounceTime = milliSecondDebounce;
             _dict = new Dictionary<string, string>();
             _atomID = atomID;
+            _timer = new DispatcherTimer();
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, milliSecondDebounce);
+            _timer.Tick += sendMessage;
         }
 
-        public void SetDebounceTime(int milliSecondDebounce)
-        {
-            _debounceTime = milliSecondDebounce;
-        }
 
         public void Add(string id, string value)
         {
@@ -39,7 +41,7 @@ namespace NuSysApp.Network
                 {
                     _timing = true;
                     _dict.Add(id, value);
-                    _timer = new Timer(new TimerCallback(sendMessage), null, _debounceTime, Timeout.Infinite);
+                    _timer.Start();
                 }
                 else
                 {
@@ -53,11 +55,11 @@ namespace NuSysApp.Network
             }
         }
 
-        private void sendMessage(object stateInfo)
+        private async void sendMessage(object sender, object e)
         {
+            _timer.Stop();
             string message = MakeSubMessageFromDict(_dict);
-            Globals.Network.SendMassUDPMessage(message);
-            _timer.Dispose();
+            await Globals.Network.SendMassUDPMessage(message);
             _timing = false;
             _dict.Clear();
         }

@@ -12,6 +12,8 @@ namespace NuSysApp
     {
         private int _x;
         private int _y;
+        private double _width;
+        private double _height;
         public Node(string id) : base (id)
         {
             StartLines = new List<Link>();
@@ -55,9 +57,31 @@ namespace NuSysApp
 
         public MatrixTransform Transform { get; set; }
 
-        public double Width { get; set; }
+        public double Width
+        {
+            get
+            {
+                return _width;
+            }
+            set
+            {
+                _width = value;
+                this.DebounceDict.Add("width", _width.ToString());
+            }
+        }
 
-        public double Height{get; set; }
+        public double Height
+        {
+            get
+            {
+                return _height;
+            }
+            set
+            {
+                _height = value;
+                this.DebounceDict.Add("height", _height.ToString());
+            }
+        }
 
         public Constants.NodeType NodeType { get; set; }
 
