@@ -1,4 +1,5 @@
 ﻿
+using NuSysApp.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml;
@@ -20,6 +21,7 @@ namespace NuSysApp
 
         private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
+        private GroupViewModel _group;
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
@@ -291,11 +293,12 @@ namespace NuSysApp
         {
             get
             {
-                return ((Node)this.Model).ParentGroup;
+                return _group;
             }
             set
             {
-                ((Node)this.Model).ParentGroup = value;
+                _group = value;
+                ((Node)Model).ParentGroup = (Group)_group.Model;
             }
         }
 

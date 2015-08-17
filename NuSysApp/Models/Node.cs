@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NuSysApp.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
@@ -36,7 +37,7 @@ namespace NuSysApp
 
         public Constants.NodeType NodeType { get; set; }
 
-        public GroupViewModel ParentGroup { get; set; }
+        public Group ParentGroup { get; set; }
 
         public virtual string GetContentSource()
         {
