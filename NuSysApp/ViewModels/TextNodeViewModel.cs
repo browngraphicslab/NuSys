@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml;
 using Windows.UI;
@@ -15,6 +16,7 @@ namespace NuSysApp
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text, string id) : base(workSpaceViewModel, id)
         {
             this.Model = new TextNode(text ?? "Enter text here", id);
+            this.Model.PropertyChanged += (s, e) => { Update(e); };
             this.View = new TextNodeView2(this);  
             this.Transform = new MatrixTransform();
             this.Width =500; //width set in /MISC/Constants.cs
@@ -25,6 +27,19 @@ namespace NuSysApp
             this.NodeType = Constants.NodeType.text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
             this.View = new TextNodeView2(this);
+        }
+
+        private void Update(PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Model_Width":
+                    this.Width = ((Node)this.Model).Width;
+                    break;
+                case "Model_Height":
+                    this.Height = ((Node)this.Model).Height;
+                    break;
+            }
         }
 
         #region Public Properties

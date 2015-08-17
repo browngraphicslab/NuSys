@@ -9,7 +9,7 @@ using NuSysApp.Network;
 
 namespace NuSysApp
 {
-    public abstract class Atom
+    public abstract class Atom : BaseINPC
     {
         private DebouncingDictionary _debounceDict;
         public Atom(string id)
