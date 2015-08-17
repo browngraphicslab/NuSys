@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml;
 using Windows.Foundation;
@@ -17,11 +18,11 @@ namespace NuSysApp
     {
         #region Private Members      
 
-        private bool _isEditing,_isEditingInk;
+        private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
         #endregion Private Members
 
-        protected NodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
+        protected NodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
         {
             this.AtomType = Constants.Node;
         }
@@ -39,18 +40,19 @@ namespace NuSysApp
 
         public virtual void Translate(double dx, double dy)
         {
-            if (IsAnnotation){return;}
+            if (IsAnnotation) { return; }
             if (!this.IsEditing)
             {
-                var transMat = ((MatrixTransform) this.View.RenderTransform).Matrix;
+                var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
                 if (ParentGroup == null)
                 {
-                transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-                transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-                } else
+                    transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
+                    transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+                }
+                else
                 {
-                    transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX / ParentGroup.LocalTransform.ScaleX ;
-                transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY/ ParentGroup.LocalTransform.ScaleX;
+                    transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX / ParentGroup.LocalTransform.ScaleX;
+                    transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY / ParentGroup.LocalTransform.ScaleX;
                 }
                 Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
@@ -60,7 +62,7 @@ namespace NuSysApp
                     link.UpdateAnchor();
                 }
             }
-            
+
         }
         /// <summary>
         /// toggles editing ability of nodes.
@@ -79,8 +81,8 @@ namespace NuSysApp
         /// </summary>
         public override void UpdateAnchor()
         {
-            this.AnchorX = (int) (this.X + this.Transform.Matrix.OffsetX + this.Width/2); //this is the midpoint
-            this.AnchorY = (int) (this.Y + this.Transform.Matrix.OffsetY + this.Height/2);
+            this.AnchorX = (int)(this.X + this.Transform.Matrix.OffsetX + this.Width / 2); //this is the midpoint
+            this.AnchorY = (int)(this.Y + this.Transform.Matrix.OffsetY + this.Height / 2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }
 
@@ -242,53 +244,12 @@ namespace NuSysApp
             }
         }
 
-        public abstract XmlElement WriteXML(XmlDocument doc);
-
-        public List<XmlAttribute> getBasicXML(XmlDocument doc)
+        public XmlElement WriteXML(XmlDocument doc)
         {
-            List<XmlAttribute> basicXml = new List<XmlAttribute>();
-
-            //create xml attribute nodes
-            XmlAttribute type = doc.CreateAttribute("nodeType");
-            type.Value = ((Node)this.Model).NodeType.ToString();
-
-            XmlAttribute id = doc.CreateAttribute("id");
-            id.Value = this.Model.ID.ToString();
-
-            if (ParentGroup != null)
-            {
-                XmlAttribute groupID = doc.CreateAttribute("groupID");
-                groupID.Value = ((Node)this.Model).ParentGroup.Model.ID.ToString();
-            }
-
-            XmlAttribute x = doc.CreateAttribute("x");
-            x.Value = ((int) ((Node)this.Model).Transform.Matrix.OffsetX).ToString();
-
-            XmlAttribute y = doc.CreateAttribute("y");
-            y.Value = ((int) ((Node)this.Model).Transform.Matrix.OffsetY).ToString();
-
-            XmlAttribute height = doc.CreateAttribute("height");
-            height.Value = ((int)((Node)this.Model).Height).ToString();
-
-            XmlAttribute width = doc.CreateAttribute("width");
-            width.Value = ((int)((Node)this.Model).Width).ToString();
-
-            //append to list and return
-            basicXml.Add(type);
-            basicXml.Add(id);
-            basicXml.Add(x);
-            basicXml.Add(y);
-            basicXml.Add(height);
-            basicXml.Add(width);
-
-            return basicXml;
+            return ((Node)Model).WriteXML(doc);
         }
 
-        
 
-        /// <summary>
-        /// indicates whether node is editable.
-        /// </summary>
         public bool IsEditing
         {
             get { return _isEditing; }
@@ -316,7 +277,8 @@ namespace NuSysApp
             }
         }
 
-        public Constants.NodeType NodeType {
+        public Constants.NodeType NodeType
+        {
             get { return ((Node)this.Model).NodeType; }
             set
             {
@@ -325,7 +287,8 @@ namespace NuSysApp
 
         }
 
-        public GroupViewModel ParentGroup {
+        public GroupViewModel ParentGroup
+        {
             get
             {
                 return ((Node)this.Model).ParentGroup;

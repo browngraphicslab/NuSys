@@ -19,7 +19,6 @@ namespace NuSysApp
         private bool _isSelected;
         private UserControl _view;
         private MatrixTransform _transform;
-
         public bool _isVisible;
 
         #endregion Private Members

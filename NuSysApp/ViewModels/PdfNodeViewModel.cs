@@ -14,20 +14,15 @@ namespace NuSysApp
 {
     public class PdfNodeViewModel : NodeViewModel
     {
-
-        private BitmapImage _bitmapImage;
-        private List<BitmapImage> _renderedPages;
-        private PdfNodeModel _pdfNodeModel;
-        private uint _currentPageNumber;
-        private uint _pageCount;
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, int id) : base(workspaceViewModel, id)
         {
+            
+            
+            this.Model = new PdfNodeModel(id);
             this.View = new PdfNodeView2(this);
-            this.PdfNodeModel = new PdfNodeModel(id);
-            this.Model = this.PdfNodeModel;
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
@@ -99,6 +94,20 @@ namespace NuSysApp
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
 
+        public PdfNodeModel PdfNodeModel //TO DO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
+        {
+            get { return (PdfNodeModel)Model; }
+            set
+            {
+                if ((PdfNodeModel)Model == value)
+                {
+                    return;
+                }
+                this.Model = value;
+                RaisePropertyChanged("PdfNodeModel");
+            }
+        }
+
         /// <summary>
         /// Deletes all .nusys files involved in the office to PDF conversion process
         /// in order to prevent false-flags and accidental creation of PDF nodes.
@@ -140,13 +149,13 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * PdfNodeModel.RenderedPage.PixelWidth / PdfNodeModel.RenderedPage.PixelHeight;
+                newDx = dy * ((PdfNodeModel)Model).RenderedPage.PixelWidth / ((PdfNodeModel)Model).RenderedPage.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * PdfNodeModel.RenderedPage.PixelHeight / PdfNodeModel.RenderedPage.PixelWidth;
+                newDy = dx * ((PdfNodeModel)Model).RenderedPage.PixelHeight / ((PdfNodeModel)Model).RenderedPage.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
@@ -158,78 +167,42 @@ namespace NuSysApp
             base.Resize(newDx, newDy);
         }
 
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            PdfNodeModel currModel = (PdfNodeModel)this.Model;
-
-            //XmlElement 
-            XmlElement pdfNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-            doc.AppendChild(pdfNode);
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                pdfNode.SetAttributeNode(attr);
-            }
-
-            return pdfNode;
-        }
-
-        public PdfNodeModel PdfNodeModel
-        {
-            get { return _pdfNodeModel; }
-            set
-            {
-                if (_pdfNodeModel == value)
-                {
-                    return;
-                }
-                _pdfNodeModel = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
-        }
-
         public BitmapImage RenderedBitmapImage
         {
-            get { return _bitmapImage; }
+            get { return ((PdfNodeModel)Model).RenderedPage; }
             set
             {
-                _bitmapImage = value;
-                _pdfNodeModel.RenderedPage = value;
+                ((PdfNodeModel)Model).RenderedPage = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
 
         public List<BitmapImage> RenderedPages
         {
-            get { return _renderedPages; }
+            get { return ((PdfNodeModel)Model).RenderedPages; }
             set
             {
-                _renderedPages = value;
-                _pdfNodeModel.RenderedPages = value;
+                ((PdfNodeModel)Model).RenderedPages = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
 
         public uint CurrentPageNumber
         {
-            get { return _currentPageNumber; }
+            get { return ((PdfNodeModel)Model).CurrentPageNumber; }
             set
             {
-                _currentPageNumber = value;
-                _pdfNodeModel.CurrentPageNumber = value;
+                ((PdfNodeModel)Model).CurrentPageNumber = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
 
         public uint PageCount
         {
-            get { return _pageCount; }
+            get { return ((PdfNodeModel)Model).PageCount; }
             set
             {
-                _pageCount = value;
-                _pdfNodeModel.PageCount = value;
+                ((PdfNodeModel)Model).PageCount = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
