@@ -11,12 +11,6 @@
         <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="500">
             Next
         </Button>
-        <Button Name="tcpButton" VerticalAlignment="Center" HorizontalAlignment="Left" Width="50" Height=" 250" Click="TCP_OnClick">
-            TCP
-        </Button>
-        <Button Name="udpButton" VerticalAlignment="Center" HorizontalAlignment="Right" Width="50" Height=" 250" Click="UDP_OnClick">
-            UDP
-        </Button>
         <TextBlock Name="TextBlock" HorizontalAlignment="Center" VerticalAlignment="Top" Height="150" Width="250" TextAlignment="Center">
             wait please...
         </TextBlock>

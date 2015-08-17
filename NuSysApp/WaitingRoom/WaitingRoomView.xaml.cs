@@ -46,14 +46,5 @@ namespace NuSysApp
                 Debug.WriteLine("Can't join workspace yet, it's not synced with host");
             }
         }
-
-        private void TCP_OnClick(object sender, RoutedEventArgs e)
-        {
-            Globals.Network.SendMassTCPMessage("TCP Test from "+Globals.Network.LocalIP);
-        }
-        private void UDP_OnClick(object sender, RoutedEventArgs e)
-        {
-            Globals.Network.SendMassUDPMessage("UDP Test from " + Globals.Network.LocalIP);
-        }
     }
 }
