@@ -12,13 +12,13 @@ namespace NuSysApp
         #region Private Members
 
         #endregion Private Members
-
+        
         public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text, int id) : base(workSpaceViewModel, id)
         {
             this.Model = new TextNode(text ?? "Enter text here", id);
             this.View = new TextNodeView2(this);  
             this.Transform = new MatrixTransform();
-            this.Width =500; //width set in /MISC/Constants.cs
+            this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
