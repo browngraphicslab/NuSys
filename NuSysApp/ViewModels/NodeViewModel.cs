@@ -203,8 +203,7 @@ namespace NuSysApp
                     return;
                 }
                 ((Node)Model).Transform = value;
-                this.X = (int)this.Transform.Matrix.OffsetX;
-                this.Y = (int) this.Transform.Matrix.OffsetY;
+
                 RaisePropertyChanged("Transform");
             }
         }

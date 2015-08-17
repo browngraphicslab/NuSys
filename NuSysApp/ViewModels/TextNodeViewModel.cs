@@ -26,7 +26,7 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.NodeType = Constants.NodeType.text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
-            this.View = new TextNodeView2(this);
+            this.View = new TextNodeView2(this);//TODO < whut is this?
         }
 
         private void Update(PropertyChangedEventArgs e)
