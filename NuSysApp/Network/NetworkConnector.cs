@@ -707,9 +707,30 @@ namespace NuSysApp
                 case "9"://Tell others to remove IP from self ex: message = "10.10.10.10"
                     RemoveIP(message);
                     break;
+                case "10":
+                    if (_workSpaceModel.HasAtom(message))
+                    {
+                        if (_hostIP == _localIP)
+                        {
+                            await SendMassTCPMessage("SPECIAL10:" + message);
+                        }
+                        _workSpaceModel.RemoveNode(message);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ERROR: delete requested for item that didn't exist.  Item requested for delete: "+message);
+                        return;
+                    }
+
+                    break;
             }
         }
 
+        public async Task RequestDeleteNode(string id)
+        {
+            await SendMessageToHost("SPECIAL10:" + id);
+        }
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
             if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
