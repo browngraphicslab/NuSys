@@ -135,26 +135,32 @@ namespace NuSysApp
                 string[] subparts = part.Split(" ".ToCharArray());
                 foreach (string subpart in subparts)
                 {
-                    if (subpart.Substring(0, 6) == "points")
+                    if (subpart.Length > 0 && subpart!="polyline")
                     {
-                        string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                        string[] points = innerPoints.Split(";".ToCharArray());
-                        foreach (string p in points)
+                        if (subpart.Substring(0, 6) == "points")
                         {
-                            string[] coords = p.Split(",".ToCharArray());
-                            Point point = new Point(double.Parse(coords[0]),double.Parse(coords[1]));
-                            poly.Points.Add(point);
+                            string innerPoints = subpart.Substring(8, subpart.Length - 9);
+                            string[] points = innerPoints.Split(";".ToCharArray());
+                            foreach (string p in points)
+                            {
+                                if (p.Length > 0)
+                                {
+                                    string[] coords = p.Split(",".ToCharArray());
+                                    Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
+                                    poly.Points.Add(point);
+                                }
+                            }
                         }
-                    }
-                    else if (subpart.Substring(0, 9) == "thickness")
-                    {
-                        string sp = subpart.Substring(11, subpart.Length - 12);
-                        poly.StrokeThickness = double.Parse(sp);
-                    }
-                    else if (subpart.Substring(0, 6) == "stroke")
-                    {
-                        string sp = subpart.Substring(8, subpart.Length - 10);
-                        //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
+                        else if (subpart.Substring(0, 9) == "thickness")
+                        {
+                            string sp = subpart.Substring(11, subpart.Length - 12);
+                            poly.StrokeThickness = double.Parse(sp);
+                        }
+                        else if (subpart.Substring(0, 6) == "stroke")
+                        {
+                            string sp = subpart.Substring(8, subpart.Length - 10);
+                            //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
+                        }
                     }
                 }
                 polys.Add(poly);
@@ -168,13 +174,13 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(",,".ToCharArray());
+            string[] parts = message.Split("%^%".ToCharArray());
             Dictionary<string, string> props = new Dictionary<string, string>();
             foreach (string part in parts)
             {
                 if (part.Length > 0)
                 {
-                    string[] subParts = part.Split('=');
+                    string[] subParts = part.Split("=".ToCharArray(),2);
                     if (subParts.Length != 2)
                     {
                         Debug.WriteLine("Error, property formatted wrong in message: " + message);
@@ -206,7 +212,7 @@ namespace NuSysApp
                     Dictionary<string, string> parts = atom.Pack();
                     foreach (KeyValuePair<string,string> tup in parts)
                     {
-                        ret += tup.Key + '=' + tup.Value + ",,";
+                        ret += tup.Key + '=' + tup.Value + "%^%";
                     }
                     ret += "id=" + atom.ID + ">&&";
                 }
