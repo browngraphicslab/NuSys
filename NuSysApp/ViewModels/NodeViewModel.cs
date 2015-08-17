@@ -31,11 +31,13 @@ namespace NuSysApp
 
         public override void Remove()
         {
-            WorkSpaceViewModel.DeleteNode(this);
+            Globals.Network.RequestDeleteNode(ID);
+            //WorkSpaceViewModel.DeleteNode(this);
             if (this.IsSelected)
             {
                 WorkSpaceViewModel.ClearSelection();
             }
+            
         }
 
         public virtual void Translate(double dx, double dy)
