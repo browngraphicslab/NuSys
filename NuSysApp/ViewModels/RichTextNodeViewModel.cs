@@ -36,38 +36,16 @@ namespace NuSysApp
         /// </summary>
         public string Data
         {
-            get { return _data; }
+            get { return ((RichTextNode)Model).Data; }
             set
             {
-                _data = value;
+                ((RichTextNode)Model).Data = value;
                 RaisePropertyChanged("Data");
                 var rtb = (RichEditBox) this.View.FindName("textBlock"); //TO DO: GET RID OF THIS. NEVER GRAB THE VIEW FROM WITHIN THE VIEWMODEL!! (- Nick)
                 rtb.Document.SetText(TextSetOptions.FormatRtf, _data);
             }
         }
 
-
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            RichTextNode currModel = (RichTextNode)this.Model;
-
-            //XmlElement 
-            XmlElement richTextNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-            
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                richTextNode.SetAttributeNode(attr);
-            }
-
-            //Text
-            XmlAttribute text = doc.CreateAttribute("text");
-            text.Value = currModel.Text;
-            richTextNode.SetAttributeNode(text);
-
-            return richTextNode;
-        }
     }
     #endregion Public Properties
 
