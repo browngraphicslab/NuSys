@@ -56,7 +56,7 @@ namespace NuSysApp
                 if (_idDict.ContainsKey(id))
                 {
                     Atom n = _idDict[id];
-                    n.Update(props);
+                    n.UnPack(props);
                 }
                 else
                 {
@@ -148,10 +148,10 @@ namespace NuSysApp
                 {
                     ret += '<';
                     Atom atom = kvp.Value;
-                    List<Tuple<string, double>> parts = new List<Tuple<string, double>>();
-                    foreach (Tuple<string, double> tup in parts)
+                    Dictionary<string, string> parts = atom.Pack();
+                    foreach (KeyValuePair<string,string> tup in parts)
                     {
-                        ret += tup.Item1 + '=' + tup.Item2 + ',';
+                        ret += tup.Key + '=' + tup.Value + ',';
                     }
                     ret += "id=" + atom.ID + ">&&";
                 }
