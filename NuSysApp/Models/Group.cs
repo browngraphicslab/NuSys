@@ -13,15 +13,12 @@ namespace NuSysApp.Models
     {
         public Group(int id): base(id)
         {
-
+            NodeModelList = new ObservableCollection<Node>();
         }
 
-        public ObservableCollection<UserControl> AtomViewList { get; set; }
+        public ObservableCollection<Node> NodeModelList { get; set; }
 
-        public ObservableCollection<NodeViewModel> NodeViewModelList { get; set; }
-
-        public ObservableCollection<LinkViewModel> LinkViewModelList { get; set; }
-
+       public ObservableCollection<Link> LinkModelList { get; set; }
         public override XmlElement WriteXML(XmlDocument doc)
         {
 
@@ -37,9 +34,9 @@ namespace NuSysApp.Models
             }
 
             //get nodes within groups
-            foreach (NodeViewModel nodevm in NodeViewModelList)
+            foreach (Node n in NodeModelList)
             {
-                groupNode.AppendChild(nodevm.WriteXML(doc));
+                groupNode.AppendChild(n.WriteXML(doc));
             }
             return groupNode;
         }

@@ -13,13 +13,21 @@ namespace NuSysApp
     {
         private double _margin;
         private CompositeTransform _localTransform;
+
+        private ObservableCollection<UserControl> _atomViewList;
+
+        public ObservableCollection<NodeViewModel> _nodeViewModelList;
+
+        public ObservableCollection<LinkViewModel> _linkViewModelList;
+
+
         public GroupViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.AtomType = Constants.Node;
             this.Model = new Group(id);
-            ((Group)this.Model).NodeViewModelList = new ObservableCollection<NodeViewModel>();
-            ((Group)this.Model).LinkViewModelList = new ObservableCollection<LinkViewModel>();
-            ((Group)this.Model).AtomViewList = new ObservableCollection<UserControl>();
+            _nodeViewModelList = new ObservableCollection<NodeViewModel>();
+            _linkViewModelList = new ObservableCollection<LinkViewModel>();
+            _atomViewList = new ObservableCollection<UserControl>();
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -36,8 +44,9 @@ namespace NuSysApp
         public void AddNode(NodeViewModel toAdd)
         {
             toAdd.Transform = new MatrixTransform();
-            ((Group)Model).AtomViewList.Add(toAdd.View);
-            ((Group)Model).NodeViewModelList.Add(toAdd);
+            _atomViewList.Add(toAdd.View);
+            _nodeViewModelList.Add(toAdd);
+            ((Group)Model).NodeModelList.Add((Node)toAdd.Model);
           //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
@@ -48,16 +57,20 @@ namespace NuSysApp
 
         public ObservableCollection<UserControl> AtomViewList
         {
-            get { return ((Group)Model).AtomViewList; }
+            get { return _atomViewList; }
             set
             {
-                ((Group)Model).AtomViewList = value;
+                _atomViewList = value;
             }
         }
 
         public ObservableCollection<NodeViewModel> NodeViewModelList
         {
-            get { return ((Group)Model).NodeViewModelList; }
+            get { return _nodeViewModelList; }
+            set
+            {
+                _nodeViewModelList = value;
+            }
         }
          
         public override void Resize(double dx, double dy)
@@ -97,18 +110,20 @@ namespace NuSysApp
                 link.UpdateAnchor();
             }
             toRemove.UpdateAnchor();
-            ((Group)Model).AtomViewList.Remove(toRemove.View);
-            ((Group)Model).NodeViewModelList.Remove(toRemove);
+            _atomViewList.Remove(toRemove.View);
+            _nodeViewModelList.Remove(toRemove);
+            ((Group)Model).NodeModelList.Remove((Node)toRemove.Model);
+
          //   ArrangeNodesInGrid();
-            switch (((Group)Model).NodeViewModelList.Count)
+            switch (_nodeViewModelList.Count)
             {
                 case 0:
                     WorkSpaceViewModel.DeleteNode(this);
                     break;
                 case 1:
-                    var lastNode = ((Group)Model).NodeViewModelList[0];
-                    ((Group)Model).AtomViewList.Remove(lastNode.View);
-                    ((Group)Model).NodeViewModelList.Remove(lastNode);
+                    var lastNode = _nodeViewModelList[0];
+                    _atomViewList.Remove(lastNode.View);
+                    _nodeViewModelList.Remove(lastNode);
                     WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
                     WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
@@ -128,31 +143,31 @@ namespace NuSysApp
         }
 
         public bool CheckNodeIntersection(NodeViewModel node) { 
-            for (var i = 0; i < ((Group)Model).NodeViewModelList.Count; i++)
+            for (var i = 0; i < _nodeViewModelList.Count; i++)
             {
-                var node2 = ((Group)Model).NodeViewModelList[i];
+                var node2 = _nodeViewModelList[i];
                 var rect2 = Geometry.NodeToBoudingRect(node2);
                 var rect1 = Geometry.NodeToBoudingRect(node);
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    ((Group)Model).NodeViewModelList.Remove(node);
-                    ((Group)Model).AtomViewList.Remove(node.View);
+                    _nodeViewModelList.Remove(node);
+                    _atomViewList.Remove(node.View);
                     if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
                     {
-                        if (((Group)Model).NodeViewModelList.Count <= i+1)
+                        if (_nodeViewModelList.Count <= i+1)
                         {
-                            ((Group)Model).NodeViewModelList.Add(node);
-                            ((Group)Model).AtomViewList.Add(node.View);
+                            _nodeViewModelList.Add(node);
+                            _atomViewList.Add(node.View);
                             return true;
                         }
-                        ((Group)Model).NodeViewModelList.Insert(i+1, node);
-                        ((Group)Model).AtomViewList.Insert(i+1,node.View);
+                        _nodeViewModelList.Insert(i+1, node);
+                        _atomViewList.Insert(i+1,node.View);
                     }
                     else
                     {
-                        ((Group)Model).NodeViewModelList.Insert(i, node);
-                        ((Group)Model).AtomViewList.Insert(i,node.View);
+                        _nodeViewModelList.Insert(i, node);
+                        _atomViewList.Insert(i,node.View);
                     }
                     return true;
                 }
