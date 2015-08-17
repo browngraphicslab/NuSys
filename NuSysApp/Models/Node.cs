@@ -92,7 +92,7 @@ namespace NuSysApp
             return null;
         }
 
-        public override void Update(Dictionary<string, string> props)
+        public override void UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("x"))
             {
@@ -110,9 +110,18 @@ namespace NuSysApp
             {
                 Height = Double.Parse(props["height"]);
             }
-            base.Update(props);
+            base.UnPack(props);
         }
 
+        public override Dictionary<string, string> Pack()
+        {
+            Dictionary<string, string> dict = base.Pack();
+            dict.Add("x",X.ToString());
+            dict.Add("y", Y.ToString());
+            dict.Add("width", Width.ToString());
+            dict.Add("height", Height.ToString());
+            return dict;
+        }
 
     }
 }

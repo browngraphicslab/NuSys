@@ -15,7 +15,7 @@ namespace NuSysApp
         public string InAtomID { get; set; }
         public string OutAtomID { get; set; }
 
-        public override void Update(Dictionary<string, string> props)
+        public override void UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("id1"))
             {
@@ -25,7 +25,16 @@ namespace NuSysApp
             {
                 this.InAtomID = props["id2"];
             }
-            base.Update(props);
+            base.UnPack(props);
         }
+
+        public override Dictionary<string, string> Pack()
+        {
+            Dictionary<string, string> dict = base.Pack();
+            dict.Add("id1",InAtomID);
+            dict.Add("id2", OutAtomID);
+            return dict;
+        }
+
     }
 }

@@ -21,14 +21,14 @@ namespace NuSysApp
             return Text;
         }
 
-        public override void Update(Dictionary<string, string> props)
+        public override void UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("text"))
             {
                 Text = props["text"];
                 this.DebounceDict.Add("text",Text);
             }
-            base.Update(props);
+            base.UnPack (props);}
         }
     }
 }

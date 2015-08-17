@@ -26,12 +26,19 @@ namespace NuSysApp
 
         public string ID { get; set; }
 
-        public virtual void Update(Dictionary<string, string> props)
+        public virtual void UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("color"))
             {
                 //TODO add in color
             }
         }
+
+        public virtual Dictionary<string, string> Pack()
+        {
+            Dictionary<string,string> dict = new Dictionary<string, string>();
+            //dict.Add("color") //TODO add in color
+            return dict;
+        } 
     } 
 }
