@@ -200,11 +200,11 @@ namespace NuSysApp
             {
                 _addressToWriter.Remove(ip);//remove the datagram socket data writer
             }
-            foreach (Tuple<DatagramSocket,DataWriter> tup in _UDPOutSockets)
+            foreach (var tup in _UDPOutSockets)
             {
                 if (tup.Item1.Information.RemoteAddress.RawName == ip)
                 {
-                    _UDPOutSockets.Remove(tup);//remove the outgoing socket
+                    _UDPOutSockets.Remove(tup); //remove the outgoing socket
                     break;
                 }
             }
