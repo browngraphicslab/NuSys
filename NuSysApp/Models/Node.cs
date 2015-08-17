@@ -96,7 +96,7 @@ namespace NuSysApp
             return null;
         }
 
-        public void Update(Dictionary<string, string> props)
+        public override void Update(Dictionary<string, string> props)
         {
             if (props.ContainsKey("x"))
             {

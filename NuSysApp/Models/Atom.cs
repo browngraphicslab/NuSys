@@ -26,7 +26,7 @@ namespace NuSysApp
 
         public string ID { get; set; }
 
-        public void Update(Dictionary<string, string> props)
+        public virtual void Update(Dictionary<string, string> props)
         {
             if (props.ContainsKey("color"))
             {
