@@ -65,7 +65,13 @@ namespace NuSysApp
                     link.UpdateAnchor();
                 }
             }
+        }
 
+        public void SetPosition(double x, double y)
+        {
+            var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
+            transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
         }
         /// <summary>
         /// toggles editing ability of nodes.
