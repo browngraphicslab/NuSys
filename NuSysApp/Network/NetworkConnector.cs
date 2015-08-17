@@ -707,9 +707,30 @@ namespace NuSysApp
                 case "9"://Tell others to remove IP from self ex: message = "10.10.10.10"
                     RemoveIP(message);
                     break;
+                case "10":
+                    if (_workSpaceModel.HasAtom(message))
+                    {
+                        if (_hostIP == _localIP)
+                        {
+                            await SendMassTCPMessage("SPECIAL10:" + message);
+                        }
+                        _workSpaceModel.RemoveNode(message);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ERROR: delete requested for item that didn't exist.  Item requested for delete: "+message);
+                        return;
+                    }
+
+                    break;
             }
         }
 
+        public async Task RequestDeleteNode(string id)
+        {
+            await SendMessageToHost("SPECIAL10:" + id);
+        }
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
             if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
@@ -751,7 +772,7 @@ namespace NuSysApp
             //Debug.WriteLine(_localIP + " handled message: " + message);
         }
 
-        private Dictionary<string, string> ParseOutProperties(string message)
+        private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
         {
             message = message.Substring(1, message.Length - 2);
             string[] parts = message.Split(",".ToCharArray());
@@ -778,6 +799,28 @@ namespace NuSysApp
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
+        }
+
+        public async Task QuickUpdateAtom(Dictionary<string, string> properties)
+        {
+            if (properties.ContainsKey("id"))
+            {
+                if (_workSpaceModel.HasAtom(properties["id"]))
+                {
+                    string message = MakeSubMessageFromDict(properties);
+                    await SendMassUDPMessage(message);
+                }
+                else
+                {
+                    Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an VALID ID. ID: "+properties["id"]);
+                    return;
+                }
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an ID.  ");
+                return;
+            }
         }
     }
 }

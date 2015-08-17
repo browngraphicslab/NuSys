@@ -113,6 +113,10 @@ namespace NuSysApp
             });
         }
 
+        public bool HasAtom(string id)
+        {
+            return _idDict.ContainsKey(id);
+        }
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
@@ -130,7 +134,14 @@ namespace NuSysApp
             }
             return props;
         }
-
+        public void RemoveNode(string id)
+        {
+            if (_idDict.ContainsKey(id))
+            {
+                //TODO Remove node visually
+                _idDict.Remove(id);
+            }
+        }
         public async Task SendMessageToHost(string message)
         {
             if (!_isNetwork)

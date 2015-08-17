@@ -36,6 +36,10 @@ namespace NuSysApp
             }
             set
             {
+                if (_x == value)
+                {
+                    return;
+                }
                 _x = value;
                 this.DebounceDict.Add("x",_x.ToString());
                 RaisePropertyChanged("Model_X");
@@ -51,6 +55,10 @@ namespace NuSysApp
             }
             set
             {
+                if (_y == value)
+                {
+                    return;
+                }
                 _y = value;
                 this.DebounceDict.Add("y", _y.ToString());
                 RaisePropertyChanged("Model_Y");
@@ -67,6 +75,10 @@ namespace NuSysApp
             }
             set
             {
+                if (_width == value)
+                {
+                    return;
+                }
                 _width = value;
                 this.DebounceDict.Add("width", _width.ToString());
                 RaisePropertyChanged("Model_Width");
@@ -81,6 +93,10 @@ namespace NuSysApp
             }
             set
             {
+                if (_height == value)
+                {
+                    return;
+                }
                 _height = value;
                 this.DebounceDict.Add("height", _height.ToString());
                 RaisePropertyChanged("Model_Height");
