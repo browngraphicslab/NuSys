@@ -174,7 +174,7 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split("%^%".ToCharArray());
+            string[] parts = message.Split(Constants.CommaReplacement.ToCharArray());
             Dictionary<string, string> props = new Dictionary<string, string>();
             foreach (string part in parts)
             {
@@ -212,7 +212,7 @@ namespace NuSysApp
                     Dictionary<string, string> parts = atom.Pack();
                     foreach (KeyValuePair<string,string> tup in parts)
                     {
-                        ret += tup.Key + '=' + tup.Value + "%^%";
+                        ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
                     }
                     ret += "id=" + atom.ID + ">&&";
                 }

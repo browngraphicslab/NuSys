@@ -52,6 +52,11 @@ namespace NuSysApp
         public const string Link = "Link";
         #endregion AtomType
 
+        #region Network
+
+        public const string CommaReplacement = "%^%";
+        #endregion Network
+
         #region Node Type
         public enum NodeType
         {

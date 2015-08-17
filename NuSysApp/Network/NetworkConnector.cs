@@ -810,9 +810,9 @@ namespace NuSysApp
         {
             if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
             {
-                if (message.IndexOf("id=0%^%") != -1)
+                if (message.IndexOf("id=0"+Constants.CommaReplacement) != -1)
                 {
-                    message = message.Replace(@"id=0%^%", "id=" + GetID(ip) + "%^%");
+                    message = message.Replace(("id=0"+ Constants.CommaReplacement), "id=" + GetID(ip) + Constants.CommaReplacement);
                     await HandleRegularMessage(ip, message, packetType);
                     await SendMassTCPMessage(message);
                     return;
@@ -851,7 +851,7 @@ namespace NuSysApp
         {
             message = message.Substring(1, message.Length - 2);
 
-            var parts = message.Split("%^%".ToCharArray());
+            var parts = message.Split(Constants.CommaReplacement.ToCharArray());
             var props = new Dictionary<string, string>();
             foreach (var part in parts)
 
@@ -875,7 +875,7 @@ namespace NuSysApp
             var m = "<";
             foreach (var kvp in dict)
             {
-                m += kvp.Key + "=" + kvp.Value + "%^%";
+                m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
@@ -917,9 +917,9 @@ namespace NuSysApp
                 var s = "";
                 if (data != null && data!="null" && data!="")
                 {
-                    s = "%^%data=" + data;
+                    s = Constants.CommaReplacement+"data=" + data;
                 }
-                await SendMessageToHost("<id=0%^%x=" + x + "%^%y=" + y + "%^%type=node%^%nodeType=" + nodeType + s +">");
+                await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"x=" + x + Constants.CommaReplacement+"y=" + y + Constants.CommaReplacement+"type=node"+ Constants.CommaReplacement+"nodeType=" + nodeType + s +">");
             }
             else
             {
@@ -935,7 +935,7 @@ namespace NuSysApp
         {
             if (id1 != "" && id2 != "")
             {
-                await SendMessageToHost("<id=0%^%id1=" + id1 + "%^%id2=" + id2 + "%^%type=linq>");
+                await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"id1=" + id1 + Constants.CommaReplacement+"id2=" + id2 + Constants.CommaReplacement+"type=linq>");
             }
             else
             {
