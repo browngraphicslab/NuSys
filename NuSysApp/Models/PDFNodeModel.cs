@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
@@ -29,7 +30,23 @@ namespace NuSysApp
                 RenderedPage = RenderedPages[(int)value];
             }
         }
-        
+
+        public override XmlElement WriteXML(XmlDocument doc)
+        {
+  
+            //XmlElement 
+            XmlElement pdfNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+
+            //Other attributes - id, x, y, height, width
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            foreach (XmlAttribute attr in basicXml)
+            {
+                pdfNode.SetAttributeNode(attr);
+            }
+
+            return pdfNode;
+        }
+
         public uint PageCount { get; set; }
     }
 }

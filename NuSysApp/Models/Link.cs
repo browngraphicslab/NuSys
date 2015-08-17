@@ -12,5 +12,8 @@ namespace NuSysApp
 
         public int InAtomID { get; set; }
         public int OutAtomID { get; set; }
+
+        public AtomViewModel atom1 { get; set; }
+        public AtomViewModel atom2 { get; set; }
     }
 }

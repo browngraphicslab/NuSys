@@ -28,21 +28,5 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175,173,216,230));
         }
 
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            Atom currModel = this.Model;
-
-            //Main XmlElement 
-            XmlElement inkNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                inkNode.SetAttributeNode(attr);
-            }
-
-            return inkNode;
-        }
     }
 }
