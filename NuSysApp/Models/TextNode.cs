@@ -28,7 +28,7 @@ namespace NuSysApp
                 Text = props["text"];
                 this.DebounceDict.Add("text",Text);
             }
-            base.UnPack (props);}
+            base.UnPack (props);
         }
     }
 }
