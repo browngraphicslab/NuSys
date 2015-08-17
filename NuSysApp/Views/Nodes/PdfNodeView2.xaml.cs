@@ -35,37 +35,37 @@ namespace NuSysApp
         private void pageLeft_Click(object sender, RoutedEventArgs e)
         {
 
-            var vm = (PdfNodeViewModel)this.DataContext;
-            var pageNum = vm.CurrentPageNumber;
+            //var vm = (PdfNodeViewModel)this.DataContext;
+            //var pageNum = vm.CurrentPageNumber;
 
-            vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
-            inkCanvas.Strokes.Clear();
-            inkCanvas.Children.Clear();
-            inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
-            if (pageNum <= 0) return;
-            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
-            vm.CurrentPageNumber--;
+            //vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
+            //inkCanvas.Strokes.Clear();
+            //inkCanvas.Children.Clear();
+            //inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
+            //if (pageNum <= 0) return;
+            //vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
+            //vm.CurrentPageNumber--;
 
-            //      foreach (InkStroke inkStroke in vm.InkContainer[(int)pageNum -1])
-            //      {
-            //          inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
-            //      }
-                inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
+            ////      foreach (InkStroke inkStroke in vm.InkContainer[(int)pageNum -1])
+            ////      {
+            ////          inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
+            ////      }
+            //    inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
 
         private void pageRight_Click(object sender, RoutedEventArgs e)
         {
-            var vm = (PdfNodeViewModel)this.DataContext;
-            var pageCount = vm.PageCount;
-            var pageNum = vm.CurrentPageNumber;
-            vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
-            inkCanvas.Strokes.Clear();
-            inkCanvas.Children.Clear();
-            inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
-            if (pageNum >= (pageCount - 1)) return;
-            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
-            vm.CurrentPageNumber++;
-            inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
+            //var vm = (PdfNodeViewModel)this.DataContext;
+            //var pageCount = vm.PageCount;
+            //var pageNum = vm.CurrentPageNumber;
+            //vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
+            //inkCanvas.Strokes.Clear();
+            //inkCanvas.Children.Clear();
+            //inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
+            //if (pageNum >= (pageCount - 1)) return;
+            //vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
+            //vm.CurrentPageNumber++;
+            //inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
     }
 }
