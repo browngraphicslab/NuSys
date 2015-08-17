@@ -794,9 +794,9 @@ namespace NuSysApp
         {
             if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
             {
-                if (message.IndexOf("id=0,") != -1)
+                if (message.IndexOf("id=0,,") != -1)
                 {
-                    message = message.Replace(@"id=0,", "id=" + GetID(ip) + ',');
+                    message = message.Replace(@"id=0,,", "id=" + GetID(ip) + ",,");
                     await HandleRegularMessage(ip, message, packetType);
                     await SendMassTCPMessage(message);
                     return;
@@ -834,9 +834,11 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
         {
             message = message.Substring(1, message.Length - 2);
-            var parts = message.Split(",".ToCharArray());
+
+            var parts = message.Split(",,".ToCharArray());
             var props = new Dictionary<string, string>();
             foreach (var part in parts)
+
             {
                 var subParts = part.Split('=');
                 if (subParts.Length != 2)
@@ -857,7 +859,7 @@ namespace NuSysApp
             var m = "<";
             foreach (var kvp in dict)
             {
-                m += kvp.Key + "=" + kvp.Value + ",";
+                m += kvp.Key + "=" + kvp.Value + ",,";
             }
             m = m.Substring(0, m.Length - 1) + ">";
             return m;
@@ -891,16 +893,17 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, object data=null)
+        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null)
         {
             if (x != "" && y != "" && nodeType != "")
             {
+
                 var s = "";
-                if (data != null)
+                if (data != null && data!="null" && data!="")
                 {
-                    s = ",data=" + data.ToString();
+                    s = ",,data=" + data;
                 }
-                await SendMessageToHost("<id=0,x=" + x + ",y=" + y + ",type=node,nodeType=" + nodeType + s +">");
+                await SendMessageToHost("<id=0,,x=" + x + ",,y=" + y + ",,type=node,,nodeType=" + nodeType + s +">");
             }
             else
             {
@@ -916,7 +919,7 @@ namespace NuSysApp
         {
             if (id1 != "" && id2 != "")
             {
-                await SendMessageToHost("<id=0,id1=" + id1 + ",id2=" + id2 + ",type=linq>");
+                await SendMessageToHost("<id=0,,id1=" + id1 + ",,id2=" + id2 + ",,type=linq>");
             }
             else
             {

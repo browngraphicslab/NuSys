@@ -35,6 +35,7 @@ namespace NuSysApp
             dict.Add("id2", OutAtomID);
             return dict;
         }
-
+        public AtomViewModel atom1 { get; set; }
+        public AtomViewModel atom2 { get; set; }
     }
 }

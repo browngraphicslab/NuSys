@@ -143,6 +143,7 @@
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\Atom.cs" />
     <Compile Include="Models\Content.cs" />
+    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />

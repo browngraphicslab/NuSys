@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml;
@@ -14,11 +15,11 @@ namespace NuSysApp
         private CompositeTransform _localTransform;
         public GroupViewModel(WorkspaceViewModel vm, string id): base(vm, id)
         {
-            AtomViewList = new ObservableCollection<UserControl>();
-            NodeViewModelList = new ObservableCollection<NodeViewModel>();
-            LinkViewModelList = new ObservableCollection<LinkViewModel>();
             this.AtomType = Constants.Node;
-            this.Model = new Node(id);
+            this.Model = new Group(id);
+            ((Group)this.Model).NodeViewModelList = new ObservableCollection<NodeViewModel>();
+            ((Group)this.Model).LinkViewModelList = new ObservableCollection<LinkViewModel>();
+            ((Group)this.Model).AtomViewList = new ObservableCollection<UserControl>();
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
@@ -35,14 +36,28 @@ namespace NuSysApp
         public void AddNode(NodeViewModel toAdd)
         {
             toAdd.Transform = new MatrixTransform();
-            AtomViewList.Add(toAdd.View);
-            NodeViewModelList.Add(toAdd);
+            ((Group)Model).AtomViewList.Add(toAdd.View);
+            ((Group)Model).NodeViewModelList.Add(toAdd);
           //  ArrangeNodesInGrid();
             foreach (var link in toAdd.LinkList)
             {
                 link.SetVisibility(false);
             }
             //TODO Handle links
+        }
+
+        public ObservableCollection<UserControl> AtomViewList
+        {
+            get { return ((Group)Model).AtomViewList; }
+            set
+            {
+                ((Group)Model).AtomViewList = value;
+            }
+        }
+
+        public ObservableCollection<NodeViewModel> NodeViewModelList
+        {
+            get { return ((Group)Model).NodeViewModelList; }
         }
          
         public override void Resize(double dx, double dy)
@@ -82,18 +97,18 @@ namespace NuSysApp
                 link.UpdateAnchor();
             }
             toRemove.UpdateAnchor();
-            this.AtomViewList.Remove(toRemove.View);
-            NodeViewModelList.Remove(toRemove);
+            ((Group)Model).AtomViewList.Remove(toRemove.View);
+            ((Group)Model).NodeViewModelList.Remove(toRemove);
          //   ArrangeNodesInGrid();
-            switch (NodeViewModelList.Count)
+            switch (((Group)Model).NodeViewModelList.Count)
             {
                 case 0:
                     WorkSpaceViewModel.DeleteNode(this);
                     break;
                 case 1:
-                    var lastNode = NodeViewModelList[0];
-                    this.AtomViewList.Remove(lastNode.View);
-                    NodeViewModelList.Remove(lastNode);
+                    var lastNode = ((Group)Model).NodeViewModelList[0];
+                    ((Group)Model).AtomViewList.Remove(lastNode.View);
+                    ((Group)Model).NodeViewModelList.Remove(lastNode);
                     WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
                     WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
@@ -113,64 +128,37 @@ namespace NuSysApp
         }
 
         public bool CheckNodeIntersection(NodeViewModel node) { 
-            for (var i = 0; i < NodeViewModelList.Count; i++)
+            for (var i = 0; i < ((Group)Model).NodeViewModelList.Count; i++)
             {
-                var node2 = NodeViewModelList[i];
+                var node2 = ((Group)Model).NodeViewModelList[i];
                 var rect2 = Geometry.NodeToBoudingRect(node2);
                 var rect1 = Geometry.NodeToBoudingRect(node);
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    NodeViewModelList.Remove(node);
-                    AtomViewList.Remove(node.View);
+                    ((Group)Model).NodeViewModelList.Remove(node);
+                    ((Group)Model).AtomViewList.Remove(node.View);
                     if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
                     {
-                        if (NodeViewModelList.Count <= i+1)
+                        if (((Group)Model).NodeViewModelList.Count <= i+1)
                         {
-                            NodeViewModelList.Add(node);
-                            AtomViewList.Add(node.View);
+                            ((Group)Model).NodeViewModelList.Add(node);
+                            ((Group)Model).AtomViewList.Add(node.View);
                             return true;
                         }
-                        NodeViewModelList.Insert(i+1, node);
-                        AtomViewList.Insert(i+1,node.View);
+                        ((Group)Model).NodeViewModelList.Insert(i+1, node);
+                        ((Group)Model).AtomViewList.Insert(i+1,node.View);
                     }
                     else
                     {
-                        NodeViewModelList.Insert(i, node);
-                        AtomViewList.Insert(i,node.View);
+                        ((Group)Model).NodeViewModelList.Insert(i, node);
+                        ((Group)Model).AtomViewList.Insert(i,node.View);
                     }
                     return true;
                 }
             }
             return false;
         }
-
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            Atom currModel = this.Model;
-
-            //Main XmlElement 
-            XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-            
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                groupNode.SetAttributeNode(attr);
-            }
-
-            //get nodes within groups
-            foreach(NodeViewModel nodevm in NodeViewModelList)
-            {
-                groupNode.AppendChild(nodevm.WriteXML(doc));
-            }
-            return groupNode;
-        }
-
-        public ObservableCollection<UserControl> AtomViewList { get; private set;}
-        public ObservableCollection<LinkViewModel> LinkViewModelList { get; private set; }
-        public ObservableCollection<NodeViewModel> NodeViewModelList { get; private set; }
 
         public CompositeTransform LocalTransform
         {

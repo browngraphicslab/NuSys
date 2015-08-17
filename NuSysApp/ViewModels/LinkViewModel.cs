@@ -18,7 +18,7 @@ namespace NuSysApp
     {
         #region Private Members
 
-        private AtomViewModel _atom1, _atom2;
+        //private AtomViewModel _atom1, _atom2;
         #endregion Private members
 
         public LinkViewModel(AtomViewModel atom1,
@@ -70,28 +70,28 @@ namespace NuSysApp
         public NodeViewModel Annotation { get; set; }
         public AtomViewModel Atom1
         {
-            get { return _atom1; }
+            get { return ((Link)Model).atom1; }
             set
             {
-                if (_atom1 == value)
+                if (((Link)Model).atom1 == value)
                 {
                     return;
                 }
-                _atom1 = value;
+                ((Link)Model).atom1 = value;
                 RaisePropertyChanged("Atom1");
             }
         }
 
         public AtomViewModel Atom2
         {
-            get { return _atom2; }
+            get { return ((Link)Model).atom2; }
             set
             {
-                if (_atom2 == value)
+                if (((Link)Model).atom2 == value)
                 {
                     return;
                 }
-                _atom2 = value;
+                ((Link)Model).atom2 = value;
                 RaisePropertyChanged("Atom2");
             }
         }
