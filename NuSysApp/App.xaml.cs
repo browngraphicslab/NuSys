@@ -95,7 +95,6 @@ namespace NuSysApp
                 // configuring the new page by passing required information as a navigation
                 // parameter
                 rootFrame.Navigate(typeof(WaitingRoomView), e.Arguments);
-                Globals.Network.Start();
             }
             // Ensure the current window is active
             Window.Current.Activate();
@@ -202,7 +201,7 @@ namespace NuSysApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            await Globals.Network.Disconnect();
+            await NetworkConnector.Instance.Disconnect();
 
 
 

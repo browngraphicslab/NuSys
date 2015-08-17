@@ -23,9 +23,9 @@ namespace NuSysApp
     public class NetworkConnector
     {
         #region Private Members
-        private string _UDPPort = "2156";
-        private string _TCPInputPort = "302";
-        private string _TCPOutputPort = "302";
+        private const string _UDPPort = "2156";
+        private const string _TCPInputPort = "302";
+        private const string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
         private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
@@ -37,6 +37,9 @@ namespace NuSysApp
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
         private HashSet<string> _localLocks;
         private bool _caughtUp = false;
+
+        private static volatile NetworkConnector _instance;
+        private static readonly object _syncRoot = new Object();
         #endregion Private Members
 
         #region Public Members
@@ -46,16 +49,29 @@ namespace NuSysApp
             TCP,
             Both
         }
-        #endregion 
 
-        public NetworkConnector()
+        public static NetworkConnector Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_syncRoot)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new NetworkConnector();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+        #endregion
+
+        private NetworkConnector()//pls keep this private or shit won't work anymore
         {
             this.Init();// Constructor can't contain async code, so it delegates to helper method
-        }
-
-        public void Start()
-        {
-            Debug.WriteLine("Starting Network Connection");
         }
    
         /*
@@ -947,10 +963,10 @@ namespace NuSysApp
                 switch (_type)
                 {
                     case PacketType.TCP:
-                        await Globals.Network.SendTCPMessage(Message, address);
+                        await NetworkConnector.Instance.SendTCPMessage(Message, address);
                         break;
                     case PacketType.UDP:
-                        await Globals.Network.SendUDPMessage(Message, address);
+                        await NetworkConnector.Instance.SendUDPMessage(Message, address);
                         break;
                 }
             }

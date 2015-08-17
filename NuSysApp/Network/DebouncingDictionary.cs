@@ -35,7 +35,7 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!Globals.Network.WorkSpaceModel.Locked)
+            if (!NetworkConnector.Instance.WorkSpaceModel.Locked)
             {
                 if (!_timing)
                 {
@@ -59,7 +59,7 @@ namespace NuSysApp.Network
         {
             _timer.Stop();
             _dict.Add("id",_atomID);
-            await Globals.Network.QuickUpdateAtom(_dict);
+            await NetworkConnector.Instance.QuickUpdateAtom(_dict);
             _timing = false;
             _dict.Clear();
         }

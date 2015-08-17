@@ -37,7 +37,7 @@ namespace NuSysApp
         }
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Globals.Network.IsReady())
+            if (NetworkConnector.Instance.IsReady())
             {
                 this.Frame.Navigate(typeof (WorkspaceView), _workspaceView);
             }
