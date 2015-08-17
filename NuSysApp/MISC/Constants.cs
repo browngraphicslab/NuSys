@@ -76,7 +76,7 @@ namespace NuSysApp
         public static IEnumerable<string> AllFileTypes   = ImageFileTypes.Concat(PdfFileTypes);
 
         #region Cortana
-        public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
+        //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
         #endregion
     }
 }
