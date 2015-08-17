@@ -15,7 +15,7 @@ namespace NuSysApp
         public string InAtomID { get; set; }
         public string OutAtomID { get; set; }
 
-        public void Update(Dictionary<string, string> props)
+        public override void Update(Dictionary<string, string> props)
         {
             if (props.ContainsKey("id1"))
             {

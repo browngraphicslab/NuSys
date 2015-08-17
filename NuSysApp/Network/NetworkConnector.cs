@@ -375,11 +375,11 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(string message, DataWriter writer)
         {
-            //Debug.WriteLine("attempting to send UDP message: " + message);
+            Debug.WriteLine("attempting to send UDP message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
 
-            //Debug.WriteLine("Sent UDP message: " + message);
+            Debug.WriteLine("Sent UDP message: " + message);
         }
         private async Task MessageRecieved(string ip, string message, PacketType packetType)
         {
