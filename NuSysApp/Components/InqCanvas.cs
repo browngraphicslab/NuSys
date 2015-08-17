@@ -21,10 +21,11 @@ namespace NuSysApp
     public class InqCanvas : Canvas
     {
         private bool _isEnabled;
-        private InkManager _inkManager = new InkManager();
+        //private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
+        private HashSet<Polyline> _strokes = new HashSet<Polyline>();
+        //private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
 
         public InqCanvas() : base()
         {
@@ -120,42 +121,49 @@ namespace NuSysApp
         //        Children.Remove(line);
         //}
 
-        public Rect PasteManagedStrokes()
+        public Rect PasteStrokes(Polyline[] lines)
         {
-            var rect = Manager.PasteFromClipboard(new Point(0, 0));
-            var strokes = _inkManager.GetStrokes();
-            this.Background = new SolidColorBrush(Colors.Black);
-            foreach (var stroke in strokes)
+
+            double width = 0;
+            double height = 0;
+            foreach (var stroke in lines)
             {
                 var pl = new Polyline();
 
-                var points = stroke.GetInkPoints();
-                var minX = points.Min(em => em.Position.X);
-                var minY = points.Min(em => em.Position.Y);
+                var points = stroke.Points;
+                var minX = points.Min(em => em.X);
+                var minY = points.Min(em => em.Y);
+                var maxX = points.Max(em => em.X);
+                var maxY = points.Max(em => em.Y);
 
-                foreach (var point in stroke.GetInkPoints())
+                width = maxX - minX;
+                height = maxY - minY;
+
+                foreach (var point in stroke.Points)
                 {
-                    pl.StrokeThickness = Math.Max(4.0 * point.Pressure, 2);
-                    pl.Stroke = new SolidColorBrush(Colors.Black);
-                    pl.Points.Add(new Point(point.Position.X - minX, point.Position.Y - minY));
+                    pl.StrokeThickness = stroke.StrokeThickness;
+                    pl.Stroke = stroke.Stroke;
+                    pl.Points.Add(new Point(point.X - minX, point.Y - minY));
                 }
 
 
-                pl.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
-                {
-                    /*
-                    if (_isErasing)
-                    {
-                        Children.Remove(o as Polyline);
-                        _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
-                    }
-                    */
-                };
+                //         pl.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
+                //         {
+                //             /*
+                //             if (_isErasing)
+                //             {
+                //                 Children.Remove(o as Polyline);
+                //                 _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
+                //             }
+                //             */
+                //         };
 
-                
+
                 Children.Add(pl);
             }
-
+            Rect rect = new Rect();
+            rect.Width = width;
+            rect.Height = height;
             return rect;
         }
 
@@ -183,24 +191,24 @@ namespace NuSysApp
             }
         }
 
-        public InkManager Manager
-        {
-            get
-            {
-                return _inkManager;
-            }
-            set
-            {
-                _inkManager = value;
-            }
-        }
+        //public InkManager Manager
+        //{
+        //    get
+        //    {
+        //        return _inkManager;
+        //    }
+        //    set
+        //    {
+        //        _inkManager = value;
+        //    }
+        //}
 
         public IInqMode Mode
         {
             get { return _mode; }
         }
 
-        internal Dictionary<Polyline, InkStroke> Strokes
+        internal HashSet<Polyline> Strokes
         {
             get
             {
