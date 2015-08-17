@@ -471,9 +471,6 @@ namespace NuSysApp
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
-            vm.X = 0;
-            vm.Y = 0;
-
             var transMat = ((MatrixTransform)vm.View.RenderTransform).Matrix;
             transMat.OffsetX = xCoordinate;
             transMat.OffsetY = yCoordinate;

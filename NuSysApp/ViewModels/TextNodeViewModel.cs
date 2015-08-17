@@ -39,6 +39,12 @@ namespace NuSysApp
                 case "Model_Height":
                     this.Height = ((Node)this.Model).Height;
                     break;
+                case "Model_X":
+                    this.WorkSpaceViewModel.PositionNode(this, ((Node)this.Model).X, this.Y);
+                    break;
+                case "Model_Y":
+                    this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
+                    break;
             }
         }
 
