@@ -142,13 +142,6 @@ namespace NuSysApp
                 _idDict.Remove(id);
             }
         }
-        public async Task SendMessageToHost(string message)
-        {
-            if (!_isNetwork)
-            {
-                await Globals.Network.SendMessageToHost(message);
-            }
-        }
 
         public string GetFullWorkspace()
         {

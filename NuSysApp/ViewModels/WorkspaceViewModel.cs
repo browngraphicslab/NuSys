@@ -276,7 +276,7 @@ namespace NuSysApp
                 SelectedAtomViewModel = selected;
                 return;
             }
-            Globals.Network.SendMessageToHost("<id=0,type=link,id1=" + SelectedAtomViewModel.ID + ",id2=" + selected.ID +">");
+            Globals.Network.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
             selected.IsSelected = false;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;

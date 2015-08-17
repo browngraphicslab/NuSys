@@ -80,15 +80,23 @@ namespace NuSysApp
                 }
             }
         }
-
+        /*
+        * returns whether the current connector is caught up with the overall network.  only used in waiting room
+        */
         public bool isReady()
         {
             return _caughtUp;
         }
+        /*
+        * constructor
+        */
         public NetworkConnector()
         {
             this.Init();//to call an async method
         }
+        /*
+        * essentially an async constructor
+        */
         private async void Init()
         {
             _localIP  = NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
@@ -115,6 +123,7 @@ namespace NuSysApp
                 }
             }
 
+            //initializes the incoming sockets for TCP and UDP
             _TCPlistener = new StreamSocketListener();
             _TCPlistener.ConnectionReceived += this.TCPConnectionRecieved;
             await _TCPlistener.BindEndpointAsync(new HostName(this._localIP), _TCPInputPort);
@@ -126,7 +135,7 @@ namespace NuSysApp
         }
 
         /*
-        * this will make  
+        * this will make this network connection the host, forcibly
         */
         private void makeHost()
         {
@@ -135,18 +144,25 @@ namespace NuSysApp
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
             Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
-            //ToDo add in other host responsibilities
+            //TODO add in other host responsibilities
         }
 
-        public WorkSpaceModel WorkSpaceModel
+        /*
+        * gets and sets the workspace model that the network connector communicates with
+        */
+        public WorkSpaceModel WorkSpaceModel//might be able to get rid of _workspaceModel
         {
             set { _workSpaceModel = value; }
             get { return _workSpaceModel; }
         }
-        public string LocalIP
+        public string LocalIP//Returns the local IP
         {
             get { return _localIP; }
         }
+
+        /*
+        * adds an IP address to the list of IPs and instantiates the outgoing sockets
+        */
         private async Task AddIP(string ip)
         {
             if (!_otherIPs.Contains(ip) && ip != this._localIP) 
@@ -156,7 +172,10 @@ namespace NuSysApp
             }
         }
 
-        public async Task Disconnect()
+        /*
+        * removes this local ip from the php script that keeps track of all the members on the server
+        */
+        public async Task Disconnect()//called by the closing of the application
         {
             string URL = "http://aint.ch/nusys/clients.php";
             string urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
@@ -165,8 +184,11 @@ namespace NuSysApp
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
             HttpResponseMessage response = client.GetAsync(urlParameters).Result;
-            this.TellRemoveIP(this.LocalIP);
+            this.TellRemoveIP(LocalIP);
         }
+        /*
+        * to tell everyone else in the network to remove this local IP from their list of IP's
+        */
         private async Task TellRemoveIP(string ip)
         {
             if (_otherIPs.Count > 0)
@@ -174,56 +196,61 @@ namespace NuSysApp
                 if (_localIP == _hostIP)
                 {
                     //TODO tell everyone to stop actions and wait
-                    await SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);
+                    await SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);//if this is the host, tell everyone who the new host is because I'M OUT
                 }
-                await SendMassTCPMessage("SPECIAL9:" + _localIP);
+                await SendMassTCPMessage("SPECIAL9:" + _localIP);//tell everyone else to remove myself from their IP list
             }
         }
+        /*
+        * Remove an IP from local list of IP's
+        */
         private async Task RemoveIP(string ip)
         {
             if (_otherIPs.Contains(ip))
             {
-                _otherIPs.Remove(ip);
+                _otherIPs.Remove(ip);//remove from stright list
             }
             if (_addressToWriter.ContainsKey(ip))
             {
-                _addressToWriter.Remove(ip);
+                _addressToWriter.Remove(ip);//remove the datagram socket data writer
             }
             foreach (Tuple<DatagramSocket,DataWriter> tup in _UDPOutSockets)
             {
                 if (tup.Item1.Information.RemoteAddress.RawName == ip)
                 {
-                    _UDPOutSockets.Remove(tup);
+                    _UDPOutSockets.Remove(tup);//remove the outgoing socket
                     break;
                 }
             }
-            HashSet<KeyValuePair<string,string>> set = new HashSet<KeyValuePair<string, string>>();
+            HashSet<KeyValuePair<string,string>> set = new HashSet<KeyValuePair<string, string>>();//create a list of lcoks that need to be removed
             if (_locksOut.ContainsValue(ip))
             {
                 foreach (KeyValuePair<string, string> kvp in _locksOut)
                 {
                     if (kvp.Value == ip)
                     {
-                        set.Add(kvp);
+                        set.Add(kvp);//populate that list
                     }
                 }
             }
             foreach (KeyValuePair<string, string> kvp in set)
             {
-                _locksOut.Remove(kvp.Key);
+                _locksOut.Remove(kvp.Key);//remove each item in that list from the _locksOut set
             }
             Tuple<bool, List<Packet>> items;
             if (_joiningMembers.ContainsKey(ip))
             {
-                _joiningMembers.TryRemove(ip, out items);
+                _joiningMembers.TryRemove(ip, out items);//if that IP was joining, remove it
             }
             Debug.WriteLine("Removed IP: "+ip+".  List now is: "+_otherIPs.ToString());
         }
-
+        /*
+        * called when a TCP Connection has been made.  essentially the incoming message method 
+        */
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             DataReader reader = new DataReader(args.Socket.InputStream);
-            string ip = args.Socket.Information.RemoteAddress.RawName;
+            string ip = args.Socket.Information.RemoteAddress.RawName;//get the remote IP address
             string message;
             try
             {
@@ -236,7 +263,7 @@ namespace NuSysApp
                     return;
                 }
                 uint stringLength = reader.ReadUInt32();
-                uint actualLength = await reader.LoadAsync(stringLength);
+                uint actualLength = await reader.LoadAsync(stringLength);//Read the incoming message
                 message = reader.ReadString(actualLength);
             }
             catch(Exception e)
@@ -245,15 +272,29 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
-            await this.MessageRecieved(ip,message,PacketType.TCP);
+            await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
-
+        /*
+        * a method for creating a new ID
+        */
         private string GetID(string senderIP)
         {
-            string hash = senderIP.Replace(@".", "") + "#";
-            string now = DateTime.UtcNow.Ticks.ToString();
-            return hash + now;
+            if (_localIP == _hostIP)
+            {
+                string hash = senderIP.Replace(@".", "") + "#";
+                string now = DateTime.UtcNow.Ticks.ToString();
+                return hash + now;
+            }
+            else
+            {
+                Debug.WriteLine("Non-host tried to make an ID.  Returning a string of 'null'");
+                return "null";
+            }
         }
+        /*
+        * adds self to php script list of IP's 
+        * called once at the beginning to get the list of other IP's on the network
+        */
         private List<string> GetOtherIPs()
         {
             string URL = "http://aint.ch/nusys/clients.php";
@@ -270,7 +311,7 @@ namespace NuSysApp
             HttpResponseMessage response = client.GetAsync(urlParameters).Result;
             if (response.IsSuccessStatusCode)
             {
-                var d = response.Content.ReadAsStringAsync().Result;
+                var d = response.Content.ReadAsStringAsync().Result;//gets the response from the php script
                 people = d;
             }
             else
@@ -281,9 +322,11 @@ namespace NuSysApp
             var split = people.Split(",".ToCharArray());
 
             List<string> ips = split.ToList();
-            return ips;//TODO add in Phil's php script
+            return ips;
         }
-
+        /*
+        * adds a new pair of sockets for a newly joining IP
+        */
         private async Task AddSocket(string ip)
         {
             DatagramSocket UDPsocket = new DatagramSocket();
@@ -293,16 +336,19 @@ namespace NuSysApp
 
             if (_addressToWriter.ContainsKey(ip))
             {
-                _addressToWriter[ip] = UDPwriter;
+                _addressToWriter[ip] = UDPwriter;//adds the datagram sockets to the dictionary of them
             }
             else
             {
                 _addressToWriter.Add(ip, UDPwriter);
             }
         }
+        /*
+        * the incoming UDP packet method that reads and formats the message
+        */
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            string ip = args.RemoteAddress.RawName;
+            string ip = args.RemoteAddress.RawName;//get the remote IP
             string message;
             try
             {
@@ -311,7 +357,7 @@ namespace NuSysApp
 
                 using (var reader = new StreamReader(resultStream))
                 {
-                    message = await reader.ReadToEndAsync();
+                    message = await reader.ReadToEndAsync();//Reads the message to string
                 }
             }
             catch (Exception e)
@@ -321,28 +367,31 @@ namespace NuSysApp
                 return;
             }
             //Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
-            await this.MessageRecieved(ip, message, PacketType.UDP);
+            await this.MessageRecieved(ip, message, PacketType.UDP);//process the message
         }
-
-        public async Task SendTCPMessage(string message, string recievingIP)
+        /*
+        * sends a TCP message to specific recieving IP
+        */
+        private async Task SendTCPMessage(string message, string recievingIP)
         {
             await SendTCPMessage(message, recievingIP, _TCPOutputPort);
         }
-        public async Task SendTCPMessage(string message, string recievingIP, string outport)
+        /*
+        * Actual method call that every single outgoing TCP goes through.  LOWEST LEVEL SENDER
+        */
+        private async Task SendTCPMessage(string message, string recievingIP, string outport)
         {
-            Debug.WriteLine("attempting to send TCP message: "+message+" to IP: "+recievingIP);
+            //Debug.WriteLine("attempting to send TCP message: "+message+" to IP: "+recievingIP);
             try
             {
                 StreamSocket TCPsocket = new StreamSocket();
-                await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPOutputPort);
+                await TCPsocket.ConnectAsync(new HostName(recievingIP), outport);
                 DataWriter writer = new DataWriter(TCPsocket.OutputStream);
 
-
-                //DataWriter writer = _addressToWriter[recievingIP].Item2;
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
-                await writer.StoreAsync();
-                writer.Dispose();
+                await writer.StoreAsync();//awaiting recieve
+                writer.Dispose();//disposes writer and socket after sending message
                 TCPsocket.Dispose();
                 Debug.WriteLine("Sent TCP message: " + message + " to IP: " + recievingIP);
             }
@@ -352,16 +401,20 @@ namespace NuSysApp
                 return;
             }
         }
-
-        public async Task SendMassUDPMessage(string message)
+        /*
+        * sends UDP packets to everyone except self.  
+        */
+        private async Task SendMassUDPMessage(string message)
         {
-            foreach (Tuple<DatagramSocket,DataWriter> tup in this._UDPOutSockets)
+            foreach (Tuple<DatagramSocket,DataWriter> tup in this._UDPOutSockets)//iterates through everyone
             {
                 await this.SendUDPMessage(message, tup.Item2);
             }
         }
-
-        public async Task SendMassTCPMessage(string message)
+        /*
+        * sends TCP Streamss to everyone except self.  
+        */
+        private async Task SendMassTCPMessage(string message)
         {
             foreach (string ip in _otherIPs)
             {
@@ -369,65 +422,36 @@ namespace NuSysApp
             }
         }
 
-        public async Task SendUDPMessage(string message, string ip)
+        /*
+        * sends UDP packets to specified IP
+        */
+        private async Task SendUDPMessage(string message, string ip)
         {
             await this.SendUDPMessage(message, _addressToWriter[ip]);
         }
-        public async Task SendUDPMessage(string message, DataWriter writer)
+
+        /*
+        * sends TCP message to specified IP
+        */
+        private async Task SendUDPMessage(string message, DataWriter writer)
         {
             //Debug.WriteLine("attempting to send UDP message: " + message);
             writer.WriteString(message);
             await writer.StoreAsync();
             //Debug.WriteLine("Sent UDP message: " + message);
         }
-        private async Task MessageRecieved(string ip, string message, PacketType packetType)
-        {
-            if (message.Length > 0)
-            {
-                if (message.Substring(0, 7) != "SPECIAL")
-                {
-                    string[] miniStrings = message.Split("&&".ToCharArray());
-                    foreach (string subMessage in miniStrings)
-                    {
-                        if (subMessage.Length > 0)
-                        {
-                            await this.HandleSubMessage(ip, subMessage, packetType);
-                        }
-                    }
-                }
-                else
-                {
-                    await this.HandleSubMessage(ip, message, packetType);
-                }
-            }
-            else
-            {
-                Debug.WriteLine("Recieved message of length 0 from IP: "+ip);
-            }
-            return;
 
-        }
-        private async Task SendUpdateForNode(string nodeId, string sendToIP)
-        {
-            //TODO make this method get the current status of node nodeId and send full TCP update to IP adress sendToIP
-        }
-
-        public async Task SendMessage(string ip, string message, PacketType packetType)
+        /*
+        * general message sending method
+        */
+        private async Task SendMessage(string ip, string message, PacketType packetType)
         {
             await SendMessage(ip, message, packetType, false);
         }
-
-        public async Task SendMessageToHost(string message, PacketType packetType = PacketType.TCP)
-        {
-            if (_localIP == _hostIP)
-            {
-                await MessageRecieved(_localIP, message, packetType);
-                return;
-            }
-            await SendMessage(_hostIP, message, packetType, false);
-        }
-
-        public async Task SendMessage(string ip, string message, PacketType packetType, bool mass)
+        /*
+        * general all-purpose message sending method.  HIGHEST LEVEL SENDER.  can specify anything
+        */
+        public async Task SendMessage(string ip, string message, PacketType packetType, bool mass, bool self = false)//USE WITH CAUTION
         {
             switch (packetType)
             {
@@ -464,8 +488,66 @@ namespace NuSysApp
                     return;
                     break;
             }
+            if (self)
+            {
+                await MessageRecieved(_localIP, message, packetType);//handle message directly if sending to self
+            }
         }
 
+        /*
+        * sends message to the host, or the self if self is host.  Auto-property packetType is TCP
+        */
+        private async Task SendMessageToHost(string message, PacketType packetType = PacketType.TCP)
+        {
+            if (_localIP == _hostIP)
+            {
+                await MessageRecieved(_localIP, message, packetType);
+                return;
+            }
+            await SendMessage(_hostIP, message, packetType, false);
+        }
+
+        /*
+        * general, all-purpose message processing method.  called directly from TCP and UDP message recievings
+        */
+        private async Task MessageRecieved(string ip, string message, PacketType packetType)
+        {
+            if (message.Length > 0)//if message exists
+            {
+                if (message.Substring(0, 7) != "SPECIAL")//if not a special message
+                {
+                    string[] miniStrings = message.Split("&&".ToCharArray());//break up message into subparts
+                    foreach (string subMessage in miniStrings)
+                    {
+                        if (subMessage.Length > 0)
+                        {
+                            await this.HandleSubMessage(ip, subMessage, packetType);//handle each submessage
+                        }
+                    }
+                }
+                else
+                {
+                    await this.HandleSubMessage(ip, message, packetType);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Recieved message of length 0 from IP: "+ip);
+            }
+            return;
+
+        }
+        /*
+        * sends TCP update to someone with the entire current state of a node
+        */
+        private async Task SendUpdateForNode(string nodeId, string sendToIP)
+        {
+            //TODO make this method get the current status of node nodeId and send full TCP update to IP adress sendToIP
+        }
+
+        /*
+        * handles individual sub-messages
+        */
         private async Task HandleSubMessage(string ip, string message, PacketType packetType)
         {
             string type = message.Substring(0, 7);
@@ -479,6 +561,9 @@ namespace NuSysApp
                     break;
             }
         }
+        /*
+        * Handles SPECIAL messages.  Read each switch case for specifics
+        */
         private async Task HandleSpecialMessage(string ip, string message,PacketType packetType)
         {
             int indexOfColon = message.IndexOf(":");
@@ -727,10 +812,17 @@ namespace NuSysApp
             }
         }
 
+        /*
+        * PUBLIC request for deleting a nod 
+        */
         public async Task RequestDeleteNode(string id)
         {
-            await SendMessageToHost("SPECIAL10:" + id);
+            await SendMessageToHost("SPECIAL10:" + id);//tells host to delete the node
         }
+
+        /*
+        * handles and proccesses a regular sub-message
+        */
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
             if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
@@ -750,7 +842,7 @@ namespace NuSysApp
                     return;
                 }
             }
-            if (_localIP == _hostIP)
+            if (_localIP == _hostIP)//if host, add a new packet and store it in every joining member's stack of updates
             {
                 foreach (KeyValuePair<string, Tuple<bool, List<Packet>>>  kvp in _joiningMembers)
                     // keeps track of messages sent durig initial loading into workspace
@@ -771,7 +863,9 @@ namespace NuSysApp
 
             //Debug.WriteLine(_localIP + " handled message: " + message);
         }
-
+        /*
+        * parses message to dictionary of properties.  POSSIBLE DEPRICATED
+        */
         private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
         {
             message = message.Substring(1, message.Length - 2);
@@ -790,6 +884,9 @@ namespace NuSysApp
             return props;
         }
 
+        /*
+        * makes a message from a dictionary of properties.  dict must have an ID
+        */
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
         {
             string m = "<";
@@ -801,6 +898,9 @@ namespace NuSysApp
             return m;
         }
 
+        /*
+        * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
+        */
         public async Task QuickUpdateAtom(Dictionary<string, string> properties)
         {
             if (properties.ContainsKey("id"))
@@ -819,6 +919,43 @@ namespace NuSysApp
             else
             {
                 Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an ID.  ");
+                return;
+            }
+        }
+
+        /*
+        * PUBLIC general method to create Node
+        */
+        public async Task RequestMakeNode(string x, string y, string nodeType, object data=null)
+        {
+            if (x != "" && y != "" && nodeType != "")
+            {
+                string s = "";
+                if (data != null)
+                {
+                    s = ",data=" + data.ToString();
+                }
+                await SendMessageToHost("<id=0,x=" + x + ",y=" + y + ",type=node,nodeType=" + nodeType + s +">");
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: tried to create node with invalid arguments.  X: "+x+"  Y: "+y+"   nodeType: "+nodeType);
+                return;
+            }
+        }
+
+        /*
+        * PUBLIC general method to create Linq
+        */
+        public async Task RequestMakeLinq(string id1, string id2)
+        {
+            if (id1 != "" && id2 != "")
+            {
+                await SendMessageToHost("<id=0,id1=" + id1 + ",id2=" + id2 + ",type=linq>");
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: tried to create node with invalid arguments.  ID1: " + id1 + "  ID2: " + id2);
                 return;
             }
         }
