@@ -18,7 +18,8 @@ namespace NuSysApp
 {
     public sealed partial class InkNodeView2 : UserControl
     {
-        InkDrawingAttributes _drawingAttributes;
+        //InkDrawingAttributes _drawingAttributes;
+        private Polyline[] _toBePasted;
         public InkNodeView2(InkNodeViewModel vm)
         {
             this.InitializeComponent();
@@ -44,9 +45,21 @@ namespace NuSysApp
         public void UpdateInk()
         {
             var vm = (InkNodeViewModel)this.DataContext;
-            var rect = nodeTpl.inkCanvas.PasteManagedStrokes();
+            var rect = nodeTpl.inkCanvas.PasteStrokes(_toBePasted);
             vm.Width = rect.Width;
             vm.Height = rect.Height;
+        }
+
+        private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
+        {
+            UpdateInk();
+            Loaded -= InkNodeView_PromoteInk;
+        }
+
+        public void PromoteStrokes(Polyline[] lines)
+        {
+            _toBePasted = lines;
+            Loaded += InkNodeView_PromoteInk;
         }
     }
 }

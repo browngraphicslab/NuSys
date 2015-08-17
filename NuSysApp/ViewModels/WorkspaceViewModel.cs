@@ -19,6 +19,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using System.Xml;
 using System.IO;
+using Windows.UI.Xaml.Shapes;
 using SQLite.Net;
 
 namespace NuSysApp
@@ -370,20 +371,21 @@ namespace NuSysApp
             if (vm != null)
             {
                 AtomViewList.Add(vm.View);
-                PositionNode(vm, xCoordinate, yCoordinate);
-                if (data is InkStroke)
-                {
 
-                    vm.View.Loaded += InkNodeView_PromoteInk;
+                if (data is Polyline[])
+                {
+                    Polyline p = (data as Polyline[]).First();
+                    var minX = p.Points.Min(em => em.X);
+                    var minY = p.Points.Min(em => em.Y);
+                    (vm.View as InkNodeView2).PromoteStrokes(data as Polyline[]);
+                    PositionNode(vm, minX, minY);
+                }
+                else
+                {
+                    PositionNode(vm, xCoordinate, yCoordinate);
                 }
             }
             return vm;
-        }
-
-        private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
-        {
-            (o as InkNodeView2).UpdateInk();
-            (o as InkNodeView2).Loaded -= InkNodeView_PromoteInk;
         }
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
