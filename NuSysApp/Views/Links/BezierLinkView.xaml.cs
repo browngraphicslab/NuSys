@@ -54,21 +54,21 @@ namespace NuSysApp
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
 
-            if(atom2.AtomType == Constants.Node)
-            {
-                if((anchor2.Y >= curve.Point3.Y && anchor2.Y >= pathfigure.StartPoint.Y) || (anchor2.Y<=curve.Point3.Y && anchor2.Y <= pathfigure.StartPoint.Y))
-                {
-                    curve.Point2 = new Point(anchor1.X - distanceX / 2, curve.Point3.Y);
-                }
-            }
+            //if(atom2.AtomType == Constants.Node)
+            //{
+            //    if((anchor2.Y >= curve.Point3.Y && anchor2.Y >= pathfigure.StartPoint.Y) || (anchor2.Y<=curve.Point3.Y && anchor2.Y <= pathfigure.StartPoint.Y))
+            //    {
+            //        curve.Point2 = new Point(anchor1.X - distanceX / 2, curve.Point3.Y);
+            //    }
+            //}
 
-            if (atom1.AtomType == Constants.Node)
-            {
-                if ((anchor1.Y >= curve.Point3.Y && anchor1.Y >= pathfigure.StartPoint.Y) || (anchor1.Y <= curve.Point3.Y && anchor1.Y <= pathfigure.StartPoint.Y))
-                {
-                    curve.Point1 = new Point(anchor2.X + distanceX / 2, pathfigure.StartPoint.Y);
-                }
-            }
+            //if (atom1.AtomType == Constants.Node)
+            //{
+            //    if ((anchor1.Y >= curve.Point3.Y && anchor1.Y >= pathfigure.StartPoint.Y) || (anchor1.Y <= curve.Point3.Y && anchor1.Y <= pathfigure.StartPoint.Y))
+            //    {
+            //        curve.Point1 = new Point(anchor2.X + distanceX / 2, pathfigure.StartPoint.Y);
+            //    }
+            //}
         }
 
         private void UpdateEndPoints()
@@ -77,22 +77,22 @@ namespace NuSysApp
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
 
-            if (atom1.AtomType == Constants.Node)
-            {
-                pathfigure.StartPoint = this.findIntersection((NodeViewModel)atom1, curve.Point3);
-            }
-            else //atom is a link - this link anchors to atom1's anchor point
-            {
+            //if (atom1.AtomType == Constants.Node)
+            //{
+            //    pathfigure.StartPoint = this.findIntersection((NodeViewModel)atom1, curve.Point3);
+            //}
+            //else //atom is a link - this link anchors to atom1's anchor point
+            //{
                 pathfigure.StartPoint = atom1.Anchor;
-            }
-            if (atom2.AtomType == Constants.Node)
-            {
-                curve.Point3 = this.findIntersection((NodeViewModel)atom2, pathfigure.StartPoint);
-            }
-            else //atom2 is a link - this link anchors to atom2's anchor (midpoint)
-            {
+            //}
+            //if (atom2.AtomType == Constants.Node)
+            //{
+            //    curve.Point3 = this.findIntersection((NodeViewModel)atom2, pathfigure.StartPoint);
+            //}
+            //else //atom2 is a link - this link anchors to atom2's anchor (midpoint)
+            //
                 curve.Point3 = atom2.Anchor;
-            }
+            //}
 
 
         }

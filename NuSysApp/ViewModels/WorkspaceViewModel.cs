@@ -364,6 +364,12 @@ namespace NuSysApp
                         vm = pdfVM;
                     }
                     break;
+                //case NodeType.Group: //Only called when reloading
+                    //var group = new GroupViewModel(this, idCounter);
+                    //idCounter++;
+                    //break;
+
+
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
@@ -454,7 +460,7 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
-            this.getXml();
+            //this.getXml();
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
             query.FirstOrDefaultAsync().ContinueWith((t) => 
