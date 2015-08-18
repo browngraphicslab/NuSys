@@ -8,19 +8,24 @@ namespace NuSysApp
 {
     class Cortana
     {
+        protected Cortana() { }
+
         // This error is raised if "Getting to know you" is disabled in Win10 privacy settings.
         protected const uint HResultPrivacyStatementDeclined = 0x80045509;
 
         protected static SpeechRecognizer Recognizer;
         protected static StringBuilder DictatedStringBuilder;
         protected const string StopListeningCommand = "stop";
+        protected const string ResetStringBuilderCommand = "reset";
+        protected const string BeginDictationCommand = "dictate";
+        protected const string RecognizerFailedIndicator = "recognizerfailed";
 
         // Speech commands should be accessible from CortanaMode.
-        public static readonly IReadOnlyCollection<string> SpeechCommands = new List<string>
+        public static readonly IReadOnlyCollection<string> NodeCreationCommands = new List<string>
         {
             "open document",
             "create text",
-            "create ink"
+            "create ink",
         };
 
         /// <summary>
@@ -48,7 +53,7 @@ namespace NuSysApp
             }
             catch
             {
-                return "recognizerfailed";
+                return RecognizerFailedIndicator;
             }
         }
         private static bool SpeechRecognitionSucceeded(SpeechRecognitionResult result)
@@ -64,6 +69,13 @@ namespace NuSysApp
             if (!dictatedString.Contains(StopListeningCommand)) return dictatedString;
             var index = dictatedString.IndexOf(StopListeningCommand, StringComparison.OrdinalIgnoreCase);
             return dictatedString.Substring(0, index-1);
+        }
+
+        protected static string GetAllAfterResetCommand(string dictatedString)
+        {
+            if (!dictatedString.Contains(ResetStringBuilderCommand)) return dictatedString;
+            var index = dictatedString.IndexOf(ResetStringBuilderCommand, StringComparison.OrdinalIgnoreCase);
+            return dictatedString.Substring(index + ResetStringBuilderCommand.Length + 1);
         }
 
         protected static async Task HandleSpeechException(Exception exception)

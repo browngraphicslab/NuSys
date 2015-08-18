@@ -22,11 +22,10 @@ namespace NuSysApp
                 WorkspaceView.CortanaRunning = true;
                 while (true)
                 {
-                    var dictation = await CortanaContinuousRecognition.RunContinuousRecognizerAndReturnResult();
+                    var dictation = await CortanaContinuousRecognition.RunRecognizerAndReturnResult();
                     await ProcessCommand(dictation);
                 }
             }
-            //Deactivate();
         }
 
         public override async Task Deactivate()
@@ -35,11 +34,12 @@ namespace NuSysApp
             WorkspaceView.CortanaRunning = false;
         }
 
-        private async Task ProcessCommand(string dictation) // bug: sometimes dictation is ""
+        private async Task ProcessCommand(string dictation)
         {
-            switch (dictation.ToLower())
+            switch (dictation)
             {
                 case null:
+                case "":
                     break;
                 case "open document":
                     await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Document);
