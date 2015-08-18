@@ -50,18 +50,18 @@ namespace NuSysApp
             ////      {
             ////          inkCanvas.InkPresenter.StrokeContainer.AddStroke(inkStroke);
             ////      }
-            vm.InkContainer[(int)pageNum] = nodeTpl.inkCanvas.Strokes;
             foreach (var stroke in nodeTpl.inkCanvas.Strokes)
             {
                 nodeTpl.inkCanvas.Children.Remove(stroke);
+                vm.InkContainer[(int)pageNum].Add(stroke);
             }
             nodeTpl.inkCanvas.Strokes.Clear();
             foreach (var stroke in vm.InkContainer[(int)vm.CurrentPageNumber])
             {
-                nodeTpl.inkCanvas.Children.Add(stroke);
                 nodeTpl.inkCanvas.Strokes.Add(stroke);
+                nodeTpl.inkCanvas.Children.Add(stroke);
             }
-            DataContext = vm;
+      //      this.DataContext = vm;
         }
 
         private void pageRight_Click(object sender, RoutedEventArgs e)
@@ -76,18 +76,18 @@ namespace NuSysApp
             if (pageNum >= (pageCount - 1)) return;
             vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
             vm.CurrentPageNumber++;
-            vm.InkContainer[(int)pageNum] = nodeTpl.inkCanvas.Strokes;
             foreach (var stroke in nodeTpl.inkCanvas.Strokes)
             {
                 nodeTpl.inkCanvas.Children.Remove(stroke);
+                vm.InkContainer[(int)pageNum].Add(stroke);
             }
             nodeTpl.inkCanvas.Strokes.Clear();
             foreach (var stroke in vm.InkContainer[(int)vm.CurrentPageNumber])
             {
-                nodeTpl.inkCanvas.Children.Add(stroke);
                 nodeTpl.inkCanvas.Strokes.Add(stroke);
+                nodeTpl.inkCanvas.Children.Add(stroke);
             }
-            DataContext = vm;
+     //      this.DataContext = vm;
             //inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -13,6 +14,7 @@ namespace NuSysApp
         private uint _currentPageNum;
         public PdfNodeModel(int id) : base(id)
         {
+
         }
 
         //public string FilePath { get; set; }
@@ -48,5 +50,6 @@ namespace NuSysApp
         }
 
         public uint PageCount { get; set; }
+        public List<HashSet<Polyline>> InkContainer { get; set; }
     }
 }

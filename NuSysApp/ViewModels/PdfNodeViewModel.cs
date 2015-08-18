@@ -51,7 +51,7 @@ namespace NuSysApp
             if (storageFile == null) return; // null if file explorer is closed by user
             var fileType = storageFile.FileType;
             switch (fileType)
-            {
+            {//
                 case ".pdf":
                     await ProcessPdfFile(storageFile);
                     break;
@@ -66,7 +66,7 @@ namespace NuSysApp
         /// Takes in a storageFile (either .docx or .pptx), waits for OfficeInterop to convert
         /// it to PDF, and opens the PDF in the workspace.
         /// </summary>
-        /// <param name="storageFile"></param>
+        /// <param name="storageFile"></para//m>
         /// <returns></returns>
         private async Task WatchForOfficeConversions(StorageFile storageFile)
         {
@@ -102,7 +102,7 @@ namespace NuSysApp
             {
                 if ((PdfNodeModel)Model == value)
                 {
-                    return;
+                    return;//
                 }
                 this.Model = value;
                 RaisePropertyChanged("PdfNodeModel");
@@ -122,7 +122,7 @@ namespace NuSysApp
             await pathToOfficeFile.DeleteAsync(StorageDeleteOption.PermanentDelete); // PermanentDelete bypasses the Recycle Bin
             await pathToPdfFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
-
+//
 
         /// <summary>
         /// Takes in a .pdf StorageFile and renders it in the workspace.
@@ -157,7 +157,7 @@ namespace NuSysApp
             {
                 newDx = dx;
                 newDy = dx * ((PdfNodeModel)Model).RenderedPage.PixelHeight / ((PdfNodeModel)Model).RenderedPage.PixelWidth;
-            }
+            }//
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
                 return;
@@ -205,10 +205,18 @@ namespace NuSysApp
             {
                 ((PdfNodeModel)Model).PageCount = value;
                 RaisePropertyChanged("PdfNodeModel");
-            }
+            }//
         }
         //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<HashSet<Polyline>> InkContainer { get; set; }
+        public List<HashSet<Polyline>> InkContainer
+        {
+            get { return ((PdfNodeModel)Model).InkContainer; }
+            set
+            {
+                ((PdfNodeModel)Model).InkContainer = value;
+                RaisePropertyChanged("PdfNodeModel");
+            }
+        }
 
         public CompositeTransform InkScale
         {
