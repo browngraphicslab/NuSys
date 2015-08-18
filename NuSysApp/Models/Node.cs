@@ -10,6 +10,7 @@ namespace NuSysApp
 {
     public class Node : Atom
     {
+        private Group _group;
         public Node(int id) : base(id)
         {
             StartLines = new List<Link>();
@@ -38,7 +39,10 @@ namespace NuSysApp
 
         public Constants.NodeType NodeType { get; set; }
 
-        public Group ParentGroup { get; set; }
+        public Group ParentGroup {
+            get; set;
+            }
+        
 
         public virtual string GetContentSource()
         {

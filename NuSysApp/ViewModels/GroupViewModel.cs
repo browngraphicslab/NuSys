@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -23,8 +24,10 @@ namespace NuSysApp
 
         public GroupViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
+            Debug.WriteLine("id=" + id.ToString());
             this.AtomType = Constants.Node;
             this.Model = new Group(id);
+            this.Model.ID = id;
             _nodeViewModelList = new ObservableCollection<NodeViewModel>();
             _linkViewModelList = new ObservableCollection<LinkViewModel>();
             _atomViewList = new ObservableCollection<UserControl>();

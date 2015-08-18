@@ -1,4 +1,5 @@
-﻿using SQLite.Net.Attributes;
+﻿using NuSysApp.Models;
+using SQLite.Net.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -110,6 +111,8 @@ namespace NuSysApp
                             {
                                 NodeViewModel newVM = this.CreateNodeFromXml(vm, child);
                                 groupVm.AddNode(newVM);
+                                //((Node)newVM.Model).ParentGroup = ((Group)groupVm.Model);
+                                newVM.ParentGroup = groupVm;
                             }
                             //groupVm.Width = w;
                             //groupVm.Height = h;

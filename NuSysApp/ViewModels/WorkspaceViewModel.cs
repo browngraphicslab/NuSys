@@ -453,7 +453,8 @@ namespace NuSysApp
             // recreate the table to store the xml file of the current workspace
             dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
-            currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
+            XmlDocument doc = this.getXml();
+            currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(doc);
             dbConnection.InsertAsync(currWorkspaceXml);
         }
 
