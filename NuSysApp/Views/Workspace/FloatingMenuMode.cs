@@ -42,6 +42,8 @@ namespace NuSysApp.Views.Workspace
             _view.FloatingMenu.Visibility = _view.FloatingMenu.Visibility == Visibility.Collapsed
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            e.Handled = true;
         }
     }
 }
