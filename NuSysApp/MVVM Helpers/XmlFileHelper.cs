@@ -22,11 +22,6 @@ namespace NuSysApp
         [Column("toXml")]
         public String toXml { get; set; }
 
-        public void CreateXml()
-        {
-
-        }
-
         public string XmlToString(XmlDocument xmlDoc)
         {
             return xmlDoc.OuterXml;
@@ -50,15 +45,11 @@ namespace NuSysApp
             switch (currType)
             {
                 case "text":
-                    Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                       () =>
-                       {
-                          //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
-                           nodeVM = vm.CreateNewNode(NodeType.Text, X, Y).Result;
-                           nodeVM.Width = width;
-                           nodeVM.Height = height;
-                           nodeVM.ID = ID;
-                       });
+                    //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
+                    nodeVM = vm.CreateNewNode(NodeType.Text, X, Y).Result;
+                    nodeVM.Width = width;
+                    nodeVM.Height = height;
+                    nodeVM.ID = ID;
                     break;
                 case "Image":
                     nodeVM = vm.CreateNewNode(NodeType.Document, X, Y).Result;
@@ -67,19 +58,14 @@ namespace NuSysApp
                     nodeVM = vm.CreateNewNode(NodeType.Document, X, Y).Result;
                     break;
                 case "ink":
-                    Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                        () =>
-                        {
-                            nodeVM = vm.CreateNewNode(NodeType.Ink, X, Y).Result;
-                            nodeVM.Width = width;
-                            nodeVM.Height = height;
-                            nodeVM.ID = ID;
-                        });
+                    nodeVM = vm.CreateNewNode(NodeType.Ink, X, Y).Result;
+                    nodeVM.Width = width;
+                    nodeVM.Height = height;
+                    nodeVM.ID = ID;
                     break;
                 default://case "RichText":
                    nodeVM= vm.CreateNewNode(NodeType.Text, X, Y).Result;
                     break;
-
             }
             return nodeVM;
         }
@@ -105,7 +91,6 @@ namespace NuSysApp
                         () =>
                         {
                             GroupViewModel groupVm = new GroupViewModel(vm, ID);
-
                             foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
                             {
                                 NodeViewModel newVM = this.CreateNodeFromXml(vm, child);
@@ -120,45 +105,11 @@ namespace NuSysApp
                         });
                         break;
                     case "Node":
-                        this.CreateNodeFromXml(vm, node);
-                        /*string currType = node.Attributes.GetNamedItem("nodeType").Value;
-                        double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
-                        double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
-                        double width = Convert.ToDouble(node.Attributes.GetNamedItem("width").Value);
-                        double height = Convert.ToDouble(node.Attributes.GetNamedItem("height").Value);
-                        switch (currType)
+                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                        () =>
                         {
-                            case "text":
-                                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                   () =>
-                                   {
-                                       //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
-                                       NodeViewModel newTextVm = vm.CreateNewNode(NodeType.Text, X, Y).Result;
-                                       newTextVm.Width = width;
-                                       newTextVm.Height = height;
-                                       newTextVm.ID = ID;
-                                   });
-                                break;
-                            case "Image":
-                                vm.CreateNewNode(NodeType.Document, X, Y);
-                                break;
-                            case "Pdf":
-                                vm.CreateNewNode(NodeType.Document, X, Y);
-                                break;
-                            case "ink":
-                                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                    () =>
-                                    {
-                                        NodeViewModel newInkVm = vm.CreateNewNode(NodeType.Ink, X, Y).Result;
-                                        newInkVm.Width = width;
-                                        newInkVm.Height = height;
-                                        newInkVm.ID = ID;
-                                    });
-                                break;
-                            case "RichText":
-                                vm.CreateNewNode(NodeType.Text, X, Y);
-                                break;    
-                        }*/
+                            NodeViewModel nodeVm = this.CreateNodeFromXml(vm, node);
+                        });
                         break;
                     case "Link":
                         int atomID1 = Convert.ToInt32(node.Attributes.GetNamedItem("atomID1").Value);
@@ -170,10 +121,18 @@ namespace NuSysApp
                                 AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
                                 LinkViewModel newLinkVm = vm.CreateNewLink(atom1Vm, atom2Vm);
                                 newLinkVm.ID = ID;
+
+                                // create node annotation and attach it to the link
+                                if (node.HasChildNodes)
+                                {
+                                    XmlNode attachedAnnotation = node.ChildNodes[0];
+                                    int clippedParentID = Convert.ToInt32(attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value);
+                                    NodeViewModel nodeVm = this.CreateNodeFromXml(vm, attachedAnnotation);
+                                    nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
+                                }
                             });
                         break;
                 }
-
             }
         }
     }

@@ -107,7 +107,7 @@ namespace NuSysApp
             // if the node is an annotation, add information to the xml about the link it is attached to
             if (this.IsAnnotation)
             {
-                XmlAttribute clippedParent = doc.CreateAttribute("clipped parent");
+                XmlAttribute clippedParent = doc.CreateAttribute("ClippedParent");
                 clippedParent.Value = ClippedParent.ID.ToString();
                 basicXml.Add(clippedParent);
             }
