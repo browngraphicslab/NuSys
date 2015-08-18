@@ -62,10 +62,10 @@ namespace NuSysApp
                                    () =>
                                    {
                                        //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
-                                       NodeViewModel newNodeVm = vm.CreateNewNode(NodeType.Text, X, Y).Result;
-                                       newNodeVm.Width = width;
-                                       newNodeVm.Height = height;
-                                       newNodeVm.ID = ID;
+                                       NodeViewModel newTextVm = vm.CreateNewNode(NodeType.Text, X, Y).Result;
+                                       newTextVm.Width = width;
+                                       newTextVm.Height = height;
+                                       newTextVm.ID = ID;
                                    });
                                 break;
                             case "Image":
@@ -75,7 +75,14 @@ namespace NuSysApp
                                 vm.CreateNewNode(NodeType.Document, X, Y);
                                 break;
                             case "ink":
-                                vm.CreateNewNode(NodeType.Ink, X, Y);
+                                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                                    () =>
+                                    {
+                                        NodeViewModel newInkVm = vm.CreateNewNode(NodeType.Ink, X, Y).Result;
+                                        newInkVm.Width = width;
+                                        newInkVm.Height = height;
+                                        newInkVm.ID = ID;
+                                    });
                                 break;
                             case "RichText":
                                 vm.CreateNewNode(NodeType.Text, X, Y);
@@ -83,13 +90,15 @@ namespace NuSysApp
                         }
                         break;
                     case "Link":
-                        int atom1Id = Convert.ToInt32(node.Attributes.GetNamedItem("atom1").Value);
-                        int atom2Id = Convert.ToInt32(node.Attributes.GetNamedItem("atom2").Value);
+                        int atomID1 = Convert.ToInt32(node.Attributes.GetNamedItem("atomID1").Value);
+                        int atomID2 = Convert.ToInt32(node.Attributes.GetNamedItem("atomID2").Value);
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                             () =>
                             {
-                                // LinkViewModel newLinkVm = vm.CreateNewLink(atom1Id, atom2Id).Result; TO-DO: A dict to map the ID with atom
-                                //newLinkVm.ID = ID;
+                                AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
+                                AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
+                                LinkViewModel newLinkVm = vm.CreateNewLink(atom1Vm, atom2Vm);
+                                newLinkVm.ID = ID;
                             });
                         break;
                 }

@@ -11,12 +11,12 @@ namespace NuSysApp
         //private Factory _factory;
         public WorkSpaceModel()
         {
-            NodeDict = new Dictionary<int, Atom>();
+            AtomDict = new Dictionary<int, AtomViewModel>();
             _currentId = 0;
            // _factory = new Factory(this);
         }
 
-        public Dictionary<int, Atom> NodeDict
+        public Dictionary<int, AtomViewModel> AtomDict
         { set; get; }
 
         public void CreateNewTextNode(string data)
