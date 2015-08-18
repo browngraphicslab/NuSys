@@ -212,7 +212,7 @@ namespace NuSysApp
                         _pingResponses.Add(_hostIP, 0);
                     }
                     _pingTimer.Start();
-                }
+                });
             }
         }
 
