@@ -20,9 +20,13 @@ namespace NuSysApp
 
         public XmlElement WriteXML(XmlDocument doc)
         {
-
             //XmlElement 
             XmlElement link = doc.CreateElement(string.Empty, "Link", string.Empty); //TODO: Change how we determine node type for name
+
+            //ID of this link
+            XmlAttribute id = doc.CreateAttribute("id");
+            id.Value = this.ID.ToString();
+            link.SetAttributeNode(id);
 
             //Atoms that this link is bound to
             XmlAttribute id1 = doc.CreateAttribute("atomID1");

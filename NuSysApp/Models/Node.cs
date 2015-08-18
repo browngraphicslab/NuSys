@@ -43,7 +43,6 @@ namespace NuSysApp
             return null;
         }
 
-
         public virtual XmlElement WriteXML(XmlDocument doc)
         {
             XmlElement node = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
@@ -102,7 +101,6 @@ namespace NuSysApp
 
             return basicXml;
         }
-
     }
 }
 

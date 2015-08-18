@@ -293,21 +293,24 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public void CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
+        public LinkViewModel CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
             {
-                return;
+                return null;
             }
             var vm2 = atomVm2 as NodeViewModel;
             if (vm2 != null && ((NodeViewModel)vm2).IsAnnotation)
             {
-                return;
+                return null;
             }
-            if (atomVm1 == atomVm2) return;
+            if (atomVm1 == atomVm2)
+            {
+                return null;
+            }
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
-            Model.NodeDict.Add(idCounter, (Atom)vm.Model);
+            Model.AtomDict.Add(idCounter, vm);
             idCounter++;
 
 
@@ -320,6 +323,7 @@ namespace NuSysApp
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);
             atomVm2.AddLink(vm);
+            return vm;
         }
 
         public async Task<NodeViewModel> CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
@@ -365,7 +369,7 @@ namespace NuSysApp
                 default:
                     return null;
             }
-            Model.NodeDict.Add(idCounter, (Atom)vm.Model);
+            Model.AtomDict.Add(idCounter, vm);
             idCounter++;
             NodeViewModelList.Add(vm);
 

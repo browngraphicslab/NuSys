@@ -131,7 +131,6 @@ namespace NuSysApp
                     parent_PropertyChanged(null, null);
                     this.Width = Constants.DefaultAnnotationSize * 2;
                     this.Height = Constants.DefaultAnnotationSize;
-
                 }
                 else
                 {
