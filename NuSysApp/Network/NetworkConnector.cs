@@ -1091,7 +1091,7 @@ namespace NuSysApp
                 return;
             }
         }
-
+         
         private class Packet //private class to store messages for later
         {
             private readonly PacketType _type;

@@ -108,7 +108,7 @@ namespace NuSysApp
 
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
-                            var nodeVm = Factory.CreateNewRichText(this, "null", readFile);
+                            var nodeVm = Factory.CreateNewRichText(this, "null", readFile);//TODO FIX THE ID'S HERE
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             PositionNode(nodeVm, p.X, p.Y);
                             NodeViewModelList.Add(nodeVm);
@@ -142,7 +142,7 @@ namespace NuSysApp
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-                        var nodeVm = Factory.CreateNewRichText(this, "null", text);
+                        var nodeVm = Factory.CreateNewRichText(this, "null", text);//TODO FIX THE ID'S HERE
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         PositionNode(nodeVm, p.X, p.Y);
                         NodeViewModelList.Add(nodeVm);
