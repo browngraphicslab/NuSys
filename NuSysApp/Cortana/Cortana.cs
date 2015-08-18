@@ -40,12 +40,15 @@ namespace NuSysApp
         /// </summary>
         protected static async Task<string> RunRecognizerChunk()
         {
-            var speechRecognitionResult = await Recognizer.RecognizeAsync();
-            //if (!string.IsNullOrWhiteSpace(speechRecognitionResult.Text))
-            //{
-            //    var a = speechRecognitionResult.Text;
-            //}
-            return SpeechRecognitionSucceeded(speechRecognitionResult) ? speechRecognitionResult.Text : null;
+            try
+            {
+                var speechRecognitionResult = await Recognizer.RecognizeAsync();
+                return SpeechRecognitionSucceeded(speechRecognitionResult) ? speechRecognitionResult.Text : null;
+            }
+            catch
+            {
+                return "recognizerfailed";
+            }
         }
         private static bool SpeechRecognitionSucceeded(SpeechRecognitionResult result)
         {

@@ -21,17 +21,17 @@ namespace NuSysApp
                 try
                 {
                     var dictationChunk = await RunRecognizerChunk();
-                    if (!string.IsNullOrWhiteSpace(dictationChunk))
+                    if (dictationChunk == "recognizerfailed")
                     {
-                        var a = dictationChunk;
+                        return null;
                     }
                     if (dictationChunk == null) continue;
-                    var appended = DictatedStringBuilder.Append(" " + dictationChunk);
+                    DictatedStringBuilder.Append(" " + dictationChunk);
                     if (dictationChunk.Contains(StopListeningCommand))
                     {
-                        var raw = DictatedStringBuilder.ToString();
-                        var result = RemoveStopCommand(raw);
-                        return result;
+                        //var raw = DictatedStringBuilder.ToString();
+                        //var result = RemoveStopCommand(raw);
+                        return RemoveStopCommand(DictatedStringBuilder.ToString());
                     }
                     // if a command is detected, return the command
                     if (SpeechCommands.Contains(dictationChunk))
@@ -39,7 +39,6 @@ namespace NuSysApp
                         var command = dictationChunk;
                         return command;
                     }
-                    
                 }
                 catch (Exception exception)
                 {

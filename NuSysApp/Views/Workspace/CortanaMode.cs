@@ -7,26 +7,34 @@ namespace NuSysApp
     public class CortanaMode : AbstractWorkspaceViewMode
     {
         private readonly Point _defaultPlacementPos = new Point(500, 100);
-        private bool _isActive;
 
         public CortanaMode(WorkspaceView view) : base(view)
         {
-            _isActive = false;
+            IsRunning = false;
         }
+
+        public bool IsRunning { get; set; }
 
         public override async Task Activate()
         {
-            if (!_isActive)
+            if (!IsRunning)
             {
-                var dictation = await CortanaContinuousRecognition.RunContinuousRecognizerAndReturnResult();
-                await ProcessCommand(dictation);
-                _isActive = true;
+                IsRunning = true;
+                while (true)
+                {
+                    var dictation = await CortanaContinuousRecognition.RunContinuousRecognizerAndReturnResult();
+                    // TODO
+                    // FIND A WAY TO DEACTIVATE RECOGNITION IF CORTANA BUTTON IS PRESSED AGAIN, OR 
+                    // ALTERNATIVELY DEACTIVATE CORTANA BUTTON WHILE RECOGNIZER IS RUNNING
+                    await ProcessCommand(dictation);
+                }
             }
+            Deactivate();
         }
 
         public override async Task Deactivate()
         {
-            _isActive = false;
+            IsRunning = false;
         }
 
         private async Task ProcessCommand(string dictation) // bug: sometimes dictation is ""
