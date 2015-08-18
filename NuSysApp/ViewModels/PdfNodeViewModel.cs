@@ -9,6 +9,7 @@ using NuSysApp.MISC;
 using Windows.UI.Xaml;
 using System.Xml;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -31,7 +32,7 @@ namespace NuSysApp
             this.NodeType = Constants.NodeType.pdf;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>>();
+            this.InkContainer = new List<HashSet<Polyline>>();
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,
@@ -139,7 +140,7 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new Dictionary<Windows.UI.Xaml.Shapes.Polyline, InkStroke>());
+                this.InkContainer.Add(new HashSet<Polyline>());
 
             }
         }
@@ -207,7 +208,7 @@ namespace NuSysApp
             }
         }
         //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>> InkContainer { get; set; }
+        public List<HashSet<Polyline>> InkContainer { get; set; }
 
         public CompositeTransform InkScale
         {
