@@ -212,7 +212,7 @@ namespace NuSysApp
 
         private async Task EndTimer()
         {
-            if (_pingTimer.IsEnabled)
+            if (_pingTimer != null && _pingTimer.IsEnabled)
             {
                 _pingTimer.Stop();
             }   
