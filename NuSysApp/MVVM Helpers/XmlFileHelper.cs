@@ -51,10 +51,10 @@ namespace NuSysApp
                 {
                     case "Node":
                         string currType = node.Attributes.GetNamedItem("nodeType").Value;
-                        int X = Convert.ToInt32(node.Attributes.GetNamedItem("x").Value);
-                        int Y = Convert.ToInt32(node.Attributes.GetNamedItem("y").Value);
-                        int width = Convert.ToInt32(node.Attributes.GetNamedItem("width").Value);
-                        int height = Convert.ToInt32(node.Attributes.GetNamedItem("height").Value);
+                        double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
+                        double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
+                        double width = Convert.ToDouble(node.Attributes.GetNamedItem("width").Value);
+                        double height = Convert.ToDouble(node.Attributes.GetNamedItem("height").Value);
                         switch (currType)
                         {
                             case "text":
@@ -74,7 +74,7 @@ namespace NuSysApp
                             case "Pdf":
                                 vm.CreateNewNode(NodeType.Document, X, Y);
                                 break;
-                            case "Ink":
+                            case "ink":
                                 vm.CreateNewNode(NodeType.Ink, X, Y);
                                 break;
                             case "RichText":

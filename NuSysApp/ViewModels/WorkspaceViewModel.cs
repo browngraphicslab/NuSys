@@ -47,6 +47,7 @@ namespace NuSysApp
 
         public WorkspaceViewModel()
         {
+            Model = new WorkSpaceModel();
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
@@ -306,6 +307,7 @@ namespace NuSysApp
             }
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
+            Model.NodeDict.Add(idCounter, (Atom)vm.Model);
             idCounter++;
 
 
@@ -327,21 +329,17 @@ namespace NuSysApp
             {
                 case NodeType.Text:
                     vm = new TextNodeViewModel(this, (string)data, idCounter);
-                    idCounter++;
                     break;
                 case NodeType.Richtext:
                     vm = new TextNodeViewModel(this, (string)data, idCounter);
-                    idCounter++;
                     break;
                 case NodeType.Ink:
                     vm = new InkNodeViewModel(this, idCounter);
-                    idCounter++;
                     break;
                 case NodeType.Image:
                     var imgVM = new ImageNodeViewModel(this, idCounter);
                     await imgVM.InitializeImageNodeAsync((StorageFile)data);
                     vm = imgVM;
-                    idCounter++;
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
@@ -352,7 +350,6 @@ namespace NuSysApp
                         var imgVM1 = new ImageNodeViewModel(this, idCounter);
                         await imgVM1.InitializeImageNodeAsync(storageFile);
                         vm = imgVM1;
-                        idCounter++;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
@@ -360,7 +357,6 @@ namespace NuSysApp
                         var pdfVM = new PdfNodeViewModel(this, idCounter);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
-                        idCounter++;
                     }
                     break;
                 //   case Mode.InkSelect:
@@ -369,6 +365,8 @@ namespace NuSysApp
                 default:
                     return null;
             }
+            Model.NodeDict.Add(idCounter, (Atom)vm.Model);
+            idCounter++;
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -505,6 +503,8 @@ namespace NuSysApp
         public ObservableCollection<UserControl> AtomViewList { get; }
 
         public AtomViewModel SelectedAtomViewModel { get; private set; }
+
+        public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }
 
