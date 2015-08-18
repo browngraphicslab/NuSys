@@ -15,8 +15,7 @@ namespace NuSysApp.Views.Workspace
         public override async Task Activate()
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
-            vm.SaveWorkspace();
-            
+            vm.LoadWorkspace();
         }
 
         public override async Task Deactivate()

@@ -134,7 +134,6 @@ namespace NuSysApp
                     parent_PropertyChanged(null, null);
                     this.Width = Constants.DefaultAnnotationSize * 2;
                     this.Height = Constants.DefaultAnnotationSize;
-
                 }
                 else
                 {
@@ -299,7 +298,11 @@ namespace NuSysApp
             set
             {
                 _group = value;
-                ((Node)Model).ParentGroup = (Group)_group.Model;
+                if (_group != null)
+                {
+                    ((Node)Model).ParentGroup = (Group)_group.Model;
+                }
+                
                 //Debug.WriteLine(_group.Model == null);
                 //Debug.WriteLine(((Node)Model).ParentGroup == null);
             }

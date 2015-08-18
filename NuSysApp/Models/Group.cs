@@ -23,7 +23,7 @@ namespace NuSysApp.Models
         {
 
             //Main XmlElement 
-            XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            XmlElement groupNode = doc.CreateElement(string.Empty, "Group", string.Empty); //TODO: Change how we determine node type for name
 
 
             //Other attributes - id, x, y, height, width
