@@ -1,6 +1,8 @@
 ﻿
+using NuSysApp.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
 using Windows.UI;
@@ -20,11 +22,13 @@ namespace NuSysApp
 
         private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
+        private GroupViewModel _group;
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
         {
             this.AtomType = Constants.Node;
+        
         }
 
         #region Node Manipulations
@@ -290,11 +294,18 @@ namespace NuSysApp
         {
             get
             {
-                return ((Node)this.Model).ParentGroup;
+                return _group;
             }
             set
             {
-                ((Node)this.Model).ParentGroup = value;
+                _group = value;
+                if (_group != null)
+                {
+                    ((Node)Model).ParentGroup = (Group)_group.Model;
+                }
+                
+                //Debug.WriteLine(_group.Model == null);
+                //Debug.WriteLine(((Node)Model).ParentGroup == null);
             }
         }
 

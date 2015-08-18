@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using NuSysApp.Models;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
@@ -36,7 +38,7 @@ namespace NuSysApp
 
         public Constants.NodeType NodeType { get; set; }
 
-        public GroupViewModel ParentGroup { get; set; }
+        public Group ParentGroup { get; set; }
 
         public virtual string GetContentSource()
         {
@@ -70,33 +72,33 @@ namespace NuSysApp
             //create xml attribute nodes
             XmlAttribute type = doc.CreateAttribute("nodeType");
             type.Value = NodeType.ToString();
+            basicXml.Add(type);
 
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = ID.ToString();
+            basicXml.Add(id);
 
-
-            //TODO: Uncomment this when parent group IDs are set
-            //XmlAttribute groupID = doc.CreateAttribute("groupID");
-            //groupID.Value = ParentGroup.Model.ID.ToString();
+            if (ParentGroup != null)
+            {
+                XmlAttribute groupID = doc.CreateAttribute("groupID");
+                groupID.Value = this.ParentGroup.ID.ToString();
+                basicXml.Add(groupID);
+            }
 
             XmlAttribute x = doc.CreateAttribute("x");
             x.Value = Transform.Matrix.OffsetX.ToString();
+            basicXml.Add(x);
 
             XmlAttribute y = doc.CreateAttribute("y");
             y.Value = Transform.Matrix.OffsetY.ToString();
+            basicXml.Add(y);
 
             XmlAttribute height = doc.CreateAttribute("height");
             height.Value = Height.ToString();
+            basicXml.Add(height);
 
             XmlAttribute width = doc.CreateAttribute("width");
             width.Value = Width.ToString();
-
-            //append to list and return
-            basicXml.Add(type);
-            basicXml.Add(id);
-            basicXml.Add(x);
-            basicXml.Add(y);
-            basicXml.Add(height);
             basicXml.Add(width);
 
             return basicXml;
