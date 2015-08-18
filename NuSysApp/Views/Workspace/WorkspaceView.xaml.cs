@@ -21,8 +21,8 @@ namespace NuSysApp
         private bool _isManipulationEnabled;
         private AbstractWorkspaceViewMode _mode;
 
-        private bool _cortanaInitialized;
-        private CortanaMode _cortanaModeInstance;
+        public static bool CortanaRunning { get; set; }
+        private readonly CortanaMode _cortanaModeInstance;
 
         #endregion Private Members
 
@@ -32,7 +32,9 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            _cortanaInitialized = false;
+            _cortanaModeInstance = new CortanaMode(this);
+            _cortanaModeInstance.Activate();
+            CortanaRunning = true;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -100,20 +102,18 @@ namespace NuSysApp
                         new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
                 case Options.Cortana:
-                    if (!_cortanaInitialized)
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new FloatingMenuMode(this)));
+                    // toggle continuous Cortana listening on and off
+                    if (CortanaRunning)
                     {
-                        _cortanaModeInstance = new CortanaMode(this);
-                        _cortanaInitialized = true;
-                    }
-                    if (!_cortanaModeInstance.IsRunning)
-                    {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            _cortanaModeInstance, new FloatingMenuMode(this)));
+                        _cortanaModeInstance.Deactivate();
+                        CortanaRunning = false;
                     }
                     else
                     {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            new FloatingMenuMode(this)));
+                        _cortanaModeInstance.Activate();
+                        CortanaRunning = true;
                     }
                     break;
                 case Options.Erase:

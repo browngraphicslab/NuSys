@@ -38,18 +38,23 @@ namespace NuSysApp
                 idleButton,
                 saveButton
             };
-            SetOpacityActive(idleButton);
+            SetOpacityActive(idleButton, cortanaButton);
         }
 
-        public void SetOpacityActive(Button btnToActivate)
+        public void SetOpacityActive(params Button[] btnsToActivate)
         {
             // set all buttons to deactivated opacity
             foreach (var btn in _buttons)
             {
                 btn.Opacity = Constants.ButtonDeactivatedOpacity;
             }
-            // set clicked button to activated opacity
-            btnToActivate.Opacity  = Constants.ButtonActivatedOpacity;
+            //cortanaButton.Opacity = WorkspaceView.CortanaRunning
+            //    ? Constants.ButtonDeactivatedOpacity
+            //    : Constants.ButtonActivatedOpacity;
+            foreach (var btnToActivate in btnsToActivate)
+            {
+                btnToActivate.Opacity = Constants.ButtonActivatedOpacity;
+            }
             // Close any open submenus
             if (!_subMenuOpen) return;
             slidein.Begin();
@@ -98,8 +103,16 @@ namespace NuSysApp
 
         private async void CortanaButton_Click(object sender, RoutedEventArgs e)
         {
-            SetOpacityActive((Button) sender);
             ModeChange?.Invoke(Options.Cortana);
+            if (!WorkspaceView.CortanaRunning)
+            {
+                SetOpacityActive(cortanaButton);
+            }
+            else
+            {
+                SetOpacityActive(idleButton);
+                ModeChange?.Invoke(Options.Select);
+            }
         }
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {

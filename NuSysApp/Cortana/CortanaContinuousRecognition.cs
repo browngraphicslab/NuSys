@@ -16,16 +16,19 @@ namespace NuSysApp
         public static async Task<string> RunContinuousRecognizerAndReturnResult()
         {
             await ResetRecognizer();
-            while (true)
+            while (WorkspaceView.CortanaRunning)
             {
                 try
                 {
                     var dictationChunk = await RunRecognizerChunk();
-                    if (dictationChunk == "recognizerfailed")
+                    //await Task.Delay(50);
+                    switch (dictationChunk)
                     {
-                        return null;
+                        case "recognizerfailed":
+                            return null;
+                        case null:
+                            continue;
                     }
-                    if (dictationChunk == null) continue;
                     DictatedStringBuilder.Append(" " + dictationChunk);
                     if (dictationChunk.Contains(StopListeningCommand))
                     {
@@ -46,6 +49,7 @@ namespace NuSysApp
                     return null;
                 }
             }
+            return null;
         }
     }
 }

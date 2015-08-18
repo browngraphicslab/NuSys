@@ -43,7 +43,8 @@ namespace NuSysApp
             try
             {
                 var speechRecognitionResult = await Recognizer.RecognizeAsync();
-                return SpeechRecognitionSucceeded(speechRecognitionResult) ? speechRecognitionResult.Text : null;
+                var succeeded = SpeechRecognitionSucceeded(speechRecognitionResult);
+                return succeeded ? speechRecognitionResult.Text : null;
             }
             catch
             {
