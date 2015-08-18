@@ -32,7 +32,7 @@ namespace NuSysApp
 
         public override void Remove()
         {
-            NetworkConnector.Instance.RequestDeleteNode(ID);
+            NetworkConnector.Instance.RequestDeleteAtom(ID);
             //WorkSpaceViewModel.DeleteNode(this);
             if (this.IsSelected)
             {

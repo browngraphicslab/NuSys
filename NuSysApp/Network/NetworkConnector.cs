@@ -148,6 +148,9 @@ namespace NuSysApp
             //TODO add in other host responsibilities
         }
 
+        /*
+        * method called every timer tick (3 seconds for host, 2 seconds for non-host)
+        */
         private async void PingTick(object sender, object args)
         {
             var toDelete = new List<string>();
@@ -186,6 +189,9 @@ namespace NuSysApp
             }
         }
 
+        /*
+        * method called whenever a ping is recieved
+        */
         public void Pingged(string ip)//Did I spell the past-tense of ping incorrectly?
         {
             if (_pingResponses.ContainsKey(ip))
@@ -197,10 +203,18 @@ namespace NuSysApp
                 Debug.WriteLine("ERROR: Got 'ping' from IP: " + ip + " when there is no such known IP. LOL.");
             }
         }
+
+        /*
+        * this sends a ping to the specified IP
+        */
         public async Task SendPing(string ip, PacketType packetType)
         {
             await SendMessage(ip, "SPECIAL11:", packetType);
         }
+
+        /*
+        * this ends a restarts a timer.  It starts it with the list of people to ping updating according to the current list of network members
+        */
         private async Task StartTimer()
         {
             if (_hostIP != null)
@@ -230,6 +244,9 @@ namespace NuSysApp
             }
         }
 
+        /*
+        * this ends the ping timer if it is running
+        */
         private async Task EndTimer()
         {
             if (_pingTimer != null && _pingTimer.IsEnabled)
@@ -899,7 +916,7 @@ namespace NuSysApp
                 case "9"://Tell others to remove IP from self ex: message = "10.10.10.10"
                     RemoveIP(message);
                     break;
-                case "10":
+                case "10":// Request to delete a node.  HOST ONLY.   ex: message = an ID
                     if (WorkSpaceModel.HasAtom(message))
                     {
                         if (_hostIP == _localIP)
@@ -916,7 +933,7 @@ namespace NuSysApp
                     }
 
                     break;
-                case "11":
+                case "11"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
                     this.Pingged(ip);
                     if (message != "NO")
                     {
@@ -929,7 +946,7 @@ namespace NuSysApp
         /*
         * PUBLIC request for deleting a nod 
         */
-        public async Task RequestDeleteNode(string id)
+        public async Task RequestDeleteAtom(string id)
         {
             await SendMessageToHost("SPECIAL10:" + id);//tells host to delete the node
         }
