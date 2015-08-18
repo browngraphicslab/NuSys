@@ -363,6 +363,12 @@ namespace NuSysApp
                         idCounter++;
                     }
                     break;
+                //case NodeType.Group: //Only called when reloading
+                    //var group = new GroupViewModel(this, idCounter);
+                    //idCounter++;
+                    //break;
+
+
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;

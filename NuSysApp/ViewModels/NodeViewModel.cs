@@ -2,6 +2,7 @@
 using NuSysApp.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
 using Windows.UI;
@@ -299,6 +300,8 @@ namespace NuSysApp
             {
                 _group = value;
                 ((Node)Model).ParentGroup = (Group)_group.Model;
+                //Debug.WriteLine(_group.Model == null);
+                //Debug.WriteLine(((Node)Model).ParentGroup == null);
             }
         }
 

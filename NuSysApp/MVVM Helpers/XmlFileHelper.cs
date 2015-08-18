@@ -51,10 +51,10 @@ namespace NuSysApp
                 {
                     case "Node":
                         string currType = node.Attributes.GetNamedItem("nodeType").Value;
-                        int X = Convert.ToInt32(node.Attributes.GetNamedItem("x").Value);
-                        int Y = Convert.ToInt32(node.Attributes.GetNamedItem("y").Value);
-                        int width = Convert.ToInt32(node.Attributes.GetNamedItem("width").Value);
-                        int height = Convert.ToInt32(node.Attributes.GetNamedItem("height").Value);
+                        double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
+                        double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
+                        double width = Convert.ToDouble(node.Attributes.GetNamedItem("width").Value);
+                        double height = Convert.ToDouble(node.Attributes.GetNamedItem("height").Value);
                         switch (currType)
                         {
                             case "text":
@@ -68,6 +68,17 @@ namespace NuSysApp
                                        newNodeVm.ID = ID;
                                    });
                                 break;
+                            case "group":
+                                //First check if group already exists
+                                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                                   () =>
+                                   {
+                                        NodeViewModel newNodelVm = new GroupViewModel(vm, ID);
+                                        newNodelVm.Width = width;
+                                        newNodelVm.Height = height;
+                                   });
+                                
+                                break;
                             case "Image":
                                 vm.CreateNewNode(NodeType.Document, X, Y);
                                 break;
@@ -80,6 +91,7 @@ namespace NuSysApp
                             case "RichText":
                                 vm.CreateNewNode(NodeType.Text, X, Y);
                                 break;
+                                
                         }
                         break;
                     case "Link":
