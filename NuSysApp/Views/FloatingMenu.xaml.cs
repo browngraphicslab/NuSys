@@ -1,6 +1,9 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Collections.Generic;
+using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,25 +22,35 @@ namespace NuSysApp
 
         private bool _subMenuOpen;
 
+        private readonly List<Button> _buttons;
+
         public FloatingMenu()
         {
             this.InitializeComponent();
+            _buttons = new List<Button>
+            {
+                inkButton,
+                linkButton,
+                textButton,
+                scribbleButton,
+                docButton,
+                cortanaButton,
+                idleButton,
+                saveButton
+            };
             SetOpacityActive(idleButton);
         }
 
         public void SetOpacityActive(Button btnToActivate)
         {
-            // Buttons to deactivate
-            inkButton.Opacity      = Constants.ButtonDeactivatedOpacity;
-            linkButton.Opacity     = Constants.ButtonDeactivatedOpacity;
-            textButton.Opacity     = Constants.ButtonDeactivatedOpacity;
-            scribbleButton.Opacity = Constants.ButtonDeactivatedOpacity;
-            docButton.Opacity      = Constants.ButtonDeactivatedOpacity;
-            idleButton.Opacity     = Constants.ButtonDeactivatedOpacity;
-            saveButton.Opacity     = Constants.ButtonDeactivatedOpacity;
-            // Button to activate
+            // set all buttons to deactivated opacity
+            foreach (var btn in _buttons)
+            {
+                btn.Opacity = Constants.ButtonDeactivatedOpacity;
+            }
+            // set clicked button to activated opacity
             btnToActivate.Opacity  = Constants.ButtonActivatedOpacity;
-            // Close all open submenus
+            // Close any open submenus
             if (!_subMenuOpen) return;
             slidein.Begin();
             _subMenuOpen = false;

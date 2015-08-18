@@ -15,11 +15,14 @@ namespace NuSysApp
     {
         #region Private Members
 
-        private int penSize = Constants.InitialPenSize;
+        private int _penSize = Constants.InitialPenSize;
 
         private bool _isZooming;
         private bool _isManipulationEnabled;
         private AbstractWorkspaceViewMode _mode;
+
+        private bool _cortanaInitialized;
+        private CortanaMode _cortanaModeInstance;
 
         #endregion Private Members
 
@@ -29,6 +32,7 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
+            _cortanaInitialized = false;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -96,8 +100,21 @@ namespace NuSysApp
                         new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
                 case Options.Cortana:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                        new CortanaMode(this), new FloatingMenuMode(this)));
+                    if (!_cortanaInitialized)
+                    {
+                        _cortanaModeInstance = new CortanaMode(this);
+                        _cortanaInitialized = true;
+                    }
+                    if (!_cortanaModeInstance.IsRunning)
+                    {
+                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                            _cortanaModeInstance, new FloatingMenuMode(this)));
+                    }
+                    else
+                    {
+                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                            new FloatingMenuMode(this)));
+                    }
                     break;
                 case Options.Erase:
                     InqCanvas.SetErasing(true);
