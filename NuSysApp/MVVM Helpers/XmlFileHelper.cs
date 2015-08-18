@@ -111,8 +111,8 @@ namespace NuSysApp
                                 NodeViewModel newVM = this.CreateNodeFromXml(vm, child);
                                 groupVm.AddNode(newVM);
                             }
-                            groupVm.Width = w;
-                            groupVm.Height = h;
+                            //groupVm.Width = w;
+                            //groupVm.Height = h;
                             vm.NodeViewModelList.Add(groupVm);
                             vm.AtomViewList.Add(groupVm.View);
                             vm.PositionNode(groupVm, x, y);
