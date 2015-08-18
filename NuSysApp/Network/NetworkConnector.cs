@@ -230,8 +230,8 @@ namespace NuSysApp
             if (!_otherIPs.Contains(ip) && ip != this._localIP) 
             {
                 _otherIPs.Add(ip);
-                await StartTimer();
                 await AddSocket(ip);
+                await StartTimer();
             }
         }
 
