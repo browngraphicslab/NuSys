@@ -150,6 +150,8 @@ namespace NuSysApp
 
         private async void PingTick(object sender, object args)
         {
+            var toDelete = new List<string>();
+            var newDict = new Dictionary<string, int>();
             foreach (KeyValuePair<string, int> kvp in _pingResponses)
             {
                 if (kvp.Value == 0)
@@ -163,12 +165,17 @@ namespace NuSysApp
                 }
                 else
                 {
-                    Debug.WriteLine("IP: " + kvp.Key + " failed ping twice.  Removing from network");
-                    await RemoveIP(kvp.Key);
-                    await TellRemoveRemoteIP(kvp.Key);
-                    await Disconnect(kvp.Key);
+                    toDelete.Add(kvp.Key);
                 }
-                _pingResponses[kvp.Key]++;
+                newDict.Add(kvp.Key, kvp.Value + 1);
+            }
+            _pingResponses = newDict;
+            foreach (string s in toDelete)
+            {
+                Debug.WriteLine("IP: " + s + " failed ping twice.  Removing from network");
+                await RemoveIP(s);
+                await TellRemoveRemoteIP(s);
+                await Disconnect(s);
             }
         }
 
