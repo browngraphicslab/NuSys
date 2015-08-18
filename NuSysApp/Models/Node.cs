@@ -10,6 +10,7 @@ namespace NuSysApp
 {
     public class Node : Atom
     {
+        private Group _group;
         public Node(int id) : base(id)
         {
             StartLines = new List<Link>();
@@ -38,7 +39,13 @@ namespace NuSysApp
 
         public Constants.NodeType NodeType { get; set; }
 
-        public Group ParentGroup { get; set; }
+        public Group ParentGroup {
+            get; set;
+            }
+        
+
+        public bool IsAnnotation { get; set; }
+        public Atom ClippedParent { get; set; }
 
         public virtual string GetContentSource()
         {
@@ -100,6 +107,14 @@ namespace NuSysApp
             XmlAttribute width = doc.CreateAttribute("width");
             width.Value = Width.ToString();
             basicXml.Add(width);
+
+            // if the node is an annotation, add information to the xml about the link it is attached to
+            if (this.IsAnnotation)
+            {
+                XmlAttribute clippedParent = doc.CreateAttribute("ClippedParent");
+                clippedParent.Value = ClippedParent.ID.ToString();
+                basicXml.Add(clippedParent);
+            }
 
             return basicXml;
         }
