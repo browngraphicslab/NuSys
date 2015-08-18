@@ -51,6 +51,10 @@ namespace NuSysApp
             foreach (var link in toAdd.LinkList)
             {
                 link.SetVisibility(false);
+                if (link.Annotation != null)
+                {
+                    link.Annotation.IsVisible = false;
+                }
             }
             //TODO Handle links
         }
