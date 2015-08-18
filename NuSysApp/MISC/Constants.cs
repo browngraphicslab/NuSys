@@ -69,7 +69,7 @@ namespace NuSysApp
         public const int MaxCanvasSize = 100000;
 
         public const double ButtonActivatedOpacity = 1.0;
-        public const double ButtonDeactivatedOpacity = 0.75;
+        public const double ButtonDeactivatedOpacity = 0.5;
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg" };
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf", ".pptx", ".docx" };

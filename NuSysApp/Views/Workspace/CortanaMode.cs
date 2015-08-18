@@ -7,20 +7,31 @@ namespace NuSysApp
     public class CortanaMode : AbstractWorkspaceViewMode
     {
         private readonly Point _defaultPlacementPos = new Point(500, 100);
-        public CortanaMode(WorkspaceView view) : base(view) { }
+        private bool _isActive;
+
+        public CortanaMode(WorkspaceView view) : base(view)
+        {
+            _isActive = false;
+        }
 
         public override async Task Activate()
         {
-            //var command = await Cortana.RunRecognizer();
-            var command = await new CortanaContinuousRecognition().RunContinuousRecognizerAndReturnResult(_view);
-            await ProcessCommand(command);
+            if (!_isActive)
+            {
+                var dictation = await CortanaContinuousRecognition.RunContinuousRecognizerAndReturnResult();
+                await ProcessCommand(dictation);
+                _isActive = true;
+            }
         }
 
-        public override async Task Deactivate() { }
-
-        private async Task ProcessCommand(string command)
+        public override async Task Deactivate()
         {
-            switch (command.ToLower())
+            _isActive = false;
+        }
+
+        private async Task ProcessCommand(string dictation) // bug: sometimes dictation is ""
+        {
+            switch (dictation.ToLower())
             {
                 case "open document":
                     await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Document);
@@ -32,7 +43,7 @@ namespace NuSysApp
                     await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Ink);
                     break;
                 default:
-                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, command);
+                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, dictation);
                     break;
             }
         }

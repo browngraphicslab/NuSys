@@ -128,9 +128,9 @@
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
-    <Compile Include="MISC\Cortana\Cortana.cs" />
-    <Compile Include="MISC\Cortana\CortanaContinuousRecognition.cs" />
-    <Compile Include="MISC\Cortana\CortanaPopup.xaml.cs">
+    <Compile Include="Cortana\Cortana.cs" />
+    <Compile Include="Cortana\CortanaContinuousRecognition.cs" />
+    <Compile Include="Cortana\CortanaPopup.xaml.cs">
       <DependentUpon>CortanaPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="MISC\Factory.cs" />
@@ -255,7 +255,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MISC\Cortana\CortanaPopup.xaml">
+    <Page Include="Cortana\CortanaPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
