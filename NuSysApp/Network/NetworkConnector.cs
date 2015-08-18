@@ -151,29 +151,36 @@ namespace NuSysApp
         private async void PingTick(object sender, object args)
         {
             var toDelete = new List<string>();
-            var newDict = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, int> kvp in _pingResponses)
+            var keys = _pingResponses.Keys.ToArray();
+            for (var i =0;i<keys.Length;i++)
             {
-                if (kvp.Value == 0)
+                var ip = keys[i];
+                if (_pingResponses[ip] == 0)
                 {
-                    await SendPing(kvp.Key, PacketType.UDP);
+                    _pingResponses[ip]++;
+                    await SendPing(ip, PacketType.UDP);
                 }
-                else if (kvp.Value < 2)
+                else if (_pingResponses[ip] < 2)
                 {
-                    Debug.WriteLine("IP: " + kvp.Key + " failed ping once.  Sending TCP ping...");
-                    await SendPing(kvp.Key, PacketType.TCP);
+                    _pingResponses[ip]++;
+                    Debug.WriteLine("IP: " + ip + " failed ping once.  Sending TCP ping...");
+                    await SendPing(ip, PacketType.TCP);
                 }
                 else
                 {
-                    toDelete.Add(kvp.Key);
+                    toDelete.Add(ip);
                 }
-                newDict.Add(kvp.Key, kvp.Value + 1);
             }
-            _pingResponses = newDict;
             foreach (string s in toDelete)
             {
                 Debug.WriteLine("IP: " + s + " failed ping twice.  Removing from network");
                 await RemoveIP(s);
+                if (_hostIP == s)
+                {
+                    //TODO STOP EVERYONE AND RESET HOST
+                    await SendMassTCPMessage("SPECIAL1:" + _localIP);
+                    MakeHost();
+                }
                 await TellRemoveRemoteIP(s);
                 await Disconnect(s);
             }
@@ -297,44 +304,54 @@ namespace NuSysApp
         */
         private async Task RemoveIP(string ip)
         {
-            if (_otherIPs.Contains(ip))
+            lock (_otherIPs)
             {
-                _otherIPs.Remove(ip);//remove from stright list
-            }
-            if (_addressToWriter.ContainsKey(ip))
-            {
-                _addressToWriter.Remove(ip);//remove the datagram socket data writer
-            }
-            foreach (var tup in _UDPOutSockets)
-            {
-                if (tup.Item1.Information.RemoteAddress.RawName == ip)
+                _otherIPs.Remove(ip); //remove from stright list
+                if (_addressToWriter.ContainsKey(ip))
                 {
-                    _UDPOutSockets.Remove(tup); //remove the outgoing socket
-                    break;
+                    _addressToWriter.Remove(ip); //remove the datagram socket data writer
                 }
-            }
-            var set = new HashSet<KeyValuePair<string, string>>();//create a list of lcoks that need to be removed
-            if (_locksOut.ContainsValue(ip))
-            {
-                foreach (var kvp in _locksOut)
+                foreach (var tup in _UDPOutSockets)
                 {
-                    if (kvp.Value == ip)
+                    if (tup.Item1.Information.RemoteAddress.RawName == ip)
                     {
-                        set.Add(kvp);//populate that list
+                        _UDPOutSockets.Remove(tup); //remove the outgoing socket
+                        break;
                     }
                 }
+                var set = new HashSet<KeyValuePair<string, string>>(); //create a list of lcoks that need to be removed
+                if (_locksOut.ContainsValue(ip))
+                {
+                    foreach (var kvp in _locksOut)
+                    {
+                        if (kvp.Value == ip)
+                        {
+                            set.Add(kvp); //populate that list
+                        }
+                    }
+                }
+                _pingResponses.Remove(ip);
+                foreach (var kvp in set)
+                {
+                    _locksOut.Remove(kvp.Key); //remove each item in that list from the _locksOut set
+                }
+                if (_joiningMembers.ContainsKey(ip))
+                {
+                    Tuple<bool, List<Packet>> items;
+                    _joiningMembers.TryRemove(ip, out items); //if that IP was joining, remove it
+                }
+                while (_otherIPs.Contains(ip))
+                    Debug.WriteLine("Removing IP " + ip + " from list of IPs");
+                {
+                    _otherIPs.Remove(ip);
+                }
+                var s = "";
+                foreach (string i in _otherIPs)
+                {
+                    s += i + ", ";
+                }
+                Debug.WriteLine("Removed IP: " + ip + ".  List now is: " + s);
             }
-            _pingResponses.Remove(ip);
-            foreach (var kvp in set)
-            {
-                _locksOut.Remove(kvp.Key);//remove each item in that list from the _locksOut set
-            }
-            if (_joiningMembers.ContainsKey(ip))
-            {
-                Tuple<bool, List<Packet>> items;
-                _joiningMembers.TryRemove(ip, out items);//if that IP was joining, remove it
-            }
-            Debug.WriteLine("Removed IP: "+ip+".  List now is: "+_otherIPs.ToString());
         }
         /*
         * called when a TCP Connection has been made.  essentially the incoming message method 
