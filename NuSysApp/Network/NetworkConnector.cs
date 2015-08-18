@@ -157,6 +157,7 @@ namespace NuSysApp
                 }
                 else if (kvp.Value < 2)
                 {
+                    Debug.WriteLine("IP: " + kvp.Key + " failed ping once.  Sending TCP ping...");
                     await SendPing(kvp.Key, PacketType.TCP);
                 }
                 else
