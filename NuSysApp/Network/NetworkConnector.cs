@@ -901,6 +901,10 @@ namespace NuSysApp
                     break;
                 case "11":
                     this.Pingged(ip);
+                    if (message != "NO")
+                    {
+                        await SendMessage(ip, "SPECIAL11:NO", packetType);
+                    }
                     break;
             }
         }
