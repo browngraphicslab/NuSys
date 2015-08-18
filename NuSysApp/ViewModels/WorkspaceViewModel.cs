@@ -451,7 +451,7 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
-            this.getXml();
+            //this.getXml();
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
             query.FirstOrDefaultAsync().ContinueWith((t) => 
