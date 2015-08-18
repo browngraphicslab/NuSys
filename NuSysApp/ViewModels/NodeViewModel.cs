@@ -112,7 +112,7 @@ namespace NuSysApp
 
             if (this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
             {
-                this.IsAnnotation = true;
+                ((Node)this.Model).IsAnnotation = true;
             }
         }
         #endregion Node Manipulations
@@ -148,7 +148,11 @@ namespace NuSysApp
             this.Transform.Matrix = transMat;
         }
 
-        public bool IsAnnotation { get; set; }
+        public bool IsAnnotation
+        {
+            get { return ((Node)Model).IsAnnotation; }
+            set { ((Node)Model).IsAnnotation = value; }
+        }
 
         public int id
         {

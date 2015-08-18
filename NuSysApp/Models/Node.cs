@@ -38,6 +38,9 @@ namespace NuSysApp
 
         public GroupViewModel ParentGroup { get; set; }
 
+        public bool IsAnnotation { get; set; }
+        public Atom ClippedParent { get; set; }
+
         public virtual string GetContentSource()
         {
             return null;
@@ -74,7 +77,6 @@ namespace NuSysApp
             XmlAttribute id = doc.CreateAttribute("id");
             id.Value = ID.ToString();
 
-
             //TODO: Uncomment this when parent group IDs are set
             //XmlAttribute groupID = doc.CreateAttribute("groupID");
             //groupID.Value = ParentGroup.Model.ID.ToString();
@@ -98,6 +100,14 @@ namespace NuSysApp
             basicXml.Add(y);
             basicXml.Add(height);
             basicXml.Add(width);
+
+            // if the node is an annotation, add information to the xml about the link it is attached to
+            if (this.IsAnnotation)
+            {
+                XmlAttribute clippedParent = doc.CreateAttribute("clipped parent");
+                clippedParent.Value = ClippedParent.ID.ToString();
+                basicXml.Add(clippedParent);
+            }
 
             return basicXml;
         }
