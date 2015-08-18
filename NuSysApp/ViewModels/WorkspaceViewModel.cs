@@ -188,7 +188,8 @@ namespace NuSysApp
                     if (link.IsVisible && Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
-                        link.Annotation = node;
+                        ((Node)node.Model).ClippedParent = link.Model;
+                        ((Link)link.Model).Annotation = (Node)node.Model;
                         return true;
                     }
                 }
@@ -478,15 +479,18 @@ namespace NuSysApp
             XmlElement parent = doc.CreateElement(string.Empty, "Parent", string.Empty);
             doc.AppendChild(parent);
 
-            for (int i = 0; i < NodeViewModelList.Count; i++)
+            foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-                XmlElement ele = NodeViewModelList[i].WriteXML(doc);
-                parent.AppendChild(ele);
+                if (!nodeVm.IsAnnotation)
+                {
+                    XmlElement ele = nodeVm.WriteXML(doc);
+                    parent.AppendChild(ele);
+                }
             }
 
-            for(int i=0; i<LinkViewModelList.Count; i++)
+            foreach (LinkViewModel linkVm in LinkViewModelList)
             {
-                XmlElement ele = LinkViewModelList[i].WriteXML(doc);
+                XmlElement ele = linkVm.WriteXML(doc);
                 parent.AppendChild(ele);
             }
 

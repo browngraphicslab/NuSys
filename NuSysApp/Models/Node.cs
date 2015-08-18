@@ -44,6 +44,9 @@ namespace NuSysApp
             }
         
 
+        public bool IsAnnotation { get; set; }
+        public Atom ClippedParent { get; set; }
+
         public virtual string GetContentSource()
         {
             return null;
@@ -104,6 +107,14 @@ namespace NuSysApp
             XmlAttribute width = doc.CreateAttribute("width");
             width.Value = Width.ToString();
             basicXml.Add(width);
+
+            // if the node is an annotation, add information to the xml about the link it is attached to
+            if (this.IsAnnotation)
+            {
+                XmlAttribute clippedParent = doc.CreateAttribute("ClippedParent");
+                clippedParent.Value = ClippedParent.ID.ToString();
+                basicXml.Add(clippedParent);
+            }
 
             return basicXml;
         }
