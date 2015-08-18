@@ -29,7 +29,6 @@ namespace NuSysApp
 
         public string XmlToString(XmlDocument xmlDoc)
         {
-            Debug.WriteLine(xmlDoc.OuterXml);
             return xmlDoc.OuterXml;
         }
 

@@ -142,6 +142,7 @@
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\Atom.cs" />
     <Compile Include="Models\Content.cs" />
+    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
@@ -302,9 +303,6 @@
   <ItemGroup>
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
-    </SDKReference>
-    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
-      <Name>SQLite for Universal App Platform</Name>
     </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

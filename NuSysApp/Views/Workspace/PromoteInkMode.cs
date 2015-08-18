@@ -14,7 +14,7 @@ namespace NuSysApp.Views.Workspace
     internal class PromoteInkMode : AbstractWorkspaceViewMode
     {
 
-        private Dictionary<Polyline, InkStroke> _strokes;
+        private HashSet<Polyline> _strokes;
 
         public PromoteInkMode(WorkspaceView view) : base(view)
         {
@@ -26,7 +26,7 @@ namespace NuSysApp.Views.Workspace
             _strokes = _view.InqCanvas.Strokes;
             for (int i = 0; i < _strokes.Count; i++)
             {
-                _strokes.ElementAt(i).Key.RightTapped += OnRightTapped;
+                _strokes.ElementAt(i).RightTapped += OnRightTapped;
             }
         }
 
@@ -34,23 +34,18 @@ namespace NuSysApp.Views.Workspace
         {
             for (int i = 0; i < _strokes.Count; i++)
             {
-                _strokes.ElementAt(i).Key.RightTapped -= OnRightTapped;
+                _strokes.ElementAt(i).RightTapped -= OnRightTapped;
             }
         }
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
-        {            
-            var inkStroke = _view.InqCanvas.Strokes[sender as Polyline];
-            _view.InqCanvas.Manager.SelectWithLine(e.GetPosition(_view.InqCanvas), e.GetPosition(_view.InqCanvas));
-            if (inkStroke.Selected)
-            {
-                _view.InqCanvas.Manager.CopySelectedToClipboard();
-                _view.InqCanvas.Children.Remove(sender as Polyline);
-                var vm = (WorkspaceViewModel)_view.DataContext;
-                var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-                Debug.WriteLine("click at " + p.X + ", " + p.Y);
-                await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, inkStroke);
-            }
+        {
+            _view.InqCanvas.Children.Remove(sender as Polyline);
+            _strokes.Remove(sender as Polyline);
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
+            Polyline[] lines = {sender as Polyline};
+            await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, lines);            
         }
 
     }

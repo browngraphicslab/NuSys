@@ -11,11 +11,12 @@ namespace NuSysApp
 {
     public class ImageNodeViewModel : NodeViewModel
     {
-        private ImageModel _imgm;
+        //private ImageModel _imgm;
         private CompositeTransform _inkScale;
 
         public ImageNodeViewModel(WorkspaceViewModel vm, BitmapImage igm, int id) : base(vm, id)
         {
+            this.Model = new ImageModel(igm, id); //TO-DO get rid of this and just have one model
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.Width = igm.PixelWidth;
@@ -25,8 +26,9 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = Constants.NodeType.image; //Also sets model value
-            this.ImageModel = new ImageModel(igm, id); //TO-DO get rid of this and just have one model
-            this.Model = this.ImageModel;
+
+
+
             
             var C = new CompositeTransform
             {
@@ -40,10 +42,14 @@ namespace NuSysApp
 
         public ImageNodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
         {
+            this.Model = new ImageModel(null, id); //TO-DO get rid of this and just have one model
+            this.NodeType = Constants.NodeType.image; //Also sets model value
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
+            this.IsEditingInk = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
         public async Task InitializeImageNodeAsync(StorageFile storageFile)
@@ -54,8 +60,8 @@ namespace NuSysApp
             {
                 var bitmapImage = new BitmapImage();
                 bitmapImage.SetSource(fileStream);
-                this.ImageModel = new ImageModel(bitmapImage, 0);
-                ImageModel.FilePath = storageFile.Path;
+                ((ImageModel)Model).Image = bitmapImage;
+                ((ImageModel)Model).FilePath = storageFile.Path;
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;
                 var C = new CompositeTransform
@@ -72,13 +78,13 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * ImageModel.Image.PixelWidth / ImageModel.Image.PixelHeight;
+                newDx = dy * ((ImageModel)Model).Image.PixelWidth / ((ImageModel)Model).Image.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * ImageModel.Image.PixelHeight / ImageModel.Image.PixelWidth;
+                newDy = dx * ((ImageModel)Model).Image.PixelHeight / ((ImageModel)Model).Image.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
@@ -91,43 +97,6 @@ namespace NuSysApp
 
             base.Resize(newDx, newDy);
         }
-
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            ImageModel currModel = (ImageModel)this.Model;
-
-            //Main XmlElement 
-            XmlElement imageNode = doc.CreateElement(string.Empty, "Node", string.Empty); 
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                imageNode.SetAttributeNode(attr);
-            }
-
-            //Source for image
-            XmlAttribute source = doc.CreateAttribute("Source");
-            source.Value = currModel.FilePath;
-            imageNode.SetAttributeNode(source);
-
-            return imageNode;
-        }
-
-        public ImageModel ImageModel
-        {
-            get { return _imgm; }
-            set
-            {
-                if (_imgm == value)
-                {
-                    return;
-                }
-                _imgm = value;
-                RaisePropertyChanged("ImageModel");
-            }
-        }
-
         public CompositeTransform InkScale
         {
             get { return _inkScale; }

@@ -19,6 +19,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using System.Xml;
 using System.IO;
+using Windows.UI.Xaml.Shapes;
 using SQLite.Net;
 
 namespace NuSysApp
@@ -30,7 +31,7 @@ namespace NuSysApp
     {
         #region Private Members
 
-        private readonly Factory _factory;
+        //private readonly Factory _factory;
         private SQLiteDatabase myDB;
         private int idCounter;
 
@@ -98,21 +99,15 @@ namespace NuSysApp
                         {
                             var str = lines[0];
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-                            var nodeVm = await Factory.CreateNewImage(this, imageFile, idCounter);
-                            idCounter++;
+
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            PositionNode(nodeVm, p.X, p.Y);
-                            NodeViewModelList.Add(nodeVm);
-                            AtomViewList.Add(nodeVm.View);
+                            var nodeVm = CreateNewNode(NodeType.Image, p.X, p.Y, imageFile);
 
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
-                            var nodeVm = Factory.CreateNewRichText(this, readFile, idCounter);
-                            idCounter++;
+
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            PositionNode(nodeVm, p.X, p.Y);
-                            NodeViewModelList.Add(nodeVm);
-                            AtomViewList.Add(nodeVm.View);
+                            var nodeVm2 = CreateNewNode(NodeType.Richtext, p.X, p.Y, readFile);
                         }
                     });
                 }
@@ -142,13 +137,10 @@ namespace NuSysApp
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-
-                        var nodeVm = Factory.CreateNewRichText(this, text, idCounter);
+                        
                         idCounter++;
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
-                        PositionNode(nodeVm, p.X, p.Y);
-                        NodeViewModelList.Add(nodeVm);
-                        AtomViewList.Add(nodeVm.View);
+                        var nodeVm = CreateNewNode(NodeType.Richtext, p.X, p.Y, text);
                     });
                 }
 
@@ -316,10 +308,12 @@ namespace NuSysApp
             var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
             idCounter++;
 
+
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
                 vm.IsVisible = false;
             }
+
             LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);
@@ -335,8 +329,18 @@ namespace NuSysApp
                     vm = new TextNodeViewModel(this, (string)data, idCounter);
                     idCounter++;
                     break;
+                case NodeType.Richtext:
+                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    idCounter++;
+                    break;
                 case NodeType.Ink:
                     vm = new InkNodeViewModel(this, idCounter);
+                    idCounter++;
+                    break;
+                case NodeType.Image:
+                    var imgVM = new ImageNodeViewModel(this, idCounter);
+                    await imgVM.InitializeImageNodeAsync((StorageFile)data);
+                    vm = imgVM;
                     idCounter++;
                     break;
                 case NodeType.Document:
@@ -345,9 +349,9 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM = new ImageNodeViewModel(this, idCounter);
-                        await imgVM.InitializeImageNodeAsync(storageFile);
-                        vm = imgVM;
+                        var imgVM1 = new ImageNodeViewModel(this, idCounter);
+                        await imgVM1.InitializeImageNodeAsync(storageFile);
+                        vm = imgVM1;
                         idCounter++;
                     }
 
@@ -370,20 +374,21 @@ namespace NuSysApp
             if (vm != null)
             {
                 AtomViewList.Add(vm.View);
-                PositionNode(vm, xCoordinate, yCoordinate);
-                if (data is InkStroke)
-                {
 
-                    vm.View.Loaded += InkNodeView_PromoteInk;
+                if (data is Polyline[])
+                {
+                    Polyline p = (data as Polyline[]).First();
+                    var minX = p.Points.Min(em => em.X);
+                    var minY = p.Points.Min(em => em.Y);
+                    (vm.View as InkNodeView2).PromoteStrokes(data as Polyline[]);
+                    PositionNode(vm, minX, minY);
+                }
+                else
+                {
+                    PositionNode(vm, xCoordinate, yCoordinate);
                 }
             }
             return vm;
-        }
-
-        private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)
-        {
-            (o as InkNodeView2).UpdateInk();
-            (o as InkNodeView2).Loaded -= InkNodeView_PromoteInk;
         }
 
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
@@ -441,12 +446,12 @@ namespace NuSysApp
             dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
-            //Debug.WriteLine(currWorkspaceXml.XmlToString(this.getXml()));
             dbConnection.InsertAsync(currWorkspaceXml);
         }
 
         public async Task LoadWorkspace()
         {
+            this.getXml();
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
             query.FirstOrDefaultAsync().ContinueWith((t) => 
@@ -475,6 +480,8 @@ namespace NuSysApp
                 XmlElement ele = LinkViewModelList[i].WriteXML(doc);
                 parent.AppendChild(ele);
             }
+
+            Debug.WriteLine(doc.OuterXml);
             return doc;
         }
 
