@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
@@ -190,24 +191,28 @@ namespace NuSysApp
         {
             if (_hostIP != null)
             {
-                await this.EndTimer();
-                _pingResponses = new Dictionary<string, int>();
-                _pingTimer = new DispatcherTimer();
-                _pingTimer.Tick += PingTick;
-                if (_hostIP == _localIP)
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    _pingTimer.Interval = new TimeSpan(0, 0, 0, 3);
-                    foreach (string ip in _otherIPs)
+                    await this.EndTimer();
+                    _pingResponses = new Dictionary<string, int>();
+                    _pingTimer = new DispatcherTimer();
+                    _pingTimer.Tick += PingTick;
+                    if (_hostIP == _localIP)
                     {
-                        _pingResponses.Add(ip, 0);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 3);
+                        foreach (string ip in _otherIPs)
+                        {
+                            _pingResponses.Add(ip, 0);
+                        }
                     }
+                    else
+                    {
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
+                        _pingResponses.Add(_hostIP, 0);
+                    }
+                    _pingTimer.Start();
                 }
-                else
-                {
-                    _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
-                    _pingResponses.Add(_hostIP, 0);
-                }
-                _pingTimer.Start();
             }
         }
 
