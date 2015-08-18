@@ -49,12 +49,15 @@ namespace NuSysApp.Views.Workspace
             string plines = "";
             foreach (Polyline pl in lines)
             {
-                plines += "<polyline points='";
-                foreach (Point point in pl.Points)
+                if (pl.Points.Count > 0)
                 {
-                    plines += point.X.ToString() + "," + point.Y.ToString() + ";";
+                    plines += "<polyline points='";
+                    foreach (Point point in pl.Points)
+                    {
+                        plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
+                    }
+                    plines += "' thickness='" + pl.StrokeThickness + "' stroke='" + pl.Stroke.ToString() + "'/>";
                 }
-                plines += "' thickness='"+pl.StrokeThickness+"' stroke='"+pl.Stroke.ToString()+"'/>";
             }
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
         }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -146,8 +147,8 @@ namespace NuSysApp
                                 if (p.Length > 0)
                                 {
                                     string[] coords = p.Split(",".ToCharArray());
-                                    Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    poly.Points.Add(point);
+                                    //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
+                                    poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
                                 }
                             }
                         }
@@ -159,11 +160,15 @@ namespace NuSysApp
                         else if (subpart.Substring(0, 6) == "stroke")
                         {
                             string sp = subpart.Substring(8, subpart.Length - 10);
+                            poly.Stroke = new SolidColorBrush(Color.FromArgb(255,0,0,1));
                             //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
                         }
                     }
                 }
-                polys.Add(poly);
+                if (poly.Points.Count > 0)
+                {
+                    polys.Add(poly);
+                }
             }
             return polys.ToArray();
         }

@@ -142,7 +142,7 @@ namespace NuSysApp
                 foreach (var point in stroke.Points)
                 {
                     pl.StrokeThickness = stroke.StrokeThickness;
-                    pl.Stroke = stroke.Stroke;
+                    pl.Stroke = stroke.Stroke != null ? stroke.Stroke : new SolidColorBrush(Color.FromArgb(0,0,0,1));
                     pl.Points.Add(new Point(point.X - minX, point.Y - minY));
                 }
 
