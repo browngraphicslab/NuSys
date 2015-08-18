@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
+using Windows.Security.Authentication.Web.Provider;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -31,12 +32,14 @@ namespace NuSysApp
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
+        private DispatcherTimer _pingTimer;
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
         private HashSet<string> _localLocks;
         private bool _caughtUp = false;
+        private Dictionary<string, int> _pingResponses;
 
         private static volatile NetworkConnector _instance;
         private static readonly object _syncRoot = new Object();
@@ -81,7 +84,12 @@ namespace NuSysApp
         {
             return _caughtUp;
         }
-       
+
+        /*
+         * gets and sets the workspace model that the network connector communicates with
+         */
+
+        public WorkSpaceModel WorkSpaceModel { set; get; }
         /*
         * Essentially an async constructor
         */
@@ -98,6 +106,7 @@ namespace NuSysApp
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
             _localLocks = new HashSet<string>();
+            _pingResponses = new Dictionary<string, int>();
 
             var ips = GetOtherIPs();
             if (ips.Count == 1)
@@ -132,16 +141,82 @@ namespace NuSysApp
             _locksOut = new Dictionary<string, string>();
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
-            Debug.WriteLine("This machine (IP: "+_localIP+") set to be the host");
+            _pingResponses = new Dictionary<string, int>();
+            Debug.WriteLine("This machine (IP: " + _localIP + ") set to be the host");
+
             //TODO add in other host responsibilities
         }
 
-        /*
-        * gets and sets the workspace model that the network connector communicates with
-        */
-        public WorkSpaceModel WorkSpaceModel//might be able to get rid of _workspaceModel
-        { set; get; }
+        private async void PingTick(object sender, object args)
+        {
+            foreach (KeyValuePair<string, int> kvp in _pingResponses)
+            {
+                if (kvp.Value == 0)
+                {
+                    await SendPing(kvp.Key, PacketType.UDP);
+                }
+                else if (kvp.Value < 2)
+                {
+                    await SendPing(kvp.Key, PacketType.TCP);
+                }
+                else
+                {
+                    Debug.WriteLine("IP: " + kvp.Key + " failed ping twice.  Removing from network");
+                    await RemoveIP(kvp.Key);
+                    await TellRemoveRemoteIP(kvp.Key);
+                    await Disconnect(kvp.Key);
+                }
+                _pingResponses[kvp.Key]++;
+            }
+        }
 
+        public void Pingged(string ip)//Did I spell the past-tense of ping incorrectly?
+        {
+            if (_pingResponses.ContainsKey(ip))
+            {
+                _pingResponses[ip] = 0;
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: Got 'ping' from IP: " + ip + " when there is no such known IP. LOL.");
+            }
+        }
+        public async Task SendPing(string ip, PacketType packetType)
+        {
+            await SendMessage(ip, "SPECIAL11:", packetType);
+        }
+        private async Task StartTimer()
+        {
+            if (_hostIP != null)
+            {
+                await this.EndTimer();
+                _pingResponses = new Dictionary<string, int>();
+                _pingTimer = new DispatcherTimer();
+                _pingTimer.Tick += PingTick;
+                if (_hostIP == _localIP)
+                {
+                    _pingTimer.Interval = new TimeSpan(0, 0, 0, 3);
+                    foreach (string ip in _otherIPs)
+                    {
+                        _pingResponses.Add(ip, 0);
+                    }
+                }
+                else
+                {
+                    _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
+                    _pingResponses.Add(_hostIP, 0);
+                }
+                _pingTimer.Start();
+            }
+        }
+
+        private async Task EndTimer()
+        {
+            if (_pingTimer.IsEnabled)
+            {
+                _pingTimer.Stop();
+            }   
+        }
         public string LocalIP//Returns the local IP
         {
             get { return _localIP; }
@@ -155,6 +230,7 @@ namespace NuSysApp
             if (!_otherIPs.Contains(ip) && ip != this._localIP) 
             {
                 _otherIPs.Add(ip);
+                await StartTimer();
                 await AddSocket(ip);
             }
         }
@@ -162,20 +238,36 @@ namespace NuSysApp
         /*
         * removes this local ip from the php script that keeps track of all the members on the server
         */
-        public async Task Disconnect()//called by the closing of the application
+        public async Task Disconnect(string ip = null)//called by the closing of the application
         {
+            if (ip == null)
+            {
+                ip = _localIP;
+            }
             var URL = "http://aint.ch/nusys/clients.php";
-            var urlParameters = "?action=remove&ip=" + NetworkInformation.GetHostNames().FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null).RawName;
+            var urlParameters = "?action=remove&ip=" + ip;
             var client = new HttpClient {BaseAddress = new Uri(URL)};
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
             var response = client.GetAsync(urlParameters).Result;
-            this.TellRemoveIP(LocalIP);
+            if (_localIP == ip)
+            {
+                this.TellRemoveLocalIP();
+            }
         }
+
+        /*
+        * to tell everyone else in the network to remove the specified IP from their lists
+        */
+        private async Task TellRemoveRemoteIP(string ip)
+        {
+            await SendMassTCPMessage("SPECIAL9:" + ip);
+        }
+
         /*
         * to tell everyone else in the network to remove this local IP from their list of IP's
         */
-        private async Task TellRemoveIP(string ip)
+        private async Task TellRemoveLocalIP()
         {
             if (_otherIPs.Count > 0)
             {
@@ -219,6 +311,7 @@ namespace NuSysApp
                     }
                 }
             }
+            _pingResponses.Remove(ip);
             foreach (var kvp in set)
             {
                 _locksOut.Remove(kvp.Key);//remove each item in that list from the _locksOut set
@@ -600,6 +693,7 @@ namespace NuSysApp
                         {
                             this.MakeHost();
                         }
+                        await StartTimer();
                         Debug.WriteLine("Host returned and SET to be: "+message);
                         return;
                     }
@@ -791,6 +885,9 @@ namespace NuSysApp
                         return;
                     }
 
+                    break;
+                case "11":
+                    this.Pingged(ip);
                     break;
             }
         }
