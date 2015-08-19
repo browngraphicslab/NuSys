@@ -26,15 +26,16 @@ namespace NuSysApp
         {
             this.Model = new Link(atom1.Model, atom2.Model, id);
             this.Atom1 = atom1;
-            ((Link)Model).atom1.Model = atom1.Model;
             this.Atom2 = atom2;
-            ((Link)Model).atom2.Model = atom2.Model;
             this.AtomType = Constants.Link;
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
             this.IsVisible = true;
 
             var line = this.LineRepresentation;
+
+            //((Link)Model).atom1.Model = atom1.Model;
+            //((Link)Model).atom2.Model = atom2.Model;
 
             this.AnchorX = (int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2));
             this.AnchorY = (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
