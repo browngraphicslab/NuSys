@@ -39,7 +39,6 @@ namespace NuSysApp
         public NodeViewModel CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
             int ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
-            vm.currId = ID;
             string currType = node.Attributes.GetNamedItem("nodeType").Value;
             double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
             double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
@@ -50,25 +49,25 @@ namespace NuSysApp
             {
                 case "text":
                     //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
-                    nodeVM = vm.CreateNewNode(NodeType.Text, X, Y).Result;
+                    nodeVM = vm.CreateNewNode(ID, NodeType.Text, X, Y).Result;
                     nodeVM.Width = width;
                     nodeVM.Height = height;
                     nodeVM.ID = ID;
                     break;
                 case "Image":
-                    nodeVM = vm.CreateNewNode(NodeType.Document, X, Y).Result;
+                    nodeVM = vm.CreateNewNode(ID, NodeType.Document, X, Y).Result;
                     break;
                 case "Pdf":
-                    nodeVM = vm.CreateNewNode(NodeType.Document, X, Y).Result;
+                    nodeVM = vm.CreateNewNode(ID, NodeType.Document, X, Y).Result;
                     break;
                 case "ink":
-                    nodeVM = vm.CreateNewNode(NodeType.Ink, X, Y).Result;
+                    nodeVM = vm.CreateNewNode(ID, NodeType.Ink, X, Y).Result;
                     nodeVM.Width = width;
                     nodeVM.Height = height;
                     nodeVM.ID = ID;
                     break;
                 default:
-                    nodeVM = vm.CreateNewNode(NodeType.Text, X, Y).Result;
+                    nodeVM = vm.CreateNewNode(ID, NodeType.Text, X, Y).Result;
                     break;
             }
             return nodeVM;
@@ -82,7 +81,6 @@ namespace NuSysApp
             {
                 string AtomType = node.Name;
                 int ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
-                vm.currId = ID;
                 switch (AtomType)
                 {
                     case "Group":
@@ -114,6 +112,7 @@ namespace NuSysApp
                         });
                         break;
                     case "Link":
+                        vm.currId = ID;
                         int atomID1 = Convert.ToInt32(node.Attributes.GetNamedItem("atomID1").Value);
                         int atomID2 = Convert.ToInt32(node.Attributes.GetNamedItem("atomID2").Value);
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
@@ -121,7 +120,7 @@ namespace NuSysApp
                         {
                             AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
                             AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
-                            LinkViewModel newLinkVm = vm.CreateNewLink(atom1Vm, atom2Vm);
+                            LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
                             newLinkVm.ID = ID;
 
                             // create node annotation and attach it to the link

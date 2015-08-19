@@ -33,8 +33,6 @@ namespace NuSysApp
 
         //private readonly Factory _factory;
         private SQLiteDatabase myDB;
-        private int idCounter;
-        private Queue<int> availableId;
 
         public enum LinkMode
         {
@@ -56,8 +54,7 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
-            idCounter = 0;
-            availableId = new Queue<int>();
+            currId = 0;
 
             Init();
             var c = new CompositeTransform
@@ -103,13 +100,14 @@ namespace NuSysApp
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
 
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            var nodeVm = CreateNewNode(NodeType.Image, p.X, p.Y, imageFile);
-
+                            var nodeVm = CreateNewNode(currId, NodeType.Image, p.X, p.Y, imageFile);
+                            currId++;
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
 
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            var nodeVm2 = CreateNewNode(NodeType.Richtext, p.X, p.Y, readFile);
+                            var nodeVm2 = CreateNewNode(currId, NodeType.Richtext, p.X, p.Y, readFile);
+                            currId++;
                         }
                     });
                 }
@@ -141,7 +139,8 @@ namespace NuSysApp
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
        
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
-                        var nodeVm = CreateNewNode(NodeType.Richtext, p.X, p.Y, text);
+                        var nodeVm = CreateNewNode(currId, NodeType.Richtext, p.X, p.Y, text);
+                        currId++;
                     });
                 }
 
@@ -235,9 +234,6 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
-            // store the ID so that the next atom can be instantiated using this ID
-            availableId.Enqueue(nodeVM.ID);
-
             //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
@@ -275,7 +271,8 @@ namespace NuSysApp
                 SelectedAtomViewModel = selected;
                 return;
             }
-            this.CreateNewLink(SelectedAtomViewModel, selected);
+            this.CreateNewLink(currId, SelectedAtomViewModel, selected);
+            currId++;
             selected.IsSelected = false;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
@@ -296,7 +293,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
+        public LinkViewModel CreateNewLink(int id, AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -313,8 +310,8 @@ namespace NuSysApp
                 return null;
             }
 
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, currId);
-            Model.AtomDict.Add(currId, vm);
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, id);
+            Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -328,22 +325,22 @@ namespace NuSysApp
             return vm;
         }
 
-        public async Task<NodeViewModel> CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<NodeViewModel> CreateNewNode(int id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data, currId);
+                    vm = new TextNodeViewModel(this, (string)data, id);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel(this, (string)data, currId);
+                    vm = new TextNodeViewModel(this, (string)data, id);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel(this, currId);
+                    vm = new InkNodeViewModel(this, id);
                     break;
                 case NodeType.Image:
-                    var imgVM = new ImageNodeViewModel(this, currId);
+                    var imgVM = new ImageNodeViewModel(this, id);
                     await imgVM.InitializeImageNodeAsync((StorageFile)data);
                     vm = imgVM;
                     break;
@@ -353,14 +350,14 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM1 = new ImageNodeViewModel(this, currId);
+                        var imgVM1 = new ImageNodeViewModel(this, id);
                         await imgVM1.InitializeImageNodeAsync(storageFile);
                         vm = imgVM1;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {
-                        var pdfVM = new PdfNodeViewModel(this, currId);
+                        var pdfVM = new PdfNodeViewModel(this, id);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
                     }
@@ -377,7 +374,8 @@ namespace NuSysApp
                 default:
                     return null;
             }
-            Model.AtomDict.Add(currId, vm);
+            currId++;
+            Model.AtomDict.Add(id, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -430,6 +428,7 @@ namespace NuSysApp
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
             Model.AtomDict.Add(currId, groupVm);
+            currId++;
 
             //Add the first node
             groupVm.AddNode(node1);
