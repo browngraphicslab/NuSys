@@ -50,7 +50,7 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
-            SelectedAtomViewModel = null;
+            SelectedComponents = new Collection<ISelectable>();
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
@@ -159,6 +159,7 @@ namespace NuSysApp
                 }
             };
         }
+
 
         private static async Task<bool> SetupDirectories()
         {
@@ -273,17 +274,19 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void SetSelection(AtomViewModel selected)
+        public void SetSelection(ISelectable selected)
         {
-            if (SelectedAtomViewModel == null)
-            {
-                SelectedAtomViewModel = selected;
-                return;
-            }
-            this.CreateNewLink(SelectedAtomViewModel, selected);
-            selected.IsSelected = false;
-            SelectedAtomViewModel.IsSelected = false;
-            SelectedAtomViewModel = null;
+            SelectedComponents.Add(selected);
+            selected.IsSelected = true;
+            //if (SelectedAtomViewModel == null)
+            //{
+            //    SelectedAtomViewModel = selected;
+            //    return;
+            //}
+            //this.CreateNewLink(SelectedAtomViewModel, selected);
+            //selected.IsSelected = false;
+            //SelectedAtomViewModel.IsSelected = false;
+            //SelectedAtomViewModel = null;
         }
 
         /// <summary>
@@ -291,9 +294,11 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
-            if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.IsSelected = false;
-            SelectedAtomViewModel = null;
+            foreach (ISelectable select in SelectedComponents)
+            {
+                select.IsSelected = false;
+            }
+            SelectedComponents.Clear();
         }
 
         /// <summary>
@@ -372,12 +377,12 @@ namespace NuSysApp
             {
                 AtomViewList.Add(vm.View);
 
-                if (data is Polyline[])
+                if (data is InqLine[])
                 {
-                    Polyline p = (data as Polyline[]).First();
+                    InqLine p = (data as InqLine[]).First();
                     var minX = p.Points.Min(em => em.X);
                     var minY = p.Points.Min(em => em.Y);
-                    (vm.View as InkNodeView2).PromoteStrokes(data as Polyline[]);
+                    (vm.View as InkNodeView2).PromoteStrokes(data as InqLine[]);
                     PositionNode(vm, minX, minY);
                 }
                 else
@@ -502,7 +507,7 @@ namespace NuSysApp
 
         public ObservableCollection<UserControl> AtomViewList { get; }
 
-        public AtomViewModel SelectedAtomViewModel { get; private set; }
+        public Collection<ISelectable> SelectedComponents { get; private set; }
 
         //public Mode CurrentMode { get; set; }
 

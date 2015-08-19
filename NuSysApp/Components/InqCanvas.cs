@@ -21,11 +21,9 @@ namespace NuSysApp
     public class InqCanvas : Canvas
     {
         private bool _isEnabled;
-        //private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private HashSet<Polyline> _strokes = new HashSet<Polyline>();
-        //private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
+        private HashSet<InqLine> _strokes = new HashSet<InqLine>();
 
         public InqCanvas() : base()
         {
@@ -121,14 +119,16 @@ namespace NuSysApp
         //        Children.Remove(line);
         //}
 
-        public Rect PasteStrokes(Polyline[] lines)
+        public Rect PasteStrokes(InqLine[] lines)
         {
-
+            
             double width = 0;
             double height = 0;
             foreach (var stroke in lines)
             {
-                var pl = new Polyline();
+                var pl = new InqLine();
+                pl.StrokeThickness = stroke.StrokeThickness;
+                pl.SetHighlighting(stroke.IsHighlighting);
 
                 var points = stroke.Points;
                 var minX = points.Min(em => em.X);
@@ -141,25 +141,12 @@ namespace NuSysApp
 
                 foreach (var point in stroke.Points)
                 {
-                    pl.StrokeThickness = stroke.StrokeThickness;
-                    pl.Stroke = stroke.Stroke;
-                    pl.Points.Add(new Point(point.X - minX, point.Y - minY));
+                    double x = point.X - minX;
+                    double y = point.Y - minY;
+                    pl.AddPoint(new Point(point.X - minX, point.Y - minY));
                 }
-
-
-                //         pl.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
-                //         {
-                //             /*
-                //             if (_isErasing)
-                //             {
-                //                 Children.Remove(o as Polyline);
-                //                 _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
-                //             }
-                //             */
-                //         };
-
-
                 Children.Add(pl);
+                _strokes.Add(stroke);
             }
             Rect rect = new Rect();
             rect.Width = width;
@@ -191,24 +178,13 @@ namespace NuSysApp
             }
         }
 
-        //public InkManager Manager
-        //{
-        //    get
-        //    {
-        //        return _inkManager;
-        //    }
-        //    set
-        //    {
-        //        _inkManager = value;
-        //    }
-        //}
 
         public IInqMode Mode
         {
             get { return _mode; }
         }
 
-        internal HashSet<Polyline> Strokes
+        internal HashSet<InqLine> Strokes
         {
             get
             {

@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class AtomViewModel : BaseINPC
+    public abstract class AtomViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
 

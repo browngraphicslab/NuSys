@@ -19,7 +19,7 @@ namespace NuSysApp
     public sealed partial class InkNodeView2 : UserControl
     {
         //InkDrawingAttributes _drawingAttributes;
-        private Polyline[] _toBePasted;
+        private InqLine[] _toBePasted;
         public InkNodeView2(InkNodeViewModel vm)
         {
             this.InitializeComponent();
@@ -56,7 +56,7 @@ namespace NuSysApp
             Loaded -= InkNodeView_PromoteInk;
         }
 
-        public void PromoteStrokes(Polyline[] lines)
+        public void PromoteStrokes(InqLine[] lines)
         {
             _toBePasted = lines;
             Loaded += InkNodeView_PromoteInk;
