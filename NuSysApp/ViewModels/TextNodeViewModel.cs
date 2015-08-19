@@ -74,7 +74,10 @@ namespace NuSysApp
             set
             {
                 _data = value;
-                ((TextNode)this.Model).Text = value;
+                if (!WorkSpaceViewModel.Model.Locked)
+                {
+                    ((TextNode) this.Model).Text = value;
+                }
                 RaisePropertyChanged("Data");
             }
         }
