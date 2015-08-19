@@ -54,6 +54,7 @@ namespace NuSysApp
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
+                Locked = true;
                 Dictionary<string, string> props = ParseOutProperties(s);
                 string id = props["id"];//since we called parse properties, it MUST have an id
                 if (_idDict.ContainsKey(id))
@@ -94,6 +95,7 @@ namespace NuSysApp
                         Node node = (Node) vm.Model;
                         if (node == null)
                         {
+                            Locked = false;
                             return;
                         }
                         _idDict.Add(id, node);
@@ -121,6 +123,7 @@ namespace NuSysApp
                     }
                 }
             });
+            Locked = false;
         }
 
         private Polyline[] ParseToPolyline(string s)

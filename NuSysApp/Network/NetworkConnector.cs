@@ -996,9 +996,7 @@ namespace NuSysApp
             }
             if (message[0] == '<' && message[message.Length - 1] == '>')
             {
-                WorkSpaceModel.Locked = true;
                 WorkSpaceModel.HandleMessage(message);
-                WorkSpaceModel.Locked = false;
             }
         }
 
