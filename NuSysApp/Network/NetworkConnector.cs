@@ -155,8 +155,9 @@ namespace NuSysApp
         {
             var toDelete = new List<string>();
             var keys = _pingResponses.Keys.ToArray();
-            foreach (var ip in keys)
+            for (int i = 0;i<keys.Length;i++)
             {
+                var ip = keys[i];
                 if (_pingResponses[ip] == 0)
                 {
                     _pingResponses[ip]++;
