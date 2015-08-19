@@ -41,7 +41,6 @@ namespace NuSysApp
                     return;
                 }
                 _x = value;
-                Debug.WriteLine(_x + " " + _y);
                 this.DebounceDict.Add("x",_x.ToString());
                 if (NetworkConnector.Instance.WorkSpaceModel.Locked)
                 {
