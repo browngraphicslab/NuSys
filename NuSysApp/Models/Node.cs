@@ -41,10 +41,13 @@ namespace NuSysApp
                     return;
                 }
                 _x = value;
-                this.DebounceDict.Add("x",_x.ToString());
                 if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_X");
+                }
+                else
+                {
+                    this.DebounceDict.Add("x", _x.ToString());
                 }
             }
         }
@@ -63,11 +66,14 @@ namespace NuSysApp
                     return;
                 }
                 _y = value;
-                this.DebounceDict.Add("y", _y.ToString());
                 if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Y");
-                }  
+                }
+                else
+                {
+                    this.DebounceDict.Add("y", _y.ToString());
+                }
             }
         }
 
@@ -84,10 +90,13 @@ namespace NuSysApp
                     return;
                 }
                 _width = value;
-                this.DebounceDict.Add("width", _width.ToString());
                 if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Width");
+                }
+                else
+                {
+                    this.DebounceDict.Add("width", _width.ToString());
                 }
            
             }
@@ -106,10 +115,14 @@ namespace NuSysApp
                     return;
                 }
                 _height = value;
-                this.DebounceDict.Add("height", _height.ToString());
+
                 if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Height");
+                }
+                else
+                {
+                    this.DebounceDict.Add("height", _height.ToString());
                 }
             }
         }
