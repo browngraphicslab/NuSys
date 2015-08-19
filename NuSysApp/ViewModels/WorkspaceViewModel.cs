@@ -491,8 +491,8 @@ namespace NuSysApp
             transMat.OffsetX = xCoordinate;
             transMat.OffsetY = yCoordinate;
             vm.Transform = new MatrixTransform { Matrix = transMat };
-            vm.X = xCoordinate;
-            vm.Y = yCoordinate;
+            vm.X = 0;
+            vm.Y = 0;
         }
 
         #region Public Members

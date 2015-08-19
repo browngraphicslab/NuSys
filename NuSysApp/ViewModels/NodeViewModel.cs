@@ -76,6 +76,7 @@ namespace NuSysApp
 
         public void SetPosition(double x, double y)
         {
+            
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
             transMat.OffsetX = x;
             transMat.OffsetY = y;
@@ -86,7 +87,8 @@ namespace NuSysApp
             {
                 Matrix = transMat
             };
-            //RaisePropertyChanged("Transform");
+           
+            RaisePropertyChanged("Transform");
         }
         /// <summary>
         /// toggles editing ability of nodes.
