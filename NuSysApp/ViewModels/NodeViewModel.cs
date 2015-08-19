@@ -256,7 +256,6 @@ namespace NuSysApp
             return ((Node)Model).WriteXML(doc);
         }
 
-
         public bool IsEditing
         {
             get { return _isEditing; }
@@ -291,7 +290,6 @@ namespace NuSysApp
             {
                 ((Node)this.Model).NodeType = value;
             }
-
         }
 
         public GroupViewModel ParentGroup
