@@ -35,7 +35,7 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.WorkSpaceModel.Locked)
+            if (!NetworkConnector.Instance.ModelLocked)
             {
                 if (!_timing)
                 {

@@ -24,7 +24,7 @@ namespace NuSysApp
             {
                 if (_text == value) return;
                 _text = value;
-                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Text");
                 }

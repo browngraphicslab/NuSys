@@ -42,7 +42,7 @@ namespace NuSysApp
                 }
                 _x = value;
                 this.DebounceDict.Add("x",_x.ToString());
-                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_X");
                 }
@@ -64,7 +64,7 @@ namespace NuSysApp
                 }
                 _y = value;
                 this.DebounceDict.Add("y", _y.ToString());
-                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Y");
                 }  
@@ -85,7 +85,7 @@ namespace NuSysApp
                 }
                 _width = value;
                 this.DebounceDict.Add("width", _width.ToString());
-                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Width");
                 }
@@ -107,7 +107,7 @@ namespace NuSysApp
                 }
                 _height = value;
                 this.DebounceDict.Add("height", _height.ToString());
-                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                if (NetworkConnector.Instance.ModelLocked)
                 {
                     RaisePropertyChanged("Model_Height");
                 }

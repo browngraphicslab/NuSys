@@ -86,6 +86,8 @@ namespace NuSysApp
             return _caughtUp;
         }
 
+        public bool ModelLocked { get; set; }
+
         /*
          * gets and sets the workspace model that the network connector communicates with
          */
@@ -996,7 +998,9 @@ namespace NuSysApp
             }
             if (message[0] == '<' && message[message.Length - 1] == '>')
             {
+                ModelLocked = true;
                 WorkSpaceModel.HandleMessage(message);
+                ModelLocked = false;
             }
         }
 
