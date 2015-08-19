@@ -77,8 +77,10 @@ namespace NuSysApp
         public void SetPosition(double x, double y)
         {
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
-            transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            transMat.OffsetX += x / WorkSpaceViewModel.CompositeTransform.ScaleX / ParentGroup.LocalTransform.ScaleX;
+            transMat.OffsetY += y / WorkSpaceViewModel.CompositeTransform.ScaleY / ParentGroup.LocalTransform.ScaleX;
+            //transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
+            //transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
         }
