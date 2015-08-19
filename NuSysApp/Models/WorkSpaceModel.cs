@@ -204,7 +204,7 @@ namespace NuSysApp
                     //TODO Remove node visually
                     _idDict.Remove(id);
                 }
-            }
+            });
         }
 
         public string GetFullWorkspace()
