@@ -867,7 +867,7 @@ namespace NuSysApp
                     }
                     var lockId = parts[0];
                     var lockHolder = parts[1];
-                    if (false)//TODO make into 'this does not contain an object with key number: lockId'
+                    if (!WorkSpaceModel.HasAtom(lockHolder))//TODO make into 'this does not contain an object with key number: lockId'
                     {
                         Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
                                         " which has an invalid id");
@@ -879,6 +879,10 @@ namespace NuSysApp
                         //then
                         SendMessage(_hostIP, "SPECIAL8:" + lockId, PacketType.TCP);
                         return;
+                    }
+                    else
+                    {
+                        _localLocks.Add(lockId);
                     }
                     return;
                     break;

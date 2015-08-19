@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -45,6 +47,16 @@ namespace NuSysApp
             {
                 Debug.WriteLine("Can't join workspace yet, it's not synced with host");
             }
+        }
+
+        private void clear_OnClick(object sender, RoutedEventArgs e)
+        {
+            const string URL = "http://aint.ch/nusys/clients.php";
+            var urlParameters = "?action=clear";
+            var client = new HttpClient { BaseAddress = new Uri(URL) };
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = client.GetAsync(urlParameters).Result;
         }
     }
 }
