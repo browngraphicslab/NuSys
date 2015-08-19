@@ -247,7 +247,7 @@ namespace NuSysApp
         /// </summary>
         public double Width
         {
-            get { return _width };
+            get { return _width; }
             set
             {
                 if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
