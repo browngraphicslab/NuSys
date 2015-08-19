@@ -77,12 +77,16 @@ namespace NuSysApp
         public void SetPosition(double x, double y)
         {
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
-            transMat.OffsetX += x / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            transMat.OffsetY += y / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            transMat.OffsetX = x;
+            transMat.OffsetY = y;
             //transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
             //transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            Transform = new MatrixTransform();
-            this.Transform.Matrix = transMat;
+            //Transform = new MatrixTransform();
+            this.Transform = new MatrixTransform
+            {
+                Matrix = transMat
+            };
+            //RaisePropertyChanged("Transform");
         }
         /// <summary>
         /// toggles editing ability of nodes.
@@ -227,8 +231,6 @@ namespace NuSysApp
                     return;
                 }
                 _transform = value;
-                X = value.Matrix.OffsetX;
-                Y = value.Matrix.OffsetY;
                 RaisePropertyChanged("Transform");
             }
         }
