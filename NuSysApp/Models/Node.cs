@@ -20,19 +20,13 @@ namespace NuSysApp
         private Group _group;
         public Node(string id) : base (id)
         {
-            StartLines = new List<Link>();
-            EndLines = new List<Link>();
+
         }
 
         public string Data { get; set; }
 
         public Content Content { set; get; }
 
-        public List<Link> StartLines { get; }
-
-        public List<Link> EndLines { get; }
-        
-        public List<Node> ConnectedNodes { get; }
 
         public double X
         {
@@ -46,9 +40,13 @@ namespace NuSysApp
                 {
                     return;
                 }
+             
                 _x = value;
                 this.DebounceDict.Add("x",_x.ToString());
-                RaisePropertyChanged("Model_X");
+                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                {
+                    RaisePropertyChanged("Model_X");
+                }
             }
         }
 
@@ -67,11 +65,12 @@ namespace NuSysApp
                 }
                 _y = value;
                 this.DebounceDict.Add("y", _y.ToString());
-                RaisePropertyChanged("Model_Y");
+                if (NetworkConnector.Instance.WorkSpaceModel.Locked)
+                {
+                    RaisePropertyChanged("Model_Y");
+                }  
             }
         }
-
-        public MatrixTransform Transform { get; set; }
 
         public double Width
         {
@@ -194,12 +193,12 @@ namespace NuSysApp
             }
 
             XmlAttribute x = doc.CreateAttribute("x");
-            x.Value = Transform.Matrix.OffsetX.ToString();
-            basicXml.Add(x);
+
+            x.Value = X.ToString();
 
             XmlAttribute y = doc.CreateAttribute("y");
-            y.Value = Transform.Matrix.OffsetY.ToString();
-            basicXml.Add(y);
+            y.Value = Y.ToString();
+
 
             XmlAttribute height = doc.CreateAttribute("height");
             height.Value = Height.ToString();

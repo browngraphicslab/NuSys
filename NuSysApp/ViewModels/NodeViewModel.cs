@@ -22,7 +22,11 @@ namespace NuSysApp
 
         private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
+
+        private MatrixTransform _transform;
+
         private GroupViewModel _group;
+
         #endregion Private Members
         protected NodeViewModel(WorkspaceViewModel vm, string id): base(vm, id)
         {
@@ -60,6 +64,8 @@ namespace NuSysApp
                 }
                 Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
+                ((Node)Model).X = transMat.OffsetX;
+                ((Node)Model).Y = transMat.OffsetY;
                 this.UpdateAnchor();
                 foreach (var link in LinkList)
                 {
@@ -73,6 +79,8 @@ namespace NuSysApp
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
             transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
             transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
+            Transform = new MatrixTransform();
+            this.Transform.Matrix = transMat;
         }
         /// <summary>
         /// toggles editing ability of nodes.
@@ -170,19 +178,21 @@ namespace NuSysApp
             set { Model.ID = value; }
         }
 
+        private double _x, _y;
         /// <summary>
         /// X-coordinate of this atom
         /// </summary>
         public double X
         {
-            get { return ((Node)Model).X; }
+            get { return _x; }
             set
             {
-                if (((Node)Model).X == value)
+                if (_x == value)
                 {
                     return;
                 }
-                ((Node)Model).X = value;
+                _x = value;
+                //((Node)Model).Y = value;
                 RaisePropertyChanged("X");
             }
         }
@@ -192,29 +202,29 @@ namespace NuSysApp
         /// </summary>
         public double Y
         {
-            get { return ((Node)Model).Y; }
+            get { return _y; }
             set
             {
-                if (((Node)Model).Y == value)
+                if (_y == value)
                 {
                     return;
                 }
-
-                ((Node)Model).Y = value;
+                _y = value;
+                //((Node)Model).Y = value;
                 RaisePropertyChanged("Y");
             }
         }
 
         public MatrixTransform Transform
         {
-            get { return ((Node)Model).Transform; }
+            get { return _transform; }
             set
             {
-                if (((Node)Model).Transform == value)
+                if (_transform == value)
                 {
                     return;
                 }
-                ((Node)Model).Transform = value;
+                _transform = value;
                 X = value.Matrix.OffsetX;
                 Y = value.Matrix.OffsetY;
                 RaisePropertyChanged("Transform");
