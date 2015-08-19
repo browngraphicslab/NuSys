@@ -25,8 +25,11 @@ namespace NuSysApp
                 _text = value;
                 if (NetworkConnector.Instance.WorkSpaceModel.Locked)
                 {
-                    this.DebounceDict.Add("text", Text);
                     RaisePropertyChanged("Model_Text");
+                }
+                else
+                {
+                    this.DebounceDict.Add("text", Text);
                 }
             } 
         }
