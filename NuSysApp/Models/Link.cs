@@ -12,9 +12,9 @@ namespace NuSysApp
             ID = id;
         }
 
+        public Node Annotation { get; set; }
         public int InAtomID { get; set; }
         public int OutAtomID { get; set; }
-
         public Atom atom1 { get; set; }
         public Atom atom2 { get; set; }
 
@@ -36,6 +36,13 @@ namespace NuSysApp
             XmlAttribute id2 = doc.CreateAttribute("atomID2");
             id2.Value = OutAtomID.ToString();
             link.SetAttributeNode(id2);
+
+            //Annotation, if any
+            if (this.Annotation != null)
+            {
+                XmlElement linkAnnotation = this.Annotation.WriteXML(doc);
+                link.AppendChild(linkAnnotation);
+            }
 
             return link;
         }

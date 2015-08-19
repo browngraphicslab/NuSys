@@ -1,6 +1,8 @@
 ﻿
+using NuSysApp.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
 using Windows.UI;
@@ -20,6 +22,7 @@ namespace NuSysApp
 
         private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
+        private GroupViewModel _group;
         #endregion Private Members
 
         protected NodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
@@ -113,7 +116,7 @@ namespace NuSysApp
 
             if (this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
             {
-                this.IsAnnotation = true;
+                ((Node)this.Model).IsAnnotation = true;
             }
         }
         #endregion Node Manipulations
@@ -149,7 +152,11 @@ namespace NuSysApp
             this.Transform.Matrix = transMat;
         }
 
-        public bool IsAnnotation { get; set; }
+        public bool IsAnnotation
+        {
+            get { return ((Node)Model).IsAnnotation; }
+            set { ((Node)Model).IsAnnotation = value; }
+        }
 
         public int id
         {
@@ -291,11 +298,18 @@ namespace NuSysApp
         {
             get
             {
-                return ((Node)this.Model).ParentGroup;
+                return _group;
             }
             set
             {
-                ((Node)this.Model).ParentGroup = value;
+                _group = value;
+                if (_group != null)
+                {
+                    ((Node)Model).ParentGroup = (Group)_group.Model;
+                }
+                
+                //Debug.WriteLine(_group.Model == null);
+                //Debug.WriteLine(((Node)Model).ParentGroup == null);
             }
         }
 

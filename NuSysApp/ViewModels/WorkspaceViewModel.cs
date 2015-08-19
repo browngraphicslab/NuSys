@@ -34,6 +34,7 @@ namespace NuSysApp
         //private readonly Factory _factory;
         private SQLiteDatabase myDB;
         private int idCounter;
+        private Queue<int> availableId;
 
         public enum LinkMode
         {
@@ -56,6 +57,7 @@ namespace NuSysApp
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
             idCounter = 0;
+            availableId = new Queue<int>();
 
             Init();
             var c = new CompositeTransform
@@ -66,7 +68,6 @@ namespace NuSysApp
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
-
 
         private async void Init()
         {
@@ -138,8 +139,7 @@ namespace NuSysApp
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-                        
-                        idCounter++;
+       
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         var nodeVm = CreateNewNode(NodeType.Richtext, p.X, p.Y, text);
                     });
@@ -188,7 +188,8 @@ namespace NuSysApp
                     if (link.IsVisible && Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
-                        link.Annotation = node;
+                        ((Node)node.Model).ClippedParent = link.Model;
+                        ((Link)link.Model).Annotation = (Node)node.Model;
                         return true;
                     }
                 }
@@ -234,6 +235,9 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
+            // store the ID so that the next atom can be instantiated using this ID
+            availableId.Enqueue(nodeVM.ID);
+
             //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
@@ -257,7 +261,6 @@ namespace NuSysApp
             {
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
-           
         }
 
         /// <summary>
@@ -309,10 +312,9 @@ namespace NuSysApp
             {
                 return null;
             }
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
-            Model.AtomDict.Add(idCounter, vm);
-            idCounter++;
 
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, currId);
+            Model.AtomDict.Add(currId, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -332,16 +334,16 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    vm = new TextNodeViewModel(this, (string)data, currId);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    vm = new TextNodeViewModel(this, (string)data, currId);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel(this, idCounter);
+                    vm = new InkNodeViewModel(this, currId);
                     break;
                 case NodeType.Image:
-                    var imgVM = new ImageNodeViewModel(this, idCounter);
+                    var imgVM = new ImageNodeViewModel(this, currId);
                     await imgVM.InitializeImageNodeAsync((StorageFile)data);
                     vm = imgVM;
                     break;
@@ -351,26 +353,31 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM1 = new ImageNodeViewModel(this, idCounter);
+                        var imgVM1 = new ImageNodeViewModel(this, currId);
                         await imgVM1.InitializeImageNodeAsync(storageFile);
                         vm = imgVM1;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {
-                        var pdfVM = new PdfNodeViewModel(this, idCounter);
+                        var pdfVM = new PdfNodeViewModel(this, currId);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
                     }
                     break;
+                //case NodeType.Group: //Only called when reloading
+                    //var group = new GroupViewModel(this, idCounter);
+                    //idCounter++;
+                    //break;
+
+
                 //   case Mode.InkSelect:
                 //      vm = Factory.CreateNewPromotedInk(this);
                 //      break;
                 default:
                     return null;
             }
-            Model.AtomDict.Add(idCounter, vm);
-            idCounter++;
+            Model.AtomDict.Add(currId, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -412,8 +419,7 @@ namespace NuSysApp
             }
 
             //Create new group, because no group exists
-            groupVm = new GroupViewModel(this, idCounter);
-            idCounter++;
+            groupVm = new GroupViewModel(this, currId);
 
             //Set location to node2's location
             var xCoordinate = node2.Transform.Matrix.OffsetX;
@@ -423,6 +429,7 @@ namespace NuSysApp
             NodeViewModelList.Add(groupVm);
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
+            Model.AtomDict.Add(currId, groupVm);
 
             //Add the first node
             groupVm.AddNode(node1);
@@ -447,13 +454,13 @@ namespace NuSysApp
             // recreate the table to store the xml file of the current workspace
             dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
-            currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(this.getXml());
+            XmlDocument doc = this.getXml();
+            currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(doc);
             dbConnection.InsertAsync(currWorkspaceXml);
         }
 
         public async Task LoadWorkspace()
         {
-            this.getXml();
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
             query.FirstOrDefaultAsync().ContinueWith((t) => 
@@ -471,15 +478,18 @@ namespace NuSysApp
             XmlElement parent = doc.CreateElement(string.Empty, "Parent", string.Empty);
             doc.AppendChild(parent);
 
-            for (int i = 0; i < NodeViewModelList.Count; i++)
+            foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-                XmlElement ele = NodeViewModelList[i].WriteXML(doc);
-                parent.AppendChild(ele);
+                if (!nodeVm.IsAnnotation)
+                {
+                    XmlElement ele = nodeVm.WriteXML(doc);
+                    parent.AppendChild(ele);
+                }
             }
 
-            for(int i=0; i<LinkViewModelList.Count; i++)
+            foreach (LinkViewModel linkVm in LinkViewModelList)
             {
-                XmlElement ele = LinkViewModelList[i].WriteXML(doc);
+                XmlElement ele = linkVm.WriteXML(doc);
                 parent.AppendChild(ele);
             }
 
@@ -511,7 +521,7 @@ namespace NuSysApp
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }
-
+        public int currId { get; set; }
         public LinkMode CurrentLinkMode { get; set; }
 
         public CompositeTransform CompositeTransform
