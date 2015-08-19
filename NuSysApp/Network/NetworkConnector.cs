@@ -155,9 +155,8 @@ namespace NuSysApp
         {
             var toDelete = new List<string>();
             var keys = _pingResponses.Keys.ToArray();
-            for (int i = 0;i<keys.Length;i++)
+            foreach (var ip in keys)
             {
-                var ip = keys[i];
                 if (_pingResponses[ip] == 0)
                 {
                     _pingResponses[ip]++;
@@ -637,20 +636,28 @@ namespace NuSysApp
         {
             if (message.Length > 0)//if message exists
             {
-                if (message.Substring(0, 7) != "SPECIAL")//if not a special message
+                if (_otherIPs.Contains(ip) || ip == _localIP)
                 {
-                    var miniStrings = message.Split("&&".ToCharArray());//break up message into subparts
-                    foreach (var subMessage in miniStrings)
+                    if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                     {
-                        if (subMessage.Length > 0)
+                        var miniStrings = message.Split("&&".ToCharArray()); //break up message into subparts
+                        foreach (var subMessage in miniStrings)
                         {
-                            await this.HandleSubMessage(ip, subMessage, packetType);//handle each submessage
+                            if (subMessage.Length > 0)
+                            {
+                                await this.HandleSubMessage(ip, subMessage, packetType); //handle each submessage
+                            }
                         }
+                    }
+                    else
+                    {
+                        await this.HandleSubMessage(ip, message, packetType);
                     }
                 }
                 else
                 {
-                    await this.HandleSubMessage(ip, message, packetType);
+                    Debug.WriteLine("Recieved message from unknown IP: " + ip);
+                    return;
                 }
             }
             else
