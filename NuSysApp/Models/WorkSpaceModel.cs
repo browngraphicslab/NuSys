@@ -18,7 +18,6 @@ namespace NuSysApp
         private Dictionary<string, Atom> _idDict;
         private WorkspaceViewModel _workspaceViewModel;
         private int _currentId;
-        private bool _isNetwork = false;
         //private Factory _factory;
         public WorkSpaceModel(WorkspaceViewModel vm)
         {
@@ -47,16 +46,13 @@ namespace NuSysApp
             }
         }
 
-        public bool Locked
-        {
-            get { return _isNetwork; }
-        }
+        public bool Locked { get; set; }
         public async void HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                _isNetwork = true;
+                Locked = true;
                 Dictionary<string, string> props = ParseOutProperties(s);
                 string id = props["id"];//since we called parse properties, it MUST have an id
                 if (_idDict.ContainsKey(id))
@@ -97,7 +93,7 @@ namespace NuSysApp
                         Node node = (Node) vm.Model;
                         if (node == null)
                         {
-                            _isNetwork = false;
+                            Locked = false;
                             return;
                         }
                         _idDict.Add(id, node);
@@ -124,8 +120,8 @@ namespace NuSysApp
                         //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id);
                     }
                 }
-                _isNetwork = false;
             });
+            Locked = false;
         }
 
         private Polyline[] ParseToPolyline(string s)

@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
@@ -29,7 +30,8 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("text", Text);
+                    this.DebounceDict.Add("text", value);
+                    //Debug.WriteLine("Got the text: "+value);
                 }
             } 
         }
