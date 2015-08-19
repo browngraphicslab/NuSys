@@ -77,7 +77,7 @@ namespace NuSysApp
         public void SetPosition(double x, double y)
         {
             WorkSpaceViewModel.PositionNode(this,x,y);
-            /*
+            
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
             transMat.OffsetX = x;
             transMat.OffsetY = y;
@@ -90,7 +90,7 @@ namespace NuSysApp
             };
             this.X = 0;
             this.Y = 0;
-            RaisePropertyChanged("Transform");*/
+            RaisePropertyChanged("Transform");
         }
         /// <summary>
         /// toggles editing ability of nodes.
