@@ -40,7 +40,7 @@ namespace NuSysApp
 
         public NodeViewModel CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
-            string ID = node.Attributes.GetNamedItem("id").ToString();
+            string ID = node.Attributes.GetNamedItem("id").Value;
             string currType = node.Attributes.GetNamedItem("nodeType").Value;
             double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
             double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
@@ -137,7 +137,7 @@ namespace NuSysApp
                                     {
                                         XmlNode attachedAnnotation = node.ChildNodes[0];
                                         string clippedParentID =
-                                            attachedAnnotation.Attributes.GetNamedItem("ClippedParent").ToString();
+                                            attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value;
                                         NodeViewModel nodeVm = this.CreateNodeFromXml(vm, attachedAnnotation);
                                         nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
                                     }
