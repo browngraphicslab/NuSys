@@ -9,13 +9,23 @@ namespace NuSysApp
 {
     public class TextNode : Node
     {
+        private string _text;
         public TextNode(string data, string id): base(id)
         {
             Text = data;
             this.ID = id;
         }
 
-        public string Text { get; set; }
+        public string Text
+        {
+            get { return _text; }
+            set
+            {
+                if (_text == value) return;
+                _text = value;
+                this.DebounceDict.Add("text", Text);
+            } 
+        }
 
         public override string GetContentSource()
         {
@@ -27,7 +37,6 @@ namespace NuSysApp
             if (props.ContainsKey("text"))
             {
                 Text = props["text"];
-                this.DebounceDict.Add("text", Text);
             }
             base.UnPack(props);
         }
