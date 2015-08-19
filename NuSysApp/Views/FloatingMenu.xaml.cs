@@ -24,6 +24,7 @@ namespace NuSysApp
         private bool _subMenuSelectOpen;
         private bool _subMenuNodesOpen;
         private bool _subMenuAdditionalOpen;
+        private bool _FloatingMenuCollapsed;
 
         private readonly List<Button> _buttons;
         private SolidColorBrush _borderColor;
@@ -78,6 +79,22 @@ namespace NuSysApp
             _subMenuAdditionalOpen = false;
         }
 
+        private void Expandable(object sender, RoutedEventArgs e)
+        {
+            if (_FloatingMenuCollapsed)
+            {
+                expand.Begin();
+                _FloatingMenuCollapsed = false;
+            }
+            else
+            {
+                collapse.Begin();
+                _FloatingMenuCollapsed = true;
+                //ExpandableImage.Source = new ImageSource();
+            }
+
+        }
+
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
@@ -98,7 +115,6 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AddTextNode);
         }
-
 
         private void EraseButton_Click(object sender, RoutedEventArgs e)
         {

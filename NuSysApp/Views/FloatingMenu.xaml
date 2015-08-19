@@ -43,6 +43,29 @@
             </Setter>
         </Style>
 
+        <Storyboard x:Name="expand">
+            <DoubleAnimation Duration="0:0:0.2" To="30" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="FloatingMenuPanel">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="collapse">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="FloatingMenuPanel">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
         <Storyboard x:Name="slideout">
             <DoubleAnimation Duration="0:0:0.2" To="130" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuPen" d:IsOptimized="True"/>
             <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuPen" d:IsOptimized="True"/>
@@ -138,14 +161,17 @@
     </UserControl.Resources>
 
     <Canvas RenderTransform="{Binding FMTransform}" Margin="10,30,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
-        <Button x:Name="CollapseExpand" Background="#CFF8FF" Height="20" Width="30" Padding="0,0,0,0" Margin="5,0,0,0">
+        <Button x:Name="CollapseExpand" Background="#CFF8FF" Height="20" Width="30" Padding="0,0,0,0" Margin="5,0,0,0" Click="Expandable">
             <Button.Content>
                 <Grid>
-                    <Image Source="ms-appx:///Assets/icon_collapse.png" Width="20"></Image>
+                    <Image x:Name="ExpandableImage" Source="ms-appx:///Assets/icon_collapse.png" Width="20"></Image>
                 </Grid>
             </Button.Content>
         </Button>
-        <StackPanel Margin="30,20,0,0">
+        <StackPanel x:Name="FloatingMenuPanel" Margin="30,20,0,0">
+            <StackPanel.RenderTransform>
+                <CompositeTransform/>
+            </StackPanel.RenderTransform>
             <Button x:Name="idleButton" Style="{StaticResource FloatingButton}" Tapped="Idle_OnTapped" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_select.png" Height="40" Width="40"></Image>
             </Button>
@@ -237,6 +263,9 @@
             </StackPanel.RenderTransform>
             <Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
+            </Button>
+            <Button x:Name="Load" Style="{StaticResource FloatingButton}">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/open icon.png"></Image>
             </Button>
             <Button x:Name="Export" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_export.png"></Image>
