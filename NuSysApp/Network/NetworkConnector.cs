@@ -382,7 +382,7 @@ namespace NuSysApp
                 var fieldCount = await reader.LoadAsync(sizeof (uint));
                 if (fieldCount != sizeof (uint))
                 {
-                    Debug.WriteLine("TCP connection recieved at IP "+this._localIP+" but socket closed before full stream was read");
+                    Debug.WriteLine("TCP connection recieved FROM IP "+ip+" but socket closed before full stream was read");
                     await RemoveIP(ip);
                     await SendMassTCPMessage("SPECIAL9:" + ip);
                     return;

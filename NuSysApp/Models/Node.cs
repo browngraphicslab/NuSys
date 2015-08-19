@@ -40,7 +40,6 @@ namespace NuSysApp
                 {
                     return;
                 }
-             
                 _x = value;
                 this.DebounceDict.Add("x",_x.ToString());
                 if (NetworkConnector.Instance.WorkSpaceModel.Locked)
