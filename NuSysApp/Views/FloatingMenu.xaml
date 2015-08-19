@@ -13,14 +13,13 @@
             <Setter Property="Template" >
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid Width="100" Height="100" Opacity=".75">
-                            <Rectangle Height="85" Width="85" Fill="{TemplateBinding Background}" Opacity="1" Name="rectangle"/>
+                        <Grid Width="100" Height="100">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal" />
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="rectangle"
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                    Storyboard.TargetProperty="Opacity">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value=".5" />
                                             </ObjectAnimationUsingKeyFrames>
@@ -28,7 +27,7 @@
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="rectangle"
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
                                             </ObjectAnimationUsingKeyFrames>
@@ -36,6 +35,8 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+                            <Ellipse Height="85" Width ="85" Fill="#51DCE7" x:Name="Ellipse" Opacity=".5" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10"/>
+                            <ContentPresenter></ContentPresenter>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -43,9 +44,9 @@
         </Style>
 
         <Storyboard x:Name="slideout">
-            <DoubleAnimation Duration="0:0:0.2" To="125" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+            <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuPen" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuPen" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuPen">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
                     <DiscreteObjectKeyFrame.Value>
                         <x:Boolean>True</x:Boolean>
@@ -54,9 +55,9 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Name="slidein">
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuPen" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuPen" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuPen">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
                     <DiscreteObjectKeyFrame.Value>
                         <x:Boolean>False</x:Boolean>
@@ -64,45 +65,118 @@
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
+
+        <Storyboard x:Name="slideoutSelect">
+            <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuSelect" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuSelect" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuSelect">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="slideinSelect">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuSelect" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuSelect" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuSelect">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="slideoutNodes">
+            <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuNodes" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuNodes" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuNodes">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="slideinNodes">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuNodes" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuNodes" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuNodes">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="slideoutAdditional">
+            <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuAdditional" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuAdditional" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuAdditional">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="slideinAdditional">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenuAdditional" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenuAdditional" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenuAdditional">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
     </UserControl.Resources>
 
-    <Grid RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible" Opacity=".75">
+    <Canvas RenderTransform="{Binding FMTransform}" Margin="0,15,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <StackPanel>
-            <Button x:Name="idleButton" Style="{StaticResource FloatingButton}" Tapped="Idle_OnTapped" HorizontalAlignment="Center" Height="100" Content="idle">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_idle.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
+            <Button x:Name="idleButton" Style="{StaticResource FloatingButton}" Tapped="Idle_OnTapped" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_select.png" Height="40" Width="40"></Image>
             </Button>
-            <Button x:Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Height="100" Content="global ink" Foreground="White">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_globalink.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
+            <Button x:Name="inkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
             </Button>
-            <Button x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+            <Button x:Name="addNodeButton" Tapped="Nodes_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_add_node.png" Height="40" Width="40"></Image>
+            </Button>
+            <Button x:Name="additionalButton" Tapped="Additional_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_additional.png" Height="40" Width="40"></Image>
+            </Button>
+
+            <!--<Button x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_selectink.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
-            <Button x:Name="textButton" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+            </Button>-->
+            <!--<Button x:Name="textButton" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
-            <Button x:Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="InkNodeButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+            </Button>-->
+            <!--<Button x:Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="InkNodeButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_scribble.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
-            <Button Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+            </Button>-->
+            <!--<Button Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
-            <Button Name="cortanaButton" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+            </Button>-->
+            <!--<Button Name="cortanaButton" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
+            </Button>-->
             <!-- just for testing -->
             <!--<Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
@@ -110,26 +184,53 @@
                 </Button.Background>
             </Button>-->
             <!-- just for testing -->
-            <Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
+            <!--<Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/load icon.png" Stretch="Uniform"></ImageBrush>
                 </Button.Background>
-            </Button>
+            </Button>-->
         </StackPanel>
-        <StackPanel x:Name="SubMenu" Orientation="Horizontal" VerticalAlignment="Top" Height="300" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuPen" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,100,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <MenuFlyoutItem x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource SubMenuItem}">
-                <MenuFlyoutItem.Background>
-                    <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_eraser.png"></ImageBrush>
-                </MenuFlyoutItem.Background>
-            </MenuFlyoutItem>
-            <MenuFlyoutItem x:Name="Highlight" Click="Highlight_OnTapped" Style="{StaticResource SubMenuItem}">
-                <MenuFlyoutItem.Background>
-                    <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_highlighter.png" ></ImageBrush>
-                </MenuFlyoutItem.Background>
-            </MenuFlyoutItem>
+            <Button x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource FloatingButton}">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_eraser.png"></Image>
+            </Button>
+            <Button x:Name="Colors" Style="{StaticResource FloatingButton}"/>
         </StackPanel>
-    </Grid>
+        <StackPanel x:Name="SubMenuSelect" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,0,0,0" Opacity="0" IsHitTestVisible="False">
+            <StackPanel.RenderTransform>
+                <CompositeTransform/> 
+            </StackPanel.RenderTransform>
+            <Button x:Name="MultiSelect" Style="{StaticResource FloatingButton}" Tapped="LinkButton_Click">
+                <Image Height="50" Width="50" Source="ms-appx:///Assets/icon_multiselect.png"></Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="SubMenuNodes" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,200,0,0" Opacity="0" IsHitTestVisible="False">
+            <StackPanel.RenderTransform>
+                <CompositeTransform />
+            </StackPanel.RenderTransform>
+            <Button x:Name="NewNode" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_node.png" ></Image>
+            </Button>
+            <Button x:Name="NewMedia" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_media.png"></Image>
+            </Button>
+            <Button x:Name="NewImport" Style="{StaticResource FloatingButton}">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_bucket.png"></Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="SubMenuAdditional" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,300,0,0" Opacity="0" IsHitTestVisible="False">
+            <StackPanel.RenderTransform>
+                <CompositeTransform />
+            </StackPanel.RenderTransform>
+            <Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
+            </Button>
+            <Button x:Name="Export" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_export.png"></Image>
+            </Button>
+        </StackPanel>
+    </Canvas>
 </UserControl>

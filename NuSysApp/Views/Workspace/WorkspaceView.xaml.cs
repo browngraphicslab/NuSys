@@ -119,7 +119,7 @@ namespace NuSysApp
                 case Options.Erase:
                     InqCanvas.SetErasing(true);
                     break;
-                case Options.Highlight:
+                case Options.Color:
                     InqCanvas.SetHighlighting(true);
                     break;
                 case Options.Save:
