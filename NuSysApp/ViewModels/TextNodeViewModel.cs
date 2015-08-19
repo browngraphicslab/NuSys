@@ -47,19 +47,24 @@ namespace NuSysApp
                     this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
                     //this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
                     break;
+                case "Model_Text":
+                    this.Data = ((TextNode) this.Model).Text;
+                    break;
             }
         }
         
         #region Public Properties
 
+        private string _data;
         /// <summary>
         /// data contained by text node
         /// </summary>
         public string Data
         {
-            get { return ((TextNode)this.Model).Text; }
+            get { return _data; }
             set
             {
+                _data = value;
                 ((TextNode)this.Model).Text = value;
                 RaisePropertyChanged("Data");
             }
