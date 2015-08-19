@@ -931,7 +931,7 @@ namespace NuSysApp
                         {
                             await SendMassTCPMessage("SPECIAL10:" + message);
                         }
-                        WorkSpaceModel.RemoveNode(message);
+                        await WorkSpaceModel.RemoveNode(message);
                         return;
                     }
                     else
