@@ -2,6 +2,7 @@
 using SQLite.Net.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace NuSysApp
 
         public NodeViewModel CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
+            string ID = node.Attributes.GetNamedItem("id").ToString();
             string currType = node.Attributes.GetNamedItem("nodeType").Value;
             double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
             double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
@@ -81,30 +83,25 @@ namespace NuSysApp
                 string ID = node.Attributes.GetNamedItem("id").Value;
                 switch (AtomType)
                 {
-
                     case "Group":
-                        string type = node.Attributes.GetNamedItem("nodeType").Value;
                         double x = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
                         double y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
-                        double w = Convert.ToDouble(node.Attributes.GetNamedItem("width").Value);
-                        double h = Convert.ToDouble(node.Attributes.GetNamedItem("height").Value);
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                         () =>
                         {
                             GroupViewModel groupVm = new GroupViewModel(vm, ID);
+                            vm.Model.AtomDict.Add(ID, groupVm);
                             foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
                             {
                                 NodeViewModel newVM = this.CreateNodeFromXml(vm, child);
+                                vm.AtomViewList.Remove(newVM.View); // View has to be removed from workspace's AtomViewList so it can be added to the group's AtomViewList
                                 groupVm.AddNode(newVM);
-                                //((Node)newVM.Model).ParentGroup = ((Group)groupVm.Model);
+                                ((Node)newVM.Model).ParentGroup = ((Group)groupVm.Model);
                                 newVM.ParentGroup = groupVm;
                             }
-                            //groupVm.Width = w;
-                            //groupVm.Height = h;
                             vm.NodeViewModelList.Add(groupVm);
                             vm.AtomViewList.Add(groupVm.View);
                             vm.PositionNode(groupVm, x, y);
-                            
                         });
                         break;
                     case "Node":
@@ -117,8 +114,7 @@ namespace NuSysApp
                     case "Link":
                         string atomID1 = node.Attributes.GetNamedItem("atomID1").ToString();
                         string atomID2 = node.Attributes.GetNamedItem("atomID2").ToString();
-                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                            () =>
+                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,() =>
                             {
                                 AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
                                 AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];

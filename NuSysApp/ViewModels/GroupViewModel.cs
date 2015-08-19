@@ -23,7 +23,6 @@ namespace NuSysApp
 
         public GroupViewModel(WorkspaceViewModel vm, string id): base(vm, id)
         {
-            Debug.WriteLine("id=" + id.ToString());
             this.AtomType = Constants.Node;
             this.Model = new Group(id);
             this.Model.ID = id;

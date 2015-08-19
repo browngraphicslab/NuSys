@@ -61,7 +61,6 @@ namespace NuSysApp
             FMTransform = new CompositeTransform();
            
         }
-       
         private async void Init()
         {
             await SetupDirectories();
@@ -212,7 +211,7 @@ namespace NuSysApp
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    CreateNewGroup(node, node2);
+                    CreateNewGroup("null", node, node2);
                     return true;
                 }
             }
@@ -225,6 +224,8 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
+            // store the ID so that the next atom can be instantiated using this ID
+
             //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
@@ -248,7 +249,6 @@ namespace NuSysApp
             {
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
-           
         }
 
         /// <summary>
@@ -303,7 +303,6 @@ namespace NuSysApp
             if (atomVm1 == atomVm2) return null;
             var vm = new LinkViewModel(atomVm1, atomVm2, this, id);
             Model.AtomDict.Add(id, vm);
-
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -390,7 +389,7 @@ namespace NuSysApp
             return  vm;
         }
 
-        public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
+        public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
         {
             if (node1 is GroupViewModel)
             {
@@ -419,6 +418,7 @@ namespace NuSysApp
             NodeViewModelList.Add(groupVm);
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
+            Model.AtomDict.Add(id, groupVm);
 
             //Add the first node
             groupVm.AddNode(node1);
@@ -450,7 +450,6 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
-            //this.getXml();
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == "1");
             query.FirstOrDefaultAsync().ContinueWith((t) => 
@@ -510,7 +509,6 @@ namespace NuSysApp
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }
-
         public LinkMode CurrentLinkMode { get; set; }
 
         public CompositeTransform CompositeTransform
