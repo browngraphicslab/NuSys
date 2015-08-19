@@ -93,7 +93,6 @@ namespace NuSysApp
             this.X = 0;
             this.Y = 0;
             RaisePropertyChanged("Transform");
-            Debug.WriteLine(WorkSpaceViewModel.AtomViewList.Count);
         }
         /// <summary>
         /// toggles editing ability of nodes.
