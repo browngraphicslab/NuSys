@@ -636,28 +636,29 @@ namespace NuSysApp
         {
             if (message.Length > 0)//if message exists
             {
-                if (_otherIPs.Contains(ip) || ip == _localIP)
+                if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    if (message.Substring(0, 7) != "SPECIAL") //if not a special message
+                    var miniStrings = message.Split("&&".ToCharArray()); //break up message into subparts
+                    foreach (var subMessage in miniStrings)
                     {
-                        var miniStrings = message.Split("&&".ToCharArray()); //break up message into subparts
-                        foreach (var subMessage in miniStrings)
+                        if (subMessage.Length > 0)
                         {
-                            if (subMessage.Length > 0)
-                            {
-                                await this.HandleSubMessage(ip, subMessage, packetType); //handle each submessage
-                            }
+                            await this.HandleSubMessage(ip, subMessage, packetType); //handle each submessage
                         }
-                    }
-                    else
-                    {
-                        await this.HandleSubMessage(ip, message, packetType);
                     }
                 }
                 else
                 {
-                    Debug.WriteLine("Recieved message from unknown IP: " + ip);
-                    return;
+                    try
+                    {
+                        await this.HandleSubMessage(ip, message, packetType);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        Debug.WriteLine("ERROR: Message recieved tried to access a dictionary when remote IP isn't know");
+                        //go back to waiting room or reconnect
+                        return;
+                    }
                 }
             }
             else

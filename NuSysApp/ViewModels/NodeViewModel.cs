@@ -1,4 +1,5 @@
 ﻿
+using NuSysApp.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -21,12 +22,15 @@ namespace NuSysApp
 
         private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
+
         private MatrixTransform _transform;
+
+        private GroupViewModel _group;
+
         #endregion Private Members
         protected NodeViewModel(WorkspaceViewModel vm, string id): base(vm, id)
         {
             this.AtomType = Constants.Node;
-
         }
 
         #region Node Manipulations
@@ -126,7 +130,7 @@ namespace NuSysApp
 
             if (this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
             {
-                this.IsAnnotation = true;
+                ((Node)this.Model).IsAnnotation = true;
             }
         }
         #endregion Node Manipulations
@@ -145,7 +149,6 @@ namespace NuSysApp
                     parent_PropertyChanged(null, null);
                     this.Width = Constants.DefaultAnnotationSize * 2;
                     this.Height = Constants.DefaultAnnotationSize;
-
                 }
                 else
                 {
@@ -163,7 +166,11 @@ namespace NuSysApp
             this.Transform.Matrix = transMat;
         }
 
-        public bool IsAnnotation { get; set; }
+        public bool IsAnnotation
+        {
+            get { return ((Node)Model).IsAnnotation; }
+            set { ((Node)Model).IsAnnotation = value; }
+        }
 
         public string id
         {
@@ -308,11 +315,18 @@ namespace NuSysApp
         {
             get
             {
-                return ((Node)this.Model).ParentGroup;
+                return _group;
             }
             set
             {
-                ((Node)this.Model).ParentGroup = value;
+                _group = value;
+                if (_group != null)
+                {
+                    ((Node)Model).ParentGroup = (Group)_group.Model;
+                }
+                
+                //Debug.WriteLine(_group.Model == null);
+                //Debug.WriteLine(((Node)Model).ParentGroup == null);
             }
         }
 

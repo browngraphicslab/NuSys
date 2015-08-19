@@ -44,7 +44,6 @@ namespace NuSysApp.Views.Workspace
             _strokes.Remove(sender as Polyline);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-            Debug.WriteLine("click at " + p.X + ", " + p.Y);
             Polyline[] lines = {sender as Polyline};
             string plines = "";
             foreach (Polyline pl in lines)

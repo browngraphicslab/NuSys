@@ -16,6 +16,7 @@ namespace NuSysApp
                 foreach (var fileType in allowedFileTypes)
                 {
                     fileOpenPicker.FileTypeFilter.Add(fileType);
+                    //fileOpenPicker.FileTypeFilter.Add(fileType.ToUpper());
                 }
             }
             try

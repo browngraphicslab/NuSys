@@ -128,7 +128,11 @@
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
-    <Compile Include="MISC\Cortana.cs" />
+    <Compile Include="Cortana\Cortana.cs" />
+    <Compile Include="Cortana\CortanaContinuousRecognition.cs" />
+    <Compile Include="Cortana\CortanaPopup.xaml.cs">
+      <DependentUpon>CortanaPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MISC\Factory.cs" />
     <Compile Include="MISC\FileManager.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
@@ -242,10 +246,6 @@
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\underline.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
-    <Content Include="MISC\CortanaCommands.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -260,6 +260,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Cortana\CortanaPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
