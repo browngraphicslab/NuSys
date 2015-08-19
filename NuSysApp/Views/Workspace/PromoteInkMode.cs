@@ -9,7 +9,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     internal class PromoteInkMode : AbstractWorkspaceViewMode
     {

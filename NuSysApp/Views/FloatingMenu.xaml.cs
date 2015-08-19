@@ -38,23 +38,17 @@ namespace NuSysApp
                 idleButton,
                 saveButton
             };
-            SetOpacityActive(idleButton, cortanaButton);
+            SetOpacityActive(idleButton);
         }
 
-        public void SetOpacityActive(params Button[] btnsToActivate)
+        public void SetOpacityActive(Button btnToActivate)
         {
             // set all buttons to deactivated opacity
             foreach (var btn in _buttons)
             {
                 btn.Opacity = Constants.ButtonDeactivatedOpacity;
             }
-            //cortanaButton.Opacity = WorkspaceView.CortanaRunning
-            //    ? Constants.ButtonDeactivatedOpacity
-            //    : Constants.ButtonActivatedOpacity;
-            foreach (var btnToActivate in btnsToActivate)
-            {
-                btnToActivate.Opacity = Constants.ButtonActivatedOpacity;
-            }
+            btnToActivate.Opacity = Constants.ButtonActivatedOpacity;
             // Close any open submenus
             if (!_subMenuOpen) return;
             slidein.Begin();

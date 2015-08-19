@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    class Cortana
+    partial class Cortana
     {
         protected Cortana() { }
 
@@ -20,12 +20,14 @@ namespace NuSysApp
         protected const string BeginDictationCommand = "dictate";
         protected const string RecognizerFailedIndicator = "recognizerfailed";
 
-        // Speech commands should be accessible from CortanaMode.
-        public static readonly IReadOnlyCollection<string> NodeCreationCommands = new List<string>
+        protected const string OpenDocumentCommand = "open document";
+        protected const string CreateTextCommand = "create text";
+        protected const string CreateInkCommand = "create ink";
+        protected static readonly IReadOnlyCollection<string> NodeCreationCommands = new List<string>
         {
-            "open document",
-            "create text",
-            "create ink",
+            OpenDocumentCommand,
+            CreateTextCommand,
+            CreateInkCommand,
         };
 
         /// <summary>
@@ -71,11 +73,19 @@ namespace NuSysApp
             return dictatedString.Substring(0, index-1);
         }
 
-        protected static string GetAllAfterResetCommand(string dictatedString)
+        /// <summary>
+        /// Returns the substring following the last instance of the reset command.
+        /// </summary>
+        /// <param name="dictatedString"></param>
+        /// <returns></returns>
+        protected static string GetSubstringFollowingResetCommand(string dictatedString)
         {
-            if (!dictatedString.Contains(ResetStringBuilderCommand)) return dictatedString;
-            var index = dictatedString.IndexOf(ResetStringBuilderCommand, StringComparison.OrdinalIgnoreCase);
-            return dictatedString.Substring(index + ResetStringBuilderCommand.Length + 1);
+            while (true)
+            {
+                if (!dictatedString.Contains(ResetStringBuilderCommand)) return dictatedString;
+                var index = dictatedString.IndexOf(ResetStringBuilderCommand, StringComparison.OrdinalIgnoreCase);
+                dictatedString = dictatedString.Substring(index + ResetStringBuilderCommand.Length);
+            }
         }
 
         protected static async Task HandleSpeechException(Exception exception)

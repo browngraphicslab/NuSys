@@ -2,7 +2,6 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using NuSysApp.Views.Workspace;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -22,7 +21,7 @@ namespace NuSysApp
         private AbstractWorkspaceViewMode _mode;
 
         public static bool CortanaRunning { get; set; }
-        private readonly CortanaMode _cortanaModeInstance;
+        private readonly Cortana.CortanaMode _cortanaModeInstance;
 
         #endregion Private Members
 
@@ -32,9 +31,8 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            _cortanaModeInstance = new CortanaMode(this);
-            _cortanaModeInstance.Activate();
-            CortanaRunning = true;
+            _cortanaModeInstance = new Cortana.CortanaMode(this);
+            CortanaRunning = false;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)

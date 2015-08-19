@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class SaveMode : AbstractWorkspaceViewMode
     {
