@@ -32,6 +32,12 @@ namespace NuSysApp
             base.UnPack(props);
         }
 
+        public override Dictionary<string,string> Pack()
+        {
+            Dictionary<string, string> dict = base.Pack();
+            dict.Add("text",Text);
+            return dict;
+        }
         public override XmlElement WriteXML(XmlDocument doc)
         {
 
