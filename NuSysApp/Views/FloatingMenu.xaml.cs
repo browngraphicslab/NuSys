@@ -62,7 +62,10 @@ namespace NuSysApp
                 btn.BorderBrush = null;
             }
             // set clicked button to activated border
-            btnToActivate.BorderBrush = _borderColor;
+            if (btnToActivate.Name == "inkButton" || btnToActivate.Name == "idleButton")
+            {
+                btnToActivate.BorderBrush = _borderColor;
+            }
             // Close any open submenus
             if (!_subMenuOpen && !_subMenuSelectOpen && !_subMenuNodesOpen && !_subMenuAdditionalOpen) return;
             slidein.Begin();
@@ -128,11 +131,13 @@ namespace NuSysApp
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)
         {
+            SetActive((Button)sender);
             ModeChange?.Invoke((Options.Erase));
         }
 
         private void Color_OnTapped(object sender, RoutedEventArgs e)
         {
+            SetActive((Button)sender);
             ModeChange?.Invoke((Options.Color));
         }
 

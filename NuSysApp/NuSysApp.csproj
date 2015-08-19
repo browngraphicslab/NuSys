@@ -101,6 +101,7 @@
     <Content Include="Assets\bold.png" />
     <Content Include="Assets\bullets.png" />
     <Content Include="Assets\font size.png" />
+    <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_eraser.png" />
     <Content Include="Assets\icon_export.png" />
     <Content Include="Assets\icon_media.png" />
