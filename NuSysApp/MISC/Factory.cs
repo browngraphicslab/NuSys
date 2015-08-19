@@ -8,10 +8,6 @@ namespace NuSysApp
 {
     public class Factory
     {
-        public static RichTextNodeViewModel CreateNewRichText(WorkspaceViewModel vm, string id, string html)
-        {
-            return new RichTextNodeViewModel(vm, id) { Data = html };
-        }
         public async static Task<ImageNodeViewModel> CreateNewImage(WorkspaceViewModel vm, string id, StorageFile storageFile)
         {
             var invm = new ImageNodeViewModel(vm, id);

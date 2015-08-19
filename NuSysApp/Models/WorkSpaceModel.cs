@@ -118,10 +118,10 @@ namespace NuSysApp
                         AtomViewModel avm2;
                         if (_idDict.ContainsKey(id1))
                         {
-                            //avm1 = _idDict[id1]
+                            //avm1 = _idDict[id1];
                         }
 
-                        //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id)
+                        //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id);
                     }
                 }
                 _isNetwork = false;

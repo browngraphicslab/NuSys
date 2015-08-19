@@ -151,7 +151,6 @@
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
     <Compile Include="Models\PDFNodeModel.cs" />
-    <Compile Include="Models\RichTextNode.cs" />
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
@@ -169,7 +168,6 @@
     <Compile Include="ViewModels\LinkViewModel.cs" />
     <Compile Include="ViewModels\NodeViewModel.cs" />
     <Compile Include="ViewModels\PdfNodeViewModel.cs" />
-    <Compile Include="ViewModels\RichTextNodeViewModel.cs" />
     <Compile Include="ViewModels\TextNodeViewModel.cs" />
     <Compile Include="ViewModels\WorkspaceViewModel.cs" />
     <Compile Include="Views\Links\BezierLinkView.xaml.cs">
@@ -191,9 +189,6 @@
     <Compile Include="Views\Nodes\NodeTemplate.cs" />
     <Compile Include="Views\Nodes\PdfNodeView2.xaml.cs">
       <DependentUpon>PdfNodeView2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Nodes\RichTextNodeView2.xaml.cs">
-      <DependentUpon>RichTextNodeView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\TextNodeView2.xaml.cs">
       <DependentUpon>TextNodeView2.xaml</DependentUpon>
@@ -295,10 +290,6 @@
     <Page Include="Views\Nodes\PdfNodeView2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Nodes\RichTextNodeView2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Nodes\TextNodeView2.xaml">
       <SubType>Designer</SubType>
