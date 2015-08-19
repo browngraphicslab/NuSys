@@ -85,12 +85,15 @@ namespace NuSysApp
             {
                 expand.Begin();
                 _FloatingMenuCollapsed = false;
+                CollapseImage.Visibility = Visibility.Visible;
+                ExpandImage.Visibility = Visibility.Collapsed;
             }
             else
             {
                 collapse.Begin();
                 _FloatingMenuCollapsed = true;
-                //ExpandableImage.Source = new ImageSource();
+                CollapseImage.Visibility = Visibility.Collapsed;
+                ExpandImage.Visibility = Visibility.Visible;
             }
 
         }
