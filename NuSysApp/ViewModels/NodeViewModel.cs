@@ -241,20 +241,22 @@ namespace NuSysApp
             }
         }
 
+        private double _height, _width;
         /// <summary>
         /// Width of this atom
         /// </summary>
         public double Width
         {
-            get { return ((Node)Model).Width; }
+            get { return _width }
             set
             {
-                if (((Node)Model).Width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
+                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
                 {
                     return;
                 }
+                _width = value;
                 ((Node)Model).Width = value;
-
+         
                 RaisePropertyChanged("Width");
             }
         }
@@ -264,16 +266,15 @@ namespace NuSysApp
         /// </summary>
         public double Height
         {
-            get { return ((Node)Model).Height; }
+            get { return _height; }
             set
             {
-                if (((Node)Model).Height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
+                if (_height == value || value < Constants.MinNodeSize) //prevent atom from getting to small
                 {
                     return;
                 }
-
+                _height = value;
                 ((Node)Model).Height = value;
-
                 RaisePropertyChanged("Height");
             }
         }
