@@ -18,7 +18,7 @@ namespace NuSysApp
     {
         #region Private Members
 
-        //private AtomViewModel _atom1, _atom2;
+        private AtomViewModel _atom1, _atom2;
         #endregion Private members
 
         public LinkViewModel(AtomViewModel atom1,
@@ -26,7 +26,9 @@ namespace NuSysApp
         {
             this.Model = new Link(atom1.Model, atom2.Model, id);
             this.Atom1 = atom1;
+            ((Link)Model).atom1.Model = atom1.Model;
             this.Atom2 = atom2;
+            ((Link)Model).atom2.Model = atom2.Model;
             this.AtomType = Constants.Link;
             this.Atom1.UpdateAnchor();
             this.Atom2.UpdateAnchor();
@@ -70,28 +72,28 @@ namespace NuSysApp
         public NodeViewModel Annotation { get; set; }
         public AtomViewModel Atom1
         {
-            get { return ((Link)Model).atom1; }
+            get { return _atom1; }
             set
             {
-                if (((Link)Model).atom1 == value)
+                if (_atom1 == value)
                 {
                     return;
                 }
-                ((Link)Model).atom1 = value;
+                _atom1 = value;
                 RaisePropertyChanged("Atom1");
             }
         }
 
         public AtomViewModel Atom2
         {
-            get { return ((Link)Model).atom2; }
+            get { return _atom2;}
             set
             {
-                if (((Link)Model).atom2 == value)
+                if (_atom2 == value)
                 {
                     return;
                 }
-                ((Link)Model).atom2 = value;
+                _atom2 = value;
                 RaisePropertyChanged("Atom2");
             }
         }
@@ -134,21 +136,7 @@ namespace NuSysApp
         public XmlElement WriteXML(XmlDocument doc)
         {
 
-            Link linkModel = (Link) this.Model;
-
-            //XmlElement 
-            XmlElement link = doc.CreateElement(string.Empty, "Link", string.Empty); //TODO: Change how we determine node type for name
-
-            //Atoms that this link is bound to
-            XmlAttribute id1 = doc.CreateAttribute("atomID1");
-            id1.Value = ((Link)this.Model).InAtomID.ToString();
-            link.SetAttributeNode(id1);
-
-            XmlAttribute id2 = doc.CreateAttribute("atomID2");
-            id2.Value = ((Link)this.Model).OutAtomID.ToString();
-            link.SetAttributeNode(id2);
-
-            return link;
+            return ((Link)Model).WriteXML(doc);
         }
 
 

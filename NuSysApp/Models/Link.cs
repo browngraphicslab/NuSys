@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace NuSysApp
 {
@@ -14,7 +15,6 @@ namespace NuSysApp
         }
         public string InAtomID { get; set; }
         public string OutAtomID { get; set; }
-
         public override void UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("id1"))
@@ -37,5 +37,34 @@ namespace NuSysApp
         }
         public AtomViewModel atom1 { get; set; }
         public AtomViewModel atom2 { get; set; }
+        public Node Annotation { get; set; }
+        public XmlElement WriteXML(XmlDocument doc)
+        {
+            //XmlElement 
+            XmlElement link = doc.CreateElement(string.Empty, "Link", string.Empty); //TODO: Change how we determine node type for name
+
+            //ID of this link
+            XmlAttribute id = doc.CreateAttribute("id");
+            id.Value = this.ID.ToString();
+            link.SetAttributeNode(id);
+
+            //Atoms that this link is bound to
+            XmlAttribute id1 = doc.CreateAttribute("atomID1");
+            id1.Value = InAtomID.ToString();
+            link.SetAttributeNode(id1);
+
+            XmlAttribute id2 = doc.CreateAttribute("atomID2");
+            id2.Value = OutAtomID.ToString();
+            link.SetAttributeNode(id2);
+
+            //Annotation, if any
+            if (this.Annotation != null)
+            {
+                XmlElement linkAnnotation = this.Annotation.WriteXML(doc);
+                link.AppendChild(linkAnnotation);
+            }
+
+            return link;
+        }
     }
 }

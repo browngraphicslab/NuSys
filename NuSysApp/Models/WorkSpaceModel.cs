@@ -15,7 +15,6 @@ namespace NuSysApp
     {
 
         //Node _selectedNode;
-        Dictionary<int, Node> _nodeDict;
         private Dictionary<string, Atom> _idDict;
         private WorkspaceViewModel _workspaceViewModel;
         private int _currentId;
@@ -23,13 +22,16 @@ namespace NuSysApp
         //private Factory _factory;
         public WorkSpaceModel(WorkspaceViewModel vm)
         {
-            _nodeDict = new Dictionary<int, Node>();
             _idDict = new Dictionary<string, Atom>();
             _workspaceViewModel = vm;
+            AtomDict = new Dictionary<string, AtomViewModel>();
             _currentId = 0;
             NetworkConnector.Instance.WorkSpaceModel = this;
             // _factory = new Factory(this);
         }
+        public Dictionary<string, AtomViewModel> AtomDict
+        { set; get; }
+
         public void CreateNewTextNode(string data)
         {
             //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
