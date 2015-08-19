@@ -59,8 +59,9 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
+           
         }
-
+       
         private async void Init()
         {
             await SetupDirectories();

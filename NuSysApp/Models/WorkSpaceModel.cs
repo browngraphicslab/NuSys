@@ -13,7 +13,9 @@ namespace NuSysApp
 {
     public class WorkSpaceModel
     {
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
 
+        public event DeleteEventHandler OnDeletion;
         //Node _selectedNode;
         private Dictionary<string, Atom> _idDict;
         private WorkspaceViewModel _workspaceViewModel;
@@ -198,6 +200,7 @@ namespace NuSysApp
         {
             if (_idDict.ContainsKey(id))
             {
+                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
                 //TODO Remove node visually
                 _idDict.Remove(id);
             }
@@ -224,5 +227,21 @@ namespace NuSysApp
             }
             return "";
         }
+        public class DeleteEventArgs : EventArgs
+        {
+            private string EventInfo;
+
+            public DeleteEventArgs(string text)
+            {
+                EventInfo = text;
+            }
+            
+            public string GetInfo()
+            {
+                return EventInfo;
+            }
+        }
     }
+
+    
 }
