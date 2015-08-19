@@ -142,6 +142,7 @@ namespace NuSysApp
         {
             _hostIP = _localIP;
             _locksOut = new Dictionary<string, string>();
+            _localLocks = new HashSet<string>();
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
             _pingResponses = new Dictionary<string, int>();

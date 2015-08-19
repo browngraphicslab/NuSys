@@ -95,7 +95,6 @@ namespace NuSysApp
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
                             var nodeVm = CreateNewNode("null",NodeType.Image, p.X, p.Y, imageFile);//TODO make actual Id's
-
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
@@ -224,8 +223,6 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
-            // store the ID so that the next atom can be instantiated using this ID
-
             //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
@@ -315,7 +312,6 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
             return vm;
         }
-
         public async Task<NodeViewModel> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
