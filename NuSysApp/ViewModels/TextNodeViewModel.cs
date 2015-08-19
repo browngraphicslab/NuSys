@@ -40,11 +40,11 @@ namespace NuSysApp
                     this.Height = ((Node)this.Model).Height;
                     break;
                 case "Model_X":
-                    this.SetPosition(this.X, this.Y);
+                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
                     //this.WorkSpaceViewModel.PositionNode(this, ((Node)this.Model).X, this.Y);
                     break;
                 case "Model_Y":
-                    this.SetPosition(this.X, this.Y);
+                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
                     //this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
                     break;
             }
