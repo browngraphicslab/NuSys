@@ -315,6 +315,7 @@ namespace NuSysApp
 
             var vm = new LinkViewModel(atomVm1, atomVm2, this, currId);
             Model.AtomDict.Add(currId, vm);
+            currId++;
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -378,6 +379,7 @@ namespace NuSysApp
                     return null;
             }
             Model.AtomDict.Add(currId, vm);
+            currId++;
             NodeViewModelList.Add(vm);
 
             if (vm != null)

@@ -221,6 +221,9 @@
             <Button x:Name="NewNode" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_node.png" ></Image>
             </Button>
+            <Button x:Name="InkNode" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" Tapped="InkNodeButton_Click">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_scribble.png"></Image>
+            </Button>
             <Button x:Name="NewMedia" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click"> 
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_media.png"></Image>
             </Button>

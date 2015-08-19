@@ -106,6 +106,7 @@
     <Content Include="Assets\icon_export.png" />
     <Content Include="Assets\icon_media.png" />
     <Content Include="Assets\icon_node.png" />
+    <Content Include="Assets\icon_scribble.png" />
     <Content Include="Assets\icon_select.png" />
     <Content Include="Assets\image.png" />
     <Content Include="Assets\link.png" />
