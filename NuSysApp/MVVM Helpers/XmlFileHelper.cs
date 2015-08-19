@@ -39,12 +39,13 @@ namespace NuSysApp
         public NodeViewModel CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
             int ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
+            vm.currId = ID;
             string currType = node.Attributes.GetNamedItem("nodeType").Value;
             double X = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
             double Y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
             double width = Convert.ToDouble(node.Attributes.GetNamedItem("width").Value);
             double height = Convert.ToDouble(node.Attributes.GetNamedItem("height").Value);
-            NodeViewModel nodeVM = new TextNodeViewModel(vm, string.Empty, 0); //Just a filler - gets reassigned in all cases
+            NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
             switch (currType)
             {
                 case "text":
@@ -81,6 +82,7 @@ namespace NuSysApp
             {
                 string AtomType = node.Name;
                 int ID = Convert.ToInt16(node.Attributes.GetNamedItem("id").Value);
+                vm.currId = ID;
                 switch (AtomType)
                 {
                     case "Group":
@@ -90,10 +92,11 @@ namespace NuSysApp
                         () =>
                         {
                             GroupViewModel groupVm = new GroupViewModel(vm, ID);
+                            vm.Model.AtomDict.Add(ID, groupVm);
                             foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
                             {
                                 NodeViewModel newVM = this.CreateNodeFromXml(vm, child);
-                                vm.AtomViewList.Remove(newVM.View);
+                                vm.AtomViewList.Remove(newVM.View); // View has to be removed from workspace's AtomViewList so it can be added to the group's AtomViewList
                                 groupVm.AddNode(newVM);
                                 ((Node)newVM.Model).ParentGroup = ((Group)groupVm.Model);
                                 newVM.ParentGroup = groupVm;
@@ -133,7 +136,6 @@ namespace NuSysApp
                         break;
                 }
             }
-            Debug.WriteLine("REACH");
         }
     }
 }

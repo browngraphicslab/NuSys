@@ -34,6 +34,7 @@ namespace NuSysApp
         //private readonly Factory _factory;
         private SQLiteDatabase myDB;
         private int idCounter;
+        private Queue<int> availableId;
 
         public enum LinkMode
         {
@@ -56,6 +57,7 @@ namespace NuSysApp
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
             idCounter = 0;
+            availableId = new Queue<int>();
 
             Init();
             var c = new CompositeTransform
@@ -66,7 +68,6 @@ namespace NuSysApp
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
-
 
         private async void Init()
         {
@@ -138,8 +139,7 @@ namespace NuSysApp
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-                        
-                        idCounter++;
+       
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         var nodeVm = CreateNewNode(NodeType.Richtext, p.X, p.Y, text);
                     });
@@ -235,6 +235,9 @@ namespace NuSysApp
         /// <param name="nodeVM"></param>
         public void DeleteNode(NodeViewModel nodeVM)
         {
+            // store the ID so that the next atom can be instantiated using this ID
+            availableId.Enqueue(nodeVM.ID);
+
             //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
             foreach (var linkVm in nodeVM.LinkList)
@@ -258,7 +261,6 @@ namespace NuSysApp
             {
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
-           
         }
 
         /// <summary>
@@ -310,10 +312,9 @@ namespace NuSysApp
             {
                 return null;
             }
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
-            Model.AtomDict.Add(idCounter, vm);
-            idCounter++;
 
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, currId);
+            Model.AtomDict.Add(currId, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -333,16 +334,16 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    vm = new TextNodeViewModel(this, (string)data, currId);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    vm = new TextNodeViewModel(this, (string)data, currId);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel(this, idCounter);
+                    vm = new InkNodeViewModel(this, currId);
                     break;
                 case NodeType.Image:
-                    var imgVM = new ImageNodeViewModel(this, idCounter);
+                    var imgVM = new ImageNodeViewModel(this, currId);
                     await imgVM.InitializeImageNodeAsync((StorageFile)data);
                     vm = imgVM;
                     break;
@@ -352,14 +353,14 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM1 = new ImageNodeViewModel(this, idCounter);
+                        var imgVM1 = new ImageNodeViewModel(this, currId);
                         await imgVM1.InitializeImageNodeAsync(storageFile);
                         vm = imgVM1;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {
-                        var pdfVM = new PdfNodeViewModel(this, idCounter);
+                        var pdfVM = new PdfNodeViewModel(this, currId);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
                     }
@@ -376,8 +377,7 @@ namespace NuSysApp
                 default:
                     return null;
             }
-            Model.AtomDict.Add(idCounter, vm);
-            idCounter++;
+            Model.AtomDict.Add(currId, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -419,8 +419,7 @@ namespace NuSysApp
             }
 
             //Create new group, because no group exists
-            groupVm = new GroupViewModel(this, idCounter);
-            idCounter++;
+            groupVm = new GroupViewModel(this, currId);
 
             //Set location to node2's location
             var xCoordinate = node2.Transform.Matrix.OffsetX;
@@ -430,6 +429,7 @@ namespace NuSysApp
             NodeViewModelList.Add(groupVm);
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
+            Model.AtomDict.Add(currId, groupVm);
 
             //Add the first node
             groupVm.AddNode(node1);
@@ -521,7 +521,7 @@ namespace NuSysApp
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }
-
+        public int currId { get; set; }
         public LinkMode CurrentLinkMode { get; set; }
 
         public CompositeTransform CompositeTransform
