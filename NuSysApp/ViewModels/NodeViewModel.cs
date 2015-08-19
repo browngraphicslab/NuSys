@@ -68,8 +68,8 @@ namespace NuSysApp
                 }
                 Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
-                ((Node)Model).X = transMat.OffsetX;
-                ((Node)Model).Y = transMat.OffsetY;
+                //((Node)Model).X = transMat.OffsetX;
+                //((Node)Model).Y = transMat.OffsetY;
                 this.UpdateAnchor();
                 foreach (var link in LinkList)
                 {
