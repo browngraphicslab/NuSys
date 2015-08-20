@@ -950,7 +950,7 @@ namespace NuSysApp
                 {
                     Dictionary<string, string> dict = ParseOutProperties(message);
                     dict["id"] = dict["OLDSQLID"];
-                    dict.Remove("OLDSQID");
+                    dict.Remove("OLDSQLID");
                     string m = MakeSubMessageFromDict(dict);
                     await HandleRegularMessage(ip, m, packetType);
                     await SendMassTCPMessage(m);
@@ -1012,7 +1012,6 @@ namespace NuSysApp
                 var subParts = part.Split('=');
                 if (subParts.Length != 2)
                 {
-                    Debug.WriteLine("Error, property formatted wrong in message: " + message);
                     continue;
                 }
                 props.Add(subParts[0], subParts[1]);
