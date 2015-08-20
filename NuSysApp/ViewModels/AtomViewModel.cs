@@ -95,7 +95,18 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
-                this.Color = _canEdit == Atom.EditStatus.No ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Constants.DefaultColor);
+                if (_canEdit == Atom.EditStatus.No)
+                {
+                    this.Color = new SolidColorBrush(Colors.Chartreuse);
+                }
+                else
+                {
+                    this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
+                    //if(_canEdit == Atom.EditStatus.Yes)
+                    //{
+                    //    this.Color = new SolidColorBrush(Constants.DefaultColor);
+                    //}
+                }
             }
         }
         /// <summary>
