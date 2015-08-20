@@ -14,10 +14,12 @@ namespace NuSysApp.Network
         private bool _timing = false;
         private DispatcherTimer _timer;
         private string _atomID;
-        public DebouncingDictionary(string atomID)
+        private Atom _atom;
+        public DebouncingDictionary(Atom atom)
         {
             _dict = new Dictionary<string, string>();
-            _atomID = atomID;
+            _atomID = atom.ID;
+            _atom = atom;
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             _timer.Tick += SendMessage;
@@ -35,7 +37,7 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.ModelLocked)
+            if (!NetworkConnector.Instance.ModelLocked && _atom.CanEdit)
             {
                 if (!_timing)
                 {
@@ -58,8 +60,11 @@ namespace NuSysApp.Network
         private async void SendMessage(object sender, object e)
         {
             _timer.Stop();
-            _dict.Add("id",_atomID);
-            await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+            if (_atom.CanEdit)
+            {
+                _dict.Add("id", _atomID);
+                await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+            }
             _timing = false;
             _dict.Clear();
         }

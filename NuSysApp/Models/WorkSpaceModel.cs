@@ -18,6 +18,8 @@ namespace NuSysApp
         public event DeleteEventHandler OnDeletion;
         //Node _selectedNode;
         private Dictionary<string, Atom> _idDict;
+        private Dictionary<string, string> _locks;
+        private HashSet<string> _locksHeld; 
         private WorkspaceViewModel _workspaceViewModel;
         private int _currentId;
         //private Factory _factory;
@@ -27,33 +29,39 @@ namespace NuSysApp
             _workspaceViewModel = vm;
             AtomDict = new Dictionary<string, AtomViewModel>();
             _currentId = 0;
+            _locks = new Dictionary<string, string>();
+            _locksHeld = new HashSet<string>();
             NetworkConnector.Instance.WorkSpaceModel = this;
             // _factory = new Factory(this);
         }
-        public Dictionary<string, AtomViewModel> AtomDict
-        { set; get; }
+
+        public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
         public void CreateNewTextNode(string data)
         {
             //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
             //CurrentID++;
         }
+
         public int CurrentId
         {
             get { return _currentId; }
-            set { if(value >= _currentId)//decreasing the current ID doesn't make sense
+            set
+            {
+                if (value >= _currentId) //decreasing the current ID doesn't make sense
                 {
                     _currentId = value;
                 }
             }
         }
+
         public async void HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 Dictionary<string, string> props = ParseOutProperties(s);
-                string id = props["id"];//since we called parse properties, it MUST have an id
+                string id = props["id"]; //since we called parse properties, it MUST have an id
                 if (_idDict.ContainsKey(id))
                 {
                     Atom n = _idDict[id];
@@ -131,7 +139,7 @@ namespace NuSysApp
                 string[] subparts = part.Split(" ".ToCharArray());
                 foreach (string subpart in subparts)
                 {
-                    if (subpart.Length > 0 && subpart!="polyline")
+                    if (subpart.Length > 0 && subpart != "polyline")
                     {
                         if (subpart.Substring(0, 6) == "points")
                         {
@@ -155,7 +163,7 @@ namespace NuSysApp
                         else if (subpart.Substring(0, 6) == "stroke")
                         {
                             string sp = subpart.Substring(8, subpart.Length - 10);
-                            poly.Stroke = new SolidColorBrush(Color.FromArgb(255,0,0,1));
+                            poly.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
                             //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
                         }
                     }
@@ -167,10 +175,12 @@ namespace NuSysApp
             }
             return polys.ToArray();
         }
+
         public bool HasAtom(string id)
         {
             return _idDict.ContainsKey(id);
         }
+
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
@@ -180,7 +190,7 @@ namespace NuSysApp
             {
                 if (part.Length > 0)
                 {
-                    string[] subParts = part.Split("=".ToCharArray(),2);
+                    string[] subParts = part.Split("=".ToCharArray(), 2);
                     if (subParts.Length != 2)
                     {
                         Debug.WriteLine("Error, property formatted wrong in message: " + message);
@@ -191,6 +201,7 @@ namespace NuSysApp
             }
             return props;
         }
+
         public async Task RemoveNode(string id)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -215,7 +226,7 @@ namespace NuSysApp
                     ret += '<';
                     Atom atom = kvp.Value;
                     Dictionary<string, string> parts = atom.Pack();
-                    foreach (KeyValuePair<string,string> tup in parts)
+                    foreach (KeyValuePair<string, string> tup in parts)
                     {
                         ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
                     }
@@ -226,6 +237,7 @@ namespace NuSysApp
             }
             return "";
         }
+
         public class DeleteEventArgs : EventArgs
         {
             private string EventInfo;
@@ -234,13 +246,68 @@ namespace NuSysApp
             {
                 EventInfo = text;
             }
-            
+
             public string GetInfo()
             {
                 return EventInfo;
             }
         }
+
+        public async Task SetAtomLock(string id, string ip)
+        {
+            if (HasAtom(id))
+            {
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    _locks[id] = ip;
+                    _idDict[id].CanEdit = (NetworkConnector.Instance.LocalIP == ip || ip == "");
+                    if (NetworkConnector.Instance.LocalIP == ip)
+                    {
+                        _locksHeld.Add(id);
+                    }
+                });
+            }
+            else
+            {
+                Debug.WriteLine("got lock update from unknown node");
+            }
+        }
+
+        private HashSet<string> LocksNeeded(string id)
+        {
+            if (this.HasAtom(id))
+            {
+                HashSet<string> set = new HashSet<string>();
+                set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
+                return set;
+            }
+            return null;
+        }
+
+        public async Task CheckLocks(string id)
+        {
+            HashSet<string> locksNeeded = LocksNeeded(id);
+            foreach (string lockID in _locksHeld)
+            {
+                if (!locksNeeded.Contains(lockID))
+                {
+                    await NetworkConnector.Instance.ReturnLock(lockID);
+                }
+            }
+        }
+
+        public Dictionary<string, string> GetNodeState(string id)
+        {
+            if (HasAtom(id))
+            {
+                return _idDict[id].Pack();
+            }
+            else
+            {
+                return null;
+            }
+        } 
     }
 
-    
 }

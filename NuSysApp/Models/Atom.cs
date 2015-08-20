@@ -17,14 +17,15 @@ namespace NuSysApp
         public Atom(string id)
         {
             ID = id;
-            _debounceDict = new DebouncingDictionary(id);
+            _debounceDict = new DebouncingDictionary(this);
+            CanEdit = true;
         }
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict
         {
             get { return _debounceDict; }
         }
-
+        public bool CanEdit { get; set; } //Network locks
         public string ID { get; set; }
 
         public virtual void UnPack(Dictionary<string, string> props)

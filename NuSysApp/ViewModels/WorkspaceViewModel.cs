@@ -380,7 +380,6 @@ namespace NuSysApp
                 {
                     PositionNode(vm, xCoordinate, yCoordinate);
                 }
-                Debug.WriteLine("Number of atoms in workspace: "+AtomViewList.Count);
             }
             return  vm;
         }
