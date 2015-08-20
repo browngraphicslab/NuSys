@@ -364,6 +364,11 @@ namespace NuSysApp
                         vm = pdfVM;
                     }
                     break;
+                case NodeType.Audio:
+                    var anvm = new AudioNodeViewModel(this, idCounter);
+                    await anvm.InitializeAudioNode();
+                    vm = anvm;
+                    break;
                 //case NodeType.Group: //Only called when reloading
                     //var group = new GroupViewModel(this, idCounter);
                     //idCounter++;

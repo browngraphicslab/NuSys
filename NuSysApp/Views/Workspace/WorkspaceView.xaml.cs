@@ -21,7 +21,7 @@ namespace NuSysApp
         private AbstractWorkspaceViewMode _mode;
 
         public static bool CortanaRunning { get; set; }
-        private readonly Cortana.CortanaMode _cortanaModeInstance;
+        private readonly CortanaContinuousRecognition.CortanaMode _cortanaModeInstance;
 
         #endregion Private Members
 
@@ -31,7 +31,7 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            _cortanaModeInstance = new Cortana.CortanaMode(this);
+            _cortanaModeInstance = new CortanaContinuousRecognition.CortanaMode(this);
             CortanaRunning = false;
         }
 
@@ -113,6 +113,10 @@ namespace NuSysApp
                         _cortanaModeInstance.Activate();
                         CortanaRunning = true;
                     }
+                    break;
+                case Options.AudioCapture:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new AddNodeMode(this, NodeType.Audio), new FloatingMenuMode(this)));
                     break;
                 case Options.Erase:
                     InqCanvas.SetErasing(true);

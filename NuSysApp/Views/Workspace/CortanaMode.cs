@@ -3,7 +3,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    partial class Cortana
+    partial class CortanaContinuousRecognition
     {
         public class CortanaMode : AbstractWorkspaceViewMode
         {
@@ -23,7 +23,7 @@ namespace NuSysApp
                     WorkspaceView.CortanaRunning = true;
                     while (WorkspaceView.CortanaRunning)
                     {
-                        var dictation = await CortanaContinuousRecognition.RunRecognizerAndReturnResult();
+                        var dictation = await RunRecognizerAndReturnResult();
                         await ProcessCommand(dictation);
                     }
                 }

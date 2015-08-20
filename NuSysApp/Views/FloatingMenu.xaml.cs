@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     
     public enum Options {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Highlight, Save
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Highlight, Save
     }
 
 
@@ -35,6 +35,7 @@ namespace NuSysApp
                 scribbleButton,
                 docButton,
                 cortanaButton,
+                audioCaptureButton,
                 idleButton,
                 saveButton
             };
@@ -107,6 +108,12 @@ namespace NuSysApp
                 SetOpacityActive(idleButton);
                 ModeChange?.Invoke(Options.Select);
             }
+        }
+
+        private async void AudioCaptureButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetOpacityActive(audioCaptureButton);
+            ModeChange?.Invoke(Options.AudioCapture);
         }
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {

@@ -4,15 +4,16 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    sealed class CortanaContinuousRecognition : Cortana
+    partial class CortanaContinuousRecognition : Cortana
     {
         private CortanaContinuousRecognition() { }
 
         /// <summary>
-        /// Raises events when commands are encountered, instead of returning anything (or maybe not .__.)
+        /// Initializes speech recognition, continuously listens until the stop command is issued,
+        /// then returns the dictated text.
         /// </summary>
         /// <returns></returns>
-        public static async Task<string> RunRecognizerAndReturnResult()
+        private static async Task<string> RunRecognizerAndReturnResult()
         {
             await ResetRecognizer();
             while (WorkspaceView.CortanaRunning)
@@ -21,6 +22,7 @@ namespace NuSysApp
                 {
                     var dictationChunk = await RunRecognizerChunk(); // bleh (this is where stuff screws up)
                     DictatedStringBuilder.Append(" " + dictationChunk);
+                    CortanaPopupDialog.ModifyPopupText("hi");
                     var processedResult = ProcessDictationChunk(dictationChunk);
                     if (processedResult != null)
                     {
@@ -36,6 +38,11 @@ namespace NuSysApp
             return null;
         }
 
+        /// <summary>
+        /// Determines if a dictated phrase is a "special" phrase. If so, an appropriate result
+        /// is returned. If not, null is returned so RunRecognizerAndReturnResult can continue
+        /// recognizing more speech.
+        /// </summary>
         private static string ProcessDictationChunk(string chunk)
         {
             if (string.IsNullOrWhiteSpace(chunk))

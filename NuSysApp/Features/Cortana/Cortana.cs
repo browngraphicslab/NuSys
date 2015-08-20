@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    partial class Cortana
+    class Cortana
     {
         protected Cortana() { }
+        static Cortana()
+        {
+            ResetRecognizer();
+        }
 
-        // This error is raised if "Getting to know you" is disabled in Win10 privacy settings.
+        /// <summary>
+        /// This exception is raised if "Getting to know you" is disabled in Win10 privacy settings.
+        /// </summary>
         protected const uint HResultPrivacyStatementDeclined = 0x80045509;
+
+        protected static CortanaPopup CortanaPopupDialog = new CortanaPopup();
 
         protected static SpeechRecognizer Recognizer;
         protected static StringBuilder DictatedStringBuilder;
@@ -58,6 +66,10 @@ namespace NuSysApp
                 return RecognizerFailedIndicator;
             }
         }
+
+        /// <summary>
+        /// Returns true if a SpeechRecognitionResult was successful, and false otherwise.
+        /// </summary>
         private static bool SpeechRecognitionSucceeded(SpeechRecognitionResult result)
         {
             return result.Status == SpeechRecognitionResultStatus.Success;
@@ -76,8 +88,6 @@ namespace NuSysApp
         /// <summary>
         /// Returns the substring following the last instance of the reset command.
         /// </summary>
-        /// <param name="dictatedString"></param>
-        /// <returns></returns>
         protected static string GetSubstringFollowingResetCommand(string dictatedString)
         {
             while (true)
@@ -88,6 +98,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// This method is called to handle any speech exceptions that crop up
+        /// </summary>
         protected static async Task HandleSpeechException(Exception exception)
         {
             if ((uint)exception.HResult == HResultPrivacyStatementDeclined)

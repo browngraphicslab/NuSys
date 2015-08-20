@@ -11,7 +11,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components;
-using NuSysApp.Views.Workspace;
 
 namespace NuSysApp
 {

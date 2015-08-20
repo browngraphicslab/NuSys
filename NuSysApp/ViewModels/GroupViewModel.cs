@@ -39,7 +39,7 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             this.View = new GroupView(this);
-            this.NodeType = Constants.NodeType.group;
+            this.NodeType = Constants.NodeType.Group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
         }

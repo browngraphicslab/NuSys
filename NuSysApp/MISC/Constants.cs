@@ -55,12 +55,13 @@ namespace NuSysApp
         #region Node Type
         public enum NodeType
         {
-            text,
-            image,
-            ink,
-            pdf,
-            richText,
-            group
+            Text,
+            Image,
+            Ink,
+            Pdf,
+            RichText,
+            Group,
+            Audio
         }
         #endregion Node Type
 

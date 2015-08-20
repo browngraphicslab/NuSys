@@ -26,7 +26,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.NodeType = Constants.NodeType.richText;
+            this.NodeType = Constants.NodeType.RichText;
             this.View = new RichTextNodeView2(this);
         }
 

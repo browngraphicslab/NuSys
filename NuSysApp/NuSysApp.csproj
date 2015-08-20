@@ -125,12 +125,13 @@
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="Features\Audio Recording\AudioCapture.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
-    <Compile Include="Cortana\Cortana.cs" />
-    <Compile Include="Cortana\CortanaContinuousRecognition.cs" />
-    <Compile Include="Cortana\CortanaPopup.xaml.cs">
+    <Compile Include="Features\Cortana\Cortana.cs" />
+    <Compile Include="Features\Cortana\CortanaContinuousRecognition.cs" />
+    <Compile Include="Features\Cortana\CortanaPopup.xaml.cs">
       <DependentUpon>CortanaPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="MISC\Factory.cs" />
@@ -141,10 +142,10 @@
     <Compile Include="Components\InqCanvas.cs" />
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
-    <Compile Include="MISC\OfficeInteropWord.cs" />
     <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\Atom.cs" />
+    <Compile Include="Models\AudioNodeModel.cs" />
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ImageModel.cs" />
@@ -159,6 +160,10 @@
     <Compile Include="MVVM Helpers\XmlFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
+    <Compile Include="ViewModels\AudioNodeViewModel.cs" />
+    <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
+      <DependentUpon>AudioNodeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\GroupView.xaml.cs">
       <DependentUpon>GroupView.xaml</DependentUpon>
     </Compile>
@@ -255,13 +260,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Cortana\CortanaPopup.xaml">
+    <Page Include="Features\Cortana\CortanaPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Nodes\AudioNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Nodes\GroupView.xaml">
       <SubType>Designer</SubType>
@@ -312,6 +321,7 @@
       <Name>SQLite for Universal App Platform</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
