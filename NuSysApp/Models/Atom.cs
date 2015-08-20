@@ -47,6 +47,7 @@ namespace NuSysApp
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
             //dict.Add("color") //TODO add in color
+            dict.Add("id", ID);
             return dict;
         } 
     } 

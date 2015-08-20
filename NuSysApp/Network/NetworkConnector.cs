@@ -1132,7 +1132,7 @@ namespace NuSysApp
             {
                 Debug.WriteLine("Requesting lock for ID: "+id+" although it doesn't exist yet");
             }
-            await SendMessageToHost("SPECIAL5:" + id, PacketType.Both);
+            await SendMessageToHost("SPECIAL5:" + id, PacketType.TCP);
         }
 
         public async Task ReturnLock(string id)
