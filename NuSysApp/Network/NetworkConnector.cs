@@ -157,7 +157,15 @@ namespace NuSysApp
                 if (_pingResponses[ip] <=2)
                 {
                     _pingResponses[ip]++;
-                    await SendPing(ip, PacketType.UDP);
+                    try
+                    {
+                        await SendPing(ip, PacketType.UDP);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        StartTimer();
+                        break;
+                    }
                 }
                 else
                 {
