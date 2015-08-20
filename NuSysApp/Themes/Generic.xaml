@@ -8,12 +8,13 @@
     xmlns:local="using:NuSysApp">
     <converters:SelectionToColorConverter x:Key="sConverter" />
     <converters:BoolToVisibilityConverter x:Key="vConverter" />
-
+    <converters:EnumToBoolConverter x:Key="eConverter" />
     <Style TargetType="local:NodeTemplate">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
-                    <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}">
+                    <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}"
+                          IsHitTestVisible="{Binding CanEdit, Converter={StaticResource eConverter}, Mode=OneWay}">
                         <Grid.Resources>
                             <Storyboard x:Key="slideout" x:Name="slideout">
                                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>

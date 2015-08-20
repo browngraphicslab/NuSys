@@ -27,7 +27,8 @@ namespace NuSysApp
         {
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
-            this.IsVisible = true;  
+            this.IsVisible = true;
+           
         }
 
         #region Atom Manipulations
@@ -86,6 +87,16 @@ namespace NuSysApp
         /// </summary>
         public WorkspaceViewModel WorkSpaceViewModel { get; }
 
+        private Atom.EditStatus _canEdit;
+        public Atom.EditStatus CanEdit
+        {
+            get { return _canEdit; }
+            set
+            {
+                _canEdit = value;
+                RaisePropertyChanged("CanEdit");
+            }
+        }
         /// <summary>
         /// indicates whether node is selected.
         /// </summary>

@@ -134,6 +134,7 @@
     <Compile Include="Components\RichTextBlockBinder.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
