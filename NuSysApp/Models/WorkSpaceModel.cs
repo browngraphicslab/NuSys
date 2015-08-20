@@ -43,18 +43,10 @@ namespace NuSysApp
             //CurrentID++;
         }
 
-        public int CurrentId
+        public Dictionary<string, string> Locks
         {
-            get { return _currentId; }
-            set
-            {
-                if (value >= _currentId) //decreasing the current ID doesn't make sense
-                {
-                    _currentId = value;
-                }
-            }
-        }
-
+            get { return _locks; }
+        } 
         public async void HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -333,7 +325,26 @@ namespace NuSysApp
             {
                 return null;
             }
-        } 
+        }
+
+        public void RemoveIPFromLocks(string ip)
+        {
+            if (_locks.ContainsValue(ip))
+            {
+                foreach (KeyValuePair<string, string> kvp in _locks)
+                {
+                    if (kvp.Value == ip)
+                    {
+                        _locks[kvp.Key] = "";
+                        SetAtomLock(kvp.Key, "");
+                        if (!_locks.ContainsValue(ip))
+                        {
+                            return;
+                        }
+                    } 
+                }
+            }
+        }
     }
 
 }
