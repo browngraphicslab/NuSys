@@ -39,7 +39,6 @@ namespace NuSysApp
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private bool _caughtUp = false;
         private Dictionary<string, int> _pingResponses;
-        private string _lastIDUpdated = "";
 
         private static volatile NetworkConnector _instance;
         private static readonly object _syncRoot = new Object();
@@ -931,15 +930,6 @@ namespace NuSysApp
             }
         }
 
-        private void CheckLastUpdate(string id)
-        {
-            if (_lastIDUpdated != id)
-            {
-                WorkSpaceModel.CheckLocks(id);
-                _lastIDUpdated = id;
-            }
-        }
-
 
         /*
         * PUBLIC request for deleting a nod 
@@ -1053,7 +1043,6 @@ namespace NuSysApp
             {
                 if (WorkSpaceModel.HasAtom(properties["id"]))
                 {
-                    CheckLastUpdate(properties["id"]);
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassUDPMessage(message);
                 }
