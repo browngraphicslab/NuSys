@@ -116,6 +116,7 @@
     <Content Include="Assets\icon_multiselect.png" />
     <Content Include="Assets\icon_bucket.png" />
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\mic icon.png" />
     <Content Include="Assets\open icon.png" />
     <Content Include="Views\Nodes\link icon.png" />
     <None Include="Assets\paragraph.nusys" />

@@ -271,6 +271,9 @@
             <Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
             </Button>
+            <Button x:Name="AudioCapture" Style="{StaticResource FloatingButton}" Tapped="AudioCaptureButton_Click">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/mic icon.png"></Image>
+            </Button>
             <Button x:Name="Load" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/open icon.png"></Image>
             </Button>
