@@ -61,70 +61,76 @@ namespace NuSysApp
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 Dictionary<string, string> props = ParseOutProperties(s);
+                if (props.ContainsKey("id")) { 
                 string id = props["id"]; //since we called parse properties, it MUST have an id
-                if (_idDict.ContainsKey(id))
-                {
-                    Atom n = _idDict[id];
-                    n.UnPack(props);
+                    if (_idDict.ContainsKey(id))
+                    {
+                        Atom n = _idDict[id];
+                        n.UnPack(props);
+                    }
+                    else
+                    {
+                        if (props.ContainsKey("type") && props["type"] == "node")
+                        {
+                            NodeType type = NodeType.Text;
+                            double x = 0;
+                            double y = 0;
+                            object data = null;
+                            if (props.ContainsKey("nodeType"))
+                            {
+                                string t = props["nodeType"];
+                                type = (NodeType) Enum.Parse(typeof (NodeType), t);
+                            }
+                            if (props.ContainsKey("x"))
+                            {
+                                double.TryParse(props["x"], out x);
+                            }
+                            if (props.ContainsKey("y"))
+                            {
+                                double.TryParse(props["y"], out y);
+                            }
+                            if (props.ContainsKey("data"))
+                            {
+                                string d = props["data"];
+                                if (d.Substring(0, 10).Contains("polyline"))
+                                {
+                                    data = ParseToPolyline(d);
+                                }
+                            }
+                            NodeViewModel vm = await _workspaceViewModel.CreateNewNode(props["id"], type, x, y, data);
+                            Node node = (Node) vm.Model;
+                            if (node == null)
+                            {
+                                return;
+                            }
+                            _idDict.Add(id, node);
+                        }
+                        else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
+                        {
+                            string id1 = "null";
+                            string id2 = "null";
+                            if (props.ContainsKey("id1"))
+                            {
+                                id1 = props["id1"];
+                            }
+                            if (props.ContainsKey("id2"))
+                            {
+                                id1 = props["id2"];
+                            }
+                            AtomViewModel avm1;
+                            AtomViewModel avm2;
+                            if (_idDict.ContainsKey(id1))
+                            {
+                                //avm1 = _idDict[id1];
+                            }
+
+                            //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id);
+                        }
+                    }
                 }
                 else
                 {
-                    if (props.ContainsKey("type") && props["type"] == "node")
-                    {
-                        NodeType type = NodeType.Text;
-                        double x = 0;
-                        double y = 0;
-                        object data = null;
-                        if (props.ContainsKey("nodeType"))
-                        {
-                            string t = props["nodeType"];
-                            type = (NodeType) Enum.Parse(typeof (NodeType), t);
-                        }
-                        if (props.ContainsKey("x"))
-                        {
-                            double.TryParse(props["x"], out x);
-                        }
-                        if (props.ContainsKey("y"))
-                        {
-                            double.TryParse(props["y"], out y);
-                        }
-                        if (props.ContainsKey("data"))
-                        {
-                            string d = props["data"];
-                            if (d.Substring(0, 10).Contains("polyline"))
-                            {
-                                data = ParseToPolyline(d);
-                            }
-                        }
-                        NodeViewModel vm = await _workspaceViewModel.CreateNewNode(props["id"], type, x, y, data);
-                        Node node = (Node) vm.Model;
-                        if (node == null)
-                        {
-                            return;
-                        }
-                        _idDict.Add(id, node);
-                    }
-                    else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
-                    {
-                        string id1 = "null";
-                        string id2 = "null";
-                        if (props.ContainsKey("id1"))
-                        {
-                            id1 = props["id1"];
-                        }
-                        if (props.ContainsKey("id2"))
-                        {
-                            id1 = props["id2"];
-                        }
-                        AtomViewModel avm1;
-                        AtomViewModel avm2;
-                        if (_idDict.ContainsKey(id1))
-                        {
-                            //avm1 = _idDict[id1];
-                        }
-
-                        //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id);
-                    }
+                    Debug.WriteLine("ID was not found in property list of message: "+s);
                 }
             });
         }
