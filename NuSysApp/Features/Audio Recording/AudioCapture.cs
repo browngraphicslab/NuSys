@@ -17,6 +17,8 @@ namespace NuSysApp
         private StorageFile _recordStorageFile;
         private bool _recording;
         public static int NumInstances;
+        private readonly StorageFolder _rootFolder = KnownFolders.MusicLibrary;
+        //private readonly StorageFolder _rootFolder = NuSysStorages.Media;
         //private bool _suspended;
         //private bool _userRequestedRaw;
         //private bool _rawAudioSupported;
@@ -115,8 +117,7 @@ namespace NuSysApp
             {
                 Debug.WriteLine("Starting audio capture");
                 _recordStorageFile =
-                    await
-                        KnownFolders.MusicLibrary.CreateFileAsync(fileName, CreationCollisionOption.GenerateUniqueName);
+                    await _rootFolder.CreateFileAsync(fileName, CreationCollisionOption.GenerateUniqueName);
                 Debug.WriteLine("Created audio file successfully");
                 var recordProfile = MediaEncodingProfile.CreateM4a(AudioEncodingQuality.Auto);
                 await _mediaCaptureManager.StartRecordToStorageFileAsync(recordProfile, _recordStorageFile);
