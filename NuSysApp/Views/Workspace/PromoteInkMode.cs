@@ -45,7 +45,7 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
             Polyline[] lines = {sender as Polyline};
-            await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, lines);            
+            await vm.CreateNewNode(vm.currId, NodeType.Ink, p.X, p.Y, lines);            
         }
 
     }

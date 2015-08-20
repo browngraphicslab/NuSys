@@ -33,7 +33,6 @@ namespace NuSysApp
 
         //private readonly Factory _factory;
         private SQLiteDatabase myDB;
-        private int idCounter;
 
         public enum LinkMode
         {
@@ -55,7 +54,7 @@ namespace NuSysApp
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
-            idCounter = 0;
+            currId = 0;
 
             Init();
             var c = new CompositeTransform
@@ -66,7 +65,6 @@ namespace NuSysApp
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
-
 
         private async void Init()
         {
@@ -102,13 +100,14 @@ namespace NuSysApp
                             var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
 
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            var nodeVm = CreateNewNode(NodeType.Image, p.X, p.Y, imageFile);
-
+                            var nodeVm = CreateNewNode(currId, NodeType.Image, p.X, p.Y, imageFile);
+                            currId++;
                         } else {
                             var readFile = await FileIO.ReadTextAsync(file);
 
                             var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            var nodeVm2 = CreateNewNode(NodeType.Richtext, p.X, p.Y, readFile);
+                            var nodeVm2 = CreateNewNode(currId, NodeType.Richtext, p.X, p.Y, readFile);
+                            currId++;
                         }
                     });
                 }
@@ -138,10 +137,10 @@ namespace NuSysApp
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-                        
-                        idCounter++;
+       
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
-                        var nodeVm = CreateNewNode(NodeType.Richtext, p.X, p.Y, text);
+                        var nodeVm = CreateNewNode(currId, NodeType.Richtext, p.X, p.Y, text);
+                        currId++;
                     });
                 }
 
@@ -258,7 +257,6 @@ namespace NuSysApp
             {
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
-           
         }
 
         /// <summary>
@@ -273,7 +271,8 @@ namespace NuSysApp
                 SelectedAtomViewModel = selected;
                 return;
             }
-            this.CreateNewLink(SelectedAtomViewModel, selected);
+            this.CreateNewLink(currId, SelectedAtomViewModel, selected);
+            currId++;
             selected.IsSelected = false;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
@@ -294,7 +293,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
+        public LinkViewModel CreateNewLink(int id, AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -310,10 +309,9 @@ namespace NuSysApp
             {
                 return null;
             }
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, idCounter);
-            Model.AtomDict.Add(idCounter, vm);
-            idCounter++;
 
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, id);
+            Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -327,22 +325,22 @@ namespace NuSysApp
             return vm;
         }
 
-        public async Task<NodeViewModel> CreateNewNode(NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<NodeViewModel> CreateNewNode(int id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    vm = new TextNodeViewModel(this, (string)data, id);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel(this, (string)data, idCounter);
+                    vm = new TextNodeViewModel(this, (string)data, id);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel(this, idCounter);
+                    vm = new InkNodeViewModel(this, id);
                     break;
                 case NodeType.Image:
-                    var imgVM = new ImageNodeViewModel(this, idCounter);
+                    var imgVM = new ImageNodeViewModel(this, id);
                     await imgVM.InitializeImageNodeAsync((StorageFile)data);
                     vm = imgVM;
                     break;
@@ -352,20 +350,20 @@ namespace NuSysApp
                     
                     if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                     {
-                        var imgVM1 = new ImageNodeViewModel(this, idCounter);
+                        var imgVM1 = new ImageNodeViewModel(this, id);
                         await imgVM1.InitializeImageNodeAsync(storageFile);
                         vm = imgVM1;
                     }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {
-                        var pdfVM = new PdfNodeViewModel(this, idCounter);
+                        var pdfVM = new PdfNodeViewModel(this, id);
                         await pdfVM.InitializePdfNodeAsync(storageFile);
                         vm = pdfVM;
                     }
                     break;
                 case NodeType.Audio:
-                    var anvm = new AudioNodeViewModel(this, idCounter);
+                    var anvm = new AudioNodeViewModel(this, id);
                     await anvm.InitializeAudioNode();
                     vm = anvm;
                     break;
@@ -381,8 +379,8 @@ namespace NuSysApp
                 default:
                     return null;
             }
-            Model.AtomDict.Add(idCounter, vm);
-            idCounter++;
+            currId++;
+            Model.AtomDict.Add(id, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -424,8 +422,7 @@ namespace NuSysApp
             }
 
             //Create new group, because no group exists
-            groupVm = new GroupViewModel(this, idCounter);
-            idCounter++;
+            groupVm = new GroupViewModel(this, currId);
 
             //Set location to node2's location
             var xCoordinate = node2.Transform.Matrix.OffsetX;
@@ -435,6 +432,8 @@ namespace NuSysApp
             NodeViewModelList.Add(groupVm);
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
+            Model.AtomDict.Add(currId, groupVm);
+            currId++;
 
             //Add the first node
             groupVm.AddNode(node1);
@@ -466,7 +465,6 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
-            //this.getXml();
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == 1);
             query.FirstOrDefaultAsync().ContinueWith((t) => 
@@ -527,7 +525,7 @@ namespace NuSysApp
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }
-
+        public int currId { get; set; }
         public LinkMode CurrentLinkMode { get; set; }
 
         public CompositeTransform CompositeTransform

@@ -15,7 +15,6 @@ namespace NuSysApp
     /// </summary>
     public class InkNodeViewModel : NodeViewModel
     {
-
         public InkNodeViewModel(WorkspaceViewModel vm, int id): base(vm, id)
         {
             this.Model = new Node(id);
@@ -29,6 +28,5 @@ namespace NuSysApp
             this.IsEditing = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175,173,216,230));
         }
-
     }
 }
