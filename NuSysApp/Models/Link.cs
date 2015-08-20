@@ -15,7 +15,7 @@ namespace NuSysApp
         }
         public string InAtomID { get; set; }
         public string OutAtomID { get; set; }
-        public override void UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("id1"))
             {
@@ -28,9 +28,9 @@ namespace NuSysApp
             base.UnPack(props);
         }
 
-        public override Dictionary<string, string> Pack()
+        public override async Task<Dictionary<string, string>> Pack()
         {
-            Dictionary<string, string> dict = base.Pack();
+            Dictionary<string, string> dict = await base.Pack();
             dict.Add("id1",InAtomID);
             dict.Add("id2", OutAtomID);
             return dict;

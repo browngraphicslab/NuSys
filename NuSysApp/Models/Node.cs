@@ -141,7 +141,7 @@ namespace NuSysApp
         {
             return null;
         }
-        public override void UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("x"))
             {
@@ -162,9 +162,9 @@ namespace NuSysApp
             base.UnPack(props);
         }
 
-        public override Dictionary<string, string> Pack()
+        public override async Task<Dictionary<string, string>> Pack()
         {
-            Dictionary<string, string> dict = base.Pack();
+            Dictionary<string, string> dict = await base.Pack();
             dict.Add("x",X.ToString());
             dict.Add("y", Y.ToString());
             dict.Add("width", Width.ToString());

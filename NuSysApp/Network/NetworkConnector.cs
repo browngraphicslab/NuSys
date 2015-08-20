@@ -582,24 +582,20 @@ namespace NuSysApp
                     if (mass)
                     {
                         await SendMassTCPMessage(message);
-                        return;
                     }
                     else
                     {
                         await SendTCPMessage(message, ip);
-                        return;
                     }
                     break;
                 case PacketType.UDP:
                     if (mass)
                     {
                         await SendMassUDPMessage(message);
-                        return;
                     }
                     else
                     {
                         await SendUDPMessage(message, _addressToWriter[ip]);
-                        return;
                     }
                     break;
                 case PacketType.Both:
@@ -712,7 +708,7 @@ namespace NuSysApp
                         if (_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))
                             //add new joining member
                         {
-                            var m = WorkSpaceModel.GetFullWorkspace();
+                            var m = await WorkSpaceModel.GetFullWorkspace();
                             if (m.Length > 0)
                             {
                                 await SendTCPMessage("SPECIAL2:" + m, ip);
@@ -826,20 +822,12 @@ namespace NuSysApp
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (this.WorkSpaceModel.HasAtom(message))
+                        if (!_locksOut.ContainsKey(message))
                         {
-                            if (!_locksOut.ContainsKey(message))
-                            {
-                                _locksOut.Add(message,ip);
-                            }
-                            await SendMessage(ip, "SPECIAL6:" +message+"="+ _locksOut[message], packetType,true,true);
-                            return;
+                            _locksOut.Add(message, ip);
                         }
-                        else
-                        {
-                            Debug.WriteLine("ERROR: Recieved a request for a lock for id: " + message +
-                                        " which is an invalid id");
-                        }
+                        await SendMessage(ip, "SPECIAL6:" + message + "=" + _locksOut[message], packetType, true, true);
+                        return;
                     }
                     else
                     {
@@ -891,7 +879,7 @@ namespace NuSysApp
                         else
                         {
                             Debug.WriteLine("Recieved a return lock request with message: " + message +
-                                        " when the lock wasnt out"); 
+                                        " when the lock wasnt out");
                         }
                     }
                     else
@@ -959,7 +947,7 @@ namespace NuSysApp
         */
         private async Task SendUpdateForNode(string nodeId, string sendToIP)
         {
-            Dictionary<string, string> dict = WorkSpaceModel.GetNodeState(nodeId);
+            Dictionary<string, string> dict = await WorkSpaceModel.GetNodeState(nodeId);
             if (dict != null)
             {
                 string message = MakeSubMessageFromDict(dict);
@@ -992,19 +980,34 @@ namespace NuSysApp
         {
             if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
             {
-                if (message.IndexOf("id=0"+Constants.CommaReplacement) != -1)
+                if (message.IndexOf("OLDSQLID") != -1)
                 {
-                    message = message.Replace(("id=0"+ Constants.CommaReplacement), "id=" + GetID(ip) + Constants.CommaReplacement);
-                    await HandleRegularMessage(ip, message, packetType);
-                    await SendMassTCPMessage(message);
-                    return;
+                    Dictionary<string, string> dict = ParseOutProperties(message);
+                    dict["id"] = dict["OLDSQLID"];
+                    dict.Remove("OLDSQID");
+                    string m = MakeSubMessageFromDict(dict);
+                    await HandleRegularMessage(ip, m, packetType);
+                    await SendMassTCPMessage(m);
                 }
-                if (message.IndexOf("id=0>") != -1)
+                else
                 {
-                    message = message.Replace(@"id=0>", "id=" + GetID(ip) + '>');
-                    await HandleRegularMessage(ip, message, packetType);
-                    await SendMassTCPMessage(message);
-                    return;
+                    if (message.IndexOf("id=0" + Constants.CommaReplacement) != -1)
+                    {
+                        string id = GetID(ip);
+                        message = message.Replace(("id=0" + Constants.CommaReplacement),
+                            "id=" + id + Constants.CommaReplacement);
+                        await HandleRegularMessage(ip, message, packetType);
+                        await SendMassTCPMessage(message);
+                        return;
+                    }
+                    if (message.IndexOf("id=0>") != -1)
+                    {
+                        string id = GetID(ip);
+                        message = message.Replace(@"id=0>", "id=" + id + '>');
+                        await HandleRegularMessage(ip, message, packetType);
+                        await SendMassTCPMessage(message);
+                        return;
+                    }
                 }
             }
             if (_localIP == _hostIP)//if host, add a new packet and store it in every joining member's stack of updates
@@ -1094,15 +1097,18 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null)
+        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null)
         {
             if (x != "" && y != "" && nodeType != "")
             {
-
                 var s = "";
                 if (data != null && data!="null" && data!="")
                 {
                     s = Constants.CommaReplacement+"data=" + data;
+                }
+                if (oldID != null)
+                {
+                    s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
                 }
                 await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"x=" + x + Constants.CommaReplacement+"y=" + y + Constants.CommaReplacement+"type=node"+ Constants.CommaReplacement+"nodeType=" + nodeType + s +">");
             }

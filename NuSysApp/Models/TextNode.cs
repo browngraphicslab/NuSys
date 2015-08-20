@@ -41,7 +41,7 @@ namespace NuSysApp
             return Text;
         }
 
-        public override void UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("text"))
             {
@@ -50,9 +50,9 @@ namespace NuSysApp
             base.UnPack(props);
         }
 
-        public override Dictionary<string,string> Pack()
+        public override async Task<Dictionary<string,string>> Pack()
         {
-            Dictionary<string, string> dict = base.Pack();
+            Dictionary<string, string> dict = await base.Pack();
             dict.Add("text",Text);
             return dict;
         }

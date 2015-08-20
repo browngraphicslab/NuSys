@@ -229,7 +229,7 @@ namespace NuSysApp
             });
         }
 
-        public string GetFullWorkspace()
+        public async Task<string> GetFullWorkspace()
         {
             if (_idDict.Count > 0)
             {
@@ -238,7 +238,7 @@ namespace NuSysApp
                 {
                     ret += '<';
                     Atom atom = kvp.Value;
-                    Dictionary<string, string> parts = atom.Pack();
+                    Dictionary<string, string> parts = await atom.Pack();
                     foreach (KeyValuePair<string, string> tup in parts)
                     {
                         ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
@@ -272,34 +272,31 @@ namespace NuSysApp
         }
         public async Task SetAtomLock(string id, string ip)
         {
-            if (HasAtom(id))
-            {
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    _locks[id] = ip;
-                    if (NetworkConnector.Instance.LocalIP == ip)
-                    {
-                        _idDict[id].CanEdit = Atom.EditStatus.Yes;
-                    }
-                    else if (ip == "")
-                    {
-                        _idDict[id].CanEdit = Atom.EditStatus.Maybe;
-                    }
-                    else
-                    {
-                        _idDict[id].CanEdit = Atom.EditStatus.No;
-                    }
-                    if (NetworkConnector.Instance.LocalIP == ip)
-                    {
-                        _locksHeld.Add(id);
-                    }
-                });
-            }
-            else
+            if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
             }
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                _locks[id] = ip;
+                if (NetworkConnector.Instance.LocalIP == ip)
+                {
+                    _idDict[id].CanEdit = Atom.EditStatus.Yes;
+                }
+                else if (ip == "")
+                {
+                    _idDict[id].CanEdit = Atom.EditStatus.Maybe;
+                }
+                else
+                {
+                    _idDict[id].CanEdit = Atom.EditStatus.No;
+                }
+                if (NetworkConnector.Instance.LocalIP == ip)
+                {
+                    _locksHeld.Add(id);
+                }
+            });
         }
 
         private HashSet<string> LocksNeeded(string id)
@@ -315,6 +312,7 @@ namespace NuSysApp
 
         public async Task CheckLocks(string id)
         {
+            Debug.WriteLine("Checking locks");
             HashSet<string> locksNeeded = LocksNeeded(id);
             foreach (string lockID in _locksHeld)
             {
@@ -325,11 +323,11 @@ namespace NuSysApp
             }
         }
 
-        public Dictionary<string, string> GetNodeState(string id)
+        public async Task<Dictionary<string, string>> GetNodeState(string id)
         {
             if (HasAtom(id))
             {
-                return _idDict[id].Pack();
+                return await _idDict[id].Pack();
             }
             else
             {

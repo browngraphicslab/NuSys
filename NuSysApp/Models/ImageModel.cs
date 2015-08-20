@@ -1,5 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using System.Xml;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
@@ -39,6 +47,37 @@ namespace NuSysApp
             imageNode.SetAttributeNode(source);
 
             return imageNode;
+        }
+
+        public override async Task UnPack(Dictionary<string, string> props)
+        {
+            if (props.ContainsKey("image"))
+            {
+                byte[] imageBytes = Convert.FromBase64String(props["image"]);
+
+                var stream = new InMemoryRandomAccessStream();
+                var image = new BitmapImage();
+                image.SetSource(stream);
+                await stream.WriteAsync(imageBytes.AsBuffer());
+                stream.Seek(0);
+                Image = image;
+            }
+            if (props.ContainsKey("filepath"))
+            {
+                FilePath = props["filepath"];
+            }
+        }
+
+        public override async Task<Dictionary<string, string>> Pack()
+        {
+            Dictionary<string, string> props = await base.Pack();
+            props.Add("filepath",FilePath);
+
+
+            var stream = new InMemoryRandomAccessStream();
+            //byte[] imageBytes = Image.
+            //string imageString = Convert.ToBase64String(imageBytes);
+            return props;
         }
     }
 }
