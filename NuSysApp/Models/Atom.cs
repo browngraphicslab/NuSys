@@ -50,7 +50,7 @@ namespace NuSysApp
         public string ID { get; set; }
 
         public virtual async Task UnPack(Dictionary<string, string> props)
-        {
+        { 
             if (props.ContainsKey("color"))
             {
                 //TODO add in color
