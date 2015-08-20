@@ -18,6 +18,7 @@ namespace NuSysApp
         public event DeleteEventHandler OnDeletion;
         //Node _selectedNode;
         private Dictionary<string, Atom> _idDict;
+        private Dictionary<string, Polyline> _gloablInkDict;
         private Dictionary<string, string> _locks;
         private HashSet<string> _locksHeld; 
         private WorkspaceViewModel _workspaceViewModel;
@@ -31,7 +32,7 @@ namespace NuSysApp
             _currentId = 0;
             _locks = new Dictionary<string, string>();
             _locksHeld = new HashSet<string>();
-            NetworkConnector.Instance.WorkSpaceModel = this;
+            _gloablInkDict = new Dictionary<string, Polyline>();
             // _factory = new Factory(this);
         }
 
@@ -47,7 +48,7 @@ namespace NuSysApp
         {
             get { return _locks; }
         } 
-        public async void HandleMessage(string s)
+        public async Task HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
@@ -60,8 +61,16 @@ namespace NuSysApp
                         Atom n = _idDict[id];
                         n.UnPack(props);
                     }
+                    else if (_gloablInkDict.ContainsKey(id))
+                    {
+                           
+                    }
                     else
                     {
+                        if (props.ContainsKey("type") && props["type"] == "ink")
+                        {
+
+                        }
                         if (props.ContainsKey("type") && props["type"] == "node")
                         {
                             NodeType type = NodeType.Text;
@@ -96,6 +105,7 @@ namespace NuSysApp
                                 return;
                             }
                             _idDict.Add(id, node);
+                            await this.HandleMessage(s);
                         }
                         else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
                         {

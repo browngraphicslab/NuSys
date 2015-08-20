@@ -9,13 +9,10 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="500">
-            Next
+            Enter Local Network Workspace...
         </Button>
-        <Button Click="clear_OnClick" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="60" Width="900" Margin="0,0,0,400">
+        <Button Click="clear_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="900" Margin="0,0,0,-300">
             Can't join workspace after a few seconds? CLICK THIS AND RESTART APP.  (warning: will make current workspace unjoinable)
         </Button>
-        <TextBlock Name="TextBlock" HorizontalAlignment="Center" VerticalAlignment="Top" Height="150" Width="250" TextAlignment="Center">
-            wait please...
-        </TextBlock>
     </Grid>
 </Page>

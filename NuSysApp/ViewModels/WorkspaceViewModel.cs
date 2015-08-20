@@ -59,13 +59,13 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
-           
         }
         private async void Init()
         {
             await SetupDirectories();
             SetupChromeIntermediate();
-            SetupOfficeTransfer();       
+            SetupOfficeTransfer();
+            NetworkConnector.Instance.WorkSpaceModel = Model;
         }
 
         private async void SetupOfficeTransfer()

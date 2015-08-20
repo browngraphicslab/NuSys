@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using NuSysApp.Views.Workspace;
 using System;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -35,7 +36,6 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
             _cortanaInitialized = false;
         }
-
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
@@ -73,6 +73,10 @@ namespace NuSysApp
             }
         }
 
+        public void RemoveLoading()
+        {
+            //TODO remove a loading screen
+        }
         private async void OnModeChange(Options mode)
         {
             switch (mode)
