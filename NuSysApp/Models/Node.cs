@@ -169,7 +169,7 @@ namespace NuSysApp
             dict.Add("y", Y.ToString());
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
-            dict.Add("nodeType", NodeType.ToString());
+            dict.Add("nodeType", NodeType.GetType().ToString());
             dict.Add("type","node");
             return dict;
         }
