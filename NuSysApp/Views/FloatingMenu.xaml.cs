@@ -90,12 +90,19 @@ namespace NuSysApp
             }
             else
             {
+                slidein.Begin();
+                slideinSelect.Begin();
+                slideinNodes.Begin();
+                slideinAdditional.Begin();
+                _subMenuOpen = false;
+                _subMenuSelectOpen = false;
+                _subMenuNodesOpen = false;
+                _subMenuAdditionalOpen = false;
                 collapse.Begin();
                 _FloatingMenuCollapsed = true;
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
-
         }
 
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
