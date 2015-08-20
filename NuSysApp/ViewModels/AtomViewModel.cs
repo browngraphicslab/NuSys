@@ -95,6 +95,7 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
+                this.Color = _canEdit == Atom.EditStatus.No ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Constants.DefaultColor);
             }
         }
         /// <summary>
@@ -148,7 +149,7 @@ namespace NuSysApp
                 }
 
                 Model.Color = value;
-
+                
                 RaisePropertyChanged("Color");
             }
         }
