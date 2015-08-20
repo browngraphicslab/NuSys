@@ -14,7 +14,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}"
-                          IsHitTestVisible="{Binding CanEdit, Converter={StaticResource eConverter}, Mode=OneWay}">
+                          IsHitTestVisible="{Binding CanEdit, Converter={StaticResource eConverter}, Mode=TwoWay}">
                         <Grid.Resources>
                             <Storyboard x:Key="slideout" x:Name="slideout">
                                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
