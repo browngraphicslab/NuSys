@@ -303,7 +303,7 @@ namespace NuSysApp
                 set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
                 return set;
             }
-            return null;
+            return new HashSet<string>();
         }
 
         public async Task CheckLocks(string id)

@@ -863,7 +863,7 @@ namespace NuSysApp
                     if (_localIP == _hostIP)
                     {
                         WorkSpaceModel.Locks[message] = "";
-                        await SendMessage(ip, "SPECIAL6:"+message+":", PacketType.TCP, true, true);
+                        await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
                     }
                     else
                     {
