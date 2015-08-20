@@ -9,6 +9,7 @@ using NuSysApp.MISC;
 using Windows.UI.Xaml;
 using System.Xml;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -31,7 +32,7 @@ namespace NuSysApp
             this.NodeType = Constants.NodeType.pdf;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>>();
+            this.InkContainer = new List<HashSet<InqLine>>();
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,
@@ -50,7 +51,7 @@ namespace NuSysApp
             if (storageFile == null) return; // null if file explorer is closed by user
             var fileType = storageFile.FileType;
             switch (fileType)
-            {
+            {//
                 case ".pdf":
                     await ProcessPdfFile(storageFile);
                     break;
@@ -65,7 +66,7 @@ namespace NuSysApp
         /// Takes in a storageFile (either .docx or .pptx), waits for OfficeInterop to convert
         /// it to PDF, and opens the PDF in the workspace.
         /// </summary>
-        /// <param name="storageFile"></param>
+        /// <param name="storageFile"></para//m>
         /// <returns></returns>
         private async Task WatchForOfficeConversions(StorageFile storageFile)
         {
@@ -101,7 +102,7 @@ namespace NuSysApp
             {
                 if ((PdfNodeModel)Model == value)
                 {
-                    return;
+                    return;//
                 }
                 this.Model = value;
                 RaisePropertyChanged("PdfNodeModel");
@@ -121,7 +122,7 @@ namespace NuSysApp
             await pathToOfficeFile.DeleteAsync(StorageDeleteOption.PermanentDelete); // PermanentDelete bypasses the Recycle Bin
             await pathToPdfFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
-
+//
 
         /// <summary>
         /// Takes in a .pdf StorageFile and renders it in the workspace.
@@ -139,7 +140,7 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new Dictionary<Windows.UI.Xaml.Shapes.Polyline, InkStroke>());
+                this.InkContainer.Add(new HashSet<InqLine>());
 
             }
         }
@@ -156,7 +157,7 @@ namespace NuSysApp
             {
                 newDx = dx;
                 newDy = dx * ((PdfNodeModel)Model).RenderedPage.PixelHeight / ((PdfNodeModel)Model).RenderedPage.PixelWidth;
-            }
+            }//
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
                 return;
@@ -204,10 +205,18 @@ namespace NuSysApp
             {
                 ((PdfNodeModel)Model).PageCount = value;
                 RaisePropertyChanged("PdfNodeModel");
-            }
+            }//
         }
         //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<Dictionary<Windows.UI.Xaml.Shapes.Polyline,InkStroke>> InkContainer { get; set; }
+        public List<HashSet<InqLine>> InkContainer
+        {
+            get { return ((PdfNodeModel)Model).InkContainer; }
+            set
+            {
+                ((PdfNodeModel)Model).InkContainer = value;
+                RaisePropertyChanged("PdfNodeModel");
+            }
+        }
 
         public CompositeTransform InkScale
         {

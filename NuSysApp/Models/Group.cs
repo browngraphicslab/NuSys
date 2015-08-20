@@ -13,6 +13,7 @@ namespace NuSysApp.Models
     {
         public Group(int id): base(id)
         {
+            this.ID = id;
             NodeModelList = new ObservableCollection<Node>();
         }
 
@@ -21,10 +22,8 @@ namespace NuSysApp.Models
        public ObservableCollection<Link> LinkModelList { get; set; }
         public override XmlElement WriteXML(XmlDocument doc)
         {
-
             //Main XmlElement 
-            XmlElement groupNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-
+            XmlElement groupNode = doc.CreateElement(string.Empty, "Group", string.Empty); //TODO: Change how we determine node type for name
 
             //Other attributes - id, x, y, height, width
             List<XmlAttribute> basicXml = this.getBasicXML(doc);

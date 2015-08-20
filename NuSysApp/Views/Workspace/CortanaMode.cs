@@ -7,19 +7,39 @@ namespace NuSysApp
     public class CortanaMode : AbstractWorkspaceViewMode
     {
         private readonly Point _defaultPlacementPos = new Point(500, 100);
-        public CortanaMode(WorkspaceView view) : base(view) { }
+
+        public CortanaMode(WorkspaceView view) : base(view)
+        {
+            IsRunning = false;
+        }
+
+        public bool IsRunning { get; set; }
 
         public override async Task Activate()
         {
-            var command = await Cortana.RunRecognizer();
-            await ProcessCommand(command);
+            if (!IsRunning)
+            {
+                IsRunning = true;
+                while (true)
+                {
+                    var dictation = await CortanaContinuousRecognition.RunContinuousRecognizerAndReturnResult();
+                    // TODO
+                    // FIND A WAY TO DEACTIVATE RECOGNITION IF CORTANA BUTTON IS PRESSED AGAIN, OR 
+                    // ALTERNATIVELY DEACTIVATE CORTANA BUTTON WHILE RECOGNIZER IS RUNNING
+                    await ProcessCommand(dictation);
+                }
+            }
+            Deactivate();
         }
 
-        public override async Task Deactivate() { }
-
-        private async Task ProcessCommand(string command)
+        public override async Task Deactivate()
         {
-            switch (command.ToLower())
+            IsRunning = false;
+        }
+
+        private async Task ProcessCommand(string dictation) // bug: sometimes dictation is ""
+        {
+            switch (dictation.ToLower())
             {
                 case "open document":
                     await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Document);
@@ -31,7 +51,7 @@ namespace NuSysApp
                     await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Ink);
                     break;
                 default:
-                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, command);
+                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, dictation);
                     break;
             }
         }

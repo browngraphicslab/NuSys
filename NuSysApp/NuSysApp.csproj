@@ -100,12 +100,23 @@
     </Content>
     <Content Include="Assets\bold.png" />
     <Content Include="Assets\bullets.png" />
-    <Content Include="Assets\icon_idle.png" />
     <Content Include="Assets\font size.png" />
+    <Content Include="Assets\icon_collapse.png" />
+    <Content Include="Assets\icon_eraser.png" />
+    <Content Include="Assets\icon_export.png" />
+    <Content Include="Assets\icon_media.png" />
+    <Content Include="Assets\icon_node.png" />
+    <Content Include="Assets\icon_scribble.png" />
+    <Content Include="Assets\icon_select.png" />
     <Content Include="Assets\image.png" />
     <Content Include="Assets\link.png" />
-    <Content Include="Assets\load icon.png" />
-    <Content Include="Assets\save icon.png" />
+    <Content Include="Assets\icon_additional.png" />
+    <Content Include="Assets\icon_add_node.png" />
+    <Content Include="Assets\icon_global_ink.png" />
+    <Content Include="Assets\icon_multiselect.png" />
+    <Content Include="Assets\icon_bucket.png" />
+    <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\open icon.png" />
     <Content Include="Views\Nodes\link icon.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -131,7 +142,11 @@
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
-    <Compile Include="MISC\Cortana.cs" />
+    <Compile Include="Cortana\Cortana.cs" />
+    <Compile Include="Cortana\CortanaContinuousRecognition.cs" />
+    <Compile Include="Cortana\CortanaPopup.xaml.cs">
+      <DependentUpon>CortanaPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MISC\Factory.cs" />
     <Compile Include="MISC\FileManager.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
@@ -218,34 +233,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\icon.png" />
-    <Content Include="Assets\icon_document.png" />
-    <Content Include="Assets\icon_eraser.png" />
-    <Content Include="Assets\icon_globalink.png" />
-    <Content Include="Assets\icon_highlighter.png" />
     <Content Include="Assets\icon_ink.png" />
     <Content Include="Assets\icon_left.png" />
-    <Content Include="Assets\icon_link.png" />
     <Content Include="Assets\icon_right.png" />
-    <Content Include="Assets\icon_scribble.png" />
-    <Content Include="Assets\icon_scribble2.png" />
     <Content Include="Assets\icon_search.png" />
-    <Content Include="Assets\icon_selectink.png" />
-    <Content Include="Assets\icon_text.png" />
     <Content Include="Assets\icon_x.png" />
     <Content Include="Assets\icon_x2.png" />
     <Content Include="Assets\italic.png" />
     <Content Include="Assets\Logo.scale-100.png" />
-    <Content Include="Assets\mic icon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-1001.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\underline.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
-    <Content Include="MISC\CortanaCommands.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -261,6 +262,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Components\InqLine.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Cortana\CortanaPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

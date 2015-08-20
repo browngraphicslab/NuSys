@@ -44,9 +44,10 @@ namespace NuSysApp.Views.Workspace
             _strokes.Remove(sender as InqLine);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
+
             Debug.WriteLine("click at " + p.X + ", " + p.Y);
             InqLine[] lines = {sender as InqLine};
-            await vm.CreateNewNode(NodeType.Ink, p.X, p.Y, lines);
+            await vm.CreateNewNode(0, NodeType.Ink, p.X, p.Y, lines);
             
         }
 
