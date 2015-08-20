@@ -392,47 +392,54 @@ namespace NuSysApp
 
         public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
         {
-            if (node1 is GroupViewModel)
+            try//TODO remove this try catch block
             {
-                return; //TODO this is temporary until we fix everything else
-            }
-            //Check if group already exists
-            var groupVm = node2 as GroupViewModel;
-            if (groupVm != null)
-            {
-                var group = groupVm;
-                this.AtomViewList.Remove(node1.View);
-                this.NodeViewModelList.Remove(node1); 
+                if (node1 is GroupViewModel)
+                {
+                    return; //TODO this is temporary until we fix everything else
+                }
+                //Check if group already exists
+                var groupVm = node2 as GroupViewModel;
+                if (groupVm != null)
+                {
+                    var group = groupVm;
+                    this.AtomViewList.Remove(node1.View);
+                    this.NodeViewModelList.Remove(node1);
+                    groupVm.AddNode(node1);
+                    node1.ParentGroup = groupVm;
+                    return;
+                }
+
+                //Create new group, because no group exists
+                groupVm = new GroupViewModel(this, "null"); //TODO FIX ID'S HERE
+
+                //Set location to node2's location
+                var xCoordinate = node2.Transform.Matrix.OffsetX;
+                var yCoordinate = node2.Transform.Matrix.OffsetY;
+
+                //Add group to workspace
+                NodeViewModelList.Add(groupVm);
+                AtomViewList.Add(groupVm.View);
+                PositionNode(groupVm, xCoordinate, yCoordinate);
+                Model.AtomDict.Add(id, groupVm);
+
+                //Add the first node
                 groupVm.AddNode(node1);
+                this.AtomViewList.Remove(node1.View);
+                this.NodeViewModelList.Remove(node1);
+
+                //Add the second node
+                groupVm.AddNode(node2);
+                this.AtomViewList.Remove(node2.View);
+                this.NodeViewModelList.Remove(node2);
+
                 node1.ParentGroup = groupVm;
-                return;
+                node2.ParentGroup = groupVm;
             }
-
-            //Create new group, because no group exists
-            groupVm = new GroupViewModel(this, "null");//TODO FIX ID'S HERE
-
-            //Set location to node2's location
-            var xCoordinate = node2.Transform.Matrix.OffsetX;
-            var yCoordinate = node2.Transform.Matrix.OffsetY;
-          
-            //Add group to workspace
-            NodeViewModelList.Add(groupVm);
-            AtomViewList.Add(groupVm.View);
-            PositionNode(groupVm, xCoordinate, yCoordinate);
-            Model.AtomDict.Add(id, groupVm);
-
-            //Add the first node
-            groupVm.AddNode(node1);
-            this.AtomViewList.Remove(node1.View);
-            this.NodeViewModelList.Remove(node1);
-
-            //Add the second node
-            groupVm.AddNode(node2);
-            this.AtomViewList.Remove(node2.View);
-            this.NodeViewModelList.Remove(node2);
-
-            node1.ParentGroup = groupVm;
-            node2.ParentGroup = groupVm;
+            catch (Exception e)
+            {
+                Debug.WriteLine("FUCKING GROUPS");//TRUE
+            }
         }
 
         public async void SaveWorkspace()
