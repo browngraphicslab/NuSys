@@ -57,18 +57,6 @@ namespace NuSysApp
         public const string CommaReplacement = "%^%";
         #endregion Network
 
-        #region Node Type
-        public enum NodeType
-        {
-            text,
-            image,
-            ink,
-            pdf,
-            richText,
-            group
-        }
-        #endregion Node Type
-
         public const int InitialPenSize = 4;
 
         public const int MaxCanvasSize = 100000;

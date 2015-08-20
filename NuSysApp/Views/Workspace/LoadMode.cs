@@ -5,9 +5,9 @@ using Windows.UI.Xaml.Input;
 
 namespace NuSysApp.Views.Workspace
 {
-    public class SaveMode : AbstractWorkspaceViewMode
+    public class LoadMode : AbstractWorkspaceViewMode
     {
-        public SaveMode(WorkspaceView view) : base(view)
+        public LoadMode(WorkspaceView view) : base(view)
         {
 
         }
@@ -15,7 +15,7 @@ namespace NuSysApp.Views.Workspace
         public override async Task Activate()
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
-            vm.SaveWorkspace();
+            vm.LoadWorkspace();
         }
 
         public override async Task Deactivate()

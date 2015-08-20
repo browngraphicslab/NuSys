@@ -19,9 +19,10 @@ namespace NuSysApp
         private List<Dictionary<string, string>> _atomUpdateDicts = new List<Dictionary<string, string>>();
         public XmlFileHelper()
         {
+            this.ID = "1";
         }
 
-        [Column("ID"), PrimaryKey, AutoIncrement]
+        [Column("ID")]
         public string ID { get; set; }
 
         [Column("toXml")]
@@ -57,7 +58,6 @@ namespace NuSysApp
                 case "text":
                     //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
-
                     dict.Add("width", width);
                     dict.Add("height", height);
                     dict.Add("id", ID);
@@ -112,10 +112,11 @@ namespace NuSysApp
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal,async () =>
                             {
-                                await this.CreateNodeFromXml(vm, node);
+                                this.CreateNodeFromXml(vm, node);
                             });
                         break;
                     case "Link":
+                        break;
                         string atomID1 = Convert.ToString(node.Attributes.GetNamedItem("atomID1").Value);
                         string atomID2 = Convert.ToString(node.Attributes.GetNamedItem("atomID2").Value);
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(

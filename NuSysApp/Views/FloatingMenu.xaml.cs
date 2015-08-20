@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     
     public enum Options {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Color, Save
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Color, Save, Load
     }
 
 
@@ -127,6 +127,12 @@ namespace NuSysApp
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Save);
+        }
+
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetActive((Button)sender);
+            ModeChange?.Invoke(Options.Load);
         }
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)

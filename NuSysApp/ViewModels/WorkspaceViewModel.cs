@@ -435,14 +435,14 @@ namespace NuSysApp
             node2.ParentGroup = groupVm;
         }
 
-        public async Task SaveWorkspace()
+        public async void SaveWorkspace()
         {
             // clear the existing table so that there is always only one workspace to load, just for testing purposes
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
-            dbConnection.DropTableAsync<XmlFileHelper>();
+            await dbConnection.DropTableAsync<XmlFileHelper>();
 
             // recreate the table to store the xml file of the current workspace
-            dbConnection.CreateTableAsync<XmlFileHelper>();
+            await dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             XmlDocument doc = this.getXml();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(doc);

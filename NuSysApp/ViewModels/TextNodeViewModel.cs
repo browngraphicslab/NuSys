@@ -24,7 +24,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.NodeType = Constants.NodeType.text;
+            this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
             this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
             this.WorkSpaceViewModel.Model.OnDeletion += DeletionHappend;
