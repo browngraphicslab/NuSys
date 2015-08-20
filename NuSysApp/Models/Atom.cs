@@ -14,7 +14,7 @@ namespace NuSysApp
     public abstract class Atom : BaseINPC
     {
         private DebouncingDictionary _debounceDict;
-
+        private EditStatus _editStatus;
         public enum EditStatus
         {
             Yes,
@@ -32,7 +32,21 @@ namespace NuSysApp
         {
             get { return _debounceDict; }
         }
-        public EditStatus CanEdit { get; set; } //Network locks
+        public EditStatus CanEdit {
+            get
+            {
+                return _editStatus;
+            }
+            set
+            {
+                if (_editStatus == value)
+                {
+                    return;
+                }
+                _editStatus = value;
+                RaisePropertyChanged("Model_CanEdit");
+            }
+        } //Network locks
         public string ID { get; set; }
 
         public virtual async Task UnPack(Dictionary<string, string> props)

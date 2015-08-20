@@ -28,6 +28,7 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
             this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
             this.WorkSpaceViewModel.Model.OnDeletion += DeletionHappend;
+            
         }
 
         public void DeletionHappend(object source, WorkSpaceModel.DeleteEventArgs e)
@@ -58,6 +59,9 @@ namespace NuSysApp
                     break;
                 case "Model_Text":
                     this.Data = ((TextNode) this.Model).Text;
+                    break;
+                case "Model_CanEdit":
+                    this.CanEdit = ((TextNode) this.Model).CanEdit;
                     break;
             }
         }
