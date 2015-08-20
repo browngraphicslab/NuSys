@@ -129,7 +129,8 @@ namespace NuSysApp
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
-                        var nodeVm = CreateNewNode("null",NodeType.Richtext, p.X, p.Y, text);//TODO make actual Id's
+                        NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Richtext.ToString(),text);
+                        //var nodeVm = CreateNewNode("null",NodeType.Richtext, p.X, p.Y, text);//TODO make actual Id's
                     });
                 }
 

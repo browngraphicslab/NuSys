@@ -850,7 +850,7 @@ namespace NuSysApp
                     break;
                 case "6"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
                     var parts = message.Split("=".ToCharArray());
-                    if (parts.Length != 2)
+                    if (parts.Length != 2 && parts.Length != 1)
                     {
                         Debug.WriteLine("Recieved Lock request response that was incorrectly formatted.  message: "+message);
                         return;
