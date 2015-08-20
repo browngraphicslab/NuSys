@@ -265,7 +265,7 @@
             <Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
             </Button>
-            <Button x:Name="Load" Style="{StaticResource FloatingButton}">
+            <Button x:Name="Load" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/open icon.png"></Image>
             </Button>
             <Button x:Name="Export" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click">
