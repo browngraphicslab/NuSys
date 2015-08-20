@@ -209,16 +209,19 @@ namespace NuSysApp
 
         public async Task RemoveNode(string id)
         {
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            if (this.HasLock(id))
             {
-                if (_idDict.ContainsKey(id))
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
-                    //TODO Remove node visually
-                    _idDict.Remove(id);
-                }
-            });
+                    if (_idDict.ContainsKey(id))
+                    {
+                        OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
+                        //TODO Remove node visually
+                        _idDict.Remove(id);
+                    }
+                });
+            }
         }
 
         public async Task<string> GetFullWorkspace()
