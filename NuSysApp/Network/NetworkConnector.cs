@@ -37,10 +37,8 @@ namespace NuSysApp
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
-        private Dictionary<string,string> _locksOut;//The hashset of locks currently given out.  the first string is the id number, the second string represents the IP that holds its lock
         private bool _caughtUp = false;
         private Dictionary<string, int> _pingResponses;
-        private string _lastIDUpdated = "";
 
         private static volatile NetworkConnector _instance;
         private static readonly object _syncRoot = new Object();
@@ -103,7 +101,6 @@ namespace NuSysApp
 
             Debug.WriteLine("local IP: " + _localIP);
 
-            _locksOut = new Dictionary<string, string>();
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string,DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
@@ -140,7 +137,6 @@ namespace NuSysApp
         private void MakeHost()//TODO temporary
         {
             _hostIP = _localIP;
-            _locksOut = new Dictionary<string, string>();
             _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
             _pingResponses = new Dictionary<string, int>();
@@ -150,7 +146,7 @@ namespace NuSysApp
         }
 
         /*
-        * method called every timer tick (3 seconds for host, 2 seconds for non-host)
+        * method called every timer tick (2 seconds for host, 1 seconds for non-host)
         */
         private async void PingTick(object sender, object args)
         {
@@ -158,16 +154,10 @@ namespace NuSysApp
             var keys = _pingResponses.Keys.ToArray();
             foreach (var ip in keys)
             {
-                if (_pingResponses[ip] == 0)
+                if (_pingResponses[ip] <=2)
                 {
                     _pingResponses[ip]++;
                     await SendPing(ip, PacketType.UDP);
-                }
-                else if (_pingResponses[ip] < 2)
-                {
-                    _pingResponses[ip]++;
-                    Debug.WriteLine("IP: " + ip + " failed ping once.  Sending TCP ping...");
-                    await SendPing(ip, PacketType.TCP);
                 }
                 else
                 {
@@ -232,7 +222,7 @@ namespace NuSysApp
                     _pingTimer.Tick += PingTick;
                     if (_hostIP == _localIP)
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 3);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
                         foreach (string ip in _otherIPs)
                         {
                             _pingResponses.Add(ip, 0);
@@ -240,7 +230,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 1);
                         _pingResponses.Add(_hostIP, 0);
                     }
                     _pingTimer.Start();
@@ -341,21 +331,9 @@ namespace NuSysApp
                     }
                 }
                 var set = new HashSet<KeyValuePair<string, string>>(); //create a list of lcoks that need to be removed
-                if (_locksOut.ContainsValue(ip))
-                {
-                    foreach (var kvp in _locksOut)
-                    {
-                        if (kvp.Value == ip)
-                        {
-                            set.Add(kvp); //populate that list
-                        }
-                    }
-                }
+                
+                WorkSpaceModel.RemoveIPFromLocks(ip);
                 _pingResponses.Remove(ip);
-                foreach (var kvp in set)
-                {
-                    _locksOut.Remove(kvp.Key); //remove each item in that list from the _locksOut set
-                }
                 if (_joiningMembers.ContainsKey(ip))
                 {
                     Tuple<bool, List<Packet>> items;
@@ -826,11 +804,12 @@ namespace NuSysApp
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (!_locksOut.ContainsKey(message))
+                        if (!WorkSpaceModel.Locks.ContainsKey(message))
                         {
-                            _locksOut.Add(message, ip);
+                            WorkSpaceModel.Locks.Add(message,ip);
                         }
-                        await SendMessage(ip, "SPECIAL6:" + message + "=" + _locksOut[message], packetType, true, true);
+
+                        await SendMessage(ip, "SPECIAL6:" + message + "=" + WorkSpaceModel.Locks[message], packetType, true, true);
                         return;
                     }
                     else
@@ -875,16 +854,8 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (_locksOut.ContainsKey(message))
-                        {
-                            _locksOut.Remove(message);
-                            await SendMessage(ip, "SPECIAL6:"+message+":", PacketType.TCP, true, true);
-                        }
-                        else
-                        {
-                            Debug.WriteLine("Recieved a return lock request with message: " + message +
-                                        " when the lock wasnt out");
-                        }
+                        WorkSpaceModel.Locks[message] = "";
+                        await SendMessage(ip, "SPECIAL6:"+message+":", PacketType.TCP, true, true);
                     }
                     else
                     {
@@ -956,15 +927,6 @@ namespace NuSysApp
             {
                 string message = MakeSubMessageFromDict(dict);
                 await SendTCPMessage(message, sendToIP);
-            }
-        }
-
-        private void CheckLastUpdate(string id)
-        {
-            if (_lastIDUpdated != id)
-            {
-                WorkSpaceModel.CheckLocks(id);
-                _lastIDUpdated = id;
             }
         }
 
@@ -1081,7 +1043,6 @@ namespace NuSysApp
             {
                 if (WorkSpaceModel.HasAtom(properties["id"]))
                 {
-                    CheckLastUpdate(properties["id"]);
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassUDPMessage(message);
                 }
