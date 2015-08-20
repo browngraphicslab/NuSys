@@ -55,10 +55,6 @@ namespace NuSysApp.Network
                     _dict.Add(id, value);
                 }
             }
-            else if (_atom.CanEdit == Atom.EditStatus.Maybe && ! NetworkConnector.Instance.WorkSpaceModel.HasLock(_atomID))
-            {
-                NetworkConnector.Instance.RequestLock(_atomID);
-            }
         }
 
         private async void SendMessage(object sender, object e)

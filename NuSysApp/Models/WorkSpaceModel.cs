@@ -43,18 +43,10 @@ namespace NuSysApp
             //CurrentID++;
         }
 
-        public int CurrentId
+        public Dictionary<string, string> Locks
         {
-            get { return _currentId; }
-            set
-            {
-                if (value >= _currentId) //decreasing the current ID doesn't make sense
-                {
-                    _currentId = value;
-                }
-            }
-        }
-
+            get { return _locks; }
+        } 
         public async void HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -275,6 +267,7 @@ namespace NuSysApp
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
+                return;
             }
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
@@ -333,7 +326,25 @@ namespace NuSysApp
             {
                 return null;
             }
-        } 
+        }
+
+        public void RemoveIPFromLocks(string ip)
+        {
+            if (_locks.ContainsValue(ip))
+            {
+                foreach (KeyValuePair<string, string> kvp in _locks)
+                {
+                    if (kvp.Value == ip)
+                    {
+                        SetAtomLock(kvp.Key, "");
+                        if (!_locks.ContainsValue(ip))
+                        {
+                            return;
+                        }
+                    } 
+                }
+            }
+        }
     }
 
 }
