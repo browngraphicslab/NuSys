@@ -52,7 +52,6 @@ namespace NuSysApp
             }
         }
 
-
         public double Y
         {
             get
@@ -129,9 +128,7 @@ namespace NuSysApp
 
         public NodeType NodeType { get; set; }
 
-        public Group ParentGroup {
-            get; set;
-            }
+        public Group ParentGroup { get; set;}
         
 
         public bool IsAnnotation { get; set; }
@@ -213,11 +210,12 @@ namespace NuSysApp
             }
 
             XmlAttribute x = doc.CreateAttribute("x");
-
             x.Value = X.ToString();
+            basicXml.Add(x);
 
             XmlAttribute y = doc.CreateAttribute("y");
             y.Value = Y.ToString();
+            basicXml.Add(y);
 
 
             XmlAttribute height = doc.CreateAttribute("height");
