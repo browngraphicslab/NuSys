@@ -936,7 +936,10 @@ namespace NuSysApp
         */
         public async Task RequestDeleteAtom(string id)
         {
-            await SendMessageToHost("SPECIAL10:" + id);//tells host to delete the node
+            if (WorkSpaceModel.HasLock(id))
+            {
+                await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
+            }
         }
 
         /*
