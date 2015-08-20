@@ -85,14 +85,24 @@ namespace NuSysApp
             {
                 expand.Begin();
                 _FloatingMenuCollapsed = false;
+                CollapseImage.Visibility = Visibility.Visible;
+                ExpandImage.Visibility = Visibility.Collapsed;
             }
             else
             {
+                slidein.Begin();
+                slideinSelect.Begin();
+                slideinNodes.Begin();
+                slideinAdditional.Begin();
+                _subMenuOpen = false;
+                _subMenuSelectOpen = false;
+                _subMenuNodesOpen = false;
+                _subMenuAdditionalOpen = false;
                 collapse.Begin();
                 _FloatingMenuCollapsed = true;
-                //ExpandableImage.Source = new ImageSource();
+                CollapseImage.Visibility = Visibility.Collapsed;
+                ExpandImage.Visibility = Visibility.Visible;
             }
-
         }
 
         private void GlobalInkButton_Click(object sender, RoutedEventArgs e)
