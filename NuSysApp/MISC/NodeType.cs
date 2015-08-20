@@ -3,6 +3,6 @@ namespace NuSysApp
 {
     public enum NodeType
     {
-        Text, Richtext, Ink, Document, Image
+        Text, Richtext, Ink, Document, Image,Group,PDF
     }
 }

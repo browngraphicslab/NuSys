@@ -311,7 +311,7 @@ namespace NuSysApp
             }
         }
 
-        public Constants.NodeType NodeType
+        public NodeType NodeType
         {
             get { return ((Node)this.Model).NodeType; }
             set

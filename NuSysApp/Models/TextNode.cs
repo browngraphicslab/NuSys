@@ -54,6 +54,7 @@ namespace NuSysApp
         {
             Dictionary<string, string> dict = await base.Pack();
             dict.Add("text",Text);
+            dict.Add("nodeType", NodeType.Text.ToString());
             return dict;
         }
         public override XmlElement WriteXML(XmlDocument doc)

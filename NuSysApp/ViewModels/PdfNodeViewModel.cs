@@ -28,7 +28,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            this.NodeType = Constants.NodeType.pdf;
+            this.NodeType = NodeType.PDF;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
             this.InkContainer = new List<HashSet<Polyline>>();
