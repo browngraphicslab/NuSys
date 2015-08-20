@@ -855,6 +855,13 @@ namespace NuSysApp
                         Debug.WriteLine("Recieved Lock request response that was incorrectly formatted.  message: "+message);
                         return;
                     }
+                    if (parts.Length == 1)
+                    {
+                        string[] p = new string[2];
+                        p[0] = parts[0];
+                        p[1] = "";
+                        parts = p;
+                    }
                     var lockId = parts[0];
                     var lockHolder = parts[1];
                     if (!WorkSpaceModel.HasAtom(lockId))
