@@ -1147,12 +1147,12 @@ namespace NuSysApp
             if (WorkSpaceModel.HasAtom(id))
             {
                 Debug.WriteLine("Returning lock for ID: " + id);
-                await SendMessageToHost("SPECIAL7:" + id);
             }
             else
             {
                 Debug.WriteLine("Attempted to return lock with ID: "+id+" When no such ID exists");
             }
+            await SendMessageToHost("SPECIAL7:" + id);
         }
 
         private class Packet //private class to store messages for later

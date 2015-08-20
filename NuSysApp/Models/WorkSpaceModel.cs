@@ -202,7 +202,14 @@ namespace NuSysApp
                         Debug.WriteLine("Error, property formatted wrong in message: " + message);
                         continue;
                     }
-                    props.Add(subParts[0], subParts[1]);
+                    if (!props.ContainsKey(subParts[0]))
+                    {
+                        props.Add(subParts[0], subParts[1]);
+                    }
+                    else
+                    {
+                        props[subParts[0]] = subParts[1];
+                    }
                 }
             }
             return props;
@@ -259,6 +266,10 @@ namespace NuSysApp
             }
         }
 
+        public bool HasLock(string id)
+        {
+            return _locksHeld.Contains(id);
+        }
         public async Task SetAtomLock(string id, string ip)
         {
             if (HasAtom(id))
