@@ -261,7 +261,18 @@ namespace NuSysApp
                 await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
                     _locks[id] = ip;
-                    _idDict[id].CanEdit = (NetworkConnector.Instance.LocalIP == ip || ip == "");
+                    if (NetworkConnector.Instance.LocalIP == ip)
+                    {
+                        _idDict[id].CanEdit = Atom.EditStatus.Yes;
+                    }
+                    else if (ip == "")
+                    {
+                        _idDict[id].CanEdit = Atom.EditStatus.Maybe;
+                    }
+                    else
+                    {
+                        _idDict[id].CanEdit = Atom.EditStatus.No;
+                    }
                     if (NetworkConnector.Instance.LocalIP == ip)
                     {
                         _locksHeld.Add(id);

@@ -1127,13 +1127,12 @@ namespace NuSysApp
             if (WorkSpaceModel.HasAtom(id))
             {
                 Debug.WriteLine("Requesting lock for ID: "+id);
-                await SendMessageToHost("SPECIAL5:" + id, PacketType.Both);
             }
             else
             {
-                Debug.WriteLine("Lock was requested for ID: "+id+" when do such ID exists");
-                return;
+                Debug.WriteLine("Requesting lock for ID: "+id+" although it doesn't exist yet");
             }
+            await SendMessageToHost("SPECIAL5:" + id, PacketType.Both);
         }
 
         public async Task ReturnLock(string id)

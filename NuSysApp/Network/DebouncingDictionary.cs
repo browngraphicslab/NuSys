@@ -37,7 +37,7 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.ModelLocked && _atom.CanEdit)
+            if (!NetworkConnector.Instance.ModelLocked && _atom.CanEdit == Atom.EditStatus.Yes)
             {
                 if (!_timing)
                 {
@@ -55,12 +55,16 @@ namespace NuSysApp.Network
                     _dict.Add(id, value);
                 }
             }
+            else if (_atom.CanEdit == Atom.EditStatus.Maybe)
+            {
+                NetworkConnector.Instance.RequestLock(_atomID);
+            }
         }
 
         private async void SendMessage(object sender, object e)
         {
             _timer.Stop();
-            if (_atom.CanEdit)
+            if (_atom.CanEdit == Atom.EditStatus.Yes)
             {
                 _dict.Add("id", _atomID);
                 await NetworkConnector.Instance.QuickUpdateAtom(_dict);
