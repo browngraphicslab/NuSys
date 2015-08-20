@@ -44,7 +44,7 @@ namespace NuSysApp
                     return;
                 }
                 _editStatus = value;
-                RaisePropertyChanged("CanEdit");
+                RaisePropertyChanged("Model_CanEdit");
             }
         } //Network locks
         public string ID { get; set; }
