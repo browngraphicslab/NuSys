@@ -187,6 +187,10 @@ namespace NuSysApp
                 await TellRemoveRemoteIP(s);
                 await Disconnect(s);
             }
+            if (toDelete.Count > 0)
+            {
+                StartTimer();
+            }
         }
 
         /*
