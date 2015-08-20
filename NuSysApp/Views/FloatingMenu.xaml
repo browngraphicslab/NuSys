@@ -182,6 +182,9 @@
             <Button x:Name="addNodeButton" Tapped="Nodes_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_add_node.png" Height="40" Width="40"></Image>
             </Button>
+            <Button x:Name="Record" Tapped="CortanaButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_record.png" Height="40" Width="40"></Image>
+            </Button>
             <Button x:Name="additionalButton" Tapped="Additional_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_additional.png" Height="40" Width="40"></Image>
             </Button>
@@ -271,9 +274,9 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
+            <!--<Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
-            </Button>
+            </Button>-->
             <Button x:Name="Load" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/open icon.png"></Image>
             </Button>
