@@ -267,6 +267,7 @@ namespace NuSysApp
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
+                return;
             }
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
@@ -335,7 +336,6 @@ namespace NuSysApp
                 {
                     if (kvp.Value == ip)
                     {
-                        _locks[kvp.Key] = "";
                         SetAtomLock(kvp.Key, "");
                         if (!_locks.ContainsValue(ip))
                         {

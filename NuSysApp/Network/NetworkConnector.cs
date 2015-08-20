@@ -147,7 +147,7 @@ namespace NuSysApp
         }
 
         /*
-        * method called every timer tick (3 seconds for host, 2 seconds for non-host)
+        * method called every timer tick (2 seconds for host, 1 seconds for non-host)
         */
         private async void PingTick(object sender, object args)
         {
@@ -155,16 +155,10 @@ namespace NuSysApp
             var keys = _pingResponses.Keys.ToArray();
             foreach (var ip in keys)
             {
-                if (_pingResponses[ip] == 0)
+                if (_pingResponses[ip] <=2)
                 {
                     _pingResponses[ip]++;
                     await SendPing(ip, PacketType.UDP);
-                }
-                else if (_pingResponses[ip] < 2)
-                {
-                    _pingResponses[ip]++;
-                    Debug.WriteLine("IP: " + ip + " failed ping once.  Sending TCP ping...");
-                    await SendPing(ip, PacketType.TCP);
                 }
                 else
                 {
@@ -229,7 +223,7 @@ namespace NuSysApp
                     _pingTimer.Tick += PingTick;
                     if (_hostIP == _localIP)
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 3);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
                         foreach (string ip in _otherIPs)
                         {
                             _pingResponses.Add(ip, 0);
@@ -237,7 +231,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 1);
                         _pingResponses.Add(_hostIP, 0);
                     }
                     _pingTimer.Start();
