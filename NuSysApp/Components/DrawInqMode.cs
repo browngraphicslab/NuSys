@@ -24,20 +24,14 @@ namespace NuSysApp
 
             _currentStroke = new InqLine();
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
+            _currentStroke.PointerEntered += delegate (object o, PointerRoutedEventArgs e2)
             {
                 
-                if (inqCanvas.Mode is EraseInqMode)
+                if (inqCanvas.Mode is EraseInqMode && inqCanvas.IsPressed)
                 {
-                    inqCanvas.Children.Remove(o as InqLine);
-                    inqCanvas.Strokes.Remove(o as InqLine);
-                    //InkStroke inkStroke = inqCanvas.Strokes[o as Polyline];
-                    //inqCanvas.Manager.SelectWithLine(e2.GetCurrentPoint(inqCanvas).Position, e2.GetCurrentPoint(inqCanvas).Position);
-                    //if (inkStroke.Selected)
-                    //{
-                    //    inqCanvas.Manager.DeleteSelected();
-                    //}
-
+                    InqLine me = o as InqLine;
+                    inqCanvas.Children.Remove(me);
+                    inqCanvas.Strokes.Remove(me);
                 } 
             };
             inqCanvas.Children.Add(_currentStroke);

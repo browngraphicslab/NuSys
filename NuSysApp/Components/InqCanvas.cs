@@ -24,6 +24,7 @@ namespace NuSysApp
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
         private HashSet<InqLine> _strokes = new HashSet<InqLine>();
+        public bool IsPressed = false;
 
         public InqCanvas() : base()
         {
@@ -39,9 +40,10 @@ namespace NuSysApp
             }
 
             _pointerId = e.Pointer.PointerId;
-            CapturePointer(e.Pointer);
+            //CapturePointer(e.Pointer);
             PointerMoved += OnPointerMoved;
             PointerReleased += OnPointerReleased;
+            IsPressed = true;
 
             _mode.OnPointerPressed(this, e);
 
@@ -72,7 +74,8 @@ namespace NuSysApp
             PointerMoved -= OnPointerMoved;
             PointerReleased -= OnPointerReleased;
             _pointerId = uint.MaxValue;
-            ReleasePointerCapture(e.Pointer);
+            //ReleasePointerCapture(e.Pointer);
+            IsPressed = false;
 
             _mode.OnPointerReleased(this, e);
 

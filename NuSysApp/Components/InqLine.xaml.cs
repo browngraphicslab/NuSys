@@ -23,6 +23,7 @@ namespace NuSysApp
 
         private bool _isHighlighting = false;
         private bool _isSelected = false;
+
         public InqLine()
         {
             this.InitializeComponent();
@@ -47,6 +48,7 @@ namespace NuSysApp
                 Line.Stroke = new SolidColorBrush(Colors.Black);
             }
         }
+
 
         public void ToggleSelection()
         {
