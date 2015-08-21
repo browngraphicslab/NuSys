@@ -25,10 +25,10 @@ namespace NuSysApp
         private bool _subMenuSelectOpen;
         private bool _subMenuNodesOpen;
         private bool _subMenuAdditionalOpen;
-        private bool _FloatingMenuCollapsed;
+        private bool _floatingMenuCollapsed;
 
         private readonly List<Button> _buttons;
-        private SolidColorBrush _borderColor;
+        private static readonly SolidColorBrush BorderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
 
         public FloatingMenu()
         {
@@ -43,13 +43,22 @@ namespace NuSysApp
                 Erase,
                 Colors,
                 MultiSelect,
-                Record,
+                CortanaButton,
                 Export,
                 idleButton,
                 //saveButton
             };
-            _borderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
             SetActive(idleButton);
+        }
+
+        private static void AddBorder(Button btn)
+        {
+            btn.BorderBrush = BorderColor;
+        }
+
+        private static void RemoveBorder(Button btn)
+        {
+            btn.BorderBrush = null;
         }
 
         public void SetActive(Button btnToActivate)
@@ -57,12 +66,12 @@ namespace NuSysApp
             // set all buttons to no border
             foreach (var btn in _buttons)
             {
-                btn.BorderBrush = null;
+                RemoveBorder(btn);
             }
             // set clicked button to activated border
             if (btnToActivate.Name == "inkButton" || btnToActivate.Name == "idleButton")
             {
-                btnToActivate.BorderBrush = _borderColor;
+                AddBorder(btnToActivate);
             }
             // Close any open submenus
             if (!_subMenuOpen && !_subMenuSelectOpen && !_subMenuNodesOpen && !_subMenuAdditionalOpen) return;
@@ -78,10 +87,10 @@ namespace NuSysApp
 
         private void Expandable(object sender, RoutedEventArgs e)
         {
-            if (_FloatingMenuCollapsed)
+            if (_floatingMenuCollapsed)
             {
                 expand.Begin();
-                _FloatingMenuCollapsed = false;
+                _floatingMenuCollapsed = false;
                 CollapseImage.Visibility = Visibility.Visible;
                 ExpandImage.Visibility = Visibility.Collapsed;
             }
@@ -96,7 +105,7 @@ namespace NuSysApp
                 _subMenuNodesOpen = false;
                 _subMenuAdditionalOpen = false;
                 collapse.Begin();
-                _FloatingMenuCollapsed = true;
+                _floatingMenuCollapsed = true;
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
@@ -141,21 +150,6 @@ namespace NuSysApp
             ModeChange?.Invoke(Options.Document);
         }
 
-        private async void CortanaButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetActive((Button) sender);
-            ModeChange?.Invoke(Options.Cortana);
-            if (!WorkspaceView.CortanaRunning)
-            {
-                //SetOpacityActive(cortanaButton);
-                ((Button)sender).BorderBrush = _borderColor;
-            }
-            else
-            {
-                ModeChange?.Invoke(Options.Select);
-            }
-        }
-
         private async void AudioCaptureButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
@@ -181,7 +175,7 @@ namespace NuSysApp
 
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetActive(idleButton);
             ModeChange?.Invoke(Options.Select);
             if (_subMenuSelectOpen) return;
             slideoutSelect.Begin();
@@ -201,6 +195,21 @@ namespace NuSysApp
             if (_subMenuNodesOpen) return;
             slideoutNodes.Begin();
             _subMenuNodesOpen = true;
+        }
+
+        private async void CortanaButton_Click(object sender, TappedRoutedEventArgs e)
+        {
+            SetActive((Button)sender);
+            if (!WorkspaceView.CortanaRunning)
+            {
+                AddBorder((Button) sender);
+                ModeChange?.Invoke(Options.Cortana);
+            }
+            else
+            {
+                RemoveBorder((Button) sender);
+                ModeChange?.Invoke(Options.Cortana);
+            }
         }
 
         private void Additional_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -229,16 +238,6 @@ namespace NuSysApp
 
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            /*
-            vm.FMTransform = compositeTransform;
-            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth
-                || compositeTransform.TranslateY < -85 + FM.Children.Count * -100 || compositeTransform.TranslateY > this.ActualHeight)
-            {
-                FM.Visibility = Visibility.Collapsed;
-                e.Complete();
-            }
-            */
             
             e.Handled = true;
         }

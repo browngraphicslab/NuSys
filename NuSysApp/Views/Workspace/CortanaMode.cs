@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace NuSysApp
@@ -19,6 +20,7 @@ namespace NuSysApp
             {
                 if (!IsRunning)
                 {
+                    Debug.WriteLine("Cortana activated");
                     IsRunning = true;
                     WorkspaceView.CortanaRunning = true;
                     while (WorkspaceView.CortanaRunning)
@@ -31,6 +33,7 @@ namespace NuSysApp
 
             public override async Task Deactivate()
             {
+                Debug.WriteLine("Cortana deactivated");
                 IsRunning = false;
                 WorkspaceView.CortanaRunning = false;
             }
