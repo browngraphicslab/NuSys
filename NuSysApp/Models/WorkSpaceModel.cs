@@ -22,7 +22,6 @@ namespace NuSysApp
         private Dictionary<string, string> _locks;
         private HashSet<string> _locksHeld; 
         private WorkspaceViewModel _workspaceViewModel;
-        private ModelIntermediate _modelIntermediate;
         private int _currentId;
         //private Factory _factory;
         public WorkSpaceModel(WorkspaceViewModel vm)
@@ -33,9 +32,7 @@ namespace NuSysApp
             _currentId = 0;
             _locks = new Dictionary<string, string>();
             _locksHeld = new HashSet<string>();
-            _modelIntermediate = new ModelIntermediate(this);
-            NetworkConnector.Instance.ModelIntermediate = _modelIntermediate;
-            // _factory = new Factory(this);
+            NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
