@@ -382,6 +382,10 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
+            if (message == "SPECIAL3:DONE")
+            {
+                Debug.WriteLine("here");
+            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
