@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Xml;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -36,15 +37,18 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(200, 199, 235, 189));
             this.View = new GroupView(this);
-            this.NodeType = Constants.NodeType.group;
+            this.NodeType = Constants.NodeType.Group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
         }
 
         public void AddNode(NodeViewModel toAdd)
         {
+            Color opaque = toAdd.Color.Color;
+            opaque.A = 255;
+            toAdd.Color = new SolidColorBrush(opaque);
             toAdd.Transform = new MatrixTransform();
             _atomViewList.Add(toAdd.View);
             _nodeViewModelList.Add(toAdd);
@@ -119,8 +123,11 @@ namespace NuSysApp
             _atomViewList.Remove(toRemove.View);
             _nodeViewModelList.Remove(toRemove);
             ((Group)Model).NodeModelList.Remove((Node)toRemove.Model);
+            Color translucent = toRemove.Color.Color;
+            translucent.A = 175;
+            toRemove.Color = new SolidColorBrush(translucent);
 
-         //   ArrangeNodesInGrid();
+            //   ArrangeNodesInGrid();
             switch (_nodeViewModelList.Count)
             {
                 case 0:

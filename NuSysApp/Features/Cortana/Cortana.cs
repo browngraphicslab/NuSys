@@ -8,19 +8,34 @@ namespace NuSysApp
 {
     class Cortana
     {
-        // This error is raised if "Getting to know you" is disabled in Win10 privacy settings.
+        protected Cortana() { }
+        static Cortana()
+        {
+            ResetRecognizer();
+        }
+
+        /// <summary>
+        /// This exception is raised if "Getting to know you" is disabled in Win10 privacy settings.
+        /// </summary>
         protected const uint HResultPrivacyStatementDeclined = 0x80045509;
+
+        protected static CortanaPopup CortanaPopupDialog = new CortanaPopup();
 
         protected static SpeechRecognizer Recognizer;
         protected static StringBuilder DictatedStringBuilder;
         protected const string StopListeningCommand = "stop";
+        protected const string ResetStringBuilderCommand = "reset";
+        protected const string BeginDictationCommand = "dictate";
+        protected const string RecognizerFailedIndicator = "recognizerfailed";
 
-        // Speech commands should be accessible from CortanaMode.
-        public static readonly IReadOnlyCollection<string> SpeechCommands = new List<string>
+        protected const string OpenDocumentCommand = "open document";
+        protected const string CreateTextCommand = "create text";
+        protected const string CreateInkCommand = "create ink";
+        protected static readonly IReadOnlyCollection<string> NodeCreationCommands = new List<string>
         {
-            "open document",
-            "create text",
-            "create ink"
+            OpenDocumentCommand,
+            CreateTextCommand,
+            CreateInkCommand,
         };
 
         /// <summary>
@@ -43,13 +58,18 @@ namespace NuSysApp
             try
             {
                 var speechRecognitionResult = await Recognizer.RecognizeAsync();
-                return SpeechRecognitionSucceeded(speechRecognitionResult) ? speechRecognitionResult.Text : null;
+                var succeeded = SpeechRecognitionSucceeded(speechRecognitionResult);
+                return succeeded ? speechRecognitionResult.Text : null;
             }
             catch
             {
-                return "recognizerfailed";
+                return RecognizerFailedIndicator;
             }
         }
+
+        /// <summary>
+        /// Returns true if a SpeechRecognitionResult was successful, and false otherwise.
+        /// </summary>
         private static bool SpeechRecognitionSucceeded(SpeechRecognitionResult result)
         {
             return result.Status == SpeechRecognitionResultStatus.Success;
@@ -65,6 +85,22 @@ namespace NuSysApp
             return dictatedString.Substring(0, index-1);
         }
 
+        /// <summary>
+        /// Returns the substring following the last instance of the reset command.
+        /// </summary>
+        protected static string GetSubstringFollowingResetCommand(string dictatedString)
+        {
+            while (true)
+            {
+                if (!dictatedString.Contains(ResetStringBuilderCommand)) return dictatedString;
+                var index = dictatedString.IndexOf(ResetStringBuilderCommand, StringComparison.OrdinalIgnoreCase);
+                dictatedString = dictatedString.Substring(index + ResetStringBuilderCommand.Length);
+            }
+        }
+
+        /// <summary>
+        /// This method is called to handle any speech exceptions that crop up
+        /// </summary>
         protected static async Task HandleSpeechException(Exception exception)
         {
             if ((uint)exception.HResult == HResultPrivacyStatementDeclined)

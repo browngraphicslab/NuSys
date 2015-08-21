@@ -2,7 +2,6 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using NuSysApp.Views.Workspace;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -21,8 +20,8 @@ namespace NuSysApp
         private bool _isManipulationEnabled;
         private AbstractWorkspaceViewMode _mode;
 
-        private bool _cortanaInitialized;
-        private CortanaMode _cortanaModeInstance;
+        public static bool CortanaRunning { get; set; }
+        private readonly CortanaContinuousRecognition.CortanaMode _cortanaModeInstance;
 
         #endregion Private Members
 
@@ -32,7 +31,8 @@ namespace NuSysApp
             this.DataContext = new WorkspaceViewModel();
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
-            _cortanaInitialized = false;
+            _cortanaModeInstance = new CortanaContinuousRecognition.CortanaMode(this);
+            CortanaRunning = false;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -100,21 +100,23 @@ namespace NuSysApp
                         new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
                 case Options.Cortana:
-                    if (!_cortanaInitialized)
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new FloatingMenuMode(this)));
+                    // toggle continuous Cortana listening on and off
+                    if (CortanaRunning)
                     {
-                        _cortanaModeInstance = new CortanaMode(this);
-                        _cortanaInitialized = true;
-                    }
-                    if (!_cortanaModeInstance.IsRunning)
-                    {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            _cortanaModeInstance, new FloatingMenuMode(this)));
+                        _cortanaModeInstance.Deactivate();
+                        CortanaRunning = false;
                     }
                     else
                     {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            new FloatingMenuMode(this)));
+                        _cortanaModeInstance.Activate();
+                        CortanaRunning = true;
                     }
+                    break;
+                case Options.AudioCapture:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                        new AddNodeMode(this, NodeType.Audio), new FloatingMenuMode(this)));
                     break;
                 case Options.Erase:
                     InqCanvas.SetErasing(true);

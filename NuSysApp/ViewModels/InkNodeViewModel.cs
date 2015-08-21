@@ -23,7 +23,7 @@ namespace NuSysApp
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; 
             this.Height = Constants.DefaultNodeSize;
-            this.NodeType = Constants.NodeType.ink;
+            this.NodeType = Constants.NodeType.Ink;
             this.IsSelected = false;
             this.IsEditing = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175,173,216,230));
