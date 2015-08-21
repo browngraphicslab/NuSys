@@ -133,6 +133,10 @@ namespace NuSysApp
                 case Options.Load:
                     await SetViewMode(new MultiMode(this, new LoadMode(this), new SelectMode(this)));
                     break;
+                case Options.Pin:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
+                    break;
+
             }
         }
     }

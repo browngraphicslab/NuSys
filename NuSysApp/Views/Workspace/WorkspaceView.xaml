@@ -28,6 +28,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
+        <local:MinimapView PinList="{Binding PinViewModelList}"/>
         <local:FloatingMenu x:Name="floatingMenu" ModeChange="OnModeChange" />
     </Canvas>
 </Page>

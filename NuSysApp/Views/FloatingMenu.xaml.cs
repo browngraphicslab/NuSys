@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     
     public enum Options {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Color, Save, Load
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, Erase, Color, Save, Load, Pin
     }
 
 
@@ -184,6 +184,11 @@ namespace NuSysApp
             slideoutAdditional.Begin();
             _subMenuAdditionalOpen = true;
 
+        }
+        private async void PinButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetActive((Button)sender);
+            ModeChange?.Invoke(Options.Pin);
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
