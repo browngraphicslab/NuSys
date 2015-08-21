@@ -288,9 +288,13 @@ namespace NuSysApp
                 }
             }
         }
-        public void ForceSetLocks(string message)
+        public async Task ForceSetLocks(string message)
         {
             WorkSpaceModel.Locks = StringToDict(message);
+            foreach (KeyValuePair<string, string> kvp in Locks)
+            {
+                await SetAtomLock(kvp.Key, kvp.Value);
+            }
         }
 
         public string GetAllLocksToSend()

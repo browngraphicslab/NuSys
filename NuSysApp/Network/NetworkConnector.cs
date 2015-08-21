@@ -922,7 +922,7 @@ namespace NuSysApp
                     }
                     break;
                 case "12"://A full update from the host about the current locks
-                    ModelIntermediate.ForceSetLocks(message);
+                    await ModelIntermediate.ForceSetLocks(message);
                     break;
             }
         }
