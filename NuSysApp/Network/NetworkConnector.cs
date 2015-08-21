@@ -920,6 +920,9 @@ namespace NuSysApp
                         await SendMessage(ip, "SPECIAL11:NO", packetType);
                     }
                     break;
+                case "12":
+
+                    break;
             }
         }
 
