@@ -29,7 +29,7 @@ namespace NuSysApp
         private const string _TCPInputPort = "302";
         private const string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
-        private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
+        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
@@ -100,7 +100,7 @@ namespace NuSysApp
 
             Debug.WriteLine("local IP: " + _localIP);
 
-            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string,DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
@@ -136,7 +136,7 @@ namespace NuSysApp
         private void MakeHost()//TODO temporary
         {
             _hostIP = _localIP;
-            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
             _pingResponses = new Dictionary<string, int>();
             Debug.WriteLine("This machine (IP: " + _localIP + ") set to be the host");
@@ -344,13 +344,7 @@ namespace NuSysApp
                 _pingResponses.Remove(ip);
                 if (_joiningMembers.ContainsKey(ip))
                 {
-                    Tuple<bool, List<Packet>> items;
-                    _joiningMembers.TryRemove(ip, out items); //if that IP was joining, remove it
-                }
-                while (_otherIPs.Contains(ip))
-                    Debug.WriteLine("Removing IP " + ip + " from list of IPs");
-                {
-                    _otherIPs.Remove(ip);
+                    _joiningMembers.Remove(ip); //if that IP was joining, remove it
                 }
                 var s = "";
                 foreach (string i in _otherIPs)
@@ -695,28 +689,17 @@ namespace NuSysApp
                     }
                     if (_hostIP == _localIP && message != _localIP) ;
                     {
-                        if (_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))
-                            //add new joining member
+                        _joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
+                        var m = await ModelIntermediate.GetFullWorkspace();
+                        if (m.Length > 0)
                         {
-                            var m = await ModelIntermediate.GetFullWorkspace();
-                            if (m.Length > 0)
-                            {
-                                await SendTCPMessage("SPECIAL2:" + m, ip);
-                            }
-                            else
-                            {
-                                await SendTCPMessage("SPECIAL4:0",ip);
-                            }
-                            return;
+                            await SendTCPMessage("SPECIAL2:" + m, ip);
                         }
                         else
                         {
-                            Debug.WriteLine("Adding of joining member failed concurrency");
-                            await SendTCPMessage("SPECIAL2:FAIL", ip);
-                            await HandleSpecialMessage(_localIP,"SPECIAL9:" + ip,PacketType.TCP);
-                            await SendMassTCPMessage("SPECIAL9:" + ip);
-                            return;
+                            await SendTCPMessage("SPECIAL4:0",ip);
                         }
+                        return;
                     }
                     break;
                 case "1":// response to initial request = "The host is the following person" ex: message = "10.10.10.10"
@@ -769,17 +752,7 @@ namespace NuSysApp
                                     {
                                         await p.Send(ip);
                                     }
-                                    Tuple<bool, List<Packet>> nothing;
-                                    if (_joiningMembers.TryRemove(ip, out nothing))//remove the joining member
-                                    {
-                                        nothing = null; //seems so weird writing this. Yeah it's definitely weird, TRANT
-                                    }
-                                    else
-                                    {
-                                        Debug.WriteLine("ERROR: Failed to remove joining member after they caught up.  probably concurrency error");
-                                        return;
-                                    }
-
+                                    _joiningMembers.Remove(ip);//remove the joining member
                                     return;
                                 }
                             }
@@ -1044,7 +1017,7 @@ namespace NuSysApp
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
-            m = m.Substring(0, m.Length - 1) + ">";
+            m = m.Substring(0, m.Length - Constants.CommaReplacement.Length) + ">";
             return m;
         }
 
