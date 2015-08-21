@@ -46,11 +46,12 @@ namespace NuSysApp
 
         public WorkspaceViewModel()
         {
-            Model = new WorkSpaceModel();
+            //Model = new WorkSpaceModel();
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             SelectedComponents = new Collection<ISelectable>();
+            MultiSelectEnabled = false;
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
@@ -267,8 +268,31 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void SetSelection(ISelectable selected)
         {
-            SelectedComponents.Add(selected);
-            selected.IsSelected = true;
+            if (!MultiSelectEnabled)
+            {
+                if (SelectedComponents.Count == 1)
+                {
+                    var avm1 = selected as AtomViewModel;
+                    var avm2 = SelectedComponents.First() as AtomViewModel;
+                    if (avm1 != null && avm2 != null)
+                    {
+                        this.CreateNewLink(avm1, avm2);
+                        selected.IsSelected = false;
+                        avm2.IsSelected = false;
+                        SelectedComponents.Clear();
+                    }
+                }
+                else
+                {
+                    SelectedComponents.Clear();
+                    SelectedComponents.Add(selected);
+                }
+            }
+            else
+            {
+                SelectedComponents.Add(selected);
+            }
+            
             //if (SelectedAtomViewModel == null)
             //{
             //    SelectedAtomViewModel = selected;
@@ -297,7 +321,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(int id, AtomViewModel atomVm1, AtomViewModel atomVm2)
+        public LinkViewModel CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -314,8 +338,8 @@ namespace NuSysApp
                 return null;
             }
 
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, id);
-            Model.AtomDict.Add(id, vm);
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, 0);
+            //Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -379,7 +403,7 @@ namespace NuSysApp
                     return null;
             }
             currId++;
-            Model.AtomDict.Add(id, vm);
+            //Model.AtomDict.Add(id, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -431,7 +455,7 @@ namespace NuSysApp
             NodeViewModelList.Add(groupVm);
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
-            Model.AtomDict.Add(currId, groupVm);
+            //Model.AtomDict.Add(currId, groupVm);
             currId++;
 
             //Add the first node
@@ -521,7 +545,9 @@ namespace NuSysApp
 
         public Collection<ISelectable> SelectedComponents { get; private set; }
 
-        public WorkSpaceModel Model { get; set; }
+        //public WorkSpaceModel Model { get; set; }
+
+        public bool MultiSelectEnabled { get; set; }
 
         //public Mode CurrentMode { get; set; }
         public int currId { get; set; }

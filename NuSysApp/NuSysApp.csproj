@@ -216,7 +216,7 @@
     <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
     <Compile Include="Views\Workspace\GlobalInkMode.cs" />
     <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
-    <Compile Include="Views\Workspace\MarqueeSelectMode.cs" />
+    <Compile Include="Views\Workspace\MultiSelectMode.cs" />
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
     <Compile Include="Views\Workspace\PromoteInkMode.cs" />

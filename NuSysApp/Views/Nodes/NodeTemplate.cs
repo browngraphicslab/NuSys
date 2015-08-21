@@ -58,6 +58,7 @@ namespace NuSysApp
             this.ManipulationMode = ManipulationModes.All;
             this.ManipulationDelta += OnManipulationDelta;
 
+            this.PointerPressed += OnPointerPressed;
             this.PointerReleased += OnPointerReleased;
 
             var vm = (NodeViewModel)this.DataContext;
@@ -111,6 +112,11 @@ namespace NuSysApp
 //                SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
 //                nodeTpl.Background = backgroundColorBrush;
 //            }
+            e.Handled = true;
+        }
+
+        private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
             e.Handled = true;
         }
 

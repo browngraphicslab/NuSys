@@ -90,7 +90,7 @@ namespace NuSysApp
                         () =>
                         {
                             GroupViewModel groupVm = new GroupViewModel(vm, ID);
-                            vm.Model.AtomDict.Add(ID, groupVm);
+                            //vm.Model.AtomDict.Add(ID, groupVm);
                             foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
                             {
                                 NodeViewModel newVM = this.CreateNodeFromXml(vm, child);
@@ -118,10 +118,10 @@ namespace NuSysApp
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                         () =>
                         {
-                            AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
-                            AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
-                            LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
-                            newLinkVm.ID = ID;
+                           // AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
+                            //AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
+                            //inkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
+                           // newLinkVm.ID = ID;
 
                             // create node annotation and attach it to the link
                             if (node.HasChildNodes)
@@ -129,7 +129,7 @@ namespace NuSysApp
                                 XmlNode attachedAnnotation = node.ChildNodes[0];
                                 int clippedParentID = Convert.ToInt32(attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value);
                                 NodeViewModel nodeVm = this.CreateNodeFromXml(vm, attachedAnnotation);
-                                nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
+                                //nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
                             }
                         });
                         break;

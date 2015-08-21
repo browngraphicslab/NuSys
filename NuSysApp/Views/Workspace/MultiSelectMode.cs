@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    class MarqueeSelectMode : AbstractWorkspaceViewMode
+    class MultiSelectMode : AbstractWorkspaceViewMode
     {
 
         private bool _isMouseDown;
@@ -24,8 +24,10 @@ namespace NuSysApp
         private Point _previousPoint;
         private Rectangle _currentRect;
 
-        public MarqueeSelectMode(WorkspaceView view) : base(view)
+        public MultiSelectMode(WorkspaceView view) : base(view)
         {
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.MultiSelectEnabled = true;
         }
 
         public override async Task Activate()
@@ -33,6 +35,7 @@ namespace NuSysApp
             _view.PointerPressed += View_PointerPressed;
             _view.PointerMoved += View_PointerMoved;
             _view.PointerReleased += View_PointerReleased;
+            _view.DoubleTapped += View_OnDoubleTapped;
         }
 
         public override async Task Deactivate()
@@ -40,6 +43,7 @@ namespace NuSysApp
             _view.PointerPressed -= View_PointerPressed;
             _view.PointerMoved -= View_PointerMoved;
             _view.PointerReleased -= View_PointerReleased;
+            _view.DoubleTapped -= View_OnDoubleTapped;
         }
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -48,6 +52,20 @@ namespace NuSysApp
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;
             _currentPoint = e.GetCurrentPoint(_view).Position;
+        }
+
+        private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (dc is NodeViewModel)
+            {
+                var vm = (NodeViewModel)dc;
+                vm.ToggleSelection();
+            }
+
+            _isMouseDown = false;
+
+            e.Handled = true;
         }
 
         private async void View_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -111,6 +129,8 @@ namespace NuSysApp
 
         private async void SelectContainedComponents()
         {
+            if(_currentRect == null) 
+                return;
             Rect r = new Rect();
             r.Width = _currentRect.Width;
             r.Height = _currentRect.Height;
@@ -171,7 +191,7 @@ namespace NuSysApp
 
             foreach (ISelectable element in selectedElements)
             {
-                vm.SetSelection(element);
+                element.ToggleSelection();
             }
         }
     }
