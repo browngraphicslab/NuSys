@@ -182,7 +182,7 @@
             <Button x:Name="addNodeButton" Tapped="Nodes_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_add_node.png" Height="40" Width="40"></Image>
             </Button>
-            <Button x:Name="Record" Tapped="CortanaButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
+            <Button x:Name="CortanaButton" Tapped="CortanaButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_record.png" Height="40" Width="40"></Image>
             </Button>
             <Button x:Name="additionalButton" Tapped="Additional_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">

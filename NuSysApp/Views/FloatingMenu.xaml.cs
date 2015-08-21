@@ -43,7 +43,7 @@ namespace NuSysApp
                 Erase,
                 Colors,
                 MultiSelect,
-                Record,
+                CortanaButton,
                 Export,
                 idleButton,
                 //saveButton
@@ -57,12 +57,12 @@ namespace NuSysApp
             // set all buttons to no border
             foreach (var btn in _buttons)
             {
-                btn.BorderBrush = null;
+                RemoveBorder(btn);
             }
             // set clicked button to activated border
             if (btnToActivate.Name == "inkButton" || btnToActivate.Name == "idleButton")
             {
-                btnToActivate.BorderBrush = _borderColor;
+                AddBorder(btnToActivate);
             }
             // Close any open submenus
             if (!_subMenuOpen && !_subMenuSelectOpen && !_subMenuNodesOpen && !_subMenuAdditionalOpen) return;
@@ -74,6 +74,16 @@ namespace NuSysApp
             _subMenuSelectOpen = false;
             _subMenuNodesOpen = false;
             _subMenuAdditionalOpen = false;
+        }
+
+        private void AddBorder(Button btn)
+        {
+            btn.BorderBrush = _borderColor;
+        }
+
+        private void RemoveBorder(Button btn)
+        {
+            btn.BorderBrush = null;
         }
 
         private void Expandable(object sender, RoutedEventArgs e)
@@ -141,21 +151,6 @@ namespace NuSysApp
             ModeChange?.Invoke(Options.Document);
         }
 
-        private async void CortanaButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetActive((Button) sender);
-            ModeChange?.Invoke(Options.Cortana);
-            if (!WorkspaceView.CortanaRunning)
-            {
-                //SetOpacityActive(cortanaButton);
-                ((Button)sender).BorderBrush = _borderColor;
-            }
-            else
-            {
-                ModeChange?.Invoke(Options.Select);
-            }
-        }
-
         private async void AudioCaptureButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
@@ -181,7 +176,7 @@ namespace NuSysApp
 
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            SetActive((Button)sender);
+            SetActive(idleButton);
             ModeChange?.Invoke(Options.Select);
             if (_subMenuSelectOpen) return;
             slideoutSelect.Begin();
@@ -201,6 +196,21 @@ namespace NuSysApp
             if (_subMenuNodesOpen) return;
             slideoutNodes.Begin();
             _subMenuNodesOpen = true;
+        }
+
+        private async void CortanaButton_Click(object sender, TappedRoutedEventArgs e)
+        {
+            SetActive((Button)sender);
+            if (!WorkspaceView.CortanaRunning)
+            {
+                AddBorder((Button) sender);
+                ModeChange?.Invoke(Options.Cortana);
+            }
+            else
+            {
+                RemoveBorder((Button) sender);
+                ModeChange?.Invoke(Options.Cortana);
+            }
         }
 
         private void Additional_OnTapped(object sender, TappedRoutedEventArgs e)
