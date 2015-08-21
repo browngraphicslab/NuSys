@@ -790,7 +790,8 @@ namespace NuSysApp
                         {
                             ModelIntermediate.Locks.Add(message,ip);
                         }
-                        await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks[message]);
                         await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message]);
                         return;
                     }
@@ -817,12 +818,6 @@ namespace NuSysApp
                     }
                     var lockId = parts[0];
                     var lockHolder = parts[1];
-                    if (!ModelIntermediate.HasAtom(lockId))
-                    {
-                        Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
-                                        " which has an invalid id");
-                        return;
-                    }
                     ModelIntermediate.SetAtomLock(lockId, lockHolder);
                     return;
                     break;
