@@ -218,6 +218,7 @@ namespace NuSysApp
         */
         private async Task StartTimer()
         {
+            return;
             if (_hostIP != null)
             {
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -641,7 +642,7 @@ namespace NuSysApp
                     }
                     catch (KeyNotFoundException e)
                     {
-                        Debug.WriteLine("ERROR: Message recieved tried to access a dictionary when remote IP isn't know");
+                        Debug.WriteLine("ERROR: Message recieved tried to access a dictionary when remote IP isn't known");
                         //go back to waiting room or reconnect
                         return;
                     }

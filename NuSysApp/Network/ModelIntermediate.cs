@@ -121,6 +121,8 @@ namespace NuSysApp
         }
         public async Task SetAtomLock(string id, string ip)
         {
+
+
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
