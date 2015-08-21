@@ -889,6 +889,7 @@ namespace NuSysApp
 
                     break;
                 case "11"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
+                    return;
                     this.Pingged(ip);
                     if (message != "NO")
                     {
@@ -1017,7 +1018,14 @@ namespace NuSysApp
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
-            m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length,0)) + ">";
+            try
+            {
+                m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
+            }
+            catch (Exception e)
+            {
+                return "<>";
+            }
             return m;
         }
 
