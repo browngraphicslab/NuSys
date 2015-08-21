@@ -828,13 +828,6 @@ namespace NuSysApp
                         return;
                     }
                     ModelIntermediate.SetAtomLock(lockId, lockHolder);
-                    if (lockHolder != _localIP && lockHolder!="")
-                    {
-                        //TODO Cancel movement of node
-                        //then
-                        await SendMessageToHost("SPECIAL8:" + lockId);
-                        return;
-                    }
                     return;
                     break;
                 case "7"://Returning lock  ex: message = "6"
