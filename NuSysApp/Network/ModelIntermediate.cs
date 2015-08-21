@@ -121,10 +121,6 @@ namespace NuSysApp
         }
         public async Task SetAtomLock(string id, string ip)
         {
-            if (NetworkConnector.Instance.LocalIP == ip)
-            {
-                WorkSpaceModel.LocalLocks.Add(id);
-            }
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
@@ -255,18 +251,18 @@ namespace NuSysApp
 
         public bool HasLock(string id)
         {
-            return WorkSpaceModel.LocalLocks.Contains(id);
+            return WorkSpaceModel.Locks.ContainsKey(id) && WorkSpaceModel.Locks[id] == NetworkConnector.Instance.LocalIP;
         }
 
         public async Task CheckLocks(string id)
         {
             Debug.WriteLine("Checking locks");
             HashSet<string> locksNeeded = LocksNeeded(id);
-            foreach (string lockID in WorkSpaceModel.LocalLocks)
+            foreach (KeyValuePair<string,string> kvp in WorkSpaceModel.Locks)
             {
-                if (!locksNeeded.Contains(lockID))
+                if (kvp.Value == NetworkConnector.Instance.LocalIP && !locksNeeded.Contains(kvp.Key))
                 {
-                    await NetworkConnector.Instance.ReturnLock(lockID);
+                    await NetworkConnector.Instance.ReturnLock(kvp.Key);
                 }
             }
         }
@@ -291,7 +287,6 @@ namespace NuSysApp
         public async Task ForceSetLocks(string message)
         {
             WorkSpaceModel.Locks.Clear();
-            WorkSpaceModel.LocalLocks.Clear();
             foreach (KeyValuePair<string, string> kvp in StringToDict(message))
             {
                 await SetAtomLock(kvp.Key, kvp.Value);

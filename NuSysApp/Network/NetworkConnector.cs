@@ -788,7 +788,11 @@ namespace NuSysApp
                     {
                         if (!ModelIntermediate.Locks.ContainsKey(message))
                         {
-                            ModelIntermediate.Locks.Add(message,ip);
+                            ModelIntermediate.Locks.Add(message, ip);
+                        }
+                        else
+                        {
+                            ModelIntermediate.Locks[message] = ip;
                         }
                         //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
                         ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks[message]);
