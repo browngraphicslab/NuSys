@@ -77,7 +77,7 @@ namespace NuSysApp
             switch (mode)
             {
                 case Options.Select:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
+                    await SetViewMode(new MultiMode(this, new PromoteInkMode(this), new PanZoomMode(this), new SelectMode(this),
                         new FloatingMenuMode(this)));
                     break;
                 case Options.GlobalInk:
