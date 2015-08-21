@@ -32,7 +32,7 @@ namespace NuSysApp
         private GroupViewModel _group;
 
         #endregion Private Members
-        protected NodeViewModel(WorkspaceViewModel vm, string id): base(vm, id)
+        protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
         {
             this.AtomType = Constants.Node;
         }

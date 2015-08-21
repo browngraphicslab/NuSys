@@ -17,11 +17,8 @@ namespace NuSysApp
     {
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
-        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, string id) : base(workspaceViewModel, id)
+        public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel, string id) : base(model, workspaceViewModel, id)
         {
-            
-            
-            this.Model = new PdfNodeModel(id);
             this.View = new PdfNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
@@ -94,7 +91,7 @@ namespace NuSysApp
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
 
-        public PdfNodeModel PdfNodeModel //TO DO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
+        public PdfNodeModel PdfNodeModel //TODO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
         {
             get { return (PdfNodeModel)Model; }
             set
@@ -103,7 +100,7 @@ namespace NuSysApp
                 {
                     return;//
                 }
-                this.Model = value;
+                //this.Model = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }

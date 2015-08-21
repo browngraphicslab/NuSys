@@ -136,6 +136,8 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="EventArgs\CreateEventArgs.cs" />
+    <Compile Include="EventArgs\DeleteEventArgs.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
@@ -144,7 +146,6 @@
     <Compile Include="Cortana\CortanaPopup.xaml.cs">
       <DependentUpon>CortanaPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MISC\Factory.cs" />
     <Compile Include="MISC\FileManager.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />

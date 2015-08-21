@@ -14,39 +14,25 @@ namespace NuSysApp
 {
     public class WorkSpaceModel
     {
+        #region Events and Delegates
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
-
+        public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public event DeleteEventHandler OnDeletion;
-        //Node _selectedNode;
+        public event CreateEventHandler OnCreation;
+        #endregion Events and Delegates
+
+        #region Private Members
         private Dictionary<string, Atom> _idDict;
         private Dictionary<string, string> _locks;
         private HashSet<string> _locksHeld; 
-        private WorkspaceViewModel _workspaceViewModel;
         private int _currentId;
-        //private Factory _factory;
-        public WorkSpaceModel(WorkspaceViewModel vm)
-        {
-            _idDict = new Dictionary<string, Atom>();
-            _workspaceViewModel = vm;
-            AtomDict = new Dictionary<string, AtomViewModel>();
-            _currentId = 0;
-            _locks = new Dictionary<string, string>();
-            _locksHeld = new HashSet<string>();
-            NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
-        }
+        #endregion Private members
 
-        public Dictionary<string, AtomViewModel> AtomDict { set; get; }
-
-        public void CreateNewTextNode(string data)
-        {
-            //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
-            //CurrentID++;
-        }
-
+        #region Public Members
         public Dictionary<string, Atom> IDToAtomDict
         {
             get { return _idDict; }
-        } 
+        }
         public Dictionary<string, string> Locks
         {
             get { return _locks; }
@@ -56,40 +42,64 @@ namespace NuSysApp
         {
             get
             {
-                return _locksHeld; 
+                return _locksHeld;
             }
-        } 
+        }
 
-        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public Dictionary<string, AtomViewModel> AtomDict { set; get; }
+        #endregion
+
+        public WorkSpaceModel()
         {
-            Atom atom = await _workspaceViewModel.CreateNewNode(id, type, xCoordinate, yCoordinate, data); 
-            _idDict.Add(id,atom);
-            return atom;
+            _idDict = new Dictionary<string, Atom>();
+            AtomDict = new Dictionary<string, AtomViewModel>();
+            _currentId = 0;
+            _locks = new Dictionary<string, string>();
+            _locksHeld = new HashSet<string>();
+            NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
+        }
+
+        public void CreateNewTextNode(string data)
+        {
+            //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
+            //CurrentID++;
+        }
+
+        public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        {
+            Node node;
+            switch (type)
+            {
+                case NodeType.Text:
+                    node = new TextNode((string)data, id);
+                    break;
+                case NodeType.Richtext:
+                    node = new TextNode((string)data, id);
+                    break;
+                case NodeType.Ink:
+                    node = new InkModel(id);
+                    break;
+                default:
+                    Debug.WriteLine("Could not create node");
+                    return;
+            }
+            node.X = xCoordinate;
+            node.Y = yCoordinate;
+            node.NodeType = type;
+
+            _idDict.Add(id, node);
+            OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
         }
 
         public async Task RemoveNode(string id)
         {
             if (_idDict.ContainsKey(id))
             {
-                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
+                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted", (Node)_idDict[id]));
                 _idDict.Remove(id);
             }
         }
-
-        public class DeleteEventArgs : EventArgs
-        {
-            private string EventInfo;
-
-            public DeleteEventArgs(string text)
-            {
-                EventInfo = text;
-            }
-
-            public string GetInfo()
-            {
-                return EventInfo;
-            }
-        }
+  
     }
 
 }

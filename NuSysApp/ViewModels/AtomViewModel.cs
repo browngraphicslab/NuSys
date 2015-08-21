@@ -23,12 +23,12 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected AtomViewModel(WorkspaceViewModel vm, string id)
+        protected AtomViewModel(Atom model, WorkspaceViewModel vm, string id)
         {
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
             this.IsVisible = true;
-           
+            this.Model = model;
         }
 
         #region Atom Manipulations
@@ -241,7 +241,7 @@ namespace NuSysApp
             }
         }
 
-        public Atom Model { get; set; }
+        public Atom Model { get;}
 
         public String AtomType { get; set; }
 

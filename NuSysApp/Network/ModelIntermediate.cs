@@ -72,7 +72,7 @@ namespace NuSysApp
                                     data = ParseToPolyline(d);
                                 }
                             }
-                            Atom vm = await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
+                            await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
                             await this.HandleMessage(s);
                         }
                         else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
