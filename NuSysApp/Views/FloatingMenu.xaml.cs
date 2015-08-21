@@ -12,7 +12,7 @@ namespace NuSysApp
     
     public enum Options
     {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Pin
     }
 
 
@@ -226,8 +226,12 @@ namespace NuSysApp
             _subMenuAdditionalOpen = true;
 
         }
-
-        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private async void PinButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetActive((Button) sender);
+            ModeChange?.Invoke(Options.Pin);
+        }
+    private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
             var compositeTransform = vm.FMTransform;
