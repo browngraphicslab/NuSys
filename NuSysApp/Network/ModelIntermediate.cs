@@ -121,8 +121,10 @@ namespace NuSysApp
         }
         public async Task SetAtomLock(string id, string ip)
         {
-
-
+            if (NetworkConnector.Instance.LocalIP == ip)
+            {
+                WorkSpaceModel.LocalLocks.Add(id);
+            }
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
@@ -143,10 +145,6 @@ namespace NuSysApp
                 else
                 {
                     WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
-                }
-                if (NetworkConnector.Instance.LocalIP == ip)
-                {
-                    WorkSpaceModel.LocalLocks.Add(id);
                 }
             });
         }
@@ -292,7 +290,8 @@ namespace NuSysApp
         }
         public async Task ForceSetLocks(string message)
         {
-            Locks.Clear();
+            WorkSpaceModel.Locks.Clear();
+            WorkSpaceModel.LocalLocks.Clear();
             foreach (KeyValuePair<string, string> kvp in StringToDict(message))
             {
                 await SetAtomLock(kvp.Key, kvp.Value);
