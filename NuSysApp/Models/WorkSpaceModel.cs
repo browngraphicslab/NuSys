@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Network;
 
 namespace NuSysApp
 {
@@ -18,10 +19,10 @@ namespace NuSysApp
         public event DeleteEventHandler OnDeletion;
         //Node _selectedNode;
         private Dictionary<string, Atom> _idDict;
-        private Dictionary<string, Polyline> _gloablInkDict;
         private Dictionary<string, string> _locks;
         private HashSet<string> _locksHeld; 
         private WorkspaceViewModel _workspaceViewModel;
+        private ModelIntermediate _modelIntermediate;
         private int _currentId;
         //private Factory _factory;
         public WorkSpaceModel(WorkspaceViewModel vm)
@@ -32,7 +33,8 @@ namespace NuSysApp
             _currentId = 0;
             _locks = new Dictionary<string, string>();
             _locksHeld = new HashSet<string>();
-            _gloablInkDict = new Dictionary<string, Polyline>();
+            _modelIntermediate = new ModelIntermediate(this);
+            NetworkConnector.Instance.ModelIntermediate = _modelIntermediate;
             // _factory = new Factory(this);
         }
 
@@ -44,216 +46,37 @@ namespace NuSysApp
             //CurrentID++;
         }
 
+        public Dictionary<string, Atom> IDToAtomDict
+        {
+            get { return _idDict; }
+        } 
         public Dictionary<string, string> Locks
         {
             get { return _locks; }
+        }
+
+        public HashSet<string> LocalLocks
+        {
+            get
+            {
+                return _locksHeld; 
+            }
         } 
-        public async Task HandleMessage(string s)
+
+        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                Dictionary<string, string> props = ParseOutProperties(s);
-                if (props.ContainsKey("id")) { 
-                string id = props["id"]; //since we called parse properties, it MUST have an id
-                    if (_idDict.ContainsKey(id))
-                    {
-                        Atom n = _idDict[id];
-                        n.UnPack(props);
-                    }
-                    else if (_gloablInkDict.ContainsKey(id))
-                    {
-                           
-                    }
-                    else
-                    {
-                        if (props.ContainsKey("type") && props["type"] == "ink")
-                        {
-
-                        }
-                        if (props.ContainsKey("type") && props["type"] == "node")
-                        {
-                            NodeType type = NodeType.Text;
-                            double x = 0;
-                            double y = 0;
-                            object data = null;
-                            if (props.ContainsKey("nodeType"))
-                            {
-                                string t = props["nodeType"];
-                                type = (NodeType) Enum.Parse(typeof (NodeType), t);
-                            }
-                            if (props.ContainsKey("x"))
-                            {
-                                double.TryParse(props["x"], out x);
-                            }
-                            if (props.ContainsKey("y"))
-                            {
-                                double.TryParse(props["y"], out y);
-                            }
-                            if (props.ContainsKey("data"))
-                            {
-                                string d = props["data"];
-                                if (d.Substring(0, 10).Contains("polyline"))
-                                {
-                                    data = ParseToPolyline(d);
-                                }
-                            }
-                            NodeViewModel vm = await _workspaceViewModel.CreateNewNode(props["id"], type, x, y, data);
-                            Node node = (Node) vm.Model;
-                            if (node == null)
-                            {
-                                return;
-                            }
-                            _idDict.Add(id, node);
-                            await this.HandleMessage(s);
-                        }
-                        else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
-                        {
-                            string id1 = "null";
-                            string id2 = "null";
-                            if (props.ContainsKey("id1"))
-                            {
-                                id1 = props["id1"];
-                            }
-                            if (props.ContainsKey("id2"))
-                            {
-                                id1 = props["id2"];
-                            }
-                            AtomViewModel avm1;
-                            AtomViewModel avm2;
-                            if (_idDict.ContainsKey(id1))
-                            {
-                                //avm1 = _idDict[id1];
-                            }
-
-                            //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id);
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("ID was not found in property list of message: "+s);
-                }
-            });
-        }
-
-        private Polyline[] ParseToPolyline(string s)
-        {
-            List<Polyline> polys = new List<Polyline>();
-            string[] parts = s.Split("><".ToCharArray());
-            foreach (string part in parts)
-            {
-                Polyline poly = new Polyline();
-                string[] subparts = part.Split(" ".ToCharArray());
-                foreach (string subpart in subparts)
-                {
-                    if (subpart.Length > 0 && subpart != "polyline")
-                    {
-                        if (subpart.Substring(0, 6) == "points")
-                        {
-                            string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                            string[] points = innerPoints.Split(";".ToCharArray());
-                            foreach (string p in points)
-                            {
-                                if (p.Length > 0)
-                                {
-                                    string[] coords = p.Split(",".ToCharArray());
-                                    //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
-                                }
-                            }
-                        }
-                        else if (subpart.Substring(0, 9) == "thickness")
-                        {
-                            string sp = subpart.Substring(11, subpart.Length - 12);
-                            poly.StrokeThickness = double.Parse(sp);
-                        }
-                        else if (subpart.Substring(0, 6) == "stroke")
-                        {
-                            string sp = subpart.Substring(8, subpart.Length - 10);
-                            poly.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
-                            //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
-                        }
-                    }
-                }
-                if (poly.Points.Count > 0)
-                {
-                    polys.Add(poly);
-                }
-            }
-            return polys.ToArray();
-        }
-
-        public bool HasAtom(string id)
-        {
-            return _idDict.ContainsKey(id);
-        }
-
-        private Dictionary<string, string> ParseOutProperties(string message)
-        {
-            message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(Constants.CommaReplacement.ToCharArray());
-            Dictionary<string, string> props = new Dictionary<string, string>();
-            foreach (string part in parts)
-            {
-                if (part.Length > 0)
-                {
-                    string[] subParts = part.Split("=".ToCharArray(), 2);
-                    if (subParts.Length != 2)
-                    {
-                        Debug.WriteLine("Error, property formatted wrong in message: " + message);
-                        continue;
-                    }
-                    if (!props.ContainsKey(subParts[0]))
-                    {
-                        props.Add(subParts[0], subParts[1]);
-                    }
-                    else
-                    {
-                        props[subParts[0]] = subParts[1];
-                    }
-                }
-            }
-            return props;
+            Atom atom = await _workspaceViewModel.CreateNewNode(id, type, xCoordinate, yCoordinate, data); 
+            _idDict.Add(id,atom);
+            return atom;
         }
 
         public async Task RemoveNode(string id)
         {
-            if (this.HasLock(id))
+            if (_idDict.ContainsKey(id))
             {
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    if (_idDict.ContainsKey(id))
-                    {
-                        OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
-                        //TODO Remove node visually
-                        _idDict.Remove(id);
-                    }
-                });
+                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
+                _idDict.Remove(id);
             }
-        }
-
-        public async Task<string> GetFullWorkspace()
-        {
-            if (_idDict.Count > 0)
-            {
-                string ret = "";
-                foreach (KeyValuePair<string, Atom> kvp in _idDict)
-                {
-                    ret += '<';
-                    Atom atom = kvp.Value;
-                    Dictionary<string, string> parts = await atom.Pack();
-                    foreach (KeyValuePair<string, string> tup in parts)
-                    {
-                        ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
-                    }
-                    ret += "id=" + atom.ID + ">&&";
-                }
-                ret = ret.Substring(0, ret.Length - 2);
-                return ret;
-            }
-            return "";
         }
 
         public class DeleteEventArgs : EventArgs
@@ -268,94 +91,6 @@ namespace NuSysApp
             public string GetInfo()
             {
                 return EventInfo;
-            }
-        }
-
-        public bool HasLock(string id)
-        {
-            return _locksHeld.Contains(id);
-        }
-        public async Task SetAtomLock(string id, string ip)
-        {
-            if (!HasAtom(id))
-            {
-                Debug.WriteLine("got lock update from unknown node");
-                return;
-            }
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                _locks[id] = ip;
-                if (NetworkConnector.Instance.LocalIP == ip)
-                {
-                    _idDict[id].CanEdit = Atom.EditStatus.Yes;
-                }
-                else if (ip == "")
-                {
-                    _idDict[id].CanEdit = Atom.EditStatus.Maybe;
-                }
-                else
-                {
-                    _idDict[id].CanEdit = Atom.EditStatus.No;
-                }
-                if (NetworkConnector.Instance.LocalIP == ip)
-                {
-                    _locksHeld.Add(id);
-                }
-            });
-        }
-
-        private HashSet<string> LocksNeeded(string id)
-        {
-            if (this.HasAtom(id))
-            {
-                HashSet<string> set = new HashSet<string>();
-                set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
-                return set;
-            }
-            return new HashSet<string>();
-        }
-
-        public async Task CheckLocks(string id)
-        {
-            Debug.WriteLine("Checking locks");
-            HashSet<string> locksNeeded = LocksNeeded(id);
-            foreach (string lockID in _locksHeld)
-            {
-                if (!locksNeeded.Contains(lockID))
-                {
-                    await NetworkConnector.Instance.ReturnLock(lockID);
-                }
-            }
-        }
-
-        public async Task<Dictionary<string, string>> GetNodeState(string id)
-        {
-            if (HasAtom(id))
-            {
-                return await _idDict[id].Pack();
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public void RemoveIPFromLocks(string ip)
-        {
-            if (_locks.ContainsValue(ip))
-            {
-                foreach (KeyValuePair<string, string> kvp in _locks)
-                {
-                    if (kvp.Value == ip)
-                    {
-                        SetAtomLock(kvp.Key, "");
-                        if (!_locks.ContainsValue(ip))
-                        {
-                            return;
-                        }
-                    } 
-                }
             }
         }
     }

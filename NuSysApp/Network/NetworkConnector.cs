@@ -89,8 +89,7 @@ namespace NuSysApp
         /*
          * gets and sets the workspace model that the network connector communicates with
          */
-
-        public WorkSpaceModel WorkSpaceModel { set; get; }
+        public ModelIntermediate ModelIntermediate { get;set; }
         /*
         * Essentially an async constructor
         */
@@ -340,7 +339,7 @@ namespace NuSysApp
                 }
                 var set = new HashSet<KeyValuePair<string, string>>(); //create a list of lcoks that need to be removed
                 
-                WorkSpaceModel.RemoveIPFromLocks(ip);
+                ModelIntermediate.RemoveIPFromLocks(ip);
                 _pingResponses.Remove(ip);
                 if (_joiningMembers.ContainsKey(ip))
                 {
@@ -698,7 +697,7 @@ namespace NuSysApp
                         if (_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))
                             //add new joining member
                         {
-                            var m = await WorkSpaceModel.GetFullWorkspace();
+                            var m = await ModelIntermediate.GetFullWorkspace();
                             if (m.Length > 0)
                             {
                                 await SendTCPMessage("SPECIAL2:" + m, ip);
@@ -812,12 +811,12 @@ namespace NuSysApp
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (!WorkSpaceModel.Locks.ContainsKey(message))
+                        if (!ModelIntermediate.Locks.ContainsKey(message))
                         {
-                            WorkSpaceModel.Locks.Add(message,ip);
+                            ModelIntermediate.Locks.Add(message,ip);
                         }
 
-                        await SendMessage(ip, "SPECIAL6:" + message + "=" + WorkSpaceModel.Locks[message], packetType, true, true);
+                        await SendMessage(ip, "SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message], packetType, true, true);
                         return;
                     }
                     else
@@ -843,13 +842,13 @@ namespace NuSysApp
                     }
                     var lockId = parts[0];
                     var lockHolder = parts[1];
-                    if (!WorkSpaceModel.HasAtom(lockId))
+                    if (!ModelIntermediate.HasAtom(lockId))
                     {
                         Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
                                         " which has an invalid id");
                         return;
                     }
-                    WorkSpaceModel.SetAtomLock(lockId, lockHolder);
+                    ModelIntermediate.SetAtomLock(lockId, lockHolder);
                     if (lockHolder != _localIP && lockHolder!="")
                     {
                         //TODO Cancel movement of node
@@ -862,7 +861,7 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        WorkSpaceModel.Locks[message] = "";
+                        ModelIntermediate.Locks[message] = "";
                         await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
                     }
                     else
@@ -875,7 +874,7 @@ namespace NuSysApp
                 case "8"://Request full node update for certain id -- HOST ONLY ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (!WorkSpaceModel.HasAtom(message))
+                        if (!ModelIntermediate.HasAtom(message))
                         {
                             Debug.WriteLine("ERROR: Recieved a request for a node update with: " + message +
                                             " which has an invalid id");
@@ -898,13 +897,13 @@ namespace NuSysApp
                     RemoveIP(message);
                     break;
                 case "10":// Request to delete a node.  HOST ONLY.   ex: message = an ID
-                    if (WorkSpaceModel.HasAtom(message))
+                    if (ModelIntermediate.HasAtom(message))
                     {
                         if (_hostIP == _localIP)
                         {
                             await SendMassTCPMessage("SPECIAL10:" + message);
                         }
-                        await WorkSpaceModel.RemoveNode(message);
+                        await ModelIntermediate.RemoveNode(message);
                         return;
                     }
                     else
@@ -930,7 +929,7 @@ namespace NuSysApp
         */
         private async Task SendUpdateForNode(string nodeId, string sendToIP)
         {
-            Dictionary<string, string> dict = await WorkSpaceModel.GetNodeState(nodeId);
+            Dictionary<string, string> dict = await ModelIntermediate.GetNodeState(nodeId);
             if (dict != null)
             {
                 string message = MakeSubMessageFromDict(dict);
@@ -944,7 +943,7 @@ namespace NuSysApp
         */
         public async Task RequestDeleteAtom(string id)
         {
-            if (WorkSpaceModel.HasLock(id))
+            if (ModelIntermediate.HasLock(id))
             {
                 await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
             }
@@ -1003,7 +1002,7 @@ namespace NuSysApp
             if (message[0] == '<' && message[message.Length - 1] == '>')
             {
                 ModelLocked = true;
-                await WorkSpaceModel.HandleMessage(message);
+                await ModelIntermediate.HandleMessage(message);
                 ModelLocked = false;
             }
         }
@@ -1051,7 +1050,7 @@ namespace NuSysApp
         {
             if (properties.ContainsKey("id"))
             {
-                if (WorkSpaceModel.HasAtom(properties["id"]))
+                if (ModelIntermediate.HasAtom(properties["id"]))
                 {
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassUDPMessage(message);
@@ -1112,7 +1111,7 @@ namespace NuSysApp
 
         public async Task RequestLock(string id)
         {
-            if (WorkSpaceModel.HasAtom(id))
+            if (ModelIntermediate.HasAtom(id))
             {
                 Debug.WriteLine("Requesting lock for ID: "+id);
             }
@@ -1125,7 +1124,7 @@ namespace NuSysApp
 
         public async Task ReturnLock(string id)
         {
-            if (WorkSpaceModel.HasAtom(id))
+            if (ModelIntermediate.HasAtom(id))
             {
                 Debug.WriteLine("Returning lock for ID: " + id);
             }
@@ -1134,7 +1133,7 @@ namespace NuSysApp
                 Debug.WriteLine("Attempted to return lock with ID: "+id+" When no such ID exists");
             }
             await SendMessageToHost("SPECIAL7:" + id);
-            await SendMassTCPMessage(MakeSubMessageFromDict(await WorkSpaceModel.GetNodeState(id)));
+            await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
         }
 
         private class Packet //private class to store messages for later

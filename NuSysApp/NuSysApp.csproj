@@ -167,6 +167,7 @@
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
+    <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
     <Compile Include="MVVM Helpers\SQLiteDatabase.cs" />
     <Compile Include="MVVM Helpers\XmlFileHelper.cs" />

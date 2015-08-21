@@ -65,7 +65,7 @@ namespace NuSysApp
             await SetupDirectories();
             SetupChromeIntermediate();
             SetupOfficeTransfer();
-            NetworkConnector.Instance.WorkSpaceModel = Model;
+            Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
         }
 
         private async void SetupOfficeTransfer()
@@ -256,7 +256,7 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void SetSelection(AtomViewModel selected)
         {
-            Model.CheckLocks(selected.Model.ID);
+            NetworkConnector.Instance.ModelIntermediate.CheckLocks(selected.Model.ID);
             if (selected.Model.CanEdit == Atom.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);
@@ -318,7 +318,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
             return vm;
         }
-        public async Task<NodeViewModel> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             switch (type)
@@ -387,7 +387,7 @@ namespace NuSysApp
                     PositionNode(vm, xCoordinate, yCoordinate);
                 }
             }
-            return  vm;
+            return  vm.Model;
         }
 
         public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
