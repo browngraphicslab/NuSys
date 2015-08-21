@@ -1017,7 +1017,7 @@ namespace NuSysApp
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
-            m = m.Substring(0, m.Length - Constants.CommaReplacement.Length) + ">";
+            m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length,0)) + ">";
             return m;
         }
 
