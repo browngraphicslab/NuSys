@@ -46,6 +46,7 @@ namespace NuSysApp
         {
             var vm = (InkNodeViewModel)this.DataContext;
             var rect = nodeTpl.inkCanvas.PasteStrokes(_toBePasted);
+            ((InkModel)vm.Model).PolyLines.AddRange(_toBePasted);
             vm.Width = rect.Width;
             vm.Height = rect.Height;
         }

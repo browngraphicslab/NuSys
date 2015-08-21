@@ -159,6 +159,7 @@
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ImageModel.cs" />
+    <Compile Include="Models\InkModel.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
     <Compile Include="Models\PDFNodeModel.cs" />

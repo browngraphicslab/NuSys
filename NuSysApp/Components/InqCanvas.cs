@@ -27,7 +27,7 @@ namespace NuSysApp
         private HashSet<Polyline> _strokes = new HashSet<Polyline>();
         //private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
 
-        public InqCanvas() : base()
+        public InqCanvas()
         {
             NuSysApp.MISC.Clip.SetToBounds(this, true);
         }
