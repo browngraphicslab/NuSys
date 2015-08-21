@@ -50,6 +50,7 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
+            PinViewModelList = new ObservableCollection<PinViewModel>();
             SelectedAtomViewModel = null;
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
@@ -399,7 +400,27 @@ namespace NuSysApp
             }
             return vm;
         }
+        public async Task<PinViewModel> AddNewPin(double x, double y)
+        {
+            PinViewModel vm = new PinViewModel();
+            PinViewModelList.Add(vm);
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionPin(vm, x, y);
+            }
+            return vm;
+        }
 
+        private void PositionPin(PinViewModel vm, double x, double y)
+        {
+            var trans = vm.Transform.Matrix;
+            trans.OffsetX = x;
+            trans.OffsetY = y;
+        //    trans.M11 = 1 / CompositeTransform.ScaleX;
+        //    trans.M22 = 1 / CompositeTransform.ScaleY;
+            vm.Transform = new MatrixTransform { Matrix = trans };
+        }
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
         {
             if (node1 is GroupViewModel)
@@ -512,6 +533,8 @@ namespace NuSysApp
         #region Public Members
 
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; }
+        public ObservableCollection<PinViewModel> PinViewModelList { get; }
+
 
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; }
 
