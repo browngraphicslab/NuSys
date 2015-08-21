@@ -218,7 +218,6 @@ namespace NuSysApp
         */
         private async Task StartTimer()
         {
-            return;
             if (_hostIP != null)
             {
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
