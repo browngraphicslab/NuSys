@@ -1134,6 +1134,7 @@ namespace NuSysApp
                 Debug.WriteLine("Attempted to return lock with ID: "+id+" When no such ID exists");
             }
             await SendMessageToHost("SPECIAL7:" + id);
+            await SendMassTCPMessage(MakeSubMessageFromDict(await WorkSpaceModel.GetNodeState(id)));
         }
 
         private class Packet //private class to store messages for later
