@@ -121,6 +121,8 @@ namespace NuSysApp
         }
         public async Task SetAtomLock(string id, string ip)
         {
+
+
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
@@ -319,7 +321,7 @@ namespace NuSysApp
             {
                 s += kvp.Key + ":" + kvp.Value + "&";
             }
-            s = s.Substring(0, s.Length - 1);
+            s = s.Substring(0, Math.Max(s.Length - 1,0));
             return s;
         }
 
