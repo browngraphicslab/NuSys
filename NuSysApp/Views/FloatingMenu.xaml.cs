@@ -25,10 +25,10 @@ namespace NuSysApp
         private bool _subMenuSelectOpen;
         private bool _subMenuNodesOpen;
         private bool _subMenuAdditionalOpen;
-        private bool _FloatingMenuCollapsed;
+        private bool _floatingMenuCollapsed;
 
         private readonly List<Button> _buttons;
-        private SolidColorBrush _borderColor;
+        private static readonly SolidColorBrush BorderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
 
         public FloatingMenu()
         {
@@ -48,8 +48,17 @@ namespace NuSysApp
                 idleButton,
                 //saveButton
             };
-            _borderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
             SetActive(idleButton);
+        }
+
+        private static void AddBorder(Button btn)
+        {
+            btn.BorderBrush = BorderColor;
+        }
+
+        private static void RemoveBorder(Button btn)
+        {
+            btn.BorderBrush = null;
         }
 
         public void SetActive(Button btnToActivate)
@@ -76,22 +85,12 @@ namespace NuSysApp
             _subMenuAdditionalOpen = false;
         }
 
-        private void AddBorder(Button btn)
-        {
-            btn.BorderBrush = _borderColor;
-        }
-
-        private void RemoveBorder(Button btn)
-        {
-            btn.BorderBrush = null;
-        }
-
         private void Expandable(object sender, RoutedEventArgs e)
         {
-            if (_FloatingMenuCollapsed)
+            if (_floatingMenuCollapsed)
             {
                 expand.Begin();
-                _FloatingMenuCollapsed = false;
+                _floatingMenuCollapsed = false;
                 CollapseImage.Visibility = Visibility.Visible;
                 ExpandImage.Visibility = Visibility.Collapsed;
             }
@@ -106,7 +105,7 @@ namespace NuSysApp
                 _subMenuNodesOpen = false;
                 _subMenuAdditionalOpen = false;
                 collapse.Begin();
-                _FloatingMenuCollapsed = true;
+                _floatingMenuCollapsed = true;
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
@@ -235,16 +234,6 @@ namespace NuSysApp
 
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            /*
-            vm.FMTransform = compositeTransform;
-            if (compositeTransform.TranslateX < -85 || compositeTransform.TranslateX > this.ActualWidth
-                || compositeTransform.TranslateY < -85 + FM.Children.Count * -100 || compositeTransform.TranslateY > this.ActualHeight)
-            {
-                FM.Visibility = Visibility.Collapsed;
-                e.Complete();
-            }
-            */
             
             e.Handled = true;
         }
