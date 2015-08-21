@@ -382,10 +382,6 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
-            if (message == "SPECIAL3:DONE")
-            {
-                Debug.WriteLine("here");
-            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
@@ -894,7 +890,10 @@ namespace NuSysApp
                     }
                     break;
                 case "12"://A full update from the host about the current locks
-                    await ModelIntermediate.ForceSetLocks(message);
+                    if (message != "")
+                    {
+                        await ModelIntermediate.ForceSetLocks(message);
+                    }
                     break;
             }
         }
