@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,29 @@ namespace NuSysApp
     {
         private MatrixTransform _transform;
         private UserControl _view;
+        private BaseINPC _model;
         private string _text;
         
         public PinViewModel() : base()
         {
             Transform = new MatrixTransform();
             View = new PinView(this);
+            Model = new PinModel();
+            this.Model.PropertyChanged += (s, e) => { Update(e); };
             Text = "Nusysland";
+        }
+
+        private void Update(PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Model_Text":
+                    this.Text = ((PinModel)Model).Text;
+                    break;
+                case "Model_Transform":
+                    this.Transform = ((PinModel)Model).Transform;
+                    break;
+            }
         }
         public MatrixTransform Transform
         {
@@ -31,7 +48,7 @@ namespace NuSysApp
                     return;
                 }
                 _transform = value;
-
+                ((PinModel)Model).Transform = value;
                 RaisePropertyChanged("Transform");
             }
         }
@@ -60,11 +77,24 @@ namespace NuSysApp
                     return;
                 }
                 _text = value;
-
+                ((PinModel)Model).Text = value;
                 RaisePropertyChanged("Text");
             }
         }
 
+        public BaseINPC Model
+        {
+            get { return _model; }
+            set
+            {
+                if (_model == value)
+                {
+                    return;
+                }
+                _model = value;
+                RaisePropertyChanged("Model");
+            }
+        }        
 
     }
 }
