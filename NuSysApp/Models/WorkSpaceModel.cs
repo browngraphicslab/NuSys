@@ -53,6 +53,7 @@ namespace NuSysApp
         public Dictionary<string, string> Locks
         {
             get { return _locks; }
+            set { _locks = value; }
         }
 
         public HashSet<string> LocalLocks

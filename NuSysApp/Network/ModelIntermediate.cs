@@ -288,6 +288,15 @@ namespace NuSysApp
                 }
             }
         }
+        public void ForceSetLocks(string message)
+        {
+            WorkSpaceModel.Locks = StringToDict(message);
+        }
+
+        public string GetAllLocksToSend()
+        {
+            return DictToString(WorkSpaceModel.Locks);
+        }
         public async Task<Dictionary<string, string>> GetNodeState(string id)
         {
             if (HasAtom(id))
@@ -313,8 +322,14 @@ namespace NuSysApp
 
         private Dictionary<string, string> StringToDict(string s)
         {
+            Dictionary<string,string> dict = new Dictionary<string, string>();
             string[] strings = s.Split("&".ToCharArray());
-            return new Dictionary<string, string>();
+            foreach (string kvpString in strings)
+            {
+                string[] kvpparts = kvpString.Split(":".ToCharArray());
+                dict.Add(kvpparts[0], kvpparts[1]);
+            }
+            return dict;
         } 
     }
 }

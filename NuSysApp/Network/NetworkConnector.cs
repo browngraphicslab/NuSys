@@ -763,6 +763,7 @@ namespace NuSysApp
                                 else
                                 {
                                     await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
                                     foreach (var p in _joiningMembers[ip].Item2)
                                     {
                                         await p.Send(ip);
@@ -920,8 +921,8 @@ namespace NuSysApp
                         await SendMessage(ip, "SPECIAL11:NO", packetType);
                     }
                     break;
-                case "12":
-
+                case "12"://A full update from the host about the current locks
+                    ModelIntermediate.ForceSetLocks(message);
                     break;
             }
         }
