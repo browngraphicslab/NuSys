@@ -20,7 +20,6 @@ namespace NuSysApp
         //Node _selectedNode;
         private Dictionary<string, Atom> _idDict;
         private Dictionary<string, string> _locks;
-        private HashSet<string> _locksHeld; 
         private WorkspaceViewModel _workspaceViewModel;
         private ModelIntermediate _modelIntermediate;
         private int _currentId;
@@ -32,7 +31,6 @@ namespace NuSysApp
             AtomDict = new Dictionary<string, AtomViewModel>();
             _currentId = 0;
             _locks = new Dictionary<string, string>();
-            _locksHeld = new HashSet<string>();
             _modelIntermediate = new ModelIntermediate(this);
             NetworkConnector.Instance.ModelIntermediate = _modelIntermediate;
             // _factory = new Factory(this);
@@ -53,16 +51,8 @@ namespace NuSysApp
         public Dictionary<string, string> Locks
         {
             get { return _locks; }
-            set { _locks = value; }
+            set { _locks = value;}
         }
-
-        public HashSet<string> LocalLocks
-        {
-            get
-            {
-                return _locksHeld; 
-            }
-        } 
 
         public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {

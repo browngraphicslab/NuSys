@@ -218,7 +218,6 @@ namespace NuSysApp
         */
         private async Task StartTimer()
         {
-            return;
             if (_hostIP != null)
             {
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
@@ -382,10 +381,6 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
-            if (message == "SPECIAL3:DONE")
-            {
-                Debug.WriteLine("here");
-            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
@@ -792,9 +787,14 @@ namespace NuSysApp
                     {
                         if (!ModelIntermediate.Locks.ContainsKey(message))
                         {
-                            ModelIntermediate.Locks.Add(message,ip);
+                            ModelIntermediate.Locks.Add(message, ip);
                         }
-                        await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        else
+                        {
+                            ModelIntermediate.Locks[message] = ip;
+                        }
+                        //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks[message]);
                         await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message]);
                         return;
                     }
@@ -821,12 +821,6 @@ namespace NuSysApp
                     }
                     var lockId = parts[0];
                     var lockHolder = parts[1];
-                    if (!ModelIntermediate.HasAtom(lockId))
-                    {
-                        Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
-                                        " which has an invalid id");
-                        return;
-                    }
                     ModelIntermediate.SetAtomLock(lockId, lockHolder);
                     return;
                     break;
@@ -894,7 +888,10 @@ namespace NuSysApp
                     }
                     break;
                 case "12"://A full update from the host about the current locks
-                    await ModelIntermediate.ForceSetLocks(message);
+                    if (message != "")
+                    {
+                        await ModelIntermediate.ForceSetLocks(message);
+                    }
                     break;
             }
         }
