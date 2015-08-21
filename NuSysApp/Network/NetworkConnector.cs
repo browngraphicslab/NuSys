@@ -816,8 +816,8 @@ namespace NuSysApp
                         {
                             ModelIntermediate.Locks.Add(message,ip);
                         }
-
-                        await SendMessage(ip, "SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message], packetType, true, true);
+                        await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message]);
                         return;
                     }
                     else
