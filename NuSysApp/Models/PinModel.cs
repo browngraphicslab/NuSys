@@ -13,6 +13,8 @@ namespace NuSysApp
         private MatrixTransform _transform; 
         public PinModel () : base()
         {
+            this.Transform = new MatrixTransform();
+            this.Text = "NusysLand";
         }
         
         public string Text

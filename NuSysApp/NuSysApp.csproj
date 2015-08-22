@@ -164,6 +164,7 @@
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
     <Compile Include="Models\PDFNodeModel.cs" />
+    <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
