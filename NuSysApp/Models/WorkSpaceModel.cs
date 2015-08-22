@@ -143,6 +143,10 @@ namespace NuSysApp
                 {
                     _locals.Add(k);
                 }
+                else
+                {
+                    _locals.Remove(k);
+                }
                 if (!_dict.ContainsKey(k))
                 {
                     _dict.Add(k, v);
@@ -156,10 +160,10 @@ namespace NuSysApp
 
             private async Task UpdateAtomLock(string id, string lockHolder)
             {
-                if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
                     {
                         if (lockHolder == "")
                         {
@@ -173,8 +177,8 @@ namespace NuSysApp
                         {
                             _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
                         }
-                    });
-                }
+                    }
+                });
             }
 
             public void Clear()

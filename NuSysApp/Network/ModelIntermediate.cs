@@ -167,23 +167,7 @@ namespace NuSysApp
                 Debug.WriteLine("got lock update from unknown node");
                 return;
             }
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-                await WorkSpaceModel.Locks.Set(id, ip);
-                if (NetworkConnector.Instance.LocalIP == ip)
-                {
-                    WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
-                }
-                else if (ip == "")
-                {
-                    WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Maybe;
-                }
-                else
-                {
-                    WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
-                }
-            });
+            await WorkSpaceModel.Locks.Set(id, ip);
         }
 
         private byte[] ParseToByteArray(string s)
@@ -295,6 +279,18 @@ namespace NuSysApp
             return "";
         }
 
+        public async Task ClearLocks()
+        {
+            List<string> locks = new List<string>();
+            locks.AddRange(WorkSpaceModel.Locks.LocalLocks);
+            while (locks.Count > 0)
+            {
+                string l = locks.First();
+                locks.Remove(l);
+                await NetworkConnector.Instance.ReturnLock(l);
+            }
+        }
+
         public bool HasLock(string id)
         {
             return WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP;
@@ -304,12 +300,19 @@ namespace NuSysApp
         {
             Debug.WriteLine("Checking locks");
             HashSet<string> locksNeeded = LocksNeeded(id);
+            List<string> locksToReturn = new List<string>();
             foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
             {
                 if (!locksNeeded.Contains(lockID))
                 {
-                    await NetworkConnector.Instance.ReturnLock(lockID);
+                    locksToReturn.Add(lockID);
                 }
+            }
+            while (locksToReturn.Count > 0)
+            {
+                string l = locksToReturn.First();
+                locksToReturn.Remove(l);
+                await NetworkConnector.Instance.ReturnLock(l);
             }
         }
 
