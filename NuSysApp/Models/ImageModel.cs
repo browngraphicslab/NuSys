@@ -69,12 +69,12 @@ namespace NuSysApp
         {
             if (props.ContainsKey("image"))
             {
-                byte[] imageBytes = Convert.FromBase64String(props["image"]);
+                ByteArray = Convert.FromBase64String(props["image"]);
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
                 image.SetSource(stream);
-                await stream.WriteAsync(imageBytes.AsBuffer());
+                await stream.WriteAsync(ByteArray.AsBuffer());
                 stream.Seek(0);
                 Image = image;
             }

@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
@@ -75,12 +76,31 @@ namespace NuSysApp
                             {
                                 double.TryParse(props["y"], out y);
                             }
-                            if (props.ContainsKey("data"))
+                            if (props.ContainsKey("data") && props.ContainsKey("nodeType"))
                             {
                                 string d = props["data"];
-                                if (d.Substring(0, 10).Contains("polyline"))
+                                switch (type)
                                 {
-                                    data = ParseToPolyline(d);
+                                    case NodeType.Ink:
+                                        try
+                                        {
+                                            data = ParseToPolyline(d);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
+                                        }
+                                        break;
+                                    case NodeType.Image:
+                                        try
+                                        {
+                                            data = ParseToByteArray(d);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a Image");
+                                        }
+                                        break;
                                 }
                             }
                             Atom vm = await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
@@ -154,6 +174,11 @@ namespace NuSysApp
                     WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
                 }
             });
+        }
+
+        private byte[] ParseToByteArray(string s)
+        {
+            return Convert.FromBase64String(s);
         }
         private Polyline[] ParseToPolyline(string s)
         {

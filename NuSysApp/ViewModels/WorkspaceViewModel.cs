@@ -337,19 +337,12 @@ namespace NuSysApp
                     break;
                 case NodeType.Image:
                     var imgVM = new ImageNodeViewModel(this, id);
-                    await imgVM.InitializeImageNodeAsync((StorageFile)data);
+                    await imgVM.InitializeImageNodeAsync((byte[])data);
                     vm = imgVM;
                     break;
                 case NodeType.Document:
                     var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                     if (storageFile == null) return null;
-                    
-                    if (Constants.ImageFileTypes.Contains(storageFile.FileType))
-                    {
-                        var imgVM1 = new ImageNodeViewModel(this, id);
-                        await imgVM1.InitializeImageNodeAsync(storageFile);
-                        vm = imgVM1;
-                    }
 
                     if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                     {

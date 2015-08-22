@@ -11,7 +11,7 @@ namespace NuSysApp
         public async static Task<ImageNodeViewModel> CreateNewImage(WorkspaceViewModel vm, string id, StorageFile storageFile)
         {
             var invm = new ImageNodeViewModel(vm, id);
-            await invm.InitializeImageNodeAsync(storageFile);
+            //await invm.InitializeImageNodeAsync(storageFile);
             return invm;
         }
         public async static Task<PdfNodeViewModel> CreateNewPdfNodeViewModel(WorkspaceViewModel vm, string id, StorageFile storageFile)
