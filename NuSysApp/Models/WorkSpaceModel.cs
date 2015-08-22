@@ -26,8 +26,6 @@ namespace NuSysApp
         #region Private Members
         private Dictionary<string, Atom> _idDict;
 
-       
-        private int _currentId;
         private LockDictionary _locks;
         #endregion Private members
        
@@ -36,7 +34,6 @@ namespace NuSysApp
         {
             _idDict = new Dictionary<string, Atom>();
             AtomDict = new Dictionary<string, AtomViewModel>();
-            _currentId = 0;
             _locks = new LockDictionary(this);
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
@@ -63,6 +60,7 @@ namespace NuSysApp
             var link = new Link(atom1, atom2, id);
             atom1.AddToLink(link);
             atom2.AddToLink(link);
+            _idDict.Add(id,link);
         }
 
         public async Task CreateGroup(string id, Node node1, Node node2)
