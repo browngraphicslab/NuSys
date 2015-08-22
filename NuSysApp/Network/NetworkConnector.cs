@@ -29,7 +29,7 @@ namespace NuSysApp
         private const string _TCPInputPort = "302";
         private const string _TCPOutputPort = "302";
         private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
-        private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
+        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
@@ -89,8 +89,7 @@ namespace NuSysApp
         /*
          * gets and sets the workspace model that the network connector communicates with
          */
-
-        public WorkSpaceModel WorkSpaceModel { set; get; }
+        public ModelIntermediate ModelIntermediate { get;set; }
         /*
         * Essentially an async constructor
         */
@@ -101,7 +100,7 @@ namespace NuSysApp
 
             Debug.WriteLine("local IP: " + _localIP);
 
-            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             _addressToWriter = new Dictionary<string,DataWriter>();
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
@@ -137,7 +136,7 @@ namespace NuSysApp
         private void MakeHost()//TODO temporary
         {
             _hostIP = _localIP;
-            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
             _pingResponses = new Dictionary<string, int>();
             Debug.WriteLine("This machine (IP: " + _localIP + ") set to be the host");
@@ -157,7 +156,15 @@ namespace NuSysApp
                 if (_pingResponses[ip] <=2)
                 {
                     _pingResponses[ip]++;
-                    await SendPing(ip, PacketType.UDP);
+                    try
+                    {
+                        await SendPing(ip, PacketType.UDP);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        StartTimer();
+                        break;
+                    }
                 }
                 else
                 {
@@ -332,17 +339,11 @@ namespace NuSysApp
                 }
                 var set = new HashSet<KeyValuePair<string, string>>(); //create a list of lcoks that need to be removed
                 
-                WorkSpaceModel.RemoveIPFromLocks(ip);
+                ModelIntermediate.RemoveIPFromLocks(ip);
                 _pingResponses.Remove(ip);
                 if (_joiningMembers.ContainsKey(ip))
                 {
-                    Tuple<bool, List<Packet>> items;
-                    _joiningMembers.TryRemove(ip, out items); //if that IP was joining, remove it
-                }
-                while (_otherIPs.Contains(ip))
-                    Debug.WriteLine("Removing IP " + ip + " from list of IPs");
-                {
-                    _otherIPs.Remove(ip);
+                    _joiningMembers.Remove(ip); //if that IP was joining, remove it
                 }
                 var s = "";
                 foreach (string i in _otherIPs)
@@ -395,8 +396,8 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("Non-host tried to make an ID.  Returning a string of 'null'");
-                return "null";
+                Debug.WriteLine("Non-host tried to make an ID.  Returning a string of 'not#host'");
+                return "not#host";
             }
         }
         /*
@@ -405,35 +406,40 @@ namespace NuSysApp
         */
         private List<string> GetOtherIPs()
         {
-            List<string> l = new List<string>();
-            l.Add(_localIP);
-            return l;
-
-            const string URL = "http://aint.ch/nusys/clients.php";
-            var urlParameters = "?action=add&ip="+_localIP;
-
-            var client = new HttpClient {BaseAddress = new Uri(URL)};
-
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var people = "";
-
-            var response = client.GetAsync(urlParameters).Result;
-            if (response.IsSuccessStatusCode)
+            if (WaitingRoomView.IsLocal)
             {
-                var d = response.Content.ReadAsStringAsync().Result;//gets the response from the php script
-                people = d;
+                List<string> list = new List<string>();
+                list.Add(_localIP);
+                return list;
             }
-            else
+            else 
             {
-                Debug.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
-            }
-            Debug.WriteLine("in workspace: "+people);
-            var split = people.Split(",".ToCharArray());
+                const string URL = "http://aint.ch/nusys/clients.php";
+                var urlParameters = "?action=add&ip=" + _localIP;
 
-            var ips = split.ToList();
-            return ips;
+                var client = new HttpClient {BaseAddress = new Uri(URL)};
+
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var people = "";
+
+                var response = client.GetAsync(urlParameters).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var d = response.Content.ReadAsStringAsync().Result; //gets the response from the php script
+                    people = d;
+                }
+                else
+                {
+                    Debug.WriteLine("{0} ({1})", (int) response.StatusCode, response.ReasonPhrase);
+                }
+                Debug.WriteLine("in workspace: " + people);
+                var split = people.Split(",".ToCharArray());
+
+                var ips = split.ToList();
+                return ips;
+            }
         }
         /*
         * adds a new pair of sockets for a newly joining IP
@@ -638,7 +644,7 @@ namespace NuSysApp
                     }
                     catch (KeyNotFoundException e)
                     {
-                        Debug.WriteLine("ERROR: Message recieved tried to access a dictionary when remote IP isn't know");
+                        Debug.WriteLine("ERROR: Message recieved tried to access a dictionary when remote IP isn't known");
                         //go back to waiting room or reconnect
                         return;
                     }
@@ -646,7 +652,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("Recieved message of length 0 from IP: "+ip);
+                throw new IncorrectFormatException(message);
             }
             return;
 
@@ -673,10 +679,11 @@ namespace NuSysApp
         */
         private async Task HandleSpecialMessage(string ip, string message,PacketType packetType)
         {
+            string origMessage = message;
             var indexOfColon = message.IndexOf(":");
             if (indexOfColon == -1)
             {
-                Debug.WriteLine("ERROR: message recieved was formatted wrong");
+                throw new IncorrectFormatException(message);
                 return;
             }
             var type = message.Substring(0, indexOfColon);
@@ -691,28 +698,17 @@ namespace NuSysApp
                     }
                     if (_hostIP == _localIP && message != _localIP) ;
                     {
-                        if (_joiningMembers.TryAdd(message, new Tuple<bool, List<Packet>>(false, new List<Packet>())))
-                            //add new joining member
+                        //_joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
+                        var m = await ModelIntermediate.GetFullWorkspace();
+                        if (m.Length > 0)
                         {
-                            var m = await WorkSpaceModel.GetFullWorkspace();
-                            if (m.Length > 0)
-                            {
-                                await SendTCPMessage("SPECIAL2:" + m, ip);
-                            }
-                            else
-                            {
-                                await SendTCPMessage("SPECIAL4:0",ip);
-                            }
-                            return;
+                            await SendTCPMessage("SPECIAL2:" + m, ip);
                         }
                         else
                         {
-                            Debug.WriteLine("Adding of joining member failed concurrency");
-                            await SendTCPMessage("SPECIAL2:FAIL", ip);
-                            await HandleSpecialMessage(_localIP,"SPECIAL9:" + ip,PacketType.TCP);
-                            await SendMassTCPMessage("SPECIAL9:" + ip);
-                            return;
+                            await SendTCPMessage("SPECIAL4:0",ip);
                         }
+                        return;
                     }
                     break;
                 case "1":// response to initial request = "The host is the following person" ex: message = "10.10.10.10"
@@ -722,6 +718,7 @@ namespace NuSysApp
                         if (message == _localIP)
                         {
                             this.MakeHost();
+                            await SendMassTCPMessage("SPECIAL1:" + _localIP);
                         }
                         await StartTimer();
                         Debug.WriteLine("Host returned and SET to be: "+message);
@@ -731,7 +728,7 @@ namespace NuSysApp
                 case "2"://the message sent from host to tell other workspace to catch up.  message is formatted just like regular messages
                     if (_localIP == _hostIP)
                     {
-                        Debug.WriteLine("ERROR: host (this) recieved catch up message from IP: "+ip+".  This shouldn't happen EVER");
+                        throw new HostException(origMessage, ip);
                         return;
                     }
                     await MessageRecieved(ip, message, packetType);
@@ -743,9 +740,9 @@ namespace NuSysApp
                     {
                         if (message == "DONE")
                         {
-                            if (_joiningMembers.ContainsKey(ip))
+                            if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members and remove this '|| true' statement
                             {
-                                if (_joiningMembers[ip].Item1)
+                                if (false && _joiningMembers[ip].Item1)//TODO similiar, remove the "false&&"
                                 {
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
@@ -759,22 +756,14 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
-                                    foreach (var p in _joiningMembers[ip].Item2)
-                                    {
-                                        await p.Send(ip);
-                                    }
-                                    Tuple<bool, List<Packet>> nothing;
-                                    if (_joiningMembers.TryRemove(ip, out nothing))//remove the joining member
-                                    {
-                                        nothing = null; //seems so weird writing this. Yeah it's definitely weird, TRANT
-                                    }
-                                    else
-                                    {
-                                        Debug.WriteLine("ERROR: Failed to remove joining member after they caught up.  probably concurrency error");
-                                        return;
-                                    }
-
+                                    //await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this later and uncomment ABOVE LINE
+                                    await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
+                                    //foreach (var p in _joiningMembers[ip].Item2)  TODO similiar above, uncomment this stuff
+                                    //{
+                                        //await p.Send(ip);
+                                    //}
+                                    //_joiningMembers.Remove(ip);//remove the joining member
                                     return;
                                 }
                             }
@@ -786,20 +775,19 @@ namespace NuSysApp
                         }
                         else
                         {
-                            Debug.WriteLine("ERROR: Non-host recieved 'caught-up' message from IP: " + ip + ".  This shouldn't happen EVER");
+                            throw new NotHostException(origMessage, ip);
                             return;
                         }
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Non-host recieved 'caught-up with what you wanted' message from IP: "+ip+ ".  This shouldn't happen EVER");
-                        return;
+                        throw new NotHostException(origMessage, ip);
                     }
                     break;
                 case "4": //Sent by Host only, "you are caught up and ready to join". message is simply the number of catch-up UDP packets also being sent
                     if (_localIP == _hostIP)
                     {
-                        Debug.WriteLine("ERROR: Host recieved 'caught-up' message from IP: " + ip + ".  This shouldn't happen EVER");
+                        throw new HostException(origMessage, ip);
                         return;
                     }
                     this._caughtUp = true;
@@ -808,18 +796,22 @@ namespace NuSysApp
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (!WorkSpaceModel.Locks.ContainsKey(message))
+                        if (!ModelIntermediate.Locks.ContainsKey(message))
                         {
-                            WorkSpaceModel.Locks.Add(message,ip);
+                            ModelIntermediate.Locks.Add(message, ip);
                         }
-
-                        await SendMessage(ip, "SPECIAL6:" + message + "=" + WorkSpaceModel.Locks[message], packetType, true, true);
+                        else
+                        {
+                            ModelIntermediate.Locks[message] = ip;
+                        }
+                        //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks[message]);
+                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message]);
                         return;
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Recieved a request for a lock for id: " + message +
-                                        " when this machine isn't the Host");
+                        throw new NotHostException(origMessage, ip);
                         return;
                     }
                     break;
@@ -827,7 +819,7 @@ namespace NuSysApp
                     var parts = message.Split("=".ToCharArray());
                     if (parts.Length != 2 && parts.Length != 1)
                     {
-                        Debug.WriteLine("Recieved Lock request response that was incorrectly formatted.  message: "+message);
+                        throw new IncorrectFormatException(origMessage);
                         return;
                     }
                     if (parts.Length == 1)
@@ -839,42 +831,35 @@ namespace NuSysApp
                     }
                     var lockId = parts[0];
                     var lockHolder = parts[1];
-                    if (!WorkSpaceModel.HasAtom(lockId))
-                    {
-                        Debug.WriteLine("ERROR: Recieved a response from lock request with message: " + message +
-                                        " which has an invalid id");
-                        return;
-                    }
-                    WorkSpaceModel.SetAtomLock(lockId, lockHolder);
-                    if (lockHolder != _localIP && lockHolder!="")
-                    {
-                        //TODO Cancel movement of node
-                        //then
-                        await SendMessageToHost("SPECIAL8:" + lockId);
-                        return;
-                    }
+                    ModelIntermediate.SetAtomLock(lockId, lockHolder);
                     return;
                     break;
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        WorkSpaceModel.Locks[message] = "";
-                        await SendMessage(ip, "SPECIAL6:"+message+":", PacketType.TCP, true, true);
+                        if (ModelIntermediate.Locks.ContainsKey(message))
+                        {
+                            ModelIntermediate.Locks[message] = "";
+                        }
+                        else
+                        {
+                            ModelIntermediate.Locks.Add(message, "");
+                        }
+                        await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
+                        return;
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Recieved a return lock request with message: " + message +
-                                        " when this machine isn't the Host");
+                        throw new NotHostException(origMessage, ip);
                         return;
                     }
                     break;
                 case "8"://Request full node update for certain id -- HOST ONLY ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (!WorkSpaceModel.HasAtom(message))
+                        if (!ModelIntermediate.HasAtom(message))
                         {
-                            Debug.WriteLine("ERROR: Recieved a request for a node update with: " + message +
-                                            " which has an invalid id");
+                            throw new InvalidIDException(message);
                             return;
                         }
                         else
@@ -885,8 +870,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Recieved a request for a full node update with message: " + message +
-                                        " when this machine isn't the Host");
+                        throw new NotHostException(origMessage, ip);
                         return;
                     }
                     break;
@@ -894,18 +878,18 @@ namespace NuSysApp
                     RemoveIP(message);
                     break;
                 case "10":// Request to delete a node.  HOST ONLY.   ex: message = an ID
-                    if (WorkSpaceModel.HasAtom(message))
+                    if (ModelIntermediate.HasAtom(message))
                     {
                         if (_hostIP == _localIP)
                         {
                             await SendMassTCPMessage("SPECIAL10:" + message);
                         }
-                        await WorkSpaceModel.RemoveNode(message);
+                        await ModelIntermediate.RemoveNode(message);
                         return;
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: delete requested for item that didn't exist.  Item requested for delete: "+message);
+                        throw new InvalidIDException(message);
                         return;
                     }
 
@@ -917,6 +901,16 @@ namespace NuSysApp
                         await SendMessage(ip, "SPECIAL11:NO", packetType);
                     }
                     break;
+                case "12"://A full update from the host about the current locks
+                    if (message != "")
+                    {
+                        await ModelIntermediate.ForceSetLocks(message);
+                    }
+                    else
+                    {
+                        throw new IncorrectFormatException(origMessage);
+                    }
+                    break;
             }
         }
 
@@ -926,7 +920,7 @@ namespace NuSysApp
         */
         private async Task SendUpdateForNode(string nodeId, string sendToIP)
         {
-            Dictionary<string, string> dict = await WorkSpaceModel.GetNodeState(nodeId);
+            Dictionary<string, string> dict = await ModelIntermediate.GetNodeState(nodeId);
             if (dict != null)
             {
                 string message = MakeSubMessageFromDict(dict);
@@ -940,7 +934,7 @@ namespace NuSysApp
         */
         public async Task RequestDeleteAtom(string id)
         {
-            if (WorkSpaceModel.HasLock(id))
+            if (ModelIntermediate.HasLock(id))
             {
                 await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
             }
@@ -999,8 +993,12 @@ namespace NuSysApp
             if (message[0] == '<' && message[message.Length - 1] == '>')
             {
                 ModelLocked = true;
-                WorkSpaceModel.HandleMessage(message);
+                await ModelIntermediate.HandleMessage(message);
                 ModelLocked = false;
+            }
+            else
+            {
+                throw new IncorrectFormatException(message);
             }
         }
 
@@ -1036,7 +1034,7 @@ namespace NuSysApp
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
-            m = m.Substring(0, m.Length - 1) + ">";
+            m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
             return m;
         }
 
@@ -1047,20 +1045,20 @@ namespace NuSysApp
         {
             if (properties.ContainsKey("id"))
             {
-                if (WorkSpaceModel.HasAtom(properties["id"]))
+                if (ModelIntermediate.HasAtom(properties["id"]))
                 {
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassUDPMessage(message);
                 }
                 else
                 {
-                    Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an VALID ID. ID: "+properties["id"]);
+                    throw new InvalidIDException(properties["id"]);
                     return;
                 }
             }
             else
             {
-                Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an ID.  ");
+                throw new NoIDException();
                 return;
             }
         }
@@ -1085,7 +1083,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("ERROR: tried to create node with invalid arguments.  X: "+x+"  Y: "+y+"   nodeType: "+nodeType);
+                throw new InvalidCreationArgumentsException();
                 return;
             }
         }
@@ -1101,14 +1099,14 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("ERROR: tried to create node with invalid arguments.  ID1: " + id1 + "  ID2: " + id2);
+                throw new InvalidCreationArgumentsException();
                 return;
             }
         }
 
         public async Task RequestLock(string id)
         {
-            if (WorkSpaceModel.HasAtom(id))
+            if (ModelIntermediate.HasAtom(id))
             {
                 Debug.WriteLine("Requesting lock for ID: "+id);
             }
@@ -1121,7 +1119,7 @@ namespace NuSysApp
 
         public async Task ReturnLock(string id)
         {
-            if (WorkSpaceModel.HasAtom(id))
+            if (ModelIntermediate.HasAtom(id))
             {
                 Debug.WriteLine("Returning lock for ID: " + id);
             }
@@ -1130,8 +1128,35 @@ namespace NuSysApp
                 Debug.WriteLine("Attempted to return lock with ID: "+id+" When no such ID exists");
             }
             await SendMessageToHost("SPECIAL7:" + id);
+            await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
         }
 
+        public class InvalidIDException : System.Exception
+        {
+            public InvalidIDException(string id) : base(String.Format("The ID {0}  was used but is invalid",id)){}
+        }
+        public class IncorrectFormatException : System.Exception
+        {
+            public IncorrectFormatException(string message) : base(String.Format("The message '{0}' is incorrectly formatted or unrecognized",message)) { }
+        }
+
+        public class NotHostException : Exception
+        {
+            public NotHostException(string message, string remoteIP)
+                : base(String.Format("The message {0} was sent to a non-host from IP: {1} when it is a host-only message", message, remoteIP)){}
+        }
+
+        public class HostException : Exception
+        {
+            public HostException(string message, string remoteIP) : base(String.Format("The message {0} was sent to this machine, THE HOST, from IP: {1} when it is meant for only non-hosts", message, remoteIP)) { }
+        }
+        public class UnknownIPException : Exception
+        {
+            public UnknownIPException(string ip) : base(String.Format("The IP {0} was used when it is not recgonized", ip)) { }
+        }
+
+        public class NoIDException : Exception{}
+        public class InvalidCreationArgumentsException : Exception { }
         private class Packet //private class to store messages for later
         {
             private readonly PacketType _type;

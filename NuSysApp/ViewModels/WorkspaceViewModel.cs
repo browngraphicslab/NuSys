@@ -47,6 +47,7 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
+            PinViewModelList = new ObservableCollection<PinViewModel>();
             SelectedAtomViewModel = null;
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
@@ -60,13 +61,13 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
-           
         }
         private async void Init()
         {
             await SetupDirectories();
             SetupChromeIntermediate();
-            SetupOfficeTransfer();       
+            SetupOfficeTransfer();
+            Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
         }
 
         private async void SetupOfficeTransfer()
@@ -257,7 +258,7 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void SetSelection(AtomViewModel selected)
         {
-            Model.CheckLocks(selected.Model.ID);
+            NetworkConnector.Instance.ModelIntermediate.CheckLocks(selected.Model.ID);
             if (selected.Model.CanEdit == Atom.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);
@@ -319,7 +320,7 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
             return vm;
         }
-        public async Task<NodeViewModel> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             NodeViewModel vm = null;
             switch (type)
@@ -388,52 +389,81 @@ namespace NuSysApp
                     PositionNode(vm, xCoordinate, yCoordinate);
                 }
             }
-            return  vm;
+            return  vm.Model;
+        }
+
+        public async Task<PinViewModel> AddNewPin(double x, double y)
+        {
+            PinViewModel vm = new PinViewModel();
+            PinViewModelList.Add(vm);
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionPin(vm, x, y);
+            }
+            return vm;
+        }
+
+        private void PositionPin(PinViewModel vm, double x, double y)
+        {
+            var trans = vm.Transform.Matrix;
+            trans.OffsetX = x;
+            trans.OffsetY = y;
+            //    trans.M11 = 1 / CompositeTransform.ScaleX;
+            //    trans.M22 = 1 / CompositeTransform.ScaleY;
+            vm.Transform = new MatrixTransform { Matrix = trans };
         }
 
         public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
         {
-            if (node1 is GroupViewModel)
+            try//TODO remove this try catch block
             {
-                return; //TODO this is temporary until we fix everything else
-            }
-            //Check if group already exists
-            var groupVm = node2 as GroupViewModel;
-            if (groupVm != null)
-            {
-                var group = groupVm;
-                this.AtomViewList.Remove(node1.View);
-                this.NodeViewModelList.Remove(node1); 
+                if (node1 is GroupViewModel)
+                {
+                    return; //TODO this is temporary until we fix everything else
+                }
+                //Check if group already exists
+                var groupVm = node2 as GroupViewModel;
+                if (groupVm != null)
+                {
+                    var group = groupVm;
+                    this.AtomViewList.Remove(node1.View);
+                    this.NodeViewModelList.Remove(node1);
+                    groupVm.AddNode(node1);
+                    node1.ParentGroup = groupVm;
+                    return;
+                }
+
+                //Create new group, because no group exists
+                groupVm = new GroupViewModel(this, "null"); //TODO FIX ID'S HERE
+
+                //Set location to node2's location
+                var xCoordinate = node2.Transform.Matrix.OffsetX;
+                var yCoordinate = node2.Transform.Matrix.OffsetY;
+
+                //Add group to workspace
+                NodeViewModelList.Add(groupVm);
+                AtomViewList.Add(groupVm.View);
+                PositionNode(groupVm, xCoordinate, yCoordinate);
+                Model.AtomDict.Add(id, groupVm);
+
+                //Add the first node
                 groupVm.AddNode(node1);
+                this.AtomViewList.Remove(node1.View);
+                this.NodeViewModelList.Remove(node1);
+
+                //Add the second node
+                groupVm.AddNode(node2);
+                this.AtomViewList.Remove(node2.View);
+                this.NodeViewModelList.Remove(node2);
+
                 node1.ParentGroup = groupVm;
-                return;
+                node2.ParentGroup = groupVm;
             }
-
-            //Create new group, because no group exists
-            groupVm = new GroupViewModel(this, "null");//TODO FIX ID'S HERE
-
-            //Set location to node2's location
-            var xCoordinate = node2.Transform.Matrix.OffsetX;
-            var yCoordinate = node2.Transform.Matrix.OffsetY;
-          
-            //Add group to workspace
-            NodeViewModelList.Add(groupVm);
-            AtomViewList.Add(groupVm.View);
-            PositionNode(groupVm, xCoordinate, yCoordinate);
-            Model.AtomDict.Add(id, groupVm);
-
-            //Add the first node
-            groupVm.AddNode(node1);
-            this.AtomViewList.Remove(node1.View);
-            this.NodeViewModelList.Remove(node1);
-
-            //Add the second node
-            groupVm.AddNode(node2);
-            this.AtomViewList.Remove(node2.View);
-            this.NodeViewModelList.Remove(node2);
-
-            node1.ParentGroup = groupVm;
-            node2.ParentGroup = groupVm;
+            catch (Exception e)
+            {
+                Debug.WriteLine("FUCKING GROUPS");//TRUE
+            }
         }
 
         public async void SaveWorkspace()
@@ -526,6 +556,8 @@ namespace NuSysApp
         #region Public Members
 
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; }
+
+        public ObservableCollection<PinViewModel> PinViewModelList { get; }
 
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; }
 

@@ -17,7 +17,7 @@ namespace NuSysApp
     {
         public InkNodeViewModel(WorkspaceViewModel vm, string id): base(vm,id)
         {
-            this.Model = new Node(id);
+            this.Model = new InkModel(id);
             this.Model.ID = id;
             this.View = new InkNodeView2(this);
             this.Transform = new MatrixTransform();

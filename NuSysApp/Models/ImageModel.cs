@@ -17,7 +17,6 @@ namespace NuSysApp
 {
     public class ImageModel : Node
     {
-        private BitmapImage _image;
         public ImageModel(BitmapImage img, string id) : base(id)
         {
             this.Image = img;
@@ -89,8 +88,8 @@ namespace NuSysApp
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
 
-
             var stream = new InMemoryRandomAccessStream();
+
             //byte[] imageBytes = Image.
             //string imageString = Convert.ToBase64String(imageBytes);
             return props;
