@@ -756,7 +756,8 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    //await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this later and uncomment ABOVE LINE
                                     await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
                                     //foreach (var p in _joiningMembers[ip].Item2)  TODO similiar above, uncomment this stuff
                                     //{
