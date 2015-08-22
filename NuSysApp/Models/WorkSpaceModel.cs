@@ -61,6 +61,11 @@ namespace NuSysApp
             return atom;
         }
 
+        public async Task CreateGroup(string id, Node node1, Node node2)
+        {
+            //TODO make groups work here
+        }
+
         public async Task RemoveNode(string id)
         {
             if (_idDict.ContainsKey(id))

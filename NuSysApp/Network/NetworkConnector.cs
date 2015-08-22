@@ -928,18 +928,6 @@ namespace NuSysApp
             }
         }
 
-
-        /*
-        * PUBLIC request for deleting a nod 
-        */
-        public async Task RequestDeleteAtom(string id)
-        {
-            if (ModelIntermediate.HasLock(id))
-            {
-                await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
-            }
-        }
-
         /*
         * handles and proccesses a regular sub-message
         */
@@ -1037,6 +1025,17 @@ namespace NuSysApp
             m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
             return m;
         }
+        #region publicRequests
+        /*
+        * PUBLIC request for deleting a nod 
+        */
+        public async Task RequestDeleteAtom(string id)
+        {
+            if (ModelIntermediate.HasLock(id))
+            {
+                await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
+            }
+        }
 
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
@@ -1089,6 +1088,38 @@ namespace NuSysApp
         }
 
         /*
+        * PUBLIC general method to create Group
+        */
+        public async Task RequestMakeGroup(string id1, string id2)
+        {
+            if (id1 != "" && id2 != "")
+            {
+                if (ModelIntermediate.HasAtom(id1))
+                {
+                    if (ModelIntermediate.HasAtom(id2))
+                    {
+                        await SendMessageToHost("<id=0" + Constants.CommaReplacement + "id1=" + id1 +
+                                                Constants.CommaReplacement + "id2=" + id2 + Constants.CommaReplacement +
+                                                "type=group>");
+                    }
+                    else
+                    {
+                        throw new InvalidIDException(id2);
+                    }
+                }
+                else
+                { 
+                    throw new InvalidIDException(id1);
+                }
+            }
+            else
+            {
+                throw new InvalidCreationArgumentsException();
+                return;
+            }
+        }
+
+        /*
         * PUBLIC general method to create Linq
         */
         public async Task RequestMakeLinq(string id1, string id2)
@@ -1130,7 +1161,8 @@ namespace NuSysApp
             await SendMessageToHost("SPECIAL7:" + id);
             await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
         }
-
+        #endregion publicRequests
+        #region customExceptions
         public class InvalidIDException : System.Exception
         {
             public InvalidIDException(string id) : base(String.Format("The ID {0}  was used but is invalid",id)){}
@@ -1157,6 +1189,7 @@ namespace NuSysApp
 
         public class NoIDException : Exception{}
         public class InvalidCreationArgumentsException : Exception { }
+        #endregion customExceptions
         private class Packet //private class to store messages for later
         {
             private readonly PacketType _type;
