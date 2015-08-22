@@ -89,6 +89,9 @@ namespace NuSysApp
                 case NodeType.Ink:
                     node = new InkModel(id);
                     break;
+                case NodeType.Image:
+                    node = new ImageModel((byte[])data,id);
+                    break;
                 default:
                     Debug.WriteLine("Could not create node");
                     return;
