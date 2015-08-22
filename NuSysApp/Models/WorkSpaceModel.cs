@@ -37,12 +37,6 @@ namespace NuSysApp
 
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
-        public void CreateNewTextNode(string data)
-        {
-            //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
-            //CurrentID++;
-        }
-
         public Dictionary<string, string> Locks
         {
             get { return _locks; }

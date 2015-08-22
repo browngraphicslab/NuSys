@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -26,9 +27,6 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = NodeType.Image; //Also sets model value
-
-
-
             
             var C = new CompositeTransform
             {
@@ -63,6 +61,7 @@ namespace NuSysApp
                 this.Model = new ImageModel(bitmapImage, _id);
                 ((ImageModel)Model).Image = bitmapImage;
                 ((ImageModel)Model).FilePath = storageFile.Path;
+                ((ImageModel)Model).Content = new Content(await this.CreateImageByteData(storageFile), id);
                 this.Width = bitmapImage.PixelWidth;
                 this.Height = bitmapImage.PixelHeight;
                 var C = new CompositeTransform
@@ -72,6 +71,21 @@ namespace NuSysApp
                 };
                 this.InkScale = C;
             }
+        }
+
+        public async Task<byte[]> CreateImageByteData(StorageFile storageFile)
+        {
+            byte[] fileBytes = null;
+            using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+            {
+                fileBytes = new byte[stream.Size];
+                using (DataReader reader = new DataReader(stream))
+                {
+                    await reader.LoadAsync((uint)stream.Size);
+                    reader.ReadBytes(fileBytes);
+                }
+            }
+            return fileBytes;
         }
 
         public override void Resize(double dx, double dy)

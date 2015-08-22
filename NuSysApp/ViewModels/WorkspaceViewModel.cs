@@ -21,6 +21,8 @@ using System.Xml;
 using System.IO;
 using Windows.UI.Xaml.Shapes;
 using SQLite.Net;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace NuSysApp
 {
@@ -31,7 +33,6 @@ namespace NuSysApp
     {
         #region Private Members
         //private readonly Factory _factory;
-        private SQLiteDatabase myDB;
         public enum LinkMode
         {
             Linelink,
@@ -367,7 +368,7 @@ namespace NuSysApp
                 default:
                     return null;
             }
-            Model.AtomDict.Add(id, vm);
+            //Model.AtomDict.Add(id, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
@@ -447,6 +448,14 @@ namespace NuSysApp
             XmlDocument doc = this.getXml();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(doc);
             dbConnection.InsertAsync(currWorkspaceXml);
+
+            // table to store content of each node
+            await dbConnection.CreateTableAsync<Content>();
+            foreach (NodeViewModel nodeVm in NodeViewModelList)
+            {
+                Content toInsert = ((Node)nodeVm.Model).Content;
+                dbConnection.InsertAsync(toInsert);
+            }
         }
 
         public async Task LoadWorkspace()
@@ -455,6 +464,23 @@ namespace NuSysApp
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == "1");
             query.FirstOrDefaultAsync().ContinueWith((t) => 
             t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXml)));
+
+            //var res = await query.FirstOrDefaultAsync();
+            //await this.ByteArrayToBitmapImage(res.Data);
+        }
+
+        public async Task ByteArrayToBitmapImage(byte[] byteArray)
+        {
+            InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
+            BitmapImage img = new BitmapImage();
+            await stream.WriteAsync(byteArray.AsBuffer());
+            stream.Seek(0);
+            await img.SetSourceAsync(stream);
+            //NodeViewModel nodeVm = await this.CreateNewNode("10384191#635757668233554225", NodeType.Image, 99863, 99746, null);
+            //nodeVm.SetPosition(99863, 99746);
+            //nodeVm.Width = img.PixelWidth;
+            //nodeVm.Height = img.PixelHeight;
+            //((ImageModel)nodeVm.Model).Image = img;
         }
 
         public XmlDocument getXml()
@@ -507,6 +533,7 @@ namespace NuSysApp
 
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
+        public SQLiteDatabase myDB { get; set; }
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }

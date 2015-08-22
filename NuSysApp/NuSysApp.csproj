@@ -166,8 +166,8 @@
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
-    <Compile Include="MVVM Helpers\SQLiteDatabase.cs" />
-    <Compile Include="MVVM Helpers\XmlFileHelper.cs" />
+    <Compile Include="Database\SQLiteDatabase.cs" />
+    <Compile Include="Database\XmlFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="Views\Nodes\GroupView.xaml.cs">

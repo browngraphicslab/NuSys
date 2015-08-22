@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite.Net.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public abstract class Content
+    public class Content
     {
-        public abstract string GetData();
-        public abstract void SetData(string data);
+        public Content() { }
+        public Content(byte[] data, string id)
+        {
+            Data = data;
+            assocAtomID = id;
+        }
+
+        [Column("Data")]
+        public byte[] Data { get; set; }
+
+        [Column("assocAtomID")]
+        public string assocAtomID { get; set; }
     }
 }

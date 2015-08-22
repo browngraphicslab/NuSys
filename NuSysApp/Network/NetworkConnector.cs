@@ -405,6 +405,10 @@ namespace NuSysApp
         */
         private List<string> GetOtherIPs()
         {
+            List<string> l = new List<string>();
+            l.Add(_localIP);
+            return l;
+
             const string URL = "http://aint.ch/nusys/clients.php";
             var urlParameters = "?action=add&ip="+_localIP;
 

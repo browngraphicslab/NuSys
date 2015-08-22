@@ -12,21 +12,19 @@ using NuSysApp.Network;
 namespace NuSysApp
 {
     public class Node : Atom
-    { 
+    {
         private double _x;
         private double _y;
         private double _width;
         private double _height;
         private Group _group;
-        public Node(string id) : base (id)
+
+        public Node(string id) : base(id)
         {
 
         }
 
-        public string Data { get; set; }
-
         public Content Content { set; get; }
-
 
         public double X
         {
@@ -97,7 +95,7 @@ namespace NuSysApp
                 {
                     this.DebounceDict.Add("width", _width.ToString());
                 }
-           
+
             }
         }
 
@@ -128,10 +126,10 @@ namespace NuSysApp
 
         public NodeType NodeType { get; set; }
 
-        public Group ParentGroup { get; set;}
-        
+        public Group ParentGroup { get; set; }
 
         public bool IsAnnotation { get; set; }
+
         public Atom ClippedParent { get; set; }
 
         public virtual string GetContentSource()
