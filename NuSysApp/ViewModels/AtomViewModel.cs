@@ -29,6 +29,12 @@ namespace NuSysApp
             LinkList = new ObservableCollection<LinkViewModel>();
             this.IsVisible = true;
             this.Model = model;
+            this.Model.OnCanEditChanged += CanEditChangedHandler;
+        }
+
+        private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
+        {
+            CanEdit = Model.CanEdit;
         }
 
         #region Atom Manipulations
