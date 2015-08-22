@@ -428,8 +428,12 @@ namespace NuSysApp
                     vm = new TextNodeViewModel((TextNode)model, this, (string)data, id);
                     break;
                 case NodeType.Ink:
-
                     vm = new InkNodeViewModel((InkModel)model, this, id);
+                    break;
+                case NodeType.Image:
+                    vm = new ImageNodeViewModel((ImageModel)model,this,id);
+                    vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
+                    vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
                     break;
                 default:
                     return;

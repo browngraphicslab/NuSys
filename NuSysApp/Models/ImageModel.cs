@@ -17,9 +17,17 @@ namespace NuSysApp
 {
     public class ImageModel : Node
     {
-        public ImageModel(BitmapImage img, string id) : base(id)
+        public ImageModel(byte[] byteArray, string id) : base(id)
         {
-            this.Image = img;
+            ByteArray = byteArray;
+            MakeImage(byteArray);
+        }
+
+        private async Task MakeImage(byte[] bytes)
+        {
+            Image = await ByteArrayToBitmapImage(bytes);
+            this.Width = Image.PixelWidth;
+            this.Height = Image.PixelHeight;
         }
 
         public BitmapImage Image { get; set; }
