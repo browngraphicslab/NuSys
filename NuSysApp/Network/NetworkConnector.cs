@@ -906,10 +906,6 @@ namespace NuSysApp
                     {
                         await ModelIntermediate.ForceSetLocks(message);
                     }
-                    else
-                    {
-                        throw new IncorrectFormatException(origMessage);
-                    }
                     break;
             }
         }
