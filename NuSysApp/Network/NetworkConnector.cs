@@ -689,7 +689,7 @@ namespace NuSysApp
                     }
                     if (_hostIP == _localIP && message != _localIP) ;
                     {
-                        _joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
+                        //_joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
                         var m = await ModelIntermediate.GetFullWorkspace();
                         if (m.Length > 0)
                         {
