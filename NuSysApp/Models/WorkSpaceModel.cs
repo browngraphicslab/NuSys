@@ -143,6 +143,10 @@ namespace NuSysApp
                 {
                     _locals.Add(k);
                 }
+                else
+                {
+                    _locals.Remove(k);
+                }
                 if (!_dict.ContainsKey(k))
                 {
                     _dict.Add(k, v);

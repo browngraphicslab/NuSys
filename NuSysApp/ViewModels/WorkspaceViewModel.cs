@@ -282,6 +282,7 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
+            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
