@@ -25,6 +25,7 @@ namespace NuSysApp
         public BitmapImage Image { get; set; }
 
         public string FilePath { get; set; }
+        public byte[] ByteArray { get; set; }
 
         public override string GetContentSource()
         {
@@ -88,10 +89,8 @@ namespace NuSysApp
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
 
-            var stream = new InMemoryRandomAccessStream();
-
-            //byte[] imageBytes = Image.
-            //string imageString = Convert.ToBase64String(imageBytes);
+            string imageString = Convert.ToBase64String(ByteArray);
+            props.Add("image",imageString);
             return props;
         }
     }

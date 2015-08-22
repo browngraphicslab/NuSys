@@ -85,6 +85,7 @@ namespace NuSysApp
                     reader.ReadBytes(fileBytes);
                 }
             }
+            ((ImageModel) Model).ByteArray = fileBytes;//TODO make sure this is where this set should occur
             return fileBytes;
         }
 
