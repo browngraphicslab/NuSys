@@ -643,7 +643,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("Recieved message of length 0 from IP: "+ip);
+                throw new IncorrectFormatException(message);
             }
             return;
 
@@ -670,10 +670,11 @@ namespace NuSysApp
         */
         private async Task HandleSpecialMessage(string ip, string message,PacketType packetType)
         {
+            string origMessage = message;
             var indexOfColon = message.IndexOf(":");
             if (indexOfColon == -1)
             {
-                Debug.WriteLine("ERROR: message recieved was formatted wrong");
+                throw new IncorrectFormatException(message);
                 return;
             }
             var type = message.Substring(0, indexOfColon);
@@ -708,6 +709,7 @@ namespace NuSysApp
                         if (message == _localIP)
                         {
                             this.MakeHost();
+                            await SendMassTCPMessage("SPECIAL1:" + _localIP);
                         }
                         await StartTimer();
                         Debug.WriteLine("Host returned and SET to be: "+message);
@@ -717,7 +719,7 @@ namespace NuSysApp
                 case "2"://the message sent from host to tell other workspace to catch up.  message is formatted just like regular messages
                     if (_localIP == _hostIP)
                     {
-                        Debug.WriteLine("ERROR: host (this) recieved catch up message from IP: "+ip+".  This shouldn't happen EVER");
+                        throw new HostException(origMessage, ip);
                         return;
                     }
                     await MessageRecieved(ip, message, packetType);
@@ -763,20 +765,19 @@ namespace NuSysApp
                         }
                         else
                         {
-                            Debug.WriteLine("ERROR: Non-host recieved 'caught-up' message from IP: " + ip + ".  This shouldn't happen EVER");
+                            throw new NotHostException(origMessage, ip);
                             return;
                         }
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Non-host recieved 'caught-up with what you wanted' message from IP: "+ip+ ".  This shouldn't happen EVER");
-                        return;
+                        throw new NotHostException(origMessage, ip);
                     }
                     break;
                 case "4": //Sent by Host only, "you are caught up and ready to join". message is simply the number of catch-up UDP packets also being sent
                     if (_localIP == _hostIP)
                     {
-                        Debug.WriteLine("ERROR: Host recieved 'caught-up' message from IP: " + ip + ".  This shouldn't happen EVER");
+                        throw new HostException(origMessage, ip);
                         return;
                     }
                     this._caughtUp = true;
@@ -800,8 +801,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Recieved a request for a lock for id: " + message +
-                                        " when this machine isn't the Host");
+                        throw new NotHostException(origMessage, ip);
                         return;
                     }
                     break;
@@ -809,7 +809,7 @@ namespace NuSysApp
                     var parts = message.Split("=".ToCharArray());
                     if (parts.Length != 2 && parts.Length != 1)
                     {
-                        Debug.WriteLine("Recieved Lock request response that was incorrectly formatted.  message: "+message);
+                        throw new IncorrectFormatException(origMessage);
                         return;
                     }
                     if (parts.Length == 1)
@@ -832,8 +832,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Recieved a return lock request with message: " + message +
-                                        " when this machine isn't the Host");
+                        throw new NotHostException(origMessage, ip);
                         return;
                     }
                     break;
@@ -842,8 +841,7 @@ namespace NuSysApp
                     {
                         if (!ModelIntermediate.HasAtom(message))
                         {
-                            Debug.WriteLine("ERROR: Recieved a request for a node update with: " + message +
-                                            " which has an invalid id");
+                            throw new InvalidIDException(message);
                             return;
                         }
                         else
@@ -854,8 +852,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: Recieved a request for a full node update with message: " + message +
-                                        " when this machine isn't the Host");
+                        throw new NotHostException(origMessage, ip);
                         return;
                     }
                     break;
@@ -874,13 +871,12 @@ namespace NuSysApp
                     }
                     else
                     {
-                        Debug.WriteLine("ERROR: delete requested for item that didn't exist.  Item requested for delete: "+message);
+                        throw new InvalidIDException(message);
                         return;
                     }
 
                     break;
                 case "11"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
-                    return;
                     this.Pingged(ip);
                     if (message != "NO")
                     {
@@ -891,6 +887,10 @@ namespace NuSysApp
                     if (message != "")
                     {
                         await ModelIntermediate.ForceSetLocks(message);
+                    }
+                    else
+                    {
+                        throw new IncorrectFormatException(origMessage);
                     }
                     break;
             }
@@ -978,6 +978,10 @@ namespace NuSysApp
                 await ModelIntermediate.HandleMessage(message);
                 ModelLocked = false;
             }
+            else
+            {
+                throw new IncorrectFormatException(message);
+            }
         }
 
         /*
@@ -1012,14 +1016,7 @@ namespace NuSysApp
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
-            try
-            {
-                m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
-            }
-            catch (Exception e)
-            {
-                return "<>";
-            }
+            m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
             return m;
         }
 
@@ -1037,13 +1034,13 @@ namespace NuSysApp
                 }
                 else
                 {
-                    Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an VALID ID. ID: "+properties["id"]);
+                    throw new InvalidIDException(properties["id"]);
                     return;
                 }
             }
             else
             {
-                Debug.WriteLine("ERROR: An atom update was trying to be sent that didn't contain an ID.  ");
+                throw new NoIDException();
                 return;
             }
         }
@@ -1068,7 +1065,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("ERROR: tried to create node with invalid arguments.  X: "+x+"  Y: "+y+"   nodeType: "+nodeType);
+                throw new InvalidCreationArgumentsException();
                 return;
             }
         }
@@ -1084,7 +1081,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("ERROR: tried to create node with invalid arguments.  ID1: " + id1 + "  ID2: " + id2);
+                throw new InvalidCreationArgumentsException();
                 return;
             }
         }
@@ -1116,6 +1113,32 @@ namespace NuSysApp
             await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
         }
 
+        public class InvalidIDException : System.Exception
+        {
+            public InvalidIDException(string id) : base(String.Format("The ID {0}  was used but is invalid",id)){}
+        }
+        public class IncorrectFormatException : System.Exception
+        {
+            public IncorrectFormatException(string message) : base(String.Format("The message '{0}' is incorrectly formatted or unrecognized",message)) { }
+        }
+
+        public class NotHostException : Exception
+        {
+            public NotHostException(string message, string remoteIP)
+                : base(String.Format("The message {0} was sent to a non-host from IP: {1} when it is a host-only message", message, remoteIP)){}
+        }
+
+        public class HostException : Exception
+        {
+            public HostException(string message, string remoteIP) : base(String.Format("The message {0} was sent to this machine, THE HOST, from IP: {1} when it is meant for only non-hosts", message, remoteIP)) { }
+        }
+        public class UnknownIPException : Exception
+        {
+            public UnknownIPException(string ip) : base(String.Format("The IP {0} was used when it is not recgonized", ip)) { }
+        }
+
+        public class NoIDException : Exception{}
+        public class InvalidCreationArgumentsException : Exception { }
         private class Packet //private class to store messages for later
         {
             private readonly PacketType _type;
