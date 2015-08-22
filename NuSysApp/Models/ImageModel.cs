@@ -73,9 +73,9 @@ namespace NuSysApp
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
-                image.SetSource(stream);
                 await stream.WriteAsync(ByteArray.AsBuffer());
                 stream.Seek(0);
+                image.SetSource(stream);
                 Image = image;
             }
             if (props.ContainsKey("filepath"))
