@@ -91,6 +91,7 @@ namespace NuSysApp
 
             string imageString = Convert.ToBase64String(ByteArray);
             props.Add("image",imageString);
+            props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }
     }
