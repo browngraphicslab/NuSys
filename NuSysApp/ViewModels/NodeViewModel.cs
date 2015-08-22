@@ -33,9 +33,46 @@ namespace NuSysApp
         protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
         {
             this.AtomType = Constants.Node;
+            this.Model.PropertyChanged += (s, e) => { Update(e); };
+            ((Node)this.Model).OnDeletion += DeletionHappend;
+            ((Atom)this.Model).OnLinked += LinkedHappend;
         }
 
         #region Node Manipulations
+
+        private void DeletionHappend(object source, DeleteEventArgs e)
+        {
+            this.WorkSpaceViewModel.DeleteNode(this);
+        }
+
+        private void LinkedHappend(object source, LinkedEventArgs e)
+        {
+            WorkSpaceViewModel.PrepareLink(e.ID, this);
+        }
+
+        protected virtual void Update(PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Model_Width":
+                    this.Width = ((Node)this.Model).Width;
+                    break;
+                case "Model_Height":
+                    this.Height = ((Node)this.Model).Height;
+                    break;
+                case "Model_X":
+                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
+                    //this.WorkSpaceViewModel.PositionNode(this, ((Node)this.Model).X, this.Y);
+                    break;
+                case "Model_Y":
+                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
+                    //this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
+                    break;
+                case "Model_CanEdit":
+                    this.CanEdit = ((Node)this.Model).CanEdit;
+                    break;
+            }
+        }
 
         public override void Remove()
         {

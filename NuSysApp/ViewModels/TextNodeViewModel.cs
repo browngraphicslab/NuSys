@@ -15,7 +15,7 @@ namespace NuSysApp
         #endregion Private Members
         public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, string text, string id) : base(model, workSpaceViewModel, id)
         {
-            this.Model.PropertyChanged += (s, e) => { Update(e); };
+           
             this.View = new TextNodeView2(this);  
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
@@ -26,45 +26,20 @@ namespace NuSysApp
             this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
             this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
-            ((Node)this.Model).OnDeletion += DeletionHappend;
-            ((Atom) this.Model).OnLinked += LinkedHappend;
+           
         }
 
-        private void DeletionHappend(object source, DeleteEventArgs e)
-        { 
-            this.WorkSpaceViewModel.DeleteNode(this);   
-        }
-
-        private void LinkedHappend(object source, LinkedEventArgs e)
+        protected override void Update(PropertyChangedEventArgs e)
         {
-            WorkSpaceViewModel.PrepareLink(e.ID, this);
-        }
-        private void Update(PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
+            base.Update(e);
+            if (e.PropertyName == "Data")
             {
-                case "Model_Width":
-                    this.Width = ((Node)this.Model).Width;
-                    break;
-                case "Model_Height":
-                    this.Height = ((Node)this.Model).Height;
-                    break;
-                case "Model_X":
-                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
-                    //this.WorkSpaceViewModel.PositionNode(this, ((Node)this.Model).X, this.Y);
-                    break;
-                case "Model_Y":
-                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
-                    //this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
-                    break;
-                case "Model_Text":
-                    this.Data = ((TextNode) this.Model).Text;
-                    break;
-                case "Model_CanEdit":
-                    this.CanEdit = ((TextNode) this.Model).CanEdit;
-                    break;
+                this.Data = ((TextNode)this.Model).Text;
             }
         }
+
+       
+        
         
         #region Public Properties
 
