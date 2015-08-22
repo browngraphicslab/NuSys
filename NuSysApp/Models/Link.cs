@@ -37,6 +37,7 @@ namespace NuSysApp
             Dictionary<string, string> dict = await base.Pack();
             dict.Add("id1",InAtomID);
             dict.Add("id2", OutAtomID);
+            dict.Add("type","linq");
             return dict;
         }
         //public AtomViewModel atom1 { get; set; }
