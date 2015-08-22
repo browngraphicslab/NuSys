@@ -796,17 +796,11 @@ namespace NuSysApp
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (!ModelIntermediate.Locks.ContainsKey(message))
-                        {
-                            ModelIntermediate.Locks.Add(message, ip);
-                        }
-                        else
-                        {
-                            ModelIntermediate.Locks[message] = ip;
-                        }
+                        
+                        ModelIntermediate.Locks.Set(message, ip);
                         //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
-                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks[message]);
-                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message]);
+                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks.Value(message));
+                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks.Value(message));
                         return;
                     }
                     else
@@ -837,14 +831,7 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (ModelIntermediate.Locks.ContainsKey(message))
-                        {
-                            ModelIntermediate.Locks[message] = "";
-                        }
-                        else
-                        {
-                            ModelIntermediate.Locks.Add(message, "");
-                        }
+                        ModelIntermediate.Locks.Set(message, "");
                         await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
                         return;
                     }
