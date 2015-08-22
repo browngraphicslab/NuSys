@@ -160,10 +160,10 @@ namespace NuSysApp
 
             private async Task UpdateAtomLock(string id, string lockHolder)
             {
-                if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
                     {
                         if (lockHolder == "")
                         {
@@ -177,8 +177,8 @@ namespace NuSysApp
                         {
                             _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
                         }
-                    });
-                }
+                    }
+                });
             }
 
             public void Clear()
