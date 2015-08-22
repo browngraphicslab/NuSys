@@ -59,10 +59,11 @@ namespace NuSysApp
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
-        public void CreateNewTextNode(string data)
+        public void CreateLink(Atom atom1, Atom atom2, string id)
         {
-            //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
-            //CurrentID++;
+            var link = new Link(atom1, atom2, id);
+            atom1.AddToLink(link);
+            atom2.AddToLink(link);
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
@@ -93,9 +94,10 @@ namespace NuSysApp
 
         public async Task RemoveNode(string id)
         {
+
             if (_idDict.ContainsKey(id))
             {
-                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted", (Node)_idDict[id]));
+                ((Node)_idDict[id]).Delete();
                 _idDict.Remove(id);
             }
         }

@@ -320,6 +320,22 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
             return vm;
         }
+
+        private AtomViewModel _preparedAtomVm;
+        public void PrepareLink(string id, AtomViewModel atomVm)
+        {
+            if (_preparedAtomVm == null)
+            {
+                _preparedAtomVm = atomVm;
+                return;
+            }
+            else if (atomVm != _preparedAtomVm)
+            {
+                CreateNewLink(id, _preparedAtomVm, atomVm);
+            }
+            _preparedAtomVm = null;
+        }
+
         //public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         //{
         //    NodeViewModel vm = null;

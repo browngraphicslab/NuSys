@@ -15,6 +15,9 @@ namespace NuSysApp
     {
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;
+        public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
+
+        public event LinkedEventHandler OnLinked;
         public enum EditStatus
         {
             Yes,
@@ -27,6 +30,12 @@ namespace NuSysApp
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
         }
+
+        public void AddToLink(Link link)
+        {
+            OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
+        }
+
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict
         {
