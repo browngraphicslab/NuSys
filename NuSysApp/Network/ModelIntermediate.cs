@@ -160,7 +160,7 @@ namespace NuSysApp
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                WorkSpaceModel.Locks.Set(id, ip);
+                await WorkSpaceModel.Locks.Set(id, ip);
                 if (NetworkConnector.Instance.LocalIP == ip)
                 {
                     WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
