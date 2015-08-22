@@ -696,9 +696,9 @@ namespace NuSysApp
                     {
                         await this.SendTCPMessage("SPECIAL1:" + _hostIP, ip);
                     }
-                    if (_hostIP == _localIP && message != _localIP) ;
+                    if (_hostIP == _localIP && message != _localIP && !_joiningMembers.ContainsKey(message)) ;
                     {
-                        //_joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
+                        _joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
                         var m = await ModelIntermediate.GetFullWorkspace();
                         if (m.Length > 0)
                         {
@@ -740,9 +740,9 @@ namespace NuSysApp
                     {
                         if (message == "DONE")
                         {
-                            if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members and remove this '|| true' statement
+                            if (_joiningMembers.ContainsKey(ip))
                             {
-                                if (false && _joiningMembers[ip].Item1)//TODO similiar, remove the "false&&"
+                                if (_joiningMembers[ip].Item1)
                                 {
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
@@ -756,14 +756,13 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    //await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
-                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this later and uncomment ABOVE LINE
+                                    await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
                                     await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
-                                    //foreach (var p in _joiningMembers[ip].Item2)  TODO similiar above, uncomment this stuff
-                                    //{
-                                        //await p.Send(ip);
-                                    //}
-                                    //_joiningMembers.Remove(ip);//remove the joining member
+                                    while(_joiningMembers[ip].Item2.Count>0)
+                                    {
+                                        await _joiningMembers[ip].Item2[0].Send(ip);
+                                    }
+                                    _joiningMembers.Remove(ip);//remove the joining member
                                     return;
                                 }
                             }
@@ -989,7 +988,7 @@ namespace NuSysApp
         /*
         * parses message to dictionary of properties.  POSSIBLE DEPRICATED
         */
-        private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
+        private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
 
