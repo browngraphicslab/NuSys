@@ -827,8 +827,16 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        ModelIntermediate.Locks[message] = "";
+                        if (ModelIntermediate.Locks.ContainsKey(message))
+                        {
+                            ModelIntermediate.Locks[message] = "";
+                        }
+                        else
+                        {
+                            ModelIntermediate.Locks.Add(message, "");
+                        }
                         await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
+                        return;
                     }
                     else
                     {
