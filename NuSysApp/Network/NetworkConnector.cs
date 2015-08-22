@@ -396,8 +396,8 @@ namespace NuSysApp
             }
             else
             {
-                Debug.WriteLine("Non-host tried to make an ID.  Returning a string of 'null'");
-                return "null";
+                Debug.WriteLine("Non-host tried to make an ID.  Returning a string of 'not#host'");
+                return "not#host";
             }
         }
         /*
@@ -740,9 +740,9 @@ namespace NuSysApp
                     {
                         if (message == "DONE")
                         {
-                            if (_joiningMembers.ContainsKey(ip))
+                            if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members and remove this '|| true' statement
                             {
-                                if (_joiningMembers[ip].Item1)
+                                if (_joiningMembers[ip].Item1 && false)//TODO similiar, remove the "&&false"
                                 {
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
@@ -758,11 +758,11 @@ namespace NuSysApp
                                 {
                                     await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
                                     await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
-                                    foreach (var p in _joiningMembers[ip].Item2)
-                                    {
-                                        await p.Send(ip);
-                                    }
-                                    _joiningMembers.Remove(ip);//remove the joining member
+                                    //foreach (var p in _joiningMembers[ip].Item2)  TODO similiar above, uncomment this stuff
+                                    //{
+                                        //await p.Send(ip);
+                                    //}
+                                    //_joiningMembers.Remove(ip);//remove the joining member
                                     return;
                                 }
                             }
