@@ -32,14 +32,14 @@ namespace NuSysApp
         #endregion Private Members
         protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
         {
-            this.AtomType = Constants.Node;
-            this.Model.PropertyChanged += (s, e) => { Update(e); };
+            this.AtomType = Constants.Node;       
             ((Node)this.Model).OnDeletion += DeletionHappend;
             ((Atom)this.Model).OnLinked += LinkedHappend;
+            ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
         }
 
         #region Node Manipulations
-
+   
         private void DeletionHappend(object source, DeleteEventArgs e)
         {
             this.WorkSpaceViewModel.DeleteNode(this);
@@ -50,30 +50,23 @@ namespace NuSysApp
             WorkSpaceViewModel.PrepareLink(e.ID, this);
         }
 
-        protected virtual void Update(PropertyChangedEventArgs e)
+        private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
         {
-            switch (e.PropertyName)
-            {
-                case "Model_Width":
-                    this.Width = ((Node)this.Model).Width;
-                    break;
-                case "Model_Height":
-                    this.Height = ((Node)this.Model).Height;
-                    break;
-                case "Model_X":
-                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
-                    //this.WorkSpaceViewModel.PositionNode(this, ((Node)this.Model).X, this.Y);
-                    break;
-                case "Model_Y":
-                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
-                    //this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
-                    break;
-                case "Model_CanEdit":
-                    this.CanEdit = ((Node)this.Model).CanEdit;
-                    break;
-            }
+            this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
+            this.UpdateAnchor();
         }
 
+        private void WidthHeightUpdceateHandler(object source, WidthHeightUpdateEventArgs e)
+        {
+            this.Width = ((Node)this.Model).Width;
+            this.Height = ((Node)this.Model).Height;
+        }
+
+        private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
+        {
+            this.CanEdit = ((Node)this.Model).CanEdit;
+        }
+        
         public override void Remove()
         {
             NetworkConnector.Instance.RequestDeleteAtom(ID);

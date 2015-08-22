@@ -22,9 +22,12 @@ namespace NuSysApp
 
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public event DeleteEventHandler OnDeletion;
-        
-       
- 
+
+        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
+        public event LocationUpdateEventHandler OnLocationUpdate;
+
+        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
+        public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
 
         public Node(string id) : base(id)
 
@@ -32,8 +35,6 @@ namespace NuSysApp
             
         }
 
-
-       
 
         public void Delete()
         {
@@ -59,7 +60,7 @@ namespace NuSysApp
                 _x = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_X");
+                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
                 else
                 {
@@ -83,7 +84,7 @@ namespace NuSysApp
                 _y = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Y");
+                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
                 else
                 {
@@ -107,7 +108,7 @@ namespace NuSysApp
                 _width = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Width");
+                    OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
                 else
                 {
@@ -133,7 +134,7 @@ namespace NuSysApp
 
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Height");
+                    OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
                 else
                 {

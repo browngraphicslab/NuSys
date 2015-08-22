@@ -11,13 +11,15 @@ using NuSysApp.Network;
 
 namespace NuSysApp
 {
-    public abstract class Atom : BaseINPC
+    public abstract class Atom 
     {
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
-
         public event LinkedEventHandler OnLinked;
+
+        public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
+        public event CanEditChangedEventHandler OnCanEditChanged;
         public enum EditStatus
         {
             Yes,
@@ -53,7 +55,7 @@ namespace NuSysApp
                     return;
                 }
                 _editStatus = value;
-                RaisePropertyChanged("Model_CanEdit");
+                OnCanEditChanged?.Invoke(this, new CanEditChangedEventArg("Can edit changed", CanEdit));
             }
         } //Network locks
         public string ID { get; set; }

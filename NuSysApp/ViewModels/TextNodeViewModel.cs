@@ -25,19 +25,15 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
-            this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
-           
+            //this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
+            ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
         }
 
-        protected override void Update(PropertyChangedEventArgs e)
+       
+        private void TextChangedHandler(object source, TextChangedEventArgs e)
         {
-            base.Update(e);
-            if (e.PropertyName == "Data")
-            {
-                this.Data = ((TextNode)this.Model).Text;
-            }
+            this.Data = ((TextNode)this.Model).Text;
         }
-
        
         
         
