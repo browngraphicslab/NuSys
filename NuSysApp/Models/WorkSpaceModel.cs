@@ -16,51 +16,56 @@ namespace NuSysApp
 {
     public class WorkSpaceModel
     {
+        #region Events and Delegates
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
-
+        public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public event DeleteEventHandler OnDeletion;
-        //Node _selectedNode;
+        public event CreateEventHandler OnCreation;
+        #endregion Events and Delegates
+
+        #region Private Members
         private Dictionary<string, Atom> _idDict;
-        private LockDictionary _locks;
-        private WorkspaceViewModel _workspaceViewModel;
-        private ModelIntermediate _modelIntermediate;
+
+       
         private int _currentId;
-        //private Factory _factory;
-        public WorkSpaceModel(WorkspaceViewModel vm)
+        private LockDictionary _locks;
+        #endregion Private members
+       
+
+        public WorkSpaceModel()
         {
             _idDict = new Dictionary<string, Atom>();
-            _workspaceViewModel = vm;
             AtomDict = new Dictionary<string, AtomViewModel>();
             _currentId = 0;
             _locks = new LockDictionary(this);
-            _modelIntermediate = new ModelIntermediate(this);
-            NetworkConnector.Instance.ModelIntermediate = _modelIntermediate;
-            // _factory = new Factory(this);
+            NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
-        public void CreateNewTextNode(string data)
-        {
-            //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
-            //CurrentID++;
-        }
+       
 
+
+        #region Public Members
         public Dictionary<string, Atom> IDToAtomDict
         {
             get { return _idDict; }
-        } 
+        }
+       
         public LockDictionary Locks
         {
             get { return _locks; }
             set { _locks = value;}
         }
 
-        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        #endregion
+
+
+        public void CreateLink(Atom atom1, Atom atom2, string id)
         {
-            Atom atom = await _workspaceViewModel.CreateNewNode(id, type, xCoordinate, yCoordinate, data); 
-            _idDict.Add(id,atom);
-            return atom;
+            var link = new Link(atom1, atom2, id);
+            atom1.AddToLink(link);
+            atom2.AddToLink(link);
         }
 
         public async Task CreateGroup(string id, Node node1, Node node2)
@@ -68,29 +73,44 @@ namespace NuSysApp
             //TODO make groups work here
         }
 
+       
+
+        public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        {
+            Node node;
+            switch (type)
+            {
+                case NodeType.Text:
+                    node = new TextNode((string)data, id);
+                    break;
+                case NodeType.Richtext:
+                    node = new TextNode((string)data, id);
+                    break;
+                case NodeType.Ink:
+                    node = new InkModel(id);
+                    break;
+                default:
+                    Debug.WriteLine("Could not create node");
+                    return;
+            }
+            node.X = xCoordinate;
+            node.Y = yCoordinate;
+            node.NodeType = type;
+
+            _idDict.Add(id, node);
+            OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
+        }
+
         public async Task RemoveNode(string id)
         {
+
             if (_idDict.ContainsKey(id))
             {
-                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
+                ((Node)_idDict[id]).Delete();
                 _idDict.Remove(id);
             }
         }
 
-        public class DeleteEventArgs : EventArgs
-        {
-            private string EventInfo;
-
-            public DeleteEventArgs(string text)
-            {
-                EventInfo = text;
-            }
-
-            public string GetInfo()
-            {
-                return EventInfo;
-            }
-        }
 
         public class LockDictionary : IEnumerable<KeyValuePair<string,string>>
         {

@@ -15,10 +15,8 @@ namespace NuSysApp
     {
         //private ImageModel _imgm;
         private CompositeTransform _inkScale;
-        private string _id;//TODO REMOVE THIS TERRIBLE CODING SHIT
-        public ImageNodeViewModel(WorkspaceViewModel vm, string id, BitmapImage igm) : base(vm, id)
+        public ImageNodeViewModel(ImageModel model, WorkspaceViewModel vm, string id, BitmapImage igm) : base(model, vm, id)
         {
-            this.Model = new ImageModel(igm, id); //TO-DO get rid of this and just have one model
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.Width = igm.PixelWidth;
@@ -38,15 +36,13 @@ namespace NuSysApp
             };
             this.InkScale = C;
         }
-        public ImageNodeViewModel(WorkspaceViewModel vm, string id) : base(vm, id)
+        public ImageNodeViewModel(ImageModel model, WorkspaceViewModel vm, string id) : base(model, vm, id)
         {
-            this.Model = new ImageModel(null, id); //TO-DO get rid of this and just have one model
             this.NodeType = NodeType.Image; //Also sets model value
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
-            _id = id;
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
@@ -61,7 +57,7 @@ namespace NuSysApp
             stream.Seek(0);
             image.SetSource(stream);
 
-            this.Model = new ImageModel(image, _id);
+            //this.Model = new ImageModel(image, _id); //TODO - should not initialize a new model here
             ((ImageModel)Model).Image = image;
             ((ImageModel)Model).ByteArray = bytes;
             //((ImageModel)Model).FilePath = storageFile.Path;
@@ -81,12 +77,18 @@ namespace NuSysApp
             byte[] fileBytes = null;
             using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
             {
+
+                var bitmapImage = new BitmapImage();
+                //bitmapImage.SetSource(fileStream);
+                //this.Model = new ImageModel(bitmapImage,this.ID);//TODO - should not initialize a new model here
+                ((ImageModel)Model).Image = bitmapImage;
+                ((ImageModel)Model).FilePath = storageFile.Path;
+                this.Width = bitmapImage.PixelWidth;
+                this.Height = bitmapImage.PixelHeight;
+                var C = new CompositeTransform();
                 fileBytes = new byte[stream.Size];
-                using (DataReader reader = new DataReader(stream))
-                {
-                    await reader.LoadAsync((uint)stream.Size);
-                    reader.ReadBytes(fileBytes);
-                }
+                //using (DataReader reader = new DataReader(stream))
+
             }
             ((ImageModel) Model).ByteArray = fileBytes;//TODO make sure this is where this set should occur
             return fileBytes;

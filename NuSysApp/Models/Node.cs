@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+
 using NuSysApp.Network;
 
 namespace NuSysApp
@@ -19,10 +20,27 @@ namespace NuSysApp
         private double _height;
         private Group _group;
 
-        public Node(string id) : base(id)
-        {
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+        public event DeleteEventHandler OnDeletion;
+        
+       
+ 
 
+        public Node(string id) : base(id)
+
+        {
+            
         }
+
+
+       
+
+        public void Delete()
+        {
+            OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
+        }
+        public string Data { get; set; }
+
 
         public Content Content { set; get; }
 

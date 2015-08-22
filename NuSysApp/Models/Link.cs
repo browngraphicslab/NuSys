@@ -12,7 +12,11 @@ namespace NuSysApp
             InAtomID = inAtom.ID;
             OutAtomID = outAtom.ID;
             ID = id;
+            Atom1 = inAtom;
+            Atom2 = outAtom;
         }
+
+
         public string InAtomID { get; set; }
         public string OutAtomID { get; set; }
         public override async Task UnPack(Dictionary<string, string> props)
@@ -38,6 +42,9 @@ namespace NuSysApp
         //public AtomViewModel atom1 { get; set; }
         //public AtomViewModel atom2 { get; set; }
         public Node Annotation { get; set; }
+        public Atom Atom1 { get; private set; }
+        public Atom Atom2 { get; private set; }
+
         public XmlElement WriteXML(XmlDocument doc)
         {
             //XmlElement 

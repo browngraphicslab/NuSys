@@ -103,7 +103,7 @@ namespace NuSysApp
                                         break;
                                 }
                             }
-                            Atom vm = await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
+                            await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
                             await this.HandleMessage(s);
                         }
                         else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
@@ -114,14 +114,24 @@ namespace NuSysApp
                             {
                                 id1 = props["id1"];
                             }
+                            else
+                            {
+                                Debug.WriteLine("Could not create link");
+                                return;
+                            }
                             if (props.ContainsKey("id2"))
                             {
-                                id1 = props["id2"];
+                                id2 = props["id2"];
                             }
-                            AtomViewModel avm1;
-                            AtomViewModel avm2;
-                            if (WorkSpaceModel.IDToAtomDict.ContainsKey(id1))
+                            else
                             {
+                                Debug.WriteLine("Could not create link");
+                                return;
+                            }
+                           
+                            if (WorkSpaceModel.IDToAtomDict.ContainsKey(id1) && (WorkSpaceModel.IDToAtomDict.ContainsKey(id2)))
+                            {
+                                WorkSpaceModel.CreateLink(WorkSpaceModel.IDToAtomDict[id1], WorkSpaceModel.IDToAtomDict[id2], id);
                                 //avm1 = WorkSpaceModel.IDToAtomeDict[id1];
                             }
 

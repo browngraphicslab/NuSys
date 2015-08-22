@@ -13,9 +13,8 @@ namespace NuSysApp
         #region Private Members
 
         #endregion Private Members
-        public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text, string id) : base(workSpaceViewModel, id)
+        public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, string text, string id) : base(model, workSpaceViewModel, id)
         {
-            this.Model = new TextNode(text ?? "Enter text here", id);
             this.Model.PropertyChanged += (s, e) => { Update(e); };
             this.View = new TextNodeView2(this);  
             this.Transform = new MatrixTransform();
@@ -27,18 +26,19 @@ namespace NuSysApp
             this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
             this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
-            this.WorkSpaceViewModel.Model.OnDeletion += DeletionHappend;
-            
+            ((Node)this.Model).OnDeletion += DeletionHappend;
+            ((Atom) this.Model).OnLinked += LinkedHappend;
         }
 
-        public void DeletionHappend(object source, WorkSpaceModel.DeleteEventArgs e)
+        private void DeletionHappend(object source, DeleteEventArgs e)
+        { 
+            this.WorkSpaceViewModel.DeleteNode(this);   
+        }
+
+        private void LinkedHappend(object source, LinkedEventArgs e)
         {
-            if((Node)source == (Node)this.Model)
-            {
-                this.WorkSpaceViewModel.DeleteNode(this);
-            };
+            WorkSpaceViewModel.PrepareLink(e.ID, this);
         }
-
         private void Update(PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)

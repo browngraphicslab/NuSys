@@ -51,7 +51,9 @@ namespace NuSysApp
             string Y = node.Attributes.GetNamedItem("y").Value;
             string width = node.Attributes.GetNamedItem("width").Value;
             string height = node.Attributes.GetNamedItem("height").Value;
+
             NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
+
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
@@ -108,15 +110,15 @@ namespace NuSysApp
                         await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
-                                GroupViewModel groupVm = new GroupViewModel(vm, ID);
-                                vm.Model.AtomDict.Add(ID, groupVm);
-                                foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
-                                {
-                                    await this.CreateNodeFromXml(vm, child);
-                                }
-                                vm.NodeViewModelList.Add(groupVm);
-                                vm.AtomViewList.Add(groupVm.View);
-                                vm.PositionNode(groupVm, x, y);
+                                //GroupViewModel groupVm = new GroupViewModel(vm, ID);
+                                //vm.Model.AtomDict.Add(ID, groupVm);
+                                //foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
+                                //{
+                                //    await this.CreateNodeFromXml(vm, child);
+                                //}
+                                //vm.NodeViewModelList.Add(groupVm);
+                                //vm.AtomViewList.Add(groupVm.View);
+                                //vm.PositionNode(groupVm, x, y);
                             });
                         break;
                     case "Node":
