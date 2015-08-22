@@ -60,6 +60,7 @@ namespace NuSysApp
         {
             this.Width = ((Node)this.Model).Width;
             this.Height = ((Node)this.Model).Height;
+            this.UpdateAnchor();
         }
 
         private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
