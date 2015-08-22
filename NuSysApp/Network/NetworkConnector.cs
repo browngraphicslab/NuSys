@@ -698,7 +698,7 @@ namespace NuSysApp
                     }
                     if (_hostIP == _localIP && message != _localIP && !_joiningMembers.ContainsKey(message)) ;
                     {
-                        _joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
+                        //_joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
                         var m = await ModelIntermediate.GetFullWorkspace();
                         if (m.Length > 0)
                         {
@@ -740,9 +740,9 @@ namespace NuSysApp
                     {
                         if (message == "DONE")
                         {
-                            if (_joiningMembers.ContainsKey(ip))
+                            if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members later
                             {
-                                if (_joiningMembers[ip].Item1)
+                                if (false &&_joiningMembers[ip].Item1)//TODO fix these illogical statements
                                 {
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
@@ -756,13 +756,14 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    //await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
+                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this line and uncomment above line
                                     await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
-                                    while(_joiningMembers[ip].Item2.Count>0)
-                                    {
-                                        await _joiningMembers[ip].Item2[0].Send(ip);
-                                    }
-                                    _joiningMembers.Remove(ip);//remove the joining member
+                                    //while(_joiningMembers[ip].Item2.Count>0)
+                                    //{
+                                        //await _joiningMembers[ip].Item2[0].Send(ip); TODO Uncomment this stuff
+                                    //}
+                                    //_joiningMembers.Remove(ip);//remove the joining member
                                     return;
                                 }
                             }
