@@ -137,8 +137,8 @@ namespace NuSysApp
                             {
                                 AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
                                 AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
-                                LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
-                                newLinkVm.ID = ID;
+                                //LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
+                                //newLinkVm.ID = ID;
 
                                 // create node annotation and attach it to the link
                                 if (node.HasChildNodes)
