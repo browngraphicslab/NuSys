@@ -406,31 +406,40 @@ namespace NuSysApp
         */
         private List<string> GetOtherIPs()
         {
-            const string URL = "http://aint.ch/nusys/clients.php";
-            var urlParameters = "?action=add&ip="+_localIP;
-
-            var client = new HttpClient {BaseAddress = new Uri(URL)};
-
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var people = "";
-
-            var response = client.GetAsync(urlParameters).Result;
-            if (response.IsSuccessStatusCode)
+            if (WaitingRoomView.IsLocal)
             {
-                var d = response.Content.ReadAsStringAsync().Result;//gets the response from the php script
-                people = d;
+                List<string> list = new List<string>();
+                list.Add(_localIP);
+                return list;
             }
-            else
+            else 
             {
-                Debug.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
-            }
-            Debug.WriteLine("in workspace: "+people);
-            var split = people.Split(",".ToCharArray());
+                const string URL = "http://aint.ch/nusys/clients.php";
+                var urlParameters = "?action=add&ip=" + _localIP;
 
-            var ips = split.ToList();
-            return ips;
+                var client = new HttpClient {BaseAddress = new Uri(URL)};
+
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var people = "";
+
+                var response = client.GetAsync(urlParameters).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    var d = response.Content.ReadAsStringAsync().Result; //gets the response from the php script
+                    people = d;
+                }
+                else
+                {
+                    Debug.WriteLine("{0} ({1})", (int) response.StatusCode, response.ReasonPhrase);
+                }
+                Debug.WriteLine("in workspace: " + people);
+                var split = people.Split(",".ToCharArray());
+
+                var ips = split.ToList();
+                return ips;
+            }
         }
         /*
         * adds a new pair of sockets for a newly joining IP
