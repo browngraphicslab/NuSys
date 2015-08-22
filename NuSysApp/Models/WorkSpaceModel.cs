@@ -9,6 +9,8 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Network;
+using System.Collections;
+using System.Linq;
 
 namespace NuSysApp
 {
@@ -23,41 +25,41 @@ namespace NuSysApp
 
         #region Private Members
         private Dictionary<string, Atom> _idDict;
-        private Dictionary<string, string> _locks;
-        private HashSet<string> _locksHeld; 
+
+       
         private int _currentId;
+        private LockDictionary _locks;
         #endregion Private members
-
-        #region Public Members
-        public Dictionary<string, Atom> IDToAtomDict
-        {
-            get { return _idDict; }
-        }
-        public Dictionary<string, string> Locks
-        {
-            get { return _locks; }
-        }
-
-        public HashSet<string> LocalLocks
-        {
-            get
-            {
-                return _locksHeld;
-            }
-        }
-
-        public Dictionary<string, AtomViewModel> AtomDict { set; get; }
-        #endregion
+       
 
         public WorkSpaceModel()
         {
             _idDict = new Dictionary<string, Atom>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _currentId = 0;
-            _locks = new Dictionary<string, string>();
-            _locksHeld = new HashSet<string>();
+            _locks = new LockDictionary(this);
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
+
+        public Dictionary<string, AtomViewModel> AtomDict { set; get; }
+
+       
+
+
+        #region Public Members
+        public Dictionary<string, Atom> IDToAtomDict
+        {
+            get { return _idDict; }
+        }
+       
+        public LockDictionary Locks
+        {
+            get { return _locks; }
+            set { _locks = value;}
+        }
+
+        #endregion
+
 
         public void CreateLink(Atom atom1, Atom atom2, string id)
         {
@@ -65,6 +67,13 @@ namespace NuSysApp
             atom1.AddToLink(link);
             atom2.AddToLink(link);
         }
+
+        public async Task CreateGroup(string id, Node node1, Node node2)
+        {
+            //TODO make groups work here
+        }
+
+       
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
@@ -101,7 +110,113 @@ namespace NuSysApp
                 _idDict.Remove(id);
             }
         }
-  
+
+
+        public class LockDictionary : IEnumerable<KeyValuePair<string,string>>
+        {
+            private HashSet<string> _locals = new HashSet<string>();
+            private Dictionary<string,string> _dict = new Dictionary<string, string>();
+            private WorkSpaceModel _workSpaceModel;
+            public LockDictionary(WorkSpaceModel wsm)
+            {
+                _workSpaceModel = wsm;
+            }
+
+            public HashSet<string> LocalLocks
+            {
+                get { return _locals; } 
+            } 
+            public string Value(string key)
+            {
+                if (_dict.ContainsKey(key))
+                {
+                    return _dict[key];
+                }
+                return null;
+            }
+            public async Task Set(string k, string v)
+            {
+                if (v == NetworkConnector.Instance.LocalIP)
+                {
+                    _locals.Add(k);
+                }
+                if (!_dict.ContainsKey(k))
+                {
+                    _dict.Add(k, v);
+                }
+                else
+                {
+                    _dict[k] = v;
+                }
+                await UpdateAtomLock(k,v);
+            }
+
+            private async Task UpdateAtomLock(string id, string lockHolder)
+            {
+                if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
+                {
+                    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    {
+                        if (lockHolder == "")
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Maybe;
+                        }
+                        else if (lockHolder == NetworkConnector.Instance.LocalIP)
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
+                        }
+                        else
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
+                        }
+                    });
+                }
+            }
+
+            public void Clear()
+            {
+                _dict.Clear();
+                _locals.Clear();
+                foreach (KeyValuePair<string, Atom> kvp in _workSpaceModel.IDToAtomDict)
+                {
+                    kvp.Value.CanEdit = Atom.EditStatus.Maybe;
+                }
+            }
+
+            public bool ContainsID(string id)
+            {
+                return _dict.ContainsKey(id);
+            }
+
+            public bool ContainsHolder(string holder)
+            {
+                return _dict.ContainsValue(holder);
+            }
+            public bool RemoveID(string k)
+            {
+                if (_dict.ContainsKey(k))
+                {
+                    _dict.Remove(k);
+                    if (_locals.Contains(k))
+                    {
+                        _locals.Remove(k);
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            public IEnumerator<KeyValuePair<string,string>> GetEnumerator()
+            {
+                return _dict.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _dict.GetEnumerator();
+            }
+        }
     }
 
 }

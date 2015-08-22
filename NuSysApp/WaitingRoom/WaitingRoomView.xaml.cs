@@ -36,6 +36,11 @@ namespace NuSysApp
         {
             this.Frame.Navigate(typeof (WorkspaceView));
         }
+        private void Local_OnClick(object sender, RoutedEventArgs e)
+        {
+            IsLocal = true;
+            this.Frame.Navigate(typeof(WorkspaceView));
+        }
         private void clear_OnClick(object sender, RoutedEventArgs e)
         {
             const string URL = "http://aint.ch/nusys/clients.php";
@@ -45,5 +50,6 @@ namespace NuSysApp
             new MediaTypeWithQualityHeaderValue("application/json"));
             var response = client.GetAsync(urlParameters).Result;
         }
+        public static bool IsLocal { get; set; }
     }
 }

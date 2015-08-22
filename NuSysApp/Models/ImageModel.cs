@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -22,10 +25,23 @@ namespace NuSysApp
         public BitmapImage Image { get; set; }
 
         public string FilePath { get; set; }
+        public byte[] ByteArray { get; set; }
 
         public override string GetContentSource()
         {
             return FilePath;
+        }
+
+        public async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
+        {
+            var bitmapImage = new BitmapImage();
+
+            var stream = new InMemoryRandomAccessStream();
+            await stream.WriteAsync(byteArray.AsBuffer());
+            stream.Seek(0);
+
+            bitmapImage.SetSource(stream);
+            return bitmapImage;
         }
 
         public override XmlElement WriteXML(XmlDocument doc)
@@ -53,13 +69,13 @@ namespace NuSysApp
         {
             if (props.ContainsKey("image"))
             {
-                byte[] imageBytes = Convert.FromBase64String(props["image"]);
+                ByteArray = Convert.FromBase64String(props["image"]);
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
-                image.SetSource(stream);
-                await stream.WriteAsync(imageBytes.AsBuffer());
+                await stream.WriteAsync(ByteArray.AsBuffer());
                 stream.Seek(0);
+                image.SetSource(stream);
                 Image = image;
             }
             if (props.ContainsKey("filepath"))
@@ -72,11 +88,8 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
-
-            var stream = new InMemoryRandomAccessStream();
-
-            //byte[] imageBytes = Image.
-            //string imageString = Convert.ToBase64String(imageBytes);
+            props.Add("image", Convert.ToBase64String(ByteArray));
+            props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }
     }

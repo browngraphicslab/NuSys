@@ -131,14 +131,10 @@ namespace NuSysApp
                 RaisePropertyChanged("IsVisible");
             }
         }
-        
 
         public XmlElement WriteXML(XmlDocument doc)
         {
-
             return ((Link)Model).WriteXML(doc);
         }
-
-
     }
 }

@@ -21,6 +21,8 @@ using System.Xml;
 using System.IO;
 using Windows.UI.Xaml.Shapes;
 using SQLite.Net;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace NuSysApp
 {
@@ -31,7 +33,6 @@ namespace NuSysApp
     {
         #region Private Members
         //private readonly Factory _factory;
-        private SQLiteDatabase myDB;
         public enum LinkMode
         {
             Linelink,
@@ -46,6 +47,7 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
+            PinViewModelList = new ObservableCollection<PinViewModel>();
             SelectedAtomViewModel = null;
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
@@ -213,7 +215,8 @@ namespace NuSysApp
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    CreateNewGroup("null", node, node2);
+                    NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID);
+                    //CreateNewGroup("null", node, node2);//TODO fix group id
                     return true;
                 }
             }
@@ -425,9 +428,11 @@ namespace NuSysApp
                     vm = new TextNodeViewModel((TextNode)model, this, (string)data, id);
                     break;
                 case NodeType.Ink:
+
                     vm = new InkNodeViewModel((InkModel)model, this, id);
                     break;
                 default:
+                    return;
                     break;
             }
             AtomViewList.Add(vm.View);
@@ -435,56 +440,73 @@ namespace NuSysApp
             PositionNode(vm, x, y);
         }
 
+        public async Task<PinViewModel> AddNewPin(double x, double y)
+        {
+            PinViewModel vm = new PinViewModel();
+            PinViewModelList.Add(vm);
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionPin(vm, x, y);
+            }
+            return vm;
+        }
+
+        private void PositionPin(PinViewModel vm, double x, double y)
+        {
+            var trans = vm.Transform.Matrix;
+            trans.OffsetX = x;
+            trans.OffsetY = y;
+            //    trans.M11 = 1 / CompositeTransform.ScaleX;
+            //    trans.M22 = 1 / CompositeTransform.ScaleY;
+            vm.Transform = new MatrixTransform { Matrix = trans };
+        }
+
         public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
         {
-            try//TODO remove this try catch block
+            if (node1 is GroupViewModel)
             {
-                if (node1 is GroupViewModel)
-                {
-                    return; //TODO this is temporary until we fix everything else
-                }
-                //Check if group already exists
-                var groupVm = node2 as GroupViewModel;
-                if (groupVm != null)
-                {
-                    var group = groupVm;
-                    this.AtomViewList.Remove(node1.View);
-                    this.NodeViewModelList.Remove(node1);
-                    groupVm.AddNode(node1);
-                    node1.ParentGroup = groupVm;
-                    return;
-                }
+                return; //TODO this is temporary until we fix everything else
+            }
+            //Check if group already exists
+            var groupVm = node2 as GroupViewModel;
+            if (groupVm != null)
+            {
+                var group = groupVm;
+                this.AtomViewList.Remove(node1.View);
+                this.NodeViewModelList.Remove(node1);
+                groupVm.AddNode(node1);
+                node1.ParentGroup = groupVm;
+                return;
+            }
+
 
                 //Create new group, because no group exists
                 groupVm = new GroupViewModel(null, this, "null"); //TODO FIX ID'S HERE AND HOOK UP MODEL
 
-                //Set location to node2's location
-                var xCoordinate = node2.Transform.Matrix.OffsetX;
-                var yCoordinate = node2.Transform.Matrix.OffsetY;
 
-                //Add group to workspace
-                NodeViewModelList.Add(groupVm);
-                AtomViewList.Add(groupVm.View);
-                PositionNode(groupVm, xCoordinate, yCoordinate);
-                Model.AtomDict.Add(id, groupVm);
+            //Set location to node2's location
+            var xCoordinate = node2.Transform.Matrix.OffsetX;
+            var yCoordinate = node2.Transform.Matrix.OffsetY;
 
-                //Add the first node
-                groupVm.AddNode(node1);
-                this.AtomViewList.Remove(node1.View);
-                this.NodeViewModelList.Remove(node1);
+            //Add group to workspace
+            NodeViewModelList.Add(groupVm);
+            AtomViewList.Add(groupVm.View);
+            PositionNode(groupVm, xCoordinate, yCoordinate);
+            Model.AtomDict.Add(id, groupVm);
 
-                //Add the second node
-                groupVm.AddNode(node2);
-                this.AtomViewList.Remove(node2.View);
-                this.NodeViewModelList.Remove(node2);
+            //Add the first node
+            groupVm.AddNode(node1);
+            this.AtomViewList.Remove(node1.View);
+            this.NodeViewModelList.Remove(node1);
 
-                node1.ParentGroup = groupVm;
-                node2.ParentGroup = groupVm;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("FUCKING GROUPS");//TRUE
-            }
+            //Add the second node
+            groupVm.AddNode(node2);
+            this.AtomViewList.Remove(node2.View);
+            this.NodeViewModelList.Remove(node2);
+
+            node1.ParentGroup = groupVm;
+            node2.ParentGroup = groupVm;
         }
 
         public async void SaveWorkspace()
@@ -499,6 +521,14 @@ namespace NuSysApp
             XmlDocument doc = this.getXml();
             currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(doc);
             dbConnection.InsertAsync(currWorkspaceXml);
+
+            // table to store content of each node
+            await dbConnection.CreateTableAsync<Content>();
+            foreach (NodeViewModel nodeVm in NodeViewModelList)
+            {
+                Content toInsert = ((Node)nodeVm.Model).Content;
+                dbConnection.InsertAsync(toInsert);
+            }
         }
 
         public async Task LoadWorkspace()
@@ -507,6 +537,23 @@ namespace NuSysApp
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == "1");
             query.FirstOrDefaultAsync().ContinueWith((t) => 
             t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXml)));
+
+            //var res = await query.FirstOrDefaultAsync();
+            //await this.ByteArrayToBitmapImage(res.Data);
+        }
+
+        public async Task ByteArrayToBitmapImage(byte[] byteArray)
+        {
+            InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
+            BitmapImage img = new BitmapImage();
+            await stream.WriteAsync(byteArray.AsBuffer());
+            stream.Seek(0);
+            await img.SetSourceAsync(stream);
+            //NodeViewModel nodeVm = await this.CreateNewNode("10384191#635757668233554225", NodeType.Image, 99863, 99746, null);
+            //nodeVm.SetPosition(99863, 99746);
+            //nodeVm.Width = img.PixelWidth;
+            //nodeVm.Height = img.PixelHeight;
+            //((ImageModel)nodeVm.Model).Image = img;
         }
 
         public XmlDocument getXml()
@@ -553,12 +600,15 @@ namespace NuSysApp
 
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; }
 
+        public ObservableCollection<PinViewModel> PinViewModelList { get; }
+
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; }
 
         public ObservableCollection<UserControl> AtomViewList { get; }
 
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
+        public SQLiteDatabase myDB { get; set; }
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }

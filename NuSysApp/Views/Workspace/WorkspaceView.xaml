@@ -7,8 +7,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="OnLoaded">
+    Loaded="OnLoaded"
+    >
+
     <Canvas Background="Transparent">
+        <Canvas.Clip>
+            <RectangleGeometry Rect="0,0,1000,1000" />
+        </Canvas.Clip>
         <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
             <local:InqCanvas x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
         </Border>
@@ -28,6 +33,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
+        <local:MinimapView PinList="{Binding PinViewModelList}"/>
         <local:FloatingMenu x:Name="floatingMenu" ModeChange="OnModeChange" />
     </Canvas>
 </Page>

@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
@@ -16,7 +17,7 @@ namespace NuSysApp
     public class ModelIntermediate
     {
         public WorkSpaceModel WorkSpaceModel{get;}
-        public Dictionary<string,string> Locks { get { return WorkSpaceModel.Locks; } } 
+        public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } } 
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
@@ -45,7 +46,18 @@ namespace NuSysApp
                         {
 
                         }
-                        if (props.ContainsKey("type") && props["type"] == "node")
+                        else if (props.ContainsKey("type") && props["type"] == "group")
+                        {
+                            Node node1 = null;
+                            Node node2 = null;
+                            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id2"]))
+                            {
+                                node1 = (Node)WorkSpaceModel.IDToAtomDict[props["id1"]];
+                                node2 = (Node)WorkSpaceModel.IDToAtomDict[props["id2"]];
+                            }
+                            await WorkSpaceModel.CreateGroup(id, node1, node2);
+                        }
+                        else if (props.ContainsKey("type") && props["type"] == "node")
                         {
                             NodeType type = NodeType.Text;
                             double x = 0;
@@ -64,12 +76,31 @@ namespace NuSysApp
                             {
                                 double.TryParse(props["y"], out y);
                             }
-                            if (props.ContainsKey("data"))
+                            if (props.ContainsKey("data") && props.ContainsKey("nodeType"))
                             {
                                 string d = props["data"];
-                                if (d.Substring(0, 10).Contains("polyline"))
+                                switch (type)
                                 {
-                                    data = ParseToPolyline(d);
+                                    case NodeType.Ink:
+                                        try
+                                        {
+                                            data = ParseToPolyline(d);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
+                                        }
+                                        break;
+                                    case NodeType.Image:
+                                        try
+                                        {
+                                            data = ParseToByteArray(d);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a Image");
+                                        }
+                                        break;
                                 }
                             }
                             await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
@@ -139,7 +170,7 @@ namespace NuSysApp
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                WorkSpaceModel.Locks[id] = ip;
+                WorkSpaceModel.Locks.Set(id, ip);
                 if (NetworkConnector.Instance.LocalIP == ip)
                 {
                     WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
@@ -152,11 +183,12 @@ namespace NuSysApp
                 {
                     WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
                 }
-                if (NetworkConnector.Instance.LocalIP == ip)
-                {
-                    WorkSpaceModel.LocalLocks.Add(id);
-                }
             });
+        }
+
+        private byte[] ParseToByteArray(string s)
+        {
+            return Convert.FromBase64String(s);
         }
         private Polyline[] ParseToPolyline(string s)
         {
@@ -265,14 +297,14 @@ namespace NuSysApp
 
         public bool HasLock(string id)
         {
-            return WorkSpaceModel.LocalLocks.Contains(id);
+            return WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP;
         }
-
+        
         public async Task CheckLocks(string id)
         {
             Debug.WriteLine("Checking locks");
             HashSet<string> locksNeeded = LocksNeeded(id);
-            foreach (string lockID in WorkSpaceModel.LocalLocks)
+            foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
             {
                 if (!locksNeeded.Contains(lockID))
                 {
@@ -283,20 +315,33 @@ namespace NuSysApp
 
         public void RemoveIPFromLocks(string ip)
         {
-            if (WorkSpaceModel.Locks.ContainsValue(ip))
+            if (WorkSpaceModel.Locks.ContainsHolder(ip))
             {
                 foreach (KeyValuePair<string, string> kvp in WorkSpaceModel.Locks)
                 {
                     if (kvp.Value == ip)
                     {
                         SetAtomLock(kvp.Key, "");
-                        if (!WorkSpaceModel.Locks.ContainsValue(ip))
+                        if (!WorkSpaceModel.Locks.ContainsHolder(ip))
                         {
                             return;
                         }
                     }
                 }
             }
+        }
+        public async Task ForceSetLocks(string message)
+        {
+            WorkSpaceModel.Locks.Clear();
+            foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+            {
+                await SetAtomLock(kvp.Key, kvp.Value);
+            }
+        }
+
+        public string GetAllLocksToSend()
+        {
+            return DictToString(WorkSpaceModel.Locks);
         }
         public async Task<Dictionary<string, string>> GetNodeState(string id)
         {
@@ -310,21 +355,27 @@ namespace NuSysApp
             }
         }
 
-        private string DictToString(Dictionary<string, string> dict)
+        private string DictToString(IEnumerable<KeyValuePair<string, string>> dict)
         {
             string s = "";
             foreach (KeyValuePair<string, string> kvp in dict)
             {
                 s += kvp.Key + ":" + kvp.Value + "&";
             }
-            s = s.Substring(0, s.Length - 1);
+            s = s.Substring(0, Math.Max(s.Length - 1,0));
             return s;
         }
 
         private Dictionary<string, string> StringToDict(string s)
         {
+            Dictionary<string,string> dict = new Dictionary<string, string>();
             string[] strings = s.Split("&".ToCharArray());
-            return new Dictionary<string, string>();
+            foreach (string kvpString in strings)
+            {
+                string[] kvpparts = kvpString.Split(":".ToCharArray());
+                dict.Add(kvpparts[0], kvpparts[1]);
+            }
+            return dict;
         } 
     }
 }

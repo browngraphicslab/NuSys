@@ -8,11 +8,14 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="500">
-            Enter Local Network Workspace...
+        <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="800" Margin="0,0,0,700" Background="GreenYellow">
+            Enter Network Workspace...
         </Button>
-        <Button Click="clear_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="900" Margin="0,0,0,-300">
-            Can't join workspace after a few seconds? CLICK THIS AND RESTART APP.  (warning: will make current workspace unjoinable)
+        <Button Click="Local_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="150" Width="500" Margin="0,0,0,150">
+            LOCAL WORKSPACE (not NuSys Network)
+        </Button>
+        <Button Click="clear_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="900" Margin="0,0,0,-450">
+            Can't join workspace after a few seconds? CLICK THIS and then Network Workspace Button
         </Button>
     </Grid>
 </Page>

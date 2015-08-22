@@ -244,6 +244,11 @@
             <Button x:Name="Load" Style="{StaticResource FloatingButton}" Tapped="LoadButton_Click" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_open.png"></Image>
             </Button>
+            <Button Name="pinButton" Style="{StaticResource FloatingButton}" Tapped="PinButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/icon_link.png" Stretch="Uniform"></ImageBrush>
+                </Button.Background>
+            </Button>
         </StackPanel>
     </Canvas>
 </UserControl>

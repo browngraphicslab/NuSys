@@ -116,6 +116,7 @@
     <Content Include="Assets\icon_multiselect.png" />
     <Content Include="Assets\icon_bucket.png" />
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\pin icon.png" />
     <Content Include="Views\Nodes\link icon.png" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -165,16 +166,25 @@
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
     <Compile Include="Models\PDFNodeModel.cs" />
+    <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="MVVM Helpers\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
-    <Compile Include="MVVM Helpers\SQLiteDatabase.cs" />
-    <Compile Include="MVVM Helpers\XmlFileHelper.cs" />
+    <Compile Include="Database\SQLiteDatabase.cs" />
+    <Compile Include="Database\XmlFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
+    <Compile Include="ViewModels\MinimapViewModel.cs" />
+    <Compile Include="ViewModels\PinViewModel.cs" />
+    <Compile Include="Views\Misc\MinimapView.xaml.cs">
+      <DependentUpon>MinimapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Misc\PinView.xaml.cs">
+      <DependentUpon>PinView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\GroupView.xaml.cs">
       <DependentUpon>GroupView.xaml</DependentUpon>
     </Compile>
@@ -216,6 +226,7 @@
     <Compile Include="Views\Workspace\LoadMode.cs" />
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
+    <Compile Include="Views\Workspace\PinMode.cs" />
     <Compile Include="Views\Workspace\PromoteInkMode.cs" />
     <Compile Include="Views\Workspace\SaveMode.cs" />
     <Compile Include="Views\Workspace\SelectMode.cs" />
@@ -266,6 +277,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Misc\MinimapView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Misc\PinView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

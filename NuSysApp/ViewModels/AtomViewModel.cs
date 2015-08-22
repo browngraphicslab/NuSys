@@ -99,6 +99,10 @@ namespace NuSysApp
                 {
                     this.Color = new SolidColorBrush(Colors.Chartreuse);
                 }
+                else if (_canEdit == Atom.EditStatus.Yes)
+                {
+                    this.Color = new SolidColorBrush(Colors.DarkOrange);
+                }
                 else
                 {
                     this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
