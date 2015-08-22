@@ -11,6 +11,8 @@ namespace NuSysApp
     public class TextNode : Node
     {
         private string _text;
+        public delegate void TextChangedEventHandler(object source, TextChangedEventArgs e);
+        public event TextChangedEventHandler OnTextChanged;
         public TextNode(string data, string id): base(id)
         {
             Text = data;
@@ -26,12 +28,11 @@ namespace NuSysApp
                 _text = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Text");
+                    OnTextChanged?.Invoke(this, new TextChangedEventArgs("Text changed", Text));
                 }
                 else
                 {
                     this.DebounceDict.Add("text", value);
-                    //Debug.WriteLine("Got the text: "+value);
                 }
             } 
         }

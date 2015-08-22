@@ -43,9 +43,6 @@ namespace NuSysApp
 
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
-       
-
-
         #region Public Members
         public Dictionary<string, Atom> IDToAtomDict
         {
@@ -93,7 +90,7 @@ namespace NuSysApp
                     node = new ImageModel((byte[])data,id);
                     break;
                 default:
-                    Debug.WriteLine("Could not create node");
+                    throw new InvalidOperationException("This node type is not yet supported");
                     return;
             }
             node.X = xCoordinate;
@@ -106,11 +103,14 @@ namespace NuSysApp
 
         public async Task RemoveNode(string id)
         {
-
             if (_idDict.ContainsKey(id))
             {
-                ((Node)_idDict[id]).Delete();
+                ((Node) _idDict[id]).Delete();
                 _idDict.Remove(id);
+            }
+            else
+            {
+                throw new InvalidOperationException("Node no longer exists");
             }
         }
 
