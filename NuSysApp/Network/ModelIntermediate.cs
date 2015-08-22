@@ -17,7 +17,7 @@ namespace NuSysApp
     public class ModelIntermediate
     {
         public WorkSpaceModel WorkSpaceModel{get;}
-        public Dictionary<string,string> Locks { get { return WorkSpaceModel.Locks; } } 
+        public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } } 
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
@@ -160,7 +160,7 @@ namespace NuSysApp
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                WorkSpaceModel.Locks[id] = ip;
+                WorkSpaceModel.Locks.Set(id, ip);
                 if (NetworkConnector.Instance.LocalIP == ip)
                 {
                     WorkSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
@@ -287,32 +287,32 @@ namespace NuSysApp
 
         public bool HasLock(string id)
         {
-            return WorkSpaceModel.Locks.ContainsKey(id) && WorkSpaceModel.Locks[id] == NetworkConnector.Instance.LocalIP;
+            return WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP;
         }
-
+        
         public async Task CheckLocks(string id)
         {
             Debug.WriteLine("Checking locks");
             HashSet<string> locksNeeded = LocksNeeded(id);
-            foreach (KeyValuePair<string,string> kvp in WorkSpaceModel.Locks)
+            foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
             {
-                if (kvp.Value == NetworkConnector.Instance.LocalIP && !locksNeeded.Contains(kvp.Key))
+                if (!locksNeeded.Contains(lockID))
                 {
-                    await NetworkConnector.Instance.ReturnLock(kvp.Key);
+                    await NetworkConnector.Instance.ReturnLock(lockID);
                 }
             }
         }
 
         public void RemoveIPFromLocks(string ip)
         {
-            if (WorkSpaceModel.Locks.ContainsValue(ip))
+            if (WorkSpaceModel.Locks.ContainsHolder(ip))
             {
                 foreach (KeyValuePair<string, string> kvp in WorkSpaceModel.Locks)
                 {
                     if (kvp.Value == ip)
                     {
                         SetAtomLock(kvp.Key, "");
-                        if (!WorkSpaceModel.Locks.ContainsValue(ip))
+                        if (!WorkSpaceModel.Locks.ContainsHolder(ip))
                         {
                             return;
                         }
@@ -345,7 +345,7 @@ namespace NuSysApp
             }
         }
 
-        private string DictToString(Dictionary<string, string> dict)
+        private string DictToString(IEnumerable<KeyValuePair<string, string>> dict)
         {
             string s = "";
             foreach (KeyValuePair<string, string> kvp in dict)

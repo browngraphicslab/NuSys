@@ -88,9 +88,7 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
-
-            string imageString = Convert.ToBase64String(ByteArray);
-            props.Add("image",imageString);
+            props.Add("image", Convert.ToBase64String(ByteArray));
             props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }
