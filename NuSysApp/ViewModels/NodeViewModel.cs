@@ -26,9 +26,7 @@ namespace NuSysApp
 
         private bool _isEditing, _isEditingInk;
         private AtomViewModel _clippedParent;
-
         private MatrixTransform _transform;
-
         private GroupViewModel _group;
 
         #endregion Private Members
@@ -46,8 +44,7 @@ namespace NuSysApp
             if (this.IsSelected)
             {
                 WorkSpaceViewModel.ClearSelection();
-            }
-            
+            } 
         }
 
         public virtual void Translate(double dx, double dy)

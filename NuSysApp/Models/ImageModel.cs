@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing;
+using SQLite.Net.Attributes;
+using SQLiteNetExtensions.Attributes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -26,6 +29,18 @@ namespace NuSysApp
         public override string GetContentSource()
         {
             return FilePath;
+        }
+
+        public async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
+        {
+            var bitmapImage = new BitmapImage();
+
+            var stream = new InMemoryRandomAccessStream();
+            await stream.WriteAsync(byteArray.AsBuffer());
+            stream.Seek(0);
+
+            bitmapImage.SetSource(stream);
+            return bitmapImage;
         }
 
         public override XmlElement WriteXML(XmlDocument doc)

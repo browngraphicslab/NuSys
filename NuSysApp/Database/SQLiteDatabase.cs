@@ -18,7 +18,8 @@ namespace NuSysApp
         public SQLiteDatabase(string filename)
         {
             DBPath = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, filename);
-            Func<SQLiteConnectionWithLock> connectionFactory = new Func<SQLiteConnectionWithLock>(() => new SQLiteConnectionWithLock(new SQLitePlatformWinRT(), new SQLiteConnectionString(DBPath, storeDateTimeAsTicks: false)));
+            Func<SQLiteConnectionWithLock> connectionFactory = new Func<SQLiteConnectionWithLock>(() => 
+                new SQLiteConnectionWithLock(new SQLitePlatformWinRT(), new SQLiteConnectionString(DBPath, storeDateTimeAsTicks: false)));
             DBConnection = new SQLiteAsyncConnection(connectionFactory);
         }
 

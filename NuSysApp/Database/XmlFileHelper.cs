@@ -1,4 +1,5 @@
 ﻿using NuSysApp.Models;
+using SQLite.Net.Async;
 using SQLite.Net.Attributes;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,9 @@ namespace NuSysApp
 {
     public class XmlFileHelper
     {
+
         private List<Dictionary<string, string>> _atomUpdateDicts = new List<Dictionary<string, string>>();
+
         public XmlFileHelper()
         {
             this.ID = "1";
@@ -48,36 +51,39 @@ namespace NuSysApp
             string Y = node.Attributes.GetNamedItem("y").Value;
             string width = node.Attributes.GetNamedItem("width").Value;
             string height = node.Attributes.GetNamedItem("height").Value;
-            NodeViewModel nodeVM = new TextNodeViewModel(vm, string.Empty, "null");
-            //Just a filler - gets reassigned in all cases
+            NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
+            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
+            var res = await query.FirstOrDefaultAsync();
+
+            byte[] byteData = res.Data;
+
             switch (currType)
             {
-                case "text":
+                case "Text":
                     //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
-                    dict.Add("width", width);
-                    dict.Add("height", height);
-                    dict.Add("id", ID);
                     break;
                 case "Image":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), null, ID);
                     break;
                 case "Pdf":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
                     break;
                 case "ink":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
-                    dict.Add("width", width);
-                    dict.Add("height", height);
-                    dict.Add("id", ID);
                     break;
                 default:
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
                     break;
             }
+
+            dict.Add("image", System.Text.Encoding.UTF8.GetString(byteData));
+            dict.Add("width", width);
+            dict.Add("height", height);
+            dict.Add("id", ID);
             _atomUpdateDicts.Add(dict);
         }
 
@@ -85,17 +91,22 @@ namespace NuSysApp
         {
             XmlElement parent = doc.DocumentElement;
             XmlNodeList NodeList = parent.ChildNodes;
+            SQLiteAsyncConnection dbConnection = vm.myDB.DBConnection;
+
+            //dict.Add("image", System.Text.Encoding.UTF8.GetString(res.Data));
+
             foreach (XmlNode node in NodeList)
             {
                 string AtomType = node.Name;
                 string ID = Convert.ToString(node.Attributes.GetNamedItem("id").Value);
+
                 switch (AtomType)
                 {
                     case "Group":
                         double x = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
                         double y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
                         await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal,async () =>
+                            CoreDispatcherPriority.Normal, async () =>
                             {
                                 GroupViewModel groupVm = new GroupViewModel(vm, ID);
                                 vm.Model.AtomDict.Add(ID, groupVm);
@@ -110,9 +121,9 @@ namespace NuSysApp
                         break;
                     case "Node":
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal,async () =>
+                            CoreDispatcherPriority.Normal, async () =>
                             {
-                                this.CreateNodeFromXml(vm, node);
+                                await this.CreateNodeFromXml(vm, node);
                             });
                         break;
                     case "Link":
@@ -120,7 +131,7 @@ namespace NuSysApp
                         string atomID1 = Convert.ToString(node.Attributes.GetNamedItem("atomID1").Value);
                         string atomID2 = Convert.ToString(node.Attributes.GetNamedItem("atomID2").Value);
                         Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal,async() =>
+                            CoreDispatcherPriority.Normal, async() =>
                             {
                                 AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
                                 AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
@@ -130,20 +141,16 @@ namespace NuSysApp
                                 // create node annotation and attach it to the link
                                 if (node.HasChildNodes)
                                 {
-                                    // create node annotation and attach it to the link
-                                    if (node.HasChildNodes)
-                                    {
-                                        XmlNode attachedAnnotation = node.ChildNodes[0];
-                                        string clippedParentID =
-                                            attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value;
-                                        await this.CreateNodeFromXml(vm, attachedAnnotation);
-                                        //nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
-                                    }
+                                    XmlNode attachedAnnotation = node.ChildNodes[0];
+                                    string clippedParentID = attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value;
+                                    await this.CreateNodeFromXml(vm, attachedAnnotation);
+                                    //nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
                                 }
                             });
                         break;
                 }
             }
+
             foreach (Dictionary<string, string> dict in _atomUpdateDicts)
             {
                 NetworkConnector.Instance.QuickUpdateAtom(dict);
@@ -151,4 +158,3 @@ namespace NuSysApp
         }
     }
 }
-
