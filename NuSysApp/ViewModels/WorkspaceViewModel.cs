@@ -293,7 +293,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2)
+        public LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -310,7 +310,7 @@ namespace NuSysApp
                 return null;
             }
             if (atomVm1 == atomVm2) return null;
-            var vm = new LinkViewModel(null, atomVm1, atomVm2, this, id);//TODO fix this
+            var vm = new LinkViewModel(link, atomVm1, atomVm2, this, id);//TODO fix this
             Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
@@ -326,7 +326,7 @@ namespace NuSysApp
         }
 
         private AtomViewModel _preparedAtomVm;
-        public void PrepareLink(string id, AtomViewModel atomVm)
+        public void PrepareLink(string id, AtomViewModel atomVm, Link link)
         {
             if (_preparedAtomVm == null)
             {
@@ -335,7 +335,7 @@ namespace NuSysApp
             }
             else if (atomVm != _preparedAtomVm)
             {
-                CreateNewLink(id, _preparedAtomVm, atomVm);
+                CreateNewLink(id, _preparedAtomVm, atomVm, link);
             }
             _preparedAtomVm = null;
         }

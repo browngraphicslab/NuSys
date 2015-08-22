@@ -30,6 +30,12 @@ namespace NuSysApp
             this.IsVisible = true;
             this.Model = model;
             this.Model.OnCanEditChanged += CanEditChangedHandler;
+            ((Atom)this.Model).OnLinked += LinkedHappend;
+        }
+
+        private void LinkedHappend(object source, LinkedEventArgs e)
+        {
+            WorkSpaceViewModel.PrepareLink(e.ID, this, e.Link);
         }
 
         private void CanEditChangedHandler(object source, CanEditChangedEventArg e)

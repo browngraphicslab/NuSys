@@ -34,7 +34,7 @@ namespace NuSysApp
         {
             this.AtomType = Constants.Node;       
             ((Node)this.Model).OnDeletion += DeletionHappend;
-            ((Atom)this.Model).OnLinked += LinkedHappend;
+           
             ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
         }
 
@@ -45,10 +45,7 @@ namespace NuSysApp
             this.WorkSpaceViewModel.DeleteNode(this);
         }
 
-        private void LinkedHappend(object source, LinkedEventArgs e)
-        {
-            WorkSpaceViewModel.PrepareLink(e.ID, this);
-        }
+
 
         private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
         {

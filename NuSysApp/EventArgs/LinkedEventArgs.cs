@@ -17,6 +17,14 @@ namespace NuSysApp
             _link = link;
         }
 
+        public Link Link
+        {
+            get
+            {
+                return _link;
+            } 
+        }
+
         public Atom Atom1
         {
             get { return _link.Atom1; }
