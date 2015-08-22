@@ -742,7 +742,7 @@ namespace NuSysApp
                         {
                             if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members and remove this '|| true' statement
                             {
-                                if (_joiningMembers[ip].Item1 && false)//TODO similiar, remove the "&&false"
+                                if (false && _joiningMembers[ip].Item1)//TODO similiar, remove the "false&&"
                                 {
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
