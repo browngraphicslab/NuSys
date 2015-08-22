@@ -114,7 +114,7 @@ namespace NuSysApp
                 }
                 return null;
             }
-            public void Set(string k, string v)
+            public async Task Set(string k, string v)
             {
                 if (v == NetworkConnector.Instance.LocalIP)
                 {
@@ -128,25 +128,29 @@ namespace NuSysApp
                 {
                     _dict[k] = v;
                 }
-                UpdateAtomLock(k,v);
+                await UpdateAtomLock(k,v);
             }
 
-            private void UpdateAtomLock(string id, string lockHolder)
+            private async Task UpdateAtomLock(string id, string lockHolder)
             {
                 if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
                 {
-                    if(lockHolder == "")
+                    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Maybe;
-                    }
-                    else if (lockHolder == NetworkConnector.Instance.LocalIP)
-                    {
-                        _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
-                    }
-                    else
-                    {
-                        _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
-                    }
+                        if (lockHolder == "")
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Maybe;
+                        }
+                        else if (lockHolder == NetworkConnector.Instance.LocalIP)
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
+                        }
+                        else
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
+                        }
+                    });
                 }
             }
 

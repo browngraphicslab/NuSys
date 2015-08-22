@@ -797,7 +797,7 @@ namespace NuSysApp
                     if (_hostIP == _localIP)
                     {
                         
-                        ModelIntermediate.Locks.Set(message, ip);
+                        await ModelIntermediate.Locks.Set(message, ip);
                         //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
                         ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks.Value(message));
                         await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks.Value(message));
@@ -831,7 +831,7 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        ModelIntermediate.Locks.Set(message, "");
+                        await ModelIntermediate.Locks.Set(message, "");
                         await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
                         return;
                     }
