@@ -55,6 +55,7 @@ namespace NuSysApp
             dict.Add("nodeType", NodeType.Text.ToString());
             return dict;
         }
+
         public override XmlElement WriteXML(XmlDocument doc)
         {
 
@@ -62,7 +63,7 @@ namespace NuSysApp
             XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
 
             //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
+            List<XmlAttribute> basicXml = this.getBasicXML(doc);//TODO Make his polymorphic
             foreach(XmlAttribute attr in basicXml)
             {
                 textNode.SetAttributeNode(attr);

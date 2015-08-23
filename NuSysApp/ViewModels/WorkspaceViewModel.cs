@@ -54,7 +54,7 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
-            this.Model.OnCreation += CreationHappend;
+            this.Model.OnCreation += CreatedHandler;
         }
         private async void Init()
         {
@@ -405,7 +405,7 @@ namespace NuSysApp
         //    }
         //    return  vm.Model;
         //}
-        public void CreationHappend(object source, CreateEventArgs e)
+        public void CreatedHandler(object source, CreateEventArgs e)
         {
             NodeViewModel vm = null;
             var model = e.CreatedNode;

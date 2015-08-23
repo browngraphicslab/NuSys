@@ -10,8 +10,9 @@ namespace NuSysApp
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
+        public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public event LinkedEventHandler OnLinked;
-
+        public event CreateGroupEventHandler OnCreatedGroup;
         public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
         public event CanEditChangedEventHandler OnCanEditChanged;
         public enum EditStatus
@@ -30,6 +31,11 @@ namespace NuSysApp
         public void AddToLink(Link link)
         {
             OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
+        }
+
+        public void AddToGroup(Group group)
+        {
+            OnCreatedGroup.Invoke(this, new CreateGroupEventArgs("Added to group", group);
         }
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict

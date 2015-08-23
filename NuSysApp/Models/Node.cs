@@ -3,18 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
-using NuSysApp.Models;
+
 
 namespace NuSysApp
 {
     public class Node : Atom
     {
+        #region Private Members
         private double _x;
         private double _y;
         private double _width;
         private double _height;
         private Group _group;
+        #endregion Private Members
 
+        #region Events and Handlers
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public event DeleteEventHandler OnDeletion;
 
@@ -24,19 +27,20 @@ namespace NuSysApp
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
         public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
 
+        #endregion Events and Handlers
+
         public Node(string id) : base(id)
 
         {
             
         }
 
-
         public void Delete()
         {
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
         }
-        public string Data { get; set; }
 
+        public string Data { get; set; }
 
         public Content Content { set; get; }
 
@@ -150,6 +154,7 @@ namespace NuSysApp
         {
             return null;
         }
+
         public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("x"))

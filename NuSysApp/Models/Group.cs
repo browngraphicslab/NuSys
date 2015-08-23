@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Xml;
 
-namespace NuSysApp.Models
+namespace NuSysApp
 {
     public class Group : Node
     {

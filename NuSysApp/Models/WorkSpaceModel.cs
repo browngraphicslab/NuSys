@@ -12,8 +12,11 @@ namespace NuSysApp
         #region Events and Delegates
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
+        public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
+        public event CreateGroupEventHandler OnGroupCreation;
+        
         #endregion Events and Delegates
 
         #region Private Members
@@ -57,9 +60,17 @@ namespace NuSysApp
             _idDict.Add(id,link);
         }
 
-        public async Task CreateGroup(string id, Node node1, Node node2)
+        public async Task CreateGroup(string id, Node node1, Node node2, double xCooordinate, double yCoordinate)
         {
             //TODO make groups work here
+            var group = new Group(id)
+            {
+                X = xCooordinate,
+                Y= yCoordinate,
+                NodeType = NodeType.Group
+            };
+            _idDict.Add(id, group);
+            OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
