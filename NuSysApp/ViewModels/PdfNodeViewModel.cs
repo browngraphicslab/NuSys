@@ -24,8 +24,7 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = NodeType.PDF;
             this.CurrentPageNumber = 0;
-            this.PageCount = 0;
-            this.InkContainer = new List<HashSet<Polyline>>();
+            this.InkContainer = new List<HashSet<Polyline>>((int)PageCount);
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,
@@ -134,7 +133,6 @@ namespace NuSysApp
             for (var i = 0; i < PageCount; i++)
             {
                 this.InkContainer.Add(new HashSet<Polyline>());
-
             }
         }
 

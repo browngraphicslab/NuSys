@@ -78,6 +78,10 @@ namespace NuSysApp
                 case NodeType.Image:
                     node = new ImageModel((byte[])data,id);
                     break;
+                case NodeType.PDF:
+                    node = new PdfNodeModel((byte[])data, id);
+                    await ((PdfNodeModel) node).SaveFile();
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
                     return;

@@ -28,7 +28,7 @@ namespace NuSysApp
                 Dictionary<string, string> props = ParseOutProperties(s);
                 if (props.ContainsKey("id"))
                 {
-                    string id = props["id"]; //since we called parse properties, it MUST have an id
+                    string id = props["id"];
                     if (WorkSpaceModel.IDToAtomDict.ContainsKey(id))
                     {
                         Atom n = WorkSpaceModel.IDToAtomDict[id];
@@ -90,13 +90,14 @@ namespace NuSysApp
                                         }
                                         break;
                                     case NodeType.Image:
+                                    case NodeType.PDF:
                                         try
                                         {
                                             data = ParseToByteArray(d);
                                         }
                                         catch (Exception e)
                                         {
-                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a Image");
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
                                         }
                                         break;
                                 }
@@ -130,10 +131,7 @@ namespace NuSysApp
                             if (WorkSpaceModel.IDToAtomDict.ContainsKey(id1) && (WorkSpaceModel.IDToAtomDict.ContainsKey(id2)))
                             {
                                 WorkSpaceModel.CreateLink(WorkSpaceModel.IDToAtomDict[id1], WorkSpaceModel.IDToAtomDict[id2], id);
-                                //avm1 = WorkSpaceModel.IDToAtomeDict[id1];
                             }
-
-                            //LinkViewModel vm = await _workspaceViewModel.CreateNewLink(id);
                         }
                     }
                 }
