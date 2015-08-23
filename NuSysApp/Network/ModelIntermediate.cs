@@ -48,12 +48,22 @@ namespace NuSysApp
                         {
                             Node node1 = null;
                             Node node2 = null;
+                            double x = 0;
+                            double y = 0;
                             if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id2"]))
                             {
                                 node1 = (Node)WorkSpaceModel.IDToAtomDict[props["id1"]];
                                 node2 = (Node)WorkSpaceModel.IDToAtomDict[props["id2"]];
                             }
-                            await WorkSpaceModel.CreateGroup(id, node1, node2);
+                            if (props.ContainsKey("x"))
+                            {
+                                double.TryParse(props["x"], out x);
+                            }
+                            if (props.ContainsKey("y"))
+                            {
+                                double.TryParse(props["y"], out y);
+                            }
+                            await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
                         }
                         else if (props.ContainsKey("type") && props["type"] == "node")
                         {

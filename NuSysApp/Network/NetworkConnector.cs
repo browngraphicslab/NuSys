@@ -1067,7 +1067,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Group
         */
-        public async Task RequestMakeGroup(string id1, string id2)
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y)
         {
             if (id1 != "" && id2 != "")
             {
@@ -1077,6 +1077,7 @@ namespace NuSysApp
                     {
                         await SendMessageToHost("<id=0" + Constants.CommaReplacement + "id1=" + id1 +
                                                 Constants.CommaReplacement + "id2=" + id2 + Constants.CommaReplacement +
+                                                "x="+x+Constants.CommaReplacement+"y="+y+Constants.CommaReplacement+
                                                 "type=group>");
                     }
                     else
