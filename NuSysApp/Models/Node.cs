@@ -1,14 +1,9 @@
 
 using System;
-﻿using NuSysApp.Models;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
-using Windows.UI;
-using Windows.UI.Xaml.Media;
-
-using NuSysApp.Network;
+using NuSysApp.Models;
 
 namespace NuSysApp
 {

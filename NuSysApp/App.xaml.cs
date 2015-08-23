@@ -1,28 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.VoiceCommands;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.Media.SpeechRecognition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Windows.Storage;
-using System.Net.Http;
-using Windows.Networking.Connectivity;
+using Microsoft.ApplicationInsights;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -37,7 +21,7 @@ namespace NuSysApp
         /// <summary>
         /// Allows tracking page views, exceptions and other telemetry through the Microsoft Application Insights service.
         /// </summary>
-        public static Microsoft.ApplicationInsights.TelemetryClient TelemetryClient;
+        public static TelemetryClient TelemetryClient;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -45,7 +29,7 @@ namespace NuSysApp
         /// </summary>
         public App()
         {
-            TelemetryClient = new Microsoft.ApplicationInsights.TelemetryClient();
+            TelemetryClient = new TelemetryClient();
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
@@ -63,7 +47,7 @@ namespace NuSysApp
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
@@ -168,7 +152,7 @@ namespace NuSysApp
         //    }
         //}
 
-        private string SemanticInterpretation(string key, Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult)
+        private string SemanticInterpretation(string key, SpeechRecognitionResult speechRecognitionResult)
         {
             if (speechRecognitionResult.SemanticInterpretation.Properties.ContainsKey(key))
             {

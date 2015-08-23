@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Windows.Media.SpeechRecognition;
 using System.Threading.Tasks;
+using Windows.Media.SpeechRecognition;
+using Windows.UI.Popups;
 
 namespace NuSysApp
 {
@@ -69,7 +70,7 @@ namespace NuSysApp
         {
             if ((uint)exception.HResult == HResultPrivacyStatementDeclined)
             {
-                var messageDialog = new Windows.UI.Popups.MessageDialog(
+                var messageDialog = new MessageDialog(
                     "You must accept the speech privacy policy to continue.",
                     "Speech Exception");
                 messageDialog.ShowAsync().GetResults();
@@ -77,7 +78,7 @@ namespace NuSysApp
             }
             else
             {
-                var messageDialog = new Windows.UI.Popups.MessageDialog(exception.Message, "Exception");
+                var messageDialog = new MessageDialog(exception.Message, "Exception");
                 await messageDialog.ShowAsync();
             }
         }

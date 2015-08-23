@@ -1,16 +1,9 @@
-﻿using Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Xml;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp

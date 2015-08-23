@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Input;
-using Windows.UI.Input.Inking;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -29,7 +22,7 @@ namespace NuSysApp
 
         public InqCanvas()
         {
-            NuSysApp.MISC.Clip.SetToBounds(this, true);
+            MISC.Clip.SetToBounds(this, true);
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)

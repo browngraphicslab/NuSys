@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class CreateEventArgs : System.EventArgs
+    public class CreateEventArgs : EventArgs
     {
         private readonly string _eventInfo;
         private Node _node;

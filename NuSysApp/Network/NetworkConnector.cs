@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
-using Windows.Security.Authentication.Web.Provider;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-
 
 namespace NuSysApp
 {
@@ -1146,11 +1140,11 @@ namespace NuSysApp
         }
         #endregion publicRequests
         #region customExceptions
-        public class InvalidIDException : System.Exception
+        public class InvalidIDException : Exception
         {
             public InvalidIDException(string id) : base(String.Format("The ID {0}  was used but is invalid",id)){}
         }
-        public class IncorrectFormatException : System.Exception
+        public class IncorrectFormatException : Exception
         {
             public IncorrectFormatException(string message) : base(String.Format("The message '{0}' is incorrectly formatted or unrecognized",message)) { }
         }
@@ -1192,10 +1186,10 @@ namespace NuSysApp
                 switch (_type)
                 {
                     case PacketType.TCP:
-                        await NetworkConnector.Instance.SendTCPMessage(Message, address);
+                        await Instance.SendTCPMessage(Message, address);
                         break;
                     case PacketType.UDP:
-                        await NetworkConnector.Instance.SendUDPMessage(Message, address);
+                        await Instance.SendUDPMessage(Message, address);
                         break;
                 }
             }
