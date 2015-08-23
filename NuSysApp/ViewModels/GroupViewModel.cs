@@ -127,7 +127,8 @@ namespace NuSysApp
                     WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
                     lastNode.ParentGroup = null;
-                    WorkSpaceViewModel.DeleteNode(this);
+                    //WorkSpaceViewModel.DeleteNode(this);
+                    NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);
                     foreach (var link in lastNode.LinkList)
                     {
                         link.SetVisibility(true);
