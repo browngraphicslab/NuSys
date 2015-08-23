@@ -287,7 +287,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
+        private LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
