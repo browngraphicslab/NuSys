@@ -68,8 +68,6 @@ namespace NuSysApp
             //TODO make groups work here
         }
 
-       
-
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             Node node;
