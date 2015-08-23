@@ -57,7 +57,7 @@ namespace NuSysApp
             _idDict.Add(id,link);
         }
 
-        public async Task CreateGroup(string id, Node node1, Node node2)
+        public async Task CreateGroup(string id, Node node1, Node node2, double x, double y)
         {
             //TODO make groups work here
         }
