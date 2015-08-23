@@ -208,7 +208,7 @@ namespace NuSysApp
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID);
+                    NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
                     //CreateNewGroup("null", node, node2);//TODO fix group id
                     return true;
                 }
