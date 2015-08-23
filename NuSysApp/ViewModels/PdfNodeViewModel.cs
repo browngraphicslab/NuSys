@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using NuSysApp.MISC;
-using Windows.UI.Xaml;
-using System.Xml;
-using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.MISC;
 
 namespace NuSysApp
 {

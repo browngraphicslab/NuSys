@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Windows.Storage;
+﻿using Windows.Storage;
 using Windows.Storage.Search;
 
 namespace NuSysApp.MISC

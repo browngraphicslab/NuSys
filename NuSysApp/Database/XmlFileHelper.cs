@@ -1,17 +1,12 @@
-﻿using NuSysApp.Models;
-using SQLite.Net.Async;
-using SQLite.Net.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using SQLite.Net.Async;
+using SQLite.Net.Attributes;
 
 namespace NuSysApp
 {
@@ -82,7 +77,7 @@ namespace NuSysApp
                     break;
             }
 
-            dict.Add("image", System.Text.Encoding.UTF8.GetString(byteData));
+            dict.Add("image", Encoding.UTF8.GetString(byteData));
             dict.Add("width", width);
             dict.Add("height", height);
             dict.Add("id", ID);
@@ -107,7 +102,7 @@ namespace NuSysApp
                     case "Group":
                         double x = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
                         double y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
-                        await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 //GroupViewModel groupVm = new GroupViewModel(vm, ID);
@@ -122,7 +117,7 @@ namespace NuSysApp
                             });
                         break;
                     case "Node":
-                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 await this.CreateNodeFromXml(vm, node);
@@ -132,7 +127,7 @@ namespace NuSysApp
                         break;
                         string atomID1 = Convert.ToString(node.Attributes.GetNamedItem("atomID1").Value);
                         string atomID2 = Convert.ToString(node.Attributes.GetNamedItem("atomID2").Value);
-                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async() =>
                             {
                                 AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];

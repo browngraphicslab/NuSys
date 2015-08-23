@@ -2,27 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using NuSysApp.MISC;
-using Windows.Storage.Streams;
-using System.Text;
-using System.Xml;
-using SQLite.Net.Async;
-using Windows.UI.Input.Inking;
-using Windows.UI.Xaml;
-using System.Xml;
-using System.IO;
-using Windows.UI.Xaml.Shapes;
-using SQLite.Net;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Runtime.InteropServices.WindowsRuntime;
+using NuSysApp.MISC;
+using SQLite.Net.Async;
 
 namespace NuSysApp
 {
@@ -603,8 +596,6 @@ namespace NuSysApp
             transMat.OffsetX = xCoordinate;
             transMat.OffsetY = yCoordinate;
             vm.Transform = new MatrixTransform { Matrix = transMat };
-            vm.X = 0;
-            vm.Y = 0;
         }
 
         #region Public Members

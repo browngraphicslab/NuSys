@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml;
-using Windows.UI.Xaml.Media;
-
-
+﻿using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {

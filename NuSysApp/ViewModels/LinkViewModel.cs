@@ -4,7 +4,6 @@ using System.Xml;
 using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 
-
 namespace NuSysApp
 {
     /// <summary>

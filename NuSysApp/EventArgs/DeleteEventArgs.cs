@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class DeleteEventArgs : System.EventArgs
+    public class DeleteEventArgs : EventArgs
     {
         private string EventInfo;
         private Node _node;

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class LinkedEventArgs : System.EventArgs
+    public class LinkedEventArgs : EventArgs
     {
         private readonly string _eventInfo;
         private Link _link;

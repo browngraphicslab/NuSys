@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -26,7 +27,7 @@ namespace NuSysApp
             }
             catch
             {
-                System.Diagnostics.Debug.WriteLine("Error Caught");
+                Debug.WriteLine("Error Caught");
                 return null;
             }
         }
