@@ -275,6 +275,7 @@ namespace NuSysApp
             selected.IsSelected = false;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
+            ClearSelection();
         }
 
         /// <summary>
