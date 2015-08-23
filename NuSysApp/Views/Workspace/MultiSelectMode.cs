@@ -52,6 +52,7 @@ namespace NuSysApp
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;
             _currentPoint = e.GetCurrentPoint(_view).Position;
+            _view.InqCanvas.CapturePointer(e.Pointer);
         }
 
         private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -81,6 +82,7 @@ namespace NuSysApp
         private async void View_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _isMouseDown = false;
+            _view.InqCanvas.ReleasePointerCaptures();
             SelectContainedComponents();
             _view.InqCanvas.Children.Remove(_currentRect);
         }
@@ -164,14 +166,17 @@ namespace NuSysApp
                 }
             }
 
-            Collection<ISelectable> selectedElements = new Collection<ISelectable>();
             foreach (InqLine line in _view.InqCanvas.Strokes)
             {
                 foreach (Point p in line.Points)
                 {
                     if (r.Contains(p))
                     {
-                        selectedElements.Add(line);
+                        if (!line.IsSelected)
+                        {
+                            line.ToggleSelection();
+                            vm.SetSelection(line);
+                        }
                         break;
                     }
                 }
@@ -183,15 +188,14 @@ namespace NuSysApp
                 var atomPoint = atom.TransformToVisual(_view.InqCanvas).TransformPoint(new Point(0, 0));
                 var atomRect = new Rect(atomPoint.X, atomPoint.Y, atom.Width, atom.Height);
                 atomRect.Intersect(r);
-                if (atomRect.Width != 0 || atomRect.Height !=0)
+                if (!Double.IsInfinity(atomRect.Width) || !Double.IsInfinity(atomRect.Height))
                 {
-                    selectedElements.Add(atom.DataContext as AtomViewModel);
+                    var avm = atom.DataContext as AtomViewModel;
+                    if (!avm.IsSelected)
+                    {
+                        avm.ToggleSelection();
+                    }
                 }
-            }
-
-            foreach (ISelectable element in selectedElements)
-            {
-                element.ToggleSelection();
             }
         }
     }

@@ -309,7 +309,7 @@ namespace NuSysApp
         {
             foreach (ISelectable select in SelectedComponents)
             {
-                select.IsSelected = false;
+                select.ToggleSelection();
             }
             SelectedComponents.Clear();
         }

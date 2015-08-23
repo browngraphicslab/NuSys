@@ -40,7 +40,10 @@ namespace NuSysApp
             }
 
             _pointerId = e.Pointer.PointerId;
-            //CapturePointer(e.Pointer);
+            if (_mode is DrawInqMode)
+            {
+                CapturePointer(e.Pointer);
+            }
             PointerMoved += OnPointerMoved;
             PointerReleased += OnPointerReleased;
             IsPressed = true;
@@ -74,7 +77,10 @@ namespace NuSysApp
             PointerMoved -= OnPointerMoved;
             PointerReleased -= OnPointerReleased;
             _pointerId = uint.MaxValue;
-            //ReleasePointerCapture(e.Pointer);
+            if (this.PointerCaptures.Count != 0)
+            {
+                ReleasePointerCapture(e.Pointer);
+            }
             IsPressed = false;
 
             _mode.OnPointerReleased(this, e);
