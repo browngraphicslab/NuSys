@@ -24,7 +24,8 @@ namespace NuSysApp
         #endregion Events and Delegates
 
         #region Private Members
-        private Dictionary<string, Atom> _idDict;
+        private Dictionary<string, Sendable> _idDict;
+
 
         private LockDictionary _locks;
         #endregion Private members
@@ -32,7 +33,7 @@ namespace NuSysApp
 
         public WorkSpaceModel()
         {
-            _idDict = new Dictionary<string, Atom>();
+            _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
@@ -41,7 +42,7 @@ namespace NuSysApp
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
         #region Public Members
-        public Dictionary<string, Atom> IDToAtomDict
+        public Dictionary<string, Sendable> IDToAtomDict
         {
             get { return _idDict; }
         }
@@ -185,7 +186,7 @@ namespace NuSysApp
             {
                 _dict.Clear();
                 _locals.Clear();
-                foreach (KeyValuePair<string, Atom> kvp in _workSpaceModel.IDToAtomDict)
+                foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IDToAtomDict)
                 {
                     kvp.Value.CanEdit = Atom.EditStatus.Maybe;
                 }

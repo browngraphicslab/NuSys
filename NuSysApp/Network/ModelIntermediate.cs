@@ -33,7 +33,7 @@ namespace NuSysApp
                     string id = props["id"];
                     if (WorkSpaceModel.IDToAtomDict.ContainsKey(id))
                     {
-                        Atom n = WorkSpaceModel.IDToAtomDict[id];
+                        Sendable n = WorkSpaceModel.IDToAtomDict[id];
                         n.UnPack(props);
                     }
                     //else if (_gloablInkDict.ContainsKey(id))
@@ -132,7 +132,7 @@ namespace NuSysApp
                            
                             if (WorkSpaceModel.IDToAtomDict.ContainsKey(id1) && (WorkSpaceModel.IDToAtomDict.ContainsKey(id2)))
                             {
-                                WorkSpaceModel.CreateLink(WorkSpaceModel.IDToAtomDict[id1], WorkSpaceModel.IDToAtomDict[id2], id);
+                                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToAtomDict[id1], (Atom)WorkSpaceModel.IDToAtomDict[id2], id);
                             }
                         }
                     }
@@ -260,10 +260,10 @@ namespace NuSysApp
             if (WorkSpaceModel.IDToAtomDict.Count > 0)
             {
                 string ret = "";
-                foreach (KeyValuePair<string, Atom> kvp in WorkSpaceModel.IDToAtomDict)
+                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToAtomDict)
                 {
                     ret += '<';
-                    Atom atom = kvp.Value;
+                    Sendable atom = kvp.Value;
                     Dictionary<string, string> parts = await atom.Pack();
                     foreach (KeyValuePair<string, string> tup in parts)
                     {

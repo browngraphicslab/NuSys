@@ -11,7 +11,7 @@ using NuSysApp.Network;
 
 namespace NuSysApp
 {
-    public abstract class Atom 
+    public abstract class Atom :Sendable
     {
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;
@@ -37,7 +37,6 @@ namespace NuSysApp
         {
             OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
         }
-
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict
         {
