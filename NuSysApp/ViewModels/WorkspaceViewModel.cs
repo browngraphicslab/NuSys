@@ -437,6 +437,11 @@ namespace NuSysApp
                     vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
                     vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
                     break;
+                case NodeType.PDF:
+                    vm = new PdfNodeViewModel((PdfNodeModel)model,this,id);
+                    vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
+                    vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
+                    break;
                 default:
                     return;
                     break;

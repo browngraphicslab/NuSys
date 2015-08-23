@@ -137,7 +137,6 @@ namespace NuSysApp
             for (var i = 0; i < PageCount; i++)
             {
                 this.InkContainer.Add(new HashSet<Polyline>());
-
             }
         }
 

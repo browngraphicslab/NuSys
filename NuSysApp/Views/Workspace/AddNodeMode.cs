@@ -40,7 +40,7 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
-            if (nodeType == NodeType.Document || nodeType == NodeType.Image)
+            if (nodeType == NodeType.Document || nodeType == NodeType.Image || nodeType == NodeType.PDF)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
@@ -63,7 +63,19 @@ namespace NuSysApp
 
                 if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                 {
-                    nodeType = NodeType.Document;
+                    nodeType = NodeType.PDF;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync()){
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream)){
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
                 }
             }
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString());
