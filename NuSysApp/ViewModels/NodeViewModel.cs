@@ -33,19 +33,17 @@ namespace NuSysApp
         protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
         {
             this.AtomType = Constants.Node;       
-            ((Node)this.Model).OnDeletion += DeletionHappend;
-           
+            ((Node)this.Model).OnDeletion += DeletionHandler;         
             ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
+            ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
         }
 
         #region Node Manipulations
    
-        private void DeletionHappend(object source, DeleteEventArgs e)
+        private void DeletionHandler(object source, DeleteEventArgs e)
         {
             this.WorkSpaceViewModel.DeleteNode(this);
         }
-
-
 
         private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
         {
@@ -53,16 +51,11 @@ namespace NuSysApp
             this.UpdateAnchor();
         }
 
-        private void WidthHeightUpdceateHandler(object source, WidthHeightUpdateEventArgs e)
+        private void WidthHeightChangedHandler(object source, WidthHeightUpdateEventArgs e)
         {
             this.Width = ((Node)this.Model).Width;
             this.Height = ((Node)this.Model).Height;
             this.UpdateAnchor();
-        }
-
-        private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
-        {
-            this.CanEdit = ((Node)this.Model).CanEdit;
         }
         
         public override void Remove()

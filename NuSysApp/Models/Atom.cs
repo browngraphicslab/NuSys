@@ -26,7 +26,7 @@ namespace NuSysApp
             No,
             Maybe
         }
-        public Atom(string id)
+        protected Atom(string id)
         {
             ID = id;
             _debounceDict = new DebouncingDictionary(this);
