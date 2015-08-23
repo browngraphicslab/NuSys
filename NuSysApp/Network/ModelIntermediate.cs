@@ -99,7 +99,7 @@ namespace NuSysApp
                                         }
                                         catch (Exception e)
                                         {
-                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a Image");
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
                                         }
                                         break;
                                 }
