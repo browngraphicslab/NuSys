@@ -33,14 +33,14 @@ namespace NuSysApp
         protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
         {
             this.AtomType = Constants.Node;       
-            ((Node)this.Model).OnDeletion += DeletionHandler;         
+            ((Node)this.Model).OnDeletion += DeletionHappend;         
             ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
             ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
         }
 
         #region Node Manipulations
    
-        private void DeletionHandler(object source, DeleteEventArgs e)
+        private void DeletionHappend(object source, DeleteEventArgs e)
         {
             this.WorkSpaceViewModel.DeleteNode(this);
         }
@@ -101,17 +101,20 @@ namespace NuSysApp
             var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
             transMat.OffsetX = x;
             transMat.OffsetY = y;
-            //transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            //transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            //Transform = new MatrixTransform();
             this.Transform = new MatrixTransform
             {
                 Matrix = transMat
             };
             this.X = 0;
             this.Y = 0;
+            foreach (var link in LinkList)
+            {
+                link.UpdateAnchor();
+            }
+            this.UpdateAnchor();
             RaisePropertyChanged("Transform");
         }
+
         /// <summary>
         /// toggles editing ability of nodes.
         /// </summary>
