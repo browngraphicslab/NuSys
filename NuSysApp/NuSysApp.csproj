@@ -139,6 +139,7 @@
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
     <Compile Include="EventArgs\CreateEventArgs.cs" />
+    <Compile Include="EventArgs\CreateGroupEventArgs.cs" />
     <Compile Include="EventArgs\DeleteEventArgs.cs" />
     <Compile Include="EventArgs\LinkedEventArgs.cs" />
     <Compile Include="EventArgs\LocationUpdateEventArgs.cs" />

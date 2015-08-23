@@ -55,7 +55,12 @@ namespace NuSysApp
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
             this.Model.OnCreation += CreatedHandler;
+  
         }
+
+       
+        
+
         private async void Init()
         {
             await SetupDirectories();
@@ -334,6 +339,21 @@ namespace NuSysApp
             _preparedAtomVm = null;
         }
 
+        private NodeViewModel _preparedGroupNodeVm;
+        public void PrepareGroup(string id, NodeViewModel nodeVm, Group group)
+        {
+            if (_preparedGroupNodeVm == null)
+            {
+                _preparedGroupNodeVm = nodeVm;
+                return;
+            }
+            else if (nodeVm != _preparedGroupNodeVm)
+            {
+                CreateNewGroup(id, _preparedGroupNodeVm, nodeVm, group);
+            }
+            _preparedGroupNodeVm = null;
+        }
+
         //public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         //{
         //    NodeViewModel vm = null;
@@ -356,7 +376,7 @@ namespace NuSysApp
         //        case NodeType.Document:
         //            var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
         //            if (storageFile == null) return null;
-                    
+
         //            if (Constants.ImageFileTypes.Contains(storageFile.FileType))
         //            {
         //                var imgVM1 = new ImageNodeViewModel(this, id);
@@ -465,9 +485,9 @@ namespace NuSysApp
             //    trans.M22 = 1 / CompositeTransform.ScaleY;
             vm.Transform = new MatrixTransform { Matrix = trans };
         }
-
-        public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
-        {
+      
+        public void CreateNewGroup(string id, NodeViewModel node1, NodeViewModel node2, Group groupModel)
+        {       
             if (node1 is GroupViewModel)
             {
                 return; //TODO this is temporary until we fix everything else
@@ -484,9 +504,8 @@ namespace NuSysApp
                 return;
             }
 
-
                 //Create new group, because no group exists
-                groupVm = new GroupViewModel(null, this, "null"); //TODO FIX ID'S HERE AND HOOK UP MODEL
+                groupVm = new GroupViewModel(groupModel, this, "null"); //TODO FIX ID'S HERE AND HOOK UP MODEL
 
 
             //Set location to node2's location

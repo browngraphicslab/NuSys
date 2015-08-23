@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using NuSysApp.Models;
+
 
 namespace NuSysApp
 {

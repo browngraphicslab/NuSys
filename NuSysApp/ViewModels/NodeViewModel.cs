@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Xml;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
-using NuSysApp.Models;
 
 namespace NuSysApp
 {
@@ -30,12 +29,17 @@ namespace NuSysApp
             ((Node)this.Model).OnDeletion += DeletionHappend;         
             ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
             ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
+            ((Node)this.Model).OnCreatedGroup += GroupCreatedHandler;
             X = 0;
             Y = 0;
         }
-  
+
+        private void GroupCreatedHandler(object source, CreateGroupEventArgs e)
+        {
+            WorkSpaceViewModel.PrepareGroup(e.CreatedGroup.ID, this, e.CreatedGroup);
+        }
         #region Node Manipulations
-        
+
         public override void Remove()
         {
             NetworkConnector.Instance.RequestDeleteAtom(ID);

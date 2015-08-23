@@ -35,8 +35,9 @@ namespace NuSysApp
 
         public void AddToGroup(Group group)
         {
-            OnCreatedGroup.Invoke(this, new CreateGroupEventArgs("Added to group", group);
+            OnCreatedGroup?.Invoke(this, new CreateGroupEventArgs("Added to group", group));          
         }
+
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict
         {

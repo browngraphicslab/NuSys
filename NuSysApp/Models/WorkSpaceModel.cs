@@ -70,6 +70,8 @@ namespace NuSysApp
                 NodeType = NodeType.Group
             };
             _idDict.Add(id, group);
+             node1.AddToGroup(group);
+             node2.AddToGroup(group);
             OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
         }
 
