@@ -130,6 +130,8 @@ namespace NuSysApp
             foreach (var stroke in lines)
             {
                 var pl = new InqLine();
+                pl.StrokeThickness = stroke.StrokeThickness;
+                pl.SetHighlighting(stroke.IsHighlighting);
 
                 var points = stroke.Points;
                 var minX = points.Min(em => em.X);
@@ -142,25 +144,12 @@ namespace NuSysApp
 
                 foreach (var point in stroke.Points)
                 {
-                    pl.StrokeThickness = stroke.StrokeThickness;
-                    //pl.Stroke = stroke.Stroke != null ? stroke.Stroke : new SolidColorBrush(Color.FromArgb(0,0,0,1));
-                    pl.Points.Add(new Point(point.X - minX, point.Y - minY));
+                    double x = point.X - minX;
+                    double y = point.Y - minY;
+                    pl.AddPoint(new Point(point.X - minX, point.Y - minY));
                 }
-
-
-                //         pl.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
-                //         {
-                //             /*
-                //             if (_isErasing)
-                //             {
-                //                 Children.Remove(o as InqLine);
-                //                 _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
-                //             }
-                //             */
-                //         };
-
-
                 Children.Add(pl);
+                _strokes.Add(stroke);
             }
             Rect rect = new Rect();
             rect.Width = width;
