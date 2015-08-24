@@ -42,6 +42,12 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            var C = new CompositeTransform
+            {
+                ScaleX = 1,
+                ScaleY = 1
+            };
+            this.InkScale = C;
         }
 
         public async Task InitializeImageNodeAsync(byte[] bytes)
@@ -61,12 +67,6 @@ namespace NuSysApp
             ((ImageModel)Model).Content = new Content(bytes, id);
             this.Width = image.PixelWidth;
             this.Height = image.PixelHeight;
-            var C = new CompositeTransform
-            {
-                ScaleX = 1,
-                ScaleY = 1
-            };
-            this.InkScale = C;
         }
 
         public async Task<byte[]> CreateImageByteData(StorageFile storageFile)

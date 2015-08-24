@@ -168,6 +168,7 @@ namespace NuSysApp
         /// <returns></returns>
         public bool CheckForNodeLinkIntersections(NodeViewModel node)
         {
+            return false;//TODO re-implement annotations
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {

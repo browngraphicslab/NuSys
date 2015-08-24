@@ -7,12 +7,12 @@ namespace NuSysApp
         public Content() { }
         public Content(byte[] data, string id)
         {
-            Image = data;
+            Data = data;
             assocAtomID = id;
         }
 
-        [Column("Image")]
-        public byte[] Image { get; set; }
+        [Column("Data")]
+        public byte[] Data { get; set; }
 
         [Column("assocAtomID")]
         public string assocAtomID { get; set; }

@@ -9,12 +9,11 @@ namespace NuSysApp.Network
         private Dictionary<string, string> _dict;
         private bool _timing = false;
         private DispatcherTimer _timer;
-        private string _atomID;
         private Atom _atom;
+        private bool _sendNextTCP = false;
         public DebouncingDictionary(Atom atom)
         {
             _dict = new Dictionary<string, string>();
-            _atomID = atom.ID;
             _atom = atom;
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -25,17 +24,25 @@ namespace NuSysApp.Network
         {
             _dict = new Dictionary<string, string>();
             _atom = atom;
-            _atomID = atom.ID;
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, milliSecondDebounce);
             _timer.Tick += SendMessage;
         }
 
+        public void MakeNextMessageTCP()
+        {
+            _sendNextTCP = true;
+        }
 
         public void Add(string id, string value)
         {
             if (!NetworkConnector.Instance.ModelLocked && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
             {
+                if (_atom.CanEdit == Atom.EditStatus.Maybe)
+                {
+                    NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
+                    NetworkConnector.Instance.RequestLock(_atom.ID);
+                }
                 if (!_timing)
                 {
                     _timing = true;
@@ -59,8 +66,19 @@ namespace NuSysApp.Network
             _timer.Stop();
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
-                _dict.Add("id", _atomID);
-                await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+                _dict.Add("id", _atom.ID);
+                if (NetworkConnector.Instance.ModelIntermediate.HasAtom(_atom.ID))
+                {
+                    if (_sendNextTCP)
+                    {
+                        _sendNextTCP = false;
+                        await NetworkConnector.Instance.QuickUpdateAtom(_dict, NetworkConnector.PacketType.TCP);
+                    }
+                    else
+                    {
+                        await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+                    }
+                }
             }
             _timing = false;
             _dict.Clear();

@@ -522,6 +522,7 @@ namespace NuSysApp
                 await this.SendUDPMessage(message, tup.Item2);
             }
         }
+
         /*
         * sends TCP Streams to everyone except self.  
         */
@@ -530,6 +531,26 @@ namespace NuSysApp
             foreach (var ip in _otherIPs)
             {
                 await this.SendTCPMessage(message, ip, _TCPOutputPort);
+            }
+        }
+
+        /*
+        * Sends Mass Message of specified Type
+        */
+        private async Task SendMassMessage(string message, PacketType packetType)
+        {
+            switch (packetType)
+            {
+                case PacketType.TCP:
+                    await SendMassTCPMessage(message);
+                    break;
+                case PacketType.UDP:
+                    await SendMassUDPMessage(message);
+                    break;
+                case PacketType.Both:
+                    await SendMassUDPMessage(message);
+                    await SendMassTCPMessage(message);
+                    break;
             }
         }
 
@@ -972,14 +993,14 @@ namespace NuSysApp
         */
         private Dictionary<string, string> ParseOutProperties(string message)
         {
-            message = message.Substring(1, message.Length - 2);
+            message = message.Substring(1, message.Length - 1);
 
             var parts = message.Split(Constants.CommaReplacement.ToCharArray());
             var props = new Dictionary<string, string>();
             foreach (var part in parts)
 
             {
-                var subParts = part.Split('=');
+                var subParts = part.Split(new char[] { '=' }, 2);
                 if (subParts.Length != 2)
                 {
                     continue;
@@ -1017,14 +1038,14 @@ namespace NuSysApp
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
         */
-        public async Task QuickUpdateAtom(Dictionary<string, string> properties)
+        public async Task QuickUpdateAtom(Dictionary<string, string> properties, PacketType packetType = PacketType.UDP)
         {
             if (properties.ContainsKey("id"))
             {
                 if (ModelIntermediate.HasAtom(properties["id"]))
                 {
                     string message = MakeSubMessageFromDict(properties);
-                    await SendMassUDPMessage(message);
+                    await SendMassMessage(message, packetType);
                 }
                 else
                 {

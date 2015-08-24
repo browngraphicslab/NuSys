@@ -7,6 +7,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using SQLite.Net.Async;
 using SQLite.Net.Attributes;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -54,9 +55,9 @@ namespace NuSysApp
 
             var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
-
-            byte[] byteData = res.Image;
-
+            byte[] byteData = res.Data;
+            string byteToString = Convert.ToBase64String(byteData);
+            
             switch (currType)
             {
                 case "Text":
@@ -64,7 +65,7 @@ namespace NuSysApp
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
                     break;
                 case "Image":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), null, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
                     break;
                 case "Pdf":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
@@ -77,7 +78,6 @@ namespace NuSysApp
                     break;
             }
 
-            dict.Add("image", Encoding.UTF8.GetString(byteData));
             dict.Add("width", width);
             dict.Add("height", height);
             dict.Add("id", ID);
@@ -89,8 +89,6 @@ namespace NuSysApp
             XmlElement parent = doc.DocumentElement;
             XmlNodeList NodeList = parent.ChildNodes;
             SQLiteAsyncConnection dbConnection = vm.myDB.DBConnection;
-
-            //dict.Add("image", System.Text.Encoding.UTF8.GetString(res.Data));
 
             foreach (XmlNode node in NodeList)
             {
