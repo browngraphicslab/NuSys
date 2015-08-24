@@ -29,10 +29,10 @@ namespace NuSysApp
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];
-                    if (WorkSpaceModel.IDToAtomDict.ContainsKey(id))
+                    if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
-                        Sendable n = WorkSpaceModel.IDToAtomDict[id];
-                        n.UnPack(props);
+                        Sendable n = WorkSpaceModel.IDToSendableDict[id];
+                        await n.UnPack(props);
                     }
                     //else if (_gloablInkDict.ContainsKey(id))
                     //{
@@ -50,10 +50,10 @@ namespace NuSysApp
                             Node node2 = null;
                             double x = 0;
                             double y = 0;
-                            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id2"]))
+                            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
                             {
-                                node1 = (Node)WorkSpaceModel.IDToAtomDict[props["id1"]];
-                                node2 = (Node)WorkSpaceModel.IDToAtomDict[props["id2"]];
+                                node1 = (Node)WorkSpaceModel.IDToSendableDict[props["id1"]];
+                                node2 = (Node)WorkSpaceModel.IDToSendableDict[props["id2"]];
                             }
                             if (props.ContainsKey("x"))
                             {
@@ -100,6 +100,15 @@ namespace NuSysApp
                                         }
                                         break;
                                     case NodeType.Image:
+                                        try
+                                        {
+                                            data = ParseToByteArray(d);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                                        }
+                                        break;
                                     case NodeType.PDF:
                                         try
                                         {
@@ -113,7 +122,11 @@ namespace NuSysApp
                                 }
                             }
                             await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
-                            await this.HandleMessage(s);
+                            if (props.ContainsKey("data"))
+                            {
+                                props.Remove("data");
+                            }
+                            await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
                         }
                         else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
                         {
@@ -138,9 +151,9 @@ namespace NuSysApp
                                 return;
                             }
                            
-                            if (WorkSpaceModel.IDToAtomDict.ContainsKey(id1) && (WorkSpaceModel.IDToAtomDict.ContainsKey(id2)))
+                            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
                             {
-                                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToAtomDict[id1], (Atom)WorkSpaceModel.IDToAtomDict[id2], id);
+                                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id);
                             }
                         }
                     }
@@ -156,7 +169,7 @@ namespace NuSysApp
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                if (WorkSpaceModel.IDToAtomDict.ContainsKey(id))
+                if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
                     WorkSpaceModel.RemoveNode(id);
                 }
@@ -164,7 +177,7 @@ namespace NuSysApp
         }
         public bool HasAtom(string id)
         {
-            return WorkSpaceModel.IDToAtomDict.ContainsKey(id);
+            return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
         }
         public async Task SetAtomLock(string id, string ip)
         {
@@ -182,6 +195,7 @@ namespace NuSysApp
         }
         private List<InqLine> ParseToPolyline(string s)
         {
+
             List<InqLine> polys = new List<InqLine>();
             string[] parts = s.Split("><".ToCharArray());
             foreach (string part in parts)
@@ -195,12 +209,12 @@ namespace NuSysApp
                         if (subpart.Substring(0, 6) == "points")
                         {
                             string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                            string[] points = innerPoints.Split(";".ToCharArray());
+                            string[] points = innerPoints.Split(new string[] { ";" }, StringSplitOptions.None);
                             foreach (string p in points)
                             {
                                 if (p.Length > 0)
                                 {
-                                    string[] coords = p.Split(",".ToCharArray());
+                                    string[] coords = p.Split(new string[] { "," }, StringSplitOptions.None);
                                     //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
                                     Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
                                     line.AddPoint(parsedPoint);
@@ -230,13 +244,13 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(Constants.CommaReplacement.ToCharArray());
+            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
             Dictionary<string, string> props = new Dictionary<string, string>();
             foreach (string part in parts)
             {
                 if (part.Length > 0)
                 {
-                    string[] subParts = part.Split("=".ToCharArray(), 2);
+                    string[] subParts = part.Split(new string[] { "=" },2, StringSplitOptions.None);
                     if (subParts.Length != 2)
                     {
                         Debug.WriteLine("Error, property formatted wrong in message: " + message);
@@ -266,10 +280,10 @@ namespace NuSysApp
         }
         public async Task<string> GetFullWorkspace()
         {
-            if (WorkSpaceModel.IDToAtomDict.Count > 0)
+            if (WorkSpaceModel.IDToSendableDict.Count > 0)
             {
                 string ret = "";
-                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToAtomDict)
+                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
                 {
                     ret += '<';
                     Sendable atom = kvp.Value;
@@ -278,7 +292,7 @@ namespace NuSysApp
                     {
                         ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
                     }
-                    ret += "id=" + atom.ID + ">&&";
+                    ret += "id=" + atom.ID + ">"+Constants.AndReplacement;
                 }
                 ret = ret.Substring(0, ret.Length - 2);
                 return ret;
@@ -357,7 +371,7 @@ namespace NuSysApp
         {
             if (HasAtom(id))
             {
-                return await WorkSpaceModel.IDToAtomDict[id].Pack();
+                return await WorkSpaceModel.IDToSendableDict[id].Pack();
             }
             else
             {
@@ -379,10 +393,10 @@ namespace NuSysApp
         private Dictionary<string, string> StringToDict(string s)
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
-            string[] strings = s.Split("&".ToCharArray());
+            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.None);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(":".ToCharArray());
+                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.None);
                 dict.Add(kvpparts[0], kvpparts[1]);
             }
             return dict;

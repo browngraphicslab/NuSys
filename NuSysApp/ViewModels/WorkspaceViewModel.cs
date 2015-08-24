@@ -168,6 +168,7 @@ namespace NuSysApp
         /// <returns></returns>
         public bool CheckForNodeLinkIntersections(NodeViewModel node)
         {
+            return false;//TODO re-implement annotations
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
@@ -553,7 +554,7 @@ namespace NuSysApp
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
                 Content toInsert = ((Node)nodeVm.Model).Content;
-                dbConnection.InsertAsync(toInsert);
+                if (toInsert != null) dbConnection.InsertAsync(toInsert);
             }
         }
 
@@ -575,11 +576,6 @@ namespace NuSysApp
             await stream.WriteAsync(byteArray.AsBuffer());
             stream.Seek(0);
             await img.SetSourceAsync(stream);
-            //NodeViewModel nodeVm = await this.CreateNewNode("10384191#635757668233554225", NodeType.Image, 99863, 99746, null);
-            //nodeVm.SetPosition(99863, 99746);
-            //nodeVm.Width = img.PixelWidth;
-            //nodeVm.Height = img.PixelHeight;
-            //((ImageModel)nodeVm.Model).Image = img;
         }
 
         public XmlDocument getXml()

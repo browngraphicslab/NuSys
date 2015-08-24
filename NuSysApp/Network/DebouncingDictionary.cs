@@ -11,6 +11,7 @@ namespace NuSysApp.Network
         private DispatcherTimer _timer;
         private Atom _atom;
         private bool _sendNextTCP = false;
+        private bool _firstSend = true;
         public DebouncingDictionary(Atom atom)
         {
             _dict = new Dictionary<string, string>();
@@ -29,7 +30,7 @@ namespace NuSysApp.Network
             _timer.Tick += SendMessage;
         }
 
-        public void MakeNextSendTCP()
+        public void MakeNextMessageTCP()
         {
             _sendNextTCP = true;
         }
@@ -38,11 +39,6 @@ namespace NuSysApp.Network
         {
             if (!NetworkConnector.Instance.ModelLocked && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
             {
-                if (_atom.CanEdit == Atom.EditStatus.Maybe)
-                {
-                    NetworkConnector.Instance.RequestLock(_atom.ID);
-                    NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
-                }
                 if (!_timing)
                 {
                     _timing = true;
@@ -67,15 +63,24 @@ namespace NuSysApp.Network
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
                 _dict.Add("id", _atom.ID);
-                if (_sendNextTCP)
+                if (NetworkConnector.Instance.ModelIntermediate.HasAtom(_atom.ID))
                 {
-                    _sendNextTCP = false;
-                    await NetworkConnector.Instance.QuickUpdateAtom(_dict, NetworkConnector.PacketType.TCP);
+                    if (_sendNextTCP)
+                    {
+                        _sendNextTCP = false;
+                        await NetworkConnector.Instance.QuickUpdateAtom(_dict, NetworkConnector.PacketType.TCP);
+                    }
+                    else
+                    {
+                        await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+                    }
                 }
-                else
-                {
-                    await NetworkConnector.Instance.QuickUpdateAtom(_dict);
-                }
+                _firstSend = false;
+            }
+            if(_atom.CanEdit == Atom.EditStatus.Maybe && !_firstSend)
+            {
+                NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
+                NetworkConnector.Instance.RequestLock(_atom.ID);
             }
             _timing = false;
             _dict.Clear();

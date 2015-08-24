@@ -429,7 +429,7 @@ namespace NuSysApp
                     Debug.WriteLine("{0} ({1})", (int) response.StatusCode, response.ReasonPhrase);
                 }
                 Debug.WriteLine("in workspace: " + people);
-                var split = people.Split(",".ToCharArray());
+                var split = people.Split(new string[] { "," }, StringSplitOptions.None);
 
                 var ips = split.ToList();
                 return ips;
@@ -642,7 +642,7 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split("&&".ToCharArray()); //break up message into subparts
+                    var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.None); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -762,9 +762,9 @@ namespace NuSysApp
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
                                     {
-                                        ret += p.Message+"&&";
+                                        ret += p.Message+Constants.AndReplacement;
                                     }
-                                    ret = ret.Substring(0, ret.Length - 2);
+                                    ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                                     await SendTCPMessage("SPECIAL2:" + ret,ip);
                                     _joiningMembers[ip].Item2.Clear();
                                     return;
@@ -825,7 +825,7 @@ namespace NuSysApp
                     }
                     break;
                 case "6"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
-                    var parts = message.Split("=".ToCharArray());
+                    var parts = message.Split(new string[] { "=" }, StringSplitOptions.None);
                     if (parts.Length != 2 && parts.Length != 1)
                     {
                         throw new IncorrectFormatException(origMessage);
@@ -941,6 +941,7 @@ namespace NuSysApp
                     string m = MakeSubMessageFromDict(dict);
                     await HandleRegularMessage(ip, m, packetType);
                     await SendMassTCPMessage(m);
+                    return;
                 }
                 else
                 {
@@ -951,6 +952,7 @@ namespace NuSysApp
                             "id=" + id + Constants.CommaReplacement);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                     if (message.IndexOf("id=0>") != -1)
@@ -959,6 +961,7 @@ namespace NuSysApp
                         message = message.Replace(@"id=0>", "id=" + id + '>');
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                 }
@@ -995,12 +998,12 @@ namespace NuSysApp
         {
             message = message.Substring(1, message.Length - 2);
 
-            var parts = message.Split(Constants.CommaReplacement.ToCharArray());
+            var parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
             var props = new Dictionary<string, string>();
             foreach (var part in parts)
 
             {
-                var subParts = part.Split('=');
+                var subParts = part.Split(new char[] { '=' }, 2);
                 if (subParts.Length != 2)
                 {
                     continue;

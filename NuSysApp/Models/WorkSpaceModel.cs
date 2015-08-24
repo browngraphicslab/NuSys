@@ -38,7 +38,7 @@ namespace NuSysApp
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
         #region Public Members
-        public Dictionary<string, Sendable> IDToAtomDict
+        public Dictionary<string, Sendable> IDToSendableDict
         {
             get { return _idDict; }
         }
@@ -178,19 +178,19 @@ namespace NuSysApp
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
                 await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
+                    if (_workSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
                         if (lockHolder == "")
                         {
-                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Maybe;
+                            _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.Maybe;
                         }
                         else if (lockHolder == NetworkConnector.Instance.LocalIP)
                         {
-                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
+                            _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.Yes;
                         }
                         else
                         {
-                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
+                            _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.No;
                         }
                     }
                 });
@@ -200,7 +200,7 @@ namespace NuSysApp
             {
                 _dict.Clear();
                 _locals.Clear();
-                foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IDToAtomDict)
+                foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IDToSendableDict)
                 {
                     kvp.Value.CanEdit = Atom.EditStatus.Maybe;
                 }

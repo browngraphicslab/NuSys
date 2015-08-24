@@ -54,7 +54,8 @@ namespace NuSysApp
 
         #region Network
 
-        public const string CommaReplacement = "%^%";
+        public const string CommaReplacement = "%%%";
+        public const string AndReplacement = "&&&";
         #endregion Network
 
         public const int InitialPenSize = 4;
