@@ -996,7 +996,7 @@ namespace NuSysApp
         */
         private Dictionary<string, string> ParseOutProperties(string message)
         {
-            message = message.Substring(1, message.Length - 1);
+            message = message.Substring(1, message.Length - 2);
 
             var parts = message.Split(Constants.CommaReplacement.ToCharArray());
             var props = new Dictionary<string, string>();
