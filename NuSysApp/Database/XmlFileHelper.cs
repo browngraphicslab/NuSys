@@ -55,7 +55,7 @@ namespace NuSysApp
             var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
 
-            byte[] byteData = res.Data;
+            byte[] byteData = res.Image;
 
             switch (currType)
             {

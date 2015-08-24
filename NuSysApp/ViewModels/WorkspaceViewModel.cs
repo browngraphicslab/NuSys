@@ -435,16 +435,16 @@ namespace NuSysApp
             var model = e.CreatedNode;
             var type = model.NodeType;
             var id = model.ID;
-            var data = model.Data;
+            //var data = model.Data;
             var x = model.X;
             var y = model.Y;
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel((TextNode)model, this, (string)data, id);
+                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel((TextNode)model, this, (string)data, id);
+                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
                     break;
                 case NodeType.Ink:
                     vm = new InkNodeViewModel((InkModel)model, this, id);
@@ -552,8 +552,12 @@ namespace NuSysApp
             await dbConnection.CreateTableAsync<Content>();
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-                Content toInsert = ((Node)nodeVm.Model).Content;
-                dbConnection.InsertAsync(toInsert);
+                if(((Node)nodeVm.Model).Content != null)
+                {
+                    Content toInsert = ((Node)nodeVm.Model).Content;
+                    dbConnection.InsertAsync(toInsert);
+                }
+                
             }
         }
 
