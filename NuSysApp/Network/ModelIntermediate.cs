@@ -29,10 +29,10 @@ namespace NuSysApp
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];
-                    if (WorkSpaceModel.IDToAtomDict.ContainsKey(id))
+                    if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
-                        Sendable n = WorkSpaceModel.IDToAtomDict[id];
-                        n.UnPack(props);
+                        Sendable n = WorkSpaceModel.IDToSendableDict[id];
+                        await n.UnPack(props);
                     }
                     //else if (_gloablInkDict.ContainsKey(id))
                     //{
@@ -50,10 +50,10 @@ namespace NuSysApp
                             Node node2 = null;
                             double x = 0;
                             double y = 0;
-                            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToAtomDict.ContainsKey(props["id2"]))
+                            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
                             {
-                                node1 = (Node)WorkSpaceModel.IDToAtomDict[props["id1"]];
-                                node2 = (Node)WorkSpaceModel.IDToAtomDict[props["id2"]];
+                                node1 = (Node)WorkSpaceModel.IDToSendableDict[props["id1"]];
+                                node2 = (Node)WorkSpaceModel.IDToSendableDict[props["id2"]];
                             }
                             if (props.ContainsKey("x"))
                             {
@@ -122,7 +122,7 @@ namespace NuSysApp
                                 }
                             }
                             await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
-                            await this.HandleMessage(s);
+                            await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
                         }
                         else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
                         {
@@ -147,9 +147,9 @@ namespace NuSysApp
                                 return;
                             }
                            
-                            if (WorkSpaceModel.IDToAtomDict.ContainsKey(id1) && (WorkSpaceModel.IDToAtomDict.ContainsKey(id2)))
+                            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
                             {
-                                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToAtomDict[id1], (Atom)WorkSpaceModel.IDToAtomDict[id2], id);
+                                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id);
                             }
                         }
                     }
@@ -165,7 +165,7 @@ namespace NuSysApp
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                if (WorkSpaceModel.IDToAtomDict.ContainsKey(id))
+                if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
                     WorkSpaceModel.RemoveNode(id);
                 }
@@ -173,7 +173,7 @@ namespace NuSysApp
         }
         public bool HasAtom(string id)
         {
-            return WorkSpaceModel.IDToAtomDict.ContainsKey(id);
+            return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
         }
         public async Task SetAtomLock(string id, string ip)
         {
@@ -274,10 +274,10 @@ namespace NuSysApp
         }
         public async Task<string> GetFullWorkspace()
         {
-            if (WorkSpaceModel.IDToAtomDict.Count > 0)
+            if (WorkSpaceModel.IDToSendableDict.Count > 0)
             {
                 string ret = "";
-                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToAtomDict)
+                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
                 {
                     ret += '<';
                     Sendable atom = kvp.Value;
@@ -365,7 +365,7 @@ namespace NuSysApp
         {
             if (HasAtom(id))
             {
-                return await WorkSpaceModel.IDToAtomDict[id].Pack();
+                return await WorkSpaceModel.IDToSendableDict[id].Pack();
             }
             else
             {
