@@ -17,8 +17,8 @@ namespace NuSysApp
         //private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private HashSet<Polyline> _strokes = new HashSet<Polyline>();
-        //private Dictionary<Polyline, InkStroke> _strokes = new Dictionary<Polyline, InkStroke>();
+        private HashSet<InqLine> _strokes = new HashSet<InqLine>();
+        public bool IsPressed = false;
 
         public InqCanvas()
         {
@@ -34,9 +34,13 @@ namespace NuSysApp
             }
 
             _pointerId = e.Pointer.PointerId;
-            CapturePointer(e.Pointer);
+            if (_mode is DrawInqMode)
+            {
+                CapturePointer(e.Pointer);
+            }
             PointerMoved += OnPointerMoved;
             PointerReleased += OnPointerReleased;
+            IsPressed = true;
 
             _mode.OnPointerPressed(this, e);
 
@@ -67,7 +71,11 @@ namespace NuSysApp
             PointerMoved -= OnPointerMoved;
             PointerReleased -= OnPointerReleased;
             _pointerId = uint.MaxValue;
-            ReleasePointerCapture(e.Pointer);
+            if (this.PointerCaptures.Count != 0)
+            {
+                ReleasePointerCapture(e.Pointer);
+            }
+            IsPressed = false;
 
             _mode.OnPointerReleased(this, e);
 
@@ -114,14 +122,14 @@ namespace NuSysApp
         //        Children.Remove(line);
         //}
 
-        public Rect PasteStrokes(Polyline[] lines)
+        public Rect PasteStrokes(InqLine[] lines)
         {
 
             double width = 0;
             double height = 0;
             foreach (var stroke in lines)
             {
-                var pl = new Polyline();
+                var pl = new InqLine();
 
                 var points = stroke.Points;
                 var minX = points.Min(em => em.X);
@@ -135,7 +143,7 @@ namespace NuSysApp
                 foreach (var point in stroke.Points)
                 {
                     pl.StrokeThickness = stroke.StrokeThickness;
-                    pl.Stroke = stroke.Stroke != null ? stroke.Stroke : new SolidColorBrush(Color.FromArgb(0,0,0,1));
+                    //pl.Stroke = stroke.Stroke != null ? stroke.Stroke : new SolidColorBrush(Color.FromArgb(0,0,0,1));
                     pl.Points.Add(new Point(point.X - minX, point.Y - minY));
                 }
 
@@ -145,7 +153,7 @@ namespace NuSysApp
                 //             /*
                 //             if (_isErasing)
                 //             {
-                //                 Children.Remove(o as Polyline);
+                //                 Children.Remove(o as InqLine);
                 //                 _inkManager.SelectWithLine(e2.GetCurrentPoint(this).Position, e2.GetCurrentPoint(this).Position);
                 //             }
                 //             */
@@ -201,7 +209,7 @@ namespace NuSysApp
             get { return _mode; }
         }
 
-        internal HashSet<Polyline> Strokes
+        internal HashSet<InqLine> Strokes
         {
             get
             {

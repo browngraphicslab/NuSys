@@ -59,7 +59,8 @@ namespace NuSysApp
         public void ToggleSelection()
         {
             this.IsSelected = !this.IsSelected;
-            WorkSpaceViewModel.SetSelection(this);
+            if(IsSelected)
+                WorkSpaceViewModel.SetSelection(this);
         }
   
         /// <summary>

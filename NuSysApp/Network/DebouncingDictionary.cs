@@ -21,10 +21,11 @@ namespace NuSysApp.Network
             _timer.Tick += SendMessage;
 
         }
-        public DebouncingDictionary(string atomID, int milliSecondDebounce)
+        public DebouncingDictionary(Atom atom, int milliSecondDebounce)
         {
             _dict = new Dictionary<string, string>();
-            _atomID = atomID;
+            _atom = atom;
+            _atomID = atom.ID;
             _timer = new DispatcherTimer();
             _timer.Interval = new TimeSpan(0, 0, 0, 0, milliSecondDebounce);
             _timer.Tick += SendMessage;

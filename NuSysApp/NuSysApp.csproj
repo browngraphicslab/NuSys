@@ -127,6 +127,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\InqLine.xaml.cs">
+      <DependentUpon>InqLine.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\RichEditBoxExtended.cs" />
     <Compile Include="Components\DrawInqMode.cs" />
     <Compile Include="Components\EraseInqMode.cs" />
@@ -159,6 +162,7 @@
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
     <Compile Include="Components\InqCanvas.cs" />
+    <Compile Include="MISC\ISelectable.cs" />
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
     <Compile Include="MISC\OfficeInteropWord.cs" />
@@ -279,6 +283,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Components\InqLine.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Cortana\CortanaPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
