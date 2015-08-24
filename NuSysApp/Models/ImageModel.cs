@@ -1,30 +1,32 @@
-﻿using Microsoft.ApplicationInsights.Extensibility.Implementation.Tracing;
-using SQLite.Net.Attributes;
-using SQLiteNetExtensions.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Xml;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
     public class ImageModel : Node
     {
-        public ImageModel(BitmapImage img, string id) : base(id)
+        public ImageModel(byte[] byteArray, string id) : base(id)
         {
-            this.Image = img;
+            ByteArray = byteArray;
+            MakeImage(byteArray);
+        }
+
+        private async Task MakeImage(byte[] bytes)
+        {
+            Image = await ByteArrayToBitmapImage(bytes);
+            this.Width = Image.PixelWidth;
+            this.Height = Image.PixelHeight;
         }
 
         public BitmapImage Image { get; set; }
 
         public string FilePath { get; set; }
+        public byte[] ByteArray { get; set; }
 
         public override string GetContentSource()
         {
@@ -68,13 +70,13 @@ namespace NuSysApp
         {
             if (props.ContainsKey("image"))
             {
-                byte[] imageBytes = Convert.FromBase64String(props["image"]);
+                ByteArray = Convert.FromBase64String(props["image"]);
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
-                image.SetSource(stream);
-                await stream.WriteAsync(imageBytes.AsBuffer());
+                await stream.WriteAsync(ByteArray.AsBuffer());
                 stream.Seek(0);
+                image.SetSource(stream);
                 Image = image;
             }
             if (props.ContainsKey("filepath"))
@@ -87,11 +89,8 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
-
-            var stream = new InMemoryRandomAccessStream();
-
-            //byte[] imageBytes = Image.
-            //string imageString = Convert.ToBase64String(imageBytes);
+            props.Add("image", Convert.ToBase64String(ByteArray));
+            props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }
     }

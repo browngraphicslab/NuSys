@@ -137,6 +137,15 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
+    <Compile Include="EventArgs\CreateEventArgs.cs" />
+    <Compile Include="EventArgs\CreateGroupEventArgs.cs" />
+    <Compile Include="EventArgs\DeleteEventArgs.cs" />
+    <Compile Include="EventArgs\LinkedEventArgs.cs" />
+    <Compile Include="EventArgs\LocationUpdateEventArgs.cs" />
+    <Compile Include="EventArgs\SuperEventArgs.cs" />
+    <Compile Include="EventArgs\TextChangedEventArgs.cs" />
+    <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
@@ -145,7 +154,6 @@
     <Compile Include="Cortana\CortanaPopup.xaml.cs">
       <DependentUpon>CortanaPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MISC\Factory.cs" />
     <Compile Include="MISC\FileManager.cs" />
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
@@ -173,6 +181,7 @@
     <Compile Include="Network\NetworkConnector.cs" />
     <Compile Include="Database\SQLiteDatabase.cs" />
     <Compile Include="Database\XmlFileHelper.cs" />
+    <Compile Include="Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="ViewModels\MinimapViewModel.cs" />

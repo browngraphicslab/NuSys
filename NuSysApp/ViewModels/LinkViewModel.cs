@@ -4,7 +4,6 @@ using System.Xml;
 using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 
-
 namespace NuSysApp
 {
     /// <summary>
@@ -21,10 +20,9 @@ namespace NuSysApp
         private AtomViewModel _atom1, _atom2;
         #endregion Private members
 
-        public LinkViewModel(AtomViewModel atom1,
-            AtomViewModel atom2, WorkspaceViewModel workspace, string id) : base(workspace, id)
+        public LinkViewModel(Link model, AtomViewModel atom1,
+            AtomViewModel atom2, WorkspaceViewModel workspace, string id) : base(model, workspace, id)
         {
-            this.Model = new Link(atom1.Model, atom2.Model, id);
             this.Atom1 = atom1;
             this.Atom2 = atom2;
             this.AtomType = Constants.Link;

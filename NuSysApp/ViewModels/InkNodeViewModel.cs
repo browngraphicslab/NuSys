@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml;
-using Windows.UI.Xaml.Media;
-
-
+﻿using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -15,9 +9,8 @@ namespace NuSysApp
     /// </summary>
     public class InkNodeViewModel : NodeViewModel
     {
-        public InkNodeViewModel(WorkspaceViewModel vm, string id): base(vm,id)
+        public InkNodeViewModel(InkModel model, WorkspaceViewModel vm, string id): base(model, vm,id)
         {
-            this.Model = new InkModel(id);
             this.Model.ID = id;
             this.View = new InkNodeView2(this);
             this.Transform = new MatrixTransform();

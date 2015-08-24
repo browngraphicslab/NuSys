@@ -1,87 +1,234 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.UI;
 using Windows.UI.Core;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using NuSysApp.Network;
 
 namespace NuSysApp
 {
     public class WorkSpaceModel
     {
+        #region Events and Delegates
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
-
+        public delegate void CreateEventHandler(object source, CreateEventArgs e);
+        public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public event DeleteEventHandler OnDeletion;
-        //Node _selectedNode;
-        private Dictionary<string, Atom> _idDict;
-        private Dictionary<string, string> _locks;
-        private WorkspaceViewModel _workspaceViewModel;
-        private ModelIntermediate _modelIntermediate;
-        private int _currentId;
-        //private Factory _factory;
-        public WorkSpaceModel(WorkspaceViewModel vm)
+        public event CreateEventHandler OnCreation;
+        public event CreateGroupEventHandler OnGroupCreation;
+        
+        #endregion Events and Delegates
+
+        #region Private Members
+        private Dictionary<string, Sendable> _idDict;
+
+
+        private LockDictionary _locks;
+        #endregion Private members
+       
+
+        public WorkSpaceModel()
         {
-            _idDict = new Dictionary<string, Atom>();
-            _workspaceViewModel = vm;
+            _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
-            _currentId = 0;
-            _locks = new Dictionary<string, string>();
-            _modelIntermediate = new ModelIntermediate(this);
-            NetworkConnector.Instance.ModelIntermediate = _modelIntermediate;
-            // _factory = new Factory(this);
+            _locks = new LockDictionary(this);
+            NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
-        public void CreateNewTextNode(string data)
-        {
-            //_nodeDict.Add(CurrentID, _factory.createNewTextNode(data));
-            //CurrentID++;
-        }
-
-        public Dictionary<string, Atom> IDToAtomDict
+        #region Public Members
+        public Dictionary<string, Sendable> IDToAtomDict
         {
             get { return _idDict; }
-        } 
-        public Dictionary<string, string> Locks
+        }
+       
+        public LockDictionary Locks
         {
             get { return _locks; }
             set { _locks = value;}
         }
 
-        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        #endregion
+
+
+        public void CreateLink(Atom atom1, Atom atom2, string id)
         {
-            Atom atom = await _workspaceViewModel.CreateNewNode(id, type, xCoordinate, yCoordinate, data); 
-            _idDict.Add(id,atom);
-            return atom;
+            var link = new Link(atom1, atom2, id);
+            atom1.AddToLink(link);
+            atom2.AddToLink(link);
+            _idDict.Add(id,link);
+        }
+
+
+        public async Task CreateGroup(string id, Node node1, Node node2, double xCooordinate, double yCoordinate)     
+        {
+            var group = new Group(id)
+            {
+                X = xCooordinate,
+                Y= yCoordinate,
+                NodeType = NodeType.Group
+            };
+            _idDict.Add(id, group);
+             node1.AddToGroup(group);
+             node2.AddToGroup(group);
+            OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+        }
+
+        public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        {
+            Node node;
+            switch (type)
+            {
+                case NodeType.Text:
+                    node = new TextNode((string)data, id);
+                    break;
+                case NodeType.Richtext:
+                    node = new TextNode((string)data, id);
+                    break;
+                case NodeType.Ink:
+                    node = new InkModel(id);
+                    break;
+                case NodeType.Image:
+                    node = new ImageModel((byte[])data,id);
+                    break;
+                case NodeType.PDF:
+                    node = new PdfNodeModel((byte[])data, id);
+                    await ((PdfNodeModel) node).SaveFile();
+                    break;
+                default:
+                    throw new InvalidOperationException("This node type is not yet supported");
+                    return;
+            }
+            node.X = xCoordinate;
+            node.Y = yCoordinate;
+            node.NodeType = type;
+
+            _idDict.Add(id, node);
+            OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
         }
 
         public async Task RemoveNode(string id)
         {
             if (_idDict.ContainsKey(id))
             {
-                OnDeletion?.Invoke(_idDict[id], new DeleteEventArgs("Deleted"));
+                ((Node) _idDict[id]).Delete();
                 _idDict.Remove(id);
+            }
+            else
+            {
+                throw new InvalidOperationException("Node no longer exists");
             }
         }
 
-        public class DeleteEventArgs : EventArgs
-        {
-            private string EventInfo;
 
-            public DeleteEventArgs(string text)
+        public class LockDictionary : IEnumerable<KeyValuePair<string,string>>
+        {
+            private HashSet<string> _locals = new HashSet<string>();
+            private Dictionary<string,string> _dict = new Dictionary<string, string>();
+            private WorkSpaceModel _workSpaceModel;
+            public LockDictionary(WorkSpaceModel wsm)
             {
-                EventInfo = text;
+                _workSpaceModel = wsm;
             }
 
-            public string GetInfo()
+            public HashSet<string> LocalLocks
             {
-                return EventInfo;
+                get { return _locals; } 
+            } 
+            public string Value(string key)
+            {
+                if (_dict.ContainsKey(key))
+                {
+                    return _dict[key];
+                }
+                return null;
+            }
+            public async Task Set(string k, string v)
+            {
+                if (v == NetworkConnector.Instance.LocalIP)
+                {
+                    _locals.Add(k);
+                }
+                else
+                {
+                    _locals.Remove(k);
+                }
+                if (!_dict.ContainsKey(k))
+                {
+                    _dict.Add(k, v);
+                }
+                else
+                {
+                    _dict[k] = v;
+                }
+                await UpdateAtomLock(k,v);
+            }
+
+            private async Task UpdateAtomLock(string id, string lockHolder)
+            {
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    if (_workSpaceModel.IDToAtomDict.ContainsKey(id))
+                    {
+                        if (lockHolder == "")
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Maybe;
+                        }
+                        else if (lockHolder == NetworkConnector.Instance.LocalIP)
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.Yes;
+                        }
+                        else
+                        {
+                            _workSpaceModel.IDToAtomDict[id].CanEdit = Atom.EditStatus.No;
+                        }
+                    }
+                });
+            }
+
+            public void Clear()
+            {
+                _dict.Clear();
+                _locals.Clear();
+                foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IDToAtomDict)
+                {
+                    kvp.Value.CanEdit = Atom.EditStatus.Maybe;
+                }
+            }
+
+            public bool ContainsID(string id)
+            {
+                return _dict.ContainsKey(id);
+            }
+
+            public bool ContainsHolder(string holder)
+            {
+                return _dict.ContainsValue(holder);
+            }
+            public bool RemoveID(string k)
+            {
+                if (_dict.ContainsKey(k))
+                {
+                    _dict.Remove(k);
+                    if (_locals.Contains(k))
+                    {
+                        _locals.Remove(k);
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            public IEnumerator<KeyValuePair<string,string>> GetEnumerator()
+            {
+                return _dict.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _dict.GetEnumerator();
             }
         }
     }

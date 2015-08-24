@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 

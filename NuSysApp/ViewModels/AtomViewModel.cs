@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
@@ -23,12 +22,24 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected AtomViewModel(WorkspaceViewModel vm, string id)
+        protected AtomViewModel(Atom model, WorkspaceViewModel vm, string id)
         {
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
             this.IsVisible = true;
-           
+            this.Model = model;
+            this.Model.OnCanEditChanged += CanEditChangedHandler;
+            ((Atom)this.Model).OnLinked += LinkedHappend;
+        }
+
+        private void LinkedHappend(object source, LinkedEventArgs e)
+        {
+            WorkSpaceViewModel.PrepareLink(e.ID, this, e.Link);
+        }
+
+        private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
+        {
+            CanEdit = Model.CanEdit;
         }
 
         #region Atom Manipulations
@@ -245,7 +256,7 @@ namespace NuSysApp
             }
         }
 
-        public Atom Model { get; set; }
+        public Atom Model { get;}
 
         public String AtomType { get; set; }
 

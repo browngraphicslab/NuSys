@@ -1,28 +1,46 @@
 
 using System;
-﻿using NuSysApp.Models;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
-using Windows.UI;
-using Windows.UI.Xaml.Media;
-using NuSysApp.Network;
+
 
 namespace NuSysApp
 {
     public class Node : Atom
     {
+        #region Private Members
         private double _x;
         private double _y;
         private double _width;
         private double _height;
         private Group _group;
+        #endregion Private Members
+
+        #region Events and Handlers
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+        public event DeleteEventHandler OnDeletion;
+
+        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
+        public event LocationUpdateEventHandler OnLocationUpdate;
+
+        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
+        public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
+
+        #endregion Events and Handlers
 
         public Node(string id) : base(id)
-        {
 
+        {
+            
         }
+
+        public void Delete()
+        {
+            OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
+        }
+
+        public string Data { get; set; }
 
         public Content Content { set; get; }
 
@@ -41,7 +59,7 @@ namespace NuSysApp
                 _x = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_X");
+                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
                 else
                 {
@@ -65,7 +83,7 @@ namespace NuSysApp
                 _y = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Y");
+                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
                 else
                 {
@@ -89,7 +107,7 @@ namespace NuSysApp
                 _width = value;
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Width");
+                    OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
                 else
                 {
@@ -115,7 +133,7 @@ namespace NuSysApp
 
                 if (NetworkConnector.Instance.ModelLocked)
                 {
-                    RaisePropertyChanged("Model_Height");
+                    OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
                 else
                 {
@@ -136,6 +154,7 @@ namespace NuSysApp
         {
             return null;
         }
+
         public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("x"))

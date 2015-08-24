@@ -3,8 +3,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using NuSysApp.Views.Workspace;
-using System;
-using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,7 +29,7 @@ namespace NuSysApp
         public WorkspaceView()
         {
             this.InitializeComponent();
-            this.DataContext = new WorkspaceViewModel();
+            this.DataContext = new WorkspaceViewModel(new WorkSpaceModel());
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
             _cortanaInitialized = false;

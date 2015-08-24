@@ -1,32 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Network;
 
 namespace NuSysApp
 {
-    public abstract class Atom : BaseINPC
+    public abstract class Atom :Sendable
     {
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;
+        public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
+        public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
+        public event LinkedEventHandler OnLinked;
+        public event CreateGroupEventHandler OnCreatedGroup;
+        public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
+        public event CanEditChangedEventHandler OnCanEditChanged;
         public enum EditStatus
         {
             Yes,
             No,
             Maybe
         }
-        public Atom(string id)
+        protected Atom(string id)
         {
             ID = id;
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
         }
+
+        public void AddToLink(Link link)
+        {
+            OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
+        }
+
+        public void AddToGroup(Group group)
+        {
+            OnCreatedGroup?.Invoke(this, new CreateGroupEventArgs("Added to group", group));          
+        }
+
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict
         {
@@ -44,7 +55,7 @@ namespace NuSysApp
                     return;
                 }
                 _editStatus = value;
-                RaisePropertyChanged("Model_CanEdit");
+                OnCanEditChanged?.Invoke(this, new CanEditChangedEventArg("Can edit changed", CanEdit));
             }
         } //Network locks
         public string ID { get; set; }

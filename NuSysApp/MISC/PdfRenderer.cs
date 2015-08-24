@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Storage;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -127,13 +127,13 @@ namespace NuSysApp
                         }
                     }
                 }
-                System.Diagnostics.Debug.WriteLine("not rendering :(");
+                Debug.WriteLine("not rendering :(");
                 return null;
             }
             catch
             {
                 // TODO: add some kind of catch code
-                System.Diagnostics.Debug.WriteLine("PDF rendering error caught D:");
+                Debug.WriteLine("PDF rendering error caught D:");
                 return null;
             }
         }

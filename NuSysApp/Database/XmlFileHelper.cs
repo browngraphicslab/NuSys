@@ -1,17 +1,13 @@
-﻿using NuSysApp.Models;
-using SQLite.Net.Async;
-using SQLite.Net.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using SQLite.Net.Async;
+using SQLite.Net.Attributes;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -51,7 +47,9 @@ namespace NuSysApp
             string Y = node.Attributes.GetNamedItem("y").Value;
             string width = node.Attributes.GetNamedItem("width").Value;
             string height = node.Attributes.GetNamedItem("height").Value;
+
             NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
+
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
@@ -68,7 +66,6 @@ namespace NuSysApp
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
                     break;
                 case "Image":
-                    dict.Add("image", byteToString);
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
                     break;
                 case "Pdf":
@@ -104,22 +101,22 @@ namespace NuSysApp
                     case "Group":
                         double x = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
                         double y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
-                        await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
-                                GroupViewModel groupVm = new GroupViewModel(vm, ID);
-                                vm.Model.AtomDict.Add(ID, groupVm);
-                                foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
-                                {
-                                    await this.CreateNodeFromXml(vm, child);
-                                }
-                                vm.NodeViewModelList.Add(groupVm);
-                                vm.AtomViewList.Add(groupVm.View);
-                                vm.PositionNode(groupVm, x, y);
+                                //GroupViewModel groupVm = new GroupViewModel(vm, ID);
+                                //vm.Model.AtomDict.Add(ID, groupVm);
+                                //foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
+                                //{
+                                //    await this.CreateNodeFromXml(vm, child);
+                                //}
+                                //vm.NodeViewModelList.Add(groupVm);
+                                //vm.AtomViewList.Add(groupVm.View);
+                                //vm.PositionNode(groupVm, x, y);
                             });
                         break;
                     case "Node":
-                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 await this.CreateNodeFromXml(vm, node);
@@ -129,13 +126,13 @@ namespace NuSysApp
                         break;
                         string atomID1 = Convert.ToString(node.Attributes.GetNamedItem("atomID1").Value);
                         string atomID2 = Convert.ToString(node.Attributes.GetNamedItem("atomID2").Value);
-                        Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async() =>
                             {
                                 AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
                                 AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
-                                LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
-                                newLinkVm.ID = ID;
+                                //LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
+                                //newLinkVm.ID = ID;
 
                                 // create node annotation and attach it to the link
                                 if (node.HasChildNodes)

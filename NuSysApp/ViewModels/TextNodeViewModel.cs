@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Xml;
-using Windows.UI;
-using Windows.UI.Xaml.Media;
+﻿using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -13,10 +7,9 @@ namespace NuSysApp
         #region Private Members
 
         #endregion Private Members
-        public TextNodeViewModel(WorkspaceViewModel workSpaceViewModel, string text, string id) : base(workSpaceViewModel, id)
+        public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, string text, string id) : base(model, workSpaceViewModel, id)
         {
-            this.Model = new TextNode(text ?? "Enter text here", id);
-            this.Model.PropertyChanged += (s, e) => { Update(e); };
+           
             this.View = new TextNodeView2(this);  
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
@@ -26,45 +19,17 @@ namespace NuSysApp
             this.IsEditingInk = false;
             this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
-            this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
-            this.WorkSpaceViewModel.Model.OnDeletion += DeletionHappend;
-            
+            //this.View = new TextNodeView2(this);//TODO < whut is this? <IDK duuuude
+            ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
         }
 
-        public void DeletionHappend(object source, WorkSpaceModel.DeleteEventArgs e)
+       
+        private void TextChangedHandler(object source, TextChangedEventArgs e)
         {
-            if((Node)source == (Node)this.Model)
-            {
-                this.WorkSpaceViewModel.DeleteNode(this);
-            };
+            this.Data = ((TextNode)this.Model).Text;
         }
-
-        private void Update(PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "Model_Width":
-                    this.Width = ((Node)this.Model).Width;
-                    break;
-                case "Model_Height":
-                    this.Height = ((Node)this.Model).Height;
-                    break;
-                case "Model_X":
-                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
-                    //this.WorkSpaceViewModel.PositionNode(this, ((Node)this.Model).X, this.Y);
-                    break;
-                case "Model_Y":
-                    this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
-                    //this.WorkSpaceViewModel.PositionNode(this, this.X, ((Node)this.Model).Y);
-                    break;
-                case "Model_Text":
-                    this.Data = ((TextNode) this.Model).Text;
-                    break;
-                case "Model_CanEdit":
-                    this.CanEdit = ((TextNode) this.Model).CanEdit;
-                    break;
-            }
-        }
+       
+        
         
         #region Public Properties
 

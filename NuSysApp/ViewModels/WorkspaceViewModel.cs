@@ -2,27 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using NuSysApp.MISC;
-using Windows.Storage.Streams;
-using System.Text;
-using System.Xml;
-using SQLite.Net.Async;
-using Windows.UI.Input.Inking;
-using Windows.UI.Xaml;
-using System.Xml;
-using System.IO;
-using Windows.UI.Xaml.Shapes;
-using SQLite.Net;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Runtime.InteropServices.WindowsRuntime;
+using NuSysApp.MISC;
+using SQLite.Net.Async;
 
 namespace NuSysApp
 {
@@ -41,9 +34,9 @@ namespace NuSysApp
         private CompositeTransform _compositeTransform, _fMTransform;
         #endregion Private Members
 
-        public WorkspaceViewModel()
+        public WorkspaceViewModel(WorkSpaceModel model)
         {
-            Model = new WorkSpaceModel(this);
+            Model = model;
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
@@ -61,7 +54,12 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
+            this.Model.OnCreation += CreatedHandler; 
         }
+
+       
+        
+
         private async void Init()
         {
             await SetupDirectories();
@@ -70,46 +68,47 @@ namespace NuSysApp
             Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
         }
 
-        private async void SetupOfficeTransfer()
+    private async void SetupOfficeTransfer()
         {
-            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
-            fw.FilesChanged += async delegate
-            {            
-                var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
-                if (foundUpdate == null)
-                {
-                    Debug.WriteLine("no update yet!");
-                    return;
-                }
-                await foundUpdate.DeleteAsync();
+            //TODO put this back in
+            //var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
+            //fw.FilesChanged += async delegate
+            //{            
+            //    var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
+            //    if (foundUpdate == null)
+            //    {
+            //        Debug.WriteLine("no update yet!");
+            //        return;
+            //    }
+            //    await foundUpdate.DeleteAsync();
 
-                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            //    var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
+            //    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
-                foreach (var file in transferFiles) { 
+            //    foreach (var file in transferFiles) { 
 
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                    {
-                        var lines = await FileIO.ReadLinesAsync(file);
-                        if (lines[0].EndsWith(".png"))
-                        {
-                            var str = lines[0];
-                            var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-                            var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            var nodeVm = CreateNewNode("null",NodeType.Image, p.X, p.Y, imageFile);//TODO make actual Id's
-                        } else {
-                            var readFile = await FileIO.ReadTextAsync(file);
-                            var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                            var nodeVm2 = CreateNewNode("null",NodeType.Richtext, p.X, p.Y, readFile);//TODO make actual Id's
-                        }
-                    });
-                }
+            //        await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            //        {
+            //            var lines = await FileIO.ReadLinesAsync(file);
+            //            if (lines[0].EndsWith(".png"))
+            //            {
+            //                var str = lines[0];
+            //                var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
+            //                var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+            //                var nodeVm = CreateNewNode("null",NodeType.Image, p.X, p.Y, imageFile);//TODO make actual Id's
+            //            } else {
+            //                var readFile = await FileIO.ReadTextAsync(file);
+            //                var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+            //                var nodeVm2 = CreateNewNode("null",NodeType.Richtext, p.X, p.Y, readFile);//TODO make actual Id's
+            //            }
+            //        });
+            //    }
 
-                foreach (var file in transferFiles)
-                {
-                    await file.DeleteAsync();
-                }
-            };
+            //    foreach (var file in transferFiles)
+            //    {
+            //        await file.DeleteAsync();
+            //    }
+            //};
         }
 
         private void SetupChromeIntermediate()
@@ -213,7 +212,7 @@ namespace NuSysApp
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    CreateNewGroup("null", node, node2);
+                    NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
                     return true;
                 }
             }
@@ -272,6 +271,7 @@ namespace NuSysApp
             selected.IsSelected = false;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
+            ClearSelection();
         }
 
         /// <summary>
@@ -279,6 +279,7 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
+            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
@@ -289,7 +290,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2)
+        private LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -306,7 +307,7 @@ namespace NuSysApp
                 return null;
             }
             if (atomVm1 == atomVm2) return null;
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, id);
+            var vm = new LinkViewModel(link, atomVm1, atomVm2, this, id);//TODO fix this
             Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
@@ -320,76 +321,145 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
             return vm;
         }
-        public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+
+        private AtomViewModel _preparedAtomVm;
+        public void PrepareLink(string id, AtomViewModel atomVm, Link link)
+        {
+            if (_preparedAtomVm == null)
+            {
+                _preparedAtomVm = atomVm;
+                return;
+            }
+            else if (atomVm != _preparedAtomVm)
+            {
+                CreateNewLink(id, _preparedAtomVm, atomVm, link);
+            }
+            _preparedAtomVm = null;
+        }
+
+        private NodeViewModel _preparedGroupNodeVm;
+        public void PrepareGroup(string id, NodeViewModel nodeVm, Group group)
+        {
+            if (_preparedGroupNodeVm == null)
+            {
+                _preparedGroupNodeVm = nodeVm;
+                return;
+            }
+            else if (nodeVm != _preparedGroupNodeVm)
+            {
+                CreateNewGroup(id, _preparedGroupNodeVm, nodeVm, group);
+            }
+            _preparedGroupNodeVm = null;
+        }
+
+        //public async Task<Atom> CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        //{
+        //    NodeViewModel vm = null;
+        //    switch (type)
+        //    {
+        //        case NodeType.Text:
+        //            vm = new TextNodeViewModel(this, (string)data, id);
+        //            break;
+        //        case NodeType.Richtext:
+        //            vm = new TextNodeViewModel(this, (string)data, id);
+        //            break;
+        //        case NodeType.Ink:
+        //            vm = new InkNodeViewModel(this, id);
+        //            break;
+        //        case NodeType.Image:
+        //            var imgVM = new ImageNodeViewModel(this, id);
+        //            await imgVM.InitializeImageNodeAsync((StorageFile)data);
+        //            vm = imgVM;
+        //            break;
+        //        case NodeType.Document:
+        //            var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
+        //            if (storageFile == null) return null;
+
+        //            if (Constants.ImageFileTypes.Contains(storageFile.FileType))
+        //            {
+        //                var imgVM1 = new ImageNodeViewModel(this, id);
+        //                await imgVM1.InitializeImageNodeAsync(storageFile);
+        //                vm = imgVM1;
+        //            }
+
+        //            if (Constants.PdfFileTypes.Contains(storageFile.FileType))
+        //            {
+        //                var pdfVM = new PdfNodeViewModel(this, id);
+        //                await pdfVM.InitializePdfNodeAsync(storageFile);
+        //                vm = pdfVM;
+        //            }
+        //            break;
+        //        //case NodeType.Group: //Only called when reloading
+        //            //var group = new GroupViewModel(this, idCounter);
+        //            //idCounter++;
+        //            //break;
+
+
+        //        //   case Mode.InkSelect:
+        //        //      vm = Factory.CreateNewPromotedInk(this);
+        //        //      break;
+        //        default:
+        //            return null;
+        //    }
+        //    Model.AtomDict.Add(id, vm);
+        //    NodeViewModelList.Add(vm);
+
+        //    if (vm != null)
+        //    {
+        //        AtomViewList.Add(vm.View);
+
+        //        if (data is Polyline[])
+        //        {
+        //            Polyline p = (data as Polyline[]).First();
+        //            var minX = p.Points.Min(em => em.X);
+        //            var minY = p.Points.Min(em => em.Y);
+        //            (vm.View as InkNodeView2).PromoteStrokes(data as Polyline[]);
+        //            PositionNode(vm, minX, minY);
+        //        }
+        //        else
+        //        {
+        //            PositionNode(vm, xCoordinate, yCoordinate);
+        //        }
+        //    }
+        //    return  vm.Model;
+        //}
+        public void CreatedHandler(object source, CreateEventArgs e)
         {
             NodeViewModel vm = null;
+            var model = e.CreatedNode;
+            var type = model.NodeType;
+            var id = model.ID;
+            var data = model.Data;
+            var x = model.X;
+            var y = model.Y;
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel(this, (string)data, id);
+                    vm = new TextNodeViewModel((TextNode)model, this, (string)data, id);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel(this, (string)data, id);
+                    vm = new TextNodeViewModel((TextNode)model, this, (string)data, id);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel(this, id);
+                    vm = new InkNodeViewModel((InkModel)model, this, id);
                     break;
                 case NodeType.Image:
-                    var imgVM = new ImageNodeViewModel(this, id);
-                    await imgVM.InitializeImageNodeAsync((StorageFile)data);
-                    vm = imgVM;
+                    vm = new ImageNodeViewModel((ImageModel)model,this,id);
+                    vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
+                    vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
                     break;
-                case NodeType.Document:
-                    var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                    if (storageFile == null) return null;
-                    
-                    if (Constants.ImageFileTypes.Contains(storageFile.FileType))
-                    {
-                        var imgVM1 = new ImageNodeViewModel(this, id);
-                        await imgVM1.InitializeImageNodeAsync(storageFile);
-                        vm = imgVM1;
-                    }
-
-                    if (Constants.PdfFileTypes.Contains(storageFile.FileType))
-                    {
-                        var pdfVM = new PdfNodeViewModel(this, id);
-                        await pdfVM.InitializePdfNodeAsync(storageFile);
-                        vm = pdfVM;
-                    }
+                case NodeType.PDF:
+                    vm = new PdfNodeViewModel((PdfNodeModel)model,this,id);
+                    vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
+                    vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
                     break;
-                //case NodeType.Group: //Only called when reloading
-                    //var group = new GroupViewModel(this, idCounter);
-                    //idCounter++;
-                    //break;
-
-
-                //   case Mode.InkSelect:
-                //      vm = Factory.CreateNewPromotedInk(this);
-                //      break;
                 default:
-                    return null;
+                    return;
+                    break;
             }
-            //Model.AtomDict.Add(id, vm);
+            AtomViewList.Add(vm.View);
             NodeViewModelList.Add(vm);
-
-            if (vm != null)
-            {
-                AtomViewList.Add(vm.View);
-
-                if (data is Polyline[])
-                {
-                    Polyline p = (data as Polyline[]).First();
-                    var minX = p.Points.Min(em => em.X);
-                    var minY = p.Points.Min(em => em.Y);
-                    (vm.View as InkNodeView2).PromoteStrokes(data as Polyline[]);
-                    PositionNode(vm, minX, minY);
-                }
-                else
-                {
-                    PositionNode(vm, xCoordinate, yCoordinate);
-                }
-            }
-            return  vm.Model;
+            PositionNode(vm, x, y);
         }
 
         public async Task<PinViewModel> AddNewPin(double x, double y)
@@ -413,57 +483,51 @@ namespace NuSysApp
             //    trans.M22 = 1 / CompositeTransform.ScaleY;
             vm.Transform = new MatrixTransform { Matrix = trans };
         }
-
-        public void CreateNewGroup(string id,NodeViewModel node1, NodeViewModel node2)
-        {
-            try//TODO remove this try catch block
+      
+        public void CreateNewGroup(string id, NodeViewModel node1, NodeViewModel node2, Group groupModel)
+        {       
+            if (node1 is GroupViewModel)
             {
-                if (node1 is GroupViewModel)
-                {
-                    return; //TODO this is temporary until we fix everything else
-                }
-                //Check if group already exists
-                var groupVm = node2 as GroupViewModel;
-                if (groupVm != null)
-                {
-                    var group = groupVm;
-                    this.AtomViewList.Remove(node1.View);
-                    this.NodeViewModelList.Remove(node1);
-                    groupVm.AddNode(node1);
-                    node1.ParentGroup = groupVm;
-                    return;
-                }
-
-                //Create new group, because no group exists
-                groupVm = new GroupViewModel(this, "null"); //TODO FIX ID'S HERE
-
-                //Set location to node2's location
-                var xCoordinate = node2.Transform.Matrix.OffsetX;
-                var yCoordinate = node2.Transform.Matrix.OffsetY;
-
-                //Add group to workspace
-                NodeViewModelList.Add(groupVm);
-                AtomViewList.Add(groupVm.View);
-                PositionNode(groupVm, xCoordinate, yCoordinate);
-                Model.AtomDict.Add(id, groupVm);
-
-                //Add the first node
-                groupVm.AddNode(node1);
+                return; //TODO this is temporary until we fix everything else
+            }
+            //Check if group already exists
+            var groupVm = node2 as GroupViewModel;
+            if (groupVm != null)
+            {
+                var group = groupVm;
                 this.AtomViewList.Remove(node1.View);
                 this.NodeViewModelList.Remove(node1);
-
-                //Add the second node
-                groupVm.AddNode(node2);
-                this.AtomViewList.Remove(node2.View);
-                this.NodeViewModelList.Remove(node2);
-
+                groupVm.AddNode(node1);
                 node1.ParentGroup = groupVm;
-                node2.ParentGroup = groupVm;
+                return;
             }
-            catch (Exception e)
-            {
-                Debug.WriteLine("FUCKING GROUPS");//TRUE
-            }
+
+                //Create new group, because no group exists
+                groupVm = new GroupViewModel(groupModel, this, "null"); //TODO FIX ID'S HERE AND HOOK UP MODEL
+
+
+            //Set location to node2's location
+            var xCoordinate = node2.Transform.Matrix.OffsetX;
+            var yCoordinate = node2.Transform.Matrix.OffsetY;
+
+            //Add group to workspace
+            NodeViewModelList.Add(groupVm);
+            AtomViewList.Add(groupVm.View);
+            PositionNode(groupVm, xCoordinate, yCoordinate);
+            Model.AtomDict.Add(id, groupVm);
+
+            //Add the first node
+            groupVm.AddNode(node1);
+            this.AtomViewList.Remove(node1.View);
+            this.NodeViewModelList.Remove(node1);
+
+            //Add the second node
+            groupVm.AddNode(node2);
+            this.AtomViewList.Remove(node2.View);
+            this.NodeViewModelList.Remove(node2);
+
+            node1.ParentGroup = groupVm;
+            node2.ParentGroup = groupVm;
         }
 
         public async void SaveWorkspace()
@@ -549,8 +613,6 @@ namespace NuSysApp
             transMat.OffsetX = xCoordinate;
             transMat.OffsetY = yCoordinate;
             vm.Transform = new MatrixTransform { Matrix = transMat };
-            vm.X = 0;
-            vm.Y = 0;
         }
 
         #region Public Members

@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using NuSysApp.MISC;
-using Windows.UI.Xaml;
-using System.Xml;
-using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.MISC;
 
 namespace NuSysApp
 {
@@ -17,11 +14,8 @@ namespace NuSysApp
     {
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
-        public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, string id) : base(workspaceViewModel, id)
+        public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel, string id) : base(model, workspaceViewModel, id)
         {
-            
-            
-            this.Model = new PdfNodeModel(id);
             this.View = new PdfNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
@@ -30,8 +24,7 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = NodeType.PDF;
             this.CurrentPageNumber = 0;
-            this.PageCount = 0;
-            this.InkContainer = new List<HashSet<Polyline>>();
+            this.InkContainer = new List<HashSet<Polyline>>((int)PageCount);
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,
@@ -94,7 +87,7 @@ namespace NuSysApp
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
 
-        public PdfNodeModel PdfNodeModel //TO DO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
+        public PdfNodeModel PdfNodeModel //TODO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
         {
             get { return (PdfNodeModel)Model; }
             set
@@ -103,7 +96,7 @@ namespace NuSysApp
                 {
                     return;//
                 }
-                this.Model = value;
+                //this.Model = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }
@@ -140,7 +133,6 @@ namespace NuSysApp
             for (var i = 0; i < PageCount; i++)
             {
                 this.InkContainer.Add(new HashSet<Polyline>());
-
             }
         }
 

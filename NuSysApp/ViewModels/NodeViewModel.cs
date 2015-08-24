@@ -1,15 +1,8 @@
 ﻿
 using System;
-using NuSysApp.Models;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Xml;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -30,11 +23,21 @@ namespace NuSysApp
         private GroupViewModel _group;
 
         #endregion Private Members
-        protected NodeViewModel(WorkspaceViewModel vm, string id): base(vm, id)
+        protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
         {
-            this.AtomType = Constants.Node;
+            this.AtomType = Constants.Node;       
+            ((Node)this.Model).OnDeletion += DeletionHappend;         
+            ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
+            ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
+            ((Node)this.Model).OnCreatedGroup += GroupCreatedHandler;
+            X = 0;
+            Y = 0;
         }
 
+        private void GroupCreatedHandler(object source, CreateGroupEventArgs e)
+        {
+            WorkSpaceViewModel.PrepareGroup(e.CreatedGroup.ID, this, e.CreatedGroup);
+        }
         #region Node Manipulations
 
         public override void Remove()
@@ -75,22 +78,32 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Behaves like Translate(dx, dy) but sets the position to absolute coordinates instead.
+        /// Currently used to visually update location coordinates from the network.
+        /// //TODO does not yet take into account scale
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void SetPosition(double x, double y)
         {
-            var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
+            var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
             transMat.OffsetX = x;
             transMat.OffsetY = y;
-            //transMat.OffsetX = x / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            //transMat.OffsetY = y / WorkSpaceViewModel.CompositeTransform.ScaleY;
-            //Transform = new MatrixTransform();
             this.Transform = new MatrixTransform
             {
                 Matrix = transMat
             };
             this.X = 0;
             this.Y = 0;
+            foreach (var link in LinkList)
+            {
+                link.UpdateAnchor();
+            }
+            this.UpdateAnchor();
             RaisePropertyChanged("Transform");
         }
+
         /// <summary>
         /// toggles editing ability of nodes.
         /// </summary>
@@ -144,6 +157,33 @@ namespace NuSysApp
         }
         #endregion Node Manipulations
 
+        #region Event Handlers
+        private void DeletionHappend(object source, DeleteEventArgs e)
+        {
+            this.WorkSpaceViewModel.DeleteNode(this);
+        }
+
+        private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
+        {
+            this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
+            this.UpdateAnchor();
+        }
+
+        private void WidthHeightChangedHandler(object source, WidthHeightUpdateEventArgs e)
+        {
+            this.Width = ((Node)this.Model).Width;
+            this.Height = ((Node)this.Model).Height;
+            this.UpdateAnchor();
+        }
+        #endregion Event Handlers
+
+        #region XML methods
+        public XmlElement WriteXML(XmlDocument doc)
+        {
+            return ((Node)Model).WriteXML(doc);
+        }
+        #endregion XML methods
+
         #region Public Properties
 
         public AtomViewModel ClippedParent//TODO move to link
@@ -188,41 +228,7 @@ namespace NuSysApp
         }
 
         private double _x, _y;
-        /// <summary>
-        /// X-coordinate of this atom
-        /// </summary>
-        public double X
-        {
-            get { return _x; }
-            set
-            {
-                if (_x == value)
-                {
-                    return;
-                }
-                _x = value;
-                //((Node)Model).Y = value;
-                RaisePropertyChanged("X");
-            }
-        }
-
-        /// <summary>
-        /// Y-coordinate of this atom
-        /// </summary>
-        public double Y
-        {
-            get { return _y; }
-            set
-            {
-                if (_y == value)
-                {
-                    return;
-                }
-                _y = value;
-                //((Node)Model).Y = value;
-                RaisePropertyChanged("Y");
-            }
-        }
+       
 
         public MatrixTransform Transform
         {
@@ -276,11 +282,6 @@ namespace NuSysApp
             }
         }
 
-        public XmlElement WriteXML(XmlDocument doc)
-        {
-            return ((Node)Model).WriteXML(doc);
-        }
-
         public bool IsEditing
         {
             get { return _isEditing; }
@@ -329,13 +330,45 @@ namespace NuSysApp
                 if (_group != null)
                 {
                     ((Node)Model).ParentGroup = (Group)_group.Model;
-                }
-                
-                //Debug.WriteLine(_group.Model == null);
-                //Debug.WriteLine(((Node)Model).ParentGroup == null);
+                }          
             }
         }
 
+         /// <summary>
+        /// DEPRICATED X-coordinate of this atom
+        /// </summary>
+        [Obsolete("Use X and Y at model level only", false)]
+        public double X
+        {
+            get { return _x; }
+            private set
+            {
+                if (_x == value)
+                {
+                    return;
+                }
+                _x = value;
+                RaisePropertyChanged("X");
+            }
+        }
+
+        /// <summary>
+        /// DEPRICATED Y-coordinate of this atom
+        /// </summary>      
+        [Obsolete("Use X and Y at model level only", false)]
+        public double Y
+        {
+            get { return _y; }
+            private set
+            {
+                if (_y == value)
+                {
+                    return;
+                }
+                _y = value;
+                RaisePropertyChanged("Y");
+            }
+        }
         #endregion Public Properties
     }
 }

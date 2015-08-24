@@ -1,18 +1,7 @@
 ﻿using Windows.UI;
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -89,35 +78,35 @@ namespace NuSysApp
                 }
                 if (sender == Red)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,0,0);
+                    characterFormat.ForegroundColor = Color.FromArgb(100,255,0,0);
                 }
                 if (sender == Orange)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,128,0);
+                    characterFormat.ForegroundColor = Color.FromArgb(100,255,128,0);
                 }
                 if (sender == Yellow)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,255,0);
+                    characterFormat.ForegroundColor = Color.FromArgb(100,255,255,0);
                 }
                 if (sender == Green)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100, 0, 255, 0);
+                    characterFormat.ForegroundColor = Color.FromArgb(100, 0, 255, 0);
                 }
                 if (sender == Blue)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100, 0, 0, 255);
+                    characterFormat.ForegroundColor = Color.FromArgb(100, 0, 0, 255);
                 }
                 if (sender == Purple)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,127,0,255);
+                    characterFormat.ForegroundColor = Color.FromArgb(100,127,0,255);
                 }
                 if (sender == Black)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100, 0, 0, 0);
+                    characterFormat.ForegroundColor = Color.FromArgb(100, 0, 0, 0);
                 }
                 if (sender == White)
                 {
-                    characterFormat.ForegroundColor = Windows.UI.Color.FromArgb(100,255,255,255);
+                    characterFormat.ForegroundColor = Color.FromArgb(100,255,255,255);
                 }
                 
 

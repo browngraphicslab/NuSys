@@ -1,12 +1,7 @@
-﻿using NuSysApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Xml;
-using Windows.UI.Xaml;
+﻿using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+
 
 namespace NuSysApp
 {
@@ -21,10 +16,9 @@ namespace NuSysApp
         public ObservableCollection<LinkViewModel> _linkViewModelList;
 
 
-        public GroupViewModel(WorkspaceViewModel vm, string id): base(vm, id)
+        public GroupViewModel(Group model, WorkspaceViewModel vm, string id): base(model,vm, id)
         {
             this.AtomType = Constants.Node;
-            this.Model = new Group(id);
             this.Model.ID = id;
             _nodeViewModelList = new ObservableCollection<NodeViewModel>();
             _linkViewModelList = new ObservableCollection<LinkViewModel>();
@@ -133,7 +127,8 @@ namespace NuSysApp
                     WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
                     lastNode.ParentGroup = null;
-                    WorkSpaceViewModel.DeleteNode(this);
+                    //WorkSpaceViewModel.DeleteNode(this);
+                    NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);
                     foreach (var link in lastNode.LinkList)
                     {
                         link.SetVisibility(true);

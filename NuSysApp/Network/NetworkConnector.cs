@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
-using Windows.Security.Authentication.Web.Provider;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-
 
 namespace NuSysApp
 {
@@ -696,7 +690,7 @@ namespace NuSysApp
                     {
                         await this.SendTCPMessage("SPECIAL1:" + _hostIP, ip);
                     }
-                    if (_hostIP == _localIP && message != _localIP) ;
+                    if (_hostIP == _localIP && message != _localIP && !_joiningMembers.ContainsKey(message)) ;
                     {
                         //_joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
                         var m = await ModelIntermediate.GetFullWorkspace();
@@ -740,9 +734,9 @@ namespace NuSysApp
                     {
                         if (message == "DONE")
                         {
-                            if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members and remove this '|| true' statement
+                            if (_joiningMembers.ContainsKey(ip) || true)//TODO re-implement joining members later
                             {
-                                if (false && _joiningMembers[ip].Item1)//TODO similiar, remove the "false&&"
+                                if (false &&_joiningMembers[ip].Item1)//TODO fix these illogical statements
                                 {
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
@@ -757,11 +751,11 @@ namespace NuSysApp
                                 else
                                 {
                                     //await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
-                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this later and uncomment ABOVE LINE
+                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this line and uncomment above line
                                     await SendTCPMessage("SPECIAL12:" + ModelIntermediate.GetAllLocksToSend(),ip);
-                                    //foreach (var p in _joiningMembers[ip].Item2)  TODO similiar above, uncomment this stuff
+                                    //while(_joiningMembers[ip].Item2.Count>0)
                                     //{
-                                        //await p.Send(ip);
+                                        //await _joiningMembers[ip].Item2[0].Send(ip); TODO Uncomment this stuff
                                     //}
                                     //_joiningMembers.Remove(ip);//remove the joining member
                                     return;
@@ -796,17 +790,11 @@ namespace NuSysApp
                 case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
-                        if (!ModelIntermediate.Locks.ContainsKey(message))
-                        {
-                            ModelIntermediate.Locks.Add(message, ip);
-                        }
-                        else
-                        {
-                            ModelIntermediate.Locks[message] = ip;
-                        }
+                        
+                        await ModelIntermediate.Locks.Set(message, ip);
                         //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
-                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks[message]);
-                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message]);
+                        ModelIntermediate.SetAtomLock(message, ModelIntermediate.Locks.Value(message));
+                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + ModelIntermediate.Locks.Value(message));
                         return;
                     }
                     else
@@ -837,14 +825,7 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (ModelIntermediate.Locks.ContainsKey(message))
-                        {
-                            ModelIntermediate.Locks[message] = "";
-                        }
-                        else
-                        {
-                            ModelIntermediate.Locks.Add(message, "");
-                        }
+                        await ModelIntermediate.Locks.Set(message, "");
                         await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
                         return;
                     }
@@ -906,10 +887,6 @@ namespace NuSysApp
                     {
                         await ModelIntermediate.ForceSetLocks(message);
                     }
-                    else
-                    {
-                        throw new IncorrectFormatException(origMessage);
-                    }
                     break;
             }
         }
@@ -925,18 +902,6 @@ namespace NuSysApp
             {
                 string message = MakeSubMessageFromDict(dict);
                 await SendTCPMessage(message, sendToIP);
-            }
-        }
-
-
-        /*
-        * PUBLIC request for deleting a nod 
-        */
-        public async Task RequestDeleteAtom(string id)
-        {
-            if (ModelIntermediate.HasLock(id))
-            {
-                await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
             }
         }
 
@@ -1005,16 +970,16 @@ namespace NuSysApp
         /*
         * parses message to dictionary of properties.  POSSIBLE DEPRICATED
         */
-        private Dictionary<string, string> ParseOutProperties(string message)//TODO check if this can be deleted.  if not, check that it works
+        private Dictionary<string, string> ParseOutProperties(string message)
         {
-            message = message.Substring(1, message.Length - 2);
+            message = message.Substring(1, message.Length - 1);
 
             var parts = message.Split(Constants.CommaReplacement.ToCharArray());
             var props = new Dictionary<string, string>();
             foreach (var part in parts)
 
             {
-                var subParts = part.Split('=');
+                var subParts = part.Split(new char[] { '=' }, 2);
                 if (subParts.Length != 2)
                 {
                     continue;
@@ -1036,6 +1001,17 @@ namespace NuSysApp
             }
             m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
             return m;
+        }
+        #region publicRequests
+        /*
+        * PUBLIC request for deleting a nod 
+        */
+        public async Task RequestDeleteAtom(string id)
+        {
+            if (ModelIntermediate.HasLock(id))
+            {
+                await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
+            }
         }
 
         /*
@@ -1089,6 +1065,39 @@ namespace NuSysApp
         }
 
         /*
+        * PUBLIC general method to create Group
+        */
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y)
+        {
+            if (id1 != "" && id2 != "")
+            {
+                if (ModelIntermediate.HasAtom(id1))
+                {
+                    if (ModelIntermediate.HasAtom(id2))
+                    {
+                        await SendMessageToHost("<id=0" + Constants.CommaReplacement + "id1=" + id1 +
+                                                Constants.CommaReplacement + "id2=" + id2 + Constants.CommaReplacement +
+                                                "x="+x+Constants.CommaReplacement+"y="+y+Constants.CommaReplacement+
+                                                "type=group>");
+                    }
+                    else
+                    {
+                        throw new InvalidIDException(id2);
+                    }
+                }
+                else
+                { 
+                    throw new InvalidIDException(id1);
+                }
+            }
+            else
+            {
+                throw new InvalidCreationArgumentsException();
+                return;
+            }
+        }
+
+        /*
         * PUBLIC general method to create Linq
         */
         public async Task RequestMakeLinq(string id1, string id2)
@@ -1130,12 +1139,13 @@ namespace NuSysApp
             await SendMessageToHost("SPECIAL7:" + id);
             await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
         }
-
-        public class InvalidIDException : System.Exception
+        #endregion publicRequests
+        #region customExceptions
+        public class InvalidIDException : Exception
         {
             public InvalidIDException(string id) : base(String.Format("The ID {0}  was used but is invalid",id)){}
         }
-        public class IncorrectFormatException : System.Exception
+        public class IncorrectFormatException : Exception
         {
             public IncorrectFormatException(string message) : base(String.Format("The message '{0}' is incorrectly formatted or unrecognized",message)) { }
         }
@@ -1157,6 +1167,7 @@ namespace NuSysApp
 
         public class NoIDException : Exception{}
         public class InvalidCreationArgumentsException : Exception { }
+        #endregion customExceptions
         private class Packet //private class to store messages for later
         {
             private readonly PacketType _type;
@@ -1176,10 +1187,10 @@ namespace NuSysApp
                 switch (_type)
                 {
                     case PacketType.TCP:
-                        await NetworkConnector.Instance.SendTCPMessage(Message, address);
+                        await Instance.SendTCPMessage(Message, address);
                         break;
                     case PacketType.UDP:
-                        await NetworkConnector.Instance.SendUDPMessage(Message, address);
+                        await Instance.SendUDPMessage(Message, address);
                         break;
                 }
             }
