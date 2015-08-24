@@ -53,12 +53,17 @@ namespace NuSysApp
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
-            //var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
-            //var res = await query.FirstOrDefaultAsync();
+            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
+            var res = await query.FirstOrDefaultAsync();
 
-            //byte[] byteData = res.Data;
-            //string byteToString = Convert.ToBase64String(byteData);
-            
+            byte[] byteData = null;
+            string byteToString = null;
+            if (res != null)
+            {
+                byteData = res.Data;
+                byteToString = Convert.ToBase64String(byteData);
+            }
+
             switch (currType)
             {
                 case "Text":
@@ -66,7 +71,7 @@ namespace NuSysApp
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
                     break;
                 case "Image":
-                    //await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
                     break;
                 case "Pdf":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
