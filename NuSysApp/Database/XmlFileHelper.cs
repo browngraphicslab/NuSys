@@ -59,7 +59,8 @@ namespace NuSysApp
             var res = await query.FirstOrDefaultAsync();
 
             byte[] byteData = res.Data;
-
+            string byteToString = Convert.ToBase64String(byteData);
+            
             switch (currType)
             {
                 case "Text":
@@ -67,7 +68,8 @@ namespace NuSysApp
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
                     break;
                 case "Image":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), null, ID);
+                    dict.Add("image", byteToString);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
                     break;
                 case "Pdf":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
@@ -80,7 +82,6 @@ namespace NuSysApp
                     break;
             }
 
-            dict.Add("image", System.Text.Encoding.UTF8.GetString(byteData));
             dict.Add("width", width);
             dict.Add("height", height);
             dict.Add("id", ID);
@@ -92,8 +93,6 @@ namespace NuSysApp
             XmlElement parent = doc.DocumentElement;
             XmlNodeList NodeList = parent.ChildNodes;
             SQLiteAsyncConnection dbConnection = vm.myDB.DBConnection;
-
-            //dict.Add("image", System.Text.Encoding.UTF8.GetString(res.Data));
 
             foreach (XmlNode node in NodeList)
             {
