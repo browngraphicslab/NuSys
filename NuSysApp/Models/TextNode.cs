@@ -16,8 +16,12 @@ namespace NuSysApp
         public TextNode(string data, string id): base(id)
         {
             Text = data;
-            byte[] textToBytes = Convert.FromBase64String(Text); //Converts RTF to Byte array
-            Content = new Content(textToBytes, id);
+            if(Text != null)
+            {
+                byte[] textToBytes = Convert.FromBase64String(Text.ToString()); //Converts RTF to Byte array
+                Content = new Content(textToBytes, id);
+            }
+
             this.ID = id;
           
         }
@@ -29,8 +33,10 @@ namespace NuSysApp
             {
                 if (_text == value) return;
                 _text = value;
-                byte[] newTextBytes = Convert.FromBase64String(_text);
+
+                byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);
                 Content = new Content(newTextBytes, ID); //Update Content
+
                 if (NetworkConnector.Instance.ModelLocked)
                 {
                     OnTextChanged?.Invoke(this, new TextChangedEventArgs("Text changed", Text));
@@ -67,6 +73,11 @@ namespace NuSysApp
         public override XmlElement WriteXML(XmlDocument doc)
         {
 
+            //byte[] newTextBytes = Convert.FromBase64String(Text.ToString());
+
+            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
+            Content = new Content(newTextBytes, ID); //Update Content
+
             //XmlElement 
             XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
 
@@ -77,32 +88,14 @@ namespace NuSysApp
                 textNode.SetAttributeNode(attr);
             }
 
-            doc.LoadXml(textNode.OuterXml);
             //textNode.InnerText = Text;
 
 
             //Text (TODO: Uncomment this section when we figure out how to store just the string of the textnode)
-            XmlAttribute text = doc.CreateAttribute("text");
+            //XmlAttribute text = doc.CreateAttribute("text");
             //text.Value = "<![CDATA[" + Text + "]]>";
             //textNode.SetAttributeNode(text);
 
-            textNode.InnerText = Text;
-
-            Debug.WriteLine("Text = " + text.Value.ToString());
-
-            //Text (TODO: Uncomment this section when we figure out how to store just the string of the textnode)
-            //XmlCDataSection text = doc.CreateCDataSection(Text);
-            //textNode.AppendChild(text);
-
-            /*string xml = Text;
-            StringBuilder encodedString = new StringBuilder(xml.Length);
-            using(var writer = XmlWriter.Create(encodedString))
-            {
-                writer.WriteString(xml);
-            }*/
-
-            Debug.WriteLine("Updated XML = " + textNode.InnerXml);
-            Debug.WriteLine("Text = " + Text);
 
             return textNode;       
         }

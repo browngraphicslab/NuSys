@@ -56,7 +56,17 @@ namespace NuSysApp
             var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
             byte[] byteData = res.Data;
-            string byteToString = Convert.ToBase64String(byteData);
+            string byteToString;
+
+            if (currType == "Text")
+            {
+                byteToString = System.Text.Encoding.UTF8.GetString(byteData);
+            }
+            else
+            {
+                byteToString = Convert.ToBase64String(byteData);
+            }
+            
             
             switch (currType)
             {
