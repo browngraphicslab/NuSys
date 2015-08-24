@@ -29,7 +29,7 @@ namespace NuSysApp.Network
             _timer.Tick += SendMessage;
         }
 
-        public void MakeNextSendTCP()
+        public void MakeNextMessageTCP()
         {
             _sendNextTCP = true;
         }
