@@ -11,7 +11,6 @@ namespace NuSysApp.Network
         private DispatcherTimer _timer;
         private Atom _atom;
         private bool _sendNextTCP = false;
-        private bool _isFirstSend = true;
         public DebouncingDictionary(Atom atom)
         {
             _dict = new Dictionary<string, string>();
@@ -75,14 +74,12 @@ namespace NuSysApp.Network
                         await NetworkConnector.Instance.QuickUpdateAtom(_dict);
                     }
                 }
-                _isFirstSend = false;
             }
-            if(_atom.CanEdit == Atom.EditStatus.Maybe && !_isFirstSend)
+            if(_atom.CanEdit == Atom.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
                 NetworkConnector.Instance.RequestLock(_atom.ID);
             }
-
             _timing = false;
             _dict.Clear();
         }
