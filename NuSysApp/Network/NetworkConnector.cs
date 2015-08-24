@@ -642,7 +642,7 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split("&&".ToCharArray()); //break up message into subparts
+                    var miniStrings = message.Split(Constants.AndReplacement.ToCharArray()); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -762,9 +762,9 @@ namespace NuSysApp
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
                                     {
-                                        ret += p.Message+"&&";
+                                        ret += p.Message+Constants.AndReplacement;
                                     }
-                                    ret = ret.Substring(0, ret.Length - 2);
+                                    ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                                     await SendTCPMessage("SPECIAL2:" + ret,ip);
                                     _joiningMembers[ip].Item2.Clear();
                                     return;
