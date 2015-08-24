@@ -6,19 +6,12 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class CreateGroupEventArgs
+    public class CreateGroupEventArgs : SuperEventArgs
     {
-        private readonly string _eventInfo;
 
-        public CreateGroupEventArgs(string text, Group group)
+        public CreateGroupEventArgs(string text, Group group):base(text)
         {
-            _eventInfo = text;
             CreatedGroup = group;
-        }
-
-        public string GetInfo()
-        {
-            return _eventInfo;
         }
 
         public Group CreatedGroup { get; }

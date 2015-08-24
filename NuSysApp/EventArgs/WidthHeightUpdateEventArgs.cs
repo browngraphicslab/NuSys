@@ -2,20 +2,14 @@
 
 namespace NuSysApp
 {
-    public class WidthHeightUpdateEventArgs: EventArgs
+    public class WidthHeightUpdateEventArgs: SuperEventArgs
     {
-        private readonly string _eventInfo;
+        
 
-        public WidthHeightUpdateEventArgs(string text, double width, double height)
+        public WidthHeightUpdateEventArgs(string text, double width, double height):base(text)
         {
-            _eventInfo = text;
             Width = width;
             Height = height;
-        }
-
-        public string GetInfo()
-        {
-            return _eventInfo;
         }
 
         public double Width { get; }

@@ -54,8 +54,7 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
-            this.Model.OnCreation += CreatedHandler;
-  
+            this.Model.OnCreation += CreatedHandler; 
         }
 
        
@@ -214,7 +213,6 @@ namespace NuSysApp
                 if (node != node2 && !rect1.IsEmpty)
                 {
                     NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
-                    //CreateNewGroup("null", node, node2);//TODO fix group id
                     return true;
                 }
             }

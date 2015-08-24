@@ -2,19 +2,13 @@
 
 namespace NuSysApp
 {
-    public class CanEditChangedEventArg: EventArgs
+    public class CanEditChangedEventArg: SuperEventArgs
     {
-        private readonly string _eventInfo;
+       
 
-        public CanEditChangedEventArg(string text, Atom.EditStatus editStatus)
+        public CanEditChangedEventArg(string text, Atom.EditStatus editStatus):base(text)
         {
-            _eventInfo = text;
             EditStatus = editStatus;
-        }
-
-        public string GetInfo()
-        {
-            return _eventInfo;
         }
 
         public Atom.EditStatus EditStatus { get; }

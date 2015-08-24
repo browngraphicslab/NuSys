@@ -2,20 +2,13 @@
 
 namespace NuSysApp
 {
-    public class LocationUpdateEventArgs: EventArgs
+    public class LocationUpdateEventArgs: SuperEventArgs
     {
-        private readonly string _eventInfo;
-
-        public LocationUpdateEventArgs(string text, double x, double y)
+        
+        public LocationUpdateEventArgs(string text, double x, double y):base(text)
         {
-            _eventInfo = text;
             X = x;
             Y = y;
-        }
-
-        public string GetInfo()
-        {
-            return _eventInfo;
         }
 
         public double X { get; }
