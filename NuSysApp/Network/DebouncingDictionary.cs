@@ -40,8 +40,8 @@ namespace NuSysApp.Network
             {
                 if (_atom.CanEdit == Atom.EditStatus.Maybe)
                 {
-                    NetworkConnector.Instance.RequestLock(_atom.ID);
                     NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
+                    NetworkConnector.Instance.RequestLock(_atom.ID);
                 }
                 if (!_timing)
                 {
@@ -67,14 +67,17 @@ namespace NuSysApp.Network
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
                 _dict.Add("id", _atom.ID);
-                if (_sendNextTCP)
+                if (NetworkConnector.Instance.ModelIntermediate.HasAtom(_atom.ID))
                 {
-                    _sendNextTCP = false;
-                    await NetworkConnector.Instance.QuickUpdateAtom(_dict, NetworkConnector.PacketType.TCP);
-                }
-                else
-                {
-                    await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+                    if (_sendNextTCP)
+                    {
+                        _sendNextTCP = false;
+                        await NetworkConnector.Instance.QuickUpdateAtom(_dict, NetworkConnector.PacketType.TCP);
+                    }
+                    else
+                    {
+                        await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+                    }
                 }
             }
             _timing = false;
