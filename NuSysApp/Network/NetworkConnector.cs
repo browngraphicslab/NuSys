@@ -950,18 +950,18 @@ namespace NuSysApp
                         string id = GetID(ip);
                         message = message.Replace(("id=0" + Constants.CommaReplacement),
                             "id=" + id + Constants.CommaReplacement);
-                        await SendMessage(null, "SPECIAL6:" + id + "="+ip, PacketType.TCP, true, true);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                     if (message.IndexOf("id=0>") != -1)
                     {
                         string id = GetID(ip);
                         message = message.Replace(@"id=0>", "id=" + id + '>');
-                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                 }
