@@ -429,7 +429,7 @@ namespace NuSysApp
                     Debug.WriteLine("{0} ({1})", (int) response.StatusCode, response.ReasonPhrase);
                 }
                 Debug.WriteLine("in workspace: " + people);
-                var split = people.Split(",".ToCharArray());
+                var split = people.Split(new string[] { "," }, StringSplitOptions.None);
 
                 var ips = split.ToList();
                 return ips;
@@ -642,7 +642,7 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split(Constants.AndReplacement.ToCharArray()); //break up message into subparts
+                    var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.None); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -825,7 +825,7 @@ namespace NuSysApp
                     }
                     break;
                 case "6"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
-                    var parts = message.Split("=".ToCharArray());
+                    var parts = message.Split(new string[] { "=" }, StringSplitOptions.None);
                     if (parts.Length != 2 && parts.Length != 1)
                     {
                         throw new IncorrectFormatException(origMessage);
@@ -950,18 +950,18 @@ namespace NuSysApp
                         string id = GetID(ip);
                         message = message.Replace(("id=0" + Constants.CommaReplacement),
                             "id=" + id + Constants.CommaReplacement);
-                        await SendMessage(null, "SPECIAL6:" + id + "="+ip, PacketType.TCP, true, true);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                     if (message.IndexOf("id=0>") != -1)
                     {
                         string id = GetID(ip);
                         message = message.Replace(@"id=0>", "id=" + id + '>');
-                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                 }
@@ -998,7 +998,7 @@ namespace NuSysApp
         {
             message = message.Substring(1, message.Length - 2);
 
-            var parts = message.Split(Constants.CommaReplacement.ToCharArray());
+            var parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
             var props = new Dictionary<string, string>();
             foreach (var part in parts)
 
