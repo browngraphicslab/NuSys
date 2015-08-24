@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="800" Margin="0,0,0,700" Background="GreenYellow">
+        <Button Click="ButtonBase_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="250" Width="800" Margin="0,0,0,570" Background="GreenYellow">
             Enter Network Workspace...
         </Button>
         <Button Click="Local_OnClick" HorizontalAlignment="Center" VerticalAlignment="Center" Height="150" Width="500" Margin="0,0,0,150">

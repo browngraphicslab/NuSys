@@ -642,7 +642,7 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split("&&".ToCharArray()); //break up message into subparts
+                    var miniStrings = message.Split(Constants.AndReplacement.ToCharArray()); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -762,9 +762,9 @@ namespace NuSysApp
                                     var ret = "";
                                     foreach (var p in _joiningMembers[ip].Item2)
                                     {
-                                        ret += p.Message+"&&";
+                                        ret += p.Message+Constants.AndReplacement;
                                     }
-                                    ret = ret.Substring(0, ret.Length - 2);
+                                    ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                                     await SendTCPMessage("SPECIAL2:" + ret,ip);
                                     _joiningMembers[ip].Item2.Clear();
                                     return;
@@ -941,6 +941,7 @@ namespace NuSysApp
                     string m = MakeSubMessageFromDict(dict);
                     await HandleRegularMessage(ip, m, packetType);
                     await SendMassTCPMessage(m);
+                    return;
                 }
                 else
                 {
@@ -949,6 +950,7 @@ namespace NuSysApp
                         string id = GetID(ip);
                         message = message.Replace(("id=0" + Constants.CommaReplacement),
                             "id=" + id + Constants.CommaReplacement);
+                        await SendMessage(null, "SPECIAL6:" + id + "="+ip, PacketType.TCP, true, true);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
                         return;
@@ -957,6 +959,7 @@ namespace NuSysApp
                     {
                         string id = GetID(ip);
                         message = message.Replace(@"id=0>", "id=" + id + '>');
+                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
                         return;

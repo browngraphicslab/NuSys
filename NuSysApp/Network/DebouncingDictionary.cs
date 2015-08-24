@@ -38,11 +38,6 @@ namespace NuSysApp.Network
         {
             if (!NetworkConnector.Instance.ModelLocked && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
             {
-                if (_atom.CanEdit == Atom.EditStatus.Maybe)
-                {
-                    NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
-                    NetworkConnector.Instance.RequestLock(_atom.ID);
-                }
                 if (!_timing)
                 {
                     _timing = true;
@@ -79,6 +74,11 @@ namespace NuSysApp.Network
                         await NetworkConnector.Instance.QuickUpdateAtom(_dict);
                     }
                 }
+            }
+            if(_atom.CanEdit == Atom.EditStatus.Maybe)
+            {
+                NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
+                NetworkConnector.Instance.RequestLock(_atom.ID);
             }
             _timing = false;
             _dict.Clear();

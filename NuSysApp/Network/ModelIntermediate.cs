@@ -184,7 +184,6 @@ namespace NuSysApp
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
-                return;
             }
             await WorkSpaceModel.Locks.Set(id, ip);
         }
@@ -290,7 +289,7 @@ namespace NuSysApp
                     {
                         ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
                     }
-                    ret += "id=" + atom.ID + ">&&";
+                    ret += "id=" + atom.ID + ">"+Constants.AndReplacement;
                 }
                 ret = ret.Substring(0, ret.Length - 2);
                 return ret;
