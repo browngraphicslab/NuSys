@@ -35,11 +35,11 @@ namespace NuSysApp
             var firstPage = RenderedPages[0]; // to set the aspect ratio of the node
             Width = firstPage.PixelWidth;
             Height = firstPage.PixelHeight;
-            InkContainer = new List<HashSet<Polyline>>();
+            InkContainer = new List<HashSet<InqLine>>();
             InkContainer.Capacity = (int) PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                InkContainer.Add(new HashSet<Polyline>());
+                InkContainer.Add(new HashSet<InqLine>());
             }
         }
         //public string FilePath { get; set; }
@@ -75,7 +75,7 @@ namespace NuSysApp
         }
 
         public uint PageCount { get; set; }
-        public List<HashSet<Polyline>> InkContainer { get; set; }
+        public List<HashSet<InqLine>> InkContainer { get; set; }
 
         public override async Task<Dictionary<string, string>> Pack()
         {

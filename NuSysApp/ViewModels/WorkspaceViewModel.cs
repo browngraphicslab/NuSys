@@ -283,6 +283,12 @@ namespace NuSysApp
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
+            /*
+            foreach (ISelectable select in SelectedComponents)
+            {
+                select.ToggleSelection();
+            }
+            SelectedComponents.Clear();*/
         }
 
         /// <summary>
@@ -502,9 +508,8 @@ namespace NuSysApp
                 return;
             }
 
-                //Create new group, because no group exists
-                groupVm = new GroupViewModel(groupModel, this, "null"); //TODO FIX ID'S HERE AND HOOK UP MODEL
-
+            //Create new group, because no group exists
+            groupVm = new GroupViewModel(groupModel, this, id);
 
             //Set location to node2's location
             var xCoordinate = node2.Transform.Matrix.OffsetX;

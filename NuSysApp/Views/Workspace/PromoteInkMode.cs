@@ -11,7 +11,7 @@ namespace NuSysApp.Views.Workspace
     internal class PromoteInkMode : AbstractWorkspaceViewMode
     {
 
-        private HashSet<Polyline> _strokes;
+        private HashSet<InqLine> _strokes;
 
         public PromoteInkMode(WorkspaceView view) : base(view)
         {
@@ -37,13 +37,13 @@ namespace NuSysApp.Views.Workspace
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            _view.InqCanvas.Children.Remove(sender as Polyline);
-            _strokes.Remove(sender as Polyline);
+            _view.InqCanvas.Children.Remove(sender as InqLine);
+            _strokes.Remove(sender as InqLine);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-            Polyline[] lines = {sender as Polyline};
+            InqLine[] lines = {sender as InqLine};
             string plines = "";
-            foreach (Polyline pl in lines)
+            foreach (InqLine pl in lines)
             {
                 if (pl.Points.Count > 0)
                 {
@@ -52,7 +52,7 @@ namespace NuSysApp.Views.Workspace
                     {
                         plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
                     }
-                    plines += "' thickness='" + pl.StrokeThickness + "' stroke='" + pl.Stroke.ToString() + "'/>";
+                    plines += "' thickness='" + pl.StrokeThickness + "'/>";
                 }
             }
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);

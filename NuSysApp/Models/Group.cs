@@ -1,15 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Xml;
 
 namespace NuSysApp
 {
     public class Group : Node
     {
+        private Dictionary<string, Sendable> _idDict;
         public Group(string id): base(id)
         {
             this.ID = id;
+            _idDict = new Dictionary<string, Sendable>();
             NodeModelList = new ObservableCollection<Node>();
+        }
+
+        public void Add(Atom atom)
+        {
+            if (_idDict.ContainsKey(atom.ID))
+            {
+                Debug.WriteLine("Could not add atom - Atom already exists in group");
+                return;
+            }
+            _idDict.Add(atom.ID, atom);
+        }
+
+        public void Remove(Atom atom)
+        {
+            if (!_idDict.ContainsKey(atom.ID))
+            {
+                Debug.WriteLine("Could not remove atom - Atom doesn't exist in group");
+                return;
+            }
+            _idDict.Remove(atom.ID);
         }
 
         public ObservableCollection<Node> NodeModelList { get; set; }
