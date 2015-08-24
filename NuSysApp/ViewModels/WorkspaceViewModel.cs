@@ -553,7 +553,7 @@ namespace NuSysApp
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
                 Content toInsert = ((Node)nodeVm.Model).Content;
-                dbConnection.InsertAsync(toInsert);
+                if (toInsert != null) dbConnection.InsertAsync(toInsert);
             }
         }
 
