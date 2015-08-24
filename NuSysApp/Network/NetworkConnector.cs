@@ -522,6 +522,7 @@ namespace NuSysApp
                 await this.SendUDPMessage(message, tup.Item2);
             }
         }
+
         /*
         * sends TCP Streams to everyone except self.  
         */
@@ -530,6 +531,26 @@ namespace NuSysApp
             foreach (var ip in _otherIPs)
             {
                 await this.SendTCPMessage(message, ip, _TCPOutputPort);
+            }
+        }
+
+        /*
+        * Sends Mass Message of specified Type
+        */
+        private async Task SendMassMessage(string message, PacketType packetType)
+        {
+            switch (packetType)
+            {
+                case PacketType.TCP:
+                    await SendMassTCPMessage(message);
+                    break;
+                case PacketType.UDP:
+                    await SendMassUDPMessage(message);
+                    break;
+                case PacketType.Both:
+                    await SendMassUDPMessage(message);
+                    await SendMassTCPMessage(message);
+                    break;
             }
         }
 
