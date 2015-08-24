@@ -10,29 +10,22 @@ namespace NuSysApp
 {
     public class DrawInqMode : IInqMode
     {
-        private Polyline _currentStroke;
+        private InqLine _currentStroke;
 
         public void OnPointerPressed(InqCanvas inqCanvas, PointerRoutedEventArgs e)
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
 
-            _currentStroke = new Polyline();
+            _currentStroke = new InqLine();
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
-            _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
+            _currentStroke.PointerEntered += delegate (object o, PointerRoutedEventArgs e2)
             {
                 
-                if (inqCanvas.Mode is EraseInqMode)
+                if (inqCanvas.Mode is EraseInqMode && inqCanvas.IsPressed)
                 {
-                    inqCanvas.Children.Remove(o as Polyline);
-                    inqCanvas.Strokes.Remove(o as Polyline);
-                    //InkStroke inkStroke = inqCanvas.Strokes[o as Polyline];
-                    //inqCanvas.Manager.SelectWithLine(e2.GetCurrentPoint(inqCanvas).Position, e2.GetCurrentPoint(inqCanvas).Position);
-                    //if (inkStroke.Selected)
-                    //{
-                    //    inqCanvas.Manager.DeleteSelected();
-                    //}
-
+                    InqLine me = o as InqLine;
+                    inqCanvas.Children.Remove(me);
+                    inqCanvas.Strokes.Remove(me);
                 } 
             };
             inqCanvas.Children.Add(_currentStroke);

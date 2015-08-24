@@ -9,22 +9,21 @@ namespace NuSysApp.Components
 {
     class HighlightInqMode : IInqMode
     {
-        private Polyline _currentStroke;
+        private InqLine _currentStroke;
 
         public void OnPointerPressed(InqCanvas inqCanvas, PointerRoutedEventArgs e)
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
 
-            _currentStroke = new Polyline();
+            _currentStroke = new InqLine();
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
             _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
             {
 
                 if (inqCanvas.Mode is EraseInqMode)
                 {
-                    inqCanvas.Children.Remove(o as Polyline);
-                    inqCanvas.Strokes.Remove(o as Polyline);
+                    inqCanvas.Children.Remove(o as InqLine);
+                    inqCanvas.Strokes.Remove(o as InqLine);
                     //inqCanvas.Manager.SelectWithLine(e2.GetCurrentPoint(inqCanvas).Position, e2.GetCurrentPoint(inqCanvas).Position);
                     //inqCanvas.Manager.DeleteSelected();
                 }
