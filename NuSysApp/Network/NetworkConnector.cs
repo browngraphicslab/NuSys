@@ -941,6 +941,7 @@ namespace NuSysApp
                     string m = MakeSubMessageFromDict(dict);
                     await HandleRegularMessage(ip, m, packetType);
                     await SendMassTCPMessage(m);
+                    return;
                 }
                 else
                 {
