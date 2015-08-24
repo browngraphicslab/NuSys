@@ -92,7 +92,7 @@ namespace NuSysApp
                         new FloatingMenuMode(this)));
                     break;
                 case Options.PromoteInk:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this), new PromoteInkMode(this)));
+                    SetViewMode(new MultiMode(this, new PanZoomMode(this)));
                     break;
                 case Options.AddInkNode:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
