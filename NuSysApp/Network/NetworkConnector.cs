@@ -1038,14 +1038,14 @@ namespace NuSysApp
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
         */
-        public async Task QuickUpdateAtom(Dictionary<string, string> properties)
+        public async Task QuickUpdateAtom(Dictionary<string, string> properties, PacketType packetType = PacketType.UDP)
         {
             if (properties.ContainsKey("id"))
             {
                 if (ModelIntermediate.HasAtom(properties["id"]))
                 {
                     string message = MakeSubMessageFromDict(properties);
-                    await SendMassUDPMessage(message);
+                    await SendMassMessage(message, packetType);
                 }
                 else
                 {
