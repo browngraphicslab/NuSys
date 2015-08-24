@@ -2,19 +2,12 @@
 
 namespace NuSysApp
 {
-    public class TextChangedEventArgs: EventArgs
+    public class TextChangedEventArgs: SuperEventArgs
     {
-        private readonly string _eventInfo;
 
-        public TextChangedEventArgs(string eventInfo, string text)
+        public TextChangedEventArgs(string eventInfo, string text):base(eventInfo)
         {
-            _eventInfo = text;
             Text = text;
-        }
-
-        public string GetInfo()
-        {
-            return _eventInfo;
         }
 
         public string Text { get; }

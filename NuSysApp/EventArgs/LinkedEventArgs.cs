@@ -2,14 +2,14 @@
 
 namespace NuSysApp
 {
-    public class LinkedEventArgs : EventArgs
+    public class LinkedEventArgs : SuperEventArgs
     {
-        private readonly string _eventInfo;
+        
         private Link _link;
 
-        public LinkedEventArgs(string text, Link link)
+        public LinkedEventArgs(string text, Link link):base(text)
         {
-            _eventInfo = text;
+ 
             _link = link;
         }
 
@@ -35,11 +35,7 @@ namespace NuSysApp
         {
             get { return _link.ID; }
         }
-        public string GetInfo()
-        {
-            return _eventInfo;
-        }
-
+       
         
     }
 }

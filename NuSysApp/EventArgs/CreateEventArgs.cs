@@ -2,22 +2,13 @@
 
 namespace NuSysApp
 {
-    public class CreateEventArgs : EventArgs
+    public class CreateEventArgs : SuperEventArgs
     {
-        private readonly string _eventInfo;
-        private Node _node;
-
-        public CreateEventArgs(string text, Node node)
+        public CreateEventArgs(string text, Node node):base(text)
         {
-            _eventInfo = text;
-            _node = node;
+            CreatedNode = node;
         }
 
-        public string GetInfo()
-        {
-            return _eventInfo;
-        }
-
-        public Node CreatedNode => _node;
+        public Node CreatedNode { get; }
     }
 }

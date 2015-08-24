@@ -146,6 +146,7 @@
     <Compile Include="EventArgs\DeleteEventArgs.cs" />
     <Compile Include="EventArgs\LinkedEventArgs.cs" />
     <Compile Include="EventArgs\LocationUpdateEventArgs.cs" />
+    <Compile Include="EventArgs\SuperEventArgs.cs" />
     <Compile Include="EventArgs\TextChangedEventArgs.cs" />
     <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
     <Compile Include="MISC\Clip.cs" />
