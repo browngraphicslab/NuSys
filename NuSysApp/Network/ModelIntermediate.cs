@@ -122,6 +122,10 @@ namespace NuSysApp
                                 }
                             }
                             await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
+                            if (props.ContainsKey("data"))
+                            {
+                                props.Remove("data");
+                            }
                             await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
                         }
                         else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
