@@ -15,6 +15,7 @@ namespace NuSysApp
             ByteArray = byteArray;
             Content = new Content(ByteArray, id);
             MakeImage(byteArray);
+            Content = new Content(byteArray, id);
         }
 
         private async Task MakeImage(byte[] bytes)

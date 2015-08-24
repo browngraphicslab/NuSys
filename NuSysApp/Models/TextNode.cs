@@ -75,9 +75,10 @@ namespace NuSysApp
 
             //byte[] newTextBytes = Convert.FromBase64String(Text.ToString());
 
-            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
+            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes("MERP MERP");
+            //byte[] newTextBytes = Convert.FromBase64String("MERP MERP");
             Content = new Content(newTextBytes, ID); //Update Content
-
+            
             //XmlElement 
             XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
 

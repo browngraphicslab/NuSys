@@ -546,19 +546,20 @@ namespace NuSysApp
             await dbConnection.CreateTableAsync<XmlFileHelper>();
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             XmlDocument doc = this.getXml();
-            currWorkspaceXml.toXml = currWorkspaceXml.XmlToString(doc);
+            currWorkspaceXml.toXml = doc.OuterXml;
             dbConnection.InsertAsync(currWorkspaceXml);
 
             // table to store content of each node
             await dbConnection.CreateTableAsync<Content>();
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-                if(((Node)nodeVm.Model).Content != null)
+
+                if (((Node)nodeVm.Model).Content != null)
                 {
                     Content toInsert = ((Node)nodeVm.Model).Content;
                     dbConnection.InsertAsync(toInsert);
                 }
-                
+
             }
         }
 
@@ -580,11 +581,6 @@ namespace NuSysApp
             await stream.WriteAsync(byteArray.AsBuffer());
             stream.Seek(0);
             await img.SetSourceAsync(stream);
-            //NodeViewModel nodeVm = await this.CreateNewNode("10384191#635757668233554225", NodeType.Image, 99863, 99746, null);
-            //nodeVm.SetPosition(99863, 99746);
-            //nodeVm.Width = img.PixelWidth;
-            //nodeVm.Height = img.PixelHeight;
-            //((ImageModel)nodeVm.Model).Image = img;
         }
 
         public XmlDocument getXml()

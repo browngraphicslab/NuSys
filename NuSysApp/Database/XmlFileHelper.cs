@@ -55,24 +55,31 @@ namespace NuSysApp
 
             var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
-            byte[] byteData = res.Data;
-            string byteToString;
 
-            if (currType == "Text")
+            byte[] byteData = null;
+            string byteToString = null;
+
+            if (res != null)
             {
-                byteToString = System.Text.Encoding.UTF8.GetString(byteData);
+                byteData = res.Data;
+
+                if (currType == "Text")
+                {
+                    byteToString = System.Text.Encoding.UTF8.GetString(byteData);
+                }
+                else
+                {
+                    byteToString = Convert.ToBase64String(byteData);
+                }
+
             }
-            else
-            {
-                byteToString = Convert.ToBase64String(byteData);
-            }
-            
+
             
             switch (currType)
             {
                 case "Text":
                     //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID);
                     break;
                 case "Image":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
