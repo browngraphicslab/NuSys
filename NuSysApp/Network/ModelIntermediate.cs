@@ -196,11 +196,11 @@ namespace NuSysApp
         private Polyline[] ParseToPolyline(string s)
         {
             List<Polyline> polys = new List<Polyline>();
-            string[] parts = s.Split("><".ToCharArray());
+            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.None);
             foreach (string part in parts)
             {
                 Polyline poly = new Polyline();
-                string[] subparts = part.Split(" ".ToCharArray());
+                string[] subparts = part.Split(new string[] { " "}, StringSplitOptions.None);
                 foreach (string subpart in subparts)
                 {
                     if (subpart.Length > 0 && subpart != "polyline")
@@ -208,12 +208,12 @@ namespace NuSysApp
                         if (subpart.Substring(0, 6) == "points")
                         {
                             string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                            string[] points = innerPoints.Split(";".ToCharArray());
+                            string[] points = innerPoints.Split(new string[] { ";" }, StringSplitOptions.None);
                             foreach (string p in points)
                             {
                                 if (p.Length > 0)
                                 {
-                                    string[] coords = p.Split(",".ToCharArray());
+                                    string[] coords = p.Split(new string[] { "," }, StringSplitOptions.None);
                                     //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
                                     poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
                                 }
@@ -242,13 +242,13 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(Constants.CommaReplacement.ToCharArray());
+            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
             Dictionary<string, string> props = new Dictionary<string, string>();
             foreach (string part in parts)
             {
                 if (part.Length > 0)
                 {
-                    string[] subParts = part.Split("=".ToCharArray(), 2);
+                    string[] subParts = part.Split(new string[] { "=" },2, StringSplitOptions.None);
                     if (subParts.Length != 2)
                     {
                         Debug.WriteLine("Error, property formatted wrong in message: " + message);
@@ -391,10 +391,10 @@ namespace NuSysApp
         private Dictionary<string, string> StringToDict(string s)
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
-            string[] strings = s.Split("&".ToCharArray());
+            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.None);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(":".ToCharArray());
+                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.None);
                 dict.Add(kvpparts[0], kvpparts[1]);
             }
             return dict;
