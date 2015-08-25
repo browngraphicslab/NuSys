@@ -248,11 +248,11 @@ namespace NuSysApp
         {
 
             List<InqLine> polys = new List<InqLine>();
-            string[] parts = s.Split("><".ToCharArray());
+            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.None);
             foreach (string part in parts)
             {
                 InqLine line = new InqLine();
-                string[] subparts = part.Split(" ".ToCharArray());
+                string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.None);
                 foreach (string subpart in subparts)
                 {
                     if (subpart.Length > 0 && subpart != "polyline")
