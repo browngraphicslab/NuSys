@@ -67,7 +67,6 @@ namespace NuSysApp
                 e.Handled = true;
                 return;
             }
-
             PointerMoved -= OnPointerMoved;
             PointerReleased -= OnPointerReleased;
             _pointerId = uint.MaxValue;

@@ -430,7 +430,7 @@ namespace NuSysApp
         //    }
         //    return  vm.Model;
         //}
-        public IList<Line> LastPartialLines { get; set; }
+        public Line LastPartialLines { get; set; }
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
             LastPartialLines = e.AddedLines;

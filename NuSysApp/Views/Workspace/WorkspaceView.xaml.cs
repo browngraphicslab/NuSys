@@ -48,13 +48,13 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    foreach (Line l in vm.LastPartialLines)
-                    {
-                        InqLine inq = new InqLine();
-                        inq.AddPoint(new Point(l.X1, l.Y1));
-                        inq.AddPoint(new Point(l.X2, l.Y2));
-                        this.InqCanvas.Strokes.Add(inq);
-                    }
+                    Line l = vm.LastPartialLines;
+                    InqLine inq = new InqLine();
+                    inq.AddPoint(new Point(l.X1, l.Y1));
+                    inq.AddPoint(new Point(l.X2, l.Y2));
+                    InqLine[] inqs = new InqLine[1];
+                    inqs[0] = inq;
+                    this.InqCanvas.PasteStrokes(inqs);
                     break;
             }
         }

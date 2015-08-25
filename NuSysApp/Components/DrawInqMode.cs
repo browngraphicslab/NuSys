@@ -36,6 +36,13 @@ namespace NuSysApp
             //inqCanvas.Manager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
+                if (!NetworkConnector.Instance.ModelLocked && _currentStroke.Points.Count > 1)
+                {
+                    NetworkConnector.Instance.SendPartialLine(_currentStroke.ID, _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
+                        _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
+                        _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
+                        _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString());
+                }
         }
 
         public void OnPointerReleased(InqCanvas inqCanvas, PointerRoutedEventArgs e)
