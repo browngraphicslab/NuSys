@@ -168,7 +168,14 @@ namespace NuSysApp
             foreach (string s in toDelete)
             {
                 Debug.WriteLine("IP: " + s + " failed ping twice.  Removing from network");
-                await RemoveIP(s);
+                try
+                {
+                    await RemoveIP(s);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Failed to remove IP: "+s);
+                }
                 if (_hostIP == s)
                 {
                     //TODO STOP EVERYONE AND RESET HOST
