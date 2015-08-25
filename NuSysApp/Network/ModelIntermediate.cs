@@ -444,7 +444,7 @@ namespace NuSysApp
         private Dictionary<string, string> StringToDict(string s)
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
-            string[] strings = s.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.None);
+            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.None);
             foreach (string kvpString in strings)
             {
                 string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.None);
