@@ -53,10 +53,11 @@ namespace NuSysApp
                     Line l = vm.LastPartialLines;
                     InqLine inq = new InqLine();
                     inq.StrokeThickness = 2;
-                    inq.Stroke = new SolidColorBrush(Color.FromArgb(0, 0, 0, 255));
+                    inq.Stroke = new SolidColorBrush(Colors.Black);
                     inq.AddPoint(new Point(l.X1, l.Y1));
                     inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2));
                     inq.AddPoint(new Point(l.X2, l.Y2));
+                    this.InqCanvas.Children.Add(inq);
                     this.InqCanvas.Strokes.Add(inq);
                     break;
             }

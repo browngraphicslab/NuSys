@@ -25,12 +25,12 @@ namespace NuSysApp
 
         private bool _isHighlighting = false;
         private bool _isSelected = false;
-        private string _id;
         public InqLine()
         {
             this.InitializeComponent();
             this.CanEdit = Atom.EditStatus.Maybe;
-            _id = DateTime.UtcNow.Ticks.ToString();
+            ID = DateTime.UtcNow.Ticks.ToString();
+
         }
 
         public InqLine(string id,string data)
