@@ -9,11 +9,11 @@ namespace NuSysApp
 {
     public class AddPartialLineEventArgs : SuperEventArgs
     {
-        public AddPartialLineEventArgs(string text, Line line):base(text)
+        public AddPartialLineEventArgs(string text, InqLine line):base(text)
         {
-            AddedLines = line;
+            AddedLine = line;
         }
 
-        public Line AddedLines { get; }
+        public InqLine AddedLine { get; }
     }
 }

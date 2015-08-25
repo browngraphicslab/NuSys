@@ -6,8 +6,11 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
@@ -48,9 +51,14 @@ namespace NuSysApp
                     {
                         n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
-                            OnPartialLineAddition?.Invoke(this,
-                                new AddPartialLineEventArgs("Added Partial Lines",
-                                    ((Line) ((object[]) eventArgs.NewItems.SyncRoot)[0])));
+                            Line l = ((Line) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
+                            InqLine inq = new InqLine();
+                            inq.StrokeThickness = 2;
+                            inq.Stroke = new SolidColorBrush(Colors.Black);
+                            inq.AddPoint(new Point(l.X1, l.Y1));
+                            inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2));
+                            inq.AddPoint(new Point(l.X2, l.Y2));
+                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", inq));
                         };
                     }
                 }

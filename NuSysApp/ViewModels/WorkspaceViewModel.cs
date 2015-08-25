@@ -430,10 +430,10 @@ namespace NuSysApp
         //    }
         //    return  vm.Model;
         //}
-        public Line LastPartialLines { get; set; }
+        public InqLine LastPartialLine { get; set; }
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
-            LastPartialLines = e.AddedLines;
+            LastPartialLine = e.AddedLine;
             RaisePropertyChanged("PartialLineAdded");
         }
         public void CreatedHandler(object source, CreateEventArgs e)
