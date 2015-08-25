@@ -87,7 +87,15 @@ namespace NuSysApp
                     node = new TextNode((string)data, id);
                     break;
                 case NodeType.Ink:
-                    node = new InkModel(id);
+                    var lines = data as List<InqLine>;
+                    if (lines != null)
+                    {
+                        node = new InkModel(id, lines);
+                    }
+                    else
+                    {
+                        node = new InkModel(id);
+                    }
                     break;
                 case NodeType.Image:
                     node = new ImageModel((byte[])data,id);

@@ -83,6 +83,13 @@ namespace NuSysApp
             set { Line.StrokeThickness = value; }
         }
 
+        public Brush Stroke
+        {
+            get { return Line.Stroke; }
+            set { Line.Stroke = value; }
+
+        }
+
         public bool IsHighlighting
         {
             get { return _isHighlighting; }

@@ -35,7 +35,7 @@ namespace NuSysApp
         {
             //inqCanvas.Manager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.Points.Add(new Point(currentPoint.Position.X, currentPoint.Position.Y));
+            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
         }
 
         public void OnPointerReleased(InqCanvas inqCanvas, PointerRoutedEventArgs e)

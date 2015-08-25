@@ -204,14 +204,15 @@ namespace NuSysApp
         {
             return Convert.FromBase64String(s);
         }
-        private Polyline[] ParseToPolyline(string s)
+        private List<InqLine> ParseToPolyline(string s)
         {
-            List<Polyline> polys = new List<Polyline>();
-            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.None);
+
+            List<InqLine> polys = new List<InqLine>();
+            string[] parts = s.Split("><".ToCharArray());
             foreach (string part in parts)
             {
-                Polyline poly = new Polyline();
-                string[] subparts = part.Split(new string[] { " "}, StringSplitOptions.None);
+                InqLine line = new InqLine();
+                string[] subparts = part.Split(" ".ToCharArray());
                 foreach (string subpart in subparts)
                 {
                     if (subpart.Length > 0 && subpart != "polyline")
@@ -226,29 +227,30 @@ namespace NuSysApp
                                 {
                                     string[] coords = p.Split(new string[] { "," }, StringSplitOptions.None);
                                     //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
+                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
+                                    line.AddPoint(parsedPoint);
                                 }
                             }
                         }
                         else if (subpart.Substring(0, 9) == "thickness")
                         {
-                            string sp = subpart.Substring(11, subpart.Length - 12);
-                            poly.StrokeThickness = double.Parse(sp);
+                            string sp = subpart.Substring(11, subpart.Length - 13);
+                            line.StrokeThickness = double.Parse(sp);
                         }
                         else if (subpart.Substring(0, 6) == "stroke")
                         {
                             string sp = subpart.Substring(8, subpart.Length - 10);
-                            poly.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
+                            line.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
                             //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
                         }
                     }
                 }
-                if (poly.Points.Count > 0)
+                if (line.Points.Count > 0)
                 {
-                    polys.Add(poly);
+                    polys.Add(line);
                 }
             }
-            return polys.ToArray();
+            return polys;
         }
         private Dictionary<string, string> ParseOutProperties(string message)
         {

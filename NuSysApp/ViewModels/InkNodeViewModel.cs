@@ -12,7 +12,8 @@ namespace NuSysApp
         public InkNodeViewModel(InkModel model, WorkspaceViewModel vm, string id): base(model, vm,id)
         {
             this.Model.ID = id;
-            this.View = new InkNodeView2(this);
+            var view = new InkNodeView2(this);
+            this.View = view;
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize; 
             this.Height = Constants.DefaultNodeSize;
@@ -20,6 +21,7 @@ namespace NuSysApp
             this.IsSelected = false;
             this.IsEditing = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175,173,216,230));
+            view.PromoteStrokes((model as InkModel).PolyLines.ToArray());
         }
     }
 }
