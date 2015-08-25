@@ -3,6 +3,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using NuSysApp.Views.Workspace;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using Windows.Foundation;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -33,12 +39,30 @@ namespace NuSysApp
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
             _cortanaInitialized = false;
+            vm.PropertyChanged += Update;
         }
+
+        private void Update(object sender, PropertyChangedEventArgs e)
+        {
+            WorkspaceViewModel vm = (WorkspaceViewModel)sender;
+            switch (e.PropertyName)
+            {
+                case "PartialLineAdded":
+                    foreach (Line l in vm.LastPartialLines)
+                    {
+                        InqLine inq = new InqLine();
+                        inq.AddPoint(new Point(l.X1, l.Y1));
+                        inq.AddPoint(new Point(l.X2, l.Y2));
+                        this.InqCanvas.Strokes.Add(inq);
+                    }
+                    break;
+            }
+        }
+
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
         }
-
         private async Task SetViewMode(AbstractWorkspaceViewMode mode)
         {
             var deactivate = _mode?.Deactivate();

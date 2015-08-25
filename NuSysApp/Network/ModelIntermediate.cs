@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +44,23 @@ namespace NuSysApp
                     {
                         if (props.ContainsKey("type") && props["type"] == "ink")
                         {
-
+                            if (props.ContainsKey("inkType") && props["inkType"] == "global")
+                            {
+                                Line l = ParseToLineSegment(props);
+                                if (l == null) return;
+                                
+                                if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                                {
+                                    WorkSpaceModel.PartialLines[id].Add(l);
+                                }
+                                else
+                                {
+                                    ObservableCollection<Line> ol = new ObservableCollection<Line>();
+                                    WorkSpaceModel.PartialLines.Add(id,new ObservableCollection<Line>());
+                                    WorkSpaceModel.PartialLines[id].Add(l);
+                                }
+                                
+                            }
                         }
                         else if (props.ContainsKey("type") && props["type"] == "group")
                         {
@@ -400,6 +418,23 @@ namespace NuSysApp
                 dict.Add(kvpparts[0], kvpparts[1]);
             }
             return dict;
-        } 
+        }
+
+        private Line ParseToLineSegment(Dictionary<string,string> props)
+        {
+            Line l = new Line();
+            if (props.ContainsKey("x1") && props.ContainsKey("y1") && props.ContainsKey("x2") && props.ContainsKey("y2"))
+            {
+                l.X1 = Double.Parse(props["x1"]);
+                l.X2 = Double.Parse(props["x2"]);
+                l.Y1 = Double.Parse(props["y1"]);
+                l.Y2 = Double.Parse(props["y2"]);
+            }
+            else
+            {
+                return null;
+            }
+            return l;
+        }
     }
 }

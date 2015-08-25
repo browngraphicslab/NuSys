@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -14,6 +15,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
 using NuSysApp.MISC;
 using SQLite.Net.Async;
 
@@ -54,11 +56,9 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
-            this.Model.OnCreation += CreatedHandler; 
+            this.Model.OnCreation += CreatedHandler;
+            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
         }
-
-       
-        
 
         private async void Init()
         {
@@ -430,6 +430,12 @@ namespace NuSysApp
         //    }
         //    return  vm.Model;
         //}
+        public IList<Line> LastPartialLines { get; set; }
+        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
+        {
+            LastPartialLines = e.AddedLines;
+            RaisePropertyChanged("PartialLineAdded");
+        }
         public void CreatedHandler(object source, CreateEventArgs e)
         {
             NodeViewModel vm = null;

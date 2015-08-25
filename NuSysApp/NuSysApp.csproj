@@ -140,6 +140,7 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
+    <Compile Include="EventArgs\AddPartialLineEventArgs.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
     <Compile Include="EventArgs\CreateEventArgs.cs" />
     <Compile Include="EventArgs\CreateGroupEventArgs.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="MISC\ISelectable.cs" />
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
+    <Compile Include="MISC\ObservableDictionary.cs" />
     <Compile Include="MISC\OfficeInteropWord.cs" />
     <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />

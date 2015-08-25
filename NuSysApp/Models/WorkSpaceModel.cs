@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.Foundation.Collections;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -13,16 +18,18 @@ namespace NuSysApp
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
+        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
         public event CreateGroupEventHandler OnGroupCreation;
+        public event AddPartialLineEventHandler OnPartialLineAddition;
         
         #endregion Events and Delegates
 
         #region Private Members
         private Dictionary<string, Sendable> _idDict;
 
-
+        private ObservableDictionary<string,ObservableCollection<Line>> _partialLines;
         private LockDictionary _locks;
         #endregion Private members
        
@@ -32,6 +39,17 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
+            _partialLines = new ObservableDictionary<string, ObservableCollection<Line>>();
+            _partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
+            {
+                foreach (ObservableCollection<Line> n in args.NewItems)
+                {
+                    n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
+                    {
+                        OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", (List<Line>)eventArgs.NewItems));
+                    };
+                }
+            };
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
@@ -42,7 +60,10 @@ namespace NuSysApp
         {
             get { return _idDict; }
         }
-       
+        public ObservableDictionary<string, ObservableCollection<Line>> PartialLines 
+        {
+            get { return _partialLines; }
+        }
         public LockDictionary Locks
         {
             get { return _locks; }

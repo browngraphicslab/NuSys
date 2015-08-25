@@ -25,11 +25,12 @@ namespace NuSysApp
 
         private bool _isHighlighting = false;
         private bool _isSelected = false;
-
+        private string _id;
         public InqLine()
         {
             this.InitializeComponent();
             this.CanEdit = Atom.EditStatus.Maybe;
+            _id = DateTime.UtcNow.Ticks.ToString();
         }
 
         public InqLine(string id,string data)
@@ -47,6 +48,13 @@ namespace NuSysApp
         {
             Line.Points.Add(p);
             SelectedBorder.Points.Add(p);
+            if (!NetworkConnector.Instance.ModelLocked && Line.Points.Count>1)
+            {
+                NetworkConnector.Instance.SendPartialLine(_id, Line.Points[Line.Points.Count - 2].X.ToString(),
+                    Line.Points[Line.Points.Count - 2].Y.ToString(),
+                    Line.Points[Line.Points.Count - 1].X.ToString(),
+                    Line.Points[Line.Points.Count - 1].Y.ToString());
+            }
         }
 
         public void SetHighlighting(bool highlight)
