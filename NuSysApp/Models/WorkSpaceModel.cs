@@ -44,13 +44,15 @@ namespace NuSysApp
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    ObservableCollection<Line> n = (ObservableCollection<Line>) (((object[]) args.NewItems.SyncRoot)[0]);
-                    n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
+                    foreach (ObservableCollection<Line> n in ((object[]) args.NewItems.SyncRoot))
                     {
-                        OnPartialLineAddition?.Invoke(this,
-                            new AddPartialLineEventArgs("Added Partial Lines",
-                                ((Line) ((object[]) eventArgs.NewItems.SyncRoot)[0])));
-                    };
+                        n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
+                        {
+                            OnPartialLineAddition?.Invoke(this,
+                                new AddPartialLineEventArgs("Added Partial Lines",
+                                    ((Line) ((object[]) eventArgs.NewItems.SyncRoot)[0])));
+                        };
+                    }
                 }
             };
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
