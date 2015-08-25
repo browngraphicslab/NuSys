@@ -51,6 +51,7 @@ namespace NuSysApp
             //var inkStrokes = inqCanvas.Manager.GetStrokes();
             //inqCanvas.Strokes.Add(_currentStroke, inkStrokes[inkStrokes.Count - 1]);
             inqCanvas.Strokes.Add(_currentStroke);
+            NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, _currentStroke.GetString());
         }
     }
 }
