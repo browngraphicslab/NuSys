@@ -44,7 +44,7 @@ namespace NuSysApp
                     {
                         if (props.ContainsKey("type") && props["type"] == "ink")
                         {
-                            if (props.ContainsKey("inkType") && props["inkType"] == "global" && false)
+                            if (props.ContainsKey("inkType") && props["inkType"] == "global")
                             {
                                 Line l = ParseToLineSegment(props);
                                 if (l == null) return;

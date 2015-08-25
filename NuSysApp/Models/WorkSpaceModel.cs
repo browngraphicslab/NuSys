@@ -42,11 +42,14 @@ namespace NuSysApp
             _partialLines = new ObservableDictionary<string, ObservableCollection<Line>>();
             _partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
             {
-                foreach (ObservableCollection<Line> n in ((object[])args.NewItems.SyncRoot))
+                if (args.Action == NotifyCollectionChangedAction.Add)
                 {
+                    ObservableCollection<Line> n = (ObservableCollection<Line>) (((object[]) args.NewItems.SyncRoot)[0]);
                     n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
                     {
-                        OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", ((Line)((object[])eventArgs.NewItems.SyncRoot)[0])));
+                        OnPartialLineAddition?.Invoke(this,
+                            new AddPartialLineEventArgs("Added Partial Lines",
+                                ((Line) ((object[]) eventArgs.NewItems.SyncRoot)[0])));
                     };
                 }
             };
