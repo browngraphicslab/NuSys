@@ -124,7 +124,7 @@ namespace NuSysApp
                 {
                     plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
                 }
-                plines += "' thickness='" + Line.StrokeThickness + "'/>";
+                plines += "' thickness='" + Line.StrokeThickness + "'>";
             }
             return plines;
         }
