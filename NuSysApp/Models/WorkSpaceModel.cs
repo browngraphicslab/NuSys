@@ -21,7 +21,7 @@ namespace NuSysApp
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
-        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
+        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
         public event CreateGroupEventHandler OnGroupCreation;
@@ -58,7 +58,7 @@ namespace NuSysApp
                             inq.AddPoint(new Point(l.X1, l.Y1));
                             inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2));
                             inq.AddPoint(new Point(l.X2, l.Y2));
-                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", inq));
+                            OnPartialLineAddition?.Invoke(this,new AddLineEventArgs("Added Partial Lines", inq));
                         };
                     }
                 }
@@ -107,6 +107,11 @@ namespace NuSysApp
              node1.AddToGroup(group);
              node2.AddToGroup(group);
             OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+        }
+
+        public void AddGlobalInq(InqLine line)
+        {
+            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", line));
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)

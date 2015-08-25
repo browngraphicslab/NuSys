@@ -77,7 +77,9 @@ namespace NuSysApp
                                     if (props.ContainsKey("data"))
                                     {
                                         List<InqLine> lines = ParseToPolyline(props["data"]);
-
+                                        InqLine line = lines[0];
+                                        WorkSpaceModel.IDToSendableDict.Add(id,line);
+                                        WorkSpaceModel.AddGlobalInq(line);
                                     }
                                 }
 
