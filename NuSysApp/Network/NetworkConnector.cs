@@ -979,7 +979,7 @@ namespace NuSysApp
                     }
                 }
             }
-            if (message[0] == '<' && message[message.Length - 1] == '>')
+            if (message[0] == '<' && message[message.Length - 1] == '>'|| true)
             {
                 ModelLocked = true;
                 await ModelIntermediate.HandleMessage(message);
