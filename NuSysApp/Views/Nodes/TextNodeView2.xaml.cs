@@ -35,6 +35,11 @@ namespace NuSysApp
                 RearrangeImagePlaceHolders();
             };
 
+            rtfTextBox.TextChanging += delegate
+            {
+                RearrangeImagePlaceHolders();
+            };
+
             rtfTextBox.TextChanged += delegate
             {
                 RearrangeImagePlaceHolders();
@@ -89,7 +94,6 @@ namespace NuSysApp
             {
                 await vm.UpdateRtf();
                 RearrangeImagePlaceHolders();
-
             }
 
             if (mdTextBox.Visibility == Visibility.Visible)
