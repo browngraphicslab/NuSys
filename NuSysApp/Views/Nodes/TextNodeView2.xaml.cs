@@ -93,6 +93,7 @@ namespace NuSysApp
             if (!vm.IsEditing)
             {
                 await vm.UpdateRtf();
+
                 RearrangeImagePlaceHolders();
             }
 
@@ -119,6 +120,18 @@ namespace NuSysApp
 
         private void RearrangeImagePlaceHolders()
         {
+
+            string str2;
+            rtfTextBox.Document.GetText(TextGetOptions.None, out str2);
+            rtfTextBox.Document.Selection.SetRange(0, str2.Length);
+
+            Rect rect2;
+            int hit2;
+            rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect2, out hit2);
+
+
+            grid.Height = rect2.Height > this.Height ? rect2.Height : this.Height;
+
             var currentSelectionStart = rtfTextBox.Document.Selection.StartPosition;
             var currentSelectionEnd = rtfTextBox.Document.Selection.EndPosition;
 
