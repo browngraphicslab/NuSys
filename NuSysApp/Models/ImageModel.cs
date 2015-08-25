@@ -13,6 +13,7 @@ namespace NuSysApp
         public ImageModel(byte[] byteArray, string id) : base(id)
         {
             ByteArray = byteArray;
+            Content = new Content(ByteArray, id);
             MakeImage(byteArray);
             Content = new Content(byteArray, id);
         }
@@ -71,7 +72,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("image"))
             {
-                ByteArray = Convert.FromBase64String(props["image"]);
+                ByteArray = Convert.FromBase64String(props["image"]); //COnverts to Byte Array
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();

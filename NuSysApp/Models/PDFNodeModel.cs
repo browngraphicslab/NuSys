@@ -21,6 +21,7 @@ namespace NuSysApp
         public PdfNodeModel(byte[] bytes,string id) : base(id)
         {
             ByteArray = bytes;
+            Content = new Content(ByteArray, id);
         }
 
         public async Task SaveFile()
