@@ -50,7 +50,9 @@ namespace NuSysApp
                 case "PartialLineAdded":
                     Line l = vm.LastPartialLines;
                     InqLine inq = new InqLine();
+                    inq.StrokeThickness = 7;
                     inq.AddPoint(new Point(l.X1, l.Y1));
+                    inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2);
                     inq.AddPoint(new Point(l.X2, l.Y2));
                     InqLine[] inqs = new InqLine[1];
                     inqs[0] = inq;
