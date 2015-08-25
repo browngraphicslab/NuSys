@@ -170,6 +170,7 @@ namespace NuSysApp
         {
             Dictionary<string,string> props = new Dictionary<string, string>();
             props.Add("line", GetString());
+            return props;
         }
 
         public async Task UnPack(Dictionary<string, string> props)
