@@ -382,6 +382,10 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
+            if (message.IndexOf("SPECIAL12") != -1)
+            {
+                
+            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
@@ -853,9 +857,17 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        await ModelIntermediate.Locks.Set(message, "");
-                        await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
-                        return;
+                        if (ModelIntermediate.HasAtom(message))
+                        {
+                            await ModelIntermediate.Locks.Set(message, "");
+                            await SendMessage(ip, "SPECIAL6:" + message + "=", PacketType.TCP, true, true);
+                            return;
+                        }
+                        else
+                        {
+                            throw new InvalidIDException(message);
+                            return;
+                        }
                     }
                     else
                     {

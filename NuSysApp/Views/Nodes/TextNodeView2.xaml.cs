@@ -29,7 +29,6 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
 
-
             rtfTextBox.SizeChanged += delegate
             {
                 RearrangeImagePlaceHolders();
