@@ -16,6 +16,7 @@
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
+        <converters:SubStractConverter x:Key="subtractConverter" />
 
         <Style TargetType="local:TextBoxExtended">
             <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
@@ -133,14 +134,14 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <ScrollViewer Width="{Binding Width}" Height="{Binding Height}">
-                <Grid x:Name="grid" Width="{Binding Width}" Margin="30,60,30,30" >
-                    <TextBox x:Name="mdTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="1" Foreground="Black" TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Courier New" IsEnabled="true"
+            <ScrollViewer Width="{Binding Width}" Height="{Binding Height}" Padding="20,70,20,20">
+                <Canvas x:Name="grid" Width="{Binding Width}" Background="Transparent" VerticalAlignment="Top">
+                    <TextBox x:Name="mdTextBox" Height="Auto" Width="{Binding Width}" MinHeight="{Binding Height, Converter={StaticResource subtractConverter}, ConverterParameter=70}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity="1" Foreground="Black" TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Courier New" IsEnabled="true"
                          Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Text="{Binding Data, Mode=TwoWay}" Visibility="Collapsed" />
-                    <local:TextBoxExtended x:Name="rtfTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity=".8" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
+                    <local:TextBoxExtended x:Name="rtfTextBox" Width="{Binding Width}" MinHeight="{Binding Height, Converter={StaticResource subtractConverter}, ConverterParameter=70}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity=".8" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
                                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Rtf="{Binding Rtf}" Visibility="Visible" IsEnabled="False" />
-                    <Canvas x:Name="imgPlaceholderContainer" Background="Transparent"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  />
-                </Grid>
+                    <Canvas x:Name="imgPlaceholderContainer" Background="Transparent"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed" />
+                </Canvas>
             </ScrollViewer>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>

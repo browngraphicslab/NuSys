@@ -136,12 +136,12 @@ namespace NuSysApp
         {
             this.Data = ((TextNode)this.Model).Text;
             await UpdateRtf();
-        }      
-        
-        
+        }
+
+
         #region Public Properties
 
-        private string _data;
+        private string _data = string.Empty;
         /// <summary>
         /// data contained by text node
         /// </summary>
