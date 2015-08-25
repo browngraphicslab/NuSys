@@ -180,6 +180,9 @@
     <Compile Include="ViewModels\AudioNodeViewModel.cs" />
     <Compile Include="ViewModels\MinimapViewModel.cs" />
     <Compile Include="ViewModels\PinViewModel.cs" />
+    <Compile Include="Views\BucketWindow.xaml.cs">
+      <DependentUpon>BucketWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Misc\MinimapView.xaml.cs">
       <DependentUpon>MinimapView.xaml</DependentUpon>
     </Compile>
@@ -288,6 +291,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\BucketWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Misc\MinimapView.xaml">
       <Generator>MSBuild:Compile</Generator>

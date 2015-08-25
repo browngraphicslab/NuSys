@@ -263,7 +263,7 @@
             <Button x:Name="NewMedia" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click"> 
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_media.png"></Image>
             </Button>
-            <Button x:Name="NewImport" Style="{StaticResource FloatingButton}">
+            <Button x:Name="Bucket" Style="{StaticResource FloatingButton}" Click="Bucket_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_bucket.png"></Image>
             </Button>
             <Button x:Name="AudioCapture" Style="{StaticResource FloatingButton}" Tapped="AudioCaptureButton_Click">
@@ -289,5 +289,9 @@
                 </Button.Background>
             </Button>
         </StackPanel>
+        
+        <!-- Bucket Window -->
+        <local:BucketWindow x:Name="bucketWindow" Margin="40,30,0,0" Visibility="Collapsed" IsHitTestVisible="False"></local:BucketWindow>
+        
     </Canvas>
 </UserControl>

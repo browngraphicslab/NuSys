@@ -25,7 +25,6 @@ namespace NuSysApp
         private bool _subMenuSelectOpen;
         private bool _subMenuNodesOpen;
         private bool _subMenuAdditionalOpen;
-        private bool _floatingMenuCollapsed;
 
         private readonly List<Button> _buttons;
         private static readonly SolidColorBrush BorderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
@@ -39,7 +38,7 @@ namespace NuSysApp
                 //audioCaptureButton,
                 NewNode,
                 NewMedia,
-                NewImport,
+                Bucket,
                 Erase,
                 Colors,
                 MultiSelect,
@@ -87,12 +86,13 @@ namespace NuSysApp
 
         private void Expandable(object sender, RoutedEventArgs e)
         {
-            if (_floatingMenuCollapsed)
+            if (FloatingMenuPanel.Visibility == Visibility.Collapsed)
             {
+                bucketWindow.Visibility = Visibility.Collapsed;
+                bucketWindow.IsHitTestVisible = false;
                 expand.Begin();
-                _floatingMenuCollapsed = false;
                 CollapseImage.Visibility = Visibility.Visible;
-                ExpandImage.Visibility = Visibility.Collapsed;
+                ExpandImage.Visibility = Visibility.Collapsed;             
             }
             else
             {
@@ -104,8 +104,9 @@ namespace NuSysApp
                 _subMenuSelectOpen = false;
                 _subMenuNodesOpen = false;
                 _subMenuAdditionalOpen = false;
+                bucketWindow.IsHitTestVisible = false;
+                bucketWindow.Visibility = Visibility.Collapsed;
                 collapse.Begin();
-                _floatingMenuCollapsed = true;
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
@@ -231,6 +232,28 @@ namespace NuSysApp
             SetActive((Button) sender);
             ModeChange?.Invoke(Options.Pin);
         }
+
+        private void Bucket_Click(object sender, RoutedEventArgs e)
+        {
+            if (bucketWindow.Visibility == Visibility.Collapsed)
+            {
+                bucketWindow.Visibility = Visibility.Visible;
+                bucketWindow.IsHitTestVisible = true;
+                collapse.Begin();
+                slidein.Begin();
+                slideinSelect.Begin();
+                slideinNodes.Begin();
+                slideinAdditional.Begin();
+                _subMenuOpen = false;
+                _subMenuSelectOpen = false;
+                _subMenuNodesOpen = false;
+                _subMenuAdditionalOpen = false;
+                CollapseImage.Visibility = Visibility.Collapsed;
+                ExpandImage.Visibility = Visibility.Visible;
+            }
+        }
+
+
     private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)this.DataContext;
