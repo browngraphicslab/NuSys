@@ -22,8 +22,7 @@ namespace NuSysApp
                 Content = new Content(textToBytes, id);
             }
 
-            this.ID = id;
-          
+            this.ID = id;          
         }
 
         public string Text

@@ -48,7 +48,7 @@ namespace ChromeNusysIntermediate
                                         .Value;
                     string pattern = @"<img[^>]+\>";
                     Regex rgx = new Regex(pattern);
-                    input = rgx.Replace(input, "---IMAGE---");
+                    // input = rgx.Replace(input, "---IMAGE---");
 
                     string imageRtf = string.Empty;
                     if (!imgSrc.Equals("http:"))
@@ -79,13 +79,13 @@ namespace ChromeNusysIntermediate
                         imageRtf = imageRtf.Replace("---IMG_DATA---", imgData);
                     }
 
-                    input = HtmlToRichText(input, "");
+                    //input = HtmlToRichText(input, "");
                     var i = input.IndexOf("________________________________________________________");
-                    input = input.Remove(i, input.Length - i) + "}";
+                    // input = input.Remove(i, input.Length - i) + "}";
 
                     if (!imgSrc.Equals("http:"))
                     {
-                        input = input.Replace("---IMAGE---", imageRtf);
+                        //  input = input.Replace("---IMAGE---", imageRtf);
                     }
 
                     string[] line = { input };

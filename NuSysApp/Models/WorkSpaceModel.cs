@@ -115,7 +115,7 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    node = new TextNode((string)data, id);
+                    node = new TextNode((string)data ?? "", id);
                     break;
                 case NodeType.Richtext:
                     node = new TextNode((string)data, id);

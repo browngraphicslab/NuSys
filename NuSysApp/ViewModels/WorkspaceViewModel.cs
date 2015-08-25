@@ -129,9 +129,10 @@ namespace NuSysApp
                         byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                         reader.ReadBytes(fileContent);
                         string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
+                        text = text.Replace("\n", "");
+                        text = await ContentConverter.HtmlToMd(text);
                         var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
                         NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Richtext.ToString(),text);
-                        //var nodeVm = CreateNewNode("null",NodeType.Richtext, p.X, p.Y, text);//TODO make actual Id's
                     });
                 }
 
@@ -436,7 +437,7 @@ namespace NuSysApp
             LastPartialLine = e.AddedLine;
             RaisePropertyChanged("PartialLineAdded");
         }
-        public void CreatedHandler(object source, CreateEventArgs e)
+        public async void CreatedHandler(object source, CreateEventArgs e)
         {
             NodeViewModel vm = null;
             var model = e.CreatedNode;
