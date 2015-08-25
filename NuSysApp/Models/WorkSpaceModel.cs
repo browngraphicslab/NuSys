@@ -44,7 +44,7 @@ namespace NuSysApp
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    foreach (ObservableCollection<Line> n in ((object[]) args.NewItems.SyncRoot))
+                    foreach (ObservableCollection<Line> n in _partialLines.Values)
                     {
                         n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
