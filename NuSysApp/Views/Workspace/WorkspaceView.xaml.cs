@@ -9,6 +9,8 @@ using System.ComponentModel;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -50,13 +52,12 @@ namespace NuSysApp
                 case "PartialLineAdded":
                     Line l = vm.LastPartialLines;
                     InqLine inq = new InqLine();
-                    inq.StrokeThickness = 7;
+                    inq.StrokeThickness = 2;
+                    inq.Stroke = new SolidColorBrush(Color.FromArgb(0, 0, 0, 255));
                     inq.AddPoint(new Point(l.X1, l.Y1));
                     inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2));
                     inq.AddPoint(new Point(l.X2, l.Y2));
-                    InqLine[] inqs = new InqLine[1];
-                    inqs[0] = inq;
-                    this.InqCanvas.PasteStrokes(inqs);
+                    this.InqCanvas.Strokes.Add(inq);
                     break;
             }
         }
