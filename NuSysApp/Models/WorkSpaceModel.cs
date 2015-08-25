@@ -21,7 +21,7 @@ namespace NuSysApp
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
-        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
+        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
         public event CreateGroupEventHandler OnGroupCreation;
@@ -32,7 +32,7 @@ namespace NuSysApp
         #region Private Members
         private Dictionary<string, Sendable> _idDict;
 
-        private ObservableDictionary<string,ObservableCollection<Line>> _partialLines;
+        private ObservableDictionary<string,ObservableCollection<InqLine>> _partialLines;
         private LockDictionary _locks;
         #endregion Private members
        
@@ -42,12 +42,12 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
-            _partialLines = new ObservableDictionary<string, ObservableCollection<Line>>();
+            _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
             _partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    foreach (ObservableCollection<Line> n in _partialLines.Values)
+                    foreach (ObservableCollection<InqLine> n in _partialLines.Values)
                     {
                         n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
@@ -58,7 +58,7 @@ namespace NuSysApp
                             inq.AddPoint(new Point(l.X1, l.Y1));
                             inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2));
                             inq.AddPoint(new Point(l.X2, l.Y2));
-                            OnPartialLineAddition?.Invoke(this,new AddLineEventArgs("Added Partial Lines", inq));
+                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", inq));
                         };
                     }
                 }
@@ -73,7 +73,7 @@ namespace NuSysApp
         {
             get { return _idDict; }
         }
-        public ObservableDictionary<string, ObservableCollection<Line>> PartialLines 
+        public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines 
         {
             get { return _partialLines; }
         }
@@ -111,7 +111,7 @@ namespace NuSysApp
 
         public void AddGlobalInq(InqLine line)
         {
-            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", line));
+            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)

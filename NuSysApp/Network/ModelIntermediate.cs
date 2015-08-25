@@ -48,7 +48,7 @@ namespace NuSysApp
                             {
                                 if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
                                 {
-                                    Line l = ParseToLineSegment(props);
+                                    InqLine l = ParseToLineSegment(props);
                                     if (l == null) return;
 
                                     if (WorkSpaceModel.PartialLines.ContainsKey(id))
@@ -57,8 +57,7 @@ namespace NuSysApp
                                     }
                                     else
                                     {
-                                        ObservableCollection<Line> ol = new ObservableCollection<Line>();
-                                        WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<Line>());
+                                        WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
                                         WorkSpaceModel.PartialLines[id].Add(l);
                                     }
                                 }
@@ -67,8 +66,8 @@ namespace NuSysApp
                                     if (props.ContainsKey("previousID") &&
                                         WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
                                     {
-                                        ObservableCollection<Line> oc = WorkSpaceModel.PartialLines[props["previousID"]];
-                                        foreach(Line l in oc)
+                                        ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
+                                        foreach(InqLine l in oc)
                                         {
                                             ((InqCanvas) l.Parent).Children.Remove(l);
                                         }
@@ -454,15 +453,16 @@ namespace NuSysApp
             return dict;
         }
 
-        private Line ParseToLineSegment(Dictionary<string,string> props)
+        private InqLine ParseToLineSegment(Dictionary<string,string> props)
         {
-            Line l = new Line();
+            InqLine l = new InqLine();
             if (props.ContainsKey("x1") && props.ContainsKey("y1") && props.ContainsKey("x2") && props.ContainsKey("y2"))
             {
-                l.X1 = Double.Parse(props["x1"]);
-                l.X2 = Double.Parse(props["x2"]);
-                l.Y1 = Double.Parse(props["y1"]);
-                l.Y2 = Double.Parse(props["y2"]);
+                Point one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
+                Point two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
+                l.AddPoint(one);
+                l.AddPoint(two);
+                l.StrokeThickness = 2;
             }
             else
             {
