@@ -46,20 +46,41 @@ namespace NuSysApp
                         {
                             if (props.ContainsKey("inkType") && props["inkType"] == "global")
                             {
-                                Line l = ParseToLineSegment(props);
-                                if (l == null) return;
-                                
-                                if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                                if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
                                 {
-                                    WorkSpaceModel.PartialLines[id].Add(l);
+                                    Line l = ParseToLineSegment(props);
+                                    if (l == null) return;
+
+                                    if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                                    {
+                                        WorkSpaceModel.PartialLines[id].Add(l);
+                                    }
+                                    else
+                                    {
+                                        ObservableCollection<Line> ol = new ObservableCollection<Line>();
+                                        WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<Line>());
+                                        WorkSpaceModel.PartialLines[id].Add(l);
+                                    }
                                 }
-                                else
+                                else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
                                 {
-                                    ObservableCollection<Line> ol = new ObservableCollection<Line>();
-                                    WorkSpaceModel.PartialLines.Add(id,new ObservableCollection<Line>());
-                                    WorkSpaceModel.PartialLines[id].Add(l);
+                                    if (props.ContainsKey("previousID") &&
+                                        WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
+                                    {
+                                        ObservableCollection<Line> oc = WorkSpaceModel.PartialLines[props["previousID"]];
+                                        foreach(Line l in oc)
+                                        {
+                                            ((InqCanvas) l.Parent).Children.Remove(l);
+                                        }
+                                        WorkSpaceModel.PartialLines.Remove(props["previousID"]);
+                                    }
+                                    if (props.ContainsKey("data"))
+                                    {
+                                        List<InqLine> lines = ParseToPolyline(props["data"]);
+
+                                    }
                                 }
-                                
+
                             }
                         }
                         else if (props.ContainsKey("type") && props["type"] == "group")

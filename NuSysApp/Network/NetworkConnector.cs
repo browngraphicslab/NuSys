@@ -1146,8 +1146,22 @@ namespace NuSysApp
             props.Add("id", id);
             props.Add("type", "ink");
             props.Add("inkType", "global");
+            props.Add("globalInkType", "partial");
             string m = MakeSubMessageFromDict(props);
             await SendMassUDPMessage(m);
+        }
+
+        public async Task FinalizeGlobalInk(string previousID, string data)
+        {
+            Dictionary<string, string> props = new Dictionary<string, string>();
+            props.Add("type", "ink");
+            props.Add("inkType", "global");
+            props.Add("globalInkType", "full");
+            props.Add("id", "0");
+            props.Add("data", data);
+            props.Add("previousID", previousID);
+            string m = MakeSubMessageFromDict(props);
+            await SendMessageToHost(m);
         }
         public async Task RequestLock(string id)
         {
