@@ -51,14 +51,8 @@ namespace NuSysApp
                     {
                         n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
-                            Line l = ((Line) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
-                            InqLine inq = new InqLine();
-                            inq.StrokeThickness = 2;
-                            inq.Stroke = new SolidColorBrush(Colors.Black);
-                            inq.AddPoint(new Point(l.X1, l.Y1));
-                            inq.AddPoint(new Point((l.X1 + l.X2) / 2, (l.Y1 + l.Y2) / 2));
-                            inq.AddPoint(new Point(l.X2, l.Y2));
-                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", inq));
+                            InqLine l = ((InqLine) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
+                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
                         };
                     }
                 }
