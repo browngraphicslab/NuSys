@@ -959,7 +959,6 @@ namespace NuSysApp
                             "id=" + id + Constants.CommaReplacement);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
-                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                     if (message.IndexOf("id=0>") != -1)
@@ -968,7 +967,6 @@ namespace NuSysApp
                         message = message.Replace(@"id=0>", "id=" + id + '>');
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
-                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                 }
