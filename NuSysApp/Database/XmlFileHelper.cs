@@ -73,21 +73,19 @@ namespace NuSysApp
                 }
 
             }
-
             
             switch (currType)
             {
                 case "Text":
-                    //string text = node.Attributes.GetNamedItem("text").Value; TO DO: Uncomment this when we get rid of the encoding in the textnode
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID);
                     break;
                 case "Image":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
                     break;
-                case "Pdf":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
+                case "PDF":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID);
                     break;
-                case "ink":
+                case "Ink":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
                     break;
                 default:

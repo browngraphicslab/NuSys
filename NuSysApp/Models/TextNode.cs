@@ -75,8 +75,7 @@ namespace NuSysApp
 
             //byte[] newTextBytes = Convert.FromBase64String(Text.ToString());
 
-            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes("MERP MERP");
-            //byte[] newTextBytes = Convert.FromBase64String("MERP MERP");
+            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
             Content = new Content(newTextBytes, ID); //Update Content
             
             //XmlElement 

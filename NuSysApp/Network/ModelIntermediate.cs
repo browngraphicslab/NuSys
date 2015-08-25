@@ -99,6 +99,17 @@ namespace NuSysApp
                                             Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
                                         }
                                         break;
+                                    case NodeType.Text:
+                                    case NodeType.Richtext:
+                                        if (!props.ContainsKey("text"))
+                                        {
+                                            props.Add("text", d);
+                                        }
+                                        else
+                                        {
+                                            props["text"] = d;
+                                        }
+                                        break;
                                     case NodeType.Image:
                                         try
                                         {

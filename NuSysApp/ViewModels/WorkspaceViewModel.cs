@@ -549,6 +549,7 @@ namespace NuSysApp
             currWorkspaceXml.toXml = doc.OuterXml;
             dbConnection.InsertAsync(currWorkspaceXml);
 
+            await dbConnection.DropTableAsync<Content>();
             // table to store content of each node
             await dbConnection.CreateTableAsync<Content>();
             foreach (NodeViewModel nodeVm in NodeViewModelList)
