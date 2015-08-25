@@ -63,6 +63,13 @@ namespace NuSysApp
                                 }
                                 else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
                                 {
+                                    if (props.ContainsKey("data"))
+                                    {
+                                        List<InqLine> lines = ParseToPolyline(props["data"]);
+                                        InqLine line = lines[0];
+                                        WorkSpaceModel.IDToSendableDict.Add(id, line);
+                                        WorkSpaceModel.AddGlobalInq(line);
+                                    }
                                     if (props.ContainsKey("previousID") &&
                                         WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
                                     {
@@ -72,13 +79,6 @@ namespace NuSysApp
                                             ((InqCanvas) l.Parent).Children.Remove(l);
                                         }
                                         WorkSpaceModel.PartialLines.Remove(props["previousID"]);
-                                    }
-                                    if (props.ContainsKey("data"))
-                                    {
-                                        List<InqLine> lines = ParseToPolyline(props["data"]);
-                                        InqLine line = lines[0];
-                                        WorkSpaceModel.IDToSendableDict.Add(id,line);
-                                        WorkSpaceModel.AddGlobalInq(line);
                                     }
                                 }
 
