@@ -495,6 +495,7 @@ namespace NuSysApp
             //Debug.WriteLine("attempting to send TCP message: "+message+" to IP: "+recievingIP);
             try
             {
+                message = message + Constants.AndReplacement;
                 var TCPsocket = new StreamSocket();
                 await TCPsocket.ConnectAsync(new HostName(recievingIP), outport);
                 var writer = new DataWriter(TCPsocket.OutputStream);
@@ -567,7 +568,7 @@ namespace NuSysApp
         */
         private async Task SendUDPMessage(string message, DataWriter writer)
         {
-            writer.WriteString(message);
+            writer.WriteString(message + Constants.AndReplacement);
             await writer.StoreAsync();
         }
 
