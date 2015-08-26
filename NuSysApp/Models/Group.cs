@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace NuSysApp
@@ -57,5 +58,9 @@ namespace NuSysApp
             }
             return groupNode;
         }
+        public override async Task UnPack(Dictionary<string, string> props)
+        {
+            base.UnPack(props);
+        }//TODO add in pack functions
     }
 }

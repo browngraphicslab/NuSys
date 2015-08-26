@@ -85,6 +85,7 @@ namespace NuSysApp
             {
                 FilePath = props["filepath"];
             }
+            base.UnPack(props);
         }
 
         public override async Task<Dictionary<string, string>> Pack()
