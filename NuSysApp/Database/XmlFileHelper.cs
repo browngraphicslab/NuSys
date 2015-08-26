@@ -15,6 +15,8 @@ namespace NuSysApp
     {
 
         private List<Dictionary<string, string>> _atomUpdateDicts = new List<Dictionary<string, string>>();
+        List<string> _createdAtomList = new List<string>();
+        bool _allAtomCreated = false;
 
         public XmlFileHelper()
         {
@@ -42,6 +44,7 @@ namespace NuSysApp
         public async Task CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
             string ID = node.Attributes.GetNamedItem("id").Value;
+            _createdAtomList.Add(ID);
             string currType = node.Attributes.GetNamedItem("nodeType").Value;
             string X = node.Attributes.GetNamedItem("x").Value;
             string Y = node.Attributes.GetNamedItem("y").Value;
@@ -49,7 +52,6 @@ namespace NuSysApp
             string height = node.Attributes.GetNamedItem("height").Value;
 
             NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
-
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
@@ -138,32 +140,70 @@ namespace NuSysApp
                         break;
                     case "Link":
                         break;
-                        string atomID1 = Convert.ToString(node.Attributes.GetNamedItem("atomID1").Value);
-                        string atomID2 = Convert.ToString(node.Attributes.GetNamedItem("atomID2").Value);
-                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal, async() =>
-                            {
-                                AtomViewModel atom1Vm = vm.Model.AtomDict[atomID1];
-                                AtomViewModel atom2Vm = vm.Model.AtomDict[atomID2];
-                                //LinkViewModel newLinkVm = vm.CreateNewLink(ID, atom1Vm, atom2Vm);
-                                //newLinkVm.ID = ID;
-
-                                // create node annotation and attach it to the link
-                                if (node.HasChildNodes)
-                                {
-                                    XmlNode attachedAnnotation = node.ChildNodes[0];
-                                    string clippedParentID = attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value;
-                                    await this.CreateNodeFromXml(vm, attachedAnnotation);
-                                    //nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
-                                }
-                            });
-                        break;
                 }
             }
+
+            int counter = 0;
+            List<string> createdAtomListCopy = _createdAtomList;
+
+            while (createdAtomListCopy.Count != 0)
+            {
+                CheckNodeCreation(vm, createdAtomListCopy);
+            }
+            await this.CreateLinks(vm, doc);
 
             foreach (Dictionary<string, string> dict in _atomUpdateDicts)
             {
                 NetworkConnector.Instance.QuickUpdateAtom(dict);
+            }
+        }
+
+        public async Task CheckNodeCreation(WorkspaceViewModel vm, List<string> copy)
+        {
+            foreach (string id in _createdAtomList)
+            {
+                if (vm.Model.IDToSendableDict.ContainsKey(id))
+                {
+                    copy.Remove(id);
+                }
+            }
+        }
+
+        public async Task CreateLinks(WorkspaceViewModel vm, XmlDocument doc)
+        {
+            XmlElement parent = doc.DocumentElement;
+            XmlNodeList NodeList = parent.ChildNodes;
+
+            foreach (XmlNode node in NodeList)
+            {
+                string AtomType = node.Name;
+                string ID = Convert.ToString(node.Attributes.GetNamedItem("id").Value);
+
+                switch (AtomType)
+                {
+                    case "Group":
+                        break;
+                    case "Node":
+                        break;
+                    case "Link":
+                        string id1 = node.Attributes.GetNamedItem("atomID1").Value;
+                        string id2 = node.Attributes.GetNamedItem("atomID2").Value;
+                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                            CoreDispatcherPriority.Normal, async () =>
+                            {
+                                await NetworkConnector.Instance.RequestMakeLinq(id1, id2);
+
+                                // create node annotation and attach it to the link
+                                //if (node.HasChildNodes)
+                                //{
+                                //    XmlNode attachedAnnotation = node.ChildNodes[0];
+                                //    string clippedParentID = attachedAnnotation.Attributes.GetNamedItem("ClippedParent").Value;
+                                //    await this.CreateNodeFromXml(vm, attachedAnnotation);
+                                //    //nodeVm.ClippedParent = vm.Model.AtomDict[clippedParentID];
+                                //}
+                            });
+                        break;
+                }
             }
         }
     }

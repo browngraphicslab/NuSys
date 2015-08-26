@@ -480,11 +480,8 @@ namespace NuSysApp
         {
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             var query = dbConnection.Table<XmlFileHelper>().Where(v => v.ID == "1");
-            query.FirstOrDefaultAsync().ContinueWith((t) => 
-            t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXml)));
-
-            //var res = await query.FirstOrDefaultAsync();
-            //await this.ByteArrayToBitmapImage(res.Data);
+            query.FirstOrDefaultAsync().ContinueWith(async (t) =>
+                await t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXml)));
         }
 
         public async Task ByteArrayToBitmapImage(byte[] byteArray)
