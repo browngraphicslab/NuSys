@@ -382,10 +382,6 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
-            if (message.IndexOf("SPECIAL12") != -1)
-            {
-                
-            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
