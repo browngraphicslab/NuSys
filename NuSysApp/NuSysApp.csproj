@@ -106,6 +106,7 @@
     <Content Include="Assets\icon_export.png" />
     <Content Include="Assets\icon_media.png" />
     <Content Include="Assets\icon_node.png" />
+    <Content Include="Assets\icon_record_node.png" />
     <Content Include="Assets\icon_scribble.png" />
     <Content Include="Assets\icon_select.png" />
     <Content Include="Assets\image.png" />
@@ -116,6 +117,7 @@
     <Content Include="Assets\icon_multiselect.png" />
     <Content Include="Assets\icon_bucket.png" />
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\open icon.png" />
     <Content Include="Assets\pin icon.png" />
     <Content Include="Assets\icon_text.png" />
     <Content Include="Views\Nodes\link icon.png" />
@@ -238,6 +240,9 @@
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="ViewModels\MinimapViewModel.cs" />
     <Compile Include="ViewModels\PinViewModel.cs" />
+    <Compile Include="Views\BucketWindow.xaml.cs">
+      <DependentUpon>BucketWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Misc\MinimapView.xaml.cs">
       <DependentUpon>MinimapView.xaml</DependentUpon>
     </Compile>
@@ -342,6 +347,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\BucketWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Misc\MinimapView.xaml">
       <Generator>MSBuild:Compile</Generator>
