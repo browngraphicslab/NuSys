@@ -1,8 +1,10 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
+using Windows.System.Power.Diagnostics;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -29,15 +31,19 @@ namespace NuSysApp
             ((Node)this.Model).OnDeletion += DeletionHappend;         
             ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
             ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
-            ((Node)this.Model).OnCreatedGroup += GroupCreatedHandler;
+           
+            ((Node) this.Model).OnAddToGroup += AddToGroupHandler;
             X = 0;
             Y = 0;
         }
 
-        private void GroupCreatedHandler(object source, CreateGroupEventArgs e)
+        private void AddToGroupHandler(object source, AddToGroupEventArgs e)
         {
-            WorkSpaceViewModel.PrepareGroup(e.CreatedGroup.ID, this, e.CreatedGroup);
+            var groupVm = WorkSpaceViewModel.GroupDict[e.Group.ID];
+            groupVm.AddNode(this);
+            this.ParentGroup = groupVm;
         }
+       
         #region Node Manipulations
 
         public override void Remove()
@@ -326,11 +332,17 @@ namespace NuSysApp
             }
             set
             {
-                _group = value;
-                if (_group != null)
+                if (value == null)
                 {
-                    ((Node)Model).ParentGroup = (Group)_group.Model;
-                }          
+                    _group = value;
+                    return;
+                }
+                if (value.Model != ((Node) this.Model).ParentGroup)
+                {
+                    Debug.WriteLine("Different parent groups");
+                    return;
+                }
+                _group = value;     
             }
         }
 

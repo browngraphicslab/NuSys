@@ -108,6 +108,7 @@ namespace NuSysApp
             {
                 PolyLines = ParseToPolyline(props["polylines"]);
             }
+            base.UnPack(props);
         }
     }
 }

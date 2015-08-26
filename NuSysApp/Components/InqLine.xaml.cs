@@ -168,11 +168,20 @@ namespace NuSysApp
         }
         public async Task<Dictionary<string, string>> Pack()
         {
-            return new Dictionary<string, string>();
+            Dictionary<string,string> props = new Dictionary<string, string>();
+            props.Add("data", GetString());
+            props.Add("type", "ink");
+            props.Add("inkType", "global");
+            props.Add("globalInkType", "full");
+            return props;
         }
 
         public async Task UnPack(Dictionary<string, string> props)
         {
+            if (props.ContainsKey("data"))
+            {
+                SetLine(props["data"]);
+            }
             if (props.ContainsKey("delete") && props["delete"] == "true")
             {
                 //TODO add in deletion

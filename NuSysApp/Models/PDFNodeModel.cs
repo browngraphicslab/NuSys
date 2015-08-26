@@ -85,6 +85,10 @@ namespace NuSysApp
             //props.Add("pdf",await System.IO.File.ReadAllBytes(path));
             return props;
         }
-        //TODO add in UnPack function
+
+        public override async Task UnPack(Dictionary<string, string> props)
+        {
+            base.UnPack(props);
+        }
     }
 }

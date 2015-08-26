@@ -106,6 +106,7 @@
     <Content Include="Assets\icon_export.png" />
     <Content Include="Assets\icon_media.png" />
     <Content Include="Assets\icon_node.png" />
+    <Content Include="Assets\icon_record_node.png" />
     <Content Include="Assets\icon_scribble.png" />
     <Content Include="Assets\icon_select.png" />
     <Content Include="Assets\image.png" />
@@ -116,6 +117,7 @@
     <Content Include="Assets\icon_multiselect.png" />
     <Content Include="Assets\icon_bucket.png" />
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\open icon.png" />
     <Content Include="Assets\pin icon.png" />
     <Content Include="Assets\icon_text.png" />
     <Content Include="Views\Nodes\link icon.png" />
@@ -144,6 +146,7 @@
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="EventArgs\AddLineEventArgs.cs" />
+    <Compile Include="EventArgs\AddToGroupEventArgs.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
     <Compile Include="EventArgs\CreateEventArgs.cs" />
     <Compile Include="EventArgs\CreateGroupEventArgs.cs" />
@@ -238,6 +241,9 @@
     <Compile Include="ViewModels\AtomViewModel.cs" />
     <Compile Include="ViewModels\MinimapViewModel.cs" />
     <Compile Include="ViewModels\PinViewModel.cs" />
+    <Compile Include="Views\BucketWindow.xaml.cs">
+      <DependentUpon>BucketWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Misc\MinimapView.xaml.cs">
       <DependentUpon>MinimapView.xaml</DependentUpon>
     </Compile>
@@ -343,6 +349,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\BucketWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Misc\MinimapView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -395,6 +405,9 @@
   <ItemGroup>
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
+      <Name>SQLite for Universal App Platform</Name>
     </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

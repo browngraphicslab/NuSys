@@ -27,6 +27,9 @@ namespace NuSysApp
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
         public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
 
+        public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
+
+        public event AddToGroupEventHandler OnAddToGroup;
         #endregion Events and Handlers
 
         public Node(string id) : base(id)
@@ -38,6 +41,11 @@ namespace NuSysApp
         public void Delete()
         {
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
+        }
+
+        public void MoveToGroup(Group group)
+        {
+            this.ParentGroup = group;
         }
 
         public string Data { get; set; }
@@ -144,7 +152,29 @@ namespace NuSysApp
 
         public NodeType NodeType { get; set; }
 
-        public Group ParentGroup { get; set; }
+        private Group _parentGroup;
+
+        public Group ParentGroup
+        {
+            get
+            {
+                return _parentGroup;
+            }
+            set
+            {
+                _parentGroup = value;
+                if (NetworkConnector.Instance.ModelLocked)
+                {
+                    OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", _parentGroup, this));
+                }
+                else
+                {
+                    this.DebounceDict.Add("parentGroup", _parentGroup.ID);
+                    this.DebounceDict.MakeNextMessageTCP();
+                }
+            }
+          
+        }
 
         public bool IsAnnotation { get; set; }
 
@@ -173,6 +203,13 @@ namespace NuSysApp
             {
                 Height = Double.Parse(props["height"]);
             }
+            if (props.ContainsKey("parentGroup"))
+            {
+                if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
+                {
+                    this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+                }
+            }
             base.UnPack(props);
         }
 
@@ -183,7 +220,11 @@ namespace NuSysApp
             dict.Add("y", Y.ToString());
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
-            dict.Add("type","node");
+            dict.Add("type", "node");
+            if (ParentGroup != null)
+            {
+                dict.Add("parentGroup", ParentGroup.ID);
+            }
             return dict;
         }
         public virtual XmlElement WriteXML(XmlDocument doc)

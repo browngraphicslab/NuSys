@@ -38,11 +38,21 @@ namespace NuSysApp
 
         public void AddNode(NodeViewModel toAdd)
         {
+            if (toAdd.ParentGroup == null) //node is currently in workspace
+            {
+                WorkSpaceViewModel.AtomViewList.Remove(toAdd.View);
+                WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
+            }
+            else
+            {
+                toAdd.ParentGroup.AtomViewList.Remove(toAdd.View);
+                WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
+            }
             toAdd.Transform = new MatrixTransform();
             _atomViewList.Add(toAdd.View);
             _nodeViewModelList.Add(toAdd);
-            ((Group)Model).NodeModelList.Add((Node)toAdd.Model);
-          //  ArrangeNodesInGrid();
+            
+            
             foreach (var link in toAdd.LinkList)
             {
                 link.SetVisibility(false);
@@ -143,35 +153,35 @@ namespace NuSysApp
         }
 
         public bool CheckNodeIntersection(NodeViewModel node) { 
-            for (var i = 0; i < _nodeViewModelList.Count; i++)
-            {
-                var node2 = _nodeViewModelList[i];
-                var rect2 = Geometry.NodeToBoudingRect(node2);
-                var rect1 = Geometry.NodeToBoudingRect(node);
-                rect1.Intersect(rect2);//stores intersection rectangle in rect1
-                if (node != node2 && !rect1.IsEmpty)
-                {
-                    _nodeViewModelList.Remove(node);
-                    _atomViewList.Remove(node.View);
-                    if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
-                    {
-                        if (_nodeViewModelList.Count <= i+1)
-                        {
-                            _nodeViewModelList.Add(node);
-                            _atomViewList.Add(node.View);
-                            return true;
-                        }
-                        _nodeViewModelList.Insert(i+1, node);
-                        _atomViewList.Insert(i+1,node.View);
-                    }
-                    else
-                    {
-                        _nodeViewModelList.Insert(i, node);
-                        _atomViewList.Insert(i,node.View);
-                    }
-                    return true;
-                }
-            }
+            //for (var i = 0; i < _nodeViewModelList.Count; i++)
+            //{
+            //    var node2 = _nodeViewModelList[i];
+            //    var rect2 = Geometry.NodeToBoudingRect(node2);
+            //    var rect1 = Geometry.NodeToBoudingRect(node);
+            //    rect1.Intersect(rect2);//stores intersection rectangle in rect1
+            //    if (node != node2 && !rect1.IsEmpty)
+            //    {
+            //        _nodeViewModelList.Remove(node);
+            //        _atomViewList.Remove(node.View);
+            //        if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
+            //        {
+            //            if (_nodeViewModelList.Count <= i+1)
+            //            {
+            //                _nodeViewModelList.Add(node);
+            //                _atomViewList.Add(node.View);
+            //                return true;
+            //            }
+            //            _nodeViewModelList.Insert(i+1, node);
+            //            _atomViewList.Insert(i+1,node.View);
+            //        }
+            //        else
+            //        {
+            //            _nodeViewModelList.Insert(i, node);
+            //            _atomViewList.Insert(i,node.View);
+            //        }
+            //        return true;
+            //    }
+            //}
             return false;
         }
 

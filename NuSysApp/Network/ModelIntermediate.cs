@@ -66,6 +66,7 @@ namespace NuSysApp
                                     if (props.ContainsKey("data"))
                                     {
                                         List<InqLine> lines = ParseToPolyline(props["data"]);
+                                        if (lines.Count == 0) return;
                                         InqLine line = lines[0];
                                         WorkSpaceModel.IDToSendableDict.Add(id, line);
                                         WorkSpaceModel.AddGlobalInq(line);
@@ -331,24 +332,28 @@ namespace NuSysApp
         }
         public async Task<string> GetFullWorkspace()
         {
-            if (WorkSpaceModel.IDToSendableDict.Count > 0)
-            {
-                string ret = "";
-                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
+                if (WorkSpaceModel.IDToSendableDict.Count > 0)
                 {
-                    ret += '<';
-                    Sendable atom = kvp.Value;
-                    Dictionary<string, string> parts = await atom.Pack();
-                    foreach (KeyValuePair<string, string> tup in parts)
+                    string ret = "";
+                    foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
                     {
-                        ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
+                        ret += '<';
+                        Sendable atom = kvp.Value;
+                        var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                        await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                        {
+                            Dictionary<string, string> parts = await atom.Pack();
+                            foreach (KeyValuePair<string, string> tup in parts)
+                            {
+                                ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
+                            }
+                            ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
+                        });
                     }
-                    ret += "id=" + atom.ID + ">"+Constants.AndReplacement;
+                    ret = ret.Substring(0, ret.Length - 2);
+                    return ret;
                 }
-                ret = ret.Substring(0, ret.Length - 2);
-                return ret;
-            }
-            return "";
+                return "";
         }
 
         public async Task ClearLocks()

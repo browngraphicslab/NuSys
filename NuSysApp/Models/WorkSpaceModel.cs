@@ -97,10 +97,10 @@ namespace NuSysApp
                 Y= yCoordinate,
                 NodeType = NodeType.Group
             };
-            _idDict.Add(id, group);
-             node1.AddToGroup(group);
-             node2.AddToGroup(group);
             OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+            node1.MoveToGroup(group);
+            node2.MoveToGroup(group);
+            _idDict.Add(id, group);  
         }
 
         public void AddGlobalInq(InqLine line)

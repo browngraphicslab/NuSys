@@ -33,10 +33,7 @@ namespace NuSysApp
             OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
         }
 
-        public void AddToGroup(Group group)
-        {
-            OnCreatedGroup?.Invoke(this, new CreateGroupEventArgs("Added to group", group));          
-        }
+        
 
         public SolidColorBrush Color { get; set; }
         public DebouncingDictionary DebounceDict
