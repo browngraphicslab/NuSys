@@ -382,10 +382,6 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
-            if (message.IndexOf("SPECIAL12") != -1)
-            {
-                
-            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
@@ -1206,6 +1202,7 @@ namespace NuSysApp
             else
             {
                 Debug.WriteLine("Attempted to return lock with ID: "+id+" When no such ID exists");
+                throw new InvalidIDException(id);
             }
             await SendMessageToHost("SPECIAL7:" + id);
             await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
