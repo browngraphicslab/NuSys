@@ -124,10 +124,10 @@ namespace NuSysApp
         {
             return new Rect()
             {
-                Height = nodeVm.Height,
-                Width = nodeVm.Width,
-                X = nodeVm.X + nodeVm.Transform.Matrix.OffsetX,
-                Y = nodeVm.Y + nodeVm.Transform.Matrix.OffsetY
+                Height = ((Node)(nodeVm.Model)).Height,
+                Width = ((Node)(nodeVm.Model)).Width,
+                X = ((Node)(nodeVm.Model)).X,
+                Y = ((Node)(nodeVm.Model)).Y
             };
         }
     }

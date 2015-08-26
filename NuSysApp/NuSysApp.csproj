@@ -142,6 +142,7 @@
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="EventArgs\AddLineEventArgs.cs" />
+    <Compile Include="EventArgs\AddToGroupEventArgs.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
     <Compile Include="EventArgs\CreateEventArgs.cs" />
     <Compile Include="EventArgs\CreateGroupEventArgs.cs" />

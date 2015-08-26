@@ -38,11 +38,21 @@ namespace NuSysApp
 
         public void AddNode(NodeViewModel toAdd)
         {
+            if (toAdd.ParentGroup == null) //node is currently in workspace
+            {
+                WorkSpaceViewModel.AtomViewList.Remove(toAdd.View);
+                WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
+            }
+            else
+            {
+                toAdd.ParentGroup.AtomViewList.Remove(toAdd.View);
+                WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
+            }
             toAdd.Transform = new MatrixTransform();
             _atomViewList.Add(toAdd.View);
             _nodeViewModelList.Add(toAdd);
-            ((Group)Model).NodeModelList.Add((Node)toAdd.Model);
-          //  ArrangeNodesInGrid();
+            
+            
             foreach (var link in toAdd.LinkList)
             {
                 link.SetVisibility(false);
