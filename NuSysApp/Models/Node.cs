@@ -169,7 +169,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("parentGroup", _parentGroup.ID.ToString());
+                    this.DebounceDict.Add("parentGroup", _parentGroup.ID);
                     this.DebounceDict.MakeNextMessageTCP();
                 }
             }
@@ -203,6 +203,10 @@ namespace NuSysApp
             {
                 Height = Double.Parse(props["height"]);
             }
+            if (props.ContainsKey("parentGroup"))
+            {
+                this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+            }
             base.UnPack(props);
         }
 
@@ -214,6 +218,7 @@ namespace NuSysApp
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
             dict.Add("type","node");
+            dict.Add("parentGroup", ParentGroup.ID);
             return dict;
         }
         public virtual XmlElement WriteXML(XmlDocument doc)
