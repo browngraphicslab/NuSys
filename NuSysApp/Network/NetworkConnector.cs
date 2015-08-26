@@ -1202,6 +1202,7 @@ namespace NuSysApp
             else
             {
                 Debug.WriteLine("Attempted to return lock with ID: "+id+" When no such ID exists");
+                throw new InvalidIDException(id);
             }
             await SendMessageToHost("SPECIAL7:" + id);
             await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
