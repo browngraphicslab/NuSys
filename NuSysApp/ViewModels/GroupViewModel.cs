@@ -153,35 +153,35 @@ namespace NuSysApp
         }
 
         public bool CheckNodeIntersection(NodeViewModel node) { 
-            for (var i = 0; i < _nodeViewModelList.Count; i++)
-            {
-                var node2 = _nodeViewModelList[i];
-                var rect2 = Geometry.NodeToBoudingRect(node2);
-                var rect1 = Geometry.NodeToBoudingRect(node);
-                rect1.Intersect(rect2);//stores intersection rectangle in rect1
-                if (node != node2 && !rect1.IsEmpty)
-                {
-                    _nodeViewModelList.Remove(node);
-                    _atomViewList.Remove(node.View);
-                    if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
-                    {
-                        if (_nodeViewModelList.Count <= i+1)
-                        {
-                            _nodeViewModelList.Add(node);
-                            _atomViewList.Add(node.View);
-                            return true;
-                        }
-                        _nodeViewModelList.Insert(i+1, node);
-                        _atomViewList.Insert(i+1,node.View);
-                    }
-                    else
-                    {
-                        _nodeViewModelList.Insert(i, node);
-                        _atomViewList.Insert(i,node.View);
-                    }
-                    return true;
-                }
-            }
+            //for (var i = 0; i < _nodeViewModelList.Count; i++)
+            //{
+            //    var node2 = _nodeViewModelList[i];
+            //    var rect2 = Geometry.NodeToBoudingRect(node2);
+            //    var rect1 = Geometry.NodeToBoudingRect(node);
+            //    rect1.Intersect(rect2);//stores intersection rectangle in rect1
+            //    if (node != node2 && !rect1.IsEmpty)
+            //    {
+            //        _nodeViewModelList.Remove(node);
+            //        _atomViewList.Remove(node.View);
+            //        if (node.X + node.Transform.Matrix.OffsetX > node2.X + node2.Transform.Matrix.OffsetX)
+            //        {
+            //            if (_nodeViewModelList.Count <= i+1)
+            //            {
+            //                _nodeViewModelList.Add(node);
+            //                _atomViewList.Add(node.View);
+            //                return true;
+            //            }
+            //            _nodeViewModelList.Insert(i+1, node);
+            //            _atomViewList.Insert(i+1,node.View);
+            //        }
+            //        else
+            //        {
+            //            _nodeViewModelList.Insert(i, node);
+            //            _atomViewList.Insert(i,node.View);
+            //        }
+            //        return true;
+            //    }
+            //}
             return false;
         }
 
