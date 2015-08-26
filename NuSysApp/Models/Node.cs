@@ -46,7 +46,6 @@ namespace NuSysApp
         public void MoveToGroup(Group group)
         {
             this.ParentGroup = group;
-            OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
         }
 
         public string Data { get; set; }
@@ -153,7 +152,29 @@ namespace NuSysApp
 
         public NodeType NodeType { get; set; }
 
-        public Group ParentGroup { get; set; }
+        private Group _parentGroup;
+
+        public Group ParentGroup
+        {
+            get
+            {
+                return _parentGroup;
+            }
+            private set
+            {
+                _parentGroup = value;
+                if (NetworkConnector.Instance.ModelLocked)
+                {
+                    OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", _parentGroup, this));
+                }
+                else
+                {
+                    this.DebounceDict.Add("parentGroup", _parentGroup.ID);
+                    this.DebounceDict.MakeNextMessageTCP();
+                }
+            }
+          
+        }
 
         public bool IsAnnotation { get; set; }
 
@@ -182,6 +203,10 @@ namespace NuSysApp
             {
                 Height = Double.Parse(props["height"]);
             }
+            if (props.ContainsKey("parentGroup"))
+            {
+                this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+            }
             base.UnPack(props);
         }
 
@@ -193,6 +218,7 @@ namespace NuSysApp
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
             dict.Add("type","node");
+            dict.Add("parentGroup", ParentGroup.ID);
             return dict;
         }
         public virtual XmlElement WriteXML(XmlDocument doc)
