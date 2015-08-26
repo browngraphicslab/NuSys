@@ -137,6 +137,7 @@
     <Compile Include="Components\IInqMode.cs" />
     <Compile Include="Components\RichTextBlockBinder.cs" />
     <Compile Include="Components\TextBoxExtended.cs" />
+    <Compile Include="Components\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
