@@ -121,6 +121,7 @@
     <Content Include="Assets\pin icon.png" />
     <Content Include="Assets\icon_text.png" />
     <Content Include="Views\Nodes\link icon.png" />
+    <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
