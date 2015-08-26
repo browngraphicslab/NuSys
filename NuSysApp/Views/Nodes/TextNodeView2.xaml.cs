@@ -29,20 +29,27 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
 
+            mdTextBox.TextChanging += delegate
+            {
+                AdjustScrollHeight();
+            };
 
             rtfTextBox.SizeChanged += delegate
             {
                 RearrangeImagePlaceHolders();
+                AdjustScrollHeight();
             };
 
             rtfTextBox.TextChanging += delegate
             {
                 RearrangeImagePlaceHolders();
+                AdjustScrollHeight();
             };
 
             rtfTextBox.TextChanged += delegate
             {
                 RearrangeImagePlaceHolders();
+                AdjustScrollHeight();
             };
 
             vm.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
@@ -93,6 +100,7 @@ namespace NuSysApp
             if (!vm.IsEditing)
             {
                 await vm.UpdateRtf();
+
                 RearrangeImagePlaceHolders();
             }
 
@@ -110,6 +118,7 @@ namespace NuSysApp
                 imgPlaceholderContainer.Visibility = Visibility.Collapsed;
             }
 
+            AdjustScrollHeight();
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
@@ -151,6 +160,27 @@ namespace NuSysApp
             }
 
             rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
+        }
+
+        private void AdjustScrollHeight()
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
+
+            if (!vm.IsEditing)
+            {
+                string str2;
+                rtfTextBox.Document.GetText(TextGetOptions.None, out str2);
+                rtfTextBox.Document.Selection.SetRange(0, str2.Length);
+
+                Rect rect2;
+                int hit2;
+                rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect2, out hit2);
+
+                grid.Height = rect2.Height > this.MinHeight ? rect2.Height : this.MinHeight;
+            } else
+            {
+                grid.Height = mdTextBox.ActualHeight;
+            }
         }
 
         private int GetNthIndex(string s, char t, int n)

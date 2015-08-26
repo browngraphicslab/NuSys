@@ -168,7 +168,14 @@ namespace NuSysApp
             foreach (string s in toDelete)
             {
                 Debug.WriteLine("IP: " + s + " failed ping twice.  Removing from network");
-                await RemoveIP(s);
+                try
+                {
+                    await RemoveIP(s);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Failed to remove IP: "+s);
+                }
                 if (_hostIP == s)
                 {
                     //TODO STOP EVERYONE AND RESET HOST
@@ -375,6 +382,10 @@ namespace NuSysApp
                 return;
             }
             Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
+            if (message.IndexOf("SPECIAL12") != -1)
+            {
+                
+            }
             await this.MessageRecieved(ip,message,PacketType.TCP);//Process the message
         }
         /*
@@ -846,9 +857,17 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        await ModelIntermediate.Locks.Set(message, "");
-                        await SendMessage(ip, "SPECIAL6:"+message+"=", PacketType.TCP, true, true);
-                        return;
+                        if (ModelIntermediate.HasAtom(message))
+                        {
+                            await ModelIntermediate.Locks.Set(message, "");
+                            await SendMessage(ip, "SPECIAL6:" + message + "=", PacketType.TCP, true, true);
+                            return;
+                        }
+                        else
+                        {
+                            throw new InvalidIDException(message);
+                            return;
+                        }
                     }
                     else
                     {
@@ -952,7 +971,6 @@ namespace NuSysApp
                             "id=" + id + Constants.CommaReplacement);
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
-                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                     if (message.IndexOf("id=0>") != -1)
@@ -961,7 +979,6 @@ namespace NuSysApp
                         message = message.Replace(@"id=0>", "id=" + id + '>');
                         await HandleRegularMessage(ip, message, packetType);
                         await SendMassTCPMessage(message);
-                        await SendMessage(null, "SPECIAL6:" + id + "=" + ip, PacketType.TCP, true, true);
                         return;
                     }
                 }

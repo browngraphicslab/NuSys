@@ -19,7 +19,6 @@ namespace NuSysApp
         public Button btnDelete;
         public Path resizer;
         public Grid bg;
-        public ContentControl InnerControl;
 
         public NodeTemplate()
         {
@@ -49,19 +48,17 @@ namespace NuSysApp
             inkCanvas = (InqCanvas)GetTemplateChild("inkCanvas");
            
             bg = (Grid)GetTemplateChild("bg");
-
-            InnerControl = (ContentControl)GetTemplateChild("innerControl");
-                        
+            
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
 
             resizer = (Path)GetTemplateChild("Resizer");
             resizer.ManipulationDelta += OnResizerManipulationDelta;
 
-            InnerControl.ManipulationMode = ManipulationModes.All;
-            InnerControl.ManipulationDelta += OnManipulationDelta;
+            ManipulationMode = ManipulationModes.All;
+            ManipulationDelta += OnManipulationDelta;
 
-            this.PointerReleased += OnPointerReleased;
+            PointerReleased += OnPointerReleased;
 
             var vm = (NodeViewModel)this.DataContext;
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
@@ -71,13 +68,13 @@ namespace NuSysApp
 
         public void ToggleInkMode()
         {
-            if (InnerControl.ManipulationMode == ManipulationModes.All)
+            if (ManipulationMode == ManipulationModes.All)
             {
-                InnerControl.ManipulationMode = ManipulationModes.None;
+                ManipulationMode = ManipulationModes.None;
             }
             else
             {
-                InnerControl.ManipulationMode = ManipulationModes.All;
+                ManipulationMode = ManipulationModes.All;
             }
 
             var vm = (NodeViewModel)this.DataContext;
