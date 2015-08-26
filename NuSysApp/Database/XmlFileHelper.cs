@@ -60,24 +60,34 @@ namespace NuSysApp
 
             byte[] byteData = null;
             string byteToString = null;
+
             if (res != null)
             {
                 byteData = res.Data;
-                byteToString = Convert.ToBase64String(byteData);
-            }
 
+                if (currType == "Text")
+                {
+                    byteToString = System.Text.Encoding.UTF8.GetString(byteData);
+                }
+                else
+                {
+                    byteToString = Convert.ToBase64String(byteData);
+                }
+
+            }
+            
             switch (currType)
             {
                 case "Text":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null , ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID);
                     break;
                 case "Image":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
                     break;
-                case "Pdf":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
+                case "PDF":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID);
                     break;
-                case "ink":
+                case "Ink":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
                     break;
                 default:

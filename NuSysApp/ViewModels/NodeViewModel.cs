@@ -29,15 +29,19 @@ namespace NuSysApp
             ((Node)this.Model).OnDeletion += DeletionHappend;         
             ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
             ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
-            ((Node)this.Model).OnCreatedGroup += GroupCreatedHandler;
+           
+            ((Node) this.Model).OnAddToGroup += AddToGroupHandler;
             X = 0;
             Y = 0;
         }
 
-        private void GroupCreatedHandler(object source, CreateGroupEventArgs e)
+        private void AddToGroupHandler(object source, AddToGroupEventArgs e)
         {
-            WorkSpaceViewModel.PrepareGroup(e.CreatedGroup.ID, this, e.CreatedGroup);
+            var groupVm = WorkSpaceViewModel.GroupDict[e.Group.ID];
+            groupVm.AddNode(this);
+            this.ParentGroup = groupVm;
         }
+       
         #region Node Manipulations
 
         public override void Remove()

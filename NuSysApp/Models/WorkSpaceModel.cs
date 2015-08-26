@@ -1,9 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -13,16 +21,18 @@ namespace NuSysApp
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
+        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
         public event CreateGroupEventHandler OnGroupCreation;
+        public event AddPartialLineEventHandler OnPartialLineAddition;
         
         #endregion Events and Delegates
 
         #region Private Members
         private Dictionary<string, Sendable> _idDict;
 
-
+        private ObservableDictionary<string,ObservableCollection<InqLine>> _partialLines;
         private LockDictionary _locks;
         #endregion Private members
        
@@ -32,6 +42,21 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
+            _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
+            _partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
+            {
+                if (args.Action == NotifyCollectionChangedAction.Add)
+                {
+                    foreach (ObservableCollection<InqLine> n in _partialLines.Values)
+                    {
+                        n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
+                        {
+                            InqLine l = ((InqLine) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
+                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
+                        };
+                    }
+                }
+            };
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
@@ -42,7 +67,10 @@ namespace NuSysApp
         {
             get { return _idDict; }
         }
-       
+        public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines 
+        {
+            get { return _partialLines; }
+        }
         public LockDictionary Locks
         {
             get { return _locks; }
@@ -69,10 +97,15 @@ namespace NuSysApp
                 Y= yCoordinate,
                 NodeType = NodeType.Group
             };
-            _idDict.Add(id, group);
-             node1.AddToGroup(group);
-             node2.AddToGroup(group);
             OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+            node1.MoveToGroup(group);
+            node2.MoveToGroup(group);
+            _idDict.Add(id, group);  
+        }
+
+        public void AddGlobalInq(InqLine line)
+        {
+            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
@@ -81,13 +114,21 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    node = new TextNode((string)data, id);
+                    node = new TextNode((string)data ?? "", id);
                     break;
                 case NodeType.Richtext:
                     node = new TextNode((string)data, id);
                     break;
                 case NodeType.Ink:
-                    node = new InkModel(id);
+                    var lines = data as List<InqLine>;
+                    if (lines != null)
+                    {
+                        node = new InkModel(id, lines);
+                    }
+                    else
+                    {
+                        node = new InkModel(id);
+                    }
                     break;
                 case NodeType.Image:
                     node = new ImageModel((byte[])data,id);

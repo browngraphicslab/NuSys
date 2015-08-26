@@ -16,8 +16,9 @@
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
+        <converters:SubStractConverter x:Key="subtractConverter" />
 
-        <Style TargetType="local:RichEditBoxExtended">
+        <Style TargetType="local:TextBoxExtended">
             <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
             <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}" />
             <Setter Property="Foreground" Value="{ThemeResource TextBoxForegroundThemeBrush}" />
@@ -34,7 +35,7 @@
             <Setter Property="Padding" Value="{ThemeResource TextControlThemePadding}"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="local:RichEditBoxExtended">
+                    <ControlTemplate TargetType="local:TextBoxExtended">
                         <Grid>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
@@ -120,103 +121,28 @@
             </Setter>
         </Style>
 
-
     </UserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <MenuFlyoutItem x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}">
-                    <MenuFlyoutItem.Background>
-                        <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_text.png"></ImageBrush>
-                    </MenuFlyoutItem.Background>
-                </MenuFlyoutItem>
-                <MenuFlyoutItem x:Name="EditInk" Click="OnInkClick" Style="{StaticResource SubMenuItem}">
-                    <MenuFlyoutItem.Background>
-                        <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>
-                    </MenuFlyoutItem.Background>
-                </MenuFlyoutItem>
+                <Button x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_text.png" Height="40" Width="40"></Image>
+                </Button>
+                <Button x:Name="EditInk" Click="OnInkClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
+                </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Grid>
-                <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Height="50" Margin="0,10,10,0">
-                    <StackPanel RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="50" VerticalAlignment="Top" Opacity="100" 
-                                IsHitTestVisible="True" Visibility="{Binding IsEditing, ConverterParameter=false, Converter={StaticResource vConverter}}">
-                        <Button x:Name="Bold" Style="{StaticResource TextMenuItem}" Click="FormatText">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/bold.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                        </Button>
-                        <Button x:Name="Italic"  Style="{StaticResource TextMenuItem}" Click="FormatText">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/italic.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                        </Button>
-                        <Button x:Name="Underline" Style="{StaticResource TextMenuItem}" Click="FormatText">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/underline.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                        </Button>
-                        <!--<Button Height="50" Width="50" Padding="0" Style="{StaticResource TextMenuItem}">
-                            <Button.Content>
-                                <Ellipse Height="35" Width="35" Fill="Black" Margin="0,0,0,0"></Ellipse>
-                            </Button.Content>
-                        </Button>-->
-                        <ComboBox x:Name="Colors" Margin="0,10,2,0" PlaceholderText="color">
-                            <ComboBoxItem x:Name="Red" Background="FloralWhite" Content="red" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Orange" Background="FloralWhite" Content="orange" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Yellow" Background="FloralWhite" Content="yellow" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Green" Background="FloralWhite" Content="green" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Blue" Background="FloralWhite" Content="blue" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Purple" Background="FloralWhite" Content="purple" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Black" Background="FloralWhite" Content="black" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="White" Background="FloralWhite" Content="white" Tapped="FormatText"></ComboBoxItem>
-                        </ComboBox>
-                        <ComboBox x:Name="FontSize" Margin="2,10,0,0" PlaceholderText="size">
-                            <ComboBoxItem x:Name="Size8" Background="FloralWhite" Content="8" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Size12" Background="FloralWhite" Content="12" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Size14" Background="FloralWhite" Content="14" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Size18" Background="FloralWhite" Content="18" Tapped="FormatText"></ComboBoxItem>
-                            <ComboBoxItem x:Name="Size24" Background="FloralWhite" Content="24" Tapped="FormatText"></ComboBoxItem>
-                        </ComboBox>
-                        <!--<Button x:Name="FontSize" Style="{StaticResource TextMenuItem}">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/font size.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                            <Button.Flyout>
-                                <MenuFlyout Placement="Bottom">
-                                    <MenuFlyoutItem x:Name="Size8" Text="8" Click="FormatText"></MenuFlyoutItem>
-                                    <MenuFlyoutItem x:Name="Size12" Text="12" Click="FormatText"></MenuFlyoutItem>
-                                    <MenuFlyoutItem x:Name="Size14" Text="14" Click="FormatText"></MenuFlyoutItem>
-                                    <MenuFlyoutItem x:Name="Size18" Text="18" Click="FormatText"></MenuFlyoutItem>
-                                    <MenuFlyoutItem x:Name="Size24" Text="24" Click="FormatText"></MenuFlyoutItem>
-                                </MenuFlyout>
-                            </Button.Flyout>
-                        </Button>-->
-                        <!--<Button x:Name="Link" Style="{StaticResource TextMenuItem}">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/link.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                        </Button>
-                        <Button x:Name="Image" Style="{StaticResource TextMenuItem}">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/image.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                        </Button>
-                        <Button x:Name="Bullets" Style="{StaticResource TextMenuItem}">
-                            <Button.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/bullets.png" Stretch="Uniform"></ImageBrush>
-                            </Button.Background>
-                        </Button>-->
-                    </StackPanel>
-                </Grid>
-                <local:RichEditBoxExtended x:Name="textBox" Opacity=".5" Foreground="Black"  TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top"
-                     Margin="20,58,20,20" BorderThickness="0" FontSize="20" FontFamily="Calibri" RtfText="{Binding Data, Mode=TwoWay}"
-                     IsEnabled="{Binding IsEditing}"
-                     Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True">
-
-                </local:RichEditBoxExtended>
-            </Grid>
+            <ScrollViewer Width="{Binding Width}" Height="{Binding Height}" Padding="20,70,20,20">
+                <Canvas x:Name="grid" Width="{Binding Width}" Background="Transparent" VerticalAlignment="Top">
+                    <TextBox x:Name="mdTextBox" Height="Auto" Width="{Binding Width}" MinHeight="{Binding Height, Converter={StaticResource subtractConverter}, ConverterParameter=70}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity="1" Foreground="Black" TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Courier New" IsEnabled="true"
+                         Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Text="{Binding Data, Mode=TwoWay}" Visibility="Collapsed" />
+                    <local:TextBoxExtended x:Name="rtfTextBox" Width="{Binding Width}" MinHeight="{Binding Height, Converter={StaticResource subtractConverter}, ConverterParameter=70}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity=".8" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
+                                Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Rtf="{Binding Rtf}" Visibility="Visible" IsEnabled="False" />
+                    <Canvas x:Name="imgPlaceholderContainer" Background="Transparent"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed" />
+                </Canvas>
+            </ScrollViewer>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </UserControl>

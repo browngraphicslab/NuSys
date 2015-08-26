@@ -55,10 +55,10 @@ namespace NuSysApp
             resizer = (Path)GetTemplateChild("Resizer");
             resizer.ManipulationDelta += OnResizerManipulationDelta;
 
-            this.ManipulationMode = ManipulationModes.All;
-            this.ManipulationDelta += OnManipulationDelta;
+            ManipulationMode = ManipulationModes.All;
+            ManipulationDelta += OnManipulationDelta;
 
-            this.PointerReleased += OnPointerReleased;
+            PointerReleased += OnPointerReleased;
 
             var vm = (NodeViewModel)this.DataContext;
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);

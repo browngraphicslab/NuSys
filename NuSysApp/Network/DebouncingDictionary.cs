@@ -75,11 +75,6 @@ namespace NuSysApp.Network
                     }
                 }
             }
-            if(_atom.CanEdit == Atom.EditStatus.Maybe)
-            {
-                NetworkConnector.Instance.ModelIntermediate.CheckLocks(_atom.ID);
-                NetworkConnector.Instance.RequestLock(_atom.ID);
-            }
             _timing = false;
             _dict.Clear();
         }

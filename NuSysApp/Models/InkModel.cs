@@ -9,27 +9,32 @@ namespace NuSysApp
 {
     public class InkModel : Node
     {
-        private List<Polyline> _polylines; 
+        private List<InqLine> _inqlines; 
         public InkModel(string id) : base(id)
         {
 
-            _polylines = new List<Polyline>();
+            _inqlines = new List<InqLine>();
         }
 
-        public List<Polyline> PolyLines
+        public InkModel(string id, List<InqLine> lines) : base(id)
         {
-            get { return _polylines; }
+            _inqlines = lines;
+        }
+
+        public List<InqLine> PolyLines
+        {
+            get { return _inqlines; }
             set
             {
-                _polylines = value;
-                DebounceDict.Add("polylines",PolylinesToString());
+                _inqlines = value;
+                DebounceDict.Add("polylines",InqlinesToString());
             }
         }
 
-        private string PolylinesToString()
+        private string InqlinesToString()
         {
             string plines = "";
-            foreach (Polyline pl in PolyLines)
+            foreach (InqLine pl in _inqlines)
             {
                 if (pl.Points.Count > 0)
                 {
@@ -43,13 +48,13 @@ namespace NuSysApp
             }
             return plines;
         }
-        private List<Polyline> ParseToPolyline(string s)
+        private List<InqLine> ParseToPolyline(string s)
         {
-            List<Polyline> polys = new List<Polyline>();
+            List<InqLine> polys = new List<InqLine>();
             string[] parts = s.Split("><".ToCharArray());
             foreach (string part in parts)
             {
-                Polyline poly = new Polyline();
+                InqLine line = new InqLine();
                 string[] subparts = part.Split(" ".ToCharArray());
                 foreach (string subpart in subparts)
                 {
@@ -65,26 +70,27 @@ namespace NuSysApp
                                 {
                                     string[] coords = p.Split(",".ToCharArray());
                                     //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
+                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
+                                    line.AddPoint(parsedPoint);
                                 }
                             }
                         }
                         else if (subpart.Substring(0, 9) == "thickness")
                         {
-                            string sp = subpart.Substring(11, subpart.Length - 12);
-                            poly.StrokeThickness = double.Parse(sp);
+                            string sp = subpart.Substring(11, subpart.Length - 13);
+                            line.StrokeThickness = double.Parse(sp);
                         }
                         else if (subpart.Substring(0, 6) == "stroke")
                         {
                             string sp = subpart.Substring(8, subpart.Length - 10);
-                            poly.Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(0,0,0,250));
+                            line.Stroke = new SolidColorBrush(Windows.UI.Color.FromArgb(0, 0, 0, 250));
                             //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
                         }
                     }
                 }
-                if (poly.Points.Count > 0)
+                if (line.Points.Count > 0)
                 {
-                    polys.Add(poly);
+                    polys.Add(line);
                 }
             }
             return polys;
@@ -92,7 +98,7 @@ namespace NuSysApp
         public override async Task<Dictionary<string,string>>  Pack()
         {
             Dictionary<string, string> props = await base.Pack();
-            props.Add("polylines", PolylinesToString());
+            props.Add("polylines", InqlinesToString());
             return props;
         }
 

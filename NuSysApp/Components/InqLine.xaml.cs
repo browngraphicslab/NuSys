@@ -25,11 +25,12 @@ namespace NuSysApp
 
         private bool _isHighlighting = false;
         private bool _isSelected = false;
-
         public InqLine()
         {
             this.InitializeComponent();
             this.CanEdit = Atom.EditStatus.Maybe;
+            ID = DateTime.UtcNow.Ticks.ToString();
+
         }
 
         public InqLine(string id,string data)
@@ -83,6 +84,13 @@ namespace NuSysApp
             set { Line.StrokeThickness = value; }
         }
 
+        public Brush Stroke
+        {
+            get { return Line.Stroke; }
+            set { Line.Stroke = value; }
+
+        }
+
         public bool IsHighlighting
         {
             get { return _isHighlighting; }
@@ -116,7 +124,7 @@ namespace NuSysApp
                 {
                     plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
                 }
-                plines += "' thickness='" + Line.StrokeThickness + "'/>";
+                plines += "' thickness='" + Line.StrokeThickness + "'>";
             }
             return plines;
         }
@@ -160,11 +168,20 @@ namespace NuSysApp
         }
         public async Task<Dictionary<string, string>> Pack()
         {
-            return new Dictionary<string, string>();
+            Dictionary<string,string> props = new Dictionary<string, string>();
+            props.Add("data", GetString());
+            props.Add("type", "ink");
+            props.Add("inkType", "global");
+            props.Add("globalInkType", "full");
+            return props;
         }
 
         public async Task UnPack(Dictionary<string, string> props)
         {
+            if (props.ContainsKey("data"))
+            {
+                SetLine(props["data"]);
+            }
             if (props.ContainsKey("delete") && props["delete"] == "true")
             {
                 //TODO add in deletion

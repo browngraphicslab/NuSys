@@ -52,7 +52,7 @@
                             
                         </StackPanel>                       
 
-                        <ContentControl Content="{TemplateBinding Inner}" />
+                        <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
 
                         <local:InqCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" Background="Transparent" IsHitTestVisible="{Binding IsEditingInk}" />
                         

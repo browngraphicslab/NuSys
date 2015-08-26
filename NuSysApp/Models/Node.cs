@@ -27,6 +27,9 @@ namespace NuSysApp
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
         public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
 
+        public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
+
+        public event AddToGroupEventHandler OnAddToGroup;
         #endregion Events and Handlers
 
         public Node(string id) : base(id)
@@ -38,6 +41,12 @@ namespace NuSysApp
         public void Delete()
         {
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
+        }
+
+        public void MoveToGroup(Group group)
+        {
+            this.ParentGroup = group;
+            OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
         }
 
         public string Data { get; set; }

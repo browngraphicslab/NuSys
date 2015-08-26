@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +44,46 @@ namespace NuSysApp
                     {
                         if (props.ContainsKey("type") && props["type"] == "ink")
                         {
+                            if (props.ContainsKey("inkType") && props["inkType"] == "global")
+                            {
+                                if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
+                                {
+                                    InqLine l = ParseToLineSegment(props);
+                                    if (l == null) return;
 
+                                    if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                                    {
+                                        WorkSpaceModel.PartialLines[id].Add(l);
+                                    }
+                                    else
+                                    {
+                                        WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
+                                        WorkSpaceModel.PartialLines[id].Add(l);
+                                    }
+                                }
+                                else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
+                                {
+                                    if (props.ContainsKey("data"))
+                                    {
+                                        List<InqLine> lines = ParseToPolyline(props["data"]);
+                                        if (lines.Count == 0) return;
+                                        InqLine line = lines[0];
+                                        WorkSpaceModel.IDToSendableDict.Add(id, line);
+                                        WorkSpaceModel.AddGlobalInq(line);
+                                    }
+                                    if (props.ContainsKey("previousID") &&
+                                        WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
+                                    {
+                                        ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
+                                        foreach(InqLine l in oc)
+                                        {
+                                            ((InqCanvas) l.Parent).Children.Remove(l);
+                                        }
+                                        WorkSpaceModel.PartialLines.Remove(props["previousID"]);
+                                    }
+                                }
+
+                            }
                         }
                         else if (props.ContainsKey("type") && props["type"] == "group")
                         {
@@ -97,6 +138,17 @@ namespace NuSysApp
                                         catch (Exception e)
                                         {
                                             Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
+                                        }
+                                        break;
+                                    case NodeType.Text:
+                                    case NodeType.Richtext:
+                                        if (!props.ContainsKey("text"))
+                                        {
+                                            props.Add("text", d);
+                                        }
+                                        else
+                                        {
+                                            props["text"] = d;
                                         }
                                         break;
                                     case NodeType.Image:
@@ -184,6 +236,7 @@ namespace NuSysApp
             if (!HasAtom(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
+                return;
             }
             await WorkSpaceModel.Locks.Set(id, ip);
         }
@@ -192,14 +245,15 @@ namespace NuSysApp
         {
             return Convert.FromBase64String(s);
         }
-        private Polyline[] ParseToPolyline(string s)
+        private List<InqLine> ParseToPolyline(string s)
         {
-            List<Polyline> polys = new List<Polyline>();
-            string[] parts = s.Split("><".ToCharArray());
+
+            List<InqLine> polys = new List<InqLine>();
+            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.None);
             foreach (string part in parts)
             {
-                Polyline poly = new Polyline();
-                string[] subparts = part.Split(" ".ToCharArray());
+                InqLine line = new InqLine();
+                string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.None);
                 foreach (string subpart in subparts)
                 {
                     if (subpart.Length > 0 && subpart != "polyline")
@@ -207,47 +261,48 @@ namespace NuSysApp
                         if (subpart.Substring(0, 6) == "points")
                         {
                             string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                            string[] points = innerPoints.Split(";".ToCharArray());
+                            string[] points = innerPoints.Split(new string[] { ";" }, StringSplitOptions.None);
                             foreach (string p in points)
                             {
                                 if (p.Length > 0)
                                 {
-                                    string[] coords = p.Split(",".ToCharArray());
+                                    string[] coords = p.Split(new string[] { "," }, StringSplitOptions.None);
                                     //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
+                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
+                                    line.AddPoint(parsedPoint);
                                 }
                             }
                         }
                         else if (subpart.Substring(0, 9) == "thickness")
                         {
-                            string sp = subpart.Substring(11, subpart.Length - 12);
-                            poly.StrokeThickness = double.Parse(sp);
+                            string sp = subpart.Substring(11, subpart.Length - 13);
+                            line.StrokeThickness = double.Parse(sp);
                         }
                         else if (subpart.Substring(0, 6) == "stroke")
                         {
                             string sp = subpart.Substring(8, subpart.Length - 10);
-                            poly.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
+                            line.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
                             //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
                         }
                     }
                 }
-                if (poly.Points.Count > 0)
+                if (line.Points.Count > 0)
                 {
-                    polys.Add(poly);
+                    polys.Add(line);
                 }
             }
-            return polys.ToArray();
+            return polys;
         }
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(Constants.CommaReplacement.ToCharArray());
+            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
             Dictionary<string, string> props = new Dictionary<string, string>();
             foreach (string part in parts)
             {
                 if (part.Length > 0)
                 {
-                    string[] subParts = part.Split("=".ToCharArray(), 2);
+                    string[] subParts = part.Split(new string[] { "=" },2, StringSplitOptions.None);
                     if (subParts.Length != 2)
                     {
                         Debug.WriteLine("Error, property formatted wrong in message: " + message);
@@ -277,24 +332,28 @@ namespace NuSysApp
         }
         public async Task<string> GetFullWorkspace()
         {
-            if (WorkSpaceModel.IDToSendableDict.Count > 0)
-            {
-                string ret = "";
-                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
+                if (WorkSpaceModel.IDToSendableDict.Count > 0)
                 {
-                    ret += '<';
-                    Sendable atom = kvp.Value;
-                    Dictionary<string, string> parts = await atom.Pack();
-                    foreach (KeyValuePair<string, string> tup in parts)
+                    string ret = "";
+                    foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
                     {
-                        ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
+                        ret += '<';
+                        Sendable atom = kvp.Value;
+                        var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                        await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                        {
+                            Dictionary<string, string> parts = await atom.Pack();
+                            foreach (KeyValuePair<string, string> tup in parts)
+                            {
+                                ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
+                            }
+                            ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
+                        });
                     }
-                    ret += "id=" + atom.ID + ">"+Constants.AndReplacement;
+                    ret = ret.Substring(0, ret.Length - 2);
+                    return ret;
                 }
-                ret = ret.Substring(0, ret.Length - 2);
-                return ret;
-            }
-            return "";
+                return "";
         }
 
         public async Task ClearLocks()
@@ -390,13 +449,31 @@ namespace NuSysApp
         private Dictionary<string, string> StringToDict(string s)
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
-            string[] strings = s.Split("&".ToCharArray());
+            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.None);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(":".ToCharArray());
+                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.None);
                 dict.Add(kvpparts[0], kvpparts[1]);
             }
             return dict;
-        } 
+        }
+
+        private InqLine ParseToLineSegment(Dictionary<string,string> props)
+        {
+            InqLine l = new InqLine();
+            if (props.ContainsKey("x1") && props.ContainsKey("y1") && props.ContainsKey("x2") && props.ContainsKey("y2"))
+            {
+                Point one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
+                Point two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
+                l.AddPoint(one);
+                l.AddPoint(two);
+                l.StrokeThickness = 2;
+            }
+            else
+            {
+                return null;
+            }
+            return l;
+        }
     }
 }

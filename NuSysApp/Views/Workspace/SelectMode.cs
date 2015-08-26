@@ -28,10 +28,17 @@ namespace NuSysApp.Views.Workspace
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc is WorkspaceViewModel) { 
                 var vm = (WorkspaceViewModel)_view.DataContext;
                 vm.ClearSelection();
+            }
+            else if (dc is NodeViewModel)
+            {
+                var vm = (NodeViewModel)dc;
+                NetworkConnector.Instance.ModelIntermediate.CheckLocks(vm.ID);
+                NetworkConnector.Instance.RequestLock(vm.ID);
             }
             e.Handled = true;
         }
