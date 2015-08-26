@@ -470,7 +470,7 @@ namespace NuSysApp
                 if (((Node)nodeVm.Model).Content != null)
                 {
                     Content toInsert = ((Node)nodeVm.Model).Content;
-                    dbConnection.InsertAsync(toInsert);
+                    await dbConnection.InsertAsync(toInsert);
                 }
 
             }

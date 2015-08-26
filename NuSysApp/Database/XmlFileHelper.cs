@@ -16,7 +16,6 @@ namespace NuSysApp
 
         private List<Dictionary<string, string>> _atomUpdateDicts = new List<Dictionary<string, string>>();
         List<string> _createdAtomList = new List<string>();
-        bool _allAtomCreated = false;
 
         public XmlFileHelper()
         {
@@ -143,18 +142,17 @@ namespace NuSysApp
                 }
             }
 
-            int counter = 0;
             List<string> createdAtomListCopy = _createdAtomList;
 
             while (createdAtomListCopy.Count != 0)
             {
-                CheckNodeCreation(vm, createdAtomListCopy);
+                this.CheckNodeCreation(vm, createdAtomListCopy);
             }
             await this.CreateLinks(vm, doc);
 
             foreach (Dictionary<string, string> dict in _atomUpdateDicts)
             {
-                NetworkConnector.Instance.QuickUpdateAtom(dict);
+                await NetworkConnector.Instance.QuickUpdateAtom(dict);
             }
         }
 
