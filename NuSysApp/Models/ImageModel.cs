@@ -13,7 +13,6 @@ namespace NuSysApp
         public ImageModel(byte[] byteArray, string id) : base(id)
         {
             ByteArray = byteArray;
-            Content = new Content(ByteArray, id);
             MakeImage(byteArray);
             Content = new Content(byteArray, id);
         }
@@ -49,7 +48,6 @@ namespace NuSysApp
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
-
             //Main XmlElement 
             XmlElement imageNode = doc.CreateElement(string.Empty, "Node", string.Empty);
 

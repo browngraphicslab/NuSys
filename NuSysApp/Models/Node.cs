@@ -160,7 +160,7 @@ namespace NuSysApp
             {
                 return _parentGroup;
             }
-            private set
+            set
             {
                 _parentGroup = value;
                 if (NetworkConnector.Instance.ModelLocked)
