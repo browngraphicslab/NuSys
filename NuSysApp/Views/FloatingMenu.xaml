@@ -43,6 +43,28 @@
             </Setter>
         </Style>
 
+        <Storyboard x:Name="bucketOpen">
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="bucketWindow" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="bucketWindow">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="bucketClose">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="bucketWindow" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="bucketWindow">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
         <Storyboard x:Name="expand">
             <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
             <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
@@ -270,7 +292,7 @@
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/mic icon.png"></Image>
             </Button>
         </StackPanel>
-        <StackPanel x:Name="SubMenuAdditional" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,320,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuAdditional" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,420,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
@@ -283,15 +305,13 @@
             <Button x:Name="Export" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_export.png"></Image>
             </Button>
-            <Button Name="pinButton" Style="{StaticResource FloatingButton}" Tapped="PinButton_Click">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_link.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
+            <Button Name="pinButton" Style="{StaticResource FloatingButton}" Tapped="PinButton_Click" BorderBrush="{x:Null}">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_additional.png"></Image>
+            </Button> 
         </StackPanel>
         
         <!-- Bucket Window -->
-        <local:BucketWindow x:Name="bucketWindow" Margin="40,30,0,0" Visibility="Collapsed" IsHitTestVisible="False"></local:BucketWindow>
+        <local:BucketWindow x:Name="bucketWindow" Margin="40,30,0,0" Opacity="0"  IsHitTestVisible="False"></local:BucketWindow>
         
     </Canvas>
 </UserControl>

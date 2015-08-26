@@ -86,15 +86,17 @@ namespace NuSysApp
 
         private void Expandable(object sender, RoutedEventArgs e)
         {
-            if (FloatingMenuPanel.Visibility == Visibility.Collapsed)
+            //expand
+            if (ExpandImage.Visibility == Visibility.Visible)
             {
-                bucketWindow.Visibility = Visibility.Collapsed;
+                bucketClose.Begin();
                 bucketWindow.IsHitTestVisible = false;
                 expand.Begin();
                 CollapseImage.Visibility = Visibility.Visible;
                 ExpandImage.Visibility = Visibility.Collapsed;             
             }
             else
+            //collapse
             {
                 slidein.Begin();
                 slideinSelect.Begin();
@@ -104,8 +106,8 @@ namespace NuSysApp
                 _subMenuSelectOpen = false;
                 _subMenuNodesOpen = false;
                 _subMenuAdditionalOpen = false;
+                bucketClose.Begin();
                 bucketWindow.IsHitTestVisible = false;
-                bucketWindow.Visibility = Visibility.Collapsed;
                 collapse.Begin();
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
@@ -235,9 +237,9 @@ namespace NuSysApp
 
         private void Bucket_Click(object sender, RoutedEventArgs e)
         {
-            if (bucketWindow.Visibility == Visibility.Collapsed)
+            if (bucketWindow.Opacity == 0)
             {
-                bucketWindow.Visibility = Visibility.Visible;
+                bucketOpen.Begin();
                 bucketWindow.IsHitTestVisible = true;
                 collapse.Begin();
                 slidein.Begin();
