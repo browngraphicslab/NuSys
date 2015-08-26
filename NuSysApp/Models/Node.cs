@@ -205,7 +205,10 @@ namespace NuSysApp
             }
             if (props.ContainsKey("parentGroup"))
             {
-                this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+                if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
+                {
+                    this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+                }
             }
             base.UnPack(props);
         }
@@ -217,8 +220,11 @@ namespace NuSysApp
             dict.Add("y", Y.ToString());
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
-            dict.Add("type","node");
-            dict.Add("parentGroup", ParentGroup.ID);
+            dict.Add("type", "node");
+            if (ParentGroup != null)
+            {
+                dict.Add("parentGroup", ParentGroup.ID);
+            }
             return dict;
         }
         public virtual XmlElement WriteXML(XmlDocument doc)
