@@ -1,8 +1,10 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
+using Windows.System.Power.Diagnostics;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -330,11 +332,17 @@ namespace NuSysApp
             }
             set
             {
-                _group = value;
-                if (_group != null)
+                if (value == null)
                 {
-                    ((Node)Model).ParentGroup = (Group)_group.Model;
-                }          
+                    _group = value;
+                    return;
+                }
+                if (value.Model != ((Node) this.Model).ParentGroup)
+                {
+                    Debug.WriteLine("Different parent groups");
+                    return;
+                }
+                _group = value;     
             }
         }
 

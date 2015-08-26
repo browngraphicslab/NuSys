@@ -1066,6 +1066,10 @@ namespace NuSysApp
                 {
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassMessage(message, packetType);
+                    if (packetType == PacketType.TCP)
+                    {
+                        await HandleRegularMessage(_localIP, message, packetType);
+                    }
                 }
                 else
                 {
