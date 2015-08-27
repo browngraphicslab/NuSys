@@ -69,7 +69,9 @@ namespace NuSysApp
 
         private async void Init()
         {
+
             Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
+
         }
 
         

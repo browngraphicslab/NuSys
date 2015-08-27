@@ -65,6 +65,28 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
+        <Storyboard x:Name="pinOpen">
+            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="pinWindow" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="pinWindow">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="pinClose">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="pinWindow" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="pinWindow">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
         <Storyboard x:Name="expand">
             <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
             <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
@@ -259,7 +281,9 @@
             <Button x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource FloatingButton}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_eraser.png"></Image>
             </Button>
-            <Button x:Name="Colors" Style="{StaticResource FloatingButton}"/>
+            <Button x:Name="Highlight" Style="{StaticResource FloatingButton}">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_highlight.png"></Image>
+            </Button>
         </StackPanel>
         <StackPanel x:Name="SubMenuSelect" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
@@ -307,12 +331,15 @@
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_export.png"></Image>
             </Button>
             <Button Name="pinButton" Style="{StaticResource FloatingButton}" Tapped="PinButton_Click" BorderBrush="{x:Null}">
-                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_additional.png"></Image>
+                <Image Height="50" Width="40" Source="ms-appx:///Assets/pin.png"></Image>
             </Button>
         </StackPanel>
 
         <!-- Bucket Window -->
         <local:BucketWindow x:Name="bucketWindow" Margin="40,30,0,0" Opacity="0"  IsHitTestVisible="False"></local:BucketWindow>
 
+        <!-- Pin Window -->
+        <local:PinWindow x:Name="pinWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False"></local:PinWindow>
+        <!--PinList="{Binding PinViewModelList}"-->
     </Canvas>
 </UserControl>
