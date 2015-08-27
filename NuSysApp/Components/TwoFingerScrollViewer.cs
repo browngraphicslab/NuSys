@@ -51,16 +51,12 @@ namespace NuSysApp
 
             ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
             {
-                Debug.WriteLine(_numTouchPoints);
 
                 if (_numTouchPoints >=2) {
                     Scroll(Math.Sign(e.Delta.Translation.Y), Math.Abs(e.Delta.Translation.Y));
 
                     e.Handled = true;
-                } else
-                {
-                    Debug.WriteLine("asdfasfasf " + _numTouchPoints);
-                }
+                } 
             };
         }  
         

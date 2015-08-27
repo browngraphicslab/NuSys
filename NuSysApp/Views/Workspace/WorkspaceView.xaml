@@ -34,7 +34,6 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <local:MinimapView />
         <local:FloatingMenu x:Name="floatingMenu" ModeChange="OnModeChange" />
     </Canvas>
 </Page>
