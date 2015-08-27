@@ -51,14 +51,14 @@ namespace NuSysApp
                                     InqLine l = ParseToLineSegment(props);
                                     if (l == null) return;
 
-                                    if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                                    if (WorkSpaceModel.InqModel.PartialLines.ContainsKey(id))
                                     {
-                                        WorkSpaceModel.PartialLines[id].Add(l);
+                                        WorkSpaceModel.InqModel.PartialLines[id].Add(l);
                                     }
                                     else
                                     {
-                                        WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
-                                        WorkSpaceModel.PartialLines[id].Add(l);
+                                        WorkSpaceModel.InqModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
+                                        WorkSpaceModel.InqModel.PartialLines[id].Add(l);
                                     }
                                 }
                                 else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
@@ -72,14 +72,14 @@ namespace NuSysApp
                                         WorkSpaceModel.AddGlobalInq(line);
                                     }
                                     if (props.ContainsKey("previousID") &&
-                                        WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
+                                        WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                                     {
-                                        ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
+                                        ObservableCollection<InqLine> oc = WorkSpaceModel.InqModel.PartialLines[props["previousID"]];
                                         foreach(InqLine l in oc)
                                         {
-                                            ((InqCanvas) l.Parent).Children.Remove(l);
+                                            ((InqCanvasView) l.Parent).Children.Remove(l);
                                         }
-                                        WorkSpaceModel.PartialLines.Remove(props["previousID"]);
+                                        WorkSpaceModel.InqModel.PartialLines.Remove(props["previousID"]);
                                     }
                                 }
 
@@ -275,7 +275,8 @@ namespace NuSysApp
                         }
                         else if (subpart.Substring(0, 9) == "thickness")
                         {
-                            string sp = subpart.Substring(11, subpart.Length - 13);
+                            string sp = subpart.Substring(subpart.IndexOf("'") + 1);
+                            sp = sp.Substring(0, sp.IndexOf("'"));
                             line.StrokeThickness = double.Parse(sp);
                         }
                         else if (subpart.Substring(0, 6) == "stroke")

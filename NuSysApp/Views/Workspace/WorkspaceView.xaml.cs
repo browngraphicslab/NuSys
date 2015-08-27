@@ -37,24 +37,13 @@ namespace NuSysApp
         public WorkspaceView()
         {
             this.InitializeComponent();
-            this.DataContext = new WorkspaceViewModel(new WorkSpaceModel());
+            InqCanvasModel inqCanvasModel = (this.InqCanvas.DataContext as InqCanvasViewModel).Model;
+            this.DataContext = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
             _cortanaInitialized = false;
-            vm.PropertyChanged += Update;
         }
 
-        private void Update(object sender, PropertyChangedEventArgs e)
-        {
-            WorkspaceViewModel vm = (WorkspaceViewModel)sender;
-            switch (e.PropertyName)
-            {
-                case "PartialLineAdded":
-                    this.InqCanvas.Children.Add(vm.LastPartialLine);
-                    this.InqCanvas.Strokes.Add(vm.LastPartialLine);
-                    break;
-            }
-        }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -68,7 +57,7 @@ namespace NuSysApp
             await _mode.Activate();
         }
 
-        public InqCanvas InqCanvas
+        public InqCanvasView InqCanvas
         {
             get { return inqCanvas; }
         }

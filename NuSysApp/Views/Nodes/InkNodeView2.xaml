@@ -20,11 +20,11 @@
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <MenuFlyoutItem x:Name="EditInk" Click="OnEditClick" Style="{StaticResource SubMenuItem}">
-                    <MenuFlyoutItem.Background>
-                        <ImageBrush Stretch="Uniform" ImageSource="ms-appx:///Assets/icon_globalink.png" ></ImageBrush>
-                    </MenuFlyoutItem.Background>
-                </MenuFlyoutItem>
+                <Button x:Name="EditInk" Click="OnEditClick" Style="{StaticResource SubMenuItem}">
+                    
+                        <Image Source="ms-appx:///Assets/icon_global_ink.png" ></Image>
+    
+                </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>

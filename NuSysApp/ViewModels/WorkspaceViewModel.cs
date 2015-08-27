@@ -57,7 +57,6 @@ namespace NuSysApp
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
             this.Model.OnCreation += CreatedHandler;
-            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
         }
 
         private async void Init()
@@ -431,12 +430,7 @@ namespace NuSysApp
         //    }
         //    return  vm.Model;
         //}
-        public InqLine LastPartialLine { get; set; }
-        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
-        {
-            LastPartialLine = e.AddedLine;
-            RaisePropertyChanged("PartialLineAdded");
-        }
+
         public async void CreatedHandler(object source, CreateEventArgs e)
         {
             NodeViewModel vm = null;

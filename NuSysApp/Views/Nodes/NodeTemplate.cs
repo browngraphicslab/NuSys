@@ -9,13 +9,13 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvas))]
+    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvasView))]
     [TemplatePart(Name = "btnDelete", Type = typeof(Button))]
     [TemplatePart(Name = "resizer", Type = typeof(Path))]
     [TemplatePart(Name = "bg", Type = typeof(Grid))]
     public sealed class NodeTemplate : ContentControl
     {
-        public InqCanvas inkCanvas;
+        public InqCanvasView inkCanvas;
         public Button btnDelete;
         public Path resizer;
         public Grid bg;
@@ -45,7 +45,7 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
-            inkCanvas = (InqCanvas)GetTemplateChild("inkCanvas");
+            inkCanvas = (InqCanvasView)GetTemplateChild("inkCanvas");
            
             bg = (Grid)GetTemplateChild("bg");
             

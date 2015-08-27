@@ -166,6 +166,21 @@ namespace NuSysApp
             }
             Line = poly;
         }
+
+        public string Stringify()
+        {
+            string s = "";
+            s += "<polyline points='";
+            foreach (Point point in this.Points)
+            {
+                s += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
+            }
+            s += "' thickness='" + this.StrokeThickness + "' stroke='" + this.Stroke + "'/>";
+            return s;
+        }
+
+
+
         public async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string,string> props = new Dictionary<string, string>();
