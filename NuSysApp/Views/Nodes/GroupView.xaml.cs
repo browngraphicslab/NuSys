@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -76,6 +77,13 @@ namespace NuSysApp
             Width *= scale;
             this.DataContext = vm;
         }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.Remove();
+        }
+
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             var vm = (GroupViewModel)this.DataContext;
