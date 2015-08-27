@@ -37,8 +37,8 @@ namespace NuSysApp
 
         public static void CheckFileType(string fileType)
         {
-            if (fileType != "application.pdf" || fileType != "image/tiff" || fileType != "image/jpeg" ||
-                fileType != "image/png" || fileType != "image/gif")
+            if (fileType != "application.pdf" && fileType != "image/tiff" && fileType != "image/jpeg" &&
+                fileType != "image/png") //TO-DO: allow other types we support that haven't been added here yet
             {
                 throw new Exception("The file format you selected is currently supported.");
             }
