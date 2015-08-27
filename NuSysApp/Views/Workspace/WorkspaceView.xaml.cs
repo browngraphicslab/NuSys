@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
+using NuSysApp.Components.ContentImporter;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,16 +30,24 @@ namespace NuSysApp
 
         private bool _cortanaInitialized;
         private CortanaMode _cortanaModeInstance;
+        private ContentImporter _contentImporter  = new ContentImporter();
 
         #endregion Private Members
 
         public WorkspaceView()
         {
             this.InitializeComponent();
-            this.DataContext = new WorkspaceViewModel(new WorkSpaceModel());
+            var workspaceModel = new WorkSpaceModel();
+            this.DataContext = new WorkspaceViewModel( workspaceModel );
             var vm = (WorkspaceViewModel)this.DataContext;
             _cortanaInitialized = false;
             vm.PropertyChanged += Update;
+
+            _contentImporter.ContentImported += delegate (List<string> contents)
+            {
+                var nodes = new List<Node>();
+
+            };
         }
 
         private void Update(object sender, PropertyChangedEventArgs e)
