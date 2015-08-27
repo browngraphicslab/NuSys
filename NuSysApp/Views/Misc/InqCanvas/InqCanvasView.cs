@@ -26,6 +26,7 @@ namespace NuSysApp
             var vm = new InqCanvasViewModel(new InqCanvasModel());
             this.DataContext = vm;
             vm.PropertyChanged += Update;
+            
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -117,12 +118,6 @@ namespace NuSysApp
             }
         }
 
-        //public void RemoveByInkStroke(InkStroke stroke)
-        //{
-        //    var line = _strokes[stroke];
-        //    if (line != null)
-        //        Children.Remove(line);
-        //}
 
         public Rect PasteStrokes(InqLine[] lines)
         {
@@ -181,18 +176,6 @@ namespace NuSysApp
                 _isEnabled = value;
             }
         }
-
-        //public InkManager Manager
-        //{
-        //    get
-        //    {
-        //        return _inkManager;
-        //    }
-        //    set
-        //    {
-        //        _inkManager = value;
-        //    }
-        //}
 
         public IInqMode Mode
         {
