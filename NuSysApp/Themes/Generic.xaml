@@ -18,7 +18,7 @@
                         <Grid.Resources>
                             <Storyboard x:Key="slideout" x:Name="slideout">
                                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-                                <DoubleAnimation Duration="0:0:0.2" To="-93.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                                <DoubleAnimation Duration="0:0:0.2" To="-73.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
                                 <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
                                     <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
@@ -43,7 +43,7 @@
                         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Blue" StrokeThickness="3" Opacity=".8"
                    Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
                         <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5"
-            Orientation="Horizontal" Height="100" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0" IsHitTestVisible="False">
+            Orientation="Horizontal" Height="75" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0" IsHitTestVisible="False">
                             <StackPanel.RenderTransform>
                                 <CompositeTransform/>
                             </StackPanel.RenderTransform>
@@ -57,10 +57,10 @@
                         <local:InqCanvas x:Name="inkCanvas" Height="{Binding Height}" Width="{Binding Width}" Background="Transparent" IsHitTestVisible="{Binding IsEditingInk}" />
                         
                         <Button x:Name="btnDelete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
-                Background="#00000000">
-                            <Button.Content>
+                Background="#00000000" IsHitTestVisible="False">
+                            <!--<Button.Content>
                                 <Image Source="ms-appx:///Assets/icon_x2.png" />
-                            </Button.Content>
+                            </Button.Content>-->
                         </Button>
                         <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
