@@ -38,7 +38,8 @@ namespace NuSysApp
 
         public ObservableCollection<Node> NodeModelList { get; set; }
 
-       public ObservableCollection<Link> LinkModelList { get; set; }
+        public ObservableCollection<Link> LinkModelList { get; set; }
+
         public override XmlElement WriteXML(XmlDocument doc)
         {
             //Main XmlElement 
@@ -52,9 +53,10 @@ namespace NuSysApp
             }
 
             //get nodes within groups
-            foreach (Node n in NodeModelList)
+            foreach (Sendable id in _idDict.Values)
             {
-                groupNode.AppendChild(n.WriteXML(doc));
+                Node node = id as Node;
+                groupNode.AppendChild(node.WriteXML(doc));
             }
             return groupNode;
         }

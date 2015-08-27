@@ -46,6 +46,7 @@ namespace NuSysApp
         public void MoveToGroup(Group group)
         {
             this.ParentGroup = group;
+            group.Add(this);
         }
 
         public string Data { get; set; }

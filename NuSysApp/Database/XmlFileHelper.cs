@@ -16,6 +16,7 @@ namespace NuSysApp
 
         private List<Dictionary<string, string>> _atomUpdateDicts = new List<Dictionary<string, string>>();
         List<string> _createdAtomList = new List<string>();
+        bool _allAtomCreated = false;
 
         public XmlFileHelper()
         {
@@ -43,7 +44,6 @@ namespace NuSysApp
         public async Task CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
             string ID = node.Attributes.GetNamedItem("id").Value;
-            _createdAtomList.Add(ID);
             string currType = node.Attributes.GetNamedItem("nodeType").Value;
             string X = node.Attributes.GetNamedItem("x").Value;
             string Y = node.Attributes.GetNamedItem("y").Value;
@@ -72,7 +72,6 @@ namespace NuSysApp
                 {
                     byteToString = Convert.ToBase64String(byteData);
                 }
-
             }
             
             switch (currType)
@@ -114,23 +113,41 @@ namespace NuSysApp
                 switch (AtomType)
                 {
                     case "Group":
-                        double x = Convert.ToDouble(node.Attributes.GetNamedItem("x").Value);
-                        double y = Convert.ToDouble(node.Attributes.GetNamedItem("y").Value);
+                        string x = node.Attributes.GetNamedItem("x").Value;
+                        string y = node.Attributes.GetNamedItem("y").Value;
                         await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
-                                //GroupViewModel groupVm = new GroupViewModel(vm, ID);
-                                //vm.Model.AtomDict.Add(ID, groupVm);
-                                //foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
-                                //{
-                                //    await this.CreateNodeFromXml(vm, child);
-                                //}
-                                //vm.NodeViewModelList.Add(groupVm);
-                                //vm.AtomViewList.Add(groupVm.View);
-                                //vm.PositionNode(groupVm, x, y);
+                                Dictionary<string, string> dict = new Dictionary<string, string>();
+                                dict.Add("id", ID);
+                                _atomUpdateDicts.Add(dict);
+                                List<string> NodeIdList = new List<string>();
+                                foreach (XmlNode child in node.ChildNodes)
+                                {
+                                    string nodeId = child.Attributes.GetNamedItem("id").Value;
+                                    _createdAtomList.Add(nodeId);
+                                    NodeIdList.Add(nodeId);
+                                }
+                                /* have to split this into two because we need to above method to be 
+                                   executed right away and not wait until the node creation is finished */
+                                foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
+                                {
+                                    await this.CreateNodeFromXml(vm, child);
+                                }
+                                await NetworkConnector.Instance.RequestMakeGroup(NodeIdList[0], NodeIdList[1], x, y, ID);
+                                if (NodeIdList.Count > 2)
+                                {
+                                    Group group = vm.Model.IDToSendableDict[ID] as Group;
+                                    for (int i = 2; i < NodeIdList.Count; i++)
+                                    {
+                                        Node currNode = vm.Model.IDToSendableDict[NodeIdList[i]] as Node;
+                                        currNode.MoveToGroup(group);
+                                    }
+                                }
                             });
                         break;
                     case "Node":
+                        _createdAtomList.Add(ID);
                         CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
@@ -142,13 +159,18 @@ namespace NuSysApp
                 }
             }
 
-            List<string> createdAtomListCopy = _createdAtomList;
+            List<string> createdAtomListCopy = new List<string>();
+            foreach (string id in _createdAtomList) { createdAtomListCopy.Add(id); }
 
-            while (createdAtomListCopy.Count != 0)
+            while (_allAtomCreated == false)
             {
-                this.CheckNodeCreation(vm, createdAtomListCopy);
+                this.CheckNodeCreation(vm, doc, createdAtomListCopy);
+                if (createdAtomListCopy.Count == 0)
+                {
+                    await this.CreateLinks(vm, doc);
+                    _allAtomCreated = true;
+                }
             }
-            await this.CreateLinks(vm, doc);
 
             foreach (Dictionary<string, string> dict in _atomUpdateDicts)
             {
@@ -156,7 +178,7 @@ namespace NuSysApp
             }
         }
 
-        public async Task CheckNodeCreation(WorkspaceViewModel vm, List<string> copy)
+        public async Task CheckNodeCreation(WorkspaceViewModel vm, XmlDocument doc, List<string> copy)
         {
             foreach (string id in _createdAtomList)
             {
@@ -171,6 +193,8 @@ namespace NuSysApp
         {
             XmlElement parent = doc.DocumentElement;
             XmlNodeList NodeList = parent.ChildNodes;
+
+            Dictionary<string, string> dict = new Dictionary<string, string>();
 
             foreach (XmlNode node in NodeList)
             {
@@ -189,9 +213,9 @@ namespace NuSysApp
                         CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
-                                await NetworkConnector.Instance.RequestMakeLinq(id1, id2);
+                                await NetworkConnector.Instance.RequestMakeLinq(id1, id2, ID);
 
-                                // create node annotation and attach it to the link
+                                // create node annotation and attach it to the link TO-DO: uncomment when annotation works
                                 //if (node.HasChildNodes)
                                 //{
                                 //    XmlNode attachedAnnotation = node.ChildNodes[0];

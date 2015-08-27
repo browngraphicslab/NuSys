@@ -21,11 +21,13 @@ namespace NuSysApp
         {
             var html = string.Empty;
             if (!h.StartsWith("<html>")) {
-                html = "<html><body style='font-family:Calibri;'>" + h + "</body></html>";
+                html = "<html><body>" + h + "</body></html>";
             } else
             {
                 html = h;
             }
+
+            html =  html.Replace("\n", "");
 
             string result = null;
             var manualReset = new ManualResetEvent(false);
