@@ -30,7 +30,7 @@
                                         <Storyboard>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid"
                                                                            Storyboard.TargetProperty="Opacity">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value=".75"></DiscreteObjectKeyFrame>
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
@@ -82,7 +82,6 @@
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
 
-
     </UserControl.Resources>
 
     <Grid Background="#a8edf3">
@@ -99,8 +98,13 @@
         <Button Click="Local_OnClick" Foreground="#51DCE7" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,0,0,0" Background="White">
             LOCAL WORKSPACE
         </Button>
-        <Button Click="clear_OnClick" Foreground="White" FontWeight="Bold" FontSize="18" Style="{StaticResource WaitingRoomButton}" Background="{x:Null}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="1000" Margin="0,0,0,-450">
-            Can't join workspace after a few seconds? CLICK THIS and then Network Workspace Button
+
+        <TextBlock Height="60" Width="1000" FontSize="20" Margin="0,0,0,-450" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="White" 
+                   Text="Can't join workspace after a few seconds?"></TextBlock>
+        <TextBlock TextAlignment="Right" Height="60" Width="915" FontSize="20" Margin="0,0,0,-450" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="White" 
+                   Text="and then Network Workspace."></TextBlock>
+        <Button x:Name="fixButton" Height="30" Width="120" Margin="646,555,514,135" Click="clear_OnClick" Foreground="#51DCE7" FontWeight="Bold" FontSize="18" Style="{StaticResource WaitingRoomButton}" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
+            CLICK THIS
         </Button>
     </Grid>
 </Page>
