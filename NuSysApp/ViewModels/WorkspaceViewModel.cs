@@ -308,6 +308,9 @@ namespace NuSysApp
                     vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
                     vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
                     break;
+                case NodeType.Audio:
+                    vm = new AudioNodeViewModel((AudioModel)model, this, id);
+                    break;
                 default:
                     return;
                     break;
