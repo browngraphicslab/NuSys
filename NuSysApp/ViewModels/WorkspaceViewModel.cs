@@ -69,7 +69,6 @@ namespace NuSysApp
 
         private async void Init()
         {
-            await SetupDirectories();
             SetupChromeIntermediate();
             SetupOfficeTransfer();
             Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
@@ -148,24 +147,6 @@ namespace NuSysApp
                     await file.DeleteAsync();
                 }
             };
-        }
-
-        private static async Task<bool> SetupDirectories()
-        {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
-            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
-           
-            NuSysStorages.NuSysTempFolder =
-                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
-            NuSysStorages.ChromeTransferFolder =
-                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
-            NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderWordTransferName);
-            NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderPowerpointTransferName);
-            NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
-            NuSysStorages.OfficeToPdfFolder =
-                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
-
-            return true;
         }
 
         /// <summary>
