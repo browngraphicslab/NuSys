@@ -1108,7 +1108,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Group
         */
-        public async Task RequestMakeGroup(string id1, string id2, string x, string y)
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null)
         {
             if (id1 != "" && id2 != "")
             {
@@ -1116,10 +1116,15 @@ namespace NuSysApp
                 {
                     if (ModelIntermediate.HasAtom(id2))
                     {
+                        var s = "";
+                        if (oldID != null)
+                        {
+                            s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                        }
                         await SendMessageToHost("<id=0" + Constants.CommaReplacement + "id1=" + id1 +
                                                 Constants.CommaReplacement + "id2=" + id2 + Constants.CommaReplacement +
                                                 "x="+x+Constants.CommaReplacement+"y="+y+Constants.CommaReplacement+
-                                                "type=group>");
+                                                "type=group" + s + ">");
                     }
                     else
                     {
@@ -1141,11 +1146,17 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Linq
         */
-        public async Task RequestMakeLinq(string id1, string id2)
+        public async Task RequestMakeLinq(string id1, string id2, string oldID = null)
         {
             if (id1 != "" && id2 != "")
             {
-                await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"id1=" + id1 + Constants.CommaReplacement+"id2=" + id2 + Constants.CommaReplacement+"type=linq>");
+                var s = "";
+                if (oldID != null)
+                {
+                    s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                }
+
+                await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"id1=" + id1 + Constants.CommaReplacement+"id2=" + id2 + Constants.CommaReplacement+"type=linq" + s + ">");
             }
             else
             {

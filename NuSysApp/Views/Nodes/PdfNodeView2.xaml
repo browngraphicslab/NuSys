@@ -17,17 +17,19 @@
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl">
+    <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="EditInk" Click="OnEditInk" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditInk" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
                 </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid>
-                <local:InqCanvas x:Name="inkCanvas"/>                
+
+            <local:InqCanvas x:Name="inkCanvas"/>
+                
             <Image Margin="3,3,3,3" Source="{Binding Model.RenderedPage}" Stretch="Uniform"/>
                 <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
                 <Button.Content>

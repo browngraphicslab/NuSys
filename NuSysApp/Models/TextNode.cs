@@ -64,7 +64,7 @@ namespace NuSysApp
         public override async Task<Dictionary<string,string>> Pack()
         {
             Dictionary<string, string> dict = await base.Pack();
-            dict.Add("text",Text);
+            dict.Add("text", Text);
             dict.Add("nodeType", NodeType.Text.ToString());
             return dict;
         }

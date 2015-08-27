@@ -5,52 +5,31 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class AudioNodeViewModel : NodeViewModel
-    {
-        public int AudioNodeId { get; set; }
-        public AudioCapture AudioRecorder = new AudioCapture();
-        public AudioNodeViewModel(WorkspaceViewModel workspaceViewModel, int id) : base(workspaceViewModel, id)
+    public class AudioNodeViewModel: NodeViewModel
+    {     
+        public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm, string id) : base(model, vm, id)
         {
-            AudioNodeId = id;
-            this.Model = new AudioNodeModel(id);
-            this.View = new AudioNodeView(this);
-            this.Transform = new MatrixTransform();
-            this.IsSelected = false;
-            this.Width = Constants.DefaultNodeSize;
-            this.Height = Constants.DefaultNodeSize;
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
-            this.NodeType = Constants.NodeType.Audio;
+            AudioRecorder = new AudioCapture();
+            Init();
         }
 
-        public async Task InitializeAudioNode()
+        private async Task Init()
         {
             await AudioRecorder.InitializeAudioRecording();
         }
 
         public StorageFile CurrentAudioFile
         {
-            get { return ((AudioNodeModel)Model).AudioFile; }
-            set { ((AudioNodeModel) Model).AudioFile = value; }
+            get { return ((AudioModel)Model).AudioFile; }
+            set { ((AudioModel)Model).AudioFile = value; }
         }
 
         public string FileName
         {
-            get { return ((AudioNodeModel) Model).FileName; }
-            set { ((AudioNodeModel) Model).FileName = value; }
+            get { return ((AudioModel)Model).FileName; }
+            set { ((AudioModel)Model).FileName = value; }
         }
 
-        //public PdfNodeModel PdfNodeModel //TO DO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
-        //{
-        //    get { return (PdfNodeModel)Model; }
-        //    set
-        //    {
-        //        if ((PdfNodeModel)Model == value)
-        //        {
-        //            return;//
-        //        }
-        //        this.Model = value;
-        //        RaisePropertyChanged("PdfNodeModel");
-        //    }
-        //}
+        public AudioCapture AudioRecorder { get; set; }
     }
 }
