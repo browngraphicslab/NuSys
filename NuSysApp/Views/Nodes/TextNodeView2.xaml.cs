@@ -291,6 +291,12 @@ namespace NuSysApp
               */
         }
 
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.Remove();
+        }
+
         /// <summary>
         /// Catches the double-tap event so that the floating menus can't be lost.
         /// </summary>

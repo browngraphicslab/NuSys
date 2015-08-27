@@ -15,14 +15,13 @@ namespace NuSysApp
         public event TextChangedEventHandler OnTextChanged;
         public TextNode(string data, string id): base(id)
         {
+            ID = id;
             Text = data;
-            if(Text != null)
+            if (Text != null)
             {
                 byte[] textToBytes = Convert.FromBase64String(Text.ToString()); //Converts RTF to Byte array
                 Content = new Content(textToBytes, id);
-            }
-
-            this.ID = id;          
+            }         
         }
 
         public string Text
@@ -47,11 +46,6 @@ namespace NuSysApp
             } 
         }
 
-        public override string GetContentSource()
-        {
-            return Text;
-        }
-
         public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("text"))
@@ -71,9 +65,6 @@ namespace NuSysApp
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
-
-            //byte[] newTextBytes = Convert.FromBase64String(Text.ToString());
-
             byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
             Content = new Content(newTextBytes, ID); //Update Content
             
@@ -81,21 +72,11 @@ namespace NuSysApp
             XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
 
             //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);//TODO Make his polymorphic
+            List<XmlAttribute> basicXml = this.getBasicXML(doc); //TODO Make his polymorphic
             foreach(XmlAttribute attr in basicXml)
             {
                 textNode.SetAttributeNode(attr);
             }
-
-            //textNode.InnerText = Text;
-
-
-            //Text (TODO: Uncomment this section when we figure out how to store just the string of the textnode)
-            //XmlAttribute text = doc.CreateAttribute("text");
-            //text.Value = "<![CDATA[" + Text + "]]>";
-            //textNode.SetAttributeNode(text);
-
-
             return textNode;       
         }
     }

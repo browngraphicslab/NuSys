@@ -79,6 +79,11 @@ namespace NuSysApp
             //inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
 
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.Remove();
+        }
 
         /// <summary>
         /// Catches the double-tap event so that the floating menus can't be lost.

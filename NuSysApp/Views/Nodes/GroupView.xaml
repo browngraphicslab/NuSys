@@ -19,7 +19,7 @@
     </UserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" >
         <local:NodeTemplate.SubMenu>
-            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+            <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                 <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
             </Button>
         </local:NodeTemplate.SubMenu>

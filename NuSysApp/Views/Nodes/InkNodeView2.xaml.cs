@@ -57,12 +57,18 @@ namespace NuSysApp
 
         /// <summary>
         /// Catches the double-tap event so that the floating menus can't be lost.
-        /// </summary>
+        /// </summary>D
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.Remove();
         }
     }
 }

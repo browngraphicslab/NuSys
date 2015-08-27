@@ -30,7 +30,7 @@ namespace NuSysApp{
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(point);
-           await ((WorkspaceViewModel)_view.DataContext).AddNewPin(p.X, p.Y);
+             await ((WorkspaceViewModel)_view.DataContext).AddNewPin(p.X, p.Y);
         }
     }
 }
