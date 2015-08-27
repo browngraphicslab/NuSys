@@ -9,7 +9,27 @@ namespace NuSysApp
     {     
         public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm, string id) : base(model, vm, id)
         {
-            var a = new AudioCapture();
+            AudioRecorder = new AudioCapture();
+            Init();
         }
+
+        private async Task Init()
+        {
+            await AudioRecorder.InitializeAudioRecording();
+        }
+
+        public StorageFile CurrentAudioFile
+        {
+            get { return ((AudioModel)Model).AudioFile; }
+            set { ((AudioModel)Model).AudioFile = value; }
+        }
+
+        public string FileName
+        {
+            get { return ((AudioModel)Model).FileName; }
+            set { ((AudioModel)Model).FileName = value; }
+        }
+
+        public AudioCapture AudioRecorder { get; set; }
     }
 }

@@ -195,6 +195,7 @@
     <Compile Include="Lib\ReverseMarkdownSharp\Converters\Text.cs" />
     <Compile Include="Lib\ReverseMarkdownSharp\Converters\Tr.cs" />
     <Compile Include="Lib\ReverseMarkdownSharp\StringUtils.cs" />
+    <Compile Include="MISC\AudioCapture.cs" />
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
