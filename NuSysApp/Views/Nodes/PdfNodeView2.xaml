@@ -20,7 +20,7 @@
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="EditInk" Click="OnEditInk" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditInk" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
                 </Button>
             </StackPanel>

@@ -54,5 +54,15 @@ namespace NuSysApp
             _toBePasted = lines;
             Loaded += InkNodeView_PromoteInk;
         }
+
+        /// <summary>
+        /// Catches the double-tap event so that the floating menus can't be lost.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

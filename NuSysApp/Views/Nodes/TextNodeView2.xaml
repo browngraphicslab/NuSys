@@ -125,10 +125,10 @@
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_text.png" Height="40" Width="40"></Image>
                 </Button>
-                <Button x:Name="EditInk" Click="OnInkClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
                 </Button>
             </StackPanel>
