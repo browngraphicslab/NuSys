@@ -16,8 +16,7 @@ namespace NuSysApp
 {
     public class TwoFingerScrollViewer : Canvas
     {
-
-
+        
         private int _numTouchPoints = 0;
 
         public TwoFingerScrollViewer()
@@ -40,22 +39,27 @@ namespace NuSysApp
                 e.Handled = true;
             };
 
-            PointerPressed += delegate
+            PointerEntered += delegate ( object sender, PointerRoutedEventArgs e)
             {
                 _numTouchPoints++;
             };
 
-            PointerReleased += delegate
+            PointerExited += delegate (object sender, PointerRoutedEventArgs e)
             {
                 _numTouchPoints--;
             };
 
             ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
             {
+                Debug.WriteLine(_numTouchPoints);
+
                 if (_numTouchPoints >=2) {
                     Scroll(Math.Sign(e.Delta.Translation.Y), Math.Abs(e.Delta.Translation.Y));
 
                     e.Handled = true;
+                } else
+                {
+                    Debug.WriteLine("asdfasfasf " + _numTouchPoints);
                 }
             };
         }  

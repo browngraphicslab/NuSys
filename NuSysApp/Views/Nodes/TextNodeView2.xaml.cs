@@ -26,6 +26,7 @@ namespace NuSysApp
 
         public TextNodeView2(TextNodeViewModel vm)
         {
+
             this.InitializeComponent();
             this.DataContext = vm;
 
@@ -116,8 +117,9 @@ namespace NuSysApp
                 mdTextBox.Visibility = Visibility.Visible;
                 rtfTextBox.Visibility = Visibility.Collapsed;
                 imgPlaceholderContainer.Visibility = Visibility.Collapsed;
+                mdTextBox.Focus(FocusState.Keyboard);
             }
-
+            
             AdjustScrollHeight();
         }
 
