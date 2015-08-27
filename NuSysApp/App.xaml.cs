@@ -7,6 +7,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.ApplicationInsights;
+using System.Threading.Tasks;
+using NuSysApp.MISC;
+using Windows.Storage;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -33,10 +36,6 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-
-          //  var r = new ResourceLoader();
-           // r.GetString("paragraph");
-           //  Debug.WriteLine("paragraph uploaded"  + r.GetString("paragraph"));
         }
 
         /// <summary>
@@ -52,6 +51,8 @@ namespace NuSysApp
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            await SetupDirectories();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -82,87 +83,26 @@ namespace NuSysApp
             }
             // Ensure the current window is active
             Window.Current.Activate();
-
-            //var storageFile =
-            //    await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///MISC/CortanaCommands.xml"));
-            //if (storageFile == null) return;
-            //await VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(storageFile);
-
         }
 
-        ///// <summary>
-        ///// Invoked when the application is activated.
-        ///// </summary>
-        ///// <param name="e">Details about the launch request and process.</param>
-        //protected override void OnActivated(IActivatedEventArgs e)
-        //{
-        //    // Was the app activated by a voice command?
-        //    if (e.Kind != Windows.ApplicationModel.Activation.ActivationKind.VoiceCommand)
-        //    {
-        //        return;
-        //    }
-
-        //    var commandArgs = e as VoiceCommandActivatedEventArgs;
-        //    var speechRecognitionResult = commandArgs.Result;
-
-        //    // The commandMode is either "voice" or "text", and it indicates how the voice command was entered by the user.
-        //    // We should respect "text" mode by providing feedback in a silent form.
-        //    var commandMode = this.SemanticInterpretation("commandMode", speechRecognitionResult);
-
-        //    // If so, get the name of the voice command, the actual text spoken, and the value of Command/Navigate@Target.
-        //    var voiceCommandName = speechRecognitionResult.RulePath[0];
-        //    var textSpoken = speechRecognitionResult.Text;
-        //    var navigationTarget = this.SemanticInterpretation("NavigationTarget", speechRecognitionResult);
-
-        //    var navigateToPageType = typeof(WorkspaceView);
-        //    var navigationParameterString = string.Empty;
-
-        //    switch (voiceCommandName)
-        //    {
-        //        case "showASection":
-        //        case "goToASection":
-        //            string newspaperSection = this.SemanticInterpretation("newspaperSection", speechRecognitionResult);
-        //            navigateToPageType = typeof(ShowASectionPage);
-        //            navigationParameterString = string.Format("{0}|{1}", commandMode, newspaperSection);
-        //            break;
-
-        //        case "message":
-        //        case "text":
-        //            string contact = this.SemanticInterpretation("contact", speechRecognitionResult);
-        //            string msgText = this.SemanticInterpretation("msgText", speechRecognitionResult);
-        //            navigateToPageType = typeof(MessagePage);
-        //            navigationParameterString = string.Format("{0}|{1}|{2}", commandMode, contact, msgText);
-        //            break;
-
-        //        case "playAMovie":
-        //            string movieSearch = this.SemanticInterpretation("movieSearch", speechRecognitionResult);
-        //            navigateToPageType = typeof(PlayAMoviePage);
-        //            navigationParameterString = string.Format("{0}|{1}", commandMode, movieSearch);
-        //            break;
-
-        //        default:
-        //            // There is no match for the voice command name.
-        //            break;
-        //    }
-
-        //    this.EnsureRootFrame(e.PreviousExecutionState);
-        //    if (!this.rootFrame.Navigate(navigateToPageType, navigationParameterString))
-        //    {
-        //        throw new Exception("Failed to create voice command page");
-        //    }
-        //}
-
-        private string SemanticInterpretation(string key, SpeechRecognitionResult speechRecognitionResult)
+        private static async Task<bool> SetupDirectories()
         {
-            if (speechRecognitionResult.SemanticInterpretation.Properties.ContainsKey(key))
-            {
-                return speechRecognitionResult.SemanticInterpretation.Properties[key][0];
-            }
-            else
-            {
-                return "unknown";
-            }
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+
+            NuSysStorages.NuSysTempFolder =
+                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.ChromeTransferFolder =
+                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderWordTransferName);
+            NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderPowerpointTransferName);
+            NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
+            NuSysStorages.OfficeToPdfFolder =
+                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
+
+            return true;
         }
+
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails
@@ -183,12 +123,9 @@ namespace NuSysApp
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
             await NetworkConnector.Instance.Disconnect();
 
-
-
+            var deferral = e.SuspendingOperation.GetDeferral();            
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }

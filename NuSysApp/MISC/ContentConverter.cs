@@ -33,11 +33,7 @@ namespace NuSysApp
             var manualReset = new ManualResetEvent(false);
 
       
-            wv = new WebView();
-        //    wv.Width = 300;
-        //    wv.Height = 300;
-        //    WorkspaceView.Instance.MainCanvas.Children.Add(wv);
-              
+            wv = new WebView();             
             wv.DOMContentLoaded += async delegate
             {
                 await wv.InvokeScriptAsync("eval", new string[] { "(function(){ var r = document.createRange(); r.selectNodeContents(document.body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);  })();" });

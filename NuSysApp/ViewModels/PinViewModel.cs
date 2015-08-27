@@ -9,13 +9,13 @@ namespace NuSysApp
         private MatrixTransform _transform;
         private UserControl _view;
         private BaseINPC _model;
-        private string _text;
+        private string _text = string.Empty;
         
         public PinViewModel() : base()
         {
-            Transform = new MatrixTransform();
-            View = new PinView(this);
             Model = new PinModel();
+            Transform = new MatrixTransform();   
+            View = new PinView(this);
             this.Model.PropertyChanged += (s, e) => { Update(e); };
             Text = "Nusysland";
         }

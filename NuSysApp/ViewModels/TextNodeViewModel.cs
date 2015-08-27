@@ -35,7 +35,7 @@ namespace NuSysApp
             ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
         }
 
-        public async Task UpdateRtf()
+        public async Task UpdateRtf()    
         {
             if (Data.Length == 0)
                 return;
