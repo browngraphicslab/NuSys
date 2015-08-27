@@ -125,13 +125,16 @@
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="EditText" Click="OnEditClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
                     <Image Source="ms-appx:///Assets/icon_text.png" Height="40" Width="40"></Image>
                 </Button>
-                <Button x:Name="EditInk" Click="OnInkClick" Style="{StaticResource SubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
                 </Button>
-            </StackPanel>
+                <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+                </Button>
+             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <local:TwoFingerScrollViewer Width="{Binding Width}" Height="{Binding Height}">

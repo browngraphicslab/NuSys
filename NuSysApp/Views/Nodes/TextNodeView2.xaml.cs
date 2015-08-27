@@ -121,6 +121,7 @@ namespace NuSysApp
             }
             
             AdjustScrollHeight();
+            
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
@@ -288,6 +289,22 @@ namespace NuSysApp
 
         }
               */
+        }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.Remove();
+        }
+
+        /// <summary>
+        /// Catches the double-tap event so that the floating menus can't be lost.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            e.Handled = true;            
         }
     }
 }

@@ -67,7 +67,7 @@ namespace NuSysApp
             {
                 RemoveBorder(btn);
             }
-            // set clicked button to activated border
+            // set clicked inactive to activated border
             if (btnToActivate.Name == "inkButton" || btnToActivate.Name == "idleButton")
             {
                 AddBorder(btnToActivate);
@@ -118,7 +118,11 @@ namespace NuSysApp
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.GlobalInk);
-            if (_subMenuOpen) return;
+            if (_subMenuOpen)
+            {
+                slidein.Begin();
+                _subMenuOpen = false;
+            }
             slideout.Begin();
             _subMenuOpen = true;
         }
@@ -127,36 +131,35 @@ namespace NuSysApp
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.PromoteInk);
+            ShowActive(idleButton, (Button)sender);
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AddTextNode);
-        }
-
-        private void EraseButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetActive((Button)sender);
-            ModeChange?.Invoke((Options.Erase));
+            ShowActive(addNodeButton, (Button)sender);
         }
 
         private void InkNodeButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AddInkNode);
+            ShowActive(addNodeButton, (Button)sender);
         }
 
         private async void DocumentButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Document);
+            ShowActive(addNodeButton, (Button)sender);
         }
 
         private async void AudioCaptureButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AudioCapture);
+            ShowActive(addNodeButton, (Button)sender);
         }
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
@@ -174,6 +177,8 @@ namespace NuSysApp
         {
             SetActive((Button)sender);
             ModeChange?.Invoke((Options.Erase));
+            ShowActive(inkButton, (Button)sender);
+
         }
 
         private void Color_OnTapped(object sender, RoutedEventArgs e)
@@ -186,7 +191,11 @@ namespace NuSysApp
         {
             SetActive(idleButton);
             ModeChange?.Invoke(Options.Select);
-            if (_subMenuSelectOpen) return;
+            if (_subMenuSelectOpen)
+            {
+                slideinSelect.Begin();
+                _subMenuSelectOpen = false;
+            }
             slideoutSelect.Begin();
             _subMenuSelectOpen = true;
         }
@@ -201,7 +210,11 @@ namespace NuSysApp
             _subMenuAdditionalOpen = false;
 
 
-            if (_subMenuNodesOpen) return;
+            if (_subMenuNodesOpen)
+            {
+                slideinNodes.Begin();
+                _subMenuNodesOpen = false;
+            }
             slideoutNodes.Begin();
             _subMenuNodesOpen = true;
         }
@@ -230,7 +243,11 @@ namespace NuSysApp
             _subMenuSelectOpen = false;
             _subMenuNodesOpen = false;
 
-            if (_subMenuAdditionalOpen) return;
+            if (_subMenuAdditionalOpen)
+            {
+                slideinAdditional.Begin();
+                _subMenuAdditionalOpen = false;
+            }
             slideoutAdditional.Begin();
             _subMenuAdditionalOpen = true;
 
@@ -261,6 +278,12 @@ namespace NuSysApp
             }
         }
 
+        private void ShowActive(Button modeButton, Button setButton)
+        {
+            //switch locations of modeButton and setButton
+            //add border to setButton
+        }
+            
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
