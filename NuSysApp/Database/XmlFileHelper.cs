@@ -13,14 +13,16 @@ namespace NuSysApp
 {
     public class XmlFileHelper
     {
-
-        private List<Dictionary<string, string>> _atomUpdateDicts = new List<Dictionary<string, string>>();
-        List<string> _createdAtomList = new List<string>();
-        bool _allAtomCreated = false;
+        private List<Dictionary<string, string>> _atomUpdateDicts;
+        private List<string> _createdNodeList;
+        private bool _allNodeCreated;
 
         public XmlFileHelper()
         {
-            this.ID = "1";
+            this.ID = "1"; // for testing purposes so that we can only load the last saved workspace
+            _atomUpdateDicts = new List<Dictionary<string, string>>();
+            _createdNodeList = new List<string>();
+            _allNodeCreated = false;
         }
 
         [Column("ID")]
@@ -41,64 +43,12 @@ namespace NuSysApp
             return doc;
         }
 
-        public async Task CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
-        {
-            string ID = node.Attributes.GetNamedItem("id").Value;
-            string currType = node.Attributes.GetNamedItem("nodeType").Value;
-            string X = node.Attributes.GetNamedItem("x").Value;
-            string Y = node.Attributes.GetNamedItem("y").Value;
-            string width = node.Attributes.GetNamedItem("width").Value;
-            string height = node.Attributes.GetNamedItem("height").Value;
-
-            NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
-
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
-            var res = await query.FirstOrDefaultAsync();
-
-            byte[] byteData = null;
-            string byteToString = null;
-
-            if (res != null)
-            {
-                byteData = res.Data;
-
-                if (currType == "Text")
-                {
-                    byteToString = System.Text.Encoding.UTF8.GetString(byteData);
-                }
-                else
-                {
-                    byteToString = Convert.ToBase64String(byteData);
-                }
-            }
-            
-            switch (currType)
-            {
-                case "Text":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID);
-                    break;
-                case "Image":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
-                    break;
-                case "PDF":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID);
-                    break;
-                case "Ink":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
-                    break;
-                default:
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
-                    break;
-            }
-
-            dict.Add("width", width);
-            dict.Add("height", height);
-            dict.Add("id", ID);
-            _atomUpdateDicts.Add(dict);
-        }
-
+        /// <summary>
+        /// Parse XML document to recreate the saved workspace
+        /// </summary>
+        /// <param name="vm">current workspace view model</param>
+        /// <param name="doc">input XML document</param>
+        /// <returns></returns>
         public async Task ParseXml(WorkspaceViewModel vm, XmlDocument doc)
         {
             XmlElement parent = doc.DocumentElement;
@@ -115,26 +65,30 @@ namespace NuSysApp
                     case "Group":
                         string x = node.Attributes.GetNamedItem("x").Value;
                         string y = node.Attributes.GetNamedItem("y").Value;
+
                         await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 Dictionary<string, string> dict = new Dictionary<string, string>();
-                                dict.Add("id", ID);
-                                _atomUpdateDicts.Add(dict);
                                 List<string> NodeIdList = new List<string>();
+
+                                /* have to split this into two because we need the first for-loop method to be 
+                                   executed right away and not wait until the node creation is finished */
                                 foreach (XmlNode child in node.ChildNodes)
                                 {
                                     string nodeId = child.Attributes.GetNamedItem("id").Value;
-                                    _createdAtomList.Add(nodeId);
+                                    _createdNodeList.Add(nodeId);
                                     NodeIdList.Add(nodeId);
                                 }
-                                /* have to split this into two because we need to above method to be 
-                                   executed right away and not wait until the node creation is finished */
-                                foreach (XmlNode child in node.ChildNodes) //Groups have child nodes
+                                foreach (XmlNode child in node.ChildNodes)
                                 {
                                     await this.CreateNodeFromXml(vm, child);
                                 }
+
+                                // create the group
                                 await NetworkConnector.Instance.RequestMakeGroup(NodeIdList[0], NodeIdList[1], x, y, ID);
+
+                                // append more nodes into the group if it contains more than two nodes
                                 if (NodeIdList.Count > 2)
                                 {
                                     Group group = vm.Model.IDToSendableDict[ID] as Group;
@@ -147,48 +101,104 @@ namespace NuSysApp
                             });
                         break;
                     case "Node":
-                        _createdAtomList.Add(ID);
+                        _createdNodeList.Add(ID);
                         CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 await this.CreateNodeFromXml(vm, node);
                             });
                         break;
-                    case "Link":
+                    default:
                         break;
                 }
             }
 
-            List<string> createdAtomListCopy = new List<string>();
-            foreach (string id in _createdAtomList) { createdAtomListCopy.Add(id); }
+            List<string> createdNodeListCopy = new List<string>();
+            foreach (string id in _createdNodeList) { createdNodeListCopy.Add(id); }
 
-            while (_allAtomCreated == false)
+            // loop through this method to make sure that all nodes have been reloaded
+            while (_allNodeCreated == false)
             {
-                this.CheckNodeCreation(vm, doc, createdAtomListCopy);
-                if (createdAtomListCopy.Count == 0)
+                this.CheckNodeCreation(vm, doc, createdNodeListCopy);
+
+                // create all the links once all nodes have been created
+                if (createdNodeListCopy.Count == 0)
                 {
                     await this.CreateLinks(vm, doc);
-                    _allAtomCreated = true;
+                    _allNodeCreated = true;
                 }
             }
 
+            // this updates the properties (height, width, etc.) of each atom once it has been created
             foreach (Dictionary<string, string> dict in _atomUpdateDicts)
             {
                 await NetworkConnector.Instance.QuickUpdateAtom(dict);
             }
         }
 
-        public async Task CheckNodeCreation(WorkspaceViewModel vm, XmlDocument doc, List<string> copy)
+        /// <summary>
+        /// Helper method used in ParseXml method that parses just the nodes
+        /// </summary>
+        /// <param name="vm">Current workspace view model</param>
+        /// <param name="node">XML node that contains info of a node in the saved workspace</param>
+        /// <returns></returns>
+        public async Task CreateNodeFromXml(WorkspaceViewModel vm, XmlNode node)
         {
-            foreach (string id in _createdAtomList)
+            string ID = node.Attributes.GetNamedItem("id").Value;
+            string currType = node.Attributes.GetNamedItem("nodeType").Value;
+            string X = node.Attributes.GetNamedItem("x").Value;
+            string Y = node.Attributes.GetNamedItem("y").Value;
+            string width = node.Attributes.GetNamedItem("width").Value;
+            string height = node.Attributes.GetNamedItem("height").Value;
+
+            NodeViewModel nodeVM = null; //Just a filler - gets reassigned in all cases
+
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            // look up the content of the current atom in the database
+            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
+            var res = await query.FirstOrDefaultAsync();
+
+            byte[] byteData = null;
+            string byteToString = null;
+
+            if (res != null)
             {
-                if (vm.Model.IDToSendableDict.ContainsKey(id))
-                {
-                    copy.Remove(id);
-                }
+                byteData = res.Data;
+                byteToString = (currType == "Text") ? (Encoding.UTF8.GetString(byteData)) : (Convert.ToBase64String(byteData));
             }
+
+            switch (currType)
+            {
+                case "Text":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID);
+                    break;
+                case "Image":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
+                    break;
+                case "PDF":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID);
+                    break;
+                case "Ink":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
+                    break;
+                default:
+                    break;
+            }
+
+            // store the properties of each node since they are always set to default once it is reloaded
+            dict.Add("width", width);
+            dict.Add("height", height);
+            dict.Add("id", ID);
+            _atomUpdateDicts.Add(dict);
         }
 
+        /// <summary>
+        /// Helper method used in ParseXml method that parses just the links
+        /// </summary>
+        /// <param name="vm">Current workspace view model</param>
+        /// <param name="doc">Input XML document</param>
+        /// <returns></returns>
         public async Task CreateLinks(WorkspaceViewModel vm, XmlDocument doc)
         {
             XmlElement parent = doc.DocumentElement;
@@ -203,10 +213,6 @@ namespace NuSysApp
 
                 switch (AtomType)
                 {
-                    case "Group":
-                        break;
-                    case "Node":
-                        break;
                     case "Link":
                         string id1 = node.Attributes.GetNamedItem("atomID1").Value;
                         string id2 = node.Attributes.GetNamedItem("atomID2").Value;
@@ -215,7 +221,8 @@ namespace NuSysApp
                             {
                                 await NetworkConnector.Instance.RequestMakeLinq(id1, id2, ID);
 
-                                // create node annotation and attach it to the link TO-DO: uncomment when annotation works
+                                /* create node annotation and attach it to the link 
+                                   TO-DO: uncomment when annotation is incorporated in nunetwork branch */
                                 //if (node.HasChildNodes)
                                 //{
                                 //    XmlNode attachedAnnotation = node.ChildNodes[0];
@@ -225,6 +232,27 @@ namespace NuSysApp
                                 //}
                             });
                         break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper method used in ParseXml method that checks whether a node has been successfully reloaded
+        /// in the workspace and if so, removes that node from the list if it
+        /// </summary>
+        /// <param name="vm">Current workspace view model</param>
+        /// <param name="node">XML node that contains info of a node in the saved workspace</param>
+        /// <param name="copy">List of all the nodes in the saved workspace</param>
+        /// <returns></returns>
+        public async Task CheckNodeCreation(WorkspaceViewModel vm, XmlDocument doc, List<string> copy)
+        {
+            foreach (string id in _createdNodeList)
+            {
+                if (vm.Model.IDToSendableDict.ContainsKey(id))
+                {
+                    copy.Remove(id);
                 }
             }
         }

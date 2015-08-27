@@ -49,8 +49,6 @@ namespace NuSysApp
             group.Add(this);
         }
 
-        public string Data { get; set; }
-
         public Content Content { set; get; }
 
         public double X

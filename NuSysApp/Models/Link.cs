@@ -16,9 +16,10 @@ namespace NuSysApp
             Atom2 = outAtom;
         }
 
-
         public string InAtomID { get; set; }
+
         public string OutAtomID { get; set; }
+
         public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("id1"))
@@ -40,10 +41,11 @@ namespace NuSysApp
             dict.Add("type","linq");
             return dict;
         }
-        //public AtomViewModel atom1 { get; set; }
-        //public AtomViewModel atom2 { get; set; }
+
         public Node Annotation { get; set; }
+
         public Atom Atom1 { get; private set; }
+
         public Atom Atom2 { get; private set; }
 
         public XmlElement WriteXML(XmlDocument doc)

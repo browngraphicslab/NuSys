@@ -235,7 +235,7 @@
     <Compile Include="Models\InkModel.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
-    <Compile Include="Models\PDFNodeModel.cs" />
+    <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
@@ -311,7 +311,7 @@
     <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WaitingRoom\WaitingRoomView.xaml.cs">
+    <Compile Include="Views\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -414,7 +414,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="WaitingRoom\WaitingRoomView.xaml">
+    <Page Include="Views\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
