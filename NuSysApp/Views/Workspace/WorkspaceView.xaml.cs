@@ -12,6 +12,8 @@ using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using NuSysApp.Components.ContentImporter;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -43,10 +45,19 @@ namespace NuSysApp
             _cortanaInitialized = false;
             vm.PropertyChanged += Update;
 
-            _contentImporter.ContentImported += delegate (List<string> contents)
+            _contentImporter.ContentImported += async delegate (List<string> contents)
             {
                 var nodes = new List<Node>();
+                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
+                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    foreach (var content in contents) { 
+                 
+                        var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                        NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), content);
+                    }
+                });
             };
         }
 

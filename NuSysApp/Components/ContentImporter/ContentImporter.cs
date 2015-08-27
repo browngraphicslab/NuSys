@@ -29,33 +29,23 @@ namespace NuSysApp.Components.ContentImporter
             fw.FilesChanged += async delegate
             {
                 var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
-
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                var contents = new List<string>();
                 var count = 0;
+                
                 foreach (var file in transferFiles)
                 {
                     IBuffer buffer = await FileIO.ReadBufferAsync(file);
+                    await file.DeleteAsync();
                     DataReader reader = DataReader.FromBuffer(buffer);
                     byte[] fileContent = new byte[reader.UnconsumedBufferLength];
                     reader.ReadBytes(fileContent);
                     string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
                     text = text.Replace("\n", "");
                     text = await ContentConverter.HtmlToMd(text);
-
-                    //ContentImported?.Invoke(text);
-
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                    {
-
-                     //   var p = CompositeTransform.Inverse.TransformPoint(new Point((count++) * 250, 200));
-                    //    NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Richtext.ToString(), text);
-                    });
+                    contents.Add(text);
                 }
 
-                foreach (var file in transferFiles)
-                {
-                    await file.DeleteAsync();
-                }
+                ContentImported?.Invoke(contents.ToList());
             };
         }
 
