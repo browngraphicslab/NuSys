@@ -137,6 +137,9 @@ namespace NuSysApp
                     node = new PdfNodeModel((byte[])data, id);
                     await ((PdfNodeModel) node).SaveFile();
                     break;
+                case NodeType.Audio:
+                    node = new AudioModel(id);
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
                     return;
