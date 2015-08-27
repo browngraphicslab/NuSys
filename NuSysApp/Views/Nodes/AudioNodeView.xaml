@@ -9,7 +9,44 @@
     d:DesignHeight="150"
     d:DesignWidth="400">
 
-    <Grid Background="#BDCCD4" Opacity="1" CornerRadius="20">
+    <Grid Background="#dee5e9" Opacity="1" CornerRadius="20">
+        
+        <Grid.Resources>
+            <Storyboard x:Key="slideout" x:Name="slideout">
+                <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <DoubleAnimation Duration="0:0:0.2" To="-73.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                        <DiscreteObjectKeyFrame.Value>
+                            <x:Boolean>True</x:Boolean>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+            <Storyboard x:Key="slidein" x:Name="slidein">
+                <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                        <DiscreteObjectKeyFrame.Value>
+                            <x:Boolean>False</x:Boolean>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+        </Grid.Resources>
+
+        <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5"
+            Orientation="Horizontal" Height="75" VerticalAlignment="Top" Opacity="0" Margin="0,-75,0,0" IsHitTestVisible="False">
+            <StackPanel.RenderTransform>
+                <CompositeTransform/>
+            </StackPanel.RenderTransform>
+            <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+                <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+            </Button>
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top">
             <Button x:Name="record" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/record.png" Height="30"></Image>
