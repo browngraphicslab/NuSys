@@ -281,7 +281,9 @@
             <Button x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource FloatingButton}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_eraser.png"></Image>
             </Button>
-            <Button x:Name="Colors" Style="{StaticResource FloatingButton}"/>
+            <Button x:Name="Highlight" Style="{StaticResource FloatingButton}">
+                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_highlight.png"></Image>
+            </Button>
         </StackPanel>
         <StackPanel x:Name="SubMenuSelect" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
@@ -338,6 +340,6 @@
 
         <!-- Pin Window -->
         <local:PinWindow x:Name="pinWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False"></local:PinWindow>
-        
+        <!--PinList="{Binding PinViewModelList}"-->
     </Canvas>
 </UserControl>

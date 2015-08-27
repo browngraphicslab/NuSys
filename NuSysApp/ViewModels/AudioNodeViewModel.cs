@@ -10,6 +10,16 @@ namespace NuSysApp
         public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm, string id) : base(model, vm, id)
         {
             AudioRecorder = new AudioCapture();
+            
+            this.View = new AudioNodeView(this);
+            this.Transform = new MatrixTransform();
+            this.Width = 400;
+            this.Height = 150;
+            this.IsSelected = false;
+            this.IsEditing = false;
+            this.IsEditingInk = false;
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            this.NodeType = NodeType.Audio; 
             Init();
         }
 

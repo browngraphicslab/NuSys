@@ -41,7 +41,7 @@ namespace NuSysApp
                 NewMedia,
                 Bucket,
                 Erase,
-                Colors,
+                Highlight,
                 MultiSelect,
                 CortanaButton,
                 Export,

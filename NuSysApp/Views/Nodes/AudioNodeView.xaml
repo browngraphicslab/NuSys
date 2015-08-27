@@ -7,9 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="150"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    Width="{Binding Width}"
+    Height="{Binding Height}"
+    RenderTransform="{Binding Transform}">
 
-    <Grid Background="#dee5e9" Opacity="1" CornerRadius="20">
+    <Grid Background="#dee5e9" Opacity="1" CornerRadius="20" >
         
         <!--use these storyboards in order to open/close popup menu - "slideout.Begin()" to open, "slidein.Begin()" to close-->
         <Grid.Resources>
@@ -50,27 +53,27 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top">
-            <Button x:Name="record" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="record" Click="OnRecord_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/record.png" Height="30"></Image>
             </Button>
-            <Button x:Name="stop" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="stop" Click="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/stop.png" Height="30"></Image>
             </Button>
-            <Button x:Name="rewind" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="rewind" Click="OnRewind_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/rewind.png" Height="40"></Image>
             </Button>
-            <Button x:Name="play" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="play" Click="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/play.png" Height="40"></Image>
             </Button>
-            <Button x:Name="pause" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="pause" Click="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/pause.png" Height="40"></Image>
             </Button>
-            <Button x:Name="fastforward" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="fastforward" Click="OnFastforward_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/fast_forward.png" Height="40"></Image>
             </Button>
         </StackPanel>
         <Slider VerticalAlignment="Bottom" Width="350" Margin="0,0,0,10" Background="White" Foreground="White"></Slider>
-                
+        <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" Visibility="Collapsed"/>        
 
     </Grid>
     
