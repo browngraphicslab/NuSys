@@ -12,7 +12,7 @@ namespace NuSysApp
 
     public enum Options
     {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Pin
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Load, Pin
     }
 
 
@@ -45,7 +45,7 @@ namespace NuSysApp
                 CortanaButton,
                 Export,
                 idleButton,
-                //saveButton
+                Load
             };
             SetActive(idleButton);
         }
@@ -162,6 +162,12 @@ namespace NuSysApp
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Save);
+        }
+
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetActive((Button)sender);
+            ModeChange?.Invoke(Options.Load);
         }
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)

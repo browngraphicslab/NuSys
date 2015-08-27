@@ -27,6 +27,7 @@ namespace NuSysApp
         public BitmapImage Image { get; set; }
 
         public string FilePath { get; set; }
+
         public byte[] ByteArray { get; set; }
 
         public override string GetContentSource()
@@ -70,7 +71,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("image"))
             {
-                ByteArray = Convert.FromBase64String(props["image"]); //COnverts to Byte Array
+                ByteArray = Convert.FromBase64String(props["image"]); //Converts to Byte Array
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();

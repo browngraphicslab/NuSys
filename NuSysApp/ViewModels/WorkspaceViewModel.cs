@@ -75,7 +75,7 @@ namespace NuSysApp
             Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
         }
 
-    private async void SetupOfficeTransfer()
+        private async void SetupOfficeTransfer()
         {
             //TODO put this back in
             //var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
@@ -445,34 +445,33 @@ namespace NuSysApp
             AtomViewList.Add(groupVm.View);
             GroupDict.Add(groupModel.ID, groupVm);
             PositionNode(groupVm, xCoordinate, yCoordinate);            
-
         }
 
-        public async void SaveWorkspace()
+        public async Task SaveWorkspace()
         {
-            // clear the existing table so that there is always only one workspace to load, just for testing purposes
+            // clear the existing tables so that there is always only one workspace to load, just for testing purposes
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             await dbConnection.DropTableAsync<XmlFileHelper>();
+            await dbConnection.DropTableAsync<Content>();
 
             // recreate the table to store the xml file of the current workspace
-            await dbConnection.CreateTableAsync<XmlFileHelper>();
+            await dbConnection.CreateTableAsync<XmlFileHelper>(); // table to store the xml file of current workspace
+            await dbConnection.CreateTableAsync<Content>(); // table to store content of each node
+
+            // generate and save the xml of the current workspace
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             XmlDocument doc = this.getXml();
             currWorkspaceXml.toXml = doc.OuterXml;
             dbConnection.InsertAsync(currWorkspaceXml);
 
-            await dbConnection.DropTableAsync<Content>();
-            // table to store content of each node
-            await dbConnection.CreateTableAsync<Content>();
+            // save the content of each atom in the current workspace
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-
                 if (((Node)nodeVm.Model).Content != null)
                 {
                     Content toInsert = ((Node)nodeVm.Model).Content;
-                    await dbConnection.InsertAsync(toInsert);
+                    dbConnection.InsertAsync(toInsert);
                 }
-
             }
         }
 
@@ -484,18 +483,9 @@ namespace NuSysApp
                 await t.Result.ParseXml(this, t.Result.StringToXml(t.Result.toXml)));
         }
 
-        public async Task ByteArrayToBitmapImage(byte[] byteArray)
-        {
-            InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
-            BitmapImage img = new BitmapImage();
-            await stream.WriteAsync(byteArray.AsBuffer());
-            stream.Seek(0);
-            await img.SetSourceAsync(stream);
-        }
-
         public XmlDocument getXml()
         {
-            //Document declaration
+            // document declaration
             XmlDocument doc = new XmlDocument();
             XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             XmlElement root = doc.DocumentElement;
@@ -518,7 +508,6 @@ namespace NuSysApp
                 XmlElement ele = linkVm.WriteXML(doc);
                 parent.AppendChild(ele);
             }
-
             Debug.WriteLine(doc.OuterXml);
             return doc;
         }
@@ -544,9 +533,11 @@ namespace NuSysApp
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
         public SQLiteDatabase myDB { get; set; }
+
         public WorkSpaceModel Model { get; set; }
 
         //public Mode CurrentMode { get; set; }
+
         public LinkMode CurrentLinkMode { get; set; }
 
         public CompositeTransform CompositeTransform
