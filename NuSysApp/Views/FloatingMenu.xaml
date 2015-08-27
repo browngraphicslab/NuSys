@@ -187,7 +187,7 @@
             <Button.Content>
                 <Grid>
                     <Image x:Name="CollapseImage" Source="ms-appx:///Assets/icon_collapse.png" Width="20"></Image>
-                    <Image x:Name="ExpandImage" Source="ms-appx:///Assets//icon_additional.png" Width="20" Visibility="Collapsed"></Image>
+                    <Image x:Name="ExpandImage" Source="ms-appx:///Assets/icon_additional.png" Width="20" Visibility="Collapsed"></Image>
                 </Grid>
             </Button.Content>
         </Button>
