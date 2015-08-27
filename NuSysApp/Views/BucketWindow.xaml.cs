@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -15,13 +16,14 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Views.Misc
+namespace NuSysApp
 {
-    public sealed partial class InqCanvasView : UserControl
+    public sealed partial class BucketWindow : UserControl
     {
-        public InqCanvasView()
+        public BucketWindow()
         {
             this.InitializeComponent();
+            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));
         }
     }
 }

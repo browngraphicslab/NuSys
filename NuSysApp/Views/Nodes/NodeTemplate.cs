@@ -15,14 +15,16 @@ namespace NuSysApp
     [TemplatePart(Name = "bg", Type = typeof(Grid))]
     public sealed class NodeTemplate : ContentControl
     {
-        public InqCanvas inkCanvas;
-        public Button btnDelete;
-        public Path resizer;
-        public Grid bg;
+        public InqCanvas inkCanvas = null;
+        public Button btnDelete = null;
+        public Path resizer = null;
+        public Grid bg = null;
 
         public NodeTemplate()
         {
             this.DefaultStyleKey = typeof(NodeTemplate);
+            SubMenu = null;
+            Inner = null;
         }
 
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
