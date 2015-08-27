@@ -86,20 +86,7 @@ namespace NuSysApp
             await DeleteInteropTransferFiles(); // to prevent false file-change notifications
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
-
-        public PdfNodeModel PdfNodeModel //TODO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
-        {
-            get { return (PdfNodeModel)Model; }
-            set
-            {
-                if ((PdfNodeModel)Model == value)
-                {
-                    return;//
-                }
-                //this.Model = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
-        }
+      
 
         /// <summary>
         /// Deletes all .nusys files involved in the office to PDF conversion process
