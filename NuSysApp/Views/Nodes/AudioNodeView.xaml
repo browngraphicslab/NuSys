@@ -6,78 +6,33 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Height="400"
-    Width="480"
-    RenderTransform ="{Binding Transform}"
-    IsDoubleTapEnabled="True">
-    <local:NodeTemplate>
-        <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Horizontal"></StackPanel>
-        </local:NodeTemplate.SubMenu>
-        <local:NodeTemplate.Inner>
-            <Grid Background="CornflowerBlue">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="50" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+    d:DesignHeight="150"
+    d:DesignWidth="400">
 
-                <Grid Grid.Row="1" Grid.ColumnSpan="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                       Margin="20,0,0,0">FileName:</TextBlock>
-                    <TextBox x:Name="nodeTitle" Grid.Column="1" FontSize="18" HorizontalAlignment="Left"
-                     VerticalAlignment="Bottom" Text="{Binding FileName, Mode=TwoWay}"></TextBox>
-                </Grid>
-                <Button x:Name="recordButton" Grid.Column="0" Grid.Row="2" Tapped="RecordButton_Click" FontSize="22"
-                Width="200" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center">Record</Button>
-                <Button x:Name="playbackButton" Grid.Column="1" Grid.Row="2" Tapped="PlaybackButton_Click" FontSize="22"
-                Width="200" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center">Play/Stop</Button>
-                <TextBlock x:Name="recordingStatus" Grid.Column="0" Grid.Row="3" FontSize="16" HorizontalAlignment="Center"
-                   VerticalAlignment="Top"></TextBlock>
-                <TextBlock x:Name="playbackStatus" Grid.Column="1" Grid.Row="3" FontSize="16" HorizontalAlignment="Center"
-                   VerticalAlignment="Top"></TextBlock>
-                <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" Visibility="Collapsed"/>
-            </Grid>
-        </local:NodeTemplate.Inner>
-    </local:NodeTemplate>
-    <!--<Grid Background="CornflowerBlue">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid Background="#BDCCD4" Opacity="1" CornerRadius="20">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top">
+            <Button x:Name="record" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/record.png" Height="30"></Image>
+            </Button>
+            <Button x:Name="stop" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/stop.png" Height="30"></Image>
+            </Button>
+            <Button x:Name="rewind" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/rewind.png" Height="40"></Image>
+            </Button>
+            <Button x:Name="play" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/play.png" Height="40"></Image>
+            </Button>
+            <Button x:Name="pause" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/pause.png" Height="40"></Image>
+            </Button>
+            <Button x:Name="fastforward" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/fast_forward.png" Height="40"></Image>
+            </Button>
+        </StackPanel>
+        <Slider VerticalAlignment="Bottom" Width="350" Margin="0,0,0,10" Background="White" Foreground="White"></Slider>
+                
 
-        <Grid Grid.Row="0" Grid.ColumnSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Margin="20,0,0,0">FileName:</TextBlock>
-            <TextBox x:Name="nodeTitle" Grid.Column="1" FontSize="18" HorizontalAlignment="Left"
-                     VerticalAlignment="Center" Text="{Binding FileName, Mode=TwoWay}"></TextBox>
-        </Grid>
-        <Button x:Name="recordButton" Grid.Column="0" Grid.Row="1" Tapped="RecordButton_Click" FontSize="22"
-                Width="200" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center">Record</Button>
-        <Button x:Name="playbackButton" Grid.Column="1" Grid.Row="1" Tapped="PlaybackButton_Click" FontSize="22"
-                Width="200" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center">Play/Stop</Button>
-        <TextBlock x:Name="recordingStatus" Grid.Column="0" Grid.Row="2" FontSize="16" HorizontalAlignment="Center"
-                   VerticalAlignment="Top"></TextBlock>
-        <TextBlock x:Name="playbackStatus" Grid.Column="1" Grid.Row="2" FontSize="16" HorizontalAlignment="Center"
-                   VerticalAlignment="Top"></TextBlock>
-        <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" Visibility="Collapsed"/>
-    </Grid>-->
+    </Grid>
+    
 </UserControl>

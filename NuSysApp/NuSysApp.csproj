@@ -100,6 +100,7 @@
     </Content>
     <Content Include="Assets\bold.png" />
     <Content Include="Assets\bullets.png" />
+    <Content Include="Assets\fast_forward.png" />
     <Content Include="Assets\font size.png" />
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_eraser.png" />
@@ -118,8 +119,13 @@
     <Content Include="Assets\icon_bucket.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\open icon.png" />
+    <Content Include="Assets\pause.png" />
     <Content Include="Assets\pin icon.png" />
     <Content Include="Assets\icon_text.png" />
+    <Content Include="Assets\play.png" />
+    <Content Include="Assets\record.png" />
+    <Content Include="Assets\rewind.png" />
+    <Content Include="Assets\stop.png" />
     <Content Include="Views\Nodes\link icon.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <None Include="Assets\paragraph.nusys" />
@@ -254,6 +260,9 @@
     <Compile Include="Views\Misc\PinView.xaml.cs">
       <DependentUpon>PinView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
+      <DependentUpon>AudioNodeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\GroupView.xaml.cs">
       <DependentUpon>GroupView.xaml</DependentUpon>
     </Compile>
@@ -364,6 +373,10 @@
     <Page Include="Views\Misc\PinView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Nodes\AudioNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Nodes\GroupView.xaml">
       <SubType>Designer</SubType>
