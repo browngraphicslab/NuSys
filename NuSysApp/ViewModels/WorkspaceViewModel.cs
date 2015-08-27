@@ -71,7 +71,7 @@ namespace NuSysApp
         {
             SetupChromeIntermediate();
             SetupOfficeTransfer();
-            Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
+            Debug.WriteLine("Setting up Network Connector at IP: "+ NetworkConnector.Instance.LocalIP);
         }
 
         private async void SetupOfficeTransfer()

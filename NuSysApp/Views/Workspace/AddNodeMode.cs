@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -33,10 +35,18 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        public static void CheckFileType(string fileType)
+        {
+            if (fileType != "application.pdf" && fileType != "image/tiff" && fileType != "image/jpeg" &&
+                fileType != "image/png") //TO-DO: allow other types we support that haven't been added here yet
+            {
+                throw new Exception("The file format you selected is currently supported.");
+            }
+        }
+
         // This method is public because it's also used in CortanaMode.cs
         // TODO: this should be refactored!
-        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType, object data = null) 
-        {
+        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType, object data = null)    {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
@@ -44,6 +54,17 @@ namespace NuSysApp
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
+
+                var fileType = storageFile.ContentType;
+                try
+                {
+                    CheckFileType(fileType);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("The file format you selected is currently unsupported");
+                    return;
+                }
 
                 if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                 {

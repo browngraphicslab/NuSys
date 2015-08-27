@@ -8,6 +8,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.MISC;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -84,6 +85,5 @@ namespace NuSysApp
         private byte[] ByteArray { set; get; }
         public BitmapImage RenderedPage { get; set; }
         public List<BitmapImage> RenderedPages { get; set; }
-
     }
 }
