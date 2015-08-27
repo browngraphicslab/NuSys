@@ -120,7 +120,6 @@
     <Content Include="Assets\open icon.png" />
     <Content Include="Assets\pin icon.png" />
     <Content Include="Assets\icon_text.png" />
-    <Content Include="Views\Nodes\link icon.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -203,9 +202,9 @@
     <Compile Include="MISC\Clip.cs" />
     <Compile Include="MISC\Command.cs" />
     <Compile Include="MISC\Constants.cs" />
-    <Compile Include="Cortana\Cortana.cs" />
-    <Compile Include="Cortana\CortanaContinuousRecognition.cs" />
-    <Compile Include="Cortana\CortanaPopup.xaml.cs">
+    <Compile Include="Components\Cortana\Cortana.cs" />
+    <Compile Include="Components\Cortana\CortanaContinuousRecognition.cs" />
+    <Compile Include="Components\Cortana\CortanaPopup.xaml.cs">
       <DependentUpon>CortanaPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="MISC\ContentConverter.cs" />
@@ -218,7 +217,7 @@
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
     <Compile Include="MISC\ObservableDictionary.cs" />
-    <Compile Include="MISC\OfficeInteropWord.cs" />
+    <Compile Include="MISC\OfficeIntermediate.cs" />
     <Compile Include="MISC\PdfRenderer.cs" />
     <Compile Include="MISC\StorageUtil.cs" />
     <Compile Include="Models\Atom.cs" />
@@ -233,7 +232,7 @@
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
-    <Compile Include="MVVM Helpers\BaseINPC.cs" />
+    <Compile Include="MISC\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
@@ -345,7 +344,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Cortana\CortanaPopup.xaml">
+    <Page Include="Components\Cortana\CortanaPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

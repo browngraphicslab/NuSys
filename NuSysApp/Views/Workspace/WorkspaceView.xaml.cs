@@ -25,8 +25,6 @@ namespace NuSysApp
 
         private int _penSize = Constants.InitialPenSize;
 
-        private bool _isZooming;
-        private bool _isManipulationEnabled;
         private AbstractWorkspaceViewMode _mode;
 
         private bool _cortanaInitialized;
@@ -38,7 +36,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = new WorkspaceViewModel(new WorkSpaceModel());
-            _isZooming = false;
             var vm = (WorkspaceViewModel)this.DataContext;
             _cortanaInitialized = false;
             vm.PropertyChanged += Update;
@@ -76,20 +73,6 @@ namespace NuSysApp
         public FloatingMenu FloatingMenu
         {
             get { return floatingMenu; }
-        }
-
-        public bool IsManipulationEnabled
-        {
-            get
-            {
-                return _isManipulationEnabled;
-            }
-
-            set
-            {
-                mainFrame.ManipulationMode = value ? ManipulationModes.None : ManipulationModes.All;
-                _isManipulationEnabled = value;
-            }
         }
 
         public void RemoveLoading()
@@ -149,9 +132,6 @@ namespace NuSysApp
                 case Options.Save:
                     await SetViewMode(new MultiMode(this, new SaveMode(this), new SelectMode(this)));
                     break;
-                //case Options.Load:
-                //    await SetViewMode(new MultiMode(this, new LoadMode(this), new SelectMode(this)));
-                //    break;
                 case Options.Pin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
                     break;
