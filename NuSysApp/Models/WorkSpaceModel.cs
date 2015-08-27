@@ -79,7 +79,6 @@ namespace NuSysApp
 
         #endregion
 
-
         public void CreateLink(Atom atom1, Atom atom2, string id)
         {
             var link = new Link(atom1, atom2, id);
@@ -87,7 +86,6 @@ namespace NuSysApp
             atom2.AddToLink(link);
             _idDict.Add(id,link);
         }
-
 
         public async Task CreateGroup(string id, Node node1, Node node2, double xCooordinate, double yCoordinate)     
         {
