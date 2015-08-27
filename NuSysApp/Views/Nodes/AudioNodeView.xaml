@@ -11,6 +11,7 @@
 
     <Grid Background="#dee5e9" Opacity="1" CornerRadius="20">
         
+        <!--use these storyboards in order to open/close popup menu - "slideout.Begin()" to open, "slidein.Begin()" to close-->
         <Grid.Resources>
             <Storyboard x:Key="slideout" x:Name="slideout">
                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
@@ -42,7 +43,8 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+            <!--delete button needs to be hooked up to delete handler-->
+            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
                 <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
             </Button>
         </StackPanel>

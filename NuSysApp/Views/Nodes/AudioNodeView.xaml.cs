@@ -23,5 +23,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
         }
+
+
     }
 }
