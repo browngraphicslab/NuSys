@@ -91,6 +91,8 @@ namespace NuSysApp
             {
                 bucketClose.Begin();
                 bucketWindow.IsHitTestVisible = false;
+                pinClose.Begin();
+                pinWindow.IsHitTestVisible = false;
                 expand.Begin();
                 CollapseImage.Visibility = Visibility.Visible;
                 ExpandImage.Visibility = Visibility.Collapsed;
@@ -108,6 +110,8 @@ namespace NuSysApp
                 _subMenuAdditionalOpen = false;
                 bucketClose.Begin();
                 bucketWindow.IsHitTestVisible = false;
+                pinClose.Begin();
+                pinWindow.IsHitTestVisible = false;
                 collapse.Begin();
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
@@ -256,6 +260,22 @@ namespace NuSysApp
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Pin);
+            if (pinWindow.Opacity == 0)
+            {
+                pinOpen.Begin();
+                pinWindow.IsHitTestVisible = true;
+                collapse.Begin();
+                slidein.Begin();
+                slideinSelect.Begin();
+                slideinNodes.Begin();
+                slideinAdditional.Begin();
+                _subMenuOpen = false;
+                _subMenuSelectOpen = false;
+                _subMenuNodesOpen = false;
+                _subMenuAdditionalOpen = false;
+                CollapseImage.Visibility = Visibility.Collapsed;
+                ExpandImage.Visibility = Visibility.Visible;
+            }
         }
 
         private void Bucket_Click(object sender, RoutedEventArgs e)
