@@ -11,12 +11,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
     public class TwoFingerScrollViewer : Canvas
     {
-        
         private int _numTouchPoints = 0;
 
         public TwoFingerScrollViewer()
@@ -26,8 +26,9 @@ namespace NuSysApp
 
             SizeChanged += delegate
             {
+                // TODO: Read hardcoded margins from xaml property
                 var r = new Windows.UI.Xaml.Media.RectangleGeometry();
-                r.Rect = new Rect(0, 0, Width, Height);
+                r.Rect = new Rect(30, 30, Width-60, Height-60);
                 Clip = r;
             };
 
@@ -35,42 +36,54 @@ namespace NuSysApp
             {
                 var scrollDir = Math.Sign(e.GetCurrentPoint(this).Properties.MouseWheelDelta);
                 Scroll(scrollDir, 10);
+                e.Handled = true;
+            };
+
+            PointerPressed += delegate ( object sender, PointerRoutedEventArgs e)
+            {
+                CapturePointer(e.Pointer);
+                if (++_numTouchPoints==2) {
+                    ManipulationDelta -= OnDelta;
+                    ManipulationDelta += OnDelta;
+                }
 
                 e.Handled = true;
             };
 
-            PointerEntered += delegate ( object sender, PointerRoutedEventArgs e)
+            PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
             {
-                _numTouchPoints++;
-            };
-
-            PointerExited += delegate (object sender, PointerRoutedEventArgs e)
-            {
-                _numTouchPoints--;
-            };
-
-            ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
-            {
-                Debug.WriteLine(_numTouchPoints);
-
-                if (_numTouchPoints >=2) {
-                    Scroll(Math.Sign(e.Delta.Translation.Y), Math.Abs(e.Delta.Translation.Y));
-
-                    e.Handled = true;
-                } else
+                if (--_numTouchPoints <= 1)
                 {
-                    Debug.WriteLine("asdfasfasf " + _numTouchPoints);
+                    ManipulationDelta -= OnDelta;
                 }
-            };
+
+                if (--_numTouchPoints <= 0)
+                {
+                    _numTouchPoints = 0;
+                    ReleasePointerCaptures();
+                }
+
+                e.Handled = true;
+            };       
         }  
-        
+
+        private void OnDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {          
+            Scroll(Math.Sign(e.Delta.Translation.Y), Math.Abs(e.Delta.Translation.Y));
+            e.Handled = true;
+        }
+
         private void Scroll(int scrollDir, double speed)
         {
             foreach (var c in Children)
             {
                 var child = (FrameworkElement)c;
                 var currY = Canvas.GetTop(child);
-                double ty = Math.Min(0, Math.Max(currY + speed * scrollDir, -(child.Height - Height)));
+
+                // TODO: Read hardcoded margins from xaml property
+                var diff = -(child.Height - (Height - 60));
+
+                double ty = Math.Min(0, Math.Max(currY + speed * scrollDir, diff));
                 Canvas.SetTop(child, ty);
             }
         }      
