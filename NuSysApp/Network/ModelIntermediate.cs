@@ -17,197 +17,35 @@ namespace NuSysApp
     public class ModelIntermediate
     {
         public WorkSpaceModel WorkSpaceModel{get;}
-        public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } } 
+        public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
+        private Dictionary<string, Delegate> _creationCallbacks; 
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
+            _creationCallbacks = new Dictionary<string, Delegate>();
         }
         public async Task HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                Dictionary<string, string> props = ParseOutProperties(s);
+                Dictionary<string, string> props = ParseOutProperties(s);//start by parsinjg properties to dictionary
                 if (props.ContainsKey("id"))
                 {
-                    string id = props["id"];
+                    string id = props["id"];//get id from dictionary
                     if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
-                        Sendable n = WorkSpaceModel.IDToSendableDict[id];
-                        await n.UnPack(props);
+                        Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
+                        await n.UnPack(props);//update the sendable with the dictionary info
                     }
-                    //else if (_gloablInkDict.ContainsKey(id))
-                    //{
-
-                    //}
-                    else
+                    else//if the sendable doesn't yey exist
                     {
-                        if (props.ContainsKey("type") && props["type"] == "ink")
+                        if (_creationCallbacks.ContainsKey(id))//check if a callback is waiting for that sendable to be created
                         {
-                            if (props.ContainsKey("inkType") && props["inkType"] == "global")
-                            {
-                                if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
-                                {
-                                    InqLine l = ParseToLineSegment(props);
-                                    if (l == null) return;
-
-                                    if (WorkSpaceModel.PartialLines.ContainsKey(id))
-                                    {
-                                        WorkSpaceModel.PartialLines[id].Add(l);
-                                    }
-                                    else
-                                    {
-                                        WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
-                                        WorkSpaceModel.PartialLines[id].Add(l);
-                                    }
-                                }
-                                else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
-                                {
-                                    if (props.ContainsKey("data"))
-                                    {
-                                        List<InqLine> lines = ParseToPolyline(props["data"]);
-                                        if (lines.Count == 0) return;
-                                        InqLine line = lines[0];
-                                        WorkSpaceModel.IDToSendableDict.Add(id, line);
-                                        WorkSpaceModel.AddGlobalInq(line);
-                                    }
-                                    if (props.ContainsKey("previousID") &&
-                                        WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
-                                    {
-                                        ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
-                                        foreach(InqLine l in oc)
-                                        {
-                                            ((InqCanvas) l.Parent).Children.Remove(l);
-                                        }
-                                        WorkSpaceModel.PartialLines.Remove(props["previousID"]);
-                                    }
-                                }
-
-                            }
+                            _creationCallbacks[id].DynamicInvoke(id);
+                            _creationCallbacks.Remove(id);
                         }
-                        else if (props.ContainsKey("type") && props["type"] == "group")
-                        {
-                            Node node1 = null;
-                            Node node2 = null;
-                            double x = 0;
-                            double y = 0;
-                            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
-                            {
-                                node1 = (Node)WorkSpaceModel.IDToSendableDict[props["id1"]];
-                                node2 = (Node)WorkSpaceModel.IDToSendableDict[props["id2"]];
-                            }
-                            if (props.ContainsKey("x"))
-                            {
-                                double.TryParse(props["x"], out x);
-                            }
-                            if (props.ContainsKey("y"))
-                            {
-                                double.TryParse(props["y"], out y);
-                            }
-                            await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
-                        }
-                        else if (props.ContainsKey("type") && props["type"] == "node")
-                        {
-                            NodeType type = NodeType.Text;
-                            double x = 0;
-                            double y = 0;
-                            object data = null;
-                            if (props.ContainsKey("nodeType"))
-                            {
-                                string t = props["nodeType"];
-                                type = (NodeType)Enum.Parse(typeof(NodeType), t);
-                            }
-                            if (props.ContainsKey("x"))
-                            {
-                                double.TryParse(props["x"], out x);
-                            }
-                            if (props.ContainsKey("y"))
-                            {
-                                double.TryParse(props["y"], out y);
-                            }
-                            if (props.ContainsKey("data") && props.ContainsKey("nodeType"))
-                            {
-                                string d = props["data"];
-                                switch (type)
-                                {
-                                    case NodeType.Ink:
-                                        try
-                                        {
-                                            data = ParseToPolyline(d);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
-                                        }
-                                        break;
-                                    case NodeType.Text:
-                                    case NodeType.Richtext:
-                                        if (!props.ContainsKey("text"))
-                                        {
-                                            props.Add("text", d);
-                                        }
-                                        else
-                                        {
-                                            props["text"] = d;
-                                        }
-                                        break;
-                                    case NodeType.Image:
-                                        try
-                                        {
-                                            data = ParseToByteArray(d);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                                        }
-                                        break;
-                                    case NodeType.PDF:
-                                        try
-                                        {
-                                            data = ParseToByteArray(d);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                                        }
-                                        break;
-                                }
-                            }
-                            await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
-                            if (props.ContainsKey("data"))
-                            {
-                                props.Remove("data");
-                            }
-                            await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
-                        }
-                        else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
-                        {
-                            string id1 = "null";
-                            string id2 = "null";
-                            if (props.ContainsKey("id1"))
-                            {
-                                id1 = props["id1"];
-                            }
-                            else
-                            {
-                                Debug.WriteLine("Could not create link");
-                                return;
-                            }
-                            if (props.ContainsKey("id2"))
-                            {
-                                id2 = props["id2"];
-                            }
-                            else
-                            {
-                                Debug.WriteLine("Could not create link");
-                                return;
-                            }
-                           
-                            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
-                            {
-                                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id);
-                            }
-                        }
+                        await HandleCreateNewSendable(id, props);//create a new sendable
                     }
                 }
                 else
@@ -215,6 +53,193 @@ namespace NuSysApp
                     Debug.WriteLine("ID was not found in property list of message: " + s);
                 }
             });
+        }
+
+        public async Task HandleCreateNewSendable(string id, Dictionary<string,string> props)
+        {
+            if (props.ContainsKey("type") && props["type"] == "ink")
+            {
+                if (props.ContainsKey("inkType") && props["inkType"] == "global")
+                {
+                    await HandleCreateNewGlobalInk(id, props);
+
+                }
+            }
+            else if (props.ContainsKey("type") && props["type"] == "group")
+            {
+                await HandleCreateNewGroup(id, props);
+            }
+            else if (props.ContainsKey("type") && props["type"] == "node")
+            {
+                await HandleCreateNewNode(id, props);
+            }
+            else if (props.ContainsKey("type") && (props["type"] == "link" || props["type"] == "linq"))
+            {
+                await HandleCreateNewLink(id, props);
+            }
+        }
+
+        public async Task HandleCreateNewLink(string id, Dictionary<string, string> props)
+        {
+            string id1 = "null";
+            string id2 = "null";
+            if (props.ContainsKey("id1"))
+            {
+                id1 = props["id1"];
+            }
+            else
+            {
+                Debug.WriteLine("Could not create link");
+                return;
+            }
+            if (props.ContainsKey("id2"))
+            {
+                id2 = props["id2"];
+            }
+            else
+            {
+                Debug.WriteLine("Could not create link");
+                return;
+            }
+
+            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
+            {
+                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id);
+            }
+        }
+        public async Task HandleCreateNewNode(string id, Dictionary<string, string> props)
+        {
+            NodeType type = NodeType.Text;
+            double x = 0;
+            double y = 0;
+            object data = null;
+            if (props.ContainsKey("nodeType"))
+            {
+                string t = props["nodeType"];
+                type = (NodeType)Enum.Parse(typeof(NodeType), t);
+            }
+            if (props.ContainsKey("x"))
+            {
+                double.TryParse(props["x"], out x);
+            }
+            if (props.ContainsKey("y"))
+            {
+                double.TryParse(props["y"], out y);
+            }
+            if (props.ContainsKey("data") && props.ContainsKey("nodeType"))
+            {
+                string d = props["data"];
+                switch (type)
+                {
+                    case NodeType.Ink:
+                        try
+                        {
+                            data = ParseToPolyline(d);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
+                        }
+                        break;
+                    case NodeType.Text:
+                    case NodeType.Richtext:
+                        if (!props.ContainsKey("text"))
+                        {
+                            props.Add("text", d);
+                        }
+                        else
+                        {
+                            props["text"] = d;
+                        }
+                        break;
+                    case NodeType.Image:
+                        try
+                        {
+                            data = ParseToByteArray(d);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                        }
+                        break;
+                    case NodeType.PDF:
+                        try
+                        {
+                            data = ParseToByteArray(d);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                        }
+                        break;
+                }
+            }
+            await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
+            if (props.ContainsKey("data"))
+            {
+                props.Remove("data");
+            }
+            await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
+        }
+        public async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
+        {
+            Node node1 = null;
+            Node node2 = null;
+            double x = 0;
+            double y = 0;
+            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
+            {
+                node1 = (Node)WorkSpaceModel.IDToSendableDict[props["id1"]];
+                node2 = (Node)WorkSpaceModel.IDToSendableDict[props["id2"]];
+            }
+            if (props.ContainsKey("x"))
+            {
+                double.TryParse(props["x"], out x);
+            }
+            if (props.ContainsKey("y"))
+            {
+                double.TryParse(props["y"], out y);
+            }
+            await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
+        }
+        public async Task HandleCreateNewGlobalInk(string id, Dictionary<string, string> props)
+        {
+            if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
+            {
+                InqLine l = ParseToLineSegment(props);
+                if (l == null) return;
+
+                if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                {
+                    WorkSpaceModel.PartialLines[id].Add(l);
+                }
+                else
+                {
+                    WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
+                    WorkSpaceModel.PartialLines[id].Add(l);
+                }
+            }
+            else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
+            {
+                if (props.ContainsKey("data"))
+                {
+                    List<InqLine> lines = ParseToPolyline(props["data"]);
+                    if (lines.Count == 0) return;
+                    InqLine line = lines[0];
+                    WorkSpaceModel.IDToSendableDict.Add(id, line);
+                    WorkSpaceModel.AddGlobalInq(line);
+                }
+                if (props.ContainsKey("previousID") &&
+                    WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
+                {
+                    ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
+                    foreach (InqLine l in oc)
+                    {
+                        ((InqCanvas)l.Parent).Children.Remove(l);
+                    }
+                    WorkSpaceModel.PartialLines.Remove(props["previousID"]);
+                }
+            }
         }
         public async Task RemoveNode(string id)
         {
@@ -332,28 +357,51 @@ namespace NuSysApp
         }
         public async Task<string> GetFullWorkspace()
         {
-                if (WorkSpaceModel.IDToSendableDict.Count > 0)
+            LinkedList<Sendable> list = new LinkedList<Sendable>();
+            Dictionary<string,Sendable> set = new Dictionary<string, Sendable>();
+
+            foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
+            {
+                set.Add(kvp.Key,kvp.Value);
+            }
+
+            while(set.Count > 0)
+            {
+                Sendable s = set[set.Keys.First()];
+                if (s.GetType() != typeof (Link) || (!set.ContainsKey(((Link) s).InAtomID) &&
+                    !set.ContainsKey(((Link) s).OutAtomID)))
                 {
-                    string ret = "";
-                    foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
-                    {
-                        ret += '<';
-                        Sendable atom = kvp.Value;
-                        var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                        await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                        {
-                            Dictionary<string, string> parts = await atom.Pack();
-                            foreach (KeyValuePair<string, string> tup in parts)
-                            {
-                                ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
-                            }
-                            ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
-                        });
-                    }
-                    ret = ret.Substring(0, ret.Length - 2);
-                    return ret;
+                    list.AddLast(s);
+                    set.Remove(s.ID);
                 }
-                return "";
+                else
+                {
+                    
+                }
+            }
+            if (WorkSpaceModel.IDToSendableDict.Count > 0)
+            {
+                string ret = "";
+                while(list.Count > 0)
+                {
+                    ret += '<';
+                    Sendable atom = list.First.Value;
+                    list.RemoveFirst();
+                    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    {
+                        Dictionary<string, string> parts = await atom.Pack();
+                        foreach (KeyValuePair<string, string> tup in parts)
+                        {
+                            ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
+                        }
+                        ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
+                    });
+                }
+                ret = ret.Substring(0, ret.Length - 2);
+                return ret;
+            }
+            return "";
         }
 
         public async Task ClearLocks()
@@ -368,6 +416,10 @@ namespace NuSysApp
             }
         }
 
+        public void AddCreationCallback(string id, Delegate d)
+        {
+            _creationCallbacks.Add(id, d);
+        }
         public bool HasLock(string id)
         {
             return WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP;

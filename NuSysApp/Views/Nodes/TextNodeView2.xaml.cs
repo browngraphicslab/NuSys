@@ -35,6 +35,12 @@ namespace NuSysApp
                 AdjustScrollHeight();
             };
 
+            mdTextBox.SizeChanged += delegate
+            {
+                RearrangeImagePlaceHolders();
+                AdjustScrollHeight();
+            };
+
             rtfTextBox.SizeChanged += delegate
             {
                 RearrangeImagePlaceHolders();

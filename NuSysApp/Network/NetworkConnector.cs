@@ -718,7 +718,7 @@ namespace NuSysApp
                     {
                         await this.SendTCPMessage("SPECIAL1:" + _hostIP, ip);
                     }
-                    if (_hostIP == _localIP && message != _localIP && !_joiningMembers.ContainsKey(message)) ;
+                    if (_hostIP == _localIP && message != _localIP && !_joiningMembers.ContainsKey(message)) 
                     {
                         //_joiningMembers.Add(message, new Tuple<bool, List<Packet>>(false, new List<Packet>()));//add new joining member
                         var m = await ModelIntermediate.GetFullWorkspace();
@@ -982,7 +982,7 @@ namespace NuSysApp
             if (_localIP == _hostIP)//if host, add a new packet and store it in every joining member's stack of updates
             {
                 foreach (var  kvp in _joiningMembers)
-                    // keeps track of messages sent durig initial loading into workspace
+                    // keeps track of messages sent during initial loading into workspace
                 {
                     kvp.Value.Item2.Add(new Packet(message, packetType));
                     if (packetType == PacketType.TCP && !kvp.Value.Item1)
@@ -1005,7 +1005,7 @@ namespace NuSysApp
         }
 
         /*
-        * parses message to dictionary of properties.  POSSIBLE DEPRICATED
+        * parses message to dictionary of properties
         */
         private Dictionary<string, string> ParseOutProperties(string message)
         {
@@ -1083,7 +1083,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null)
+        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null, Delegate callback = null)
         {
             if (x != "" && y != "" && nodeType != "")
             {
@@ -1096,7 +1096,15 @@ namespace NuSysApp
                 {
                     s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
                 }
+                if (oldID != null && callback != null)
+                {
+                    ModelIntermediate.AddCreationCallback(oldID,callback);
+                }
                 await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"x=" + x + Constants.CommaReplacement+"y=" + y + Constants.CommaReplacement+"type=node"+ Constants.CommaReplacement+"nodeType=" + nodeType + s +">");
+                if (callback != null && oldID == null)
+                {
+                    throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less node creation.  Callbacks may only be placed on nodes created with previous ID's");
+                }
             }
             else
             {
@@ -1108,7 +1116,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Group
         */
-        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null)
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Delegate callback = null)
         {
             if (id1 != "" && id2 != "")
             {
@@ -1120,6 +1128,14 @@ namespace NuSysApp
                         if (oldID != null)
                         {
                             s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                        }
+                        if (oldID != null && callback != null)
+                        {
+                            ModelIntermediate.AddCreationCallback(oldID, callback);
+                        }
+                        else if (callback != null && oldID == null)
+                        {
+                            throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less group creation.  Callbacks may only be placed on groups created with previous ID's");
                         }
                         await SendMessageToHost("<id=0" + Constants.CommaReplacement + "id1=" + id1 +
                                                 Constants.CommaReplacement + "id2=" + id2 + Constants.CommaReplacement +
@@ -1146,7 +1162,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Linq
         */
-        public async Task RequestMakeLinq(string id1, string id2, string oldID = null)
+        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Delegate callback = null)
         {
             if (id1 != "" && id2 != "")
             {
@@ -1155,7 +1171,14 @@ namespace NuSysApp
                 {
                     s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
                 }
-
+                if (oldID != null && callback != null)
+                {
+                    ModelIntermediate.AddCreationCallback(oldID, callback);
+                }
+                else if (callback != null && oldID == null)
+                {
+                    throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less linq creation.  Callbacks may only be placed on linqs created with previous ID's");
+                }
                 await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"id1=" + id1 + Constants.CommaReplacement+"id2=" + id2 + Constants.CommaReplacement+"type=linq" + s + ">");
             }
             else
@@ -1244,8 +1267,17 @@ namespace NuSysApp
             public UnknownIPException(string ip) : base(String.Format("The IP {0} was used when it is not recgonized", ip)) { }
         }
 
-        public class NoIDException : Exception{}
-        public class InvalidCreationArgumentsException : Exception { }
+        public class NoIDException : Exception
+        {
+            public NoIDException(string message) : base(message){}
+            public NoIDException() {}
+        }
+
+        public class InvalidCreationArgumentsException : Exception
+        {
+            public InvalidCreationArgumentsException(string message) : base(message) { }
+            public InvalidCreationArgumentsException(){}
+        }
         #endregion customExceptions
         private class Packet //private class to store messages for later
         {

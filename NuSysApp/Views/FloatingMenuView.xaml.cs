@@ -61,6 +61,17 @@ namespace NuSysApp
             btn.BorderBrush = null;
         }
 
+        public void SetActive(Options option)
+        {
+            // TODO: Add support for all other options
+            switch (option)
+            {
+                case Options.Select:
+                    SetActive(idleButton);
+                    break;
+            }
+        }
+
         public void SetActive(Button btnToActivate)
         {
             // set all buttons to no border
