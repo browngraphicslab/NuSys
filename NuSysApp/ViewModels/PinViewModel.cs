@@ -13,7 +13,7 @@ namespace NuSysApp
         
         public PinViewModel() : base()
         {
-            Model = new PinModel();
+            Model = new PinModel("TODO");
             Transform = new MatrixTransform();   
             View = new PinView(this);
             this.Model.PropertyChanged += (s, e) => { Update(e); };

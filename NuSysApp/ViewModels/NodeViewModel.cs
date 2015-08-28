@@ -33,8 +33,8 @@ namespace NuSysApp
             ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
            
             ((Node) this.Model).OnAddToGroup += AddToGroupHandler;
-            X = 0;
-            Y = 0;
+            //X = 0;//TODO if commenting this out doesn't cause problems just delete
+            //Y = 0;
         }
 
         private void AddToGroupHandler(object source, AddToGroupEventArgs e)

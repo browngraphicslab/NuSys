@@ -18,21 +18,24 @@ namespace NuSysApp
     {
         public WorkSpaceModel WorkSpaceModel{get;}
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
-        private Dictionary<string, Delegate> _creationCallbacks; 
+        private Dictionary<string, Delegate> _creationCallbacks;
+        private HashSet<string> _sendablesLocked;
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
             _creationCallbacks = new Dictionary<string, Delegate>();
+            _sendablesLocked = new HashSet<string>();
         }
         public async Task HandleMessage(string s)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                Dictionary<string, string> props = ParseOutProperties(s);//start by parsinjg properties to dictionary
+                Dictionary<string, string> props = ParseOutProperties(s);//start by parsing properties to dictionary
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];//get id from dictionary
+                    _sendablesLocked.Add(id);
                     if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
                         Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
@@ -47,6 +50,7 @@ namespace NuSysApp
                         }
                         await HandleCreateNewSendable(id, props);//create a new sendable
                     }
+                    _sendablesLocked.Remove(id);
                 }
                 else
                 {
@@ -55,6 +59,10 @@ namespace NuSysApp
             });
         }
 
+        public bool IsSendableLocked(string id)
+        {
+            return _sendablesLocked.Contains(id);
+        }
         public async Task HandleCreateNewSendable(string id, Dictionary<string,string> props)
         {
             if (props.ContainsKey("type") && props["type"] == "ink")
@@ -77,8 +85,30 @@ namespace NuSysApp
             {
                 await HandleCreateNewLink(id, props);
             }
+            else if (props.ContainsKey("type") && (props["type"] == "pin"))
+            {
+                await HandleCreateNewPin(id, props);
+            }
         }
 
+        public async Task HandleCreateNewPin(string id, Dictionary<string, string> props)
+        {
+            double x = 0;
+            double y = 0;
+            if (props.ContainsKey("x") && props.ContainsKey("y"))
+            {
+                try
+                {
+                    x = double.Parse(props["x"]);
+                    y = double.Parse(props["y"]);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Pin creation failed because coordinates could not be parsed to doubles");
+                }
+                await WorkSpaceModel.CreateNewPin(id, x, y);
+            }
+        }
         public async Task HandleCreateNewLink(string id, Dictionary<string, string> props)
         {
             string id1 = "null";

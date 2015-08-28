@@ -32,22 +32,10 @@ namespace NuSysApp
 
             var line = this.LineRepresentation;
 
-            //((Link)Model).atom1.Model = atom1.Model;
-            //((Link)Model).atom2.Model = atom2.Model;
-
             this.AnchorX = (int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2));
             this.AnchorY = (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
-
-            switch (workspace.CurrentLinkMode)
-            {
-                case WorkspaceViewModel.LinkMode.Bezierlink:
-                    this.View = new BezierLinkView(this);
-                    break;
-                default:
-                    this.View = new LineLinkView(this);
-                    break;
-            }
+            this.View = new BezierLinkView(this);            
         }
 
         #region Link Manipulation Methods
