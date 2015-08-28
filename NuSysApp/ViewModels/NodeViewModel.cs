@@ -39,6 +39,15 @@ namespace NuSysApp
 
         private void AddToGroupHandler(object source, AddToGroupEventArgs e)
         {
+            var group = e.Group;
+            if (group == null)
+            {
+                this.ParentGroup.RemoveNode(this);
+                WorkSpaceViewModel.NodeViewModelList.Add(this);
+                WorkSpaceViewModel.AtomViewList.Add(this.View);
+                this.ParentGroup = null;
+                return;
+            }
             var groupVm = WorkSpaceViewModel.GroupDict[e.Group.ID];
             groupVm.AddNode(this);
             this.ParentGroup = groupVm;
