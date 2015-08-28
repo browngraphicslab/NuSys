@@ -19,7 +19,7 @@ namespace NuSysApp
             Text = data;
             if (Text != null)
             {
-                byte[] textToBytes = System.Text.Encoding.ASCII.GetBytes(Text); //Converts RTF to Byte array
+                byte[] textToBytes = Convert.FromBase64String(Text); //Converts RTF to Byte array
                 Content = new Content(textToBytes, id);
             }         
         }
