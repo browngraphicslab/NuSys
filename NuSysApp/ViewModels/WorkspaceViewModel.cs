@@ -112,12 +112,14 @@ namespace NuSysApp
                 var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
                 if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
                 {
-                    node.ParentGroup.RemoveNode(node);
-                    NodeViewModelList.Add(node);
-                    AtomViewList.Add(node.View);
+                    //node.ParentGroup.RemoveNode(node);
+                    //NodeViewModelList.Add(node);
+                    //AtomViewList.Add(node.View);
+                    var nodeModel = (Node)node.Model;
+                    nodeModel.MoveToGroup(null);
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
-                    node.ParentGroup = null;
-                    node.UpdateAnchor();
+                    //node.ParentGroup = null;
+                    //node.UpdateAnchor();
                     return false;
                 }
                 node.ParentGroup.CheckNodeIntersection(node);

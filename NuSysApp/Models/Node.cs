@@ -33,7 +33,6 @@ namespace NuSysApp
         #endregion Events and Handlers
 
         public Node(string id) : base(id)
-
         {
             
         }
@@ -46,7 +45,7 @@ namespace NuSysApp
         public void MoveToGroup(Group group)
         {
             this.ParentGroup = group;
-            group.Add(this);
+            group?.Add(this);//only add if group isn't null
         }
 
         public Content Content { set; get; }
@@ -168,7 +167,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("parentGroup", _parentGroup.ID);
+                    this.DebounceDict.Add("parentGroup", _parentGroup != null ? _parentGroup.ID : "null");
                     this.DebounceDict.MakeNextMessageTCP();
                 }
             }
@@ -204,11 +203,16 @@ namespace NuSysApp
             }
             if (props.ContainsKey("parentGroup"))
             {
-                if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
+                if (props["parentGroup"] == "null")
+                {
+                    this.MoveToGroup(null);
+                }
+                else if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
                 {
                     this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
                 }
             }
+           
             base.UnPack(props);
         }
 
@@ -223,6 +227,10 @@ namespace NuSysApp
             if (ParentGroup != null)
             {
                 dict.Add("parentGroup", ParentGroup.ID);
+            }
+            else
+            {
+                dict.Add("parentGroup", "null");
             }
             return dict;
         }

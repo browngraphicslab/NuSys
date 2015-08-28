@@ -22,9 +22,7 @@ namespace NuSysApp
     public sealed partial class AudioNodeView : UserControl
     {
         private readonly AudioNodeViewModel _anvm; 
-        private bool _recording; 
-        private bool _playing;
-        private bool _stopped;
+        private bool _recording, _stopped; 
 
         public AudioNodeView(AudioNodeViewModel vm)
         {
@@ -32,7 +30,7 @@ namespace NuSysApp
             this.DataContext = vm;
             _anvm = vm;
             _recording = false;
-            _playing = false;
+   
             _stopped = true;
             CurrentAudioFile = null;
         }
@@ -42,16 +40,6 @@ namespace NuSysApp
         {
             get { return _anvm.CurrentAudioFile; }
             set { _anvm.CurrentAudioFile = value; }
-        }
-
-        private async void RecordButton_Click(object sender, TappedRoutedEventArgs e)
-        {
-            
-        }
-
-        private async void PlaybackButton_Click(object sender, TappedRoutedEventArgs e)
-        {
-            
         }
 
         private async Task ToggleRecording(string fileName)
