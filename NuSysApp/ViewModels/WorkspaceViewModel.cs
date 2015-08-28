@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Shapes;
-using NuSysApp.MISC;
 using SQLite.Net.Async;
 
 namespace NuSysApp
@@ -27,12 +15,7 @@ namespace NuSysApp
     public class WorkspaceViewModel : BaseINPC
     {
         #region Private Members
-        //private readonly Factory _factory;
-        public enum LinkMode
-        {
-            Linelink,
-            Bezierlink
-        }
+
         private CompositeTransform _compositeTransform, _fMTransform;
         #endregion Private Members
 
@@ -45,7 +28,7 @@ namespace NuSysApp
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             PinViewModelList = new ObservableCollection<PinViewModel>();
             SelectedAtomViewModel = null;
-            this.CurrentLinkMode = LinkMode.Bezierlink;
+          
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
 
@@ -456,8 +439,7 @@ namespace NuSysApp
 
         //public Mode CurrentMode { get; set; }
 
-        public LinkMode CurrentLinkMode { get; set; }
-
+        
         public CompositeTransform CompositeTransform
         {
             get { return _compositeTransform; }
