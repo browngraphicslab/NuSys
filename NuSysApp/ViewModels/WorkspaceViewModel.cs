@@ -437,8 +437,6 @@ namespace NuSysApp
 
         public WorkSpaceModel Model { get; set; }
 
-        //public Mode CurrentMode { get; set; }
-
         
         public CompositeTransform CompositeTransform
         {

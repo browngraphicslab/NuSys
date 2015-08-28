@@ -154,10 +154,12 @@ namespace NuSysApp
                     InqCanvas.SetHighlighting(true);
                     break;
                 case Options.Save:
-                    await SetViewMode(new MultiMode(this, new SaveMode(this), new SelectMode(this)));
+                    var vm1 = (WorkspaceViewModel) this.DataContext;
+                    vm1.SaveWorkspace();
                     break;
                 case Options.Load:
-                    await SetViewMode(new MultiMode(this, new LoadMode(this), new SelectMode(this)));
+                    var vm2 = (WorkspaceViewModel)this.DataContext;
+                    await vm2.LoadWorkspace();
                     break;
                 case Options.Pin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
