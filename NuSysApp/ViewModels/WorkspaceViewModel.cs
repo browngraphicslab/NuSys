@@ -95,17 +95,11 @@ namespace NuSysApp
                 var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
                 if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
                 {
-                    //node.ParentGroup.RemoveNode(node);
-                    //NodeViewModelList.Add(node);
-                    //AtomViewList.Add(node.View);
                     var nodeModel = (Node)node.Model;
                     nodeModel.MoveToGroup(null);
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
-                    //node.ParentGroup = null;
-                    //node.UpdateAnchor();
                     return false;
                 }
-                node.ParentGroup.CheckNodeIntersection(node);
             }
             foreach (var node2 in NodeViewModelList)
             {
@@ -209,23 +203,23 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        private LinkViewModel CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
+        private void CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
             {
-                return null;
+                return;
             }
             var vm2 = atomVm2 as NodeViewModel;
             if (vm2 != null && ((NodeViewModel)vm2).IsAnnotation)
             {
-                return null;
+                return;
             }
             if (atomVm1 == atomVm2)
             {
-                return null;
+                return;
             }
-            if (atomVm1 == atomVm2) return null;
+            if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(link, atomVm1, atomVm2, this, id);//TODO fix this
             Model.AtomDict.Add(id, vm);
 
@@ -238,7 +232,6 @@ namespace NuSysApp
             AtomViewList.Add(vm.View);
             atomVm1.AddLink(vm);
             atomVm2.AddLink(vm);
-            return vm;
         }
 
         private AtomViewModel _preparedAtomVm;
@@ -313,12 +306,9 @@ namespace NuSysApp
         public async Task<PinViewModel> AddNewPin(double x, double y)
         {
             PinViewModel vm = new PinViewModel();
-            PinViewModelList.Add(vm);
-            if (vm != null)
-            {
-                AtomViewList.Add(vm.View);
-                PositionPin(vm, x, y);
-            }
+            PinViewModelList.Add(vm);          
+            AtomViewList.Add(vm.View);
+            PositionPin(vm, x, y);          
             return vm;
         }
 
