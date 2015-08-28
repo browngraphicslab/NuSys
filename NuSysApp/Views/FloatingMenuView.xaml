@@ -281,12 +281,6 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <!--<Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
-                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
-            </Button>-->
-            <Button x:Name="CortanaButton" Tapped="CortanaButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
-                <Image Source="ms-appx:///Assets/icon_record.png" Height="40" Width="40"></Image>
-            </Button>
             <Button x:Name="Load" Tapped ="LoadButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/open icon.png"></Image>
             </Button>

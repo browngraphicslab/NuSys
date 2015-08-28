@@ -13,7 +13,7 @@ namespace NuSysApp
 
     public enum Options
     {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Load, Pin
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, AudioCapture, Erase, Color, Save, Load, Pin
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -39,12 +39,11 @@ namespace NuSysApp
                 inkButton,
                 //audioCaptureButton,
                 NewNode,
-                NewMedia,
+                NewMedia, 
                 Bucket,
                 Erase,
                 Highlight,
                 MultiSelect,
-                CortanaButton,
                 Export,
                 idleButton,
                 Load,

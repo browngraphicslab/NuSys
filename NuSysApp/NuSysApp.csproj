@@ -307,7 +307,6 @@
     </Compile>
     <Compile Include="Views\Workspace\GlobalInkMode.cs" />
     <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
-    <Compile Include="Views\Workspace\LoadMode.cs" />
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
     <Compile Include="Views\Workspace\PinMode.cs" />
