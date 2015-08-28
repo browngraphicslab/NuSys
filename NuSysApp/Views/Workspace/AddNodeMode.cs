@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Views.Workspace;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -101,6 +102,13 @@ namespace NuSysApp
             }
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString());
             vm.ClearSelection();
+
+            // Switch back to select mode
+            // TODO: save select mode as variable
+            await view.SetViewMode(new MultiMode(view, new PromoteInkMode(view), new PanZoomMode(view), new SelectMode(view),
+                new FloatingMenuMode(view)));
+
+            view.FloatingMenu.SetActive(Options.Select);
         }
     }
 }

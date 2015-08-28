@@ -15,8 +15,7 @@ namespace NuSysApp
         Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Load, Pin
     }
 
-
-    public sealed partial class FloatingMenu : UserControl
+    public sealed partial class FloatingMenuView : UserControl
     {
         public event OnModeChangeHandler ModeChange;
         public delegate void OnModeChangeHandler(Options mode);
@@ -29,9 +28,11 @@ namespace NuSysApp
         private readonly List<Button> _buttons;
         private static readonly SolidColorBrush BorderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
 
-        public FloatingMenu()
+        public FloatingMenuView()
         {
             this.InitializeComponent();
+            //this.DataContext = vm;
+
             _buttons = new List<Button>
             {
                 inkButton,
@@ -58,6 +59,17 @@ namespace NuSysApp
         private static void RemoveBorder(Button btn)
         {
             btn.BorderBrush = null;
+        }
+
+        public void SetActive(Options option)
+        {
+            // TODO: Add support for all other options
+            switch (option)
+            {
+                case Options.Select:
+                    SetActive(idleButton);
+                    break;
+            }
         }
 
         public void SetActive(Button btnToActivate)
