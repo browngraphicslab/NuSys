@@ -92,7 +92,6 @@ namespace NuSysApp
 
         }
 
-
         private async void OnEditClick(object sender, RoutedEventArgs e)
         {
             var vm = (TextNodeViewModel)this.DataContext;
@@ -126,8 +125,7 @@ namespace NuSysApp
                 mdTextBox.Focus(FocusState.Keyboard);
             }
             
-            AdjustScrollHeight();
-            
+            AdjustScrollHeight();        
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
