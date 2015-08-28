@@ -17,6 +17,7 @@ namespace NuSysApp
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
+        private AtomViewModel _preparedAtomVm;
         #endregion Private Members
 
         public WorkspaceViewModel(WorkSpaceModel model)
@@ -29,40 +30,63 @@ namespace NuSysApp
             PinViewModelList = new ObservableCollection<PinViewModel>();
             SelectedAtomViewModel = null;
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
+            this.SetUpTransforms();
+            this.SetUpHandlers();           
+        }
+
+        #region Helper Methods
+        private void SetUpTransforms()
+        {
             var c = new CompositeTransform
             {
-                TranslateX = (-1)*(Constants.MaxCanvasSize),
-                TranslateY = (-1)*(Constants.MaxCanvasSize)
+                TranslateX = (-1) * (Constants.MaxCanvasSize),
+                TranslateY = (-1) * (Constants.MaxCanvasSize)
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
+        }
+
+        private void SetUpHandlers()
+        {
             this.Model.OnCreation += CreatedHandler;
             this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
             this.Model.OnGroupCreation += CreateNewGroupHandler;
         }
 
-        private void CreateNewGroupHandler(object source, CreateGroupEventArgs e)
+        #endregion Helper Methods
+        #region Node Interaction
+        public async Task<PinViewModel> AddNewPin(double x, double y)
         {
-            this.CreateNewGroup(e.CreatedGroup.ID, e.CreatedGroup);
+            var vm = new PinViewModel();
+            PinViewModelList.Add(vm);
+            AtomViewList.Add(vm.View);
+            PositionPin(vm, x, y);
+            return vm;
         }
 
-       
-
-        
-
-        /// <summary>
-        /// Returns true if the given node intersects with any link on the workspace, 
-        /// using a simple line approximation for Bezier curves.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
+        {
+            var transMat = ((MatrixTransform)vm.View.RenderTransform).Matrix;
+            transMat.OffsetX = xCoordinate;
+            transMat.OffsetY = yCoordinate;
+            vm.Transform = new MatrixTransform { Matrix = transMat };
+        }
+        private void PositionPin(PinViewModel vm, double x, double y)
+        {
+            var trans = vm.Transform.Matrix;
+            trans.OffsetX = x;
+            trans.OffsetY = y;
+            //    trans.M11 = 1 / CompositeTransform.ScaleX;
+            //    trans.M22 = 1 / CompositeTransform.ScaleY;
+            vm.Transform = new MatrixTransform { Matrix = trans };
+        }
         public bool CheckForNodeLinkIntersections(NodeViewModel node)
         {
             return false;//TODO re-implement annotations
             var lines = Geometry.NodeToLineSegment(node);
             foreach (var link in LinkViewModelList)
             {
-                
+
                 var line1 = link.LineRepresentation;
                 foreach (var line2 in lines)
                 {
@@ -78,18 +102,18 @@ namespace NuSysApp
             return false;
         }
 
-        public bool CheckForNodeNodeIntersection(NodeViewModel node)
+        public void CheckForNodeNodeIntersection(NodeViewModel node)
         {
             if (node.ParentGroup != null)
             {
                 var x = node.Transform.Matrix.OffsetX * node.ParentGroup.LocalTransform.ScaleX;
                 var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
-                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0) 
+                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0)
                 {
                     var nodeModel = (Node)node.Model;
                     nodeModel.MoveToGroup(null);
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
-                    return false;
+                    return;
                 }
             }
             foreach (var node2 in NodeViewModelList)
@@ -101,22 +125,21 @@ namespace NuSysApp
                 {
                     if (node is GroupViewModel)
                     {
-                        return true;
+                        return;
                     }
                     if (node2 is GroupViewModel)
                     {
                         var group = (Group)(((GroupViewModel)node2).Model);
                         var nodeModel = (Node)node.Model;
                         nodeModel.MoveToGroup(group);
-                        return true;
+                        return;
                     }
                     NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
-                    return true;
+                    return;
                 }
             }
-            return false;
         }
-       
+
         /// <summary>
         /// Deletes a given node from the workspace, and their links.
         /// </summary> 
@@ -147,7 +170,21 @@ namespace NuSysApp
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
         }
+        public void CreateNewGroup(string id, Group groupModel)
+        {
+            //Create new group, because no group exists
+            var groupVm = new GroupViewModel(groupModel, this, id);
 
+            //Set location to node2's location
+            var xCoordinate = groupModel.X;
+            var yCoordinate = groupModel.Y;
+
+            //Add group to workspace
+            NodeViewModelList.Add(groupVm);
+            AtomViewList.Add(groupVm.View);
+            GroupDict.Add(groupModel.ID, groupVm);
+            PositionNode(groupVm, xCoordinate, yCoordinate);
+        }
         /// <summary>
         /// Sets the passed in Atom as selected. If there atlready is a selected Atom, the old \
         /// selection and the new selection are linked.
@@ -181,12 +218,6 @@ namespace NuSysApp
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
-            /*
-            foreach (ISelectable select in SelectedComponents)
-            {
-                select.ToggleSelection();
-            }
-            SelectedComponents.Clear();*/
         }
 
         /// <summary>
@@ -194,7 +225,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        private void CreateNewLink(string id,AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
+        private void CreateNewLink(string id, AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -225,110 +256,8 @@ namespace NuSysApp
             atomVm2.AddLink(vm);
         }
 
-        private AtomViewModel _preparedAtomVm;
-        public void PrepareLink(string id, AtomViewModel atomVm, Link link)
-        {
-            if (_preparedAtomVm == null)
-            {
-                _preparedAtomVm = atomVm;
-                return;
-            }
-            else if (atomVm != _preparedAtomVm)
-            {
-                CreateNewLink(id, _preparedAtomVm, atomVm, link);
-            }
-            _preparedAtomVm = null;
-        }
-
-        public InqLine LastPartialLine { get; set; }
-        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
-        {
-            LastPartialLine = e.AddedLine;
-            RaisePropertyChanged("PartialLineAdded");
-        }
-
-        public async void CreatedHandler(object source, CreateEventArgs e)
-        {
-            NodeViewModel vm = null;
-            var model = e.CreatedNode;
-            var type = model.NodeType;
-            var id = model.ID;
-            //var data = model.Data;
-            var x = model.X;
-            var y = model.Y;
-            switch (type)
-            {
-                case NodeType.Text:
-                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
-                    break;
-                case NodeType.Richtext:
-                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
-                    break;
-                case NodeType.Ink:
-                    vm = new InkNodeViewModel((InkModel)model, this, id);
-                    break;
-                case NodeType.Image:
-                    vm = new ImageNodeViewModel((ImageModel)model,this,id);
-                    if (((ImageModel)vm.Model).Image != null){
-                        vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
-                        vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
-                    }
-                    break;
-                case NodeType.PDF:
-                    vm = new PdfNodeViewModel((PdfNodeModel)model,this,id);
-                    if (((PdfNodeModel)vm.Model).RenderedPage != null)
-                    {
-                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
-                        vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
-                    }
-                    break;
-                case NodeType.Audio:
-                    vm = new AudioNodeViewModel((AudioModel)model, this, id);
-                    break;
-                default:
-                    return;
-                    break;
-            }
-            AtomViewList.Add(vm.View);
-            NodeViewModelList.Add(vm);
-            PositionNode(vm, x, y);
-        }
-
-        public async Task<PinViewModel> AddNewPin(double x, double y)
-        {
-            PinViewModel vm = new PinViewModel();
-            PinViewModelList.Add(vm);          
-            AtomViewList.Add(vm.View);
-            PositionPin(vm, x, y);          
-            return vm;
-        }
-
-        private void PositionPin(PinViewModel vm, double x, double y)
-        {
-            var trans = vm.Transform.Matrix;
-            trans.OffsetX = x;
-            trans.OffsetY = y;
-            //    trans.M11 = 1 / CompositeTransform.ScaleX;
-            //    trans.M22 = 1 / CompositeTransform.ScaleY;
-            vm.Transform = new MatrixTransform { Matrix = trans };
-        }
-        
-        public void CreateNewGroup(string id,Group groupModel) 
-        {          
-            //Create new group, because no group exists
-            var groupVm = new GroupViewModel(groupModel,this, id);
-
-            //Set location to node2's location
-            var xCoordinate = groupModel.X;
-            var yCoordinate = groupModel.Y;
-
-            //Add group to workspace
-            NodeViewModelList.Add(groupVm);
-            AtomViewList.Add(groupVm.View);
-            GroupDict.Add(groupModel.ID, groupVm);
-            PositionNode(groupVm, xCoordinate, yCoordinate);            
-        }
-
+        #endregion Node Interaction
+        #region Save/Load
         public async Task SaveWorkspace()
         {
             // clear the existing tables so that there is always only one workspace to load, just for testing purposes
@@ -376,7 +305,7 @@ namespace NuSysApp
             XmlElement parent = doc.CreateElement(string.Empty, "Parent", string.Empty);
             doc.AppendChild(parent);
 
-            foreach (NodeViewModel nodeVm in NodeViewModelList)
+            foreach (var nodeVm in NodeViewModelList)
             {
                 if (!nodeVm.IsAnnotation)
                 {
@@ -385,7 +314,7 @@ namespace NuSysApp
                 }
             }
 
-            foreach (LinkViewModel linkVm in LinkViewModelList)
+            foreach (var linkVm in LinkViewModelList)
             {
                 XmlElement ele = linkVm.WriteXML(doc);
                 parent.AppendChild(ele);
@@ -394,14 +323,83 @@ namespace NuSysApp
             return doc;
         }
 
-        public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
+        #endregion Save/Load
+        #region Event Handlers
+
+        private void CreateNewGroupHandler(object source, CreateGroupEventArgs e)
         {
-            var transMat = ((MatrixTransform)vm.View.RenderTransform).Matrix;
-            transMat.OffsetX = xCoordinate;
-            transMat.OffsetY = yCoordinate;
-            vm.Transform = new MatrixTransform { Matrix = transMat };
+            this.CreateNewGroup(e.CreatedGroup.ID, e.CreatedGroup);
         }
 
+        public async void CreatedHandler(object source, CreateEventArgs e)
+        {
+            NodeViewModel vm = null;
+            var model = e.CreatedNode;
+            var type = model.NodeType;
+            var id = model.ID;
+            var x = model.X;
+            var y = model.Y;
+            switch (type)
+            {
+                case NodeType.Text:
+                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
+                    break;
+                case NodeType.Richtext:
+                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
+                    break;
+                case NodeType.Ink:
+                    vm = new InkNodeViewModel((InkModel)model, this, id);
+                    break;
+                case NodeType.Image:
+                    vm = new ImageNodeViewModel((ImageModel)model, this, id);
+                    if (((ImageModel)vm.Model).Image != null)
+                    {
+                        vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
+                        vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
+                    }
+                    break;
+                case NodeType.PDF:
+                    vm = new PdfNodeViewModel((PdfNodeModel)model, this, id);
+                    if (((PdfNodeModel)vm.Model).RenderedPage != null)
+                    {
+                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
+                        vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
+                    }
+                    break;
+                case NodeType.Audio:
+                    vm = new AudioNodeViewModel((AudioModel)model, this, id);
+                    break;
+                default:
+                    return;
+                    break;
+            }
+            AtomViewList.Add(vm.View);
+            NodeViewModelList.Add(vm);
+            PositionNode(vm, x, y);
+        }
+
+        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
+        {
+            LastPartialLine = e.AddedLine;
+            RaisePropertyChanged("PartialLineAdded");
+        }
+
+        #endregion Event Handlers
+        #region Event Helpers
+        public void PrepareLink(string id, AtomViewModel atomVm, Link link)
+        {
+            if (_preparedAtomVm == null)
+            {
+                _preparedAtomVm = atomVm;
+                return;
+            }
+            else if (atomVm != _preparedAtomVm)
+            {
+                CreateNewLink(id, _preparedAtomVm, atomVm, link);
+            }
+            _preparedAtomVm = null;
+        }
+        #endregion Event Helpers
         #region Public Members
 
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; }
@@ -417,7 +415,6 @@ namespace NuSysApp
         public SQLiteDatabase myDB { get; set; }
 
         public WorkSpaceModel Model { get; set; }
-
         
         public CompositeTransform CompositeTransform
         {
@@ -448,6 +445,8 @@ namespace NuSysApp
         }
 
         public Dictionary<string, GroupViewModel> GroupDict { get; private set; }
+
+        public InqLine LastPartialLine { get; set; }
         #endregion Public Members
     }
 }
