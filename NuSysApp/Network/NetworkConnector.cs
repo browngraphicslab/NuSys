@@ -1212,15 +1212,17 @@ namespace NuSysApp
         }
         public async Task SendPartialLine(string id, string x1, string y1, string x2, string y2)
         {
-            Dictionary<string,string> props = new Dictionary<string, string>();
-            props.Add("x1", x1);
-            props.Add("x2", x2);
-            props.Add("y1", y1);
-            props.Add("y2", y2);
-            props.Add("id", id);
-            props.Add("type", "ink");
-            props.Add("inkType", "global");
-            props.Add("globalInkType", "partial");
+            Dictionary<string, string> props = new Dictionary<string, string>
+            {
+                {"x1", x1},
+                {"x2", x2},
+                {"y1", y1},
+                {"y2", y2},
+                {"id", id},
+                {"type", "ink"},
+                {"inkType", "global"},
+                {"globalInkType", "partial"}
+            };
             string m = MakeSubMessageFromDict(props);
             await SendMassUDPMessage(m);
         }
