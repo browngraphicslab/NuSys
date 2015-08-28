@@ -46,11 +46,13 @@ namespace NuSysApp
 
         public WorkspaceViewModel()
         {
-            Model = new WorkSpaceModel();
+            //Model = new WorkSpaceModel();
             AtomViewList = new ObservableCollection<UserControl>();
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
-            SelectedAtomViewModel = null;
+            PinViewModelList = new ObservableCollection<PinViewModel>();
+            SelectedComponents = new Collection<ISelectable>();
+            MultiSelectEnabled = false;
             this.CurrentLinkMode = LinkMode.Bezierlink;
 
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
@@ -151,13 +153,11 @@ namespace NuSysApp
             };
         }
 
+
         private static async Task<bool> SetupDirectories()
         {
             NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
-           
-            NuSysStorages.NuSysTempFolder =
-                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.ChromeTransferFolder =
                 await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
             NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderWordTransferName);
@@ -264,18 +264,42 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void SetSelection(AtomViewModel selected)
+        public void SetSelection(ISelectable selected)
         {
-            if (SelectedAtomViewModel == null)
+            if (!MultiSelectEnabled)
             {
-                SelectedAtomViewModel = selected;
-                return;
+                if (SelectedComponents.Count == 1)
+                {
+                    var avm1 = selected as AtomViewModel;
+                    var avm2 = SelectedComponents.First() as AtomViewModel;
+                    if (avm1 != null && avm2 != null)
+                    {
+                        this.CreateNewLink(avm1, avm2);
+                        selected.IsSelected = false;
+                        avm2.IsSelected = false;
+                        SelectedComponents.Clear();
+                    }
+                }
+                else
+                {
+                    SelectedComponents.Clear();
+                    SelectedComponents.Add(selected);
+                }
             }
-            this.CreateNewLink(currId, SelectedAtomViewModel, selected);
-            currId++;
-            selected.IsSelected = false;
-            SelectedAtomViewModel.IsSelected = false;
-            SelectedAtomViewModel = null;
+            else
+            {
+                SelectedComponents.Add(selected);
+            }
+            
+            //if (SelectedAtomViewModel == null)
+            //{
+            //    SelectedAtomViewModel = selected;
+            //    return;
+            //}
+            //this.CreateNewLink(SelectedAtomViewModel, selected);
+            //selected.IsSelected = false;
+            //SelectedAtomViewModel.IsSelected = false;
+            //SelectedAtomViewModel = null;
         }
 
         /// <summary>
@@ -283,9 +307,11 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
-            if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.IsSelected = false;
-            SelectedAtomViewModel = null;
+            foreach (ISelectable select in SelectedComponents)
+            {
+                select.ToggleSelection();
+            }
+            SelectedComponents.Clear();
         }
 
         /// <summary>
@@ -293,7 +319,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        public LinkViewModel CreateNewLink(int id, AtomViewModel atomVm1, AtomViewModel atomVm2)
+        public LinkViewModel CreateNewLink(AtomViewModel atomVm1, AtomViewModel atomVm2)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -310,8 +336,8 @@ namespace NuSysApp
                 return null;
             }
 
-            var vm = new LinkViewModel(atomVm1, atomVm2, this, id);
-            Model.AtomDict.Add(id, vm);
+            var vm = new LinkViewModel(atomVm1, atomVm2, this, 0);
+            //Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
@@ -362,6 +388,11 @@ namespace NuSysApp
                         vm = pdfVM;
                     }
                     break;
+                case NodeType.Audio:
+                    var anvm = new AudioNodeViewModel(this, id);
+                    await anvm.InitializeAudioNode();
+                    vm = anvm;
+                    break;
                 //case NodeType.Group: //Only called when reloading
                     //var group = new GroupViewModel(this, idCounter);
                     //idCounter++;
@@ -375,19 +406,19 @@ namespace NuSysApp
                     return null;
             }
             currId++;
-            Model.AtomDict.Add(id, vm);
+            //Model.AtomDict.Add(id, vm);
             NodeViewModelList.Add(vm);
 
             if (vm != null)
             {
                 AtomViewList.Add(vm.View);
 
-                if (data is Polyline[])
+                if (data is InqLine[])
                 {
-                    Polyline p = (data as Polyline[]).First();
+                    InqLine p = (data as InqLine[]).First();
                     var minX = p.Points.Min(em => em.X);
                     var minY = p.Points.Min(em => em.Y);
-                    (vm.View as InkNodeView2).PromoteStrokes(data as Polyline[]);
+                    (vm.View as InkNodeView2).PromoteStrokes(data as InqLine[]);
                     PositionNode(vm, minX, minY);
                 }
                 else
@@ -397,7 +428,27 @@ namespace NuSysApp
             }
             return vm;
         }
+        public async Task<PinViewModel> AddNewPin(double x, double y)
+        {
+            PinViewModel vm = new PinViewModel();
+            PinViewModelList.Add(vm);
+            if (vm != null)
+            {
+                AtomViewList.Add(vm.View);
+                PositionPin(vm, x, y);
+            }
+            return vm;
+        }
 
+        private void PositionPin(PinViewModel vm, double x, double y)
+        {
+            var trans = vm.Transform.Matrix;
+            trans.OffsetX = x;
+            trans.OffsetY = y;
+        //    trans.M11 = 1 / CompositeTransform.ScaleX;
+        //    trans.M22 = 1 / CompositeTransform.ScaleY;
+            vm.Transform = new MatrixTransform { Matrix = trans };
+        }
         public void CreateNewGroup(NodeViewModel node1, NodeViewModel node2)
         {
             if (node1 is GroupViewModel)
@@ -427,7 +478,7 @@ namespace NuSysApp
             NodeViewModelList.Add(groupVm);
             AtomViewList.Add(groupVm.View);
             PositionNode(groupVm, xCoordinate, yCoordinate);
-            Model.AtomDict.Add(currId, groupVm);
+            //Model.AtomDict.Add(currId, groupVm);
             currId++;
 
             //Add the first node
@@ -510,14 +561,18 @@ namespace NuSysApp
         #region Public Members
 
         public ObservableCollection<NodeViewModel> NodeViewModelList { get; }
+        public ObservableCollection<PinViewModel> PinViewModelList { get; }
+
 
         public ObservableCollection<LinkViewModel> LinkViewModelList { get; }
 
         public ObservableCollection<UserControl> AtomViewList { get; }
 
-        public AtomViewModel SelectedAtomViewModel { get; private set; }
+        public Collection<ISelectable> SelectedComponents { get; private set; }
 
-        public WorkSpaceModel Model { get; set; }
+        //public WorkSpaceModel Model { get; set; }
+
+        public bool MultiSelectEnabled { get; set; }
 
         //public Mode CurrentMode { get; set; }
         public int currId { get; set; }

@@ -9,7 +9,12 @@ namespace NuSysApp
         public CortanaPopup()
         {
             this.InitializeComponent();
-            
+
+        }
+
+        public void ModifyPopupText(string text)
+        {
+            DictatedSpeech.Text = text;
         }
     }
 }

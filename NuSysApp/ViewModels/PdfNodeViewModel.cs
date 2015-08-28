@@ -15,7 +15,7 @@ namespace NuSysApp
 {
     public class PdfNodeViewModel : NodeViewModel
     {
-        private readonly WorkspaceViewModel _workspaceViewModel;
+        //private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
 
         public PdfNodeViewModel(WorkspaceViewModel workspaceViewModel, int id) : base(workspaceViewModel, id)
@@ -29,16 +29,16 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            this.NodeType = Constants.NodeType.pdf;
+            this.NodeType = Constants.NodeType.Pdf;
             this.CurrentPageNumber = 0;
             this.PageCount = 0;
-            this.InkContainer = new List<HashSet<Polyline>>();
-            _workspaceViewModel = workspaceViewModel;
-            var C = new CompositeTransform {
+            this.InkContainer = new List<HashSet<InqLine>>();
+            //_workspaceViewModel = workspaceViewModel;
+            var c = new CompositeTransform {
                 ScaleX = 1,
                 ScaleY = 1
             };
-            this.InkScale = C;
+            this.InkScale = c;
         }
 
         /// <summary>
@@ -95,6 +95,7 @@ namespace NuSysApp
             await ProcessPdfFile(storageFile); // process the .pdf StoragFeile
         }
 
+        // TODO I'll fix this later -- Gary
         public PdfNodeModel PdfNodeModel //TO DO: GET RID OF THIS PROPERTY. WHY DO WE HAVE TWO MODEL PROPERTIES?!!
         {
             get { return (PdfNodeModel)Model; }
@@ -140,7 +141,7 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new HashSet<Polyline>());
+                this.InkContainer.Add(new HashSet<InqLine>());
 
             }
         }
@@ -208,7 +209,7 @@ namespace NuSysApp
             }//
         }
         //   public List<IReadOnlyList<InkStroke>> InkContainer { get; set;}
-        public List<HashSet<Polyline>> InkContainer
+        public List<HashSet<InqLine>> InkContainer
         {
             get { return ((PdfNodeModel)Model).InkContainer; }
             set

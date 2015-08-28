@@ -9,12 +9,12 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     internal class PromoteInkMode : AbstractWorkspaceViewMode
     {
 
-        private HashSet<Polyline> _strokes;
+        private HashSet<InqLine> _strokes;
 
         public PromoteInkMode(WorkspaceView view) : base(view)
         {
@@ -40,12 +40,15 @@ namespace NuSysApp.Views.Workspace
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            _view.InqCanvas.Children.Remove(sender as Polyline);
-            _strokes.Remove(sender as Polyline);
+            _view.InqCanvas.Children.Remove(sender as InqLine);
+            _strokes.Remove(sender as InqLine);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-            Polyline[] lines = {sender as Polyline};
-            await vm.CreateNewNode(vm.currId, NodeType.Ink, p.X, p.Y, lines);            
+
+            Debug.WriteLine("click at " + p.X + ", " + p.Y);
+            InqLine[] lines = {sender as InqLine};
+            await vm.CreateNewNode(0, NodeType.Ink, p.X, p.Y, lines);
+            
         }
 
     }

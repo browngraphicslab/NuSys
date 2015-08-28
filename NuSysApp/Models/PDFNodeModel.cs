@@ -50,6 +50,6 @@ namespace NuSysApp
         }
 
         public uint PageCount { get; set; }
-        public List<HashSet<Polyline>> InkContainer { get; set; }
+        public List<HashSet<InqLine>> InkContainer { get; set; }
     }
 }

@@ -1,58 +1,63 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class CortanaMode : AbstractWorkspaceViewMode
+    partial class CortanaContinuousRecognition
     {
-        private readonly Point _defaultPlacementPos = new Point(500, 100);
-
-        public CortanaMode(WorkspaceView view) : base(view)
+        public class CortanaMode : AbstractWorkspaceViewMode
         {
-            IsRunning = false;
-        }
+            private readonly Point _defaultPlacementPos = new Point(500, 100);
+            public bool IsRunning { get; set; }
 
-        public bool IsRunning { get; set; }
-
-        public override async Task Activate()
-        {
-            if (!IsRunning)
+            public CortanaMode(WorkspaceView view) : base(view)
             {
-                IsRunning = true;
-                while (true)
+                IsRunning = false;
+            }
+
+            public override async Task Activate()
+            {
+                if (!IsRunning)
                 {
-                    var dictation = await CortanaContinuousRecognition.RunContinuousRecognizerAndReturnResult();
-                    // TODO
-                    // FIND A WAY TO DEACTIVATE RECOGNITION IF CORTANA BUTTON IS PRESSED AGAIN, OR 
-                    // ALTERNATIVELY DEACTIVATE CORTANA BUTTON WHILE RECOGNIZER IS RUNNING
-                    await ProcessCommand(dictation);
+                    Debug.WriteLine("Cortana activated");
+                    IsRunning = true;
+                    WorkspaceView.CortanaRunning = true;
+                    while (WorkspaceView.CortanaRunning)
+                    {
+                        var dictation = await RunRecognizerAndReturnResult();
+                        await ProcessCommand(dictation);
+                    }
                 }
             }
-            Deactivate();
-        }
 
-        public override async Task Deactivate()
-        {
-            IsRunning = false;
-        }
-
-        private async Task ProcessCommand(string dictation) // bug: sometimes dictation is ""
-        {
-            switch (dictation.ToLower())
+            public override async Task Deactivate()
             {
-                case "open document":
-                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Document);
-                    break;
-                case "create text":
-                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text);
-                    break;
-                case "create ink":
-                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Ink);
-                    break;
-                default:
-                    await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, dictation);
-                    break;
+                Debug.WriteLine("Cortana deactivated");
+                IsRunning = false;
+                WorkspaceView.CortanaRunning = false;
+            }
+
+            private async Task ProcessCommand(string dictation)
+            {
+                switch (dictation)
+                {
+                    case null:
+                    case "":
+                        break;
+                    case OpenDocumentCommand:
+                        await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Document);
+                        break;
+                    case CreateTextCommand:
+                        await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text);
+                        break;
+                    case CreateInkCommand:
+                        await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Ink);
+                        break;
+                    default:
+                        await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, dictation);
+                        break;
+                }
             }
         }
     }

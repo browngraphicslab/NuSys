@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class AtomViewModel : BaseINPC
+    public abstract class AtomViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
 
@@ -47,7 +47,8 @@ namespace NuSysApp
         public void ToggleSelection()
         {
             this.IsSelected = !this.IsSelected;
-            WorkSpaceViewModel.SetSelection(this);
+            if(IsSelected)
+                WorkSpaceViewModel.SetSelection(this);
         }
   
         /// <summary>

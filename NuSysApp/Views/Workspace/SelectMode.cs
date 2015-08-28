@@ -2,11 +2,15 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class SelectMode : AbstractWorkspaceViewMode
     {
-        public SelectMode(WorkspaceView view) : base(view) { }
+        public SelectMode(WorkspaceView view) : base(view)
+        {
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.MultiSelectEnabled = false;
+        }
 
         public override async Task Activate()
         {

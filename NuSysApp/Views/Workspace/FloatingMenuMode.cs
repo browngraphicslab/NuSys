@@ -3,7 +3,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class FloatingMenuMode : AbstractWorkspaceViewMode
     {

@@ -13,24 +13,21 @@ namespace NuSysApp.Components
 {
     class HighlightInqMode : IInqMode
     {
-        private Polyline _currentStroke;
+        private InqLine _currentStroke;
 
         public void OnPointerPressed(InqCanvas inqCanvas, PointerRoutedEventArgs e)
         {
-            //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
 
-            _currentStroke = new Polyline();
+            _currentStroke = new InqLine();
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
+            _currentStroke.SetHighlighting(true);
             _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
             {
 
                 if (inqCanvas.Mode is EraseInqMode)
                 {
-                    inqCanvas.Children.Remove(o as Polyline);
-                    inqCanvas.Strokes.Remove(o as Polyline);
-                    //inqCanvas.Manager.SelectWithLine(e2.GetCurrentPoint(inqCanvas).Position, e2.GetCurrentPoint(inqCanvas).Position);
-                    //inqCanvas.Manager.DeleteSelected();
+                    inqCanvas.Children.Remove(o as InqLine);
+                    inqCanvas.Strokes.Remove(o as InqLine);
                 }
 
             };
@@ -39,16 +36,12 @@ namespace NuSysApp.Components
 
         public void OnPointerMoved(InqCanvas inqCanvas, PointerRoutedEventArgs e)
         {
-            //inqCanvas.Manager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.Points.Add(new Point(currentPoint.Position.X, currentPoint.Position.Y));
+            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
         }
 
         public void OnPointerReleased(InqCanvas inqCanvas, PointerRoutedEventArgs e)
         {
-            //inqCanvas.Manager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
-            //var inkStrokes = inqCanvas.Manager.GetStrokes();
-            //inqCanvas.Strokes.Add(_currentStroke, inkStrokes[inkStrokes.Count - 1]);
             inqCanvas.Strokes.Add(_currentStroke);
         }
     }

@@ -1,7 +1,7 @@
 ﻿
 using System.Threading.Tasks;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class GlobalInkMode : AbstractWorkspaceViewMode
     {

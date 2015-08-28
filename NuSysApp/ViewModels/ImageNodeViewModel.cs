@@ -25,7 +25,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            this.NodeType = Constants.NodeType.image; //Also sets model value
+            this.NodeType = Constants.NodeType.Image; //Also sets model value
 
 
 
@@ -43,7 +43,7 @@ namespace NuSysApp
         public ImageNodeViewModel(WorkspaceViewModel vm, int id) : base(vm, id)
         {
             this.Model = new ImageModel(null, id); //TO-DO get rid of this and just have one model
-            this.NodeType = Constants.NodeType.image; //Also sets model value
+            this.NodeType = Constants.NodeType.Image; //Also sets model value
             this.View = new ImageNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
