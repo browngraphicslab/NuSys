@@ -77,7 +77,7 @@ namespace NuSysApp
         {
             await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
         }
-        private async Task SetViewMode(AbstractWorkspaceViewMode mode)
+        public async Task SetViewMode(AbstractWorkspaceViewMode mode)
         {
             var deactivate = _mode?.Deactivate();
             if (deactivate != null) await deactivate;
