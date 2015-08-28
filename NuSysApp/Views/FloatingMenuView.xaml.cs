@@ -13,7 +13,7 @@ namespace NuSysApp
 
     public enum Options
     {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Load, Pin
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, AudioCapture, Erase, Color, Save, Load, Pin
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -39,12 +39,11 @@ namespace NuSysApp
                 inkButton,
                 //audioCaptureButton,
                 NewNode,
-                NewMedia,
+                NewMedia, 
                 Bucket,
                 Erase,
                 Highlight,
                 MultiSelect,
-                CortanaButton,
                 Export,
                 idleButton,
                 Load,
@@ -256,20 +255,7 @@ namespace NuSysApp
             }         
         }
 
-        private async void CortanaButton_Click(object sender, TappedRoutedEventArgs e)
-        {
-            SetActive((Button)sender);
-            //if (!WorkspaceView.CortanaRunning)
-            //{
-            //    AddBorder((Button)sender);
-            //    ModeChange?.Invoke(Options.Cortana);
-            //}
-            //else
-            //{
-            //    RemoveBorder((Button)sender);
-            //    ModeChange?.Invoke(Options.Cortana);
-            //}
-        }
+        
 
         private void Additional_OnTapped(object sender, TappedRoutedEventArgs e)
         {

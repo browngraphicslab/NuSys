@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Networking;
@@ -77,8 +78,6 @@ namespace NuSysApp
         {
             return _caughtUp;
         }
-
-        public bool ModelLocked { get; set; }
 
         /*
          * gets and sets the workspace model that the network connector communicates with
@@ -994,9 +993,7 @@ namespace NuSysApp
             }
             if (message[0] == '<' && message[message.Length - 1] == '>'|| true)
             {
-                ModelLocked = true;
                 await ModelIntermediate.HandleMessage(message);
-                ModelLocked = false;
             }
             else
             {
@@ -1114,6 +1111,32 @@ namespace NuSysApp
         }
 
         /*
+        * PUBLIC general method to create Pin
+        */
+
+        public async Task RequestMakePin(string x, string y, string oldID = null, Delegate callback = null)
+        {
+            Dictionary<string, string> props = new Dictionary<string, string>();
+            props.Add("x", x);
+            props.Add("y", y);
+            if (oldID != null)
+            {
+                props.Add("OLDSQLID", oldID);
+            }
+            props.Add("type", "pin");
+            string m = MakeSubMessageFromDict(props);
+            if (oldID != null && callback != null)
+            {
+                ModelIntermediate.AddCreationCallback(oldID, callback);
+            }
+            else if (callback != null && oldID == null)
+            {
+                throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less group creation.  Callbacks may only be placed on groups created with previous ID's");
+            }
+            await SendMessageToHost(m);
+        }
+
+        /*
         * PUBLIC general method to create Group
         */
         public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Delegate callback = null)
@@ -1189,28 +1212,32 @@ namespace NuSysApp
         }
         public async Task SendPartialLine(string id, string x1, string y1, string x2, string y2)
         {
-            Dictionary<string,string> props = new Dictionary<string, string>();
-            props.Add("x1", x1);
-            props.Add("x2", x2);
-            props.Add("y1", y1);
-            props.Add("y2", y2);
-            props.Add("id", id);
-            props.Add("type", "ink");
-            props.Add("inkType", "global");
-            props.Add("globalInkType", "partial");
+            Dictionary<string, string> props = new Dictionary<string, string>
+            {
+                {"x1", x1},
+                {"x2", x2},
+                {"y1", y1},
+                {"y2", y2},
+                {"id", id},
+                {"type", "ink"},
+                {"inkType", "global"},
+                {"globalInkType", "partial"}
+            };
             string m = MakeSubMessageFromDict(props);
             await SendMassUDPMessage(m);
         }
 
         public async Task FinalizeGlobalInk(string previousID, string data)
         {
-            Dictionary<string, string> props = new Dictionary<string, string>();
-            props.Add("type", "ink");
-            props.Add("inkType", "global");
-            props.Add("globalInkType", "full");
-            props.Add("id", "0");
-            props.Add("data", data);
-            props.Add("previousID", previousID);
+            Dictionary<string, string> props = new Dictionary<string, string>
+            {
+                {"type", "ink"},
+                {"inkType", "global"},
+                {"globalInkType", "full"},
+                {"id", "0"},
+                {"data", data},
+                {"previousID", previousID}
+            };
             string m = MakeSubMessageFromDict(props);
             await SendMessageToHost(m);
         }

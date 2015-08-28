@@ -19,7 +19,11 @@ namespace NuSysApp
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             this.UpdateControlPoints();
+
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
+
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
+
         }
 
         /// <summary>
@@ -193,6 +197,24 @@ namespace NuSysApp
         private void BezierLinkView_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true; 
+        }
+
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (LinkViewModel)this.DataContext;
+
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                }
+                else
+                {
+                    slidein.Begin();
+                }
+            }
         }
     }
 }

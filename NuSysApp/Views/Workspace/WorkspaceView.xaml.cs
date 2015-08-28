@@ -130,23 +130,6 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
                         new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
-                case Options.Cortana:
-                    if (!_cortanaInitialized)
-                    {
-                        _cortanaModeInstance = new CortanaMode(this);
-                        _cortanaInitialized = true;
-                    }
-                    if (!_cortanaModeInstance.IsRunning)
-                    {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            _cortanaModeInstance, new FloatingMenuMode(this)));
-                    }
-                    else
-                    {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            new FloatingMenuMode(this)));
-                    }
-                    break;
                 case Options.Erase:
                     InqCanvas.SetErasing(true);
                     break;
@@ -154,10 +137,12 @@ namespace NuSysApp
                     InqCanvas.SetHighlighting(true);
                     break;
                 case Options.Save:
-                    await SetViewMode(new MultiMode(this, new SaveMode(this), new SelectMode(this)));
+                    var vm1 = (WorkspaceViewModel) this.DataContext;
+                    vm1.SaveWorkspace();
                     break;
                 case Options.Load:
-                    await SetViewMode(new MultiMode(this, new LoadMode(this), new SelectMode(this)));
+                    var vm2 = (WorkspaceViewModel)this.DataContext;
+                    await vm2.LoadWorkspace();
                     break;
                 case Options.Pin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));

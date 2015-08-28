@@ -102,6 +102,7 @@
     <Content Include="Assets\bullets.png" />
     <Content Include="Assets\fast_forward.png" />
     <Content Include="Assets\font size.png" />
+    <Content Include="Assets\icon_add_annotation.png" />
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_eraser.png" />
     <Content Include="Assets\icon_export.png" />
@@ -307,7 +308,6 @@
     </Compile>
     <Compile Include="Views\Workspace\GlobalInkMode.cs" />
     <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
-    <Compile Include="Views\Workspace\LoadMode.cs" />
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
     <Compile Include="Views\Workspace\PinMode.cs" />
@@ -315,7 +315,6 @@
       <DependentUpon>PinWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\PromoteInkMode.cs" />
-    <Compile Include="Views\Workspace\SaveMode.cs" />
     <Compile Include="Views\Workspace\SelectMode.cs" />
     <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>

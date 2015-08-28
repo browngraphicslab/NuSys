@@ -63,7 +63,7 @@ namespace NuSysApp
                     return;
                 }
                 _x = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
@@ -87,7 +87,7 @@ namespace NuSysApp
                     return;
                 }
                 _y = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
@@ -111,7 +111,7 @@ namespace NuSysApp
                     return;
                 }
                 _width = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
@@ -137,7 +137,7 @@ namespace NuSysApp
                 }
                 _height = value;
 
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
@@ -161,7 +161,7 @@ namespace NuSysApp
             set
             {
                 _parentGroup = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", _parentGroup, this));
                 }
