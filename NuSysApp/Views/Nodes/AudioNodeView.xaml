@@ -10,7 +10,9 @@
     d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
-    RenderTransform="{Binding Transform}">
+    RenderTransform="{Binding Transform}"
+    ManipulationMode="All"
+    ManipulationDelta="OnManipulationDelta">
 
     <Grid Background="#dee5e9" Opacity="1" CornerRadius="20" >
         
