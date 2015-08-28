@@ -106,6 +106,10 @@ namespace NuSysApp
             OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
         }
 
+        public async Task CreateNewPin(string id, double x, double y)
+        {
+            //TODO add in pin creation
+        }
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             Node node;
@@ -115,7 +119,7 @@ namespace NuSysApp
                     node = new TextNode((string)data ?? "", id);
                     break;
                 case NodeType.Richtext:
-                    node = new TextNode((string)data, id);
+                    node = new TextNode((string)data ?? "", id);
                     break;
                 case NodeType.Ink:
                     var lines = data as List<InqLine>;

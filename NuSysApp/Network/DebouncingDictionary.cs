@@ -36,7 +36,7 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.ModelLocked && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
+            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(_atom.ID) && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
             {
                 if (!_timing)
                 {
