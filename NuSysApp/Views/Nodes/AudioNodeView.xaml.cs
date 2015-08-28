@@ -69,6 +69,10 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, RoutedEventArgs e)
         {
+            if (_recording)
+            {
+                ToggleRecording(CurrentAudioFile.Name);
+            }
             playbackElement.Stop();
             _stopped = true;
             play.Opacity = 1;
@@ -82,24 +86,33 @@ namespace NuSysApp
 
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {
-            play.Opacity = .3;
-            if (_stopped)
+            if (_recording)
             {
-                _stopped = false;
-                if (CurrentAudioFile == null) return;
-                var stream = await CurrentAudioFile.OpenAsync(FileAccessMode.Read);
-                playbackElement.SetSource(stream, CurrentAudioFile.FileType);
+                ToggleRecording(CurrentAudioFile.Name);
             }
-            playbackElement.MediaEnded += delegate(object o, RoutedEventArgs e2)
+            else
             {
-                play.Opacity = 1;
-            };
-            playbackElement.Play();
+                pause.Opacity = 1;
+                play.Opacity = .3;
+                if (_stopped)
+                {
+                    _stopped = false;
+                    if (CurrentAudioFile == null) return;
+                    var stream = await CurrentAudioFile.OpenAsync(FileAccessMode.Read);
+                    playbackElement.SetSource(stream, CurrentAudioFile.FileType);
+                }
+                playbackElement.MediaEnded += delegate(object o, RoutedEventArgs e2)
+                {
+                    play.Opacity = 1;
+                };
+                playbackElement.Play();
+            }
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             playbackElement.Pause();
+            pause.Opacity = .3;
         }
 
         private void OnFastforward_Click(object sender, RoutedEventArgs e)
