@@ -17,7 +17,6 @@ namespace NuSysApp
         private bool _isEnabled;
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        //private HashSet<InqLine> _strokes = new HashSet<InqLine>();
         public bool IsPressed = false;
         public InqCanvasViewModel ViewModel { get; }
 
