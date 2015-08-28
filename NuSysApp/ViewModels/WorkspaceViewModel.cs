@@ -378,7 +378,7 @@ namespace NuSysApp
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
             XmlDocument doc = this.getXml();
             currWorkspaceXml.toXml = doc.OuterXml;
-            dbConnection.InsertAsync(currWorkspaceXml);
+            await dbConnection.InsertAsync(currWorkspaceXml);
 
             // save the content of each atom in the current workspace
             foreach (NodeViewModel nodeVm in NodeViewModelList)
@@ -386,7 +386,7 @@ namespace NuSysApp
                 if (((Node)nodeVm.Model).Content != null)
                 {
                     Content toInsert = ((Node)nodeVm.Model).Content;
-                    dbConnection.InsertAsync(toInsert);
+                    await dbConnection.InsertAsync(toInsert);
                 }
             }
         }
