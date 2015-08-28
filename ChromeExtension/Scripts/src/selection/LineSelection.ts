@@ -17,6 +17,7 @@ class LineSelection implements ISelection {
     constructor(inkCanvas:InkCanvas) {
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
+
     }
 
     start(x: number, y: number): void {

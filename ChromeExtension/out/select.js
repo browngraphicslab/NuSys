@@ -50,6 +50,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             $("#selected").empty();
             chrome.storage.local.set({ 'curr': [] });
             chrome.tabs.executeScript({ file: 'jquery.js' });
+            chrome.tabs.executeScript({ file: 'javascriptUtil.js' });
+
             chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
         }
     });

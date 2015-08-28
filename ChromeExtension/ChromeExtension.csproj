@@ -83,6 +83,7 @@
     <TypeScriptCompile Include="Scripts\src\ink\brush\BrushStroke.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\MarqueeBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\LineBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\brush\MultiSelectionBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\SelectionBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\HighlightBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\IBrush.ts" />
@@ -93,6 +94,7 @@
     <TypeScriptCompile Include="Scripts\src\selection\ISelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\MarqueeSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\MultiLineSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\UnknownSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\util\DomUtil.ts" />

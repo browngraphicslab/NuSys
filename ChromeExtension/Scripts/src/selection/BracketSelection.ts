@@ -70,6 +70,11 @@ class BracketSelection implements ISelection {
         var totalScore = 0;
         //var hitCounter = new Map<Element, number>();
         var hitCounter = new collections.Dictionary<Element, number>();
+        console.log("=================analyzeContent================");
+        console.log(selectionBB);
+        var elList = [];
+        var scoreList = [];
+        
         for (var x = selectionBB.x; x < selectionBB.x + selectionBB.w; x += samplingRate) {
             for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
                 var hitElem = document.elementFromPoint(x, y);
@@ -78,11 +83,20 @@ class BracketSelection implements ISelection {
 
                 if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
                     continue;
-
                 var score = (1.0 - x / (selectionBB.x + selectionBB.w)) / (selectionBB.w * selectionBB.h);
 
-                if (hitCounter.getValue(hitElem) == undefined)
+                if (elList.indexOf(hitElem) < 0) {
+                    elList.push(hitElem);
+                    scoreList.push(score);
+                }
+                else {
+                    scoreList[elList.indexOf(hitElem)] += score;
+                }
+                
+                if (hitCounter.getValue(hitElem) == undefined) {
                     hitCounter.setValue(hitElem, score);
+                    console.log(hitElem);
+                }
                 else
                     hitCounter.setValue(hitElem, hitCounter.getValue(hitElem) + score);
 
@@ -90,8 +104,10 @@ class BracketSelection implements ISelection {
 
             }
         }
- 
+        console.log(elList);
+        console.log(scoreList);
 
+        console.log(hitCounter);
         var candidates = [];
         var precision = 4;
         hitCounter.forEach((k, v) => {            

@@ -22,6 +22,7 @@ class Main {
     objectKeyCount: number = Date.now();
 
     constructor() {
+
         console.log("Starting NuSys.");
         this.init();
     }
@@ -55,6 +56,13 @@ class Main {
 
     mouseMove = (e):void => {
         var currType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
+        if (currType == StrokeType.MultiLine) {
+           
+          
+        //    console.log(this.selection.getContent());
+                    document.body.removeChild(this.canvas);
+
+        }
         if (currType != this.prevStrokeType) {
             this.prevStrokeType = currType;
             switch (currType) {
@@ -64,6 +72,11 @@ class Main {
                 case StrokeType.Line:
                     this.selection = new LineSelection(this.inkCanvas);
                     break;
+                case StrokeType.MultiLine:
+                    this.selection = new MultiLineSelection(this.inkCanvas);
+                    this.selection.start(e.clientX, e.clientY);
+                    console.log("switching to multiline Selection");
+                    break; 
                 case StrokeType.Bracket:
                     this.selection = new BracketSelection(this.inkCanvas, true);
                     console.log("switching to bracket!")
@@ -81,11 +94,15 @@ class Main {
             this.inkCanvas.redrawActiveStroke();
         }
         this.selection.update(e.clientX, e.clientY);
+        document.body.appendChild(this.canvas); 
     }
 
     documentDown = (e): void => {
-        document.body.appendChild(this.canvas);
+        console.log("=============documentDown==============");
+        console.log(this.selection);
         this.selection.start(e.clientX, e.clientY);
+        document.body.appendChild(this.canvas);
+
         this.canvas.addEventListener("mousemove", this.mouseMove);
         this.isSelecting = true;
     }
@@ -197,18 +214,60 @@ class Main {
     relativeToAbsolute(content: string): string {
         //////change relative path in html string to absolute
          
-        console.log(content);
+        //console.log(content);
         var res = content.split('href="');
-        var newVal = res[0];
-        for (var i = 1; i < res.length; i++) {
-            newVal += 'href="';
+        var newval = res[0];
+        for (var i = 1; i < res.length; i++) {                  //first change href to absolute
+            newval += 'href="';
             if (res[i].slice(0, 4) != "http") {
-                newVal += window.location.protocol + "//" + window.location.host;
+                newval += window.location.protocol + "//" + window.location.host;
             }
-            newVal += res[i];
+            newval += res[i];
         }
-        
-        return newVal;
+
+
+        var src = newval.split('src="');
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="';
+            if (src[i].slice(0, 4) != "http") {
+                finalval += window.location["origin"];//+"misc/";
+                
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length-1) {
+                       newpath += (elem+"/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length-1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+        return finalval;
+
+        //return content;
     }
 
     drawPastSelections(rectArray): void {
@@ -239,6 +298,8 @@ class Main {
         this.canvas.height = window.innerHeight;
         this.canvas.style.position = "fixed";
         this.canvas.style.top = "0";
+        this.canvas.style.left = "0";           //fixes canvas placements
+        this.canvas.style.zIndex = "999";
 
 
         this.inkCanvas = new InkCanvas(this.canvas);
@@ -278,7 +339,6 @@ class Main {
                         this.drawPastSelections(rects);
                     });
                 }
-
             });
     }
 } 

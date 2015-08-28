@@ -15,6 +15,7 @@ chrome.storage.local.get(null, function (data) {
 function injectScript(tab) {
     console.log("injectin!!!!!");
     chrome.tabs.executeScript({ file: 'jquery.js' });
+    
     chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
 }
 
@@ -42,9 +43,13 @@ function sendMessage(key) {
 }
 
 function showInsertion(data) {
+    console.log(document.caretRangeFromPoint(350, 75));
     $.each(Object.keys(data).reverse(), function (index, val) {
+
+
         var title = document.createElement("h3");
         $(title).append("<span class='title'>" + data[val]["title"]);
+        $(title).append("<span>"+"Dec 28th 1992");
         $(title).append("<span class='url'>" + data[val]["url"] + "</span>");
         $(title).append("<button class='toRemove button' type='button'>Remove</button>");
         $(title).append("<button class='pastPage button' type='button'>Open</button>");
@@ -67,6 +72,7 @@ function showInsertion(data) {
             }
             $(selections).append("<div style = 'clear:both'>" + newVal + "</div>");
         });
+    //    $("#container").append(date);
         $("#container").append(title);
         $("#container").append(selections);
 
