@@ -28,11 +28,7 @@ namespace NuSysApp
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             PinViewModelList = new ObservableCollection<PinViewModel>();
             SelectedAtomViewModel = null;
-          
-
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
-
-            Init();
             var c = new CompositeTransform
             {
                 TranslateX = (-1)*(Constants.MaxCanvasSize),
@@ -50,12 +46,7 @@ namespace NuSysApp
             this.CreateNewGroup(e.CreatedGroup.ID, e.CreatedGroup);
         }
 
-        private async void Init()
-        {
-
-            Debug.WriteLine("Setting up Network Connector at IP: "+NetworkConnector.Instance.LocalIP);
-
-        }
+       
 
         
 
