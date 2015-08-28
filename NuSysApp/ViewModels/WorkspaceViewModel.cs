@@ -300,13 +300,18 @@ namespace NuSysApp
                     break;
                 case NodeType.Image:
                     vm = new ImageNodeViewModel((ImageModel)model,this,id);
-                    vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
-                    vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
+                    if (((ImageModel)vm.Model).Image != null){
+                        vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
+                        vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
+                    }
                     break;
                 case NodeType.PDF:
                     vm = new PdfNodeViewModel((PdfNodeModel)model,this,id);
-                    vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
-                    vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
+                    if (((PdfNodeModel)vm.Model).RenderedPage != null)
+                    {
+                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
+                        vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
+                    }
                     break;
                 case NodeType.Audio:
                     vm = new AudioNodeViewModel((AudioModel)model, this, id);
