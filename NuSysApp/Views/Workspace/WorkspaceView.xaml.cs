@@ -70,7 +70,7 @@ namespace NuSysApp
             get { return inqCanvas; }
         }
 
-        public FloatingMenu FloatingMenu
+        public FloatingMenuView FloatingMenu
         {
             get { return floatingMenu; }
         }

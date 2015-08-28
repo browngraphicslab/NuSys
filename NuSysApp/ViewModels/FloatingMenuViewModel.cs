@@ -11,7 +11,7 @@ namespace NuSysApp
     {
         public FloatingMenuViewModel(FloatingMenuModel model)
         {
-            this.View = new FloatingMenuView(this);
+            this.View = new FloatingMenuView();
         }
 
         public FloatingMenuView View { get; set; }

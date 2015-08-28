@@ -28,10 +28,10 @@ namespace NuSysApp
         private readonly List<Button> _buttons;
         private static readonly SolidColorBrush BorderColor = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
 
-        public FloatingMenuView(FloatingMenuViewModel vm)
+        public FloatingMenuView()
         {
             this.InitializeComponent();
-            this.DataContext = vm;
+            //this.DataContext = vm;
 
             _buttons = new List<Button>
             {
