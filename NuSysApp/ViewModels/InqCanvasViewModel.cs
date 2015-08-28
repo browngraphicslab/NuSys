@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    class InqCanvasViewModel : BaseINPC
+    public class InqCanvasViewModel : BaseINPC
     {
         public InqCanvasModel Model { get; }
 

@@ -19,12 +19,13 @@ namespace NuSysApp
         private IInqMode _mode = new DrawInqMode();
         //private HashSet<InqLine> _strokes = new HashSet<InqLine>();
         public bool IsPressed = false;
+        public InqCanvasViewModel ViewModel { get; }
 
         public InqCanvasView()
         {
             MISC.Clip.SetToBounds(this, true);
             var vm = new InqCanvasViewModel(new InqCanvasModel());
-            this.DataContext = vm;
+            ViewModel = vm;
             vm.PropertyChanged += Update;
             
         }
