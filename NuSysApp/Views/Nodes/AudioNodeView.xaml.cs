@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -33,6 +34,7 @@ namespace NuSysApp
    
             _stopped = true;
             CurrentAudioFile = null;
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
         }
         private string FileName => _anvm.FileName;
 
@@ -94,6 +96,24 @@ namespace NuSysApp
         private void OnFastforward_Click(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (NodeViewModel)this.DataContext;
+
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                }
+                else
+                {
+                    slidein.Begin();
+                }
+            }
         }
     }
 }

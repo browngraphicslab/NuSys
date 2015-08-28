@@ -18,7 +18,7 @@
         <Grid.Resources>
             <Storyboard x:Key="slideout" x:Name="slideout">
                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-                <DoubleAnimation Duration="0:0:0.2" To="-73.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <DoubleAnimation Duration="0:0:0.2" To="-15" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
                 <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
                     <DiscreteObjectKeyFrame KeyTime="0:0:0.2">

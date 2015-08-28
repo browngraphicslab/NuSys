@@ -102,6 +102,7 @@
     <Content Include="Assets\bullets.png" />
     <Content Include="Assets\fast_forward.png" />
     <Content Include="Assets\font size.png" />
+    <Content Include="Assets\icon_add_annotation.png" />
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_eraser.png" />
     <Content Include="Assets\icon_export.png" />
