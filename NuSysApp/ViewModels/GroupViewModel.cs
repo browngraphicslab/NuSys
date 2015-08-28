@@ -127,18 +127,20 @@ namespace NuSysApp
             switch (_nodeViewModelList.Count)
             {
                 case 0:
+                    //NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);
                     WorkSpaceViewModel.DeleteNode(this);
                     break;
                 case 1:
                     var lastNode = _nodeViewModelList[0];
-                    _atomViewList.Remove(lastNode.View);
-                    _nodeViewModelList.Remove(lastNode);
-                    WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
-                    WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
+                    ((Node)(lastNode.Model)).MoveToGroup(null);
+                    //_atomViewList.Remove(lastNode.View);
+                    //_nodeViewModelList.Remove(lastNode);
+                    //WorkSpaceViewModel.NodeViewModelList.Add(lastNode);
+                    //WorkSpaceViewModel.AtomViewList.Add(lastNode.View);
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
                     lastNode.ParentGroup = null;
-                    //WorkSpaceViewModel.DeleteNode(this);
-                    NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);
+                    WorkSpaceViewModel.DeleteNode(this);
+                    //NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);
                     foreach (var link in lastNode.LinkList)
                     {
                         link.SetVisibility(true);

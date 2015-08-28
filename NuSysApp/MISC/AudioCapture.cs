@@ -10,6 +10,7 @@ using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.UI.Core;
+using NuSysApp.MISC;
 
 namespace NuSysApp
 {
@@ -19,16 +20,9 @@ namespace NuSysApp
         private StorageFile _recordStorageFile;
         private bool _recording;
         public static int NumInstances;
-        private readonly StorageFolder _rootFolder = KnownFolders.MusicLibrary;
-        //private readonly StorageFolder _rootFolder = NuSysStorages.Media;
-        //private bool _suspended;
-        //private bool _userRequestedRaw;
-        //private bool _rawAudioSupported;
-
+        private readonly StorageFolder _rootFolder = NuSysStorages.Media;
+       
         private CoreDispatcher _dispatcher;
-
-        //private TypedEventHandler
-        //    <SystemMediaTransportControls, SystemMediaTransportControlsPropertyChangedEventArgs> _mediaPropertyChanged;
 
         public AudioCapture()
         {
@@ -43,10 +37,7 @@ namespace NuSysApp
             var settings = new MediaCaptureInitializationSettings
             {
                 StreamingCaptureMode = StreamingCaptureMode.Audio,
-                MediaCategory = MediaCategory.Other, // MediaCategory.Speech?
-                //AudioProcessing = (_rawAudioSupported && _userRequestedRaw)
-                //    ? AudioProcessing.Raw
-                //    : AudioProcessing.Default
+                MediaCategory = MediaCategory.Other, // MediaCategory.Speech? 
                 AudioProcessing = AudioProcessing.Default
             };
             await _mediaCaptureManager.InitializeAsync(settings);
