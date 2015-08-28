@@ -255,20 +255,7 @@ namespace NuSysApp
             }         
         }
 
-        private async void CortanaButton_Click(object sender, TappedRoutedEventArgs e)
-        {
-            SetActive((Button)sender);
-            //if (!WorkspaceView.CortanaRunning)
-            //{
-            //    AddBorder((Button)sender);
-            //    ModeChange?.Invoke(Options.Cortana);
-            //}
-            //else
-            //{
-            //    RemoveBorder((Button)sender);
-            //    ModeChange?.Invoke(Options.Cortana);
-            //}
-        }
+        
 
         private void Additional_OnTapped(object sender, TappedRoutedEventArgs e)
         {
