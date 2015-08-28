@@ -19,9 +19,17 @@
     </UserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" >
         <local:NodeTemplate.SubMenu>
-            <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
-            </Button>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+                </Button>
+                <Button x:Name="Grid" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_group_grid.png" Height="20" Width="20"></Image>
+                </Button>
+                <Button x:Name="Freeform" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_group_freeform.png" Height="20" Width="20"></Image>
+                </Button>
+            </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" RenderTransform="{Binding LocalTransform}">

@@ -49,7 +49,9 @@ namespace NuSysApp
                 idleButton,
                 Load,
                 SelectButton,
-                GlobalInkButton
+                GlobalInkButton,
+                addNodeButton,
+                additionalButton
             };
             SetActive(idleButton);
         }
@@ -67,6 +69,7 @@ namespace NuSysApp
         public void SetActive(Options option)
         {
             // TODO: Add support for all other options
+
             switch (option)
             {
                 case Options.Select:

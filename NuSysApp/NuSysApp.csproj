@@ -105,6 +105,8 @@
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_eraser.png" />
     <Content Include="Assets\icon_export.png" />
+    <Content Include="Assets\icon_group_freeform.png" />
+    <Content Include="Assets\icon_group_grid.png" />
     <Content Include="Assets\icon_highlight.png" />
     <Content Include="Assets\icon_media.png" />
     <Content Include="Assets\icon_node.png" />
