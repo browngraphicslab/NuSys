@@ -901,7 +901,7 @@ namespace NuSysApp
                         {
                             await SendMassTCPMessage("SPECIAL10:" + message);
                         }
-                        await ModelIntermediate.RemoveNode(message);
+                        await ModelIntermediate.RemoveSendable(message);
                         return;
                     }
                     else

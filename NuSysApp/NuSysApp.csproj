@@ -142,6 +142,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />

@@ -21,6 +21,13 @@ namespace NuSysApp
             _dict = new Network.DebouncingDictionary(this);
         }
 
+
+
+        public void Delete()
+        {
+
+        }
+
         public double X
         {
             get
