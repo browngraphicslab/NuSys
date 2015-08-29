@@ -368,6 +368,11 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("TCP connection recieved FROM IP "+ip+" but socket closed before full stream was read");
                     await RemoveIP(ip);
+                    if (_hostIP == ip)
+                    {
+                        await SendMassTCPMessage("SPECIAL1:" + _localIP);
+                        MakeHost();
+                    }
                     await SendMassTCPMessage("SPECIAL9:" + ip);
                     return;
                 }
