@@ -16,18 +16,8 @@ namespace NuSysApp
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
 
-            _currentStroke = new InqLine();
+            _currentStroke = new InqLine(DateTime.UtcNow.Ticks.ToString());
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            _currentStroke.PointerEntered += delegate (object o, PointerRoutedEventArgs e2)
-            {
-                
-                if (inqCanvas.Mode is EraseInqMode && inqCanvas.IsPressed)
-                {
-                    InqLine me = o as InqLine;
-                    inqCanvas.Children.Remove(me);
-                    
-                } 
-            };
             inqCanvas.Children.Add(_currentStroke);
         }
 

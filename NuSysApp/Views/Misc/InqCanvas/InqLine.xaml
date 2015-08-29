@@ -10,7 +10,6 @@
     d:DesignWidth="400">
 
     <Grid>
-        <Polyline Name="VisibleLine" Stroke="Black" Opacity="1"/>
-        <Polyline Name="SelectedBorder" Stroke="White" Opacity="0" />
+        <Polyline Name="VisibleLine" Stroke="Black" Opacity="1" PointerEntered="OnPointerEntered"/>
     </Grid>
 </UserControl>

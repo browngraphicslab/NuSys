@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components;
+using NuSysApp.EventArgs;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -22,21 +24,30 @@ namespace NuSysApp
 {
     public sealed partial class InqLine : UserControl, ISelectable, Sendable
     {
+        public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
+        public event DeleteInqLineEventHandler OnDeleteInqLine;
 
         private bool _isHighlighting = false;
         private bool _isSelected = false;
-        public InqLine()
-        {
-            this.InitializeComponent();
-            this.CanEdit = Atom.EditStatus.Maybe;
-            ID = DateTime.UtcNow.Ticks.ToString();
 
+        private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            var inqCanvas = this.Parent as InqCanvasView;
+            if (inqCanvas.Mode is EraseInqMode&& inqCanvas.IsPressed)
+            {
+                NetworkConnector.Instance.RequestDeleteSendable(this.ID);
+            }
         }
 
-        public InqLine(string id,string data)
+        public void Delete()
+        {
+            OnDeleteInqLine?.Invoke(this, new DeleteInqLineEventArgs(this));
+            (this.Parent as InqCanvasView).Children.Remove(this);
+        }
+
+        public InqLine(string id)
         {
             this.InitializeComponent();
-            SetLine(data);
             ID = id;
             this.CanEdit = Atom.EditStatus.Maybe;
         }
@@ -47,7 +58,6 @@ namespace NuSysApp
         public void AddPoint(Point p)
         {
             VisibleLine.Points.Add(p);
-            SelectedBorder.Points.Add(p);
         }
 
         public void SetHighlighting(bool highlight)
@@ -70,11 +80,12 @@ namespace NuSysApp
             _isSelected = !_isSelected;
             if (_isSelected)
             {
-                SelectedBorder.Opacity = .8;
+                                                //so thicc
+                this.BorderThickness = new Thickness(Double.MaxValue);
             }
             else
             {
-                SelectedBorder.Opacity = 0;
+                this.BorderThickness = new Thickness(0);
             }
         }
 
@@ -129,18 +140,17 @@ namespace NuSysApp
             return plines;
         }
 
-        public void SetLine(string data)
+        public void SetLine(string data, string id)
         {
-            VisibleLine = ParseToPolyline(data).First().VisibleLine;
+            VisibleLine = ParseToPolyline(data, id).VisibleLine;
         }
 
-        public static List<InqLine> ParseToPolyline(string s)
+        public static InqLine ParseToPolyline(string s, string id)
         {
             List<InqLine> polys = new List<InqLine>();
             string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string part in parts)
-            {
-                InqLine line = new InqLine();
+            string part = parts[0];
+                InqLine line = new InqLine(id);
                 string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string subpart in subparts)
                 {
@@ -179,8 +189,8 @@ namespace NuSysApp
                 {
                     polys.Add(line);
                 }
-            }
-            return polys;
+            
+            return line;
         }
 
         public string Stringify()
@@ -211,7 +221,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                SetLine(props["data"]);
+                SetLine(props["data"], props["id"]);
             }
             if (props.ContainsKey("delete") && props["delete"] == "true")
             {

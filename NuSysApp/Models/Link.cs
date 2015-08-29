@@ -20,6 +20,11 @@ namespace NuSysApp
 
         public string OutAtomID { get; set; }
 
+        public override void Delete()
+        {
+            
+        }
+
         public override async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("id1"))

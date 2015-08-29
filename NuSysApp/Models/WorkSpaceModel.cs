@@ -166,11 +166,11 @@ namespace NuSysApp
             OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
         }
 
-        public async Task RemoveNode(string id)
+        public async Task RemoveSendable(string id)
         {
             if (_idDict.ContainsKey(id))
             {
-                ((Node) _idDict[id]).Delete();
+                _idDict[id].Delete();
                 _idDict.Remove(id);
             }
             else

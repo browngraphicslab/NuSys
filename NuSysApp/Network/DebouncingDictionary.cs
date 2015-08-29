@@ -9,9 +9,9 @@ namespace NuSysApp.Network
         private Dictionary<string, string> _dict;
         private bool _timing = false;
         private DispatcherTimer _timer;
-        private Atom _atom;
+        private Sendable _atom;
         private bool _sendNextTCP = false;
-        public DebouncingDictionary(Atom atom)
+        public DebouncingDictionary(Sendable atom)
         {
             _dict = new Dictionary<string, string>();
             _atom = atom;

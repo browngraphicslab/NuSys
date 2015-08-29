@@ -166,7 +166,7 @@ namespace NuSysApp
                     case NodeType.Ink:
                         try
                         {
-                            data = ParseToPolyline(d);
+                            data = ParseToPolyline(d, id);
                         }
                         catch (Exception e)
                         {
@@ -254,9 +254,7 @@ namespace NuSysApp
             {
                 if (props.ContainsKey("data"))
                 {
-                    List<InqLine> lines = ParseToPolyline(props["data"]);
-                    if (lines.Count == 0) return;
-                    InqLine line = lines[0];
+                    InqLine line = ParseToPolyline(props["data"], id);
                     WorkSpaceModel.IDToSendableDict.Add(id, line);
                     WorkSpaceModel.AddGlobalInq(line);
                 }
@@ -272,14 +270,14 @@ namespace NuSysApp
                 }
             }
         }
-        public async Task RemoveNode(string id)
+        public async Task RemoveSendable(string id)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
-                    WorkSpaceModel.RemoveNode(id);
+                    WorkSpaceModel.RemoveSendable(id);
                 }
             });
         }
@@ -301,9 +299,9 @@ namespace NuSysApp
         {
             return Convert.FromBase64String(s);
         }
-        private List<InqLine> ParseToPolyline(string s)
+        private InqLine ParseToPolyline(string s, string id)
         {
-            return InqLine.ParseToPolyline(s);
+            return InqLine.ParseToPolyline(s, id);
         }
         private HashSet<string> LocksNeeded(string id)
         {
@@ -382,7 +380,9 @@ namespace NuSysApp
         }
         public bool HasLock(string id)
         {
-            return WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP;
+            var sendable = WorkSpaceModel.IDToSendableDict[id];
+            bool isLine = sendable is InqLine;
+            return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         
         public async Task CheckLocks(string id)
@@ -472,7 +472,7 @@ namespace NuSysApp
 
         private InqLine ParseToLineSegment(Dictionary<string,string> props)
         {
-            InqLine l = new InqLine();
+            InqLine l = new InqLine("");
             if (props.ContainsKey("x1") && props.ContainsKey("y1") && props.ContainsKey("x2") && props.ContainsKey("y2"))
             {
                 Point one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));

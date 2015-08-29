@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
+using NuSysApp.EventArgs;
 
 namespace NuSysApp
 {
@@ -15,12 +16,13 @@ namespace NuSysApp
         public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event AddPartialLineEventHandler OnPartialLineAddition;
 
-        private List<InqLine> _lines;
+        private HashSet<InqLine> _lines;
         private ObservableDictionary<string, ObservableCollection<InqLine>> _partialLines;
+
 
         public InqCanvasModel()
         {
-            _lines = new List<InqLine>();
+            _lines = new HashSet<InqLine>();
             _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
             _partialLines.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args)
             {
@@ -37,6 +39,11 @@ namespace NuSysApp
                 }
             };
 
+        }
+
+        public void Delete()
+        {
+            
         }
 
         private string InqlinesToString()
@@ -60,9 +67,9 @@ namespace NuSysApp
             return dict;
         }
 
-        private List<InqLine> ParseToPolyline(string s)
+        private InqLine ParseToPolyline(string s, string data)
         {
-            return InqLine.ParseToPolyline(s);
+            return InqLine.ParseToPolyline(s, data);
         }
 
         public void AddTemporaryPoint(Point p)
@@ -73,14 +80,24 @@ namespace NuSysApp
         public void FinalizeLine(InqLine line)
         {
             this._lines.Add(line);
+            line.OnDeleteInqLine += LineOnDeleteInqLine;
             OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
+        }
+
+        private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)
+        {
+            this._lines.Remove(deleteInqLineEventArgs.LineToDelete);
         }
 
         public async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("polylines"))
             {
-                _lines = ParseToPolyline(props["polylines"]);
+                //var list = ParseToPolyline(props["polylines"]);
+                //foreach (var line in list)
+                //{
+                //    _lines.Add(line);
+                //}
             }
         }
 

@@ -13,5 +13,7 @@ namespace NuSysApp
         Task UnPack(Dictionary<string, string> props);
         string ID { get;}
         Atom.EditStatus CanEdit { set; get; }
+
+        void Delete();
     }
 }
