@@ -1,5 +1,6 @@
 ﻿using NuSysApp.Views.Workspace;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -141,7 +142,10 @@ namespace NuSysApp
                     data = Convert.ToBase64String(fileBytes);
                 }
             }
-            await NetworkConnector.Instance.RequestMakeNode2(p.X.ToString(), p.Y.ToString(), size.Width.ToString(), size.Height.ToString(), nodeType.ToString(), data == null ? null : data.ToString());
+            var dict = new Dictionary<string, string>();
+            dict["width"] = size.Width.ToString();
+            dict["height"] = size.Height.ToString();
+            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString(), null, dict);
             vm.ClearSelection();
 
             // Switch back to select mode

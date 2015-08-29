@@ -21,9 +21,11 @@ namespace NuSysApp
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
+        public delegate void CreatePinEventHandler(object source, CreatePinEventArgs e);
         public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
+        public event CreatePinEventHandler OnPinCreation;
         public event CreateGroupEventHandler OnGroupCreation;
         public event AddPartialLineEventHandler OnPartialLineAddition;
         
@@ -32,31 +34,34 @@ namespace NuSysApp
         #region Private Members
         private Dictionary<string, Sendable> _idDict;
 
-        private ObservableDictionary<string,ObservableCollection<InqLine>> _partialLines;
+        //private ObservableDictionary<string,ObservableCollection<InqLine>> _partialLines;
         private LockDictionary _locks;
+        private InqCanvasModel _inqModel;
         #endregion Private members
        
 
-        public WorkSpaceModel()
+        public WorkSpaceModel(InqCanvasModel inqModel)
         {
+            this._inqModel = inqModel;
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
-            _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
-            _partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
-            {
-                if (args.Action == NotifyCollectionChangedAction.Add)
-                {
-                    foreach (ObservableCollection<InqLine> n in _partialLines.Values)
-                    {
-                        n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
-                        {
-                            InqLine l = ((InqLine) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
-                            OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
-                        };
-                    }
-                }
-            };
+            //_partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
+            //_partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
+            //{
+            //    if (args.Action == NotifyCollectionChangedAction.Add)
+            //    {
+            //        foreach (ObservableCollection<InqLine> n in _partialLines.Values)
+            //        {
+            //            n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
+            //            {
+            //                InqLine l = ((InqLine) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
+            //                OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
+            //            };
+            //        }
+            //    }
+            //};
+            
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
@@ -67,10 +72,10 @@ namespace NuSysApp
         {
             get { return _idDict; }
         }
-        public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines 
-        {
-            get { return _partialLines; }
-        }
+        //public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines 
+        //{
+        //    get { return _partialLines; }
+        //}
         public LockDictionary Locks
         {
             get { return _locks; }
@@ -103,9 +108,20 @@ namespace NuSysApp
 
         public void AddGlobalInq(InqLine line)
         {
-            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
+            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
+            this._inqModel.FinalizeLine(line);
         }
 
+        public async Task CreateNewPin(string id, double x, double y)
+        {
+            var pinModel = new PinModel(id);
+            pinModel.X = x;
+            pinModel.Y = y;
+
+            _idDict.Add(id, pinModel);
+            OnPinCreation?.Invoke(_idDict[id], new CreatePinEventArgs("Created", pinModel));
+
+        }
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
             Node node;
@@ -115,7 +131,7 @@ namespace NuSysApp
                     node = new TextNode((string)data ?? "", id);
                     break;
                 case NodeType.Richtext:
-                    node = new TextNode((string)data, id);
+                    node = new TextNode((string)data ?? "", id);
                     break;
                 case NodeType.Ink:
                     var lines = data as List<InqLine>;
@@ -161,6 +177,11 @@ namespace NuSysApp
             {
                 throw new InvalidOperationException("Node no longer exists");
             }
+        }
+
+        public InqCanvasModel InqModel
+        {
+            get { return this._inqModel; }
         }
 
 

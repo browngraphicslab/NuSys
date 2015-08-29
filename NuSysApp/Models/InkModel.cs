@@ -38,12 +38,7 @@ namespace NuSysApp
             {
                 if (pl.Points.Count > 0)
                 {
-                    plines += "<polyline points='";
-                    foreach (Point point in pl.Points)
-                    {
-                        plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
-                    }
-                    plines += "' thickness='" + pl.StrokeThickness + "' stroke='" + pl.Stroke + "'/>";
+                    plines += pl.Stringify();
                 }
             }
             return plines;

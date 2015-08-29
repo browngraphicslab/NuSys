@@ -10,7 +10,9 @@
     d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
-    RenderTransform="{Binding Transform}">
+    RenderTransform="{Binding Transform}"
+    ManipulationMode="All"
+    ManipulationDelta="OnManipulationDelta">
 
     <Grid Background="#dee5e9" Opacity="1" CornerRadius="20" >
         
@@ -18,7 +20,7 @@
         <Grid.Resources>
             <Storyboard x:Key="slideout" x:Name="slideout">
                 <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-                <DoubleAnimation Duration="0:0:0.2" To="-73.75" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+                <DoubleAnimation Duration="0:0:0.2" To="-15" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
                 <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
                     <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
@@ -47,7 +49,7 @@
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
             <!--delete button needs to be hooked up to delete handler-->
-            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4" Click="OnDelete_Click">
                 <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
             </Button>
         </StackPanel>

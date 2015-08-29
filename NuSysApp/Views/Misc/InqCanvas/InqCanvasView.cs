@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
@@ -11,18 +12,21 @@ using NuSysApp.Components;
 namespace NuSysApp
 {
 
-    public class InqCanvas : Canvas
+    public class InqCanvasView : Canvas
     {
         private bool _isEnabled;
-        //private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private HashSet<InqLine> _strokes = new HashSet<InqLine>();
         public bool IsPressed = false;
+        public InqCanvasViewModel ViewModel { get; }
 
-        public InqCanvas()
+        public InqCanvasView()
         {
             MISC.Clip.SetToBounds(this, true);
+            var vm = new InqCanvasViewModel(new InqCanvasModel());
+            ViewModel = vm;
+            vm.PropertyChanged += Update;
+            
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -114,12 +118,6 @@ namespace NuSysApp
             }
         }
 
-        //public void RemoveByInkStroke(InkStroke stroke)
-        //{
-        //    var line = _strokes[stroke];
-        //    if (line != null)
-        //        Children.Remove(line);
-        //}
 
         public Rect PasteStrokes(InqLine[] lines)
         {
@@ -147,8 +145,7 @@ namespace NuSysApp
                     double y = point.Y - minY;
                     pl.AddPoint(new Point(point.X - minX, point.Y - minY));
                 }
-                Children.Add(pl);
-                _strokes.Add(stroke);
+                NetworkConnector.Instance.FinalizeGlobalInk(pl.ID, pl.GetString());
             }
             Rect rect = new Rect();
             rect.Width = width;
@@ -180,32 +177,19 @@ namespace NuSysApp
             }
         }
 
-        //public InkManager Manager
-        //{
-        //    get
-        //    {
-        //        return _inkManager;
-        //    }
-        //    set
-        //    {
-        //        _inkManager = value;
-        //    }
-        //}
-
         public IInqMode Mode
         {
             get { return _mode; }
         }
 
-        internal HashSet<InqLine> Strokes
+        private void Update(object sender, PropertyChangedEventArgs e)
         {
-            get
+            var vm = (InqCanvasViewModel)sender;
+            switch (e.PropertyName)
             {
-                return _strokes;
-            }
-            set
-            {
-                _strokes = value;
+                case "PartialLineAdded":
+                    this.Children.Add(vm.LastPartialLine);
+                    break;
             }
         }
     }

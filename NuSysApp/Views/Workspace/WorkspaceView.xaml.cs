@@ -40,11 +40,10 @@ namespace NuSysApp
         public WorkspaceView()
         {
             this.InitializeComponent();
-            var workspaceModel = new WorkSpaceModel();
-            this.DataContext = new WorkspaceViewModel( workspaceModel );
-            var vm = (WorkspaceViewModel)this.DataContext;
+            InqCanvasModel inqCanvasModel = this.InqCanvas.ViewModel.Model;
+            var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
+            this.DataContext = vm;
             _cortanaInitialized = false;
-            vm.PropertyChanged += Update;
 
             _contentImporter.ContentImported += async delegate (List<string> contents)
             {
@@ -60,7 +59,7 @@ namespace NuSysApp
                  
                         try { 
                         
-                         NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), content, null, (string id)=> {
+                         NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), content, null, null, (string id)=> {
                              Debug.WriteLine("node created ID: " + id);
                          });
                         } catch (Exception ex)
@@ -72,17 +71,6 @@ namespace NuSysApp
             };
         }
 
-        private void Update(object sender, PropertyChangedEventArgs e)
-        {
-            WorkspaceViewModel vm = (WorkspaceViewModel)sender;
-            switch (e.PropertyName)
-            {
-                case "PartialLineAdded":
-                    this.InqCanvas.Children.Add(vm.LastPartialLine);
-                    this.InqCanvas.Strokes.Add(vm.LastPartialLine);
-                    break;
-            }
-        }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -96,7 +84,7 @@ namespace NuSysApp
             await _mode.Activate();
         }
 
-        public InqCanvas InqCanvas
+        public InqCanvasView InqCanvas
         {
             get { return inqCanvas; }
         }
@@ -143,23 +131,6 @@ namespace NuSysApp
                 case Options.Document:
                     await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
-                case Options.Cortana:
-                    if (!_cortanaInitialized)
-                    {
-                        _cortanaModeInstance = new CortanaMode(this);
-                        _cortanaInitialized = true;
-                    }
-                    if (!_cortanaModeInstance.IsRunning)
-                    {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            _cortanaModeInstance, new FloatingMenuMode(this)));
-                    }
-                    else
-                    {
-                        await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                            new FloatingMenuMode(this)));
-                    }
-                    break;
                 case Options.Erase:
                     InqCanvas.SetErasing(true);
                     break;
@@ -167,10 +138,12 @@ namespace NuSysApp
                     InqCanvas.SetHighlighting(true);
                     break;
                 case Options.Save:
-                    await SetViewMode(new MultiMode(this, new SaveMode(this), new SelectMode(this)));
+                    var vm1 = (WorkspaceViewModel) this.DataContext;
+                    vm1.SaveWorkspace();
                     break;
                 case Options.Load:
-                    await SetViewMode(new MultiMode(this, new LoadMode(this), new SelectMode(this)));
+                    var vm2 = (WorkspaceViewModel)this.DataContext;
+                    await vm2.LoadWorkspace();
                     break;
                 case Options.Pin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));

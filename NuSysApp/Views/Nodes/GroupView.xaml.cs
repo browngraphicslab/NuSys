@@ -88,6 +88,7 @@ namespace NuSysApp
         {
             var vm = (GroupViewModel)this.DataContext;
             vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
+            this.ArrangeNodesInGrid();
             e.Handled = true;
         }
     }

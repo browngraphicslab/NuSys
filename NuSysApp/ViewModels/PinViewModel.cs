@@ -11,13 +11,13 @@ namespace NuSysApp
         private BaseINPC _model;
         private string _text = string.Empty;
         
-        public PinViewModel() : base()
+        public PinViewModel(PinModel model) : base()
         {
-            Model = new PinModel();
+            Model = model;
             Transform = new MatrixTransform();   
             View = new PinView(this);
             this.Model.PropertyChanged += (s, e) => { Update(e); };
-            Text = "Nusysland";
+            Text = "<Enter Pin Name>";
         }
 
         private void Update(PropertyChangedEventArgs e)
