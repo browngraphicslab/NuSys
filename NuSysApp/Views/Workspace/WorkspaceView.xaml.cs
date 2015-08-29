@@ -43,6 +43,7 @@ namespace NuSysApp
             InqCanvasModel inqCanvasModel = this.InqCanvas.ViewModel.Model;
             var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             this.DataContext = vm;
+
             _cortanaInitialized = false;
 
             _contentImporter.ContentImported += async delegate (List<string> contents)

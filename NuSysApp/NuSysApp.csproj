@@ -316,7 +316,7 @@
     <Compile Include="Views\Workspace\MultiMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
     <Compile Include="Views\Workspace\PinMode.cs" />
-    <Compile Include="Views\Workspace\PinWindow.xaml.cs">
+    <Compile Include="Views\Misc\PinWindow.xaml.cs">
       <DependentUpon>PinWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\PromoteInkMode.cs" />
@@ -427,7 +427,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Workspace\PinWindow.xaml">
+    <Page Include="Views\Misc\PinWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

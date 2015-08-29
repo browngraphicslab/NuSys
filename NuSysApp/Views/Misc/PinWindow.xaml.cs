@@ -23,15 +23,12 @@ namespace NuSysApp
         public PinWindow()
         {
             this.InitializeComponent();
-            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));
+            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));           
         }
 
-        public static readonly DependencyProperty pinList = DependencyProperty.Register(
-  "PinList",
-  typeof(ObservableCollection<PinViewModel>),
-  typeof(MinimapView),
-  new PropertyMetadata(new ObservableCollection<PinViewModel>())
-);
+        public static readonly DependencyProperty pinList = DependencyProperty.Register( "PinList", typeof(ObservableCollection<PinViewModel>),
+          typeof(MinimapView), new PropertyMetadata(new ObservableCollection<PinViewModel>())
+        );
         public ObservableCollection<PinViewModel> PinList
         {
             get { return (ObservableCollection<PinViewModel>)GetValue(pinList); }
