@@ -10,13 +10,15 @@ namespace NuSysApp
         private double _x;
         private double _y;
         private string _text;
-        private MatrixTransform _transform; 
+        private MatrixTransform _transform;
+        private Network.DebouncingDictionary _dict;
 
         public PinModel (string id) : base()
         {
             this.Transform = new MatrixTransform();
             this.Text = "NusysLand";
             ID = id;
+            _dict = new Network.DebouncingDictionary(this);
         }
 
         public double X
@@ -57,8 +59,14 @@ namespace NuSysApp
                     return;
                 }
                 _text = value;
-
-                RaisePropertyChanged("Model_Text");
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                {
+                    RaisePropertyChanged("Model_Text");
+                }
+                else
+                {
+                    _dict.Add("text", Text);
+                }
             }
         }
         public MatrixTransform Transform
