@@ -62,7 +62,7 @@ namespace NuSysApp.Network
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
                 _dict.Add("id", _atom.ID);
-                if (NetworkConnector.Instance.ModelIntermediate.HasAtom(_atom.ID))
+                if (NetworkConnector.Instance.ModelIntermediate.HasSendableID(_atom.ID))
                 {
                     if (_sendNextTCP)
                     {
