@@ -107,21 +107,18 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
+                Color color = this.Color.Color;
                 if (_canEdit == Atom.EditStatus.No)
                 {
-                    Color color = this.Color.Color;
-                    color.A = 100;
-                    this.Color = new SolidColorBrush(color);
+                    this.Color = new SolidColorBrush(Windows.UI.Colors.LightGray);
                 }
                 else if (_canEdit == Atom.EditStatus.Yes)
                 {
-                    Color color = this.Color.Color;
                     color.A = 255;
                     this.Color = new SolidColorBrush(color);
                 }
                 else
                 {
-                    Color color = this.Color.Color;
                     color.A = 175;
                     this.Color = new SolidColorBrush(color);
                     //if(_canEdit == Atom.EditStatus.Yes)
