@@ -997,9 +997,9 @@ namespace NuSysApp
                 Dictionary<string, string> props = ParseOutProperties(message);
                 if (props.ContainsKey("id"))
                 {
-                    if (!ModelIntermediate.HasSendableID(props["id"]))
+                    if (!ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP)
                     {
-                        await SendMassMessage(message, packetType);
+                        await SendMassTCPMessage(message);
                     }
                     await ModelIntermediate.HandleMessage(props);
                 }
