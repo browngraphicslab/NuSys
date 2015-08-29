@@ -44,16 +44,21 @@ namespace NuSysApp
         #region Link Manipulation Methods
         public override void Remove()
         {
-            this.Atom1.LinkList.Remove(this);
-            this.Atom2.LinkList.Remove(this);
-            var toDelete = this.LinkList.ToList();
-            foreach (var link in toDelete)
+            NetworkConnector.Instance.RequestDeleteSendable(ID);
+            if (this.IsSelected)
             {
-                link.Remove();
-                WorkSpaceViewModel.AtomViewList.Remove(link.View);
+                WorkSpaceViewModel.ClearSelection();
             }
-            this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
-            this.Annotation?.Remove();
+            //this.Atom1.LinkList.Remove(this);
+            //this.Atom2.LinkList.Remove(this);
+            //var toDelete = this.LinkList.ToList();
+            //foreach (var link in toDelete)
+            //{
+            //    link.Remove();
+            //    WorkSpaceViewModel.AtomViewList.Remove(link.View);
+            //}
+            //this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
+            //this.Annotation?.Remove();
         }
 
         #endregion Link Manipulation Methods

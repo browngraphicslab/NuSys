@@ -4,6 +4,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -229,14 +230,33 @@ namespace NuSysApp
             vm.Remove();
         }
 
-        private void AddAnnotation_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private void Color_Click(object sender, RoutedEventArgs e)
         {
-            
+            if (Colors.Opacity == 0)
+            {
+                colorout.Begin();
+            }
+            else
+            {
+                colorin.Begin();
+            }          
+        }
+
+        private void Change_Color(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel) this.DataContext;
+            Button colorButton = sender as Button;
+            if (colorButton.Name == "Red")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255,255,152,149));
+            } else if (colorButton.Name == "Green")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 190, 240, 142));
+            } else if (colorButton.Name == "Gray")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 189, 204, 212));
+            }
+            colorin.Begin();
         }
     }
 }

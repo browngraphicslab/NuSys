@@ -119,7 +119,9 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
+                    Color color = this.Color.Color;
+                    color.A = 175;
+                    this.Color = new SolidColorBrush(color);
                     //if(_canEdit == Atom.EditStatus.Yes)
                     //{
                     //    this.Color = new SolidColorBrush(Constants.DefaultColor);
