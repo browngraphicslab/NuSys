@@ -21,9 +21,11 @@ namespace NuSysApp
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
+        public delegate void CreatePinEventHandler(object source, CreatePinEventArgs e);
         public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
+        public event CreatePinEventHandler OnPinCreation;
         public event CreateGroupEventHandler OnGroupCreation;
         public event AddPartialLineEventHandler OnPartialLineAddition;
         
@@ -112,7 +114,13 @@ namespace NuSysApp
 
         public async Task CreateNewPin(string id, double x, double y)
         {
-            //TODO add in pin creation
+            var pinModel = new PinModel(id);
+            pinModel.X = x;
+            pinModel.Y = y;
+
+            _idDict.Add(id, pinModel);
+            OnPinCreation?.Invoke(_idDict[id], new CreatePinEventArgs("Created", pinModel));
+
         }
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {

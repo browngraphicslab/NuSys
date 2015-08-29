@@ -5,8 +5,10 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    class PinModel : BaseINPC, Sendable
+    public class PinModel : BaseINPC, Sendable
     {
+        private double _x;
+        private double _y;
         private string _text;
         private MatrixTransform _transform; 
 
@@ -15,6 +17,30 @@ namespace NuSysApp
             this.Transform = new MatrixTransform();
             this.Text = "NusysLand";
             ID = id;
+        }
+
+        public double X
+        {
+            get
+            {
+                return _x;
+            }
+            set
+            {
+                _x = value;
+            }
+        }
+
+        public double Y
+        {
+            get
+            {
+                return _y;
+            }
+            set
+            {
+                _y = value;
+            }
         }
 
         public Atom.EditStatus CanEdit{get; set; }
