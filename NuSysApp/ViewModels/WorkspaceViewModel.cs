@@ -44,6 +44,7 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
+
         }
 
         private void SetUpHandlers()
@@ -323,6 +324,7 @@ namespace NuSysApp
             return doc;
         }
 
+
         #endregion Save/Load
         #region Event Handlers
 
@@ -330,6 +332,7 @@ namespace NuSysApp
         {
             this.CreateNewGroup(e.CreatedGroup.ID, e.CreatedGroup);
         }
+
 
         public async void CreatedHandler(object source, CreateEventArgs e)
         {

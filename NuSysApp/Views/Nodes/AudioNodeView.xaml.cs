@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -51,12 +52,13 @@ namespace NuSysApp
                 await _anvm.AudioRecorder.InitializeAudioRecording();
                 CurrentAudioFile = await _anvm.AudioRecorder.CaptureAudio(fileName);
                 _recording = true;
-                
+                record.Opacity = .3;
             }
             else
             {
                 await _anvm.AudioRecorder.StopCapture();
                 _recording = false;
+                record.Opacity = 1;
             }
         }
 
@@ -67,9 +69,15 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, RoutedEventArgs e)
         {
+            if (_recording)
+            {
+                ToggleRecording(CurrentAudioFile.Name);
+            }
             playbackElement.Stop();
             _stopped = true;
+            play.Opacity = 1;
         }
+
 
         private void OnRewind_Click(object sender, RoutedEventArgs e)
         {
@@ -78,24 +86,51 @@ namespace NuSysApp
 
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {
-            if (_stopped)
+            if (_recording)
             {
-                _stopped = false;
-                if (CurrentAudioFile == null) return;
-                var stream = await CurrentAudioFile.OpenAsync(FileAccessMode.Read);
-                playbackElement.SetSource(stream, CurrentAudioFile.FileType);
-            }  
-            playbackElement.Play();
+                ToggleRecording(CurrentAudioFile.Name);
+            }
+            else
+            {
+                pause.Opacity = 1;
+                play.Opacity = .3;
+                if (_stopped)
+                {
+                    _stopped = false;
+                    if (CurrentAudioFile == null) return;
+                    var stream = await CurrentAudioFile.OpenAsync(FileAccessMode.Read);
+                    playbackElement.SetSource(stream, CurrentAudioFile.FileType);
+                }
+                playbackElement.MediaEnded += delegate(object o, RoutedEventArgs e2)
+                {
+                    play.Opacity = 1;
+                };
+                playbackElement.Play();
+            }
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             playbackElement.Pause();
+            pause.Opacity = .3;
         }
 
         private void OnFastforward_Click(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void OnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            vm.Remove();
+        }
+
+        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var vm = (NodeViewModel) this.DataContext;
+            vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+            e.Handled = true;
         }
 
         private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)

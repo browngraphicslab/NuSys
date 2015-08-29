@@ -10,7 +10,9 @@
     d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
-    RenderTransform="{Binding Transform}">
+    RenderTransform="{Binding Transform}"
+    ManipulationMode="All"
+    ManipulationDelta="OnManipulationDelta">
 
     <Grid Background="#dee5e9" Opacity="1" CornerRadius="20" >
         
@@ -47,7 +49,7 @@
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
             <!--delete button needs to be hooked up to delete handler-->
-            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4" Click="OnDelete_Click">
                 <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
             </Button>
         </StackPanel>

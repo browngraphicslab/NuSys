@@ -46,7 +46,7 @@ namespace NuSysApp
         public Atom.EditStatus CanEdit { set; get; }
         public void AddPoint(Point p)
         {
-            Line.Points.Add(p);
+            VisibleLine.Points.Add(p);
             SelectedBorder.Points.Add(p);
         }
 
@@ -55,12 +55,12 @@ namespace NuSysApp
             if (highlight)
             {
                 _isHighlighting = true;
-                Line.Stroke = new SolidColorBrush(Colors.Yellow);
+                VisibleLine.Stroke = new SolidColorBrush(Colors.Yellow);
             }
             else
             {
                 _isHighlighting = false;
-                Line.Stroke = new SolidColorBrush(Colors.Black);
+                VisibleLine.Stroke = new SolidColorBrush(Colors.Black);
             }
         }
 
@@ -80,14 +80,14 @@ namespace NuSysApp
 
         public double StrokeThickness
         {
-            get { return Line.StrokeThickness; }
-            set { Line.StrokeThickness = value; }
+            get { return VisibleLine.StrokeThickness; }
+            set { VisibleLine.StrokeThickness = value; }
         }
 
         public Brush Stroke
         {
-            get { return Line.Stroke; }
-            set { Line.Stroke = value; }
+            get { return VisibleLine.Stroke; }
+            set { VisibleLine.Stroke = value; }
 
         }
 
@@ -98,7 +98,7 @@ namespace NuSysApp
 
         public List<Point> Points
         {
-            get { return Line.Points.ToList(); }
+            get { return VisibleLine.Points.ToList(); }
         }
 
         public bool IsSelected
@@ -117,55 +117,86 @@ namespace NuSysApp
         public string GetString()
         {
             string plines = "";
-            if (Line.Points.Count > 0)
+            if (VisibleLine.Points.Count > 0)
             {
                 plines += "<polyline points='";
-                foreach (Point point in Line.Points)
+                foreach (Point point in VisibleLine.Points)
                 {
                     plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
                 }
-                plines += "' thickness='" + Line.StrokeThickness + "'>";
+                plines += "' thickness='" + VisibleLine.StrokeThickness + "'>";
             }
             return plines;
         }
 
         public void SetLine(string data)
         {
-            Polyline poly = new Polyline();
-            string[] subparts = data.Split(" ".ToCharArray());
-            foreach (string subpart in subparts)
+            VisibleLine = ParseToPolyline(data).First().VisibleLine;
+        }
+
+        public static List<InqLine> ParseToPolyline(string s)
+        {
+            List<InqLine> polys = new List<InqLine>();
+            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string part in parts)
             {
-                if (subpart.Length > 0 && subpart != "polyline")
+                InqLine line = new InqLine();
+                string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string subpart in subparts)
                 {
-                    if (subpart.Substring(0, 6) == "points")
+                    if (subpart.Length > 0 && subpart != "polyline")
                     {
-                        string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                        string[] points = innerPoints.Split(";".ToCharArray());
-                        foreach (string p in points)
+                        if (subpart.Substring(0, 6) == "points")
                         {
-                            if (p.Length > 0)
+                            string innerPoints = subpart.Substring(8, subpart.Length - 9);
+                            string[] points = innerPoints.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                            foreach (string p in points)
                             {
-                                string[] coords = p.Split(",".ToCharArray());
-                                //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                poly.Points.Add(new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1])));
+                                if (p.Length > 0)
+                                {
+                                    string[] coords = p.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                                    //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
+                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
+                                    line.AddPoint(parsedPoint);
+                                }
                             }
                         }
-                    }
-                    else if (subpart.Substring(0, 9) == "thickness")
-                    {
-                        string sp = subpart.Substring(11, subpart.Length - 12);
-                        poly.StrokeThickness = double.Parse(sp);
-                    }
-                    else if (subpart.Substring(0, 6) == "stroke")
-                    {
-                        string sp = subpart.Substring(8, subpart.Length - 10);
-                        poly.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
-                        //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
+                        else if (subpart.Substring(0, 9) == "thickness")
+                        {
+                            string sp = subpart.Substring(subpart.IndexOf("'") + 1);
+                            sp = sp.Substring(0, sp.IndexOf("'"));
+                            line.StrokeThickness = double.Parse(sp);
+                        }
+                        else if (subpart.Substring(0, 6) == "stroke")
+                        {
+                            string sp = subpart.Substring(8, subpart.Length - 10);
+                            line.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
+                            //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
+                        }
                     }
                 }
+                if (line.Points.Count > 0)
+                {
+                    polys.Add(line);
+                }
             }
-            Line = poly;
+            return polys;
         }
+
+        public string Stringify()
+        {
+            string s = "";
+            s += "<polyline points='";
+            foreach (Point point in this.Points)
+            {
+                s += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
+            }
+            s += "' thickness='" + this.StrokeThickness + "' stroke='" + this.Stroke + "'/>";
+            return s;
+        }
+
+
+
         public async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string,string> props = new Dictionary<string, string>();

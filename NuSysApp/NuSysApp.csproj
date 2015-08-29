@@ -142,13 +142,15 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
-    <Compile Include="Components\InqLine.xaml.cs">
+    <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="ViewModels\InqCanvasViewModel.cs" />
+    <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
       <DependentUpon>InqLine.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\DrawInqMode.cs" />
-    <Compile Include="Components\EraseInqMode.cs" />
-    <Compile Include="Components\HighlightInqMode.cs" />
-    <Compile Include="Components\IInqMode.cs" />
+    <Compile Include="Views\Misc\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Views\Misc\InqCanvas\HighlightInqMode.cs" />
+    <Compile Include="Views\Misc\InqCanvas\IInqMode.cs" />
     <Compile Include="Components\RichTextBlockBinder.cs" />
     <Compile Include="Components\TextBoxExtended.cs" />
     <Compile Include="Components\TwoFingerScrollViewer.cs" />
@@ -224,7 +226,7 @@
     <Compile Include="MISC\FolderWatcher.cs" />
     <Compile Include="MISC\Geometry.cs" />
     <Compile Include="MISC\HtmlRichTextConverter.cs" />
-    <Compile Include="Components\InqCanvas.cs" />
+    <Compile Include="Views\Misc\InqCanvas\InqCanvasView.cs" />
     <Compile Include="MISC\ISelectable.cs" />
     <Compile Include="MISC\NodeType.cs" />
     <Compile Include="MISC\NuSysStorages.cs" />
@@ -358,7 +360,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Components\InqLine.xaml">
+    <Page Include="Views\Misc\InqCanvas\InqLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

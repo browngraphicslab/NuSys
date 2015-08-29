@@ -26,12 +26,11 @@ namespace NuSysApp
             _creationCallbacks = new Dictionary<string, Delegate>();
             _sendablesLocked = new HashSet<string>();
         }
-        public async Task HandleMessage(string s)
+        public async Task HandleMessage(Dictionary<string,string> props)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                Dictionary<string, string> props = ParseOutProperties(s);//start by parsing properties to dictionary
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];//get id from dictionary
@@ -49,12 +48,13 @@ namespace NuSysApp
                             _creationCallbacks.Remove(id);
                         }
                         await HandleCreateNewSendable(id, props);//create a new sendable
+                        await HandleMessage(props);
                     }
                     _sendablesLocked.Remove(id);
                 }
                 else
                 {
-                    Debug.WriteLine("ID was not found in property list of message: " + s);
+                    Debug.WriteLine("ID was not found in property list of message: ");
                 }
             });
         }
@@ -209,7 +209,6 @@ namespace NuSysApp
             {
                 props.Remove("data");
             }
-            await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
         }
         public async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
         {
@@ -239,14 +238,14 @@ namespace NuSysApp
                 InqLine l = ParseToLineSegment(props);
                 if (l == null) return;
 
-                if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                if (WorkSpaceModel.InqModel.PartialLines.ContainsKey(id))
                 {
-                    WorkSpaceModel.PartialLines[id].Add(l);
+                    WorkSpaceModel.InqModel.PartialLines[id].Add(l);
                 }
                 else
                 {
-                    WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
-                    WorkSpaceModel.PartialLines[id].Add(l);
+                    WorkSpaceModel.InqModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
+                    WorkSpaceModel.InqModel.PartialLines[id].Add(l);
                 }
             }
             else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
@@ -260,14 +259,14 @@ namespace NuSysApp
                     WorkSpaceModel.AddGlobalInq(line);
                 }
                 if (props.ContainsKey("previousID") &&
-                    WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
+                    WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                 {
-                    ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
+                    ObservableCollection<InqLine> oc = WorkSpaceModel.InqModel.PartialLines[props["previousID"]];
                     foreach (InqLine l in oc)
                     {
-                        ((InqCanvas)l.Parent).Children.Remove(l);
+                        ((InqCanvasView)l.Parent).Children.Remove(l);
                     }
-                    WorkSpaceModel.PartialLines.Remove(props["previousID"]);
+                    WorkSpaceModel.InqModel.PartialLines.Remove(props["previousID"]);
                 }
             }
         }
@@ -282,13 +281,13 @@ namespace NuSysApp
                 }
             });
         }
-        public bool HasAtom(string id)
+        public bool HasSendableID(string id)
         {
             return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
         }
         public async Task SetAtomLock(string id, string ip)
         {
-            if (!HasAtom(id))
+            if (!HasSendableID(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
                 return;
@@ -302,82 +301,11 @@ namespace NuSysApp
         }
         private List<InqLine> ParseToPolyline(string s)
         {
-
-            List<InqLine> polys = new List<InqLine>();
-            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.None);
-            foreach (string part in parts)
-            {
-                InqLine line = new InqLine();
-                string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.None);
-                foreach (string subpart in subparts)
-                {
-                    if (subpart.Length > 0 && subpart != "polyline")
-                    {
-                        if (subpart.Substring(0, 6) == "points")
-                        {
-                            string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                            string[] points = innerPoints.Split(new string[] { ";" }, StringSplitOptions.None);
-                            foreach (string p in points)
-                            {
-                                if (p.Length > 0)
-                                {
-                                    string[] coords = p.Split(new string[] { "," }, StringSplitOptions.None);
-                                    //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
-                                    line.AddPoint(parsedPoint);
-                                }
-                            }
-                        }
-                        else if (subpart.Substring(0, 9) == "thickness")
-                        {
-                            string sp = subpart.Substring(11, subpart.Length - 13);
-                            line.StrokeThickness = double.Parse(sp);
-                        }
-                        else if (subpart.Substring(0, 6) == "stroke")
-                        {
-                            string sp = subpart.Substring(8, subpart.Length - 10);
-                            line.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
-                            //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
-                        }
-                    }
-                }
-                if (line.Points.Count > 0)
-                {
-                    polys.Add(line);
-                }
-            }
-            return polys;
-        }
-        private Dictionary<string, string> ParseOutProperties(string message)
-        {
-            message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
-            Dictionary<string, string> props = new Dictionary<string, string>();
-            foreach (string part in parts)
-            {
-                if (part.Length > 0)
-                {
-                    string[] subParts = part.Split(new string[] { "=" },2, StringSplitOptions.None);
-                    if (subParts.Length != 2)
-                    {
-                        Debug.WriteLine("Error, property formatted wrong in message: " + message);
-                        continue;
-                    }
-                    if (!props.ContainsKey(subParts[0]))
-                    {
-                        props.Add(subParts[0], subParts[1]);
-                    }
-                    else
-                    {
-                        props[subParts[0]] = subParts[1];
-                    }
-                }
-            }
-            return props;
+            return InqLine.ParseToPolyline(s);
         }
         private HashSet<string> LocksNeeded(string id)
         {
-            if (HasAtom(id))
+            if (HasSendableID(id))
             {
                 HashSet<string> set = new HashSet<string>();
                 set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
@@ -507,7 +435,7 @@ namespace NuSysApp
         }
         public async Task<Dictionary<string, string>> GetNodeState(string id)
         {
-            if (HasAtom(id))
+            if (HasSendableID(id))
             {
                 return await WorkSpaceModel.IDToSendableDict[id].Pack();
             }
@@ -531,10 +459,10 @@ namespace NuSysApp
         private Dictionary<string, string> StringToDict(string s)
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
-            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.None);
+            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.None);
+                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
                 dict.Add(kvpparts[0], kvpparts[1]);
             }
             return dict;

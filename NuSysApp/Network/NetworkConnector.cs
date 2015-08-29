@@ -368,6 +368,11 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("TCP connection recieved FROM IP "+ip+" but socket closed before full stream was read");
                     await RemoveIP(ip);
+                    if (_hostIP == ip)
+                    {
+                        await SendMassTCPMessage("SPECIAL1:" + _localIP);
+                        MakeHost();
+                    }
                     await SendMassTCPMessage("SPECIAL9:" + ip);
                     return;
                 }
@@ -386,19 +391,15 @@ namespace NuSysApp
         /*
         * a method for creating a new ID
         */
-        private string GetID(string senderIP)
+        private string GetID(string senderIP = null)
         {
-            if (_localIP == _hostIP)
+            if (senderIP == null)
             {
-                var hash = senderIP.Replace(@".", "") + "#";
-                var now = DateTime.UtcNow.Ticks.ToString();
-                return hash + now;
+                senderIP = _localIP;
             }
-            else
-            {
-                Debug.WriteLine("Non-host tried to make an ID.  Returning a string of 'not#host'");
-                return "not#host";
-            }
+            var hash = senderIP.Replace(@".", "") + "#";
+            var now = DateTime.UtcNow.Ticks.ToString();
+            return hash + now;
         }
         /*
         * adds self to php script list of IP's 
@@ -435,7 +436,7 @@ namespace NuSysApp
                     Debug.WriteLine("{0} ({1})", (int) response.StatusCode, response.ReasonPhrase);
                 }
                 Debug.WriteLine("in workspace: " + people);
-                var split = people.Split(new string[] { "," }, StringSplitOptions.None);
+                var split = people.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                 var ips = split.ToList();
                 return ips;
@@ -648,7 +649,7 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.None); //break up message into subparts
+                    var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.RemoveEmptyEntries); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -831,7 +832,7 @@ namespace NuSysApp
                     }
                     break;
                 case "6"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
-                    var parts = message.Split(new string[] { "=" }, StringSplitOptions.None);
+                    var parts = message.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length != 2 && parts.Length != 1)
                     {
                         throw new IncorrectFormatException(origMessage);
@@ -852,7 +853,7 @@ namespace NuSysApp
                 case "7"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (ModelIntermediate.HasAtom(message))
+                        if (ModelIntermediate.HasSendableID(message))
                         {
                             await ModelIntermediate.Locks.Set(message, "");
                             await SendMessage(ip, "SPECIAL6:" + message + "=", PacketType.TCP, true, true);
@@ -873,7 +874,7 @@ namespace NuSysApp
                 case "8"://Request full node update for certain id -- HOST ONLY ex: message = "6"
                     if (_localIP == _hostIP)
                     {
-                        if (!ModelIntermediate.HasAtom(message))
+                        if (!ModelIntermediate.HasSendableID(message))
                         {
                             throw new InvalidIDException(message);
                             return;
@@ -894,7 +895,7 @@ namespace NuSysApp
                     RemoveIP(message);
                     break;
                 case "10":// Request to delete a node.  HOST ONLY.   ex: message = an ID
-                    if (ModelIntermediate.HasAtom(message))
+                    if (ModelIntermediate.HasSendableID(message))
                     {
                         if (_hostIP == _localIP)
                         {
@@ -945,7 +946,7 @@ namespace NuSysApp
         */
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
-            if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
+            /*if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
             {
                 if (message.IndexOf("OLDSQLID") != -1)
                 {
@@ -977,7 +978,7 @@ namespace NuSysApp
                         return;
                     }
                 }
-            }
+            }*/
             if (_localIP == _hostIP)//if host, add a new packet and store it in every joining member's stack of updates
             {
                 foreach (var  kvp in _joiningMembers)
@@ -993,7 +994,19 @@ namespace NuSysApp
             }
             if (message[0] == '<' && message[message.Length - 1] == '>'|| true)
             {
-                await ModelIntermediate.HandleMessage(message);
+                Dictionary<string, string> props = ParseOutProperties(message);
+                if (props.ContainsKey("id"))
+                {
+                    if (!ModelIntermediate.HasSendableID(props["id"]))
+                    {
+                        await SendMassTCPMessage(message);
+                    }
+                    await ModelIntermediate.HandleMessage(props);
+                }
+                else
+                {
+                    throw new InvalidIDException("there was no id, that's why this error is occurring...");
+                }
             }
             else
             {
@@ -1007,18 +1020,27 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             message = message.Substring(1, message.Length - 2);
-
-            var parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
-            var props = new Dictionary<string, string>();
-            foreach (var part in parts)
-
+            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.RemoveEmptyEntries);
+            Dictionary<string, string> props = new Dictionary<string, string>();
+            foreach (string part in parts)
             {
-                var subParts = part.Split(new char[] { '=' }, 2);
-                if (subParts.Length != 2)
+                if (part.Length > 0)
                 {
-                    continue;
+                    string[] subParts = part.Split(new string[] { "=" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (subParts.Length != 2)
+                    {
+                        Debug.WriteLine("Error, property formatted wrong in message: " + message);
+                        continue;
+                    }
+                    if (!props.ContainsKey(subParts[0]))
+                    {
+                        props.Add(subParts[0], subParts[1]);
+                    }
+                    else
+                    {
+                        props[subParts[0]] = subParts[1];
+                    }
                 }
-                props.Add(subParts[0], subParts[1]);
             }
             return props;
         }
@@ -1036,11 +1058,13 @@ namespace NuSysApp
             m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
             return m;
         }
+
+
         #region publicRequests
         /*
         * PUBLIC request for deleting a nod 
         */
-        public async Task RequestDeleteAtom(string id)
+        public async Task RequestDeleteSendable(string id)
         {
             if (ModelIntermediate.HasLock(id))
             {
@@ -1055,7 +1079,7 @@ namespace NuSysApp
         {
             if (properties.ContainsKey("id"))
             {
-                if (ModelIntermediate.HasAtom(properties["id"]))
+                if (ModelIntermediate.HasSendableID(properties["id"]))
                 {
                     string message = MakeSubMessageFromDict(properties);
                     await SendMassMessage(message, packetType);
@@ -1080,28 +1104,51 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null, Delegate callback = null)
+        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null, Dictionary<string,string> properties = null, Delegate callback = null)
         {
             if (x != "" && y != "" && nodeType != "")
             {
-                var s = "";
-                if (data != null && data!="null" && data!="")
+                Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                string id = oldID==null ? GetID() : oldID;
+
+                if (props.ContainsKey("x"))
                 {
-                    s = Constants.CommaReplacement+"data=" + data;
+                    props.Remove("x");
                 }
-                if (oldID != null)
+                if (props.ContainsKey("y"))
                 {
-                    s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                    props.Remove("y");
                 }
-                if (oldID != null && callback != null)
+                if (props.ContainsKey("id"))
                 {
-                    ModelIntermediate.AddCreationCallback(oldID,callback);
+                    props.Remove("id");
                 }
-                await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"x=" + x + Constants.CommaReplacement+"y=" + y + Constants.CommaReplacement+"type=node"+ Constants.CommaReplacement+"nodeType=" + nodeType + s +">");
-                if (callback != null && oldID == null)
+                if (props.ContainsKey("nodeType"))
                 {
-                    throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less node creation.  Callbacks may only be placed on nodes created with previous ID's");
+                    props.Remove("nodeType");
                 }
+                if (props.ContainsKey("type"))
+                {
+                    props.Remove("type");
+                }
+                props.Add("x",x);
+                props.Add("y", y);
+                props.Add("nodeType", nodeType);
+                props.Add("id", id);
+                props.Add("type", "node");
+                if (data != null && data != "null" && data != "")
+                {
+                    props.Add("data",data);
+                }
+
+                if (callback != null)
+                {
+                    ModelIntermediate.AddCreationCallback(id,callback);
+                }
+
+                string message = MakeSubMessageFromDict(props);
+
+                await SendMessageToHost(message);
             }
             else
             {
@@ -1113,57 +1160,88 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Pin
         */
-
-        public async Task RequestMakePin(string x, string y, string oldID = null, Delegate callback = null)
+        public async Task RequestMakePin(string x, string y, string oldID = null, Dictionary<string, string> properties = null, Delegate callback = null)
         {
-            Dictionary<string, string> props = new Dictionary<string, string>();
+            Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+            string id = oldID == null ? GetID() : oldID;
+            if (props.ContainsKey("x"))
+            {
+                props.Remove("x");
+            }
+            if (props.ContainsKey("y"))
+            {
+                props.Remove("y");
+            }
+            if (props.ContainsKey("id"))
+            {
+                props.Remove("id");
+            }
+            if (props.ContainsKey("type"))
+            {
+                props.Remove("type");
+            }
             props.Add("x", x);
             props.Add("y", y);
-            if (oldID != null)
-            {
-                props.Add("OLDSQLID", oldID);
-            }
+            props.Add("id", id);
             props.Add("type", "pin");
-            string m = MakeSubMessageFromDict(props);
-            if (oldID != null && callback != null)
+            string message = MakeSubMessageFromDict(props);
+            if (callback != null)
             {
                 ModelIntermediate.AddCreationCallback(oldID, callback);
             }
-            else if (callback != null && oldID == null)
-            {
-                throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less group creation.  Callbacks may only be placed on groups created with previous ID's");
-            }
-            await SendMessageToHost(m);
+            await SendMessageToHost(message);
         }
 
         /*
         * PUBLIC general method to create Group
         */
-        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Delegate callback = null)
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Dictionary<string, string> properties = null, Delegate callback = null)
         {
             if (id1 != "" && id2 != "")
             {
-                if (ModelIntermediate.HasAtom(id1))
+                if (ModelIntermediate.HasSendableID(id1))
                 {
-                    if (ModelIntermediate.HasAtom(id2))
+                    if (ModelIntermediate.HasSendableID(id2))
                     {
-                        var s = "";
-                        if (oldID != null)
+                        Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                        string id = oldID == null ? GetID() : oldID;
+
+                        if (props.ContainsKey("id1"))
                         {
-                            s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                            props.Remove("id1");
                         }
-                        if (oldID != null && callback != null)
+                        if (props.ContainsKey("id2"))
                         {
-                            ModelIntermediate.AddCreationCallback(oldID, callback);
+                            props.Remove("id2");
                         }
-                        else if (callback != null && oldID == null)
+                        if (props.ContainsKey("x"))
                         {
-                            throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less group creation.  Callbacks may only be placed on groups created with previous ID's");
+                            props.Remove("x");
                         }
-                        await SendMessageToHost("<id=0" + Constants.CommaReplacement + "id1=" + id1 +
-                                                Constants.CommaReplacement + "id2=" + id2 + Constants.CommaReplacement +
-                                                "x="+x+Constants.CommaReplacement+"y="+y+Constants.CommaReplacement+
-                                                "type=group" + s + ">");
+                        if (props.ContainsKey("y"))
+                        {
+                            props.Remove("y");
+                        }
+                        if (props.ContainsKey("id"))
+                        {
+                            props.Remove("id");
+                        }
+                        if (props.ContainsKey("type"))
+                        {
+                            props.Remove("type");
+                        }
+                        props.Add("x", x);
+                        props.Add("y", y);
+                        props.Add("id1", id1);
+                        props.Add("id2", id2);
+                        props.Add("id", id);
+                        props.Add("type", "group");
+                        if (callback != null)
+                        {
+                            ModelIntermediate.AddCreationCallback(id, callback);
+                        }
+                        string message = MakeSubMessageFromDict(props);
+                        await SendMessageToHost(message);
                     }
                     else
                     {
@@ -1185,24 +1263,47 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Linq
         */
-        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Delegate callback = null)
+        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Dictionary<string, string> properties = null, Delegate callback = null)
         {
-            if (id1 != "" && id2 != "")
+            if (id1 == id2)
             {
-                var s = "";
-                if (oldID != null)
+                throw new InvalidCreationArgumentsException("the two ids for the link were identical");
+            }
+            if (id1 != "" && id2 != "" && ModelIntermediate.HasSendableID(id1) && ModelIntermediate.HasSendableID(id2))
+            {
+                Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                string id = oldID == null ? GetID() : oldID;
+
+                if (props.ContainsKey("id1"))
                 {
-                    s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                    props.Remove("id1");
                 }
-                if (oldID != null && callback != null)
+                if (props.ContainsKey("id2"))
+                {
+                    props.Remove("id2");
+                }
+                if (props.ContainsKey("type"))
+                {
+                    props.Remove("type");
+                }
+                if (props.ContainsKey("id"))
+                {
+                    props.Remove("id");
+                }
+
+                props.Add("id1", id1);
+                props.Add("id2", id2);
+                props.Add("type", "link");
+                props.Add("id", id);
+
+                if (callback != null)
                 {
                     ModelIntermediate.AddCreationCallback(oldID, callback);
                 }
-                else if (callback != null && oldID == null)
-                {
-                    throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less linq creation.  Callbacks may only be placed on linqs created with previous ID's");
-                }
-                await SendMessageToHost("<id=0"+ Constants.CommaReplacement+"id1=" + id1 + Constants.CommaReplacement+"id2=" + id2 + Constants.CommaReplacement+"type=linq" + s + ">");
+
+                string message = MakeSubMessageFromDict(props);
+
+                await SendMessageToHost(message);
             }
             else
             {
@@ -1234,7 +1335,7 @@ namespace NuSysApp
                 {"type", "ink"},
                 {"inkType", "global"},
                 {"globalInkType", "full"},
-                {"id", "0"},
+                {"id", GetID()},
                 {"data", data},
                 {"previousID", previousID}
             };
@@ -1243,7 +1344,7 @@ namespace NuSysApp
         }
         public async Task RequestLock(string id)
         {
-            if (ModelIntermediate.HasAtom(id))
+            if (ModelIntermediate.HasSendableID(id))
             {
                 Debug.WriteLine("Requesting lock for ID: "+id);
             }
@@ -1256,7 +1357,7 @@ namespace NuSysApp
 
         public async Task ReturnLock(string id)
         {
-            if (ModelIntermediate.HasAtom(id))
+            if (ModelIntermediate.HasSendableID(id))
             {
                 Debug.WriteLine("Returning lock for ID: " + id);
             }
