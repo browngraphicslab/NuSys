@@ -18,11 +18,11 @@ namespace NuSysApp
     {
         public WorkSpaceModel WorkSpaceModel{get;}
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
-        private Dictionary<string, Delegate> _creationCallbacks; 
+        private Dictionary<string, Action<string>> _creationCallbacks; 
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
-            _creationCallbacks = new Dictionary<string, Delegate>();
+            _creationCallbacks = new Dictionary<string, Action<string>>();
         }
         public async Task HandleMessage(string s)
         {
@@ -416,7 +416,7 @@ namespace NuSysApp
             }
         }
 
-        public void AddCreationCallback(string id, Delegate d)
+        public void AddCreationCallback(string id, Action<string> d)
         {
             _creationCallbacks.Add(id, d);
         }

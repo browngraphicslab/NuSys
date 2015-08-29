@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Xml;
@@ -13,15 +14,58 @@ namespace NuSysApp
         public ImageModel(byte[] byteArray, string id) : base(id)
         {
             ByteArray = byteArray;
-            MakeImage(byteArray);
+            MakeImage(byteArray); // Todo: don't call async methods from a ctor
             Content = new Content(byteArray, id);
         }
 
         private async Task MakeImage(byte[] bytes)
         {
             Image = await ByteArrayToBitmapImage(bytes);
-            this.Width = Image.PixelWidth;
-            this.Height = Image.PixelHeight;
+        }
+
+        public override double Width
+        {
+            get
+            {
+                return base.Width;
+            }
+
+            set
+            {
+                if (Image.PixelWidth > Image.PixelHeight) { 
+                    var r = Image.PixelHeight / (double)Image.PixelWidth;
+                    base.Width = value;
+                    base.Height = base.Width * r;
+                } else
+                {
+                    var r = Image.PixelWidth / (double)Image.PixelHeight;
+                    base.Width = base.Height* r;
+                }
+            }
+        }
+
+        public override double Height
+        {
+            get
+            {
+                return base.Height;
+            }
+
+            set
+            {
+                if (Image.PixelWidth > Image.PixelHeight)
+                {
+                    var r = Image.PixelHeight / (double)Image.PixelWidth;
+                    base.Height = base.Width * r;
+
+                } else
+                {
+                    var r = Image.PixelWidth / (double)Image.PixelHeight;
+                    base.Height = value;
+                    base.Width = base.Height * r;
+                }
+
+            }
         }
 
         public BitmapImage Image { get; set; }

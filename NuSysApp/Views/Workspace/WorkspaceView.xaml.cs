@@ -14,6 +14,7 @@ using Windows.UI;
 using NuSysApp.Components.ContentImporter;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -52,10 +53,20 @@ namespace NuSysApp
 
                 await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
+                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                    NetworkConnector.Instance.RequestMakeGroup("", "", p.X.ToString(), p.Y.ToString());
+
                     foreach (var content in contents) { 
                  
-                        var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                        NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), content);
+                        try { 
+                        
+                         NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), content, null, (string id)=> {
+                             Debug.WriteLine("node created ID: " + id);
+                         });
+                        } catch (Exception ex)
+                        {
+                            Debug.WriteLine("asd");
+                        }
                     }
                 });
             };
@@ -95,6 +106,11 @@ namespace NuSysApp
             get { return floatingMenu; }
         }
 
+        public Canvas MainCanvas
+        {
+            get { return mainCanvas; }
+        }
+
         public void RemoveLoading()
         {
             //TODO remove a loading screen
@@ -112,8 +128,7 @@ namespace NuSysApp
                     InqCanvas.SetErasing(false);
                     break;
                 case Options.AddTextNode:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Text),
-                        new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Text), new FloatingMenuMode(this)));
                     break;
                 case Options.AudioCapture:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Audio),
@@ -123,12 +138,10 @@ namespace NuSysApp
                     SetViewMode(new MultiMode(this, new PanZoomMode(this)));
                     break;
                 case Options.AddInkNode:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                        new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
                     break;
                 case Options.Document:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this),
-                        new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
                     break;
                 case Options.Cortana:
                     if (!_cortanaInitialized)

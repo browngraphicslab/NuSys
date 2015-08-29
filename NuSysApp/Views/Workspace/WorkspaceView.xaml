@@ -7,11 +7,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="OnLoaded"
-    
+    Loaded="OnLoaded"    
     >
 
-    <Canvas Background="Transparent">
+    <Canvas x:Name="mainCanvas" Background="Transparent">
         <Canvas.Clip>
             <RectangleGeometry Rect="0,0,3000,3000" />
         </Canvas.Clip>
@@ -26,10 +25,8 @@
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Beige"   x:Name="canvas">
-
+                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Beige" x:Name="canvas">
                         </Canvas>
-
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>

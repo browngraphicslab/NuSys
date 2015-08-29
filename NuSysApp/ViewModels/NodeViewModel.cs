@@ -254,7 +254,7 @@ namespace NuSysApp
         /// <summary>
         /// Width of this atom
         /// </summary>
-        public double Width
+        public virtual double Width
         {
             get { return _width; }
             set
@@ -273,7 +273,7 @@ namespace NuSysApp
         /// <summary>
         /// Height of this atom
         /// </summary>
-        public double Height
+        public virtual double Height
         {
             get { return _height; }
             set

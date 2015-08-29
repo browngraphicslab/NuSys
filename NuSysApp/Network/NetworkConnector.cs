@@ -63,6 +63,7 @@ namespace NuSysApp
                 return _instance;
             }
         }
+
         #endregion
 
         private NetworkConnector()//pls keep this private or shit won't work anymore
@@ -1083,7 +1084,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null, Delegate callback = null)
+        public async Task RequestMakeNode(string x, string y, string nodeType, string data=null, string oldID = null, Action<string> callback = null, string groupID = null)
         {
             if (x != "" && y != "" && nodeType != "")
             {
@@ -1095,6 +1096,10 @@ namespace NuSysApp
                 if (oldID != null)
                 {
                     s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                }
+                if (groupID != null)
+                {
+                    s += Constants.CommaReplacement + "parentGroup=" + groupID;
                 }
                 if (oldID != null && callback != null)
                 {
@@ -1113,10 +1118,44 @@ namespace NuSysApp
             }
         }
 
+        public async Task RequestMakeNode2(string x, string y, string width, string height, string nodeType, string data = null, string oldID = null, Action<string> callback = null, string groupID = null)
+        {
+            if (x != "" && y != "" && nodeType != "")
+            {
+                var s = "";
+                if (data != null && data != "null" && data != "")
+                {
+                    s = Constants.CommaReplacement + "data=" + data;
+                }
+                if (oldID != null)
+                {
+                    s += Constants.CommaReplacement + "OLDSQLID=" + oldID;
+                }
+                if (groupID != null)
+                {
+                    s += Constants.CommaReplacement + "parentGroup=" + groupID;
+                }
+                if (oldID != null && callback != null)
+                {
+                    ModelIntermediate.AddCreationCallback(oldID, callback);
+                }
+                await SendMessageToHost("<id=0" + Constants.CommaReplacement + "x=" + x + Constants.CommaReplacement + "y=" + y + Constants.CommaReplacement + "width=" + width + Constants.CommaReplacement + "height=" + height + Constants.CommaReplacement + "type=node" + Constants.CommaReplacement + "nodeType=" + nodeType + s + ">");
+                if (callback != null && oldID == null)
+                {
+                    throw new InvalidCreationArgumentsException("You tried to place a callback for an ID-less node creation.  Callbacks may only be placed on nodes created with previous ID's");
+                }
+            }
+            else
+            {
+                throw new InvalidCreationArgumentsException();
+                return;
+            }
+        }
+
         /*
         * PUBLIC general method to create Group
         */
-        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Delegate callback = null)
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Action<string> callback = null)
         {
             if (id1 != "" && id2 != "")
             {
@@ -1162,7 +1201,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Linq
         */
-        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Delegate callback = null)
+        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Action<string> callback = null)
         {
             if (id1 != "" && id2 != "")
             {

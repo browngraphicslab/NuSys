@@ -38,6 +38,8 @@ namespace NuSysApp
 
         private async Task ProcessCommand(string dictation) // bug: sometimes dictation is ""
         {
+            /*
+            TODO: DOn't call AddNode in AddNodeMode
             switch (dictation.ToLower())
             {
                 case "open document":
@@ -53,6 +55,7 @@ namespace NuSysApp
                     await AddNodeMode.AddNode(_view, _defaultPlacementPos, NodeType.Text, dictation);
                     break;
             }
+            */
         }
     }
 }

@@ -30,16 +30,16 @@ namespace NuSysApp
 
             RenderedPages = await PdfRenderer.RenderPdf(file);
             PageCount = (uint)RenderedPages.Count;
-            var firstPage = RenderedPages[0];
-            Width = firstPage.PixelWidth;
-            Height = firstPage.PixelHeight;
             InkContainer = new List<HashSet<InqLine>>();
             InkContainer.Capacity = (int) PageCount;
             for (var i = 0; i < PageCount; i++)
             {
                 InkContainer.Add(new HashSet<InqLine>());
             }
+
         }
+
+
 
         public override async Task<Dictionary<string, string>> Pack()
         {
@@ -77,6 +77,64 @@ namespace NuSysApp
             }
 
             return pdfNode;
+        }
+
+        public override double Width
+        {
+            get
+            {
+                return base.Width;
+            }
+
+            set
+            {
+                if (RenderedPage == null) {
+                    base.Width = value;
+                    return;
+                }
+                if (RenderedPage.PixelWidth > RenderedPage.PixelHeight)
+                {
+                    var r = RenderedPage.PixelHeight / (double)RenderedPage.PixelWidth;
+                    base.Width = value;
+                    base.Height = base.Width * r;
+                }
+                else
+                {
+                    var r = RenderedPage.PixelWidth / (double)RenderedPage.PixelHeight;
+                    base.Width = base.Height * r;
+                }
+            }
+        }
+
+        public override double Height
+        {
+            get
+            {
+                return base.Height;
+            }
+
+            set
+            {
+                if (RenderedPage == null)
+                {
+                    base.Height = value;
+                    return;
+                }
+
+                if (RenderedPage.PixelWidth > RenderedPage.PixelHeight)
+                {
+                    var r = RenderedPage.PixelHeight / (double)RenderedPage.PixelWidth;
+                    base.Height = base.Width * r;
+
+                }
+                else
+                {
+                    var r = RenderedPage.PixelWidth / (double)RenderedPage.PixelHeight;
+                    base.Height = value;
+                    base.Width = base.Height * r;
+                }
+
+            }
         }
 
         public uint PageCount { get; set; }
