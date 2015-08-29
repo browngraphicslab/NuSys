@@ -999,7 +999,7 @@ namespace NuSysApp
                 {
                     if (!ModelIntermediate.HasSendableID(props["id"]))
                     {
-                        await SendMassTCPMessage(message);
+                        await SendMassMessage(message, packetType);
                     }
                     await ModelIntermediate.HandleMessage(props);
                 }
