@@ -1335,7 +1335,7 @@ namespace NuSysApp
                 {"type", "ink"},
                 {"inkType", "global"},
                 {"globalInkType", "full"},
-                {"id", "0"},
+                {"id", GetID()},
                 {"data", data},
                 {"previousID", previousID}
             };
