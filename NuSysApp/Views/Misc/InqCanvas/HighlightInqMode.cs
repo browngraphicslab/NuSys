@@ -14,19 +14,9 @@ namespace NuSysApp.Components
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
 
-            _currentStroke = new InqLine();
+            _currentStroke = new InqLine(DateTime.UtcNow.Ticks.ToString());
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
             _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
-            _currentStroke.PointerPressed += delegate (object o, PointerRoutedEventArgs e2)
-            {
-
-                if (inqCanvas.Mode is EraseInqMode)
-                {
-                    inqCanvas.Children.Remove(o as InqLine);
-
-                }
-
-            };
             inqCanvas.Children.Add(_currentStroke);
         }
 

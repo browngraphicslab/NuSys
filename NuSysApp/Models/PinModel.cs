@@ -17,6 +17,11 @@ namespace NuSysApp
             ID = id;
         }
 
+        public void Delete()
+        {
+            
+        }
+
         public Atom.EditStatus CanEdit{get; set; }
 
         public string ID { get; }
