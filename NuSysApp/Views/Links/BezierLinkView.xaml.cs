@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -54,6 +56,9 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+
+            Canvas.SetLeft(SubMenu, vm.AnchorX - 100);
+            Canvas.SetTop(SubMenu, vm.AnchorY - 100);
 
             //if(atom2.AtomType == Constants.Node)
             //{
@@ -204,17 +209,54 @@ namespace NuSysApp
 
             if (e.PropertyName.Equals("IsSelected"))
             {
-                var vm = (LinkViewModel)this.DataContext;
+                var vm = (LinkViewModel) this.DataContext;
 
                 if (vm.IsSelected)
                 {
                     slideout.Begin();
+                    BezierLink.Opacity = 1;
                 }
                 else
                 {
                     slidein.Begin();
+                    BezierLink.Opacity = .5;
                 }
             }
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel)this.DataContext;
+            vm.Remove();
+        }
+
+        private void Color_Click(object sender, RoutedEventArgs e)
+        {
+            if (Colors.Opacity == 0)
+            {
+                colorout.Begin();
+            }
+            else
+            {
+                colorin.Begin();
+            }          
+        }
+
+        private void Change_Color(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel) this.DataContext;
+            Button colorButton = sender as Button;
+            if (colorButton.Name == "Red")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255,255,152,149));
+            } else if (colorButton.Name == "Green")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 190, 240, 142));
+            } else if (colorButton.Name == "Gray")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 189, 204, 212));
+            }
+            colorin.Begin();
         }
     }
 }

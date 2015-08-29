@@ -310,5 +310,39 @@ namespace NuSysApp
         {
             e.Handled = true;            
         }
+
+        private void Color_Click(object sender, RoutedEventArgs e)
+        {
+            if (Colors.Opacity == 0)
+            {
+                colorout.Begin();
+            }
+            else
+            {
+                colorin.Begin();
+            }
+        }
+
+        private void Change_Color(object sender, RoutedEventArgs e)
+        {
+            var vm = (NodeViewModel)this.DataContext;
+            Button colorButton = sender as Button;
+            if (colorButton.Name == "Red")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 152, 149));
+            }
+            else if (colorButton.Name == "Green")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 190, 240, 142));
+            }
+            else if (colorButton.Name == "Parchment")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Colors.BlanchedAlmond);
+            } else if (colorButton.Name == "Blue")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 173, 216, 230));
+            }
+            colorin.Begin();
+        }
     }
 }
