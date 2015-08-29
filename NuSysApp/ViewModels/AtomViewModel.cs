@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -110,7 +111,8 @@ namespace NuSysApp
                 Color color = this.Color.Color;
                 if (_canEdit == Atom.EditStatus.No)
                 {
-                    this.Color = new SolidColorBrush(Windows.UI.Colors.LightGray);
+                    color.A = 50;
+                    this.Color = new SolidColorBrush(color);
                 }
                 else if (_canEdit == Atom.EditStatus.Yes)
                 {
