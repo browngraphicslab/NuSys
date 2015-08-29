@@ -46,7 +46,7 @@ namespace NuSysApp
         public Atom.EditStatus CanEdit { set; get; }
         public void AddPoint(Point p)
         {
-            Line.Points.Add(p);
+            VisibleLine.Points.Add(p);
             SelectedBorder.Points.Add(p);
         }
 
@@ -55,12 +55,12 @@ namespace NuSysApp
             if (highlight)
             {
                 _isHighlighting = true;
-                Line.Stroke = new SolidColorBrush(Colors.Yellow);
+                VisibleLine.Stroke = new SolidColorBrush(Colors.Yellow);
             }
             else
             {
                 _isHighlighting = false;
-                Line.Stroke = new SolidColorBrush(Colors.Black);
+                VisibleLine.Stroke = new SolidColorBrush(Colors.Black);
             }
         }
 
@@ -80,14 +80,14 @@ namespace NuSysApp
 
         public double StrokeThickness
         {
-            get { return Line.StrokeThickness; }
-            set { Line.StrokeThickness = value; }
+            get { return VisibleLine.StrokeThickness; }
+            set { VisibleLine.StrokeThickness = value; }
         }
 
         public Brush Stroke
         {
-            get { return Line.Stroke; }
-            set { Line.Stroke = value; }
+            get { return VisibleLine.Stroke; }
+            set { VisibleLine.Stroke = value; }
 
         }
 
@@ -98,7 +98,7 @@ namespace NuSysApp
 
         public List<Point> Points
         {
-            get { return Line.Points.ToList(); }
+            get { return VisibleLine.Points.ToList(); }
         }
 
         public bool IsSelected
@@ -117,14 +117,14 @@ namespace NuSysApp
         public string GetString()
         {
             string plines = "";
-            if (Line.Points.Count > 0)
+            if (VisibleLine.Points.Count > 0)
             {
                 plines += "<polyline points='";
-                foreach (Point point in Line.Points)
+                foreach (Point point in VisibleLine.Points)
                 {
                     plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
                 }
-                plines += "' thickness='" + Line.StrokeThickness + "'>";
+                plines += "' thickness='" + VisibleLine.StrokeThickness + "'>";
             }
             return plines;
         }
@@ -164,8 +164,23 @@ namespace NuSysApp
                     }
                 }
             }
-            Line = poly;
+            VisibleLine = poly;
         }
+
+        public string Stringify()
+        {
+            string s = "";
+            s += "<polyline points='";
+            foreach (Point point in this.Points)
+            {
+                s += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
+            }
+            s += "' thickness='" + this.StrokeThickness + "' stroke='" + this.Stroke + "'/>";
+            return s;
+        }
+
+
+
         public async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string,string> props = new Dictionary<string, string>();

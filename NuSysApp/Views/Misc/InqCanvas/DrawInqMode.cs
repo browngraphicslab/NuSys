@@ -12,7 +12,7 @@ namespace NuSysApp
     {
         private InqLine _currentStroke;
 
-        public void OnPointerPressed(InqCanvas inqCanvas, PointerRoutedEventArgs e)
+        public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
 
@@ -25,15 +25,14 @@ namespace NuSysApp
                 {
                     InqLine me = o as InqLine;
                     inqCanvas.Children.Remove(me);
-                    inqCanvas.Strokes.Remove(me);
+                    
                 } 
             };
             inqCanvas.Children.Add(_currentStroke);
         }
 
-        public void OnPointerMoved(InqCanvas inqCanvas, PointerRoutedEventArgs e)
+        public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
-            //inqCanvas.Manager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
                 if (_currentStroke.Points.Count > 1)
@@ -45,12 +44,8 @@ namespace NuSysApp
                 }
         }
 
-        public void OnPointerReleased(InqCanvas inqCanvas, PointerRoutedEventArgs e)
+        public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
-            //inqCanvas.Manager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
-            //var inkStrokes = inqCanvas.Manager.GetStrokes();
-            //inqCanvas.Strokes.Add(_currentStroke, inkStrokes[inkStrokes.Count - 1]);
-            inqCanvas.Strokes.Add(_currentStroke);
             NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, _currentStroke.GetString());
             inqCanvas.Children.Remove(_currentStroke);
         }

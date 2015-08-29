@@ -16,7 +16,7 @@
             <RectangleGeometry Rect="0,0,3000,3000" />
         </Canvas.Clip>
         <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
-            <local:InqCanvas x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
+            <local:InqCanvasView x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
         </Border>
         <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All">
             <Grid.RowDefinitions>
