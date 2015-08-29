@@ -109,11 +109,13 @@ namespace NuSysApp
                 RaisePropertyChanged("CanEdit");
                 if (_canEdit == Atom.EditStatus.No)
                 {
-                    this.Color = new SolidColorBrush(Colors.Chartreuse);
+                    this.Color = new SolidColorBrush(Colors.DarkGray);
                 }
                 else if (_canEdit == Atom.EditStatus.Yes)
                 {
-                    this.Color = new SolidColorBrush(Colors.DarkOrange);
+                    Color color = this.Color.Color;
+                    color.A = 255;
+                    this.Color = new SolidColorBrush(color);
                 }
                 else
                 {

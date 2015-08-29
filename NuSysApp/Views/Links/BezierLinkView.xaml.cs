@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -54,6 +55,9 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+
+            Canvas.SetLeft(SubMenu, vm.AnchorX - 100);
+            Canvas.SetTop(SubMenu, vm.AnchorY - 100);
 
             //if(atom2.AtomType == Constants.Node)
             //{
@@ -204,17 +208,35 @@ namespace NuSysApp
 
             if (e.PropertyName.Equals("IsSelected"))
             {
-                var vm = (LinkViewModel)this.DataContext;
+                var vm = (LinkViewModel) this.DataContext;
 
                 if (vm.IsSelected)
                 {
                     slideout.Begin();
+                    BezierLink.Opacity = 1;
                 }
                 else
                 {
                     slidein.Begin();
+                    BezierLink.Opacity = .5;
                 }
             }
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel)this.DataContext;
+            vm.Remove();
+        }
+
+        private void AddAnnotation_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Color_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

@@ -38,9 +38,9 @@
         </Storyboard>
         
     </UserControl.Resources>
-    <Grid>
-        <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
-            <Path x:Name="BezierLink" Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity=".85" CompositeMode="MinBlend">
+    <Canvas>
+        <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+            <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".5" CompositeMode="MinBlend">
                 <Path.Data>
                     <PathGeometry>
                         <PathGeometry.Figures>
@@ -67,18 +67,18 @@
             </Path>
         </Grid>
         <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" 
-            Orientation="Horizontal" Height="75" VerticalAlignment="Top" Opacity="1" IsHitTestVisible="False">
+            Orientation="Horizontal" Height="75" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
             <!--delete button needs to be hooked up to delete handler-->
-            <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+            <Button x:Name="Delete" Click="Delete_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                 <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
             </Button>
-            <Button x:Name="AddAnnotation" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+            <Button x:Name="AddAnnotation" Click="AddAnnotation_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                 <Image Source="ms-appx:///Assets/icon_add_annotation.png" Height="20" Width="20"></Image>
             </Button>
-            <Button x:Name="Color" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4"></Button>
+            <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
         </StackPanel>
-    </Grid>
+    </Canvas>
 </UserControl>
