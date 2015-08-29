@@ -16,9 +16,16 @@ namespace NuSysApp
         public PinModel (string id) : base()
         {
             this.Transform = new MatrixTransform();
-            this.Text = "NusysLand";
             ID = id;
+            this.Text = "NusysLand";
             _dict = new Network.DebouncingDictionary(this);
+        }
+
+
+
+        public void Delete()
+        {
+
         }
 
         public double X

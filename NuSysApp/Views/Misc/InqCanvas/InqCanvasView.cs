@@ -122,34 +122,34 @@ namespace NuSysApp
         public Rect PasteStrokes(InqLine[] lines)
         {
 
-            double width = 0;
-            double height = 0;
-            foreach (var stroke in lines)
-            {
-                var pl = new InqLine();
-                pl.StrokeThickness = stroke.StrokeThickness;
-                pl.SetHighlighting(stroke.IsHighlighting);
+            //double width = 0;
+            //double height = 0;
+            //foreach (var stroke in lines)
+            //{
+            //    var pl = new InqLine();
+            //    pl.StrokeThickness = stroke.StrokeThickness;
+            //    pl.SetHighlighting(stroke.IsHighlighting);
 
-                var points = stroke.Points;
-                var minX = points.Min(em => em.X);
-                var minY = points.Min(em => em.Y);
-                var maxX = points.Max(em => em.X);
-                var maxY = points.Max(em => em.Y);
+            //    var points = stroke.Points;
+            //    var minX = points.Min(em => em.X);
+            //    var minY = points.Min(em => em.Y);
+            //    var maxX = points.Max(em => em.X);
+            //    var maxY = points.Max(em => em.Y);
 
-                width = maxX - minX;
-                height = maxY - minY;
+            //    width = maxX - minX;
+            //    height = maxY - minY;
 
-                foreach (var point in stroke.Points)
-                {
-                    double x = point.X - minX;
-                    double y = point.Y - minY;
-                    pl.AddPoint(new Point(point.X - minX, point.Y - minY));
-                }
-                NetworkConnector.Instance.FinalizeGlobalInk(pl.ID, pl.GetString());
-            }
+            //    foreach (var point in stroke.Points)
+            //    {
+            //        double x = point.X - minX;
+            //        double y = point.Y - minY;
+            //        pl.AddPoint(new Point(point.X - minX, point.Y - minY));
+            //    }
+            //    NetworkConnector.Instance.FinalizeGlobalInk(pl.ID, pl.GetString());
+            //}
             Rect rect = new Rect();
-            rect.Width = width;
-            rect.Height = height;
+            //rect.Width = width;
+            //rect.Height = height;
             return rect;
         }
 

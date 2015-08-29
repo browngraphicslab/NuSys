@@ -28,6 +28,8 @@ namespace NuSysApp
             CanEdit = EditStatus.Maybe;
         }
 
+        public abstract void Delete();
+
         public void AddToLink(Link link)
         {
             OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));

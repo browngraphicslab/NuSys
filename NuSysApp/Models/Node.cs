@@ -37,7 +37,7 @@ namespace NuSysApp
             
         }
 
-        public void Delete()
+        public override void Delete()
         {
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
         }

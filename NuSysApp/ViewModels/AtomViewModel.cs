@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -107,21 +108,19 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
+                Color color = this.Color.Color;
                 if (_canEdit == Atom.EditStatus.No)
                 {
-                    Color color = this.Color.Color;
-                    color.A = 100;
+                    color.A = 50;
                     this.Color = new SolidColorBrush(color);
                 }
                 else if (_canEdit == Atom.EditStatus.Yes)
                 {
-                    Color color = this.Color.Color;
                     color.A = 255;
                     this.Color = new SolidColorBrush(color);
                 }
                 else
                 {
-                    Color color = this.Color.Color;
                     color.A = 175;
                     this.Color = new SolidColorBrush(color);
                     //if(_canEdit == Atom.EditStatus.Yes)
