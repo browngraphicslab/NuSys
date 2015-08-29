@@ -32,7 +32,7 @@ namespace NuSysApp
             };
             this.InkScale = C;
         }
-        
+
         public override void Resize(double dx, double dy)
         {
             double newDx, newDy;

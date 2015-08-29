@@ -52,18 +52,12 @@ namespace NuSysApp
             this.Model.OnCreation += CreatedHandler;
             this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
             this.Model.OnGroupCreation += CreateNewGroupHandler;
+            this.Model.OnPinCreation += CreatePinHandler;
         }
 
         #endregion Helper Methods
         #region Node Interaction
-        public async Task<PinViewModel> AddNewPin(double x, double y)
-        {
-            var vm = new PinViewModel();
-            PinViewModelList.Add(vm);
-            AtomViewList.Add(vm.View);
-            PositionPin(vm, x, y);
-            return vm;
-        }
+
 
         public void PositionNode(NodeViewModel vm, double xCoordinate, double yCoordinate)
         {
@@ -327,6 +321,14 @@ namespace NuSysApp
 
         #endregion Save/Load
         #region Event Handlers
+
+        private void CreatePinHandler(object source, CreatePinEventArgs e)
+        {
+            var vm = new PinViewModel(e.CreatedPin);
+            PinViewModelList.Add(vm);
+            AtomViewList.Add(vm.View);
+            PositionPin(vm, e.CreatedPin.X, e.CreatedPin.Y);  
+        }
 
         private void CreateNewGroupHandler(object source, CreateGroupEventArgs e)
         {

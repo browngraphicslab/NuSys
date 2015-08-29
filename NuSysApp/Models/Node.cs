@@ -98,7 +98,7 @@ namespace NuSysApp
             }
         }
 
-        public double Width
+        public virtual double Width
         {
             get
             {
@@ -123,7 +123,7 @@ namespace NuSysApp
             }
         }
 
-        public double Height
+        public virtual double Height
         {
             get
             {
