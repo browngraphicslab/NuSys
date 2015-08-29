@@ -126,7 +126,7 @@ namespace NuSysApp
             switch (_nodeViewModelList.Count)
             {
                 case 0://Currently this case never happens
-                    //NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);
+                    //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);
                     WorkSpaceViewModel.DeleteNode(this);
                     break;
                 case 1:
@@ -135,7 +135,7 @@ namespace NuSysApp
                     WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
                     lastNode.ParentGroup = null;
                     WorkSpaceViewModel.DeleteNode(this);
-                    //NetworkConnector.Instance.RequestDeleteAtom(this.Model.ID);//TODO use an actual network delete
+                    //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
                     foreach (var link in lastNode.LinkList)
                     {
                         link.SetVisibility(true);
