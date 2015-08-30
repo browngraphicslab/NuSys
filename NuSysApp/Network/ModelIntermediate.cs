@@ -44,13 +44,13 @@ namespace NuSysApp
                     }
                     else//if the sendable doesn't yey exist
                     {
+                        await HandleCreateNewSendable(id, props);//create a new sendable
+                        await HandleMessage(props);
                         if (_creationCallbacks.ContainsKey(id))//check if a callback is waiting for that sendable to be created
                         {
                             _creationCallbacks[id].DynamicInvoke(id);
                             _creationCallbacks.Remove(id);
                         }
-                        await HandleCreateNewSendable(id, props);//create a new sendable
-                        await HandleMessage(props);
                     }
                     _sendablesLocked.Remove(id);
                 }
