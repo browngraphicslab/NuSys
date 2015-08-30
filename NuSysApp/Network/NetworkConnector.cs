@@ -211,6 +211,14 @@ namespace NuSysApp
         public async Task SendPing(string ip, PacketType packetType)
         {
             await SendMessage(ip, "SPECIAL11:", packetType);
+            const string URL = "http://aint.ch/nusys/clients.php";
+            var urlParameters = "?action=ping&ip=" + _localIP;
+
+            var client = new HttpClient { BaseAddress = new Uri(URL) };
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = client.GetAsync(urlParameters).Result;
         }
 
         /*

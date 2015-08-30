@@ -42,7 +42,7 @@ namespace NuSysApp
                         Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
                         await n.UnPack(props);//update the sendable with the dictionary info
                     }
-                    else//if the sendable doesn't yey exist
+                    else//if the sendable doesn't yet exist
                     {
                         await HandleCreateNewSendable(id, props);//create a new sendable
                         await HandleMessage(props);
