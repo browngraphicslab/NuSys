@@ -27,9 +27,67 @@ class Main {
         this.init();
     }
 
+    init() {
+
+        // create and append canvas
+        var body = document.body,
+            html = document.documentElement;
+
+        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth,
+            html.clientWidth, html.scrollWidth, html.offsetWidth);
+
+        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight,
+            html.clientHeight, html.scrollHeight, html.offsetHeight);
+
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = "fixed";
+        this.canvas.style.top = "0";
+        this.canvas.style.left = "0";           //fixes canvas placements
+        this.canvas.style.zIndex = "999";
+
+
+        this.inkCanvas = new InkCanvas(this.canvas);
+        this.selection = new LineSelection(this.inkCanvas);
+
+        var currToggle = false;
+        chrome.runtime.onMessage.addListener(
+            (request, sender, sendResponse) => {
+                if (request.msg == "checkInjection")
+                    sendResponse({ toggleState: currToggle, objectId: this.objectKeyCount })
+
+                if (request.toggleState == true) {
+                    this.toggleEnabled(true);
+                    console.log("show canvas");
+                    currToggle = true;
+                }
+                if (request.toggleState == false) {
+                    console.log("hide canvas");
+                    this.toggleEnabled(false);
+                    currToggle = false;
+                }
+                if (request.pastPage != null) {
+                    sendResponse({ farewell: "received Info" });
+                    console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                    this.toggleEnabled(true);
+                    var rects = null;
+
+                    chrome.storage.local.get(null,(data) => {
+                        console.info(data);
+                        console.log(data[request.pastPage]);
+                        rects = data[request.pastPage]["boundingRects"];
+                        console.log(rects);
+                        this.drawPastSelections(rects);
+                    });
+                }
+            });
+    }
+
     
     
     toggleEnabled(flag: boolean): void {
+        //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
 
         console.log("enabled: " + this.isEnabled);
@@ -57,11 +115,7 @@ class Main {
     mouseMove = (e):void => {
         var currType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
         if (currType == StrokeType.MultiLine) {
-           
-          
-        //    console.log(this.selection.getContent());
-                    document.body.removeChild(this.canvas);
-
+            document.body.removeChild(this.canvas);
         }
         if (currType != this.prevStrokeType) {
             this.prevStrokeType = currType;
@@ -98,8 +152,6 @@ class Main {
     }
 
     documentDown = (e): void => {
-        console.log("=============documentDown==============");
-        console.log(this.selection);
         this.selection.start(e.clientX, e.clientY);
         document.body.appendChild(this.canvas);
 
@@ -212,9 +264,8 @@ class Main {
     }
 
     relativeToAbsolute(content: string): string {
-        //////change relative path in html string to absolute
+        //////change relative href of hyperlink and src of image in html string to absolute
          
-        //console.log(content);
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {                  //first change href to absolute
@@ -231,7 +282,7 @@ class Main {
         for (var i = 1; i < src.length; i++) {
             finalval += 'src="';
             if (src[i].slice(0, 4) != "http") {
-                finalval += window.location["origin"];//+"misc/";
+                finalval += window.location["origin"];
                 
                 var path = window.location.pathname;
                 var pathSplit = path.split('/');
@@ -266,8 +317,6 @@ class Main {
             finalval += src[i];
         }
         return finalval;
-
-        //return content;
     }
 
     drawPastSelections(rectArray): void {
@@ -281,65 +330,6 @@ class Main {
     }
 
 
-    init() {
-
-        // create and append canvas
-        var body = document.body,
-            html = document.documentElement;
-
-        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth,
-            html.clientWidth, html.scrollWidth, html.offsetWidth);
-
-        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight,
-            html.clientHeight, html.scrollHeight, html.offsetHeight);
-
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.canvas.style.position = "fixed";
-        this.canvas.style.top = "0";
-        this.canvas.style.left = "0";           //fixes canvas placements
-        this.canvas.style.zIndex = "999";
-
-
-        this.inkCanvas = new InkCanvas(this.canvas);
-        this.selection = new LineSelection(this.inkCanvas);    
-
-        console.log(this.objectKeyCount);  
-
-
-
-        var currToggle = false;
-        chrome.runtime.onMessage.addListener(
-            (request, sender, sendResponse) => {
-                if (request.msg == "checkInjection")
-                    sendResponse({ toggleState: currToggle , objectId: this.objectKeyCount})
-
-                if (request.toggleState == true) {
-                    this.toggleEnabled(true);
-                    console.log("show canvas");
-                    currToggle = true;
-                }
-                if (request.toggleState == false) {
-                    console.log("hide canvas");
-                    this.toggleEnabled(false);
-                    currToggle = false;
-                }
-                if (request.pastPage != null) {
-                    sendResponse({ farewell: "received Info" });
-                    console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
-                    this.toggleEnabled(true);
-                    var rects = null;
-
-                    chrome.storage.local.get(null, (data) => {
-                        console.info(data);
-                        console.log(data[request.pastPage]);
-                        rects = data[request.pastPage]["boundingRects"];
-                        console.log(rects);
-                        this.drawPastSelections(rects);
-                    });
-                }
-            });
-    }
+   
 } 
 

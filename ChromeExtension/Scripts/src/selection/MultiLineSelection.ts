@@ -82,17 +82,13 @@
             console.log(el.nodeName);
 
             if (el.nodeName == "#text") {
-
                 var range = document.createRange();
                 range.selectNodeContents(el);
                 console.log(range);
                 console.log(range.getClientRects());
                 console.log(range.getBoundingClientRect());
-
             }
         });
-
-
         return new Array<Rectangle>();
     }
 

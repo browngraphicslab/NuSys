@@ -2879,7 +2879,6 @@ var Main = (function () {
         this.mouseMove = function (e) {
             var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
             if (currType == 5 /* MultiLine */) {
-                //    console.log(this.selection.getContent());
                 document.body.removeChild(_this.canvas);
             }
             if (currType != _this.prevStrokeType) {
@@ -2915,8 +2914,6 @@ var Main = (function () {
             document.body.appendChild(_this.canvas);
         };
         this.documentDown = function (e) {
-            console.log("=============documentDown==============");
-            console.log(_this.selection);
             _this.selection.start(e.clientX, e.clientY);
             document.body.appendChild(_this.canvas);
             _this.canvas.addEventListener("mousemove", _this.mouseMove);
@@ -3013,7 +3010,52 @@ var Main = (function () {
         console.log("Starting NuSys.");
         this.init();
     }
+    Main.prototype.init = function () {
+        var _this = this;
+        // create and append canvas
+        var body = document.body, html = document.documentElement;
+        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = "fixed";
+        this.canvas.style.top = "0";
+        this.canvas.style.left = "0"; //fixes canvas placements
+        this.canvas.style.zIndex = "999";
+        this.inkCanvas = new InkCanvas(this.canvas);
+        this.selection = new LineSelection(this.inkCanvas);
+        var currToggle = false;
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if (request.msg == "checkInjection")
+                sendResponse({ toggleState: currToggle, objectId: _this.objectKeyCount });
+            if (request.toggleState == true) {
+                _this.toggleEnabled(true);
+                console.log("show canvas");
+                currToggle = true;
+            }
+            if (request.toggleState == false) {
+                console.log("hide canvas");
+                _this.toggleEnabled(false);
+                currToggle = false;
+            }
+            if (request.pastPage != null) {
+                sendResponse({ farewell: "received Info" });
+                console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                _this.toggleEnabled(true);
+                var rects = null;
+                chrome.storage.local.get(null, function (data) {
+                    console.info(data);
+                    console.log(data[request.pastPage]);
+                    rects = data[request.pastPage]["boundingRects"];
+                    console.log(rects);
+                    _this.drawPastSelections(rects);
+                });
+            }
+        });
+    };
     Main.prototype.toggleEnabled = function (flag) {
+        //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
         console.log("enabled: " + this.isEnabled);
         if (this.isEnabled) {
@@ -3038,8 +3080,7 @@ var Main = (function () {
         }
     };
     Main.prototype.relativeToAbsolute = function (content) {
-        //////change relative path in html string to absolute
-        //console.log(content);
+        //////change relative href of hyperlink and src of image in html string to absolute
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {
@@ -3054,7 +3095,7 @@ var Main = (function () {
         for (var i = 1; i < src.length; i++) {
             finalval += 'src="';
             if (src[i].slice(0, 4) != "http") {
-                finalval += window.location["origin"]; //+"misc/";
+                finalval += window.location["origin"];
                 var path = window.location.pathname;
                 var pathSplit = path.split('/');
                 var newpath = "";
@@ -3085,7 +3126,6 @@ var Main = (function () {
             finalval += src[i];
         }
         return finalval;
-        //return content;
     };
     Main.prototype.drawPastSelections = function (rectArray) {
         var _this = this;
@@ -3096,51 +3136,6 @@ var Main = (function () {
             _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
         });
         this.inkCanvas.update();
-    };
-    Main.prototype.init = function () {
-        var _this = this;
-        // create and append canvas
-        var body = document.body, html = document.documentElement;
-        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
-        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.canvas.style.position = "fixed";
-        this.canvas.style.top = "0";
-        this.canvas.style.left = "0"; //fixes canvas placements
-        this.canvas.style.zIndex = "999";
-        this.inkCanvas = new InkCanvas(this.canvas);
-        this.selection = new LineSelection(this.inkCanvas);
-        console.log(this.objectKeyCount);
-        var currToggle = false;
-        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            if (request.msg == "checkInjection")
-                sendResponse({ toggleState: currToggle, objectId: _this.objectKeyCount });
-            if (request.toggleState == true) {
-                _this.toggleEnabled(true);
-                console.log("show canvas");
-                currToggle = true;
-            }
-            if (request.toggleState == false) {
-                console.log("hide canvas");
-                _this.toggleEnabled(false);
-                currToggle = false;
-            }
-            if (request.pastPage != null) {
-                sendResponse({ farewell: "received Info" });
-                console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
-                _this.toggleEnabled(true);
-                var rects = null;
-                chrome.storage.local.get(null, function (data) {
-                    console.info(data);
-                    console.log(data[request.pastPage]);
-                    rects = data[request.pastPage]["boundingRects"];
-                    console.log(rects);
-                    _this.drawPastSelections(rects);
-                });
-            }
-        });
     };
     return Main;
 })();
@@ -3557,7 +3552,7 @@ var MarqueeSelection = (function () {
         this._parentList = new Array();
         this._selected = null;
         this._ct = 0;
-        this._content = null;
+        this._content = "";
         this._offsetY = 0;
         this._inkCanvas = inkCanvas;
         if (fromActiveStroke) {
@@ -3592,11 +3587,9 @@ var MarqueeSelection = (function () {
         var ctx = this._inkCanvas._context;
         this._inkCanvas.update();
         this._inkCanvas.draw(x, y);
-        // this.clearSelection();
     };
     MarqueeSelection.prototype.end = function (x, y) {
         var el = document.elementFromPoint(this._startX, this._startY);
-        console.log(this._parentList);
         this._parentList.push(el);
         this._selected = el;
         if (this._marqueeX1 > this._marqueeX2) {
@@ -3609,7 +3602,11 @@ var MarqueeSelection = (function () {
             this._marqueeY1 = this._marqueeY2;
             this._marqueeY2 = temp;
         }
-        this.getNextElement(el); //finds the common parent of all elements in selection range
+        //finds the common parent of all elements in selection range
+        console.log(el);
+        if (el != null) {
+            this.getNextElement(el);
+        }
         console.log(this._parentList);
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
@@ -3622,6 +3619,7 @@ var MarqueeSelection = (function () {
     };
     MarqueeSelection.prototype.getNextElement = function (el) {
         //recursively adds elements in selection range to parentList. 
+        console.log(el.childNodes);
         if (this._selected != el) {
             return;
         }
@@ -3668,6 +3666,8 @@ var MarqueeSelection = (function () {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
             element = document.elementFromPoint(this._startX, this._mouseY - nextY + 1);
+            console.log("===================2");
+            console.log(element);
             var contains = false;
             for (var i = 0; i < this._parentList.length; i++) {
                 if (this.isDescendant(this._parentList[i], element) || this._parentList[i] == element) {
@@ -3676,8 +3676,11 @@ var MarqueeSelection = (function () {
             }
             if (contains) {
                 this.drawPreviousMarquee();
+                console.log("=================2.5");
+                console.log(this._parentList);
                 return;
             }
+            console.log("===================3");
             for (var i = 0; i < this._parentList.length; i++) {
                 if (this.isDescendant(element, this._parentList[i])) {
                 }
@@ -3691,10 +3694,12 @@ var MarqueeSelection = (function () {
             this._parentList = newList;
             this._parentList.push(element);
             this.drawPreviousMarquee();
+            console.log("===================4");
             this.getNextElement(element);
         }
     };
     MarqueeSelection.prototype.isDescendant = function (parent, child) {
+        console.log("isDescendant===========");
         var node = child.parentNode;
         while (node != null) {
             if (node == parent) {
@@ -3715,12 +3720,16 @@ var MarqueeSelection = (function () {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     };
     MarqueeSelection.prototype.analyzeContent = function () {
+        console.log(this._parentList.length);
+        //  console.log(this.commonAncestor(this._parentList[0], this._parentList[1]));
         if (this._parentList.length != 1) {
             for (var i = 1; i < this._parentList.length; i++) {
                 var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
+                console.log(currAn);
                 this._parentList[0] = currAn;
             }
         }
+        console.log("===========A");
         var sel = this._parentList[0].cloneNode(true);
         var selX = $(this._parentList[0]).clone(true);
         console.log("======================ANALYZECONTENT===============");
@@ -3736,18 +3745,23 @@ var MarqueeSelection = (function () {
         //finds common ancestor between two nodes. 
         var parents1 = this.parents(node1);
         var parents2 = this.parents(node2);
-        if (parents1[0] != parents2[0])
+        if (parents1[0] != parents2[0]) {
             throw "No common ancestor!";
-        for (var i = 0; i < parents1.length; i++) {
-            if (parents1[i] != parents2[i])
-                return parents1[i - 1];
         }
+        for (var i = 0; i < parents1.length; i++) {
+            if (parents1[i] != parents2[i]) {
+                return parents1[i - 1];
+            }
+        }
+        return parents1[parents1.length - 1];
     };
     MarqueeSelection.prototype.parents = function (node) {
         var nodes = [node];
-        for (; node; node == node.parentNode) {
+        while (node != null) {
+            node = node.parentNode;
             nodes.unshift(node);
         }
+        console.log(nodes);
         return nodes;
     };
     MarqueeSelection.prototype.bound = function (myEl, el) {
@@ -3906,9 +3920,6 @@ var MarqueeSelection = (function () {
         }
         console.log(ax1 + "!!" + ax2 + "!!" + ay1 + "!!" + ay2);
         console.log(bx2 + "!!" + bx1 + "!!" + by2 + "!!" + by1);
-        //if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
-        //    return true;
-        //}
         if (ax1 < bx2 && bx1 < ax2 && ay1 < by2) {
             console.log(by1 < ay2);
             return by1 < ay2;
