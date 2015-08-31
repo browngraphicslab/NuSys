@@ -15,14 +15,29 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             //retreive selected HTML segments if there is a response
             injected = true;            
             $("#cmn-toggle-1").prop('checked', response.toggleState);
-            chrome.storage.local.get(response.objectId.toString(), function (result) {
-                console.log(result);
+            //chrome.storage.local.get(response.objectId.toString(), function (result) {
+            //    console.log(result);
+            //    id = response.objectId.toString();
+            //    console.log(id);
+            //    console.log(result[id]);
+            //    addition = result[id].selections;
+            //    if (addition != null) {
+            //        addToSelection(addition);
+            //    }
+            //});
+            var list = [];
+            chrome.storage.local.get(function (data) {
+                $(data["selections"]).each(function (indx, elem) {
+                    if (elem["urlGroup"] == response.objectId.toString()) {
+                        list.push(elem["_content"]);
+                    }
+                });
                 id = response.objectId.toString();
                 console.log(id);
-                console.log(result[id]);
-                addition = result[id].selections;
-                if (addition != null) {
-                    addToSelection(addition);
+               // console.log(result[id]);
+              //  addition = result[id].selections;
+                if (list.length > 0) {
+                    addToSelection(list);
                 }
             });
         }

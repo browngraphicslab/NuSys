@@ -2875,8 +2875,12 @@ var Main = (function () {
         this.selections = new Array();
         this.selectedArray = new Array();
         this.rectangleArray = [];
-        this.objectKeyCount = Date.now();
+        this.urlGroup = Date.now();
+        this.previousSelections = new Array();
         this.mouseMove = function (e) {
+            if (!_this.isSelecting) {
+                return;
+            }
             var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
             if (currType == 5 /* MultiLine */) {
                 document.body.removeChild(_this.canvas);
@@ -2913,11 +2917,93 @@ var Main = (function () {
             _this.selection.update(e.clientX, e.clientY);
             document.body.appendChild(_this.canvas);
         };
+        this.checkForOverlaySelection = function (x, y) {
+            var selection = null;
+            $(_this.selections).each(function (indx, elem) {
+                var rect = elem["getBoundingRect"]();
+                if (x < rect["x"] + rect["w"] && x > rect["x"] && y < rect["y"] + rect["h"] && y > rect["y"]) {
+                    console.log("=========================INTERSECT================");
+                    selection = elem;
+                }
+            });
+            return selection;
+            //$(this.rectangleArray).each(function (indx, elem) {
+            //    console.log(elem);
+            //    console.log(elem["w"]);
+            //    console.log(x + "$$$$" + y);
+            //    if (x < elem["x"] + elem["w"] && x > elem["x"] && y < elem["y"] + elem["h"] && y > elem["y"]) {
+            //        console.log(elem);
+            //        console.log(x + "$$$$" + y);
+            //        return true;
+            //    }
+            //});
+            //return false;
+        };
         this.documentDown = function (e) {
             _this.selection.start(e.clientX, e.clientY);
             document.body.appendChild(_this.canvas);
+            console.log("=============docuentDown=====");
+            console.log(_this.selections);
+            var toComment = _this.checkForOverlaySelection(e.clientX, e.clientY); //checks if any selections exist at document drop
             _this.canvas.addEventListener("mousemove", _this.mouseMove);
-            _this.isSelecting = true;
+            console.log(toComment);
+            console.log(_this.isCommenting);
+            if (toComment == null) {
+                _this.isSelecting = true;
+                _this.isCommenting = false;
+            }
+            else if (!_this.isCommenting || _this.selection != toComment) {
+                if (toComment["comment"] == null) {
+                    console.log("================NOT COMMENTING====");
+                    _this.selection = toComment;
+                    _this.annotate(toComment, e.clientX, e.clientY);
+                }
+            }
+            console.log(_this.isSelecting);
+        };
+        this.annotate = function (sel, x, y) {
+            console.log("====================annotate====================");
+            var commentBox = document.createElement("div");
+            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'>I am a textarea</textarea>";
+            commentBox.style.left = x + "px";
+            commentBox.style.top = y + "px";
+            //  commentBox.style.display = "none";
+            commentBox.style.position = "absolute";
+            commentBox.style.zIndex = "999";
+            _this.isCommenting = true;
+            var area = commentBox.querySelector("textarea");
+            _this.selection["comment"] = "";
+            area["onchange"] = function () {
+                //   this.selection["comment"] = 
+                console.log("========change======");
+                var sel = _this.selection;
+                sel["comment"] = document.getElementById(_this.selection["id"])["value"];
+                _this.selections[_this.selections.indexOf(_this.selection)] = sel;
+                _this.refreshChromeStorage();
+                //chrome.storage.local.get(null, function (data) {
+                //    var obj = data;
+                //    console.log(obj["selections"]);
+                //    $(obj["selections"]).each(function (indx, elem) {
+                //        //iterate through takes O(N)
+                //        console.log(elem);
+                //        if (elem["id"] == this.selection["id"]) {
+                //            elem["comment"] = document.getElementById(this.selection["id"])["value"];
+                //        }
+                //    });
+                //    console.log(obj);
+                //    chrome.storage.local.set(obj);
+                //});
+                console.log(_this.selection);
+            };
+            document.body.appendChild(commentBox);
+        };
+        this.refreshChromeStorage = function () {
+            var obj = {};
+            obj["selections"] = _this.previousSelections.concat(_this.selections);
+            chrome.storage.local.set(obj);
+            chrome.storage.local.get(null, function (data) {
+                console.log(data);
+            });
         };
         this.documentScroll = function (e) {
             _this.inkCanvas.update();
@@ -2932,6 +3018,9 @@ var Main = (function () {
             _this.isSelecting = false;
         };
         this.canvasUp = function (e) {
+            if (!_this.isSelecting) {
+                return;
+            }
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
             document.body.removeChild(_this.canvas);
             _this.selection.end(e.clientX, e.clientY);
@@ -2980,6 +3069,7 @@ var Main = (function () {
                 _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
             }
             else {
+                _this.selection["id"] = Date.now();
                 _this.selections.push(_this.selection);
                 _this.selectedArray.push(_this.relativeToAbsolute(_this.selection.getContent()));
                 console.log(_this.selection.getContent());
@@ -2987,9 +3077,6 @@ var Main = (function () {
                 _this.rectangleArray.push(_this.selection.getBoundingRect());
                 chrome.storage.local.set({ 'curr': _this.selectedArray });
                 var currentDate = new Date();
-                chrome.storage.local.get(null, function (data) {
-                    console.info(data);
-                });
             }
             var selectionInfo = {};
             selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -2997,12 +3084,22 @@ var Main = (function () {
             selectionInfo["selections"] = _this.selectedArray;
             selectionInfo["boundingRects"] = _this.rectangleArray;
             selectionInfo["date"] = (new Date()).toString();
-            selectionInfo["title"] = document.title;
-            var obj = {};
-            obj[_this.objectKeyCount] = selectionInfo;
-            chrome.storage.local.set(obj);
+            _this.selection["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection["date"] = (new Date()).toString();
+            _this.selection["title"] = document.title;
+            _this.selection["brushType"] = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
+            _this.selection["urlGroup"] = _this.urlGroup;
+            // var obj = {};
+            //obj[this.objectKeyCount] = selectionInfo;
+            //obj["selections"] = this.selections;
+            //chrome.storage.local.set(obj);
+            //     chrome.storage.local.set(ob
+            _this.refreshChromeStorage();
             _this.selection = new LineSelection(_this.inkCanvas);
             _this.prevStrokeType = 1 /* Line */;
+            chrome.storage.local.get(null, function (data) {
+                console.info(data);
+            });
             document.body.appendChild(_this.canvas);
             _this.inkCanvas.update();
             _this.isSelecting = false;
@@ -3022,13 +3119,16 @@ var Main = (function () {
         this.canvas.style.position = "fixed";
         this.canvas.style.top = "0";
         this.canvas.style.left = "0"; //fixes canvas placements
-        this.canvas.style.zIndex = "999";
+        this.canvas.style.zIndex = "998";
         this.inkCanvas = new InkCanvas(this.canvas);
         this.selection = new LineSelection(this.inkCanvas);
+        chrome.storage.local.get(null, function (data) {
+            _this.previousSelections = data["selections"];
+        });
         var currToggle = false;
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             if (request.msg == "checkInjection")
-                sendResponse({ toggleState: currToggle, objectId: _this.objectKeyCount });
+                sendResponse({ toggleState: currToggle, objectId: _this.urlGroup });
             if (request.toggleState == true) {
                 _this.toggleEnabled(true);
                 console.log("show canvas");
@@ -3081,6 +3181,9 @@ var Main = (function () {
     };
     Main.prototype.relativeToAbsolute = function (content) {
         //////change relative href of hyperlink and src of image in html string to absolute
+        chrome.storage.local.get(null, function (data) {
+            console.info(data);
+        });
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {
@@ -3094,7 +3197,7 @@ var Main = (function () {
         var finalval = src[0];
         for (var i = 1; i < src.length; i++) {
             finalval += 'src="';
-            if (src[i].slice(0, 4) != "http") {
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
                 finalval += window.location["origin"];
                 var path = window.location.pathname;
                 var pathSplit = path.split('/');

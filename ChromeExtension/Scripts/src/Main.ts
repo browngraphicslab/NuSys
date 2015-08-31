@@ -18,9 +18,10 @@ class Main {
     selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;
     isEnabled: boolean;
+    isCommenting: boolean;
     rectangleArray = [];
-    objectKeyCount: number = Date.now();
-
+    urlGroup: number = Date.now();
+    previousSelections: Array<ISelection> = new Array<ISelection>();
     constructor() {
 
         console.log("Starting NuSys.");
@@ -45,17 +46,20 @@ class Main {
         this.canvas.style.position = "fixed";
         this.canvas.style.top = "0";
         this.canvas.style.left = "0";           //fixes canvas placements
-        this.canvas.style.zIndex = "999";
+        this.canvas.style.zIndex = "998";
 
 
         this.inkCanvas = new InkCanvas(this.canvas);
         this.selection = new LineSelection(this.inkCanvas);
-
+        chrome.storage.local.get(null,(data) => {
+            this.previousSelections = data["selections"];
+        });
+       
         var currToggle = false;
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if (request.msg == "checkInjection")
-                    sendResponse({ toggleState: currToggle, objectId: this.objectKeyCount })
+                    sendResponse({ toggleState: currToggle, objectId: this.urlGroup })
 
                 if (request.toggleState == true) {
                     this.toggleEnabled(true);
@@ -112,7 +116,10 @@ class Main {
         }
     }
 
-    mouseMove = (e):void => {
+    mouseMove = (e): void => {
+        if (!this.isSelecting) {
+            return;
+        }
         var currType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
         if (currType == StrokeType.MultiLine) {
             document.body.removeChild(this.canvas);
@@ -151,14 +158,105 @@ class Main {
         document.body.appendChild(this.canvas); 
     }
 
+    checkForOverlaySelection = (x: Number, y: Number): ISelection => {
+        var selection = null;
+        $(this.selections).each(function (indx, elem) {
+            var rect = elem["getBoundingRect"]();
+            if (x < rect["x"] + rect["w"] && x > rect["x"] && y < rect["y"] + rect["h"] && y > rect["y"]) {
+                console.log("=========================INTERSECT================");
+                selection = elem;
+            }
+        });
+        return selection;
+        //$(this.rectangleArray).each(function (indx, elem) {
+
+        //    console.log(elem);
+        //    console.log(elem["w"]);
+        //    console.log(x + "$$$$" + y);
+        //    if (x < elem["x"] + elem["w"] && x > elem["x"] && y < elem["y"] + elem["h"] && y > elem["y"]) {
+        //        console.log(elem);
+        //        console.log(x + "$$$$" + y);
+        //        return true;
+        //    }
+        //});
+
+        //return false;
+    }
     documentDown = (e): void => {
         this.selection.start(e.clientX, e.clientY);
         document.body.appendChild(this.canvas);
-
+        console.log("=============docuentDown=====");
+        console.log(this.selections);
+        var toComment = this.checkForOverlaySelection(e.clientX, e.clientY);      //checks if any selections exist at document drop
         this.canvas.addEventListener("mousemove", this.mouseMove);
-        this.isSelecting = true;
+        console.log(toComment);
+        console.log(this.isCommenting);
+        if (toComment == null) {
+            this.isSelecting = true;
+            this.isCommenting = false;
+        }
+        else if (!this.isCommenting || this.selection != toComment) {
+            if (toComment["comment"] == null) {
+                console.log("================NOT COMMENTING====");
+                this.selection = toComment;
+                this.annotate(toComment, e.clientX, e.clientY);
+            }
+        }
+        console.log(this.isSelecting);
     }
 
+    annotate = (sel: ISelection, x: Number, y: Number): void => {
+        console.log("====================annotate====================");
+        var commentBox = document.createElement("div");
+        commentBox.innerHTML = "<textarea id='"+sel["id"]+"'>I am a textarea</textarea>";
+        commentBox.style.left = x + "px";
+        commentBox.style.top = y + "px";
+      //  commentBox.style.display = "none";
+        commentBox.style.position = "absolute";
+        commentBox.style.zIndex = "999";
+        this.isCommenting = true;
+        var area: Element = commentBox.querySelector("textarea");
+        this.selection["comment"] = "";
+        
+        area["onchange"] = () => {
+
+         //   this.selection["comment"] = 
+            console.log("========change======");
+            var sel = this.selection;
+            sel["comment"] = document.getElementById(this.selection["id"])["value"]; 
+            this.selections[this.selections.indexOf(this.selection)] = sel;
+            this.refreshChromeStorage();
+            //chrome.storage.local.get(null, function (data) {
+            //    var obj = data;
+            //    console.log(obj["selections"]);
+            //    $(obj["selections"]).each(function (indx, elem) {
+            //        //iterate through takes O(N)
+            //        console.log(elem);
+            //        if (elem["id"] == this.selection["id"]) {
+            //            elem["comment"] = document.getElementById(this.selection["id"])["value"];
+            //        }
+            //    });
+                
+            //    console.log(obj);
+            //    chrome.storage.local.set(obj);
+            //});
+            
+            console.log(this.selection);
+        }
+
+
+        document.body.appendChild(commentBox);
+
+
+    }
+
+    refreshChromeStorage = (): void => {
+        var obj = {};
+        obj["selections"] = this.previousSelections.concat(this.selections);
+
+        chrome.storage.local.set(obj);
+        chrome.storage.local.get(null, function (data) { console.log(data) });
+    }
     documentScroll = (e): void => {
         this.inkCanvas.update();
     }
@@ -176,6 +274,10 @@ class Main {
     }
 
     canvasUp = (e): void => {
+        if (!this.isSelecting) {
+
+            return;
+        }
         this.canvas.removeEventListener("mousemove", this.mouseMove);
         document.body.removeChild(this.canvas);
         this.selection.end(e.clientX, e.clientY);
@@ -197,7 +299,7 @@ class Main {
 
             var intersectionCount = 0;
             $.each(segments, function () {
-                var intersects = line.intersectsLine(this);
+                var intersects = line.intersectsLine(this); 
                 if (intersects)
                     intersectionCount++;
             });
@@ -231,6 +333,7 @@ class Main {
             this.inkCanvas.removeBrushStroke(this.inkCanvas._activeStroke);
         }
         else {
+            this.selection["id"] = Date.now();
             this.selections.push(this.selection);
             this.selectedArray.push(this.relativeToAbsolute(this.selection.getContent()));
             console.log(this.selection.getContent());
@@ -240,8 +343,6 @@ class Main {
             chrome.storage.local.set({ 'curr': this.selectedArray });
 
             var currentDate = new Date();
-
-            chrome.storage.local.get(null, function (data) { console.info(data) });
         }
         var selectionInfo = {};
         selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -250,14 +351,22 @@ class Main {
         selectionInfo["selections"] = this.selectedArray;
         selectionInfo["boundingRects"] = this.rectangleArray;
         selectionInfo["date"] = (new Date()).toString();
-        selectionInfo["title"] = document.title;
-        var obj = {};
-        obj[this.objectKeyCount] = selectionInfo;
 
-        chrome.storage.local.set(obj);
+        this.selection["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname; 
+        this.selection["date"] = (new Date()).toString();
+        this.selection["title"] = document.title;
+        this.selection["brushType"] = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
+        this.selection["urlGroup"] = this.urlGroup;
+        // var obj = {};
+        //obj[this.objectKeyCount] = selectionInfo;
+        //obj["selections"] = this.selections;
+
+        //chrome.storage.local.set(obj);
+        //     chrome.storage.local.set(ob
+        this.refreshChromeStorage();
         this.selection = new LineSelection(this.inkCanvas);
         this.prevStrokeType = StrokeType.Line;
-
+        chrome.storage.local.get(null, function (data) { console.info(data) });
         document.body.appendChild(this.canvas);
         this.inkCanvas.update();
         this.isSelecting = false;
@@ -265,7 +374,8 @@ class Main {
 
     relativeToAbsolute(content: string): string {
         //////change relative href of hyperlink and src of image in html string to absolute
-         
+        chrome.storage.local.get(null, function (data) { console.info(data) });
+
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {                  //first change href to absolute
@@ -281,7 +391,7 @@ class Main {
         var finalval = src[0];
         for (var i = 1; i < src.length; i++) {
             finalval += 'src="';
-            if (src[i].slice(0, 4) != "http") {
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0,2) != "//") {
                 finalval += window.location["origin"];
                 
                 var path = window.location.pathname;
