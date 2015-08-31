@@ -261,12 +261,15 @@ namespace NuSysApp
                     {
                         InqLine line = ParseToPolyline(props["data"], id);
                         WorkSpaceModel.IDToSendableDict.Add(id, line);
+                        if (props.ContainsKey("previousID") &&
+                            WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                        {
+                            canvas.OnFinalizedLine += delegate
+                            {
+                               canvas.RemovePartialLines(props["previousID"]);
+                            };
+                        }
                         canvas.FinalizeLine(line);
-                    }
-                    if (props.ContainsKey("previousID") &&
-                        WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
-                    {
-                        canvas.RemovePartialLines(props["previousID"]);
                     }
                 }
             }

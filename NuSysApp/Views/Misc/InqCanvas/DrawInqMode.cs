@@ -38,7 +38,10 @@ namespace NuSysApp
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
-            inqCanvas.Children.Remove(_currentStroke);
+            (((InqCanvasViewModel) inqCanvas.DataContext).Model).OnFinalizedLine += delegate
+            {
+                inqCanvas.Children.Remove(_currentStroke);
+            };
         }
     }
 }
