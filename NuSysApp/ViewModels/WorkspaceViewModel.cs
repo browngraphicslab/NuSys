@@ -28,6 +28,7 @@ namespace NuSysApp
             GroupDict = new Dictionary<string, GroupViewModel>();
             LinkViewModelList = new ObservableCollection<LinkViewModel>();
             PinViewModelList = new ObservableCollection<PinViewModel>();
+            MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
             this.SetUpTransforms();
@@ -234,6 +235,16 @@ namespace NuSysApp
             ClearSelection();
         }
 
+        public void SetMultiSelection(AtomViewModel selected)
+        {
+            if (!selected.IsMultiSelected)
+            {
+                selected.IsMultiSelected = true;
+                NetworkConnector.Instance.RequestLock(selected.ID);
+                this.MultiSelectedAtomViewModels.Add(selected);
+            }
+        }
+
         /// <summary>
         /// Unselects the currently selected node.
         /// </summary> 
@@ -243,6 +254,26 @@ namespace NuSysApp
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
+        }
+
+        public void ClearMultiSelection()
+        {
+            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
+            foreach (var avm in MultiSelectedAtomViewModels)
+            {
+                NetworkConnector.Instance.ReturnLock(avm.ID);
+                avm.IsMultiSelected = false;
+            }
+            MultiSelectedAtomViewModels.Clear();
+        }
+
+        public void DeleteMultiSelecttion()
+        {
+            foreach (var avm in MultiSelectedAtomViewModels)
+            {
+                avm.Remove();
+            }
+            MultiSelectedAtomViewModels.Clear();
         }
 
         /// <summary>
@@ -455,6 +486,8 @@ namespace NuSysApp
         public ObservableCollection<UserControl> AtomViewList { get; }
 
         public AtomViewModel SelectedAtomViewModel { get; private set; }
+
+        public List<AtomViewModel> MultiSelectedAtomViewModels { get; private set; }
 
         public SQLiteDatabase myDB { get; set; }
 

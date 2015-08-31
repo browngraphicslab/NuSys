@@ -96,6 +96,10 @@ namespace NuSysApp
             get { return floatingMenu; }
         }
 
+        public MultiSelectMenu MultiMenu
+        {
+            get { return multiMenu; }
+        }
         public Canvas MainCanvas
         {
             get { return mainCanvas; }

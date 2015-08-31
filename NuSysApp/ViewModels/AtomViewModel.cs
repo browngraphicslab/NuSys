@@ -16,7 +16,8 @@ namespace NuSysApp
         private int _anchorX, _anchorY;
         private Point _anchor;
 
-        private bool _isSelected;
+        private bool _isSelected = false;
+        private bool _isMultiSelected = false;
         private UserControl _view;
         private MatrixTransform _transform;
         public bool _isVisible;
@@ -145,6 +146,21 @@ namespace NuSysApp
 
                 _isSelected = value;
                 RaisePropertyChanged("IsSelected");
+            }
+        }
+
+        public bool IsMultiSelected
+        {
+            get { return _isMultiSelected; }
+            set
+            {
+                if (_isMultiSelected == value)
+                {
+                    return;
+                }
+
+                _isMultiSelected = value;
+                RaisePropertyChanged("IsMultiSelected");
             }
         }
 

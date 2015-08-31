@@ -270,6 +270,9 @@
     <Compile Include="Views\Misc\PinView.xaml.cs">
       <DependentUpon>PinView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MultiSelectMenu.xaml.cs">
+      <DependentUpon>MultiSelectMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
     </Compile>
@@ -388,6 +391,10 @@
     <Page Include="Views\Misc\PinView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MultiSelectMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Nodes\AudioNodeView.xaml">
       <SubType>Designer</SubType>
