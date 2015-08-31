@@ -29,6 +29,7 @@ namespace NuSysApp
         private string _hostIP;
         private string _localIP;
         private DispatcherTimer _pingTimer;
+        private DispatcherTimer _phpPingTimer;
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
@@ -98,6 +99,10 @@ namespace NuSysApp
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
             _pingResponses = new Dictionary<string, int>();
+            _phpPingTimer = new DispatcherTimer();
+            _phpPingTimer.Tick += SendPhpPing;
+            _phpPingTimer.Interval = new TimeSpan(0, 0, 0, 0,2500);
+            _phpPingTimer.Start();
 
             var ips = GetOtherIPs();
             if (ips.Count == 1)
@@ -121,6 +126,7 @@ namespace NuSysApp
             await _UDPsocket.BindServiceNameAsync(_UDPPort);
             _UDPsocket.MessageReceived += this.DatagramMessageRecieved;
             await this.SendMassTCPMessage("SPECIAL0:" + this._localIP);
+
         }
 
         /*
@@ -208,9 +214,13 @@ namespace NuSysApp
         /*
         * this sends a ping to the specified IP
         */
-        public async Task SendPing(string ip, PacketType packetType)
+        private async Task SendPing(string ip, PacketType packetType)
         {
             await SendMessage(ip, "SPECIAL11:", packetType);
+        }
+
+        private void SendPhpPing(object sender, object args)
+        {
             const string URL = "http://aint.ch/nusys/clients.php";
             var urlParameters = "?action=ping&ip=" + _localIP;
 
