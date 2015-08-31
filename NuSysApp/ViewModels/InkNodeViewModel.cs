@@ -9,7 +9,7 @@ namespace NuSysApp
     /// </summary>
     public class InkNodeViewModel : NodeViewModel
     {
-        public InkNodeViewModel(InkModel model, WorkspaceViewModel vm, string id): base(model, vm,id)
+        public InkNodeViewModel(InkModel model, WorkspaceViewModel vm): base(model, vm)
         {
             this.Model.ID = id;
             var view = new InkNodeView2(this);

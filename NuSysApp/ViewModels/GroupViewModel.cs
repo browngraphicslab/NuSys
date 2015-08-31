@@ -16,10 +16,9 @@ namespace NuSysApp
         public ObservableCollection<LinkViewModel> _linkViewModelList;
 
 
-        public GroupViewModel(Group model, WorkspaceViewModel vm, string id): base(model,vm, id)
+        public GroupViewModel(Group model, WorkspaceViewModel vm): base(model,vm)
         {
             this.AtomType = Constants.Node;
-            this.Model.ID = id;
             _nodeViewModelList = new ObservableCollection<NodeViewModel>();
             _linkViewModelList = new ObservableCollection<LinkViewModel>();
             _atomViewList = new ObservableCollection<UserControl>();

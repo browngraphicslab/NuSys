@@ -23,7 +23,7 @@ namespace NuSysApp
         #endregion Private members
 
         public LinkViewModel(Link model, AtomViewModel atom1,
-            AtomViewModel atom2, WorkspaceViewModel workspace, string id) : base(model, workspace, id)
+            AtomViewModel atom2, WorkspaceViewModel workspace) : base(model, workspace)
         {
             this.Atom1 = atom1;
             this.Atom2 = atom2;

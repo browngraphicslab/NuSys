@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
+using System.Reflection;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -293,6 +294,11 @@ namespace NuSysApp
 
         }
               */
+        }
+
+        public NodeTemplate NodeTpl
+        {
+            get { return nodeTpl; }
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)

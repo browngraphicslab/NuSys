@@ -20,16 +20,12 @@ namespace NuSysApp
         private List<byte[]> _imgData = new List<byte[]>();
 
         #endregion Private Members
-        public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, string text, string id) : base(model, workSpaceViewModel, id)
-        {
-           
-            this.View = new TextNodeView2(this);  
+        public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, UserControl view = null) : base(model, workSpaceViewModel)
+        {           
+            this.View = view ?? new TextNodeView2(this);  
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
-            this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
-            this.IsSelected = false;
-            this.IsEditing = false;
-            this.IsEditingInk = false;
+            this.Width = Constants.DefaultNodeSize;
+            this.Height = Constants.DefaultNodeSize;
             this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
             ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
@@ -45,7 +41,7 @@ namespace NuSysApp
             const string rtfImagePlaceholder = "---IMAGE---";
             var md = Data;
 
-            _imgData = new List<byte[]>();
+            var imgData = new List<byte[]>();
             while (true)
             {
 
@@ -61,7 +57,7 @@ namespace NuSysApp
                 string imgUrl = "http:" + match.Groups[1].Value;
                 var img = await DownloadImageFromWebsiteAsync(imgUrl);
 
-                _imgData.Add(img);
+                imgData.Add(img);
                 _inlineImages.Add(await ByteArrayToBitmapImage(img));
             }
 
@@ -70,15 +66,13 @@ namespace NuSysApp
 
             for (var i = 0; i < _inlineImages.Count; i++)
             {
-
-
                 var imageRtf = @"{\pict\pngblip\picw---IMG_W---0\pich---IMG_H---\picwgoal---IMG_GOAL_W---\pichgoal---IMG_GOAL_H---\hex ---IMG_DATA---}";
                 imageRtf = imageRtf.Replace("---IMG_W---", _inlineImages[i].PixelWidth.ToString());
                 imageRtf = imageRtf.Replace("---IMG_H---", _inlineImages[i].PixelHeight.ToString());
                 imageRtf = imageRtf.Replace("---IMG_GOAL_W---", (_inlineImages[i].PixelWidth * 15).ToString());
                 imageRtf = imageRtf.Replace("---IMG_GOAL_H---", (_inlineImages[i].PixelHeight * 15).ToString());
 
-                var imgDataHex = BitConverter.ToString(_imgData[i]).Replace("-", "");
+                var imgDataHex = BitConverter.ToString(imgData[i]).Replace("-", "");
                 imageRtf = imageRtf.Replace("---IMG_DATA---", imgDataHex);
 
                 var regex = new Regex(Regex.Escape(rtfImagePlaceholder));

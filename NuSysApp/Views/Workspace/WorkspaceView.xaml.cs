@@ -11,7 +11,6 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
-using NuSysApp.Components.ContentImporter;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
@@ -33,7 +32,7 @@ namespace NuSysApp
 
         private bool _cortanaInitialized;
         private CortanaMode _cortanaModeInstance;
-        private ContentImporter _contentImporter  = new ContentImporter();
+       
 
         #endregion Private Members
 
@@ -44,32 +43,7 @@ namespace NuSysApp
             var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             this.DataContext = vm;
 
-            _cortanaInitialized = false;
-
-            _contentImporter.ContentImported += async delegate (List<string> contents)
-            {
-                var nodes = new List<Node>();
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    var p = vm.CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                    NetworkConnector.Instance.RequestMakeGroup("", "", p.X.ToString(), p.Y.ToString());
-
-                    foreach (var content in contents) { 
-                 
-                        try { 
-                        
-                         NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), content, null, null, (string id)=> {
-                             Debug.WriteLine("node created ID: " + id);
-                         });
-                        } catch (Exception ex)
-                        {
-                            Debug.WriteLine("asd");
-                        }
-                    }
-                });
-            };
+            _cortanaInitialized = false;          
         }
 
 
@@ -148,6 +122,9 @@ namespace NuSysApp
                     break;
                 case Options.Pin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
+                    break;
+                case Options.Bucket:
+                    await SetViewMode(new MultiMode(this));
                     break;
             }
         }

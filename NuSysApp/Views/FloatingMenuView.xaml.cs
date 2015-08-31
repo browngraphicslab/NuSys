@@ -13,7 +13,7 @@ namespace NuSysApp
 
     public enum Options
     {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, AudioCapture, Erase, Color, Save, Load, Pin
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, AudioCapture, Erase, Color, Save, Load, Pin, Bucket
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -289,6 +289,8 @@ namespace NuSysApp
 
         private void Bucket_Click(object sender, RoutedEventArgs e)
         {
+            SetActive((Button)sender);
+            ModeChange?.Invoke(Options.Bucket);
             if (bucketWindow.Opacity == 0)
             {
                 bucketOpen.Begin();
@@ -312,17 +314,6 @@ namespace NuSysApp
             }
             
         }
-            
-
-        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            var vm = (WorkspaceViewModel)this.DataContext;
-            var compositeTransform = vm.FMTransform;
-
-            compositeTransform.TranslateX += e.Delta.Translation.X;
-            compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            e.Handled = true;
-        }
+           
     }
 }

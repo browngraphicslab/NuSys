@@ -1261,6 +1261,43 @@ namespace NuSysApp
         }
 
         /*
+       * PUBLIC general method to create Group
+       */
+        public async Task RequestMakeEmptyGroup( string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        {
+
+            var props = properties == null ? new Dictionary<string, string>() : properties;
+            string id = oldID == null ? GetID() : oldID;
+
+            if (props.ContainsKey("x"))
+            {
+                props.Remove("x");
+            }
+            if (props.ContainsKey("y"))
+            {
+                props.Remove("y");
+            }
+            if (props.ContainsKey("id"))
+            {
+                props.Remove("id");
+            }
+            if (props.ContainsKey("type"))
+            {
+                props.Remove("type");
+            }
+            props.Add("x", x);
+            props.Add("y", y);
+            props.Add("id", id);
+            props.Add("type", "emptygroup");
+            if (callback != null)
+            {
+                ModelIntermediate.AddCreationCallback(id, callback);
+            }
+            string message = MakeSubMessageFromDict(props);
+            await SendMessageToHost(message);
+        }
+
+        /*
         * PUBLIC general method to create Linq
         */
         public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)

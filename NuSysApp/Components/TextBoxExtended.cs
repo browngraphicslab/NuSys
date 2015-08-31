@@ -10,27 +10,41 @@ using NuSysApp;
 using System.Diagnostics;
 using Windows.UI.Xaml.Input;
 using Windows.Devices.Input;
+using Windows.Foundation;
 
 namespace NuSysApp
 {
     public class TextBoxExtended : RichEditBox
     {
-        public static readonly DependencyProperty RtfProperty = DependencyProperty.RegisterAttached("Rtf", typeof(string),
-            typeof(TextBoxExtended), new PropertyMetadata(null, RtfTextPropertyChanged));
+
+        public static readonly DependencyProperty RtfProperty = DependencyProperty.RegisterAttached("Rtf", typeof(string), typeof(TextBoxExtended), new PropertyMetadata(null, RtfTextPropertyChanged));
 
         private bool _changingText;
 
         public TextBoxExtended()
         {
-            //TextChanged += RichEditBoxExtended_TextChanged;
+            TextChanged += delegate
+            {
+                var s = ComputeContentSize();
+            };
+        }
+
+        public Size ComputeContentSize()
+        {
+            string str;
+            Document.GetText(TextGetOptions.FormatRtf, out str);
+            Document.Selection.SetRange(0, str.Length);
+
+            Rect rect;
+            int hit;
+            Document.Selection.GetRect(PointOptions.None, out rect, out hit);
+            return new Size(rect.Width, rect.Height);
         }
 
         public string Rtf
         {
             get { return (string)GetValue(RtfProperty); }
-            set {
-                SetValue(RtfProperty, value);
-            }
+            set {  SetValue(RtfProperty, value); }
         }
 
         private void RichEditBoxExtended_TextChanged(object sender, RoutedEventArgs e)
@@ -53,11 +67,11 @@ namespace NuSysApp
             }
         }
 
-        private static void RtfTextPropertyChanged(DependencyObject dependencyObject,
-            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void RtfTextPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             var rtb = dependencyObject as TextBoxExtended;
             rtb.Document.SetText(TextSetOptions.FormatRtf, rtb.Rtf);
+            rtb.Document.ApplyDisplayUpdates();
             rtb._changingText = false;
         }
     }     

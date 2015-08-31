@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         private CompositeTransform _inkScale;
 
-        public ImageNodeViewModel(ImageModel model, WorkspaceViewModel vm, string id) : base(model, vm, id)
+        public ImageNodeViewModel(ImageModel model, WorkspaceViewModel vm) : base(model, vm)
         {
             this.NodeType = NodeType.Image; //Also sets model value
             this.View = new ImageNodeView2(this);

@@ -44,13 +44,15 @@ namespace NuSysApp
                     }
                     else//if the sendable doesn't yey exist
                     {
+
+                        await HandleCreateNewSendable(id, props);//create a new sendable
+                        await HandleMessage(props);
+
                         if (_creationCallbacks.ContainsKey(id))//check if a callback is waiting for that sendable to be created
                         {
                             _creationCallbacks[id].DynamicInvoke(id);
                             _creationCallbacks.Remove(id);
                         }
-                        await HandleCreateNewSendable(id, props);//create a new sendable
-                        await HandleMessage(props);
                     }
                     _sendablesLocked.Remove(id);
                 }
@@ -78,6 +80,10 @@ namespace NuSysApp
             else if (props.ContainsKey("type") && props["type"] == "group")
             {
                 await HandleCreateNewGroup(id, props);
+            }
+            else if (props.ContainsKey("type") && props["type"] == "emptygroup")
+            {
+                await HandleCreateNewEmptyGroup(id, props);
             }
             else if (props.ContainsKey("type") && props["type"] == "node")
             {
@@ -212,6 +218,23 @@ namespace NuSysApp
                 props.Remove("data");
             }
         }
+
+        public async Task HandleCreateNewEmptyGroup(string id, Dictionary<string, string> props)
+        {
+            double x = 0;
+            double y = 0;
+        
+            if (props.ContainsKey("x"))
+            {
+                double.TryParse(props["x"], out x);
+            }
+            if (props.ContainsKey("y"))
+            {
+                double.TryParse(props["y"], out y);
+            }
+            await WorkSpaceModel.CreateEmptyGroup(id, x, y);
+        }
+
         public async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
         {
             Node node1 = null;
