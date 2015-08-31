@@ -1016,7 +1016,7 @@ namespace NuSysApp
                 if (props.ContainsKey("id"))
                 {
                     await ModelIntermediate.HandleMessage(props);
-                    if (!ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP && _localIP == _hostIP)
+                    if (ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP && _localIP == _hostIP)
                     {
                         await SendMassTCPMessage(message);
                     }
