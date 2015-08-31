@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
@@ -37,7 +38,9 @@ namespace NuSysApp.Views.Workspace
             else if (dc is NodeViewModel)
             {
                 var vm = (NodeViewModel)dc;
-                NetworkConnector.Instance.ModelIntermediate.CheckLocks(vm.ID);
+                List<string> locks = new List<string>();
+                locks.Add(vm.ID);
+                NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
                 NetworkConnector.Instance.RequestLock(vm.ID);
             }
             e.Handled = true;
