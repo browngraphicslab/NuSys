@@ -9,13 +9,13 @@ namespace NuSysApp
 {
     public class AudioModel:Node
     {
+        public AudioModel(string id) : base(id)
+        {
+            //FileName = "nusysAudioCapture" + DateTime.Now + ".mp3";
+        }
+
         public StorageFile AudioFile { get; set; }
 
-        public string FileName { get; set; }
-
-        public AudioModel(string id):base(id)
-        {
-            //asdfas
-        }
+        public string FileName { get; set; }      
     }
 }

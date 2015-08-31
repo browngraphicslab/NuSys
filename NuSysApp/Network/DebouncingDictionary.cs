@@ -9,9 +9,9 @@ namespace NuSysApp.Network
         private Dictionary<string, string> _dict;
         private bool _timing = false;
         private DispatcherTimer _timer;
-        private Atom _atom;
+        private Sendable _atom;
         private bool _sendNextTCP = false;
-        public DebouncingDictionary(Atom atom)
+        public DebouncingDictionary(Sendable atom)
         {
             _dict = new Dictionary<string, string>();
             _atom = atom;
@@ -36,7 +36,7 @@ namespace NuSysApp.Network
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.ModelLocked && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
+            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(_atom.ID) && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
             {
                 if (!_timing)
                 {
@@ -62,7 +62,7 @@ namespace NuSysApp.Network
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
                 _dict.Add("id", _atom.ID);
-                if (NetworkConnector.Instance.ModelIntermediate.HasAtom(_atom.ID))
+                if (NetworkConnector.Instance.ModelIntermediate.HasSendableID(_atom.ID))
                 {
                     if (_sendNextTCP)
                     {

@@ -11,9 +11,13 @@ namespace NuSysApp
         {
             if ((bool)value)
             {
-                return new SolidColorBrush(Color.FromArgb(100, 111, 138, 150));
+                Color selColor = (Color)parameter;
+                selColor.A = 255;    
+                return selColor;
             }
-            return new SolidColorBrush(Color.FromArgb(100, 189, 204, 212));
+            Color unselColor = (Color)parameter;
+            unselColor.A = 150;
+            return unselColor;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

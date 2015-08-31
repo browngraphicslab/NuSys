@@ -33,12 +33,21 @@ namespace NuSysApp
             ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
            
             ((Node) this.Model).OnAddToGroup += AddToGroupHandler;
-            X = 0;
-            Y = 0;
+            //X = 0;//TODO if commenting this out doesn't cause problems just delete
+            //Y = 0;
         }
 
         private void AddToGroupHandler(object source, AddToGroupEventArgs e)
         {
+            var group = e.Group;
+            if (group == null)
+            {
+                this.ParentGroup.RemoveNode(this);
+                WorkSpaceViewModel.NodeViewModelList.Add(this);
+                WorkSpaceViewModel.AtomViewList.Add(this.View);
+                this.ParentGroup = null;
+                return;
+            }
             var groupVm = WorkSpaceViewModel.GroupDict[e.Group.ID];
             groupVm.AddNode(this);
             this.ParentGroup = groupVm;
@@ -48,7 +57,7 @@ namespace NuSysApp
 
         public override void Remove()
         {
-            NetworkConnector.Instance.RequestDeleteAtom(ID);
+            NetworkConnector.Instance.RequestDeleteSendable(ID);
             //WorkSpaceViewModel.DeleteNode(this);
             if (this.IsSelected)
             {
@@ -254,7 +263,7 @@ namespace NuSysApp
         /// <summary>
         /// Width of this atom
         /// </summary>
-        public double Width
+        public virtual double Width
         {
             get { return _width; }
             set
@@ -273,7 +282,7 @@ namespace NuSysApp
         /// <summary>
         /// Height of this atom
         /// </summary>
-        public double Height
+        public virtual double Height
         {
             get { return _height; }
             set

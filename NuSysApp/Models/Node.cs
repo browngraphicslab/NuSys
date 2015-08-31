@@ -33,12 +33,11 @@ namespace NuSysApp
         #endregion Events and Handlers
 
         public Node(string id) : base(id)
-
         {
-            
+            InqCanvas = new InqCanvasModel(id);
         }
 
-        public void Delete()
+        public override void Delete()
         {
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
         }
@@ -46,9 +45,10 @@ namespace NuSysApp
         public void MoveToGroup(Group group)
         {
             this.ParentGroup = group;
-            group.Add(this);
+            group?.Add(this);//only add if group isn't null
         }
 
+        public InqCanvasModel InqCanvas { get;}
         public Content Content { set; get; }
 
         public double X
@@ -64,7 +64,7 @@ namespace NuSysApp
                     return;
                 }
                 _x = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
@@ -88,7 +88,7 @@ namespace NuSysApp
                     return;
                 }
                 _y = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
@@ -99,7 +99,7 @@ namespace NuSysApp
             }
         }
 
-        public double Width
+        public virtual double Width
         {
             get
             {
@@ -112,7 +112,7 @@ namespace NuSysApp
                     return;
                 }
                 _width = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
@@ -124,7 +124,7 @@ namespace NuSysApp
             }
         }
 
-        public double Height
+        public virtual double Height
         {
             get
             {
@@ -138,7 +138,7 @@ namespace NuSysApp
                 }
                 _height = value;
 
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
@@ -162,13 +162,13 @@ namespace NuSysApp
             set
             {
                 _parentGroup = value;
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", _parentGroup, this));
                 }
                 else
                 {
-                    this.DebounceDict.Add("parentGroup", _parentGroup.ID);
+                    this.DebounceDict.Add("parentGroup", _parentGroup != null ? _parentGroup.ID : "null");
                     this.DebounceDict.MakeNextMessageTCP();
                 }
             }
@@ -204,11 +204,16 @@ namespace NuSysApp
             }
             if (props.ContainsKey("parentGroup"))
             {
-                if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
+                if (props["parentGroup"] == "null")
+                {
+                    this.MoveToGroup(null);
+                }
+                else if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
                 {
                     this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
                 }
             }
+           
             base.UnPack(props);
         }
 
@@ -223,6 +228,10 @@ namespace NuSysApp
             if (ParentGroup != null)
             {
                 dict.Add("parentGroup", ParentGroup.ID);
+            }
+            else
+            {
+                dict.Add("parentGroup", "null");
             }
             return dict;
         }

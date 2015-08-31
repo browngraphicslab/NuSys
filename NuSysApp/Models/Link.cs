@@ -5,8 +5,11 @@ using System.Xml;
 
 namespace NuSysApp
 {
+
     public class Link : Atom
     {
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+        public event DeleteEventHandler OnDeletion;
         public Link(Atom inAtom, Atom outAtom, string id) : base(id)
         {
             InAtomID = inAtom.ID;
@@ -19,6 +22,11 @@ namespace NuSysApp
         public string InAtomID { get; set; }
 
         public string OutAtomID { get; set; }
+
+        public override void Delete()
+        {
+            OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
+        }
 
         public override async Task UnPack(Dictionary<string, string> props)
         {

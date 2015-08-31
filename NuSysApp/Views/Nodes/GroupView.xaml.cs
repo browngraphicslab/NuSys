@@ -14,7 +14,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            Canvas.SetZIndex(this, -1);
+            //Canvas.SetZIndex(this, -1);
             var groupViewModel = this.DataContext as GroupViewModel;
             if (groupViewModel != null)
             {
@@ -88,7 +88,13 @@ namespace NuSysApp
         {
             var vm = (GroupViewModel)this.DataContext;
             vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
+            this.ArrangeNodesInGrid();
             e.Handled = true;
+        }
+
+        private void OnClick_Grid(object sender, RoutedEventArgs e)
+        {
+            this.ArrangeNodesInGrid();
         }
     }
 }

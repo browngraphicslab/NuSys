@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,7 +21,11 @@ namespace NuSysApp
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
             this.UpdateControlPoints();
+
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
+
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
+
         }
 
         /// <summary>
@@ -50,6 +56,9 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+
+            Canvas.SetLeft(SubMenu, vm.AnchorX - 100);
+            Canvas.SetTop(SubMenu, vm.AnchorY - 100);
 
             //if(atom2.AtomType == Constants.Node)
             //{
@@ -193,6 +202,61 @@ namespace NuSysApp
         private void BezierLinkView_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true; 
+        }
+
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (LinkViewModel) this.DataContext;
+
+                if (vm.IsSelected)
+                {
+                    slideout.Begin();
+                    BezierLink.Opacity = 1;
+                }
+                else
+                {
+                    slidein.Begin();
+                    BezierLink.Opacity = .5;
+                }
+            }
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel)this.DataContext;
+            vm.Remove();
+        }
+
+        private void Color_Click(object sender, RoutedEventArgs e)
+        {
+            if (Colors.Opacity == 0)
+            {
+                colorout.Begin();
+            }
+            else
+            {
+                colorin.Begin();
+            }          
+        }
+
+        private void Change_Color(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel) this.DataContext;
+            Button colorButton = sender as Button;
+            if (colorButton.Name == "Red") //TODO: DO NOT SWITCH ON A STRING - PLS FIX
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255,255,152,149));
+            } else if (colorButton.Name == "Green")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 190, 240, 142));
+            } else if (colorButton.Name == "Gray")
+            {
+                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 189, 204, 212));
+            }
+            colorin.Begin();
         }
     }
 }

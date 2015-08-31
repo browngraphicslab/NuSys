@@ -11,8 +11,6 @@ namespace NuSysApp.Views.Workspace
     internal class PromoteInkMode : AbstractWorkspaceViewMode
     {
 
-        private HashSet<InqLine> _strokes;
-
         public PromoteInkMode(WorkspaceView view) : base(view)
         {
             
@@ -20,25 +18,31 @@ namespace NuSysApp.Views.Workspace
 
         public override async Task Activate()
         {
-            _strokes = _view.InqCanvas.Strokes;
-            for (int i = 0; i < _strokes.Count; i++)
+            var strokes = _view.InqCanvas.Children;
+            foreach (var stroke in strokes)
             {
-                _strokes.ElementAt(i).RightTapped += OnRightTapped;
+                if (stroke is InqLine)
+                {
+                    stroke.RightTapped += OnRightTapped;
+                }
             }
         }
 
         public override async Task Deactivate()
         {
-            for (int i = 0; i < _strokes.Count; i++)
+            var strokes = _view.InqCanvas.Children;
+            foreach(var stroke in strokes)
             {
-                _strokes.ElementAt(i).RightTapped -= OnRightTapped;
+                if (stroke is InqLine)
+                {
+                    stroke.RightTapped -= OnRightTapped;
+                }
             }
         }
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             _view.InqCanvas.Children.Remove(sender as InqLine);
-            _strokes.Remove(sender as InqLine);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
             InqLine[] lines = {sender as InqLine};

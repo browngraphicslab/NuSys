@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
@@ -11,18 +14,27 @@ using NuSysApp.Components;
 namespace NuSysApp
 {
 
-    public class InqCanvas : Canvas
+    public class InqCanvasView : Canvas
     {
         private bool _isEnabled;
-        //private InkManager _inkManager = new InkManager();
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
-        private HashSet<InqLine> _strokes = new HashSet<InqLine>();
         public bool IsPressed = false;
-
-        public InqCanvas()
+        private InqCanvasViewModel _viewModel;
+        public InqCanvasView()
         {
             MISC.Clip.SetToBounds(this, true);
+        }
+
+        public InqCanvasViewModel ViewModel
+        {
+            set
+            {
+                DataContext = value;
+                value.PropertyChanged += Update;
+                _viewModel = value;
+            }
+            get { return _viewModel; }
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -114,45 +126,38 @@ namespace NuSysApp
             }
         }
 
-        //public void RemoveByInkStroke(InkStroke stroke)
-        //{
-        //    var line = _strokes[stroke];
-        //    if (line != null)
-        //        Children.Remove(line);
-        //}
 
         public Rect PasteStrokes(InqLine[] lines)
         {
 
-            double width = 0;
-            double height = 0;
-            foreach (var stroke in lines)
-            {
-                var pl = new InqLine();
-                pl.StrokeThickness = stroke.StrokeThickness;
-                pl.SetHighlighting(stroke.IsHighlighting);
+            //double width = 0;
+            //double height = 0;
+            //foreach (var stroke in lines)
+            //{
+            //    var pl = new InqLine();
+            //    pl.StrokeThickness = stroke.StrokeThickness;
+            //    pl.SetHighlighting(stroke.IsHighlighting);
 
-                var points = stroke.Points;
-                var minX = points.Min(em => em.X);
-                var minY = points.Min(em => em.Y);
-                var maxX = points.Max(em => em.X);
-                var maxY = points.Max(em => em.Y);
+            //    var points = stroke.Points;
+            //    var minX = points.Min(em => em.X);
+            //    var minY = points.Min(em => em.Y);
+            //    var maxX = points.Max(em => em.X);
+            //    var maxY = points.Max(em => em.Y);
 
-                width = maxX - minX;
-                height = maxY - minY;
+            //    width = maxX - minX;
+            //    height = maxY - minY;
 
-                foreach (var point in stroke.Points)
-                {
-                    double x = point.X - minX;
-                    double y = point.Y - minY;
-                    pl.AddPoint(new Point(point.X - minX, point.Y - minY));
-                }
-                Children.Add(pl);
-                _strokes.Add(stroke);
-            }
+            //    foreach (var point in stroke.Points)
+            //    {
+            //        double x = point.X - minX;
+            //        double y = point.Y - minY;
+            //        pl.AddPoint(new Point(point.X - minX, point.Y - minY));
+            //    }
+            //    NetworkConnector.Instance.FinalizeGlobalInk(pl.ID, pl.GetString());
+            //}
             Rect rect = new Rect();
-            rect.Width = width;
-            rect.Height = height;
+            //rect.Width = width;
+            //rect.Height = height;
             return rect;
         }
 
@@ -180,32 +185,18 @@ namespace NuSysApp
             }
         }
 
-        //public InkManager Manager
-        //{
-        //    get
-        //    {
-        //        return _inkManager;
-        //    }
-        //    set
-        //    {
-        //        _inkManager = value;
-        //    }
-        //}
-
         public IInqMode Mode
         {
             get { return _mode; }
         }
-
-        internal HashSet<InqLine> Strokes
+        private void Update(object sender, PropertyChangedEventArgs e)
         {
-            get
+            var vm = (InqCanvasViewModel)sender;
+            switch (e.PropertyName)
             {
-                return _strokes;
-            }
-            set
-            {
-                _strokes = value;
+                case "PartialLineAdded":
+                    Children.Add(vm.LastPartialLine);
+                    break;
             }
         }
     }

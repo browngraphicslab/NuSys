@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
 
@@ -10,13 +12,17 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvas))]
+    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvasView))]
     [TemplatePart(Name = "btnDelete", Type = typeof(Button))]
     [TemplatePart(Name = "resizer", Type = typeof(Path))]
     [TemplatePart(Name = "bg", Type = typeof(Grid))]
     public sealed class NodeTemplate : ContentControl
     {
-        public InqCanvas inkCanvas = null;
+
+        public event TemplateReady OnTemplateReady;
+        public delegate void TemplateReady();
+
+        public InqCanvasView inkCanvas = null;
         public Button btnDelete = null;
         public Path resizer = null;
         public Grid bg = null;
@@ -48,7 +54,7 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
-            inkCanvas = (InqCanvas)GetTemplateChild("inkCanvas");
+            inkCanvas = (InqCanvasView)GetTemplateChild("inkCanvas");
            
             bg = (Grid)GetTemplateChild("bg");
             
@@ -67,6 +73,8 @@ namespace NuSysApp
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
 
             base.OnApplyTemplate();
+
+            OnTemplateReady?.Invoke();
         }
 
         public void ToggleInkMode()

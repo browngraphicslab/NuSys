@@ -22,15 +22,10 @@ namespace NuSysApp{
         }
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            await AddPin(_view, e.GetPosition(_view) );
-            e.Handled = true;
-        }
-
-        private async Task AddPin(WorkspaceView _view, Point point)
-        {
             var vm = (WorkspaceViewModel)_view.DataContext;
-            var p = vm.CompositeTransform.Inverse.TransformPoint(point);
-             await ((WorkspaceViewModel)_view.DataContext).AddNewPin(p.X, p.Y);
+            var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
+            await NetworkConnector.Instance.RequestMakePin(p.X.ToString(), p.Y.ToString());
+            e.Handled = true;
         }
     }
 }

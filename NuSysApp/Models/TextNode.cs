@@ -19,7 +19,7 @@ namespace NuSysApp
             Text = data;
             if (Text != null)
             {
-                byte[] textToBytes = Convert.FromBase64String(Text.ToString()); //Converts RTF to Byte array
+                byte[] textToBytes = Convert.FromBase64String(Text); //Converts RTF to Byte array
                 Content = new Content(textToBytes, id);
             }         
         }
@@ -35,7 +35,7 @@ namespace NuSysApp
                 byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);
                 Content = new Content(newTextBytes, ID); //Update Content
 
-                if (NetworkConnector.Instance.ModelLocked)
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
                     OnTextChanged?.Invoke(this, new TextChangedEventArgs("Text changed", Text));
                 }

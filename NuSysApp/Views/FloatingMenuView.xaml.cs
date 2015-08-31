@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -12,7 +13,7 @@ namespace NuSysApp
 
     public enum Options
     {
-        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, Cortana, AudioCapture, Erase, Color, Save, Load, Pin
+        Select, GlobalInk, AddTextNode, AddInkNode, Document, PromoteInk, AudioCapture, Erase, Color, Save, Load, Pin
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -38,15 +39,18 @@ namespace NuSysApp
                 inkButton,
                 //audioCaptureButton,
                 NewNode,
-                NewMedia,
+                NewMedia, 
                 Bucket,
                 Erase,
                 Highlight,
                 MultiSelect,
-                CortanaButton,
                 Export,
                 idleButton,
-                Load
+                Load,
+                SelectButton,
+                GlobalInkButton,
+                addNodeButton,
+                additionalButton
             };
             SetActive(idleButton);
         }
@@ -64,6 +68,7 @@ namespace NuSysApp
         public void SetActive(Options option)
         {
             // TODO: Add support for all other options
+
             switch (option)
             {
                 case Options.Select:
@@ -84,8 +89,10 @@ namespace NuSysApp
             {
                 AddBorder(btnToActivate);
             }
-            // Close any open submenus
-            if (!_subMenuOpen && !_subMenuSelectOpen && !_subMenuNodesOpen && !_subMenuAdditionalOpen) return;
+        }
+
+        public void CloseSubMenus()
+        {
             slidein.Begin();
             slideinSelect.Begin();
             slideinNodes.Begin();
@@ -136,11 +143,15 @@ namespace NuSysApp
             ModeChange?.Invoke(Options.GlobalInk);
             if (_subMenuOpen)
             {
-                slidein.Begin();
-                _subMenuOpen = false;
+                CloseSubMenus();
             }
-            slideout.Begin();
-            _subMenuOpen = true;
+            else
+            {
+                CloseSubMenus();
+                slideout.Begin();
+                _subMenuOpen = true;
+            }
+            ShowActive(inkButton, (Button)sender);
         }
 
         private void LinkButton_Click(object sender, TappedRoutedEventArgs e)
@@ -148,6 +159,7 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.PromoteInk);
             ShowActive(idleButton, (Button)sender);
+            CloseSubMenus();
         }
 
         private void TextButton_Click(object sender, RoutedEventArgs e)
@@ -155,6 +167,7 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AddTextNode);
             ShowActive(addNodeButton, (Button)sender);
+            CloseSubMenus();
         }
 
         private void InkNodeButton_Click(object sender, RoutedEventArgs e)
@@ -162,6 +175,7 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AddInkNode);
             ShowActive(addNodeButton, (Button)sender);
+            CloseSubMenus();
         }
 
         private async void DocumentButton_Click(object sender, RoutedEventArgs e)
@@ -169,6 +183,7 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Document);
             ShowActive(addNodeButton, (Button)sender);
+            CloseSubMenus();
         }
 
         private async void AudioCaptureButton_Click(object sender, RoutedEventArgs e)
@@ -176,17 +191,20 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.AudioCapture);
             ShowActive(addNodeButton, (Button)sender);
+            CloseSubMenus();
         }
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Save);
+            CloseSubMenus();
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke(Options.Load);
+            CloseSubMenus();
         }
 
         private void Erase_OnTapped(object sender, RoutedEventArgs e)
@@ -194,79 +212,65 @@ namespace NuSysApp
             SetActive((Button)sender);
             ModeChange?.Invoke((Options.Erase));
             ShowActive(inkButton, (Button)sender);
-
+            CloseSubMenus();
         }
 
         private void Color_OnTapped(object sender, RoutedEventArgs e)
         {
             SetActive((Button)sender);
             ModeChange?.Invoke((Options.Color));
+            CloseSubMenus();
         }
 
         private void Idle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             SetActive(idleButton);
             ModeChange?.Invoke(Options.Select);
-            if (_subMenuSelectOpen)
+            if (_subMenuSelectOpen == true)
             {
-                slideinSelect.Begin();
-                _subMenuSelectOpen = false;
+                CloseSubMenus();
             }
-            slideoutSelect.Begin();
-            _subMenuSelectOpen = true;
+            else
+            {
+                CloseSubMenus();
+                slideoutSelect.Begin();
+                _subMenuSelectOpen = true;
+            }
+            ShowActive(idleButton, (Button)sender);
         }
 
         private void Nodes_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            slidein.Begin();
-            slideinSelect.Begin();
-            slideinAdditional.Begin();
-            _subMenuOpen = false;
-            _subMenuSelectOpen = false;
-            _subMenuAdditionalOpen = false;
-
-
+            CloseSubMenus();
             if (_subMenuNodesOpen)
             {
                 slideinNodes.Begin();
                 _subMenuNodesOpen = false;
             }
-            slideoutNodes.Begin();
-            _subMenuNodesOpen = true;
+            else
+            {
+                CloseSubMenus();
+                slideoutNodes.Begin();
+                _subMenuNodesOpen = true;
+            }         
         }
 
-        private async void CortanaButton_Click(object sender, TappedRoutedEventArgs e)
-        {
-            SetActive((Button)sender);
-            //if (!WorkspaceView.CortanaRunning)
-            //{
-            //    AddBorder((Button)sender);
-            //    ModeChange?.Invoke(Options.Cortana);
-            //}
-            //else
-            //{
-            //    RemoveBorder((Button)sender);
-            //    ModeChange?.Invoke(Options.Cortana);
-            //}
-        }
+        
 
         private void Additional_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            slidein.Begin();
-            slideinSelect.Begin();
-            slideinNodes.Begin();
-            _subMenuOpen = false;
-            _subMenuSelectOpen = false;
-            _subMenuNodesOpen = false;
+            CloseSubMenus();
 
             if (_subMenuAdditionalOpen)
             {
-                slideinAdditional.Begin();
-                _subMenuAdditionalOpen = false;
+                CloseSubMenus();
             }
-            slideoutAdditional.Begin();
-            _subMenuAdditionalOpen = true;
-
+            else
+            {
+                CloseSubMenus();
+                slideoutAdditional.Begin();
+                _subMenuAdditionalOpen = true;
+            }
         }
         private async void PinButton_Click(object sender, RoutedEventArgs e)
         {
@@ -277,14 +281,7 @@ namespace NuSysApp
                 pinOpen.Begin();
                 pinWindow.IsHitTestVisible = true;
                 collapse.Begin();
-                slidein.Begin();
-                slideinSelect.Begin();
-                slideinNodes.Begin();
-                slideinAdditional.Begin();
-                _subMenuOpen = false;
-                _subMenuSelectOpen = false;
-                _subMenuNodesOpen = false;
-                _subMenuAdditionalOpen = false;
+                CloseSubMenus();
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
@@ -297,14 +294,7 @@ namespace NuSysApp
                 bucketOpen.Begin();
                 bucketWindow.IsHitTestVisible = true;
                 collapse.Begin();
-                slidein.Begin();
-                slideinSelect.Begin();
-                slideinNodes.Begin();
-                slideinAdditional.Begin();
-                _subMenuOpen = false;
-                _subMenuSelectOpen = false;
-                _subMenuNodesOpen = false;
-                _subMenuAdditionalOpen = false;
+                CloseSubMenus();
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
@@ -312,8 +302,15 @@ namespace NuSysApp
 
         private void ShowActive(Button modeButton, Button setButton)
         {
-            //switch locations of modeButton and setButton
-            //add border to setButton
+            Image setImage = setButton.Content as Image;
+            if (setImage != null)
+            {
+                Image content = modeButton.Content as Image;
+                content.Source = setImage.Source;
+                modeButton.Content = content;
+                AddBorder(modeButton);
+            }
+            
         }
             
 

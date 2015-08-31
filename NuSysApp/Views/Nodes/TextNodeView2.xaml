@@ -121,20 +121,52 @@
             </Setter>
         </Style>
 
+        <Storyboard x:Key="colorout" x:Name="colorout">
+            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Colors" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="Colors">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="colorin" x:Name="colorin">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Colors" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="Colors">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
     </UserControl.Resources>
-    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}">
+    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="White">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_text.png" Height="40" Width="40"></Image>
-                </Button>
-                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
-                </Button>
                 <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
                 </Button>
-             </StackPanel>
+                <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
+                    <Image Source="ms-appx:///Assets/icon_text.png" Height="20" Width="20"></Image>
+                </Button>
+                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="20" Width="20"></Image>
+                </Button>
+                <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
+                <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
+                        VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Opacity="0" IsHitTestVisible="False">
+                    <StackPanel.RenderTransform>
+                        <CompositeTransform />
+                    </StackPanel.RenderTransform>
+                    <Button x:Name="Green" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#bef08e"></Button>
+                    <Button x:Name="Red" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#ff9895"></Button>
+                    <Button x:Name="Blue" Click="Change_Color"  Style="{StaticResource NodeSubMenuItem}" Background="#ADD8E6"></Button>
+                    <Button x:Name="Parchment" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="BlanchedAlmond"></Button>
+                </StackPanel>
+            </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <local:TwoFingerScrollViewer x:Name="scroller" Width="{Binding Width}" Height="{Binding Height}">

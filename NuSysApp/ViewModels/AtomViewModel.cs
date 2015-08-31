@@ -2,12 +2,13 @@
 using System.Collections.ObjectModel;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class AtomViewModel : BaseINPC
+    public abstract class AtomViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
 
@@ -107,17 +108,21 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
+                Color color = this.Color.Color;
                 if (_canEdit == Atom.EditStatus.No)
                 {
-                    this.Color = new SolidColorBrush(Colors.Chartreuse);
+                    color.A = 50;
+                    this.Color = new SolidColorBrush(color);
                 }
                 else if (_canEdit == Atom.EditStatus.Yes)
                 {
-                    this.Color = new SolidColorBrush(Colors.DarkOrange);
+                    color.A = 255;
+                    this.Color = new SolidColorBrush(color);
                 }
                 else
                 {
-                    this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
+                    color.A = 175;
+                    this.Color = new SolidColorBrush(color);
                     //if(_canEdit == Atom.EditStatus.Yes)
                     //{
                     //    this.Color = new SolidColorBrush(Constants.DefaultColor);

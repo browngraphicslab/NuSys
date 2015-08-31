@@ -18,52 +18,61 @@ namespace NuSysApp
     {
         public WorkSpaceModel WorkSpaceModel{get;}
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
-        private Dictionary<string, Delegate> _creationCallbacks; 
+
+        private Dictionary<string, Action<string>> _creationCallbacks;
+        private HashSet<string> _sendablesLocked;
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
-            _creationCallbacks = new Dictionary<string, Delegate>();
+            _creationCallbacks = new Dictionary<string, Action<string>>();
+             _sendablesLocked = new HashSet<string>();
+
         }
-        public async Task HandleMessage(string s)
+        public async Task HandleMessage(Dictionary<string,string> props)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                Dictionary<string, string> props = ParseOutProperties(s);//start by parsinjg properties to dictionary
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];//get id from dictionary
+                    _sendablesLocked.Add(id);
                     if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
                         Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
                         await n.UnPack(props);//update the sendable with the dictionary info
                     }
-                    else//if the sendable doesn't yey exist
+                    else//if the sendable doesn't yet exist
                     {
+                        await HandleCreateNewSendable(id, props);//create a new sendable
+                        if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                        {
+                            await HandleMessage(props);
+                        }
                         if (_creationCallbacks.ContainsKey(id))//check if a callback is waiting for that sendable to be created
                         {
                             _creationCallbacks[id].DynamicInvoke(id);
                             _creationCallbacks.Remove(id);
                         }
-                        await HandleCreateNewSendable(id, props);//create a new sendable
                     }
+                    _sendablesLocked.Remove(id);
                 }
                 else
                 {
-                    Debug.WriteLine("ID was not found in property list of message: " + s);
+                    Debug.WriteLine("ID was not found in property list of message: ");
                 }
             });
         }
 
+        public bool IsSendableLocked(string id)
+        {
+            return _sendablesLocked.Contains(id);
+        }
         public async Task HandleCreateNewSendable(string id, Dictionary<string,string> props)
         {
             if (props.ContainsKey("type") && props["type"] == "ink")
             {
-                if (props.ContainsKey("inkType") && props["inkType"] == "global")
-                {
-                    await HandleCreateNewGlobalInk(id, props);
-
-                }
+                    await HandleCreateNewInk(id, props);
             }
             else if (props.ContainsKey("type") && props["type"] == "group")
             {
@@ -77,8 +86,30 @@ namespace NuSysApp
             {
                 await HandleCreateNewLink(id, props);
             }
+            else if (props.ContainsKey("type") && (props["type"] == "pin"))
+            {
+                await HandleCreateNewPin(id, props);
+            }
         }
 
+        public async Task HandleCreateNewPin(string id, Dictionary<string, string> props)
+        {
+            double x = 0;
+            double y = 0;
+            if (props.ContainsKey("x") && props.ContainsKey("y"))
+            {
+                try
+                {
+                    x = double.Parse(props["x"]);
+                    y = double.Parse(props["y"]);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Pin creation failed because coordinates could not be parsed to doubles");
+                }
+                await WorkSpaceModel.CreateNewPin(id, x, y);
+            }
+        }
         public async Task HandleCreateNewLink(string id, Dictionary<string, string> props)
         {
             string id1 = "null";
@@ -134,7 +165,7 @@ namespace NuSysApp
                     case NodeType.Ink:
                         try
                         {
-                            data = ParseToPolyline(d);
+                            data = ParseToPolyline(d, id);
                         }
                         catch (Exception e)
                         {
@@ -179,7 +210,6 @@ namespace NuSysApp
             {
                 props.Remove("data");
             }
-            await WorkSpaceModel.IDToSendableDict[props["id"]].UnPack(props);
         }
         public async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
         {
@@ -202,63 +232,70 @@ namespace NuSysApp
             }
             await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
         }
-        public async Task HandleCreateNewGlobalInk(string id, Dictionary<string, string> props)
+        public async Task HandleCreateNewInk(string id, Dictionary<string, string> props)
         {
-            if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
+            if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"]== "WORKSPACE_ID"))
             {
-                InqLine l = ParseToLineSegment(props);
-                if (l == null) return;
-
-                if (WorkSpaceModel.PartialLines.ContainsKey(id))
+                InqCanvasModel canvas;
+                if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
-                    WorkSpaceModel.PartialLines[id].Add(l);
+                    canvas = ((Node) WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas;
                 }
                 else
                 {
-                    WorkSpaceModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
-                    WorkSpaceModel.PartialLines[id].Add(l);
+                    canvas = WorkSpaceModel.InqModel;
+                }
+                if (props.ContainsKey("inkType") && props["inkType"] == "partial")
+                {
+                    InqLine l = ParseToLineSegment(props);
+                    if (l == null)
+                    {
+                        Debug.WriteLine("failed to parse message to inqline");
+                        return;
+                    }
+                    canvas.AddTemporaryInqline(l, id);
+                }
+                else if (props.ContainsKey("inkType") && props["inkType"] == "full")
+                {
+                    if (props.ContainsKey("data"))
+                    {
+                        InqLine line = ParseToPolyline(props["data"], id);
+                        WorkSpaceModel.IDToSendableDict.Add(id, line);
+                        if (props.ContainsKey("previousID") &&
+                            WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                        {
+                            canvas.OnFinalizedLine += delegate
+                            {
+                               canvas.RemovePartialLines(props["previousID"]);
+                            };
+                        }
+                        canvas.FinalizeLine(line);
+                    }
                 }
             }
-            else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
+            else
             {
-                if (props.ContainsKey("data"))
-                {
-                    List<InqLine> lines = ParseToPolyline(props["data"]);
-                    if (lines.Count == 0) return;
-                    InqLine line = lines[0];
-                    WorkSpaceModel.IDToSendableDict.Add(id, line);
-                    WorkSpaceModel.AddGlobalInq(line);
-                }
-                if (props.ContainsKey("previousID") &&
-                    WorkSpaceModel.PartialLines.ContainsKey(props["previousID"]))
-                {
-                    ObservableCollection<InqLine> oc = WorkSpaceModel.PartialLines[props["previousID"]];
-                    foreach (InqLine l in oc)
-                    {
-                        ((InqCanvas)l.Parent).Children.Remove(l);
-                    }
-                    WorkSpaceModel.PartialLines.Remove(props["previousID"]);
-                }
+                Debug.WriteLine("Ink creation failed because no canvas ID was given or the ID wasn't valid");
             }
         }
-        public async Task RemoveNode(string id)
+        public async Task RemoveSendable(string id)
         {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
-                    WorkSpaceModel.RemoveNode(id);
+                    WorkSpaceModel.RemoveSendable(id);
                 }
             });
         }
-        public bool HasAtom(string id)
+        public bool HasSendableID(string id)
         {
             return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
         }
         public async Task SetAtomLock(string id, string ip)
         {
-            if (!HasAtom(id))
+            if (!HasSendableID(id))
             {
                 Debug.WriteLine("got lock update from unknown node");
                 return;
@@ -270,88 +307,21 @@ namespace NuSysApp
         {
             return Convert.FromBase64String(s);
         }
-        private List<InqLine> ParseToPolyline(string s)
+        private InqLine ParseToPolyline(string s, string id)
         {
-
-            List<InqLine> polys = new List<InqLine>();
-            string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.None);
-            foreach (string part in parts)
-            {
-                InqLine line = new InqLine();
-                string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.None);
-                foreach (string subpart in subparts)
-                {
-                    if (subpart.Length > 0 && subpart != "polyline")
-                    {
-                        if (subpart.Substring(0, 6) == "points")
-                        {
-                            string innerPoints = subpart.Substring(8, subpart.Length - 9);
-                            string[] points = innerPoints.Split(new string[] { ";" }, StringSplitOptions.None);
-                            foreach (string p in points)
-                            {
-                                if (p.Length > 0)
-                                {
-                                    string[] coords = p.Split(new string[] { "," }, StringSplitOptions.None);
-                                    //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
-                                    line.AddPoint(parsedPoint);
-                                }
-                            }
-                        }
-                        else if (subpart.Substring(0, 9) == "thickness")
-                        {
-                            string sp = subpart.Substring(11, subpart.Length - 13);
-                            line.StrokeThickness = double.Parse(sp);
-                        }
-                        else if (subpart.Substring(0, 6) == "stroke")
-                        {
-                            string sp = subpart.Substring(8, subpart.Length - 10);
-                            line.Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 1));
-                            //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
-                        }
-                    }
-                }
-                if (line.Points.Count > 0)
-                {
-                    polys.Add(line);
-                }
-            }
-            return polys;
+            return InqLine.ParseToPolyline(s, id);
         }
-        private Dictionary<string, string> ParseOutProperties(string message)
+        private HashSet<string> LocksNeeded(List<string> ids)
         {
-            message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.None);
-            Dictionary<string, string> props = new Dictionary<string, string>();
-            foreach (string part in parts)
+            HashSet<string> set = new HashSet<string>();
+            foreach (string id in ids)
             {
-                if (part.Length > 0)
+                if (HasSendableID(id))
                 {
-                    string[] subParts = part.Split(new string[] { "=" },2, StringSplitOptions.None);
-                    if (subParts.Length != 2)
-                    {
-                        Debug.WriteLine("Error, property formatted wrong in message: " + message);
-                        continue;
-                    }
-                    if (!props.ContainsKey(subParts[0]))
-                    {
-                        props.Add(subParts[0], subParts[1]);
-                    }
-                    else
-                    {
-                        props[subParts[0]] = subParts[1];
-                    }
+                    set.Add(id);
+                        //TODO make this method return a set of all associated atoms needing to be locked as well.
+                    return set;
                 }
-            }
-            return props;
-        }
-        private HashSet<string> LocksNeeded(string id)
-        {
-            if (HasAtom(id))
-            {
-                HashSet<string> set = new HashSet<string>();
-                set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
-                return set;
             }
             return new HashSet<string>();
         }
@@ -416,19 +386,21 @@ namespace NuSysApp
             }
         }
 
-        public void AddCreationCallback(string id, Delegate d)
+        public void AddCreationCallback(string id, Action<string> d)
         {
             _creationCallbacks.Add(id, d);
         }
         public bool HasLock(string id)
         {
-            return WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP;
+            var sendable = WorkSpaceModel.IDToSendableDict[id];
+            bool isLine = sendable is InqLine;
+            return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         
-        public async Task CheckLocks(string id)
+        public async Task CheckLocks(List<string> ids)
         {
             Debug.WriteLine("Checking locks");
-            HashSet<string> locksNeeded = LocksNeeded(id);
+            HashSet<string> locksNeeded = LocksNeeded(ids);
             List<string> locksToReturn = new List<string>();
             foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
             {
@@ -464,11 +436,15 @@ namespace NuSysApp
         }
         public async Task ForceSetLocks(string message)
         {
-            WorkSpaceModel.Locks.Clear();
-            foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                await SetAtomLock(kvp.Key, kvp.Value);
-            }
+                WorkSpaceModel.Locks.Clear();
+                foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+                {
+                    await SetAtomLock(kvp.Key, kvp.Value);
+                }
+            });
         }
 
         public string GetAllLocksToSend()
@@ -477,7 +453,7 @@ namespace NuSysApp
         }
         public async Task<Dictionary<string, string>> GetNodeState(string id)
         {
-            if (HasAtom(id))
+            if (HasSendableID(id))
             {
                 return await WorkSpaceModel.IDToSendableDict[id].Pack();
             }
@@ -501,18 +477,21 @@ namespace NuSysApp
         private Dictionary<string, string> StringToDict(string s)
         {
             Dictionary<string,string> dict = new Dictionary<string, string>();
-            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.None);
+            string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.None);
-                dict.Add(kvpparts[0], kvpparts[1]);
+                string[] kvpparts = kvpString.Split(new string[] { ":" },2, StringSplitOptions.RemoveEmptyEntries);
+                if (kvpparts.Length == 2)
+                {
+                    dict.Add(kvpparts[0], kvpparts[1]);
+                }
             }
             return dict;
         }
 
         private InqLine ParseToLineSegment(Dictionary<string,string> props)
         {
-            InqLine l = new InqLine();
+            InqLine l = new InqLine("");
             if (props.ContainsKey("x1") && props.ContainsKey("y1") && props.ContainsKey("x2") && props.ContainsKey("y2"))
             {
                 Point one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));

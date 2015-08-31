@@ -23,7 +23,6 @@ namespace NuSysApp.Views.Workspace
 
         protected void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (!(dc is WorkspaceViewModel))
             {

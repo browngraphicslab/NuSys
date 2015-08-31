@@ -15,33 +15,97 @@
     <UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="bConverter"/>
+
+        <Storyboard x:Key="slideout" x:Name="slideout">
+            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="slidein" x:Name="slidein">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Key="colorout" x:Name="colorout">
+            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Colors" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="Colors">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>True</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="colorin" x:Name="colorin">
+            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Colors" d:IsOptimized="True"/>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="Colors">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                    <DiscreteObjectKeyFrame.Value>
+                        <x:Boolean>False</x:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
     </UserControl.Resources>
+    <Canvas>
+        <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+            <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".5" CompositeMode="MinBlend">
+                <Path.Data>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
 
-    <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
-        <Path x:Name="BezierLink" Stroke="{Binding IsSelected, Converter={StaticResource sConverter}}" StrokeThickness="30" Opacity=".85" CompositeMode="MinBlend">
-            <Path.Data>
-                <PathGeometry>
-                    <PathGeometry.Figures>
-                        <PathFigureCollection>
+                                <!--this startpoint should be bound to node centerpoint-->
 
-                            <!--this startpoint should be bound to node centerpoint-->
+                                <PathFigure x:Name="pathfigure">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
 
-                            <PathFigure x:Name="pathfigure">
-                                <PathFigure.Segments>
-                                    <PathSegmentCollection>
-
-                                        <!-- this bezier segment has 3 points of curvilinear change. -->
-                                        <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
+                                            <!-- this bezier segment has 3 points of curvilinear change. -->
+                                            <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
                                             node on the other end of the link -->
 
-                                        <BezierSegment x:Name="curve"/>
-                                    </PathSegmentCollection>
-                                </PathFigure.Segments>
-                            </PathFigure>
-                        </PathFigureCollection>
-                    </PathGeometry.Figures>
-                </PathGeometry>
-            </Path.Data>
-        </Path>
-    </Grid>
+                                            <BezierSegment x:Name="curve"/>
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </Path.Data>
+            </Path>
+        </Grid>
+        <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" 
+                Orientation="Horizontal" Height="75" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0" IsHitTestVisible="False">
+            <StackPanel.RenderTransform>
+                <CompositeTransform/>
+            </StackPanel.RenderTransform>
+            <!--delete button needs to be hooked up to delete handler-->
+            <Button x:Name="Delete" Click="Delete_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+            </Button>
+            <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
+            <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
+                        VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Opacity="0" IsHitTestVisible="False">
+                <StackPanel.RenderTransform>
+                    <CompositeTransform />
+                </StackPanel.RenderTransform>
+                <Button x:Name="Green" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#bef08e"></Button>
+                <Button x:Name="Red" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#ff9895"></Button>
+                <Button x:Name="Gray" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4"></Button>
+            </StackPanel>
+        </StackPanel>
+    </Canvas>
 </UserControl>

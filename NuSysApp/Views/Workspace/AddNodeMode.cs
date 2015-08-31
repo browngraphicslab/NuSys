@@ -1,11 +1,13 @@
 ﻿using NuSysApp.Views.Workspace;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -13,41 +15,83 @@ namespace NuSysApp
     public class AddNodeMode : AbstractWorkspaceViewMode
     {
         readonly NodeType _nodeType;
+        private bool _isDragging;
+        private PseudoNode _tempNode;
+        private Point _startPos;
 
         public AddNodeMode(WorkspaceView view, NodeType nodeType) : base(view) {
             _nodeType = nodeType;
+            _tempNode = new PseudoNode();
         }
         
         public override async Task Activate()
         {
             _view.IsRightTapEnabled = true;
-            _view.RightTapped += OnRightTapped;
+            _view.ManipulationMode = ManipulationModes.All;
+
+            _view.ManipulationStarted += OnManipulationStarted;
+            _view.ManipulationDelta += OnManipulationDelta;
+            _view.ManipulationCompleted += OnManipulationCompleted;
+        }
+
+        private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            _tempNode.Width = 1;
+            _tempNode.Height = 1;
+            _startPos = new Point(e.Position.X, e.Position.Y);
+            Canvas.SetLeft(_tempNode, _startPos.X);
+            Canvas.SetTop(_tempNode, _startPos.Y);
+            _view.MainCanvas.Children.Add(_tempNode);         
+            _isDragging = true;
+            e.Handled = true;
+        }
+
+        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (_isDragging) {
+                var translation = e.Cumulative.Translation;
+                if (translation.X > 0)
+                    _tempNode.Width = translation.X;
+                if (translation.Y > 0)
+                    _tempNode.Height = translation.Y;
+            }
+            e.Handled = true;
+        }
+
+        private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (_isDragging) { 
+                _view.MainCanvas.Children.Remove(_tempNode);
+
+                var wvm = (WorkspaceViewModel) _view.DataContext;
+                var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));
+                await AddNode(_view, _startPos, new Size(r.Width, r.Height), _nodeType);
+            }
+            _isDragging = false;
+            e.Handled = true;
         }
 
         public override async Task Deactivate()
         {
             _view.IsRightTapEnabled = false;
-            _view.RightTapped -= OnRightTapped;
-        }
-
-        private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            await AddNode(_view, e.GetPosition(_view), _nodeType);
-            e.Handled = true;
+            _view.ManipulationMode = ManipulationModes.None;
+            _view.ManipulationStarted -= OnManipulationStarted;
+            _view.ManipulationDelta -= OnManipulationDelta;
+            _view.ManipulationCompleted -= OnManipulationCompleted;
+            _isDragging = false;
         }
 
         public static void CheckFileType(string fileType)
         {
-            if (fileType != "application.pdf" && fileType != "image/tiff" && fileType != "image/jpeg" &&
+            if (fileType != "application/pdf" && fileType != "image/tiff" && fileType != "image/jpeg" &&
                 fileType != "image/png") //TO-DO: allow other types we support that haven't been added here yet
             {
                 throw new Exception("The file format you selected is currently supported.");
             }
         }
 
-        // This method is public because it's also used in CortanaMode.cs
         // TODO: this should be refactored!
-        public static async Task AddNode(WorkspaceView view, Point pos, NodeType nodeType, object data = null)    {
+        private async Task AddNode(WorkspaceView view, Point pos, Size size, NodeType nodeType, object data = null)    {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
@@ -100,7 +144,10 @@ namespace NuSysApp
                     data = Convert.ToBase64String(fileBytes);
                 }
             }
-            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString());
+            var dict = new Dictionary<string, string>();
+            dict["width"] = size.Width.ToString();
+            dict["height"] = size.Height.ToString();
+            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString(), null, dict);
             vm.ClearSelection();
 
             // Switch back to select mode

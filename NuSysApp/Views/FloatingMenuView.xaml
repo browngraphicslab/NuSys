@@ -229,55 +229,15 @@
             <Button x:Name="additionalButton" Tapped="Additional_OnTapped" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_additional.png" Height="40" Width="40"></Image>
             </Button>
-
-            <!--<Button x:Name ="linkButton" Style="{StaticResource FloatingButton}"  Tapped="LinkButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_selectink.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>-->
-            <!--<Button x:Name="textButton" Style="{StaticResource FloatingButton}" Tapped="TextButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_text.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>-->
-            <!--<Button x:Name="scribbleButton" Style="{StaticResource FloatingButton}" Tapped="InkNodeButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_scribble.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>-->
-            <!--<Button Name="docButton" Style="{StaticResource FloatingButton}" Tapped="DocumentButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/icon_document.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>-->
-            <!--<Button Name="cortanaButton" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
-            <Button Name="audioCaptureButton" Style="{StaticResource FloatingButton}" Tapped="AudioCaptureButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/mic icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>
-            </Button>-->
-            <!-- just for testing -->
-            <!--<Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/save icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>-->
-            <!-- just for testing -->
-            <!--<Button Name="saveButton" Style="{StaticResource FloatingButton}" Tapped="SaveButton_Click" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0">
-                <Button.Background>
-                    <ImageBrush ImageSource="ms-appx:///Assets/load icon.png" Stretch="Uniform"></ImageBrush>
-                </Button.Background>
-            </Button>-->
         </StackPanel>
+        
         <StackPanel x:Name="SubMenuPen" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,120,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
+            <Button x:Name="GlobalInkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
+            </Button>
             <Button x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource FloatingButton}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_eraser.png"></Image>
             </Button>
@@ -289,6 +249,9 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
+            <Button x:Name="SelectButton" Style="{StaticResource FloatingButton}" Tapped="Idle_OnTapped" HorizontalAlignment="Center" Height="100">
+                <Image Source="ms-appx:///Assets/icon_select.png" Height="40" Width="40"></Image>
+            </Button>
             <Button x:Name="MultiSelect" Style="{StaticResource FloatingButton}" Tapped="LinkButton_Click">
                 <Image Height="50" Width="50" Source="ms-appx:///Assets/icon_multiselect.png"></Image>
             </Button>
@@ -318,12 +281,6 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <!--<Button x:Name="Record" Style="{StaticResource FloatingButton}" Tapped="CortanaButton_Click">
-                <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record.png"></Image>
-            </Button>-->
-            <Button x:Name="CortanaButton" Tapped="CortanaButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}" HorizontalAlignment="Center" Height="100">
-                <Image Source="ms-appx:///Assets/icon_record.png" Height="40" Width="40"></Image>
-            </Button>
             <Button x:Name="Load" Tapped ="LoadButton_Click" Style="{StaticResource FloatingButton}" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/open icon.png"></Image>
             </Button>
