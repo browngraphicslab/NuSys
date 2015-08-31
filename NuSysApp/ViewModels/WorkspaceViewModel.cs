@@ -12,7 +12,7 @@ namespace NuSysApp
     /// <summary>
     /// Models the basic Workspace and maintains a list of all atoms. 
     /// </summary>
-    public class WorkspaceViewModel : BaseINPC
+    public class WorkspaceViewModel : AtomViewModel
     {
         #region Private Members
 
@@ -20,7 +20,7 @@ namespace NuSysApp
         private AtomViewModel _preparedAtomVm;
         #endregion Private Members
 
-        public WorkspaceViewModel(WorkSpaceModel model)
+        public WorkspaceViewModel(WorkSpaceModel model) : base(model, null)
         {
             Model = model;
             AtomViewList = new ObservableCollection<UserControl>();
@@ -31,7 +31,7 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
             this.SetUpTransforms();
-            this.SetUpHandlers();           
+            this.SetUpHandlers();
         }
 
         #region Helper Methods
@@ -50,7 +50,7 @@ namespace NuSysApp
         private void SetUpHandlers()
         {
             this.Model.OnCreation += CreatedHandler;
-            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
+            //this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
             this.Model.OnGroupCreation += CreateNewGroupHandler;
             this.Model.OnPinCreation += CreatePinHandler;
         }
@@ -97,16 +97,24 @@ namespace NuSysApp
             return false;
         }
 
+        /// <summary>
+        /// This method performs 3 checks: First, it checks whether "node" has been dragged out of the
+        /// group. If yes, the node is moved from the group to the workspace. Second, it checks if
+        /// "node" has been dragged onto a preexisting group. If yes, "node" is added to the group.
+        /// Third, if "node" has neither been dragged out of the group nor added to a pre-existing group,
+        /// a new group is created that will contain "node" and its intersecting node.
+        /// </summary>
+        /// <param name="node"></param>
         public void CheckForNodeNodeIntersection(NodeViewModel node)
         {
-            if (node.ParentGroup != null)
+            if (node.ParentGroup != null)//Node is in a group (meaning not the workspace)
             {
                 var x = node.Transform.Matrix.OffsetX * node.ParentGroup.LocalTransform.ScaleX;
                 var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
-                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0)
+                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0)//node has been moved out of its group
                 {
                     var nodeModel = (Node)node.Model;
-                    nodeModel.MoveToGroup(null);
+                    nodeModel.MoveToGroup(null);//remove from group (meaning move back to workspace)
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     return;
                 }
@@ -118,21 +126,41 @@ namespace NuSysApp
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    if (node is GroupViewModel)
-                    {   
-                        return;
+                    if (node is GroupViewModel)//dragging nested group onto node or group
+                    {
+                        return;//currently, do nothing
                     }
-                    if (node2 is GroupViewModel)
+                    if (node2 is GroupViewModel)//dragging nested group onto existing group
                     {
                         var group = (Group)(((GroupViewModel)node2).Model);
                         var nodeModel = (Node)node.Model;
                         nodeModel.MoveToGroup(group);
                         return;
                     }
+                    //no group exists, request network to make one
                     NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
                     return;
                 }
             }
+        }
+        
+        public void DeleteLink(LinkViewModel linkViewModel)
+        {
+            //Remove all the node's links
+            var toDelete = new List<LinkViewModel>();
+            foreach (var linkVm in linkViewModel.LinkList)
+            {
+                AtomViewList.Remove(linkVm.View);
+                toDelete.Add(linkVm);
+            }
+
+            foreach (var linkVm in toDelete) //second loop avoids concurrent modification error
+            {
+                linkVm.Remove();
+                linkViewModel.LinkList.Remove(linkVm);
+            }
+            AtomViewList.Remove(linkViewModel.View);
+            LinkViewModelList.Remove(linkViewModel);
         }
 
         /// <summary>
@@ -187,7 +215,9 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void SetSelection(AtomViewModel selected)
         {
-            NetworkConnector.Instance.ModelIntermediate.CheckLocks(selected.Model.ID);
+            List<string> locks = new List<string>();
+            locks.Add(selected.Model.ID);
+            NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
             if (selected.Model.CanEdit == Atom.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);
@@ -343,6 +373,7 @@ namespace NuSysApp
             var type = model.NodeType;
             var x = model.X;
             var y = model.Y;
+            
             switch (type)
             {
                 case NodeType.Text:
@@ -376,6 +407,14 @@ namespace NuSysApp
                 default:
                     return;
                     break;
+            }
+            var view = vm.View;
+            var tpl = view.FindName("nodeTpl") as NodeTemplate;
+            if (tpl != null)
+            {
+                tpl.OnTemplateReady += delegate {
+                    new InqCanvasViewModel(tpl.inkCanvas, model.InqCanvas);
+                };
             }
             AtomViewList.Add(vm.View);
             NodeViewModelList.Add(vm);
@@ -447,6 +486,9 @@ namespace NuSysApp
                 RaisePropertyChanged("FMTransform");
             }
         }
+
+        public override void Remove(){}
+        public override void UpdateAnchor() { }
 
         public Dictionary<string, GroupViewModel> GroupDict { get; private set; }
 

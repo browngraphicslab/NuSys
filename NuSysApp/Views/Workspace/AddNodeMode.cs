@@ -49,8 +49,11 @@ namespace NuSysApp
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (_isDragging) {
-                _tempNode.Width += e.Delta.Translation.X;
-                _tempNode.Height += e.Delta.Translation.Y;
+                var translation = e.Cumulative.Translation;
+                if (translation.X > 0)
+                    _tempNode.Width = translation.X;
+                if (translation.Y > 0)
+                    _tempNode.Height = translation.Y;
             }
             e.Handled = true;
         }
@@ -87,7 +90,6 @@ namespace NuSysApp
             }
         }
 
-        // This method is public because it's also used in CortanaMode.cs
         // TODO: this should be refactored!
         private async Task AddNode(WorkspaceView view, Point pos, Size size, NodeType nodeType, object data = null)    {
             var vm = (WorkspaceViewModel)view.DataContext;

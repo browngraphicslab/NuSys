@@ -38,7 +38,12 @@ namespace NuSysApp
             this.AnchorY = (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
             this.View = new BezierLinkView(this);  
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));          
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));
+            ((Link)this.Model).OnDeletion += DeletionHappend;
+        }
+        private void DeletionHappend(object source, DeleteEventArgs e)
+        {
+            this.WorkSpaceViewModel.DeleteLink(this);
         }
 
         #region Link Manipulation Methods

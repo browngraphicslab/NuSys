@@ -42,11 +42,14 @@ namespace NuSysApp
                         Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
                         await n.UnPack(props);//update the sendable with the dictionary info
                     }
-                    else//if the sendable doesn't yey exist
+                    else//if the sendable doesn't yet exist
                     {
 
                         await HandleCreateNewSendable(id, props);//create a new sendable
-                        await HandleMessage(props);
+                        if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                        {
+                            await HandleMessage(props);
+                        }
 
                         if (_creationCallbacks.ContainsKey(id))//check if a callback is waiting for that sendable to be created
                         {
@@ -71,11 +74,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("type") && props["type"] == "ink")
             {
-                if (props.ContainsKey("inkType") && props["inkType"] == "global")
-                {
-                    await HandleCreateNewGlobalInk(id, props);
-
-                }
+                    await HandleCreateNewInk(id, props);
             }
             else if (props.ContainsKey("type") && props["type"] == "group")
             {
@@ -256,41 +255,50 @@ namespace NuSysApp
             }
             await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
         }
-        public async Task HandleCreateNewGlobalInk(string id, Dictionary<string, string> props)
+        public async Task HandleCreateNewInk(string id, Dictionary<string, string> props)
         {
-            if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
+            if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"]== "WORKSPACE_ID"))
             {
-                InqLine l = ParseToLineSegment(props);
-                if (l == null) return;
-
-                if (WorkSpaceModel.InqModel.PartialLines.ContainsKey(id))
+                InqCanvasModel canvas;
+                if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
-                    WorkSpaceModel.InqModel.PartialLines[id].Add(l);
+                    canvas = ((Node) WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas;
                 }
                 else
                 {
-                    WorkSpaceModel.InqModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
-                    WorkSpaceModel.InqModel.PartialLines[id].Add(l);
+                    canvas = WorkSpaceModel.InqModel;
+                }
+                if (props.ContainsKey("inkType") && props["inkType"] == "partial")
+                {
+                    InqLine l = ParseToLineSegment(props);
+                    if (l == null)
+                    {
+                        Debug.WriteLine("failed to parse message to inqline");
+                        return;
+                    }
+                    canvas.AddTemporaryInqline(l, id);
+                }
+                else if (props.ContainsKey("inkType") && props["inkType"] == "full")
+                {
+                    if (props.ContainsKey("data"))
+                    {
+                        InqLine line = ParseToPolyline(props["data"], id);
+                        WorkSpaceModel.IDToSendableDict.Add(id, line);
+                        if (props.ContainsKey("previousID") &&
+                            WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                        {
+                            canvas.OnFinalizedLine += delegate
+                            {
+                               canvas.RemovePartialLines(props["previousID"]);
+                            };
+                        }
+                        canvas.FinalizeLine(line);
+                    }
                 }
             }
-            else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
+            else
             {
-                if (props.ContainsKey("data"))
-                {
-                    InqLine line = ParseToPolyline(props["data"], id);
-                    WorkSpaceModel.IDToSendableDict.Add(id, line);
-                    WorkSpaceModel.AddGlobalInq(line);
-                }
-                if (props.ContainsKey("previousID") &&
-                    WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
-                {
-                    ObservableCollection<InqLine> oc = WorkSpaceModel.InqModel.PartialLines[props["previousID"]];
-                    foreach (InqLine l in oc)
-                    {
-                        ((InqCanvasView)l.Parent).Children.Remove(l);
-                    }
-                    WorkSpaceModel.InqModel.PartialLines.Remove(props["previousID"]);
-                }
+                Debug.WriteLine("Ink creation failed because no canvas ID was given or the ID wasn't valid");
             }
         }
         public async Task RemoveSendable(string id)
@@ -326,13 +334,17 @@ namespace NuSysApp
         {
             return InqLine.ParseToPolyline(s, id);
         }
-        private HashSet<string> LocksNeeded(string id)
+        private HashSet<string> LocksNeeded(List<string> ids)
         {
-            if (HasSendableID(id))
+            HashSet<string> set = new HashSet<string>();
+            foreach (string id in ids)
             {
-                HashSet<string> set = new HashSet<string>();
-                set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
-                return set;
+                if (HasSendableID(id))
+                {
+                    set.Add(id);
+                        //TODO make this method return a set of all associated atoms needing to be locked as well.
+                    return set;
+                }
             }
             return new HashSet<string>();
         }
@@ -408,10 +420,10 @@ namespace NuSysApp
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         
-        public async Task CheckLocks(string id)
+        public async Task CheckLocks(List<string> ids)
         {
             Debug.WriteLine("Checking locks");
-            HashSet<string> locksNeeded = LocksNeeded(id);
+            HashSet<string> locksNeeded = LocksNeeded(ids);
             List<string> locksToReturn = new List<string>();
             foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
             {
@@ -447,11 +459,15 @@ namespace NuSysApp
         }
         public async Task ForceSetLocks(string message)
         {
-            WorkSpaceModel.Locks.Clear();
-            foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                await SetAtomLock(kvp.Key, kvp.Value);
-            }
+                WorkSpaceModel.Locks.Clear();
+                foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+                {
+                    await SetAtomLock(kvp.Key, kvp.Value);
+                }
+            });
         }
 
         public string GetAllLocksToSend()
@@ -487,8 +503,11 @@ namespace NuSysApp
             string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                dict.Add(kvpparts[0], kvpparts[1]);
+                string[] kvpparts = kvpString.Split(new string[] { ":" },2, StringSplitOptions.RemoveEmptyEntries);
+                if (kvpparts.Length == 2)
+                {
+                    dict.Add(kvpparts[0], kvpparts[1]);
+                }
             }
             return dict;
         }

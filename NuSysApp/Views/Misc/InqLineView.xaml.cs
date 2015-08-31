@@ -32,7 +32,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.CanEdit = Atom.EditStatus.Maybe;
         }
-
+        public PolyLine PolyLine { get { return Line; } }
         private void Update(object sender, PropertyChangedEventArgs args)
         {
             InqLineViewModel vm = (InqLineViewModel) sender;

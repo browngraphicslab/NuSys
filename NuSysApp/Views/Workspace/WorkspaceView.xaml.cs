@@ -39,7 +39,8 @@ namespace NuSysApp
         public WorkspaceView()
         {
             this.InitializeComponent();
-            InqCanvasModel inqCanvasModel = this.InqCanvas.ViewModel.Model;
+            InqCanvasModel inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
+            new InqCanvasViewModel(inqCanvas, inqCanvasModel);
             var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             this.DataContext = vm;
 
@@ -98,7 +99,7 @@ namespace NuSysApp
                         new FloatingMenuMode(this)));
                     break;
                 case Options.PromoteInk:
-                    SetViewMode(new MultiMode(this, new PanZoomMode(this)));
+                    SetViewMode(new MultiMode(this, new MultiSelectMode(this)));
                     break;
                 case Options.AddInkNode:
                     await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));

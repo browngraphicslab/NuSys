@@ -122,29 +122,23 @@ namespace NuSysApp
             _nodeViewModelList.Remove(toRemove);
             ((Group)Model).NodeModelList.Remove((Node)toRemove.Model);
 
-            switch (_nodeViewModelList.Count)
+            if (NodeViewModelList.Count == 1)
             {
-                case 0://Currently this case never happens
-                    //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);
-                    WorkSpaceViewModel.DeleteNode(this);
-                    break;
-                case 1:
-                    var lastNode = _nodeViewModelList[0];
-                    ((Node)(lastNode.Model)).MoveToGroup(null);
-                    WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
-                    lastNode.ParentGroup = null;
-                    WorkSpaceViewModel.DeleteNode(this);
-                    //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
-                    foreach (var link in lastNode.LinkList)
-                    {
-                        link.SetVisibility(true);
-                        link.UpdateAnchor();
-                        link.Atom1.UpdateAnchor();
-                        link.Atom2.UpdateAnchor();
-                    }
-                    lastNode.UpdateAnchor();
-                    break;
-            }
+                var lastNode = _nodeViewModelList[0];
+                var nodeModel = (Node)lastNode.Model;
+                nodeModel.MoveToGroup(null);
+                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
+                WorkSpaceViewModel.DeleteNode(this);
+                //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
+                foreach (var link in lastNode.LinkList)
+                {
+                    link.SetVisibility(true);
+                    link.UpdateAnchor();
+                    link.Atom1.UpdateAnchor();
+                    link.Atom2.UpdateAnchor();
+                }
+                lastNode.UpdateAnchor();
+            }               
         }
 
         public CompositeTransform LocalTransform

@@ -29,14 +29,14 @@ namespace NuSysApp
 
         private bool _isHighlighting = false;
         private bool _isSelected = false;
-
         private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            /*
             var inqCanvas = this.Parent as InqCanvasView;
             if (inqCanvas.Mode is EraseInqMode&& inqCanvas.IsPressed)
             {
                 NetworkConnector.Instance.RequestDeleteSendable(this.ID);
-            }
+            }*/
         }
 
         public void Delete()
@@ -210,10 +210,11 @@ namespace NuSysApp
         public async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string,string> props = new Dictionary<string, string>();
+            props.Add("id", ID);
+            props.Add("canvasNodeID", ((InqCanvasViewModel) ((InqCanvasView) Parent).DataContext).Model.ID);
             props.Add("data", GetString());
             props.Add("type", "ink");
-            props.Add("inkType", "global");
-            props.Add("globalInkType", "full");
+            props.Add("inkType", "full");
             return props;
         }
 

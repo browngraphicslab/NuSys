@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -11,17 +12,21 @@ using NuSysApp.EventArgs;
 
 namespace NuSysApp
 {
-    public class InqCanvasModel : Sendable
+    public class InqCanvasModel
     {
         public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
         public event AddPartialLineEventHandler OnPartialLineAddition;
+
+        public event FinalizedLine OnFinalizedLine;
+        public delegate void FinalizedLine();
 
         private HashSet<InqLine> _lines;
         private ObservableDictionary<string, ObservableCollection<InqLine>> _partialLines;
 
 
-        public InqCanvasModel()
+        public InqCanvasModel(string id)
         {
+            ID = id;
             _lines = new HashSet<InqLine>();
             _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
             _partialLines.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args)
@@ -40,7 +45,8 @@ namespace NuSysApp
             };
 
         }
-
+        public HashSet<InqLine> Lines { get { return _lines; } }
+        public string ID { get; }
         public void Delete()
         {
             
@@ -59,14 +65,6 @@ namespace NuSysApp
             return plines;
         }
 
-        public async Task<Dictionary<string, string>> Pack()
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("id", ID);
-            dict.Add("polylines", InqlinesToString());
-            return dict;
-        }
-
         private InqLine ParseToPolyline(string s, string data)
         {
             return InqLine.ParseToPolyline(s, data);
@@ -82,29 +80,37 @@ namespace NuSysApp
             this._lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
+            OnFinalizedLine?.Invoke();
         }
 
         private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)
         {
             this._lines.Remove(deleteInqLineEventArgs.LineToDelete);
         }
-
-        public async Task UnPack(Dictionary<string, string> props)
-        {
-            if (props.ContainsKey("polylines"))
-            {
-                //var list = ParseToPolyline(props["polylines"]);
-                //foreach (var line in list)
-                //{
-                //    _lines.Add(line);
-                //}
-            }
-        }
-
-        public string ID { get; }
         public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines
         {
             get { return _partialLines; }
+        }
+
+        public void AddTemporaryInqline(InqLine line, string temporaryID)
+        {
+            if (!_partialLines.ContainsKey(temporaryID))
+            {
+                _partialLines.Add(temporaryID, new ObservableCollection<InqLine>());
+            }
+            _partialLines[temporaryID].Add(line);
+        }
+
+        public void RemovePartialLines(string oldID)
+        {
+            if (_partialLines.ContainsKey(oldID))
+            {
+                foreach (InqLine l in _partialLines[oldID])
+                {
+                    _lines.Remove(l);
+                }
+                _partialLines.Remove(oldID);
+            }
         }
         public Atom.EditStatus CanEdit { get; set; }
     }
