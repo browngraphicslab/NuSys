@@ -68,11 +68,11 @@ namespace NuSysApp
 
             //Atoms that this link is bound to
             XmlAttribute id1 = doc.CreateAttribute("atomID1");
-            id1.Value = InAtomID.ToString();
+            id1.Value = Atom1.ID;
             link.SetAttributeNode(id1);
 
             XmlAttribute id2 = doc.CreateAttribute("atomID2");
-            id2.Value = OutAtomID.ToString();
+            id2.Value = Atom2.ID;
             link.SetAttributeNode(id2);
 
             //Annotation, if any

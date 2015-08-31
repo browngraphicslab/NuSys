@@ -339,6 +339,12 @@ namespace NuSysApp
                 }
             }
 
+            foreach (var pinVm in PinViewModelList)
+            {
+                XmlElement ele = ((PinModel)pinVm.Model).WriteXML(doc);
+                parent.AppendChild(ele);
+            }
+
             foreach (var linkVm in LinkViewModelList)
             {
                 XmlElement ele = linkVm.WriteXML(doc);
