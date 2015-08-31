@@ -57,19 +57,21 @@ namespace NuSysApp
 
             foreach (XmlNode node in NodeList)
             {
-                string AtomType = node.Name;
-                string ID = Convert.ToString(node.Attributes.GetNamedItem("id").Value);
+                string AtomType = node.Name,
+                       ID       = Convert.ToString(node.Attributes.GetNamedItem("id").Value),
+                       x, y;
+
+                Dictionary<string, string> dict = new Dictionary<string, string>();
 
                 switch (AtomType)
                 {
                     case "Group":
-                        string x = node.Attributes.GetNamedItem("x").Value;
-                        string y = node.Attributes.GetNamedItem("y").Value;
-
                         await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
-                                Dictionary<string, string> dict = new Dictionary<string, string>();
+                                x = node.Attributes.GetNamedItem("x").Value;
+                                y = node.Attributes.GetNamedItem("y").Value;
+
                                 List<string> NodeIdList = new List<string>();
 
                                 /* have to split this into two because we need the first for-loop method to be 
@@ -106,6 +108,20 @@ namespace NuSysApp
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 await this.CreateNodeFromXml(vm, node);
+                            });
+                        break;
+                    case "Pin":
+                        x = node.Attributes.GetNamedItem("x").Value;
+                        y = node.Attributes.GetNamedItem("y").Value;
+                        string text = node.Attributes.GetNamedItem("text").Value;
+
+                        dict.Add("text", text);
+                        _atomUpdateDicts.Add(dict);
+
+                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                            CoreDispatcherPriority.Normal, async () =>
+                            {
+                                await NetworkConnector.Instance.RequestMakePin(x, y, ID, dict);
                             });
                         break;
                     default:
