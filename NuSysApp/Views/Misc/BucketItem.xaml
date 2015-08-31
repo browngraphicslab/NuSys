@@ -7,11 +7,12 @@
     xmlns:local="using:NuSysApp"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    >
 
-    <Grid>
-        <local:TextBoxExtended x:Name="textBox" Width="200" MinHeight="200" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity=".8" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" IsEnabled="False" />
+    <Grid BorderBrush="LightGray" MaxHeight="180">
+        <local:TextBoxExtended x:Name="textBox" Width="720" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity=".8" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Calibri"
+                                Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" IsHitTestVisible="False"  />
        
     </Grid>
 </UserControl>

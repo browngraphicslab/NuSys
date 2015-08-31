@@ -22,17 +22,18 @@ namespace NuSysApp {
         public BucketItem(string rtf)
         {
             this.InitializeComponent();
-
-            Loaded += delegate
+            
+            textBox.TextChanged += delegate
             {
-
-                textBox.Rtf = rtf;
-                var contentSize = textBox.ComputeContentSize();
-                Debug.WriteLine("adfasdf");
+                var contentHeight = textBox.ComputeRtfHeight();
+                textBox.Height = contentHeight;
+                //var scale = 300.0 / contentHeight;
+                var scale = 0.8;
+                textBox.RenderTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
             };
-                //Height = contentSize.Height;
-                //var scale = 200.0 / contentSize.Height;
-                // textBox.RenderTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
+
+            textBox.Rtf = rtf;
+
         }
     }
 }
