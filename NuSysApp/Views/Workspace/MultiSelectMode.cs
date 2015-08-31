@@ -193,7 +193,7 @@ namespace NuSysApp
                     var avm = atom.DataContext as AtomViewModel;
                     if (!avm.IsSelected)
                     {
-                        selected.Add(avm);
+                        
                     }
                 }
             }
