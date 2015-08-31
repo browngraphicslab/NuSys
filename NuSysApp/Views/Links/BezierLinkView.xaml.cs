@@ -246,7 +246,7 @@ namespace NuSysApp
         {
             var vm = (LinkViewModel) this.DataContext;
             Button colorButton = sender as Button;
-            if (colorButton.Name == "Red")
+            if (colorButton.Name == "Red") //TODO: DO NOT SWITCH ON A STRING - PLS FIX
             {
                 vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255,255,152,149));
             } else if (colorButton.Name == "Green")
