@@ -133,7 +133,7 @@ namespace NuSysApp
                 plines += "<polyline points='";
                 foreach (Point point in VisibleLine.Points)
                 {
-                    plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
+                    plines += point.X + "," + point.Y + ";";
                 }
                 plines += "' thickness='" + VisibleLine.StrokeThickness + "'>";
             }
