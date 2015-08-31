@@ -18,7 +18,7 @@ namespace NuSysApp
     {
         public WorkSpaceModel WorkSpaceModel{get;}
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
-
+        public HashSet<string> _deletedIDs; 
         private Dictionary<string, Action<string>> _creationCallbacks;
         private HashSet<string> _sendablesLocked;
         public ModelIntermediate(WorkSpaceModel wsm)
@@ -26,6 +26,7 @@ namespace NuSysApp
             WorkSpaceModel = wsm;
             _creationCallbacks = new Dictionary<string, Action<string>>();
              _sendablesLocked = new HashSet<string>();
+            _deletedIDs = new HashSet<string>();
 
         }
         public async Task HandleMessage(Dictionary<string,string> props)
@@ -44,15 +45,19 @@ namespace NuSysApp
                     }
                     else//if the sendable doesn't yet exist
                     {
-                        await HandleCreateNewSendable(id, props);//create a new sendable
-                        if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                        if (!_deletedIDs.Contains(id))
                         {
-                            await HandleMessage(props);
-                        }
-                        if (_creationCallbacks.ContainsKey(id))//check if a callback is waiting for that sendable to be created
-                        {
-                            _creationCallbacks[id].DynamicInvoke(id);
-                            _creationCallbacks.Remove(id);
+                            await HandleCreateNewSendable(id, props); //create a new sendable
+                            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                            {
+                                await HandleMessage(props);
+                            }
+                            if (_creationCallbacks.ContainsKey(id))
+                                //check if a callback is waiting for that sendable to be created
+                            {
+                                _creationCallbacks[id].DynamicInvoke(id);
+                                _creationCallbacks.Remove(id);
+                            }
                         }
                     }
                     _sendablesLocked.Remove(id);
@@ -287,6 +292,7 @@ namespace NuSysApp
                 {
                     WorkSpaceModel.RemoveSendable(id);
                 }
+                _deletedIDs.Add(id);
             });
         }
         public bool HasSendableID(string id)
