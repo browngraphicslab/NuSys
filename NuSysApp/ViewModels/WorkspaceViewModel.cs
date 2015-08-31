@@ -143,6 +143,25 @@ namespace NuSysApp
                 }
             }
         }
+        
+        public void DeleteLink(LinkViewModel linkViewModel)
+        {
+            //Remove all the node's links
+            var toDelete = new List<LinkViewModel>();
+            foreach (var linkVm in linkViewModel.LinkList)
+            {
+                AtomViewList.Remove(linkVm.View);
+                toDelete.Add(linkVm);
+            }
+
+            foreach (var linkVm in toDelete) //second loop avoids concurrent modification error
+            {
+                linkVm.Remove();
+                linkViewModel.LinkList.Remove(linkVm);
+            }
+            AtomViewList.Remove(linkViewModel.View);
+            LinkViewModelList.Remove(linkViewModel);
+        }
 
         /// <summary>
         /// Deletes a given node from the workspace, and their links.
