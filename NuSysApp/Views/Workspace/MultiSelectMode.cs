@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -27,7 +25,6 @@ namespace NuSysApp
         public MultiSelectMode(WorkspaceView view) : base(view)
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
-            vm.MultiSelectEnabled = true;
         }
 
         public override async Task Activate()
@@ -131,7 +128,7 @@ namespace NuSysApp
 
         private async void SelectContainedComponents()
         {
-            if(_currentRect == null) 
+            if (_currentRect == null)
                 return;
             Rect r = new Rect();
             r.Width = _currentRect.Width;
@@ -165,22 +162,25 @@ namespace NuSysApp
                     r.Y = currentP.Y;
                 }
             }
-
-            foreach (InqLine line in _view.InqCanvas.Strokes)
-            {
-                foreach (Point p in line.Points)
-                {
-                    if (r.Contains(p))
-                    {
-                        if (!line.IsSelected)
-                        {
-                            line.ToggleSelection();
-                            vm.SetSelection(line);
-                        }
-                        break;
-                    }
-                }
-            }
+            List<ISelectable> selected = new List<ISelectable>();
+            //foreach (UIElement element in _view.InqCanvas.Children)
+            //{
+            //    var line = element as InqLine;
+            //    if (line != null)
+            //    {
+            //        foreach (Point p in line.Points)
+            //        {
+            //            if (r.Contains(p))
+            //            {
+            //                if (!line.IsSelected)
+            //                {
+            //                    selected.Add(line);
+            //                }
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
 
             var atoms = vm.AtomViewList;
             foreach (var atom in atoms)
@@ -193,13 +193,10 @@ namespace NuSysApp
                     var avm = atom.DataContext as AtomViewModel;
                     if (!avm.IsSelected)
                     {
-                        avm.ToggleSelection();
+                        selected.Add(avm);
                     }
                 }
             }
         }
     }
 }
-
-
-
