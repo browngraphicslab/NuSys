@@ -210,6 +210,8 @@ namespace NuSysApp
         public async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string,string> props = new Dictionary<string, string>();
+            props.Add("id", ID);
+            props.Add("canvasID", ((InqCanvasViewModel) ((InqCanvasView) Parent).DataContext).Model.ID);
             props.Add("data", GetString());
             props.Add("type", "ink");
             props.Add("inkType", "global");

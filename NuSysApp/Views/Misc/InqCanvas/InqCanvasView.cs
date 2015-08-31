@@ -195,7 +195,6 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    Debug.WriteLine("adding to children");
                     Children.Add(vm.LastPartialLine);
                     break;
             }

@@ -429,11 +429,15 @@ namespace NuSysApp
         }
         public async Task ForceSetLocks(string message)
         {
-            WorkSpaceModel.Locks.Clear();
-            foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                await SetAtomLock(kvp.Key, kvp.Value);
-            }
+                WorkSpaceModel.Locks.Clear();
+                foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+                {
+                    await SetAtomLock(kvp.Key, kvp.Value);
+                }
+            });
         }
 
         public string GetAllLocksToSend()
