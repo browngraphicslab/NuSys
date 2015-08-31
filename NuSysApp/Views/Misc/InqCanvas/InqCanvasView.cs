@@ -189,16 +189,14 @@ namespace NuSysApp
         {
             get { return _mode; }
         }
-        private InqLine Last { get; set; }
         private void Update(object sender, PropertyChangedEventArgs e)
         {
             var vm = (InqCanvasViewModel)sender;
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(vm.LastPartialLine.ID) && Last!=vm.LastPartialLine)
+                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(vm.LastPartialLine.ID))
                     {
-                        Last = vm.LastPartialLine;
                         Debug.WriteLine("adding to children");
                         Children.Add(vm.LastPartialLine);
                     }
