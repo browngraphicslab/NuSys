@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -16,14 +16,24 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp
-{
-    public sealed partial class BucketWindow : UserControl
+namespace NuSysApp {
+    public sealed partial class BucketItem : UserControl
     {
-        public BucketWindow()
+        public BucketItem(string rtf)
         {
             this.InitializeComponent();
-            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));
+            
+            textBox.TextChanged += delegate
+            {
+                var contentHeight = textBox.ComputeRtfHeight();
+                textBox.Height = contentHeight;
+                //var scale = 300.0 / contentHeight;
+                var scale = 0.8;
+                textBox.RenderTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
+            };
+
+            textBox.Rtf = rtf;
+
         }
     }
 }

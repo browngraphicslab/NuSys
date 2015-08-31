@@ -53,9 +53,8 @@ namespace NuSysApp.Views.Workspace
             {
                 var vm = (NodeViewModel)dc;
                 vm.ToggleSelection();
-            }
-
-            e.Handled = true;
+                e.Handled = true;
+            }   
         }
     }
 }

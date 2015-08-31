@@ -13,12 +13,31 @@ namespace NuSysApp.Views.Workspace
         {
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
+
+            _view.FloatingMenu.ManipulationMode = ManipulationModes.All;
+            _view.FloatingMenu.ManipulationDelta += OnManipulationDelta;
+
         }
 
         public override async Task Deactivate()
         {
             _view.IsDoubleTapEnabled = false;
             _view.DoubleTapped -= OnDoubleTapped;
+
+            _view.FloatingMenu.ManipulationMode = ManipulationModes.None;
+            _view.FloatingMenu.ManipulationDelta -= OnManipulationDelta;
+        }
+
+        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            var vm = (WorkspaceViewModel)dc;
+            var compositeTransform = vm.FMTransform;
+
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            e.Handled = true;
         }
 
         protected void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -38,9 +57,7 @@ namespace NuSysApp.Views.Workspace
             floatingMenuTransform.TranslateY = p.Y;
             vm.FMTransform = floatingMenuTransform;
 
-            _view.FloatingMenu.Visibility = _view.FloatingMenu.Visibility == Visibility.Collapsed
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            _view.FloatingMenu.Visibility = Visibility.Visible;
 
             e.Handled = true;
         }

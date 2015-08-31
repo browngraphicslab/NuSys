@@ -133,7 +133,7 @@ namespace NuSysApp
                 plines += "<polyline points='";
                 foreach (Point point in VisibleLine.Points)
                 {
-                    plines += Math.Floor(point.X) + "," + Math.Floor(point.Y) + ";";
+                    plines += point.X + "," + point.Y + ";";
                 }
                 plines += "' thickness='" + VisibleLine.StrokeThickness + "'>";
             }
@@ -166,7 +166,7 @@ namespace NuSysApp
                                 {
                                     string[] coords = p.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                                     //Point point = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
-                                    Point parsedPoint = new Point(Int32.Parse(coords[0]), Int32.Parse(coords[1]));
+                                    Point parsedPoint = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
                                     line.AddPoint(parsedPoint);
                                 }
                             }

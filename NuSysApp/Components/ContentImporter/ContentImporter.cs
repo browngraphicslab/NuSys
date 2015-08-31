@@ -11,7 +11,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 
-namespace NuSysApp.Components.ContentImporter
+namespace NuSysApp
 {
     public class ContentImporter
     {
@@ -49,7 +49,7 @@ namespace NuSysApp.Components.ContentImporter
             };
         }
 
-
+        
         private async void SetupOfficeTransfer()
         {
             //TODO put this back in

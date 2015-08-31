@@ -7,7 +7,7 @@ namespace NuSysApp
 {
     public class AudioNodeViewModel: NodeViewModel
     {     
-        public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm, string id) : base(model, vm, id)
+        public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm) : base(model, vm)
         {
             AudioRecorder = new AudioCapture();
             

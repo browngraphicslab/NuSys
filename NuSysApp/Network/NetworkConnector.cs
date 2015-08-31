@@ -1016,7 +1016,7 @@ namespace NuSysApp
                 if (props.ContainsKey("id"))
                 {
                     await ModelIntermediate.HandleMessage(props);
-                    if (!ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP && _localIP == _hostIP)
+                    if (ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP && _localIP == _hostIP)
                     {
                         await SendMassTCPMessage(message);
                     }
@@ -1275,6 +1275,43 @@ namespace NuSysApp
                 throw new InvalidCreationArgumentsException();
                 return;
             }
+        }
+
+        /*
+       * PUBLIC general method to create Group
+       */
+        public async Task RequestMakeEmptyGroup( string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        {
+
+            var props = properties == null ? new Dictionary<string, string>() : properties;
+            string id = oldID == null ? GetID() : oldID;
+
+            if (props.ContainsKey("x"))
+            {
+                props.Remove("x");
+            }
+            if (props.ContainsKey("y"))
+            {
+                props.Remove("y");
+            }
+            if (props.ContainsKey("id"))
+            {
+                props.Remove("id");
+            }
+            if (props.ContainsKey("type"))
+            {
+                props.Remove("type");
+            }
+            props.Add("x", x);
+            props.Add("y", y);
+            props.Add("id", id);
+            props.Add("type", "emptygroup");
+            if (callback != null)
+            {
+                ModelIntermediate.AddCreationCallback(id, callback);
+            }
+            string message = MakeSubMessageFromDict(props);
+            await SendMessageToHost(message);
         }
 
         /*

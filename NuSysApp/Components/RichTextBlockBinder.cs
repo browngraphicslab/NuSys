@@ -6,6 +6,9 @@ namespace NuSysApp
 {
     class RichTextBlockBinder : DependencyObject
     {
+
+        public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(RichTextBlockBinder), new PropertyMetadata(null));
+
         public static string GetText(DependencyObject obj)
         {
             return (string) obj.GetValue((TextProperty));
@@ -15,11 +18,7 @@ namespace NuSysApp
         {
             obj.SetValue(TextProperty, value);
         }
-
-        public static readonly DependencyProperty TextProperty =
-            DependencyProperty.RegisterAttached("Text", typeof (string), typeof (RichTextBlockBinder),
-                new PropertyMetadata(null));
-
+        
         private static void OnTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var control = sender as RichTextBlock;

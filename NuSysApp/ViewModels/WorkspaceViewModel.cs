@@ -20,7 +20,7 @@ namespace NuSysApp
         private AtomViewModel _preparedAtomVm;
         #endregion Private Members
 
-        public WorkspaceViewModel(WorkSpaceModel model) : base(model, null, "WORKSPACE_ID")
+        public WorkspaceViewModel(WorkSpaceModel model) : base(model, null)
         {
             Model = model;
             AtomViewList = new ObservableCollection<UserControl>();
@@ -194,10 +194,10 @@ namespace NuSysApp
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
         }
-        public void CreateNewGroup(string id, Group groupModel)
+        public void CreateNewGroup(Group groupModel)
         {
             //Create new group, because no group exists
-            var groupVm = new GroupViewModel(groupModel, this, id);
+            var groupVm = new GroupViewModel(groupModel, this);
 
             //Set location to node2's location
             var xCoordinate = groupModel.X;
@@ -298,7 +298,7 @@ namespace NuSysApp
                 return;
             }
             if (atomVm1 == atomVm2) return;
-            var vm = new LinkViewModel(link, atomVm1, atomVm2, this, id);//TODO fix this
+            var vm = new LinkViewModel(link, atomVm1, atomVm2, this);//TODO fix this
             Model.AtomDict.Add(id, vm);
 
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
@@ -370,6 +370,12 @@ namespace NuSysApp
                 }
             }
 
+            foreach (var pinVm in PinViewModelList)
+            {
+                XmlElement ele = ((PinModel)pinVm.Model).WriteXML(doc);
+                parent.AppendChild(ele);
+            }
+
             foreach (var linkVm in LinkViewModelList)
             {
                 XmlElement ele = linkVm.WriteXML(doc);
@@ -393,7 +399,7 @@ namespace NuSysApp
 
         private void CreateNewGroupHandler(object source, CreateGroupEventArgs e)
         {
-            this.CreateNewGroup(e.CreatedGroup.ID, e.CreatedGroup);
+            this.CreateNewGroup(e.CreatedGroup);
         }
 
 
@@ -402,23 +408,22 @@ namespace NuSysApp
             NodeViewModel vm = null;
             var model = e.CreatedNode;
             var type = model.NodeType;
-            var id = model.ID;
             var x = model.X;
             var y = model.Y;
             
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
+                    vm = new TextNodeViewModel((TextNode)model, this);
                     break;
                 case NodeType.Richtext:
-                    vm = new TextNodeViewModel((TextNode)model, this, "Enter Text Here", id);
+                    vm = new TextNodeViewModel((TextNode)model, this);
                     break;
                 case NodeType.Ink:
-                    vm = new InkNodeViewModel((InkModel)model, this, id);
+                    vm = new InkNodeViewModel((InkModel)model, this);
                     break;
                 case NodeType.Image:
-                    vm = new ImageNodeViewModel((ImageModel)model, this, id);
+                    vm = new ImageNodeViewModel((ImageModel)model, this);
                     if (((ImageModel)vm.Model).Image != null)
                     {
                         vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
@@ -426,7 +431,7 @@ namespace NuSysApp
                     }
                     break;
                 case NodeType.PDF:
-                    vm = new PdfNodeViewModel((PdfNodeModel)model, this, id);
+                    vm = new PdfNodeViewModel((PdfNodeModel)model, this);
                     if (((PdfNodeModel)vm.Model).RenderedPage != null)
                     {
                         vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
@@ -434,7 +439,7 @@ namespace NuSysApp
                     }
                     break;
                 case NodeType.Audio:
-                    vm = new AudioNodeViewModel((AudioModel)model, this, id);
+                    vm = new AudioNodeViewModel((AudioModel)model, this);
                     break;
                 default:
                     return;

@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
+using System.Reflection;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -32,6 +33,13 @@ namespace NuSysApp
 
             mdTextBox.TextChanging += delegate
             {
+                vm.MarkDownText = mdTextBox.Text;
+                AdjustScrollHeight();
+            };
+
+            mdTextBox.TextChanging += delegate
+            {                
+                vm.MarkDownText = mdTextBox.Text;
                 AdjustScrollHeight();
             };
 
@@ -63,7 +71,7 @@ namespace NuSysApp
             {
                 try
                 {
-                    if (e.PropertyName == "Rtf")
+                    if (e.PropertyName == "RtfText")
                     {
                         imgPlaceholderContainer.Children.Clear();
                         _images.Clear();
@@ -175,15 +183,8 @@ namespace NuSysApp
 
             if (!vm.IsEditing)
             {
-                string str2;
-                rtfTextBox.Document.GetText(TextGetOptions.None, out str2);
-                rtfTextBox.Document.Selection.SetRange(0, str2.Length);
-
-                Rect rect2;
-                int hit2;
-                rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect2, out hit2);
-
-                grid.Height = rect2.Height > this.MinHeight ? rect2.Height : this.MinHeight;
+                var contentHeight = rtfTextBox.ComputeRtfHeight();
+                grid.Height = contentHeight > this.MinHeight ? contentHeight : this.MinHeight;
             } else
             {
                 grid.Height = mdTextBox.ActualHeight;
@@ -293,6 +294,11 @@ namespace NuSysApp
 
         }
               */
+        }
+
+        public NodeTemplate NodeTpl
+        {
+            get { return nodeTpl; }
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)

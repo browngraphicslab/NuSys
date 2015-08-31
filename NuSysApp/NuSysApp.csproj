@@ -146,6 +146,9 @@
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
+    <Compile Include="Views\Misc\BucketItem.xaml.cs">
+      <DependentUpon>BucketItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
       <DependentUpon>InqLine.xaml</DependentUpon>
     </Compile>
@@ -261,7 +264,7 @@
     <Compile Include="ViewModels\FloatingMenuViewModel.cs" />
     <Compile Include="ViewModels\MinimapViewModel.cs" />
     <Compile Include="ViewModels\PinViewModel.cs" />
-    <Compile Include="Views\BucketWindow.xaml.cs">
+    <Compile Include="Views\Misc\BucketWindow.xaml.cs">
       <DependentUpon>BucketWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Misc\MinimapView.xaml.cs">
@@ -368,6 +371,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\Misc\BucketItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Misc\InqCanvas\InqLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -380,7 +387,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\BucketWindow.xaml">
+    <Page Include="Views\Misc\BucketWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

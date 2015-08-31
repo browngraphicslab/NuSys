@@ -106,6 +106,19 @@ namespace NuSysApp
             _idDict.Add(id, group);  
         }
 
+        public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate)
+        {
+            var group = new Group(id)
+            {
+                X = xCooordinate,
+                Y = yCoordinate,
+                NodeType = NodeType.Group
+            };
+            _idDict.Add(id, group);
+            OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+ 
+        }
+
         public void AddGlobalInq(InqLine line)
         {
             //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));

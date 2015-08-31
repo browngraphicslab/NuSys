@@ -13,6 +13,7 @@ namespace NuSysApp
         private string _text;
         public delegate void TextChangedEventHandler(object source, TextChangedEventArgs e);
         public event TextChangedEventHandler OnTextChanged;
+
         public TextNode(string data, string id): base(id)
         {
             ID = id;

@@ -14,7 +14,7 @@ namespace NuSysApp
     {
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
-        public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel, string id) : base(model, workspaceViewModel, id)
+        public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel) : base(model, workspaceViewModel)
         {
             this.View = new PdfNodeView2(this);
             this.Transform = new MatrixTransform();

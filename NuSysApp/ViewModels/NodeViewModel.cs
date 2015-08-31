@@ -25,7 +25,7 @@ namespace NuSysApp
         private GroupViewModel _group;
 
         #endregion Private Members
-        protected NodeViewModel(Node model, WorkspaceViewModel vm, string id): base(model, vm, id)
+        protected NodeViewModel(Node model, WorkspaceViewModel vm): base(model, vm)
         {
             this.AtomType = Constants.Node;       
             ((Node)this.Model).OnDeletion += DeletionHappend;         
@@ -165,7 +165,7 @@ namespace NuSysApp
         {
             if (this.LinkList.Count > 0) return;
 
-            if (this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
+            if (this.WorkSpaceViewModel != null && this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
             {
                 ((Node)this.Model).IsAnnotation = true;
             }
