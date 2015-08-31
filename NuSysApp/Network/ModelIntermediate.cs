@@ -234,14 +234,12 @@ namespace NuSysApp
         }
         public async Task HandleCreateNewInk(string id, Dictionary<string, string> props)
         {
-            Debug.WriteLine("creating new ink");
             if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"]== "WORKSPACE_ID"))
             {
                 InqCanvasModel canvas;
                 if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
                     canvas = ((Node) WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas;
-                    //get canvas
                 }
                 else
                 {

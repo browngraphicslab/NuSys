@@ -195,11 +195,8 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(vm.LastPartialLine.ID))
-                    {
-                        Debug.WriteLine("adding to children");
-                        Children.Add(vm.LastPartialLine);
-                    }
+                    Debug.WriteLine("adding to children");
+                    Children.Add(vm.LastPartialLine);
                     break;
             }
         }
