@@ -308,13 +308,17 @@ namespace NuSysApp
         {
             return InqLine.ParseToPolyline(s, id);
         }
-        private HashSet<string> LocksNeeded(string id)
+        private HashSet<string> LocksNeeded(List<string> ids)
         {
-            if (HasSendableID(id))
+            HashSet<string> set = new HashSet<string>();
+            foreach (string id in ids)
             {
-                HashSet<string> set = new HashSet<string>();
-                set.Add(id);//TODO make this method return a set of all associated atoms needing to be locked as well.
-                return set;
+                if (HasSendableID(id))
+                {
+                    set.Add(id);
+                        //TODO make this method return a set of all associated atoms needing to be locked as well.
+                    return set;
+                }
             }
             return new HashSet<string>();
         }
@@ -390,10 +394,10 @@ namespace NuSysApp
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         
-        public async Task CheckLocks(string id)
+        public async Task CheckLocks(List<string> ids)
         {
             Debug.WriteLine("Checking locks");
-            HashSet<string> locksNeeded = LocksNeeded(id);
+            HashSet<string> locksNeeded = LocksNeeded(ids);
             List<string> locksToReturn = new List<string>();
             foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
             {
@@ -429,11 +433,15 @@ namespace NuSysApp
         }
         public async Task ForceSetLocks(string message)
         {
-            WorkSpaceModel.Locks.Clear();
-            foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                await SetAtomLock(kvp.Key, kvp.Value);
-            }
+                WorkSpaceModel.Locks.Clear();
+                foreach (KeyValuePair<string, string> kvp in StringToDict(message))
+                {
+                    await SetAtomLock(kvp.Key, kvp.Value);
+                }
+            });
         }
 
         public string GetAllLocksToSend()
@@ -469,8 +477,11 @@ namespace NuSysApp
             string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                dict.Add(kvpparts[0], kvpparts[1]);
+                string[] kvpparts = kvpString.Split(new string[] { ":" },2, StringSplitOptions.RemoveEmptyEntries);
+                if (kvpparts.Length == 2)
+                {
+                    dict.Add(kvpparts[0], kvpparts[1]);
+                }
             }
             return dict;
         }

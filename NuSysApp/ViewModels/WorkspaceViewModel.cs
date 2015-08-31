@@ -215,7 +215,9 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void SetSelection(AtomViewModel selected)
         {
-            NetworkConnector.Instance.ModelIntermediate.CheckLocks(selected.Model.ID);
+            List<string> locks = new List<string>();
+            locks.Add(selected.Model.ID);
+            NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
             if (selected.Model.CanEdit == Atom.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);

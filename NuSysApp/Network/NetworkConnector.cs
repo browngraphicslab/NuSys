@@ -1015,11 +1015,11 @@ namespace NuSysApp
                 Dictionary<string, string> props = ParseOutProperties(message);
                 if (props.ContainsKey("id"))
                 {
-                    if (!ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP)
+                    await ModelIntermediate.HandleMessage(props);
+                    if (!ModelIntermediate.HasSendableID(props["id"]) && packetType == PacketType.TCP && _localIP == _hostIP)
                     {
                         await SendMassTCPMessage(message);
                     }
-                    await ModelIntermediate.HandleMessage(props);
                 }
                 else
                 {
@@ -1047,7 +1047,6 @@ namespace NuSysApp
                     string[] subParts = part.Split(new string[] { "=" }, 2, StringSplitOptions.RemoveEmptyEntries);
                     if (subParts.Length != 2)
                     {
-                        Debug.WriteLine("Error, property formatted wrong in message: " + message);
                         continue;
                     }
                     if (!props.ContainsKey(subParts[0]))
