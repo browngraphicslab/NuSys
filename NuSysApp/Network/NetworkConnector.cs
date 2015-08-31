@@ -1329,7 +1329,7 @@ namespace NuSysApp
                 return;
             }
         }
-        public async Task SendPartialLine(string id, string x1, string y1, string x2, string y2)
+        public async Task SendPartialLine(string id, string canvasNodeID, string x1, string y1, string x2, string y2)
         {
             Dictionary<string, string> props = new Dictionary<string, string>
             {
@@ -1338,21 +1338,21 @@ namespace NuSysApp
                 {"y1", y1},
                 {"y2", y2},
                 {"id", id},
+                {"canvasNodeID", canvasNodeID},
                 {"type", "ink"},
-                {"inkType", "global"},
-                {"globalInkType", "partial"}
+                {"inkType", "partial"}
             };
             string m = MakeSubMessageFromDict(props);
             await SendMassUDPMessage(m);
         }
 
-        public async Task FinalizeGlobalInk(string previousID, string data)
+        public async Task FinalizeGlobalInk(string previousID, string canvasNodeID,string data)
         {
             Dictionary<string, string> props = new Dictionary<string, string>
             {
                 {"type", "ink"},
-                {"inkType", "global"},
-                {"globalInkType", "full"},
+                {"inkType", "full"},
+                {"canvasNodeID", canvasNodeID},
                 {"id", GetID()},
                 {"data", data},
                 {"previousID", previousID}

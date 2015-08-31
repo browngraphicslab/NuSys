@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
@@ -18,15 +20,21 @@ namespace NuSysApp
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode = new DrawInqMode();
         public bool IsPressed = false;
-        public InqCanvasViewModel ViewModel { get; }
-
+        private InqCanvasViewModel _viewModel;
         public InqCanvasView()
         {
             MISC.Clip.SetToBounds(this, true);
-            var vm = new InqCanvasViewModel(new InqCanvasModel());
-            ViewModel = vm;
-            vm.PropertyChanged += Update;
-            
+        }
+
+        public InqCanvasViewModel ViewModel
+        {
+            set
+            {
+                DataContext = value;
+                value.PropertyChanged += Update;
+                _viewModel = value;
+            }
+            get { return _viewModel; }
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -181,14 +189,17 @@ namespace NuSysApp
         {
             get { return _mode; }
         }
-
         private void Update(object sender, PropertyChangedEventArgs e)
         {
             var vm = (InqCanvasViewModel)sender;
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    this.Children.Add(vm.LastPartialLine);
+                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(vm.LastPartialLine.ID))
+                    {
+                        Debug.WriteLine("adding to children");
+                        Children.Add(vm.LastPartialLine);
+                    }
                     break;
             }
         }

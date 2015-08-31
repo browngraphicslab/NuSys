@@ -27,7 +27,8 @@ namespace NuSysApp
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
                 if (_currentStroke.Points.Count > 1)
                 {
-                    NetworkConnector.Instance.SendPartialLine(_currentStroke.ID, _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
+                    NetworkConnector.Instance.SendPartialLine(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID,
+                        _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString());
@@ -36,7 +37,7 @@ namespace NuSysApp
 
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
-            NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, _currentStroke.GetString());
+            NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
             inqCanvas.Children.Remove(_currentStroke);
         }
     }

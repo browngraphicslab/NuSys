@@ -12,7 +12,7 @@ namespace NuSysApp
     /// <summary>
     /// Models the basic Workspace and maintains a list of all atoms. 
     /// </summary>
-    public class WorkspaceViewModel : BaseINPC
+    public class WorkspaceViewModel : AtomViewModel
     {
         #region Private Members
 
@@ -20,7 +20,7 @@ namespace NuSysApp
         private AtomViewModel _preparedAtomVm;
         #endregion Private Members
 
-        public WorkspaceViewModel(WorkSpaceModel model)
+        public WorkspaceViewModel(WorkSpaceModel model) : base(model, null, "WORKSPACE_ID")
         {
             Model = model;
             AtomViewList = new ObservableCollection<UserControl>();
@@ -31,7 +31,7 @@ namespace NuSysApp
             SelectedAtomViewModel = null;
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
             this.SetUpTransforms();
-            this.SetUpHandlers();           
+            this.SetUpHandlers();
         }
 
         #region Helper Methods
@@ -50,7 +50,7 @@ namespace NuSysApp
         private void SetUpHandlers()
         {
             this.Model.OnCreation += CreatedHandler;
-            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
+            //this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
             this.Model.OnGroupCreation += CreateNewGroupHandler;
             this.Model.OnPinCreation += CreatePinHandler;
         }
@@ -372,6 +372,7 @@ namespace NuSysApp
             var id = model.ID;
             var x = model.X;
             var y = model.Y;
+            
             switch (type)
             {
                 case NodeType.Text:
@@ -405,6 +406,14 @@ namespace NuSysApp
                 default:
                     return;
                     break;
+            }
+            var view = vm.View;
+            var tpl = view.FindName("nodeTpl") as NodeTemplate;
+            if (tpl != null)
+            {
+                tpl.OnTemplateReady += delegate {
+                    new InqCanvasViewModel(tpl.inkCanvas, model.InqCanvas);
+                };
             }
             AtomViewList.Add(vm.View);
             NodeViewModelList.Add(vm);
@@ -476,6 +485,9 @@ namespace NuSysApp
                 RaisePropertyChanged("FMTransform");
             }
         }
+
+        public override void Remove(){}
+        public override void UpdateAnchor() { }
 
         public Dictionary<string, GroupViewModel> GroupDict { get; private set; }
 

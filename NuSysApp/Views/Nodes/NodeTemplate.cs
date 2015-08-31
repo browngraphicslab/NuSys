@@ -19,6 +19,9 @@ namespace NuSysApp
     public sealed class NodeTemplate : ContentControl
     {
 
+        public event TemplateReady OnTemplateReady;
+        public delegate void TemplateReady();
+
         public InqCanvasView inkCanvas = null;
         public Button btnDelete = null;
         public Path resizer = null;
@@ -70,6 +73,8 @@ namespace NuSysApp
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
 
             base.OnApplyTemplate();
+
+            OnTemplateReady?.Invoke();
         }
 
         public void ToggleInkMode()

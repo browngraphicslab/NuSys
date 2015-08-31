@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class WorkSpaceModel
+    public class WorkSpaceModel : Atom
     {
         #region Events and Delegates
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
@@ -27,7 +27,7 @@ namespace NuSysApp
         public event CreateEventHandler OnCreation;
         public event CreatePinEventHandler OnPinCreation;
         public event CreateGroupEventHandler OnGroupCreation;
-        public event AddPartialLineEventHandler OnPartialLineAddition;
+        //public event AddPartialLineEventHandler OnPartialLineAddition;
         
         #endregion Events and Delegates
 
@@ -40,7 +40,7 @@ namespace NuSysApp
         #endregion Private members
        
 
-        public WorkSpaceModel(InqCanvasModel inqModel)
+        public WorkSpaceModel(InqCanvasModel inqModel) : base("WORKSPACE_ID")
         {
             this._inqModel = inqModel;
             _idDict = new Dictionary<string, Sendable>();
@@ -179,12 +179,17 @@ namespace NuSysApp
             }
         }
 
+        public async Task<Dictionary<string, string>> Pack(){return new Dictionary<string, string>();}
+
+        public async Task UnPack(Dictionary<string, string> props){}
+        public override void Delete(){}
+        public string ID{get { return "WORKSPACE_ID"; }}
+        public Atom.EditStatus CanEdit {get; set; }
+
         public InqCanvasModel InqModel
         {
             get { return this._inqModel; }
         }
-
-
         public class LockDictionary : IEnumerable<KeyValuePair<string,string>>
         {
             private HashSet<string> _locals = new HashSet<string>();

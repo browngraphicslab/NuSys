@@ -4,17 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
     public class InqCanvasViewModel : BaseINPC
     {
         public InqCanvasModel Model { get; }
-
-        public InqCanvasViewModel(InqCanvasModel model)
+        public Panel View { get; }
+        public InqCanvasViewModel(InqCanvasView inqCanvasView, InqCanvasModel model)
         {
             Model = model;
             this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
+            inqCanvasView.ViewModel = this;
+            View = inqCanvasView;
         }
 
         public void AddTemporaryPoint(Point p)
@@ -24,8 +28,11 @@ namespace NuSysApp
         public InqLine LastPartialLine { get; set; }
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
-            LastPartialLine = e.AddedLine;
-            RaisePropertyChanged("PartialLineAdded");
+            if (e.AddedLine != LastPartialLine)
+            {
+                LastPartialLine = e.AddedLine;
+                RaisePropertyChanged("PartialLineAdded");
+            }
         }
         public void RemoveLine(InqLine line)
         {
