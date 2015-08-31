@@ -69,11 +69,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("type") && props["type"] == "ink")
             {
-                if (props.ContainsKey("inkType") && props["inkType"] == "global")
-                {
-                    await HandleCreateNewGlobalInk(id, props);
-
-                }
+                    await HandleCreateNewInk(id, props);
             }
             else if (props.ContainsKey("type") && props["type"] == "group")
             {
@@ -233,41 +229,49 @@ namespace NuSysApp
             }
             await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
         }
-        public async Task HandleCreateNewGlobalInk(string id, Dictionary<string, string> props)
+        public async Task HandleCreateNewInk(string id, Dictionary<string, string> props)
         {
-            if (props.ContainsKey("globalInkType") && props["globalInkType"] == "partial")
+            Debug.WriteLine("creating new ink");
+            if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"]== "WORKSPACE_ID"))
             {
-                InqLine l = ParseToLineSegment(props);
-                if (l == null) return;
-
-                if (WorkSpaceModel.InqModel.PartialLines.ContainsKey(id))
+                InqCanvasModel canvas;
+                if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
-                    WorkSpaceModel.InqModel.PartialLines[id].Add(l);
+                    canvas = ((Node) WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas;
+                    //get canvas
                 }
                 else
                 {
-                    WorkSpaceModel.InqModel.PartialLines.Add(id, new ObservableCollection<InqLine>());
-                    WorkSpaceModel.InqModel.PartialLines[id].Add(l);
+                    canvas = WorkSpaceModel.InqModel;
+                }
+                if (props.ContainsKey("inkType") && props["inkType"] == "partial")
+                {
+                    InqLine l = ParseToLineSegment(props);
+                    if (l == null)
+                    {
+                        Debug.WriteLine("failed to parse message to inqline");
+                        return;
+                    }
+                    canvas.AddTemporaryInqline(l, id);
+                }
+                else if (props.ContainsKey("inkType") && props["inkType"] == "full")
+                {
+                    if (props.ContainsKey("data"))
+                    {
+                        InqLine line = ParseToPolyline(props["data"], id);
+                        WorkSpaceModel.IDToSendableDict.Add(id, line);
+                        canvas.FinalizeLine(line);
+                    }
+                    if (props.ContainsKey("previousID") &&
+                        WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                    {
+                        canvas.RemovePartialLines(props["previousID"]);
+                    }
                 }
             }
-            else if (props.ContainsKey("globalInkType") && props["globalInkType"] == "full")
+            else
             {
-                if (props.ContainsKey("data"))
-                {
-                    InqLine line = ParseToPolyline(props["data"], id);
-                    WorkSpaceModel.IDToSendableDict.Add(id, line);
-                    WorkSpaceModel.AddGlobalInq(line);
-                }
-                if (props.ContainsKey("previousID") &&
-                    WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
-                {
-                    ObservableCollection<InqLine> oc = WorkSpaceModel.InqModel.PartialLines[props["previousID"]];
-                    foreach (InqLine l in oc)
-                    {
-                        ((InqCanvasView)l.Parent).Children.Remove(l);
-                    }
-                    WorkSpaceModel.InqModel.PartialLines.Remove(props["previousID"]);
-                }
+                Debug.WriteLine("Ink creation failed because no canvas ID was given or the ID wasn't valid");
             }
         }
         public async Task RemoveSendable(string id)

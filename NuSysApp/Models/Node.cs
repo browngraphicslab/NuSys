@@ -34,7 +34,7 @@ namespace NuSysApp
 
         public Node(string id) : base(id)
         {
-            
+            InqCanvas = new InqCanvasModel(id);
         }
 
         public override void Delete()
@@ -48,6 +48,7 @@ namespace NuSysApp
             group?.Add(this);//only add if group isn't null
         }
 
+        public InqCanvasModel InqCanvas { get;}
         public Content Content { set; get; }
 
         public double X
