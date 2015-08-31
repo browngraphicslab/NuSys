@@ -97,16 +97,24 @@ namespace NuSysApp
             return false;
         }
 
+        /// <summary>
+        /// This method performs 3 checks: First, it checks whether "node" has been dragged out of the
+        /// group. If yes, the node is moved from the group to the workspace. Second, it checks if
+        /// "node" has been dragged onto a preexisting group. If yes, "node" is added to the group.
+        /// Third, if "node" has neither been dragged out of the group nor added to a pre-existing group,
+        /// a new group is created that will contain "node" and its intersecting node.
+        /// </summary>
+        /// <param name="node"></param>
         public void CheckForNodeNodeIntersection(NodeViewModel node)
         {
-            if (node.ParentGroup != null)
+            if (node.ParentGroup != null)//Node is in a group (meaning not the workspace)
             {
                 var x = node.Transform.Matrix.OffsetX * node.ParentGroup.LocalTransform.ScaleX;
                 var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
-                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0)
+                if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0)//node has been moved out of its group
                 {
                     var nodeModel = (Node)node.Model;
-                    nodeModel.MoveToGroup(null);
+                    nodeModel.MoveToGroup(null);//remove from group (meaning move back to workspace)
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     return;
                 }
@@ -118,17 +126,18 @@ namespace NuSysApp
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (node != node2 && !rect1.IsEmpty)
                 {
-                    if (node is GroupViewModel)
+                    if (node is GroupViewModel)//dragging nested group onto node or group
                     {
-                        return;
+                        return;//currently, do nothing
                     }
-                    if (node2 is GroupViewModel)
+                    if (node2 is GroupViewModel)//dragging nested group onto existing group
                     {
                         var group = (Group)(((GroupViewModel)node2).Model);
                         var nodeModel = (Node)node.Model;
                         nodeModel.MoveToGroup(group);
                         return;
                     }
+                    //no group exists, request network to make one
                     NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
                     return;
                 }

@@ -87,7 +87,6 @@ namespace NuSysApp
             }
         }
 
-        // This method is public because it's also used in CortanaMode.cs
         // TODO: this should be refactored!
         private async Task AddNode(WorkspaceView view, Point pos, Size size, NodeType nodeType, object data = null)    {
             var vm = (WorkspaceViewModel)view.DataContext;
