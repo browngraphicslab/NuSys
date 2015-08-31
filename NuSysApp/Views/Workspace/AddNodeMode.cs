@@ -49,11 +49,11 @@ namespace NuSysApp
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (_isDragging) {
-                var translation = e.Delta.Translation;
-                if (_tempNode.Width + translation.X > 0 && _tempNode.Height + translation.Y > 0) { 
-                    _tempNode.Width += translation.X;
-                    _tempNode.Height += translation.Y;
-                }
+                var translation = e.Cumulative.Translation;
+                if (translation.X > 0)
+                    _tempNode.Width = translation.X;
+                if (translation.Y > 0)
+                    _tempNode.Height = translation.Y;
             }
             e.Handled = true;
         }
