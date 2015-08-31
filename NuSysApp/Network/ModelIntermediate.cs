@@ -473,8 +473,11 @@ namespace NuSysApp
             string[] strings = s.Split(new string[] { "&" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string kvpString in strings)
             {
-                string[] kvpparts = kvpString.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                dict.Add(kvpparts[0], kvpparts[1]);
+                string[] kvpparts = kvpString.Split(new string[] { ":" },2, StringSplitOptions.RemoveEmptyEntries);
+                if (kvpparts.Length == 2)
+                {
+                    dict.Add(kvpparts[0], kvpparts[1]);
+                }
             }
             return dict;
         }
