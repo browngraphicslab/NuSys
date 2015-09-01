@@ -458,6 +458,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -2139,6 +2140,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -3856,6 +3858,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -5578,6 +5581,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -7295,6 +7299,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -9017,6 +9022,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -10734,6 +10740,7 @@
           "lib/dotnet/System.Data.Common.dll": {}
         }
       },
+      "System.Data.SQLite/1.0.98.1": {},
       "System.Diagnostics.Contracts/4.0.0": {
         "compile": {
           "ref/netcore50/System.Diagnostics.Contracts.dll": {}
@@ -13138,6 +13145,16 @@
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
         "package/services/metadata/core-properties/aa5ad20c33d94c8e8016ba4fc64d8d66.psmdcp",
+        "[Content_Types].xml"
+      ]
+    },
+    "System.Data.SQLite/1.0.98.1": {
+      "sha512": "R0hbk+vZxTsZC17NUvydYaWxJObnzxo0a4+BzcbJVCBQApF/AU6nxJGl7BlxsHRBhfRE3T14oJNTnJ2DQ4P0EA==",
+      "type": "Package",
+      "files": [
+        "_rels/.rels",
+        "System.Data.SQLite.nuspec",
+        "package/services/metadata/core-properties/50935c68e53f45aca4fa0798a8a7819b.psmdcp",
         "[Content_Types].xml"
       ]
     },
@@ -15563,6 +15580,7 @@
       "SQLite.Net-PCL >= 3.0.5",
       "SQLiteNetExtensions >= 1.3.0",
       "SQLiteNetExtensions.Async >= 1.3.0",
+      "System.Data.SQLite >= 1.0.98.1",
       "win2D.uwp >= 1.1.0"
     ],
     "UAP,Version=v10.0": []

@@ -54,8 +54,8 @@
 
                         <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
 
-                        <local:InqCanvasView x:Name="inkCanvas" Height="{Binding Height, 
-              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding Width, 
+                        <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
+              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
               RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
               RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" />
                         

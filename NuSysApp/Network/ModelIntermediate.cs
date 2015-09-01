@@ -187,10 +187,12 @@ namespace NuSysApp
                         if (!props.ContainsKey("text"))
                         {
                             props.Add("text", d);
+                            data = d;
                         }
                         else
                         {
                             props["text"] = d;
+                            data = d;
                         }
                         break;
                     case NodeType.Image:

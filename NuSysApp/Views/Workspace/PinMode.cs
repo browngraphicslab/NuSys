@@ -9,18 +9,18 @@ namespace NuSysApp{
         {
 
         }
+
         public override async Task Activate()
         {
-            _view.IsRightTapEnabled = true;
-            _view.RightTapped += OnRightTapped;
+            _view.Tapped += OnTapped;
         }
 
         public override async Task Deactivate()
         {
-            _view.IsRightTapEnabled = false;
-            _view.RightTapped -= OnRightTapped;
+            _view.Tapped -= OnTapped;
         }
-        private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+
+        private async void OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));

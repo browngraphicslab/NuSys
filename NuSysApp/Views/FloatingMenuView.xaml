@@ -237,7 +237,7 @@
             <Button x:Name="GlobalInkButton" Style="{StaticResource FloatingButton}" Tapped="GlobalInkButton_Click" HorizontalAlignment="Center" Height="100">
                 <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="40" Width="40"></Image>
             </Button>
-            <Button x:Name="Erase" Click="Erase_OnTapped" Style="{StaticResource FloatingButton}">
+            <Button x:Name="Erase" Tapped="Erase_OnTapped" Style="{StaticResource FloatingButton}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_eraser.png"></Image>
             </Button>
             <Button x:Name="Highlight" Style="{StaticResource FloatingButton}">
@@ -271,7 +271,7 @@
             <Button x:Name="AudioCapture" Style="{StaticResource FloatingButton}" Tapped="AudioCaptureButton_Click" BorderBrush="{x:Null}">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_record_node.png"></Image>
             </Button>
-            <Button x:Name="Bucket" Style="{StaticResource FloatingButton}" Click="Bucket_Click">
+            <Button x:Name="Bucket" Style="{StaticResource FloatingButton}" Tapped="Bucket_Click">
                 <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_bucket.png"></Image>
             </Button>
            

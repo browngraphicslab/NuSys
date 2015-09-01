@@ -8,6 +8,7 @@ using Windows.UI.Core;
 using SQLite.Net.Async;
 using SQLite.Net.Attributes;
 using System.Diagnostics;
+using System.Net;
 
 namespace NuSysApp
 {
@@ -104,11 +105,13 @@ namespace NuSysApp
                         break;
                     case "Node":
                         _createdNodeList.Add(ID);
-                        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
                             {
                                 await this.CreateNodeFromXml(vm, node);
+                               
                             });
+                        Debug.WriteLine("node created");
                         break;
                     case "Pin":
                         x = node.Attributes.GetNamedItem("x").Value;
@@ -128,7 +131,7 @@ namespace NuSysApp
                         break;
                 }
             }
-
+            Debug.WriteLine("Done switching");
             List<string> createdNodeListCopy = new List<string>();
             foreach (string id in _createdNodeList) { createdNodeListCopy.Add(id); }
 

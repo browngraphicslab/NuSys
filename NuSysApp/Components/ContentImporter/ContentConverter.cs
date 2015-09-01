@@ -21,7 +21,7 @@ namespace NuSysApp
 {
     public class ContentConverter
     {
-        private static WebView wv = new WebView();
+        private static bool dirty = false;
 
         public async static Task<string> HtmlToRtfWithImages(string htmlString)
         {
@@ -84,15 +84,15 @@ namespace NuSysApp
             string result = null;
             var manualReset = new ManualResetEvent(false);
 
-      
-            wv = new WebView();             
-            wv.DOMContentLoaded += async delegate
+            var wv = new WebView();
+            wv.NavigationCompleted += async delegate
             {
                 await wv.InvokeScriptAsync("eval", new string[] { "(function(){ var r = document.createRange(); r.selectNodeContents(document.body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);  })();" });
                 DataPackage p = await wv.CaptureSelectedContentToDataPackageAsync();
                 result = await p.GetView().GetRtfAsync();
                 manualReset.Set();
             };
+            
             
             SynchronizationContext context = SynchronizationContext.Current;
             await Task.Factory.StartNew(() =>

@@ -18,11 +18,7 @@ namespace NuSysApp
         {
             ID = id;
             Text = data;
-            if (Text != null)
-            {
-                byte[] textToBytes = Convert.FromBase64String(Text); //Converts RTF to Byte array
-                Content = new Content(textToBytes, id);
-            }         
+       
         }
 
         public string Text
@@ -30,7 +26,6 @@ namespace NuSysApp
             get { return _text; }
             set
             {
-                if (_text == value) return;
                 _text = value;
 
                 byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);

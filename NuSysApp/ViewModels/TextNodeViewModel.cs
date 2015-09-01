@@ -31,15 +31,14 @@ namespace NuSysApp
             ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
         }
 
-        public async Task UpdateRtf()    
+        public async Task UpdateRtf()       
         {
-            if (MarkDownText.Length == 0)
-                return;
+           
 
             _inlineImages.Clear();
 
             const string rtfImagePlaceholder = "---IMAGE---";
-            var md = MarkDownText;
+            var md = ((TextNode)Model).Text;
 
             var imgData = new List<byte[]>();
             while (true)
@@ -128,7 +127,7 @@ namespace NuSysApp
 
         private async void TextChangedHandler(object source, TextChangedEventArgs e)
         {
-            this.MarkDownText = ((TextNode)this.Model).Text;
+           // this.MarkDownText = ((TextNode)this.Model).Text;
             await UpdateRtf();
         }
 
@@ -139,16 +138,7 @@ namespace NuSysApp
         /// <summary>
         /// data contained by text node
         /// </summary>
-        public string MarkDownText
-        {
-            get { return _data; }
-            set
-            {
-                _data = value;
-                ((TextNode) this.Model).Text = value;
-                RaisePropertyChanged("MarkDownText");
-            }
-        }
+      
 
         public string RtfText
         {

@@ -33,13 +33,13 @@ namespace NuSysApp
 
             mdTextBox.TextChanging += delegate
             {
-                vm.MarkDownText = mdTextBox.Text;
+                //vm.MarkDownText = mdTextBox.Text;
                 AdjustScrollHeight();
             };
 
             mdTextBox.TextChanging += delegate
             {                
-                vm.MarkDownText = mdTextBox.Text;
+               // vm.MarkDownText = mdTextBox.Text;
                 AdjustScrollHeight();
             };
 
