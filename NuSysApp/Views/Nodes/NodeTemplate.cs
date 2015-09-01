@@ -71,6 +71,7 @@ namespace NuSysApp
 
             var vm = (NodeViewModel)this.DataContext;
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
+            vm.PropertyChanged += new PropertyChangedEventHandler(Node_MultiSelectionChanged);
 
             base.OnApplyTemplate();
 
@@ -125,6 +126,15 @@ namespace NuSysApp
             //                nodeTpl.Background = backgroundColorBrush;
             //            }
             e.Handled = true;
+
+        }
+
+        private void Node_MultiSelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsMultiSelected"))
+            {
+            }
+            
         }
 
         private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)

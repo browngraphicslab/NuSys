@@ -32,5 +32,6 @@
             </ItemsControl>
         </Grid>
         <local:FloatingMenuView x:Name="floatingMenu" ModeChange="OnModeChange" />
+        <local:MultiSelectMenu x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
     </Canvas>
 </Page>

@@ -149,6 +149,7 @@ namespace NuSysApp
             dict["height"] = size.Height.ToString();
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString(), null, dict);
             vm.ClearSelection();
+            vm.ClearMultiSelection();
 
             // Switch back to select mode
             // TODO: save select mode as variable

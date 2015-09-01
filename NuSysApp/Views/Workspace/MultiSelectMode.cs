@@ -24,7 +24,6 @@ namespace NuSysApp
 
         public MultiSelectMode(WorkspaceView view) : base(view)
         {
-            var vm = (WorkspaceViewModel)_view.DataContext;
         }
 
         public override async Task Activate()
@@ -33,6 +32,10 @@ namespace NuSysApp
             _view.PointerMoved += View_PointerMoved;
             _view.PointerReleased += View_PointerReleased;
             _view.DoubleTapped += View_OnDoubleTapped;
+
+            _view.MultiMenu.Visibility = Visibility.Visible;
+            _view.MultiMenu.Delete.Click += Delete_OnClick;
+            _view.MultiMenu.Group.Click += Group_OnClick;
         }
 
         public override async Task Deactivate()
@@ -41,6 +44,23 @@ namespace NuSysApp
             _view.PointerMoved -= View_PointerMoved;
             _view.PointerReleased -= View_PointerReleased;
             _view.DoubleTapped -= View_OnDoubleTapped;
+
+            _view.MultiMenu.Visibility = Visibility.Collapsed;
+            _view.MultiMenu.Delete.Click -= Delete_OnClick;
+            _view.MultiMenu.Group.Click -= Group_OnClick;
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.ClearMultiSelection();
+        }
+
+        private void Delete_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.DeleteMultiSelecttion();
+        }
+
+        private void Group_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (WorkspaceViewModel)_view.DataContext;
         }
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -162,7 +182,6 @@ namespace NuSysApp
                     r.Y = currentP.Y;
                 }
             }
-            List<ISelectable> selected = new List<ISelectable>();
             //foreach (UIElement element in _view.InqCanvas.Children)
             //{
             //    var line = element as InqLine;
@@ -193,7 +212,7 @@ namespace NuSysApp
                     var avm = atom.DataContext as AtomViewModel;
                     if (!avm.IsSelected)
                     {
-                        selected.Add(avm);
+                        vm.SetMultiSelection(avm);
                     }
                 }
             }
