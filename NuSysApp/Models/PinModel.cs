@@ -8,6 +8,9 @@ namespace NuSysApp
 {
     public class PinModel : BaseINPC, Sendable
     {
+        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
+        public event LocationUpdateEventHandler OnLocationUpdate;
+
         private double _x;
         private double _y;
         private string _text;
@@ -35,7 +38,16 @@ namespace NuSysApp
             }
             set
             {
+                if (_x == value) return;
                 _x = value;
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                {
+                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("pin X change", X, Y));
+                }
+                else
+                {
+                    _dict.Add("x", X.ToString());
+                }
             }
         }
 
@@ -47,7 +59,16 @@ namespace NuSysApp
             }
             set
             {
+                if (_y == value) return;
                 _y = value;
+                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                {
+                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("pin Y change", X, Y));
+                }
+                else
+                {
+                    _dict.Add("y", Y.ToString());
+                }
             }
         }
 
@@ -94,6 +115,8 @@ namespace NuSysApp
         {
             Dictionary<string,string> props = new Dictionary<string, string>();
             props.Add("text",Text);
+            props.Add("x", X.ToString());
+            props.Add("y", Y.ToString());
             return props;
         }
 
@@ -102,6 +125,14 @@ namespace NuSysApp
             if (props.ContainsKey("text"))
             {
                 Text = props["text"];
+            }
+            if (props.ContainsKey("x"))
+            {
+                X = double.Parse(props["x"]);
+            }
+            if(props.ContainsKey("y"))
+            {
+                Y = double.Parse(props["y"]);
             }
         }
 

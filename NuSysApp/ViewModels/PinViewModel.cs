@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -19,7 +20,6 @@ namespace NuSysApp
             this.Model.PropertyChanged += (s, e) => { Update(e); };
             Text = "<Enter Pin Name>";
         }
-
         private void Update(PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
