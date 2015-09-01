@@ -91,8 +91,7 @@ namespace NuSysApp
                 DataPackage p = await wv.CaptureSelectedContentToDataPackageAsync();
                 result = await p.GetView().GetRtfAsync();
                 manualReset.Set();
-            };
-            
+            };            
             
             SynchronizationContext context = SynchronizationContext.Current;
             await Task.Factory.StartNew(() =>

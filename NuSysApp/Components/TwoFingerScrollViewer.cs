@@ -46,8 +46,6 @@ namespace NuSysApp
                     ManipulationDelta -= OnDelta;
                     ManipulationDelta += OnDelta;
                 }
-
-                e.Handled = true;
             };
 
             PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
