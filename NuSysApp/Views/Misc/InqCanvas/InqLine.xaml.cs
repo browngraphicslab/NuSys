@@ -31,12 +31,12 @@ namespace NuSysApp
         private bool _isSelected = false;
         private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            /*
+            
             var inqCanvas = this.Parent as InqCanvasView;
             if (inqCanvas.Mode is EraseInqMode&& inqCanvas.IsPressed)
             {
                 NetworkConnector.Instance.RequestDeleteSendable(this.ID);
-            }*/
+            }
         }
 
         public void Delete()
