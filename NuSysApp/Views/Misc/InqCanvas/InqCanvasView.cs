@@ -82,7 +82,7 @@ namespace NuSysApp
             PointerMoved -= OnPointerMoved;
             PointerReleased -= OnPointerReleased;
             _pointerId = uint.MaxValue;
-            if (this.PointerCaptures.Count != 0)
+            if (this.PointerCaptures != null && this.PointerCaptures.Count != 0)
             {
                 ReleasePointerCapture(e.Pointer);
             }
