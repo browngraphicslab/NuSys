@@ -201,6 +201,9 @@ namespace NuSysApp
                 case "Ink":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
                     break;
+                case "Audio":
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Audio.ToString(), byteToString, ID);
+                    break;
                 default:
                     break;
             }

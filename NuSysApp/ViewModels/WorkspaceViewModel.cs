@@ -362,9 +362,14 @@ namespace NuSysApp
             // save the content of each atom in the current workspace
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-                if (((Node)nodeVm.Model).Content != null)
+                Node model = ((Node)nodeVm.Model);
+                if (model.Content != null)
                 {
-                    Content toInsert = ((Node)nodeVm.Model).Content;
+                    if (model.NodeType == NodeType.Audio)
+                    {
+                        ((AudioModel)model).ByteArray = await ((AudioModel)model).ConvertAudioToByte(((AudioModel)model).AudioFile);
+                    }
+                    Content toInsert = model.Content;
                     await dbConnection.InsertAsync(toInsert);
                 }
             }
