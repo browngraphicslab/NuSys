@@ -276,6 +276,34 @@ namespace NuSysApp
             MultiSelectedAtomViewModels.Clear();
         }
 
+        public async void GroupFromMultiSelection()
+        {
+            if (MultiSelectedAtomViewModels.Count < 2)
+            {
+                return;
+            }
+            if (!(MultiSelectedAtomViewModels[0] is NodeViewModel) || !(MultiSelectedAtomViewModels[1] is NodeViewModel))
+            {
+                return;
+            }
+            var node1 = (Node)MultiSelectedAtomViewModels[0].Model;
+            var node2 = (Node) MultiSelectedAtomViewModels[1].Model;
+            await NetworkConnector.Instance.RequestMakeGroup(node1.ID, node2.ID, node1.X.ToString(),node2.Y.ToString());
+            if (MultiSelectedAtomViewModels.Count > 2)
+            {
+                for (int index = 2; index < MultiSelectedAtomViewModels.Count; index++)
+                {
+                    var avm = MultiSelectedAtomViewModels[index];
+                    if (avm is NodeViewModel)
+                    {
+                        ((Node)avm.Model).MoveToGroup(node1.ParentGroup);
+                    }
+                }
+            }
+           
+        }
+
+
         /// <summary>
         /// Creates a link between two nodes. 
         /// </summary>
@@ -533,5 +561,7 @@ namespace NuSysApp
 
         public InqLine LastPartialLine { get; set; }
         #endregion Public Members
+
+        
     }
 }

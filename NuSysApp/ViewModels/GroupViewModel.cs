@@ -50,7 +50,8 @@ namespace NuSysApp
             toAdd.Transform = new MatrixTransform();
             _atomViewList.Add(toAdd.View);
             _nodeViewModelList.Add(toAdd);
-            
+            toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+            toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
             
             foreach (var link in toAdd.LinkList)
             {

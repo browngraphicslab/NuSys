@@ -14,7 +14,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            //Canvas.SetZIndex(this, -1);
+            Canvas.SetZIndex(this, -1);
             var groupViewModel = this.DataContext as GroupViewModel;
             if (groupViewModel != null)
             {
