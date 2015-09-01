@@ -61,6 +61,7 @@ namespace NuSysApp
         private void Group_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.GroupFromMultiSelection();
         }
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
