@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
@@ -176,6 +177,7 @@ namespace NuSysApp
             node.NodeType = type;
 
             _idDict.Add(id, node);
+            Debug.WriteLine("dict set");
             OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
         }
 
