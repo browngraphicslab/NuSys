@@ -374,10 +374,6 @@ namespace NuSysApp
                     list.AddLast(s);
                     set.Remove(s.ID);
                 }
-                else
-                {
-                    
-                }
             }
             if (WorkSpaceModel.IDToSendableDict.Count > 0)
             {
@@ -398,7 +394,7 @@ namespace NuSysApp
                         ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
                     });
                 }
-                ret = ret.Substring(0, ret.Length - 2);
+                ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                 return ret;
             }
             return "";

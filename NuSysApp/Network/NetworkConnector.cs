@@ -922,12 +922,6 @@ namespace NuSysApp
                         await ModelIntermediate.RemoveSendable(message);
                         return;
                     }
-                    else
-                    {
-                        throw new InvalidIDException(message);
-                        return;
-                    }
-
                     break;
                 case "11"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
                     this.Pingged(ip);
