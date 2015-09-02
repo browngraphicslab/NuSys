@@ -922,6 +922,10 @@ namespace NuSysApp
                         await ModelIntermediate.RemoveSendable(message);
                         return;
                     }
+                    else
+                    {
+                        Debug.WriteLine("tried to delete ID "+message+" when it doesn't locally exist");
+                    }
                     break;
                 case "11"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
                     this.Pingged(ip);
@@ -1010,7 +1014,7 @@ namespace NuSysApp
                 if (props.ContainsKey("id"))
                 {
                     await ModelIntermediate.HandleMessage(props);
-                    if ((ModelIntermediate.HasSendableID(props["id"]) || props["nodeType"]==NodeType.PDF.ToString())&& packetType == PacketType.TCP && _localIP == _hostIP)
+                    if ((ModelIntermediate.HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _localIP == _hostIP)
                     {
                         await SendMassTCPMessage(message);
                     }
