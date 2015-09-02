@@ -147,9 +147,6 @@
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
-    <Compile Include="Views\Misc\BucketItem.xaml.cs">
-      <DependentUpon>BucketItem.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
       <DependentUpon>InqLine.xaml</DependentUpon>
     </Compile>
@@ -372,10 +369,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\Misc\BucketItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Misc\InqCanvas\InqLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

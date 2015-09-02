@@ -42,6 +42,7 @@ namespace NuSysApp
                 TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
             };
             vm.CompositeTransform = c;
+            e.Handled = true;
         }
     }
 }
