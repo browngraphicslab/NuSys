@@ -23,7 +23,6 @@ namespace NuSysApp
             if (model.RenderedPages.Count > 0)
                 RenderedBitmapImage = model.RenderedPages[0];
 
-            this.View = new PdfNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
@@ -31,7 +30,8 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = NodeType.PDF;
             this.CurrentPageNumber = 0;
-            this.InkContainer = new List<HashSet<InqLine>>((int)PageCount);
+            this.RenderedLines = InqPages[0];
+            this.View = new PdfNodeView2(this);
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,
@@ -44,6 +44,7 @@ namespace NuSysApp
         {
             if (CurrentPageNumber >= (PageCount - 1)) return;
             RenderedBitmapImage = RenderedPages[(int)++CurrentPageNumber];
+            RenderedLines = InqPages[(int)CurrentPageNumber];
             RaisePropertyChanged("RenderedBitmapImage");
         }
 
@@ -51,6 +52,7 @@ namespace NuSysApp
         {
             if (CurrentPageNumber == 0) return;
             RenderedBitmapImage = RenderedPages[(int)--CurrentPageNumber];
+            RenderedLines = InqPages[(int)CurrentPageNumber];
             RaisePropertyChanged("RenderedBitmapImage");
         }
 
@@ -82,6 +84,8 @@ namespace NuSysApp
             get; set;
         }
 
+        public HashSet<InqLine> RenderedLines { get; set; }
+
         public List<BitmapImage> RenderedPages
         {
             get { return ((PdfNodeModel)Model).RenderedPages; }
@@ -90,6 +94,11 @@ namespace NuSysApp
                 ((PdfNodeModel)Model).RenderedPages = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
+        }
+
+        public List<HashSet<InqLine>> InqPages
+        {
+            get { return ((PdfNodeModel) Model).InqLines; }
         }
 
         public uint CurrentPageNumber
@@ -108,16 +117,6 @@ namespace NuSysApp
             set
             {
                 ((PdfNodeModel)Model).PageCount = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
-        }
-
-        public List<HashSet<InqLine>> InkContainer
-        {
-            get { return ((PdfNodeModel)Model).InkContainer; }
-            set
-            {
-                ((PdfNodeModel)Model).InkContainer = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }

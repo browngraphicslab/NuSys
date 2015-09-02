@@ -73,6 +73,8 @@ namespace NuSysApp
             {
                 case Options.Select:
                     SetActive(idleButton);
+                    ModeChange?.Invoke(Options.Select);
+                    ShowActive(idleButton, SelectButton);
                     break;
             }
         }
