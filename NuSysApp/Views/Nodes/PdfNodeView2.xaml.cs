@@ -20,16 +20,10 @@ namespace NuSysApp
             nodeTpl.ToggleInkMode();
         }
 
-
         private void pageLeft_Click(object sender, RoutedEventArgs e)
         {
-
             var vm = (PdfNodeViewModel)this.DataContext;
-            var pageNum = vm.CurrentPageNumber;
-
-            if (pageNum <= 0) return;
-            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
-            vm.CurrentPageNumber--;
+            vm.FlipLeft();
 
             //foreach (var stroke in nodeTpl.inkCanvas.Strokes)
             //{
@@ -48,15 +42,8 @@ namespace NuSysApp
         private void pageRight_Click(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
-            var pageCount = vm.PageCount;
-            var pageNum = vm.CurrentPageNumber;
-            //vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
-            //inkCanvas.Strokes.Clear();
-            //inkCanvas.Children.Clear();
-            //inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
-            if (pageNum >= (pageCount - 1)) return;
-            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
-            vm.CurrentPageNumber++;
+            vm.FlipRight();
+ 
             //foreach (var stroke in nodeTpl.inkCanvas.Strokes)
             //{
             //    nodeTpl.inkCanvas.Children.Remove(stroke);
@@ -68,7 +55,6 @@ namespace NuSysApp
             //    nodeTpl.inkCanvas.Strokes.Add(stroke);
             //    nodeTpl.inkCanvas.Children.Add(stroke);
             //}
-     //      this.DataContext = vm;
             //inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
         }
 
