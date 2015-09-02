@@ -369,6 +369,11 @@ namespace NuSysApp
                     {
                         ((AudioModel)model).ByteArray = await ((AudioModel)model).ConvertAudioToByte(((AudioModel)model).AudioFile);
                     }
+
+                    if (model.NodeType == NodeType.Ink)
+                    {
+                        ((InkModel)model).ByteArray = Serializer.Serialize<InkModel>(model as InkModel);
+                    }
                     Content toInsert = model.Content;
                     await dbConnection.InsertAsync(toInsert);
                 }

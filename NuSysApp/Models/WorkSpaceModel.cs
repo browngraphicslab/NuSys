@@ -155,7 +155,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        node = new InkModel(id);
+                        node = new InkModel((byte[])data, id);
                     }
                     break;
                 case NodeType.Image:

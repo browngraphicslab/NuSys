@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
@@ -7,12 +8,18 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
+    [DataContract]
     public class InkModel : Node
-    {
-        private List<InqLine> _inqlines; 
-        public InkModel(string id) : base(id)
-        {
+   {
+        private List<InqLine> _inqlines;
 
+        public InkModel() : base("-1")
+        { }
+        public InkModel(byte[] byteData, string id) : base(id)
+        {
+            ID = id;
+            byteData = byteData;
+            Content = new Content(byteData, id);
             _inqlines = new List<InqLine>();
         }
 
@@ -21,6 +28,7 @@ namespace NuSysApp
             _inqlines = lines;
         }
 
+        [DataMember]
         public List<InqLine> PolyLines
         {
             get { return _inqlines; }
@@ -43,6 +51,7 @@ namespace NuSysApp
             }
             return plines;
         }
+
         private InqLine ParseToPolyline(string s, string id)
         {
             return InqLine.ParseToPolyline(s, id);
@@ -57,6 +66,12 @@ namespace NuSysApp
         public override async Task UnPack(Dictionary<string, string> props)
         {
             base.UnPack(props);
+        }
+
+        public byte[] ByteArray
+        {
+            get { return Content.Data; }
+            set { Content.Data = value; }
         }
     }
 }
