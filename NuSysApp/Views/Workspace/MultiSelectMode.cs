@@ -112,77 +112,23 @@ namespace NuSysApp
                 _view.InqCanvas.Children.Remove(_currentRect);
             }
             _currentRect = new Rectangle();
-            _currentRect.Width = Math.Abs(_currentPoint.X - _startPoint.X);
-            _currentRect.Height = Math.Abs(_currentPoint.Y - _startPoint.Y);
-            _currentRect.Stroke = new SolidColorBrush(Colors.Black);
             var vm = (WorkspaceViewModel)_view.DataContext;
+            Rect transRect = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
+            _currentRect.Width = transRect.Width;
+            _currentRect.Height = transRect.Height;
+            _currentRect.Stroke = new SolidColorBrush(Colors.Black);
             var startP = vm.CompositeTransform.Inverse.TransformPoint(_startPoint);
-            var currentP = vm.CompositeTransform.Inverse.TransformPoint(_currentPoint);
             _view.InqCanvas.Children.Add(_currentRect);
-            if (_currentPoint.X > _startPoint.X)
-            {
-                if (_currentPoint.Y > _startPoint.Y)
-                {
-                    Canvas.SetTop(_currentRect, startP.Y);
-                    Canvas.SetLeft(_currentRect, startP.X);
-                }
-                else
-                {
-                    Canvas.SetTop(_currentRect, currentP.Y);
-                    Canvas.SetLeft(_currentRect, startP.X);
-                }
-            }
-            else
-            {
-                if (_currentPoint.Y > _startPoint.Y)
-                {
-                    Canvas.SetTop(_currentRect, startP.Y);
-                    Canvas.SetLeft(_currentRect, currentP.X);
-                }
-                else
-                {
-                    Canvas.SetTop(_currentRect, currentP.Y);
-                    Canvas.SetLeft(_currentRect, currentP.X);
-                }
-            }
+            Canvas.SetTop(_currentRect, transRect.Y);
+            Canvas.SetLeft(_currentRect, transRect.X);
         }
 
         private async void SelectContainedComponents()
         {
             if (_currentRect == null)
                 return;
-            Rect r = new Rect();
-            r.Width = _currentRect.Width;
-            r.Height = _currentRect.Height;
             var vm = (WorkspaceViewModel)_view.DataContext;
-            var startP = vm.CompositeTransform.Inverse.TransformPoint(_startPoint);
-            var currentP = vm.CompositeTransform.Inverse.TransformPoint(_startPoint);
-            if (currentP.X > startP.X)
-            {
-                if (currentP.Y > startP.Y)
-                {
-                    r.X = startP.X;
-                    r.Y = startP.Y;
-                }
-                else
-                {
-                    r.Y = currentP.Y;
-                    r.X = startP.X;
-                }
-            }
-            else
-            {
-                if (_currentPoint.Y > _startPoint.Y)
-                {
-                    r.Y = startP.Y;
-                    r.X = currentP.X;
-                }
-                else
-                {
-                    r.X = currentP.X;
-                    r.Y = currentP.Y;
-                }
-            }
+            Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
             //foreach (UIElement element in _view.InqCanvas.Children)
             //{
             //    var line = element as InqLine;

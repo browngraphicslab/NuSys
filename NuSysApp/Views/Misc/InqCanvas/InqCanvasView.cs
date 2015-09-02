@@ -127,38 +127,14 @@ namespace NuSysApp
         }
 
 
-        public Rect PasteStrokes(InqLine[] lines)
+        public void ReRenderLines()
         {
-
-            //double width = 0;
-            //double height = 0;
-            //foreach (var stroke in lines)
-            //{
-            //    var pl = new InqLine();
-            //    pl.StrokeThickness = stroke.StrokeThickness;
-            //    pl.SetHighlighting(stroke.IsHighlighting);
-
-            //    var points = stroke.Points;
-            //    var minX = points.Min(em => em.X);
-            //    var minY = points.Min(em => em.Y);
-            //    var maxX = points.Max(em => em.X);
-            //    var maxY = points.Max(em => em.Y);
-
-            //    width = maxX - minX;
-            //    height = maxY - minY;
-
-            //    foreach (var point in stroke.Points)
-            //    {
-            //        double x = point.X - minX;
-            //        double y = point.Y - minY;
-            //        pl.AddPoint(new Point(point.X - minX, point.Y - minY));
-            //    }
-            //    NetworkConnector.Instance.FinalizeGlobalInk(pl.ID, pl.GetString());
-            //}
-            Rect rect = new Rect();
-            //rect.Width = width;
-            //rect.Height = height;
-            return rect;
+            this.Children.Clear();
+            var lines = this.ViewModel.Model.Lines;
+            foreach (InqLine line in lines)
+            {
+                this.Children.Add(line);
+            }
         }
 
         public bool IsEnabled {

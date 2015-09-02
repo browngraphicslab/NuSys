@@ -38,9 +38,9 @@ namespace NuSysApp
         public void UpdateInk()
         {
             var vm = (InkNodeViewModel)this.DataContext;
-            var rect = nodeTpl.inkCanvas.PasteStrokes(_toBePasted);
-            vm.Width = rect.Width;
-            vm.Height = rect.Height;
+            //var rect = nodeTpl.inkCanvas.PasteStrokes(_toBePasted);
+            //vm.Width = rect.Width;
+            //vm.Height = rect.Height;
         }
 
         private void InkNodeView_PromoteInk(object o, RoutedEventArgs e)

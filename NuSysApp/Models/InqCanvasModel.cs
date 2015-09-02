@@ -45,7 +45,10 @@ namespace NuSysApp
             };
 
         }
-        public HashSet<InqLine> Lines { get { return _lines; } }
+        public HashSet<InqLine> Lines {
+            get { return _lines; } 
+            set { _lines = value; }
+        }
         public string ID { get; }
         public void Delete()
         {

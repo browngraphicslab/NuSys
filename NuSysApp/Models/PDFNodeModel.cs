@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace NuSysApp
 {
     public class PdfNodeModel : Node
     {
+        public delegate void PdfImagesCreatedHandler();
+        public event PdfImagesCreatedHandler OnPdfImagesCreated;
+
         private uint _currentPageNum;
 
         public PdfNodeModel(byte[] bytes,string id) : base(id)
@@ -30,12 +34,21 @@ namespace NuSysApp
 
             RenderedPages = await PdfRenderer.RenderPdf(file);
             PageCount = (uint)RenderedPages.Count;
+            InqLines = new List<HashSet<InqLine>>();
+            InqLines.Capacity = (int) PageCount;
+            for (int i = 0; i < PageCount; i++)
+            {
+                InqLines.Add(new InqCanvasModel(ID).Lines);
+            }
+            /*
             InkContainer = new List<HashSet<InqLine>>();
             InkContainer.Capacity = (int) PageCount;
             for (var i = 0; i < PageCount; i++)
             {
                 InkContainer.Add(new HashSet<InqLine>());
             }
+            */
+            OnPdfImagesCreated?.Invoke();
 
         }
 
@@ -59,8 +72,6 @@ namespace NuSysApp
             set
             {
                 _currentPageNum = value;
-                if (RenderedPages == null) return;
-                RenderedPage = RenderedPages[(int)value];
             }
         }
 
@@ -78,7 +89,7 @@ namespace NuSysApp
 
             return pdfNode;
         }
-
+        
         public override double Width
         {
             get
@@ -88,10 +99,11 @@ namespace NuSysApp
 
             set
             {
-                if (RenderedPage == null) {
+                if (RenderedPages == null) {
                     base.Width = value;
                     return;
                 }
+                var RenderedPage = RenderedPages[0];
                 if (RenderedPage.PixelWidth > RenderedPage.PixelHeight)
                 {
                     var r = RenderedPage.PixelHeight / (double)RenderedPage.PixelWidth;
@@ -115,6 +127,7 @@ namespace NuSysApp
 
             set
             {
+                var RenderedPage = RenderedPages[0];
                 if (RenderedPage == null)
                 {
                     base.Height = value;
@@ -136,12 +149,14 @@ namespace NuSysApp
 
             }
         }
+        
 
         public uint PageCount { get; set; }
-        public List<HashSet<InqLine>> InkContainer { get; set; }
+        //public List<HashSet<InqLine>> InkContainer { get; set; }
+
+        public List<HashSet<InqLine>> InqLines { get; set; }
 
         private byte[] ByteArray { set; get; }
-        public BitmapImage RenderedPage { get; set; }
         public List<BitmapImage> RenderedPages { get; set; }
     }
 }
