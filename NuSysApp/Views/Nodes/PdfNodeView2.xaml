@@ -32,8 +32,8 @@
             <Grid>
 
                 <local:InqCanvasView x:Name="inkCanvas"/>
-                
-            <Image Margin="3,3,3,3" Source="{Binding Model.RenderedPage}" Stretch="Uniform"/>
+
+                <Image Margin="3,3,3,3" Source="{Binding RenderedBitmapImage}" Stretch="Uniform"/>
                 <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
                 <Button.Content>
                     <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_left.png" />
