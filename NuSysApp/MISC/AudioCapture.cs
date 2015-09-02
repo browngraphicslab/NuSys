@@ -24,6 +24,10 @@ namespace NuSysApp
        
         private CoreDispatcher _dispatcher;
 
+        //event
+        public delegate void AudioStoppedHandler();
+        public event AudioStoppedHandler OnAudioStopped;
+
         public AudioCapture()
         {
             _recording = false;
@@ -133,6 +137,7 @@ namespace NuSysApp
             Debug.WriteLine("Stopping audio capture");
             await _mediaCaptureManager.StopRecordAsync();
             Debug.WriteLine("Stop audio capture successful");
+            OnAudioStopped?.Invoke();
             _recording = false;
         }
     }

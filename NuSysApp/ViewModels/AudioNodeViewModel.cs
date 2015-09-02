@@ -6,11 +6,14 @@ using Windows.UI.Xaml.Media;
 namespace NuSysApp
 {
     public class AudioNodeViewModel: NodeViewModel
-    {     
+    {
         public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm) : base(model, vm)
         {
             AudioRecorder = new AudioCapture();
-            
+            AudioRecorder.OnAudioStopped += async delegate
+            {
+                await model.SendNetworkUpdate();
+            };
             this.View = new AudioNodeView(this);
             this.Transform = new MatrixTransform();
             this.Width = 400;

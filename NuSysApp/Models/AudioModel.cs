@@ -1,6 +1,7 @@
 ﻿using NuSysApp.MISC;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -14,6 +15,7 @@ namespace NuSysApp
     public class AudioModel : Node
     {
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
+        private StorageFile _audioFile;
         public AudioModel(byte[] byteArray, string id) : base(id)
         {
             Content = new Content(byteArray, id);
@@ -25,25 +27,31 @@ namespace NuSysApp
 
         public byte[] ByteArray
         {
-            get { return Content.Data; }
-            set
-            {
-                Content.Data = value;
-                if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
-                {
-                    DebounceDict.Add("audio",Convert.ToBase64String(value));
-                }
-            }
+            get {return Content.Data;}
+            set {Content.Data = value;}
         }
 
-        public StorageFile AudioFile { get; set; }
-
-        public string FileName { get; set; }
+        public StorageFile AudioFile {
+            get
+            {
+                return _audioFile;
+            }
+            set
+            {
+                if (_audioFile == value) return;
+                _audioFile = value;
+            }
+        }
+        public string FileName { get;
+            set; }
 
         public override async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string, string> props = await base.Pack();
-            props.Add("audio", Convert.ToBase64String(ByteArray));
+            if (ByteArray != null)
+            {
+                props.Add("audio", Convert.ToBase64String(ByteArray));
+            }
             props.Add("nodeType", NodeType.Audio.ToString());
             return props;
         }
@@ -52,7 +60,8 @@ namespace NuSysApp
         {
             if (props.ContainsKey("audio"))
             {
-                MakeAudio(Convert.FromBase64String(props["audio"]));
+                ByteArray = Convert.FromBase64String(props["audio"]);
+                MakeAudio(ByteArray);
             }
             base.UnPack(props);
         } 
@@ -76,7 +85,16 @@ namespace NuSysApp
             if (byteArray == null) return;
             AudioFile = await this.ConvertByteToAudio(byteArray);
         }
-
+        public async Task SendNetworkUpdate()
+        {
+            byte[] bytes = await ConvertAudioToByte(AudioFile);
+            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+            {
+                Debug.WriteLine("add to debounce dict called");
+                DebounceDict.Add("audio", Convert.ToBase64String(bytes));
+                DebounceDict.MakeNextMessageTCP();
+            }
+        }
         public async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
         {
             StorageFile _recordStorageFile = await _rootFolder.CreateFileAsync(ID + ".mp3", CreationCollisionOption.GenerateUniqueName);
