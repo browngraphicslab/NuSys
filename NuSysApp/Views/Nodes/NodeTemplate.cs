@@ -115,6 +115,7 @@ namespace NuSysApp
         }
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            /*
             var vm = (NodeViewModel)this.DataContext;
             if (vm.WorkSpaceViewModel != null) { 
                 vm.CreateAnnotation();
@@ -125,8 +126,8 @@ namespace NuSysApp
             //                SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
             //                nodeTpl.Background = backgroundColorBrush;
             //            }
+            */
             e.Handled = true;
-
         }
 
         private void Node_MultiSelectionChanged(object sender, PropertyChangedEventArgs e)
