@@ -29,11 +29,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             chrome.storage.local.get(function (data) {
                 $(data["selections"]).each(function (indx, elem) {
                     if (elem["urlGroup"] == response.objectId.toString()) {
-                        list.push(elem["_content"]);
+                        list.push(elem);
                     }
                 });
-                id = response.objectId.toString();
-                console.log(id);
+          //      id = response.objectId.toString();
+            //    console.log(id);
                // console.log(result[id]);
               //  addition = result[id].selections;
                 if (list.length > 0) {
@@ -91,7 +91,7 @@ $("#clear").click(function () {
 function addToSelection(array) {
     console.log($("selected").data);
     $.each(array, function (index, value) {
-        var res = value.split('//');
+        var res = value._content.split('//')
         var newVal = "";
         for (var i = 0; i < res.length; i++) {
 
