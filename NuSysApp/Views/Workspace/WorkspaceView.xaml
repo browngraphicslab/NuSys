@@ -11,9 +11,6 @@
     >
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="mainGrid_DragLeave">
-        <Canvas.Clip>
-            <RectangleGeometry Rect="0,0,3000,3000" />
-        </Canvas.Clip>
         <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
             <local:InqCanvasView x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
         </Border>

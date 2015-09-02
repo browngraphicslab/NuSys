@@ -32,16 +32,19 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.DataContext = vm;
+            var model = (TextNode)vm.Model;
 
             mdTextBox.TextChanging += delegate
             {
                 //vm.MarkDownText = mdTextBox.Text;
+                model.Text = mdTextBox.Text;
                 AdjustScrollHeight();
             };
 
             mdTextBox.TextChanging += delegate
-            {                
-               // vm.MarkDownText = mdTextBox.Text;
+            {
+                // vm.MarkDownText = mdTextBox.Text;
+                model.Text = mdTextBox.Text;
                 AdjustScrollHeight();
             };
 
