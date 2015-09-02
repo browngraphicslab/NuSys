@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -33,6 +34,12 @@ namespace NuSysApp
 
             RenderedPages = await PdfRenderer.RenderPdf(file);
             PageCount = (uint)RenderedPages.Count;
+            InqLines = new List<HashSet<InqLine>>();
+            InqLines.Capacity = (int) PageCount;
+            for (int i = 0; i < PageCount; i++)
+            {
+                InqLines.Add(new InqCanvasModel(ID).Lines);
+            }
             /*
             InkContainer = new List<HashSet<InqLine>>();
             InkContainer.Capacity = (int) PageCount;
@@ -145,7 +152,9 @@ namespace NuSysApp
         
 
         public uint PageCount { get; set; }
-        public List<HashSet<InqLine>> InkContainer { get; set; }
+        //public List<HashSet<InqLine>> InkContainer { get; set; }
+
+        public List<HashSet<InqLine>> InqLines { get; set; }
 
         private byte[] ByteArray { set; get; }
         public List<BitmapImage> RenderedPages { get; set; }

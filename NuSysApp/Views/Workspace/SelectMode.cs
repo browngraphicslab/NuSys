@@ -25,6 +25,8 @@ namespace NuSysApp.Views.Workspace
             _view.DoubleTapped -= OnDoubleTapped;
 
             _view.ManipulationMode = ManipulationModes.None;
+            var vm = _view.DataContext as WorkspaceViewModel;
+            vm.ClearSelection();
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
