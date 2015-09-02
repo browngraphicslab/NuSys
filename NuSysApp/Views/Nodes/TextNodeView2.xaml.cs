@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Media;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using Windows.System;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -65,6 +67,26 @@ namespace NuSysApp
             {
                 RearrangeImagePlaceHolders();
                 AdjustScrollHeight();
+            };
+
+            grid.IsDoubleTapEnabled = true;
+            grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
+            {
+                Debug.WriteLine("double tapppped");
+                var pos = e.GetPosition(rtfTextBox);
+                var range = rtfTextBox.Document.GetRangeFromPoint(pos, PointOptions.ClientCoordinates);
+                range.StartOf(TextRangeUnit.Link, true);
+                var str = string.Empty;
+                range.GetText(TextGetOptions.UseCrlf, out str);
+
+
+                if (!str.StartsWith("HYPERLINK"))
+                    return;
+
+                var groups = Regex.Match(str, "\"(.*?)\"").Groups;
+                var url = groups[1].Value;
+                Launcher.LaunchUriAsync(new Uri(url));
+                e.Handled = true;
             };
 
             vm.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)

@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,9 +26,16 @@ namespace NuSysApp
     {
         private ContentImporter _contentImporter = new ContentImporter();
 
+
+        public ObservableCollection<BucketItem> BucketItems { get; set; }
+
         public BucketWindow()
         {
             this.InitializeComponent();
+
+            BucketItems = new ObservableCollection<BucketItem>();
+            DataContext = this;
+
             Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));
 
             _contentImporter.ContentImported += async delegate (List<string> contents)
@@ -46,7 +53,7 @@ namespace NuSysApp
                     foreach (var content in contents)
                     {                        
                         var rtf = await ContentConverter.HtmlToRtfWithImages(await ContentConverter.MdToHtml(content));
-                        ContentContainer.Children.Add(new BucketItem(rtf));
+                        BucketItems.Add(new BucketItem(content, rtf));
                     }
 
                 });
@@ -55,5 +62,47 @@ namespace NuSysApp
                 
             };
         }
+
+        private void ContentContainer_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            e.Data.SetText(((BucketItem)e.Items[0]).MarkDown);
+            e.Cancel = false;
+        }
+
+        private void ContentContainer_DragStarting(UIElement sender, DragStartingEventArgs args)
+        {
+            Debug.WriteLine("drag starting");
+        }
+
+        private void ContentContainer_DragEnter(object sender, DragEventArgs e)
+        {
+            Debug.WriteLine("drag enter");
+        }
+
+        private void ContentContainer_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            BucketItems.Remove((BucketItem)args.Items[0]);            
+            Debug.WriteLine("drag items completed!");
+        }
     }
-}
+
+
+    public class BucketItem
+        {
+            public BucketItem(string markDown, string rtf)
+            {
+                Rtf = rtf;
+                MarkDown = markDown;
+            }
+
+            public string MarkDown
+            {
+                get; set;
+            }
+
+            public string Rtf
+            {
+                get; set;
+            }
+        }
+    }
