@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -34,7 +35,7 @@ namespace NuSysApp
         public async Task UpdateRtf()       
         {
            
-
+            try { 
             _inlineImages.Clear();
 
             const string rtfImagePlaceholder = "---IMAGE---";
@@ -79,7 +80,11 @@ namespace NuSysApp
             }
 
             RtfText = rtf;
-
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Couldn't update rtf.");
+            }
         }
 
         private static async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
