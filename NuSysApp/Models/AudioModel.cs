@@ -14,7 +14,6 @@ namespace NuSysApp
     public class AudioModel : Node
     {
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
-
         public AudioModel(byte[] byteArray, string id) : base(id)
         {
             Content = new Content(byteArray, id);
@@ -27,7 +26,14 @@ namespace NuSysApp
         public byte[] ByteArray
         {
             get { return Content.Data; }
-            set { Content.Data = value; }
+            set
+            {
+                Content.Data = value;
+                if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                {
+                    DebounceDict.Add("audio",Convert.ToBase64String(value));
+                }
+            }
         }
 
         public StorageFile AudioFile { get; set; }
@@ -42,6 +48,14 @@ namespace NuSysApp
             return props;
         }
 
+        public override async Task UnPack(Dictionary<string, string> props)
+        {
+            if (props.ContainsKey("audio"))
+            {
+                MakeAudio(Convert.FromBase64String(props["audio"]));
+            }
+            base.UnPack(props);
+        } 
         public async Task<byte[]> ConvertAudioToByte(StorageFile file)
         {
             byte[] fileBytes = null;

@@ -101,7 +101,7 @@ namespace NuSysApp
             _pingResponses = new Dictionary<string, int>();
             _phpPingTimer = new DispatcherTimer();
             _phpPingTimer.Tick += SendPhpPing;
-            _phpPingTimer.Interval = new TimeSpan(0, 0, 0, 0,2500);
+            _phpPingTimer.Interval = new TimeSpan(0, 0, 0, 0,1000);
             _phpPingTimer.Start();
 
             var ips = GetOtherIPs();
