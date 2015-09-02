@@ -103,7 +103,7 @@ namespace NuSysApp
             _subMenuAdditionalOpen = false;
         }
 
-        private void Expandable(object sender, RoutedEventArgs e)
+        private void Expandable(object sender, TappedRoutedEventArgs e)
         {
             //expand
             if (ExpandImage.Visibility == Visibility.Visible)
@@ -135,6 +135,7 @@ namespace NuSysApp
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
+            e.Handled = true;
         }
 
         private void GlobalInkButton_Click(object sender, TappedRoutedEventArgs e)

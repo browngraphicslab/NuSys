@@ -129,9 +129,22 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
                     break;
                 case Options.Bucket:
-                    await SetViewMode(new MultiMode(this));
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this)));
                     break;
             }
+        }
+
+
+        private async void mainGrid_DragLeave(object sender, DragEventArgs e)
+        {
+            string text = await e.Data.GetView().GetTextAsync();
+            var pos = e.GetPosition(this);
+            var vm = (WorkspaceViewModel)this.DataContext;
+            var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
+            var props = new Dictionary<string, string>();
+            props["width"] = "400";
+            props["height"] = "300";
+            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);
         }
     }
 }

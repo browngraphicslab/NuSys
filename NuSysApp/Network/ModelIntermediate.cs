@@ -215,6 +215,16 @@ namespace NuSysApp
                             Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
                         }
                         break;
+                    case NodeType.Audio:
+                        try
+                        {
+                            data = ParseToByteArray(d);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                        }
+                        break;
                 }
             }
             await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
