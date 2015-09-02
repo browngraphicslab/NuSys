@@ -465,11 +465,12 @@ namespace NuSysApp
                     break;
                 case NodeType.PDF:
                     vm = new PdfNodeViewModel((PdfNodeModel)model, this);
+                    /*
                     if (((PdfNodeModel)vm.Model).RenderedPage != null)
                     {
                         vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
                         vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
-                    }
+                    }*/
                     break;
                 case NodeType.Audio:
                     vm = new AudioNodeViewModel((AudioModel)model, this);

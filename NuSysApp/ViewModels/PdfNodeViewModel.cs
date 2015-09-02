@@ -16,6 +16,13 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel) : base(model, workspaceViewModel)
         {
+            model.OnPdfImagesCreated += delegate
+            {
+                RenderedBitmapImage = model.RenderedPages[0];
+            };
+            if (model.RenderedPages.Count > 0)
+                RenderedBitmapImage = model.RenderedPages[0];
+
             this.View = new PdfNodeView2(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
@@ -33,18 +40,32 @@ namespace NuSysApp
             this.InkScale = C;
         }
 
+        public void FlipRight()
+        {
+            if (CurrentPageNumber >= (PageCount - 1)) return;
+            RenderedBitmapImage = RenderedPages[(int)++CurrentPageNumber];
+            RaisePropertyChanged("RenderedBitmapImage");
+        }
+
+        public void FlipLeft()
+        {
+            if (CurrentPageNumber == 0) return;
+            RenderedBitmapImage = RenderedPages[(int)--CurrentPageNumber];
+            RaisePropertyChanged("RenderedBitmapImage");
+        }
+
         public override void Resize(double dx, double dy)
         {
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * ((PdfNodeModel)Model).RenderedPage.PixelWidth / ((PdfNodeModel)Model).RenderedPage.PixelHeight;
+                newDx = dy * RenderedBitmapImage.PixelWidth / RenderedBitmapImage.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * ((PdfNodeModel)Model).RenderedPage.PixelHeight / ((PdfNodeModel)Model).RenderedPage.PixelWidth;
+                newDy = dx * RenderedBitmapImage.PixelHeight / RenderedBitmapImage.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
@@ -58,12 +79,7 @@ namespace NuSysApp
 
         public BitmapImage RenderedBitmapImage
         {
-            get { return ((PdfNodeModel)Model).RenderedPage; }
-            set
-            {
-                ((PdfNodeModel)Model).RenderedPage = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
+            get; set;
         }
 
         public List<BitmapImage> RenderedPages
