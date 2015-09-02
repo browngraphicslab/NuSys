@@ -95,7 +95,7 @@ namespace NuSysApp
             
             
             SynchronizationContext context = SynchronizationContext.Current;
-            await Task.Factory.StartNew(() =>
+            await Task.Run(() =>
             {
                 context.Post((a) => {
                     wv.NavigateToString(html);
