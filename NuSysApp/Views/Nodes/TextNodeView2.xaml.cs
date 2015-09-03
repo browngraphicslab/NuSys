@@ -40,12 +40,7 @@ namespace NuSysApp
                 model.Text = mdTextBox.Text;
                 AdjustScrollHeight();
             };
-
-            mdTextBox.TextChanged += delegate
-            {
-                model.Text = mdTextBox.Text;
-                AdjustScrollHeight();
-            };
+            
 
             mdTextBox.SizeChanged += delegate
             {

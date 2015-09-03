@@ -221,14 +221,17 @@ namespace NuSysApp
 
         private void SendPhpPing(object sender, object args)
         {
-            const string URL = "http://aint.ch/nusys/clients.php";
-            var urlParameters = "?action=ping&ip=" + _localIP;
+            Task.Run(() =>
+            {
+                const string URL = "http://aint.ch/nusys/clients.php";
+                var urlParameters = "?action=ping&ip=" + _localIP;
 
-            var client = new HttpClient { BaseAddress = new Uri(URL) };
+                var client = new HttpClient { BaseAddress = new Uri(URL) };
 
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = client.GetAsync(urlParameters).Result;
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(urlParameters).Result;
+            });
         }
 
         /*
