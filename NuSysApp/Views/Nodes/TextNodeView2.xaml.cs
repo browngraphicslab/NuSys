@@ -32,18 +32,17 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.DataContext = vm;
+
             var model = (TextNode)vm.Model;
 
             mdTextBox.TextChanging += delegate
             {
-                //vm.MarkDownText = mdTextBox.Text;
                 model.Text = mdTextBox.Text;
                 AdjustScrollHeight();
             };
 
-            mdTextBox.TextChanging += delegate
+            mdTextBox.TextChanged += delegate
             {
-                // vm.MarkDownText = mdTextBox.Text;
                 model.Text = mdTextBox.Text;
                 AdjustScrollHeight();
             };
@@ -139,7 +138,6 @@ namespace NuSysApp
             if (!vm.IsEditing)
             {
                 await vm.UpdateRtf();
-
                 RearrangeImagePlaceHolders();
             }
 

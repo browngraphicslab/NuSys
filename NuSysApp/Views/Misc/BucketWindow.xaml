@@ -9,9 +9,9 @@
     d:DesignHeight="600"
     d:DesignWidth="400">
 
-    <Border x:Name="Border" CornerRadius="10">
+    <Border x:Name="Border" CornerRadius="10" Background="#62BDC5">
         <Grid>
-            <Rectangle Fill="White" Opacity=".5"></Rectangle>
+           
 
             <ListView Background="AliceBlue" CanDragItems="True" ItemsSource="{Binding BucketItems}" x:Name="ContentContainer" DragItemsCompleted="ContentContainer_DragItemsCompleted" DragEnter="ContentContainer_DragEnter" DragItemsStarting="ContentContainer_DragItemsStarting" DragStarting="ContentContainer_DragStarting" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5" Height="550" Width="390">
                 <ListView.ItemsPanel>

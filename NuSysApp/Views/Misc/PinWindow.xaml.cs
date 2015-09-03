@@ -23,7 +23,7 @@ namespace NuSysApp
         public PinWindow()
         {
             this.InitializeComponent();
-            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));           
+          //  Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));           
         }
 
 

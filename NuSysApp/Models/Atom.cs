@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Network;
 using System.Runtime.Serialization;
@@ -24,6 +26,9 @@ namespace NuSysApp
             No,
             Maybe
         }
+
+        private SolidColorBrush _color;
+
         protected Atom(string id)
         {
             ID = id;
@@ -38,9 +43,52 @@ namespace NuSysApp
             OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
         }
 
-        
+        //takes in string converts to SolidColorBrush
+        private SolidColorBrush StringToColor(string colorString)
+        {
+            string aVal = colorString.Substring(0, 2);
+            string rVal = colorString.Substring(3, 5);
+            string gVal = colorString.Substring(6, 8);
+            string bVal = colorString.Substring(9, 11);
 
-        public SolidColorBrush Color { get; set; }
+            Color color = Windows.UI.Color.FromArgb(Byte.Parse(aVal),Byte.Parse(rVal),Byte.Parse(gVal),Byte.Parse(bVal));
+
+            SolidColorBrush colorBrush = new SolidColorBrush(color);
+
+            return colorBrush;
+        }
+
+        //takes in SolidColorBrush converts to string
+        private string ColorToString(SolidColorBrush brush)
+        {
+            Color color = brush.Color;
+            var aVal = color.A;
+            var rVal = color.R;
+            var gVal = color.G;
+            var bVal = color.B;
+            string colorString = aVal.ToString() + rVal.ToString() + gVal.ToString() + bVal.ToString();
+            return colorString;
+        }
+
+        public SolidColorBrush Color {
+            get { return _color; }
+            set
+            {
+                if (value != null && _color != value)
+                {
+                    _color = value;
+                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                    {
+                        //TODO raise property changed
+                    }
+                    else
+                    {
+                        this.DebounceDict.Add("color", ColorToString(value));
+                    }
+                }
+            }
+        }
+
         public DebouncingDictionary DebounceDict
         {
             get { return _debounceDict; }

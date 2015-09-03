@@ -36,7 +36,7 @@ namespace NuSysApp
             BucketItems = new ObservableCollection<BucketItem>();
             DataContext = this;
 
-            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 81, 220, 231));
+            Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));
 
             _contentImporter.ContentImported += async delegate (List<string> contents)
             {

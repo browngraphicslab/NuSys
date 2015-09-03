@@ -82,20 +82,32 @@
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
 
+        <Storyboard x:Name="ellipse" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse1">
+                <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
     </UserControl.Resources>
 
-    <Grid Background="#a8edf3">
-        <Button Click="ButtonBase_OnClick" Foreground="#51DCE7" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,-300,0,0" Background="White">
+    <Grid Background="#62BDC5">
+        <Button Click="ButtonBase_OnClick" Foreground="#49C7D2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,-300,0,0" Background="White">
             PUBLIC WORKSPACE
         </Button>
-        <StackPanel Orientation="Horizontal" Margin="0,-150,0,0" Height="50" Width="100">
+        <!--<StackPanel Orientation="Horizontal" Margin="0,-150,0,0" Height="50" Width="100">
             <Ellipse x:Name="ellipse" Height="20" Width="20" Opacity="0" Fill="White"></Ellipse>
             <Ellipse x:Name="ellipse1" Height="20" Width="20" Opacity="0" Fill="White"></Ellipse>
             <Ellipse x:Name="ellipse2" Height="20" Width="20" Opacity="0" Fill="White"></Ellipse>
             <Ellipse x:Name="ellipse3" Height="20" Width="20" Opacity="0" Fill="White"></Ellipse>
             <Ellipse x:Name="ellipse4" Height="20" Width="20" Opacity="0" Fill="White"></Ellipse>
-        </StackPanel>
-        <Button Click="Local_OnClick" Foreground="#51DCE7" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,0,0,0" Background="White">
+        </StackPanel>-->
+
+        <Grid Margin="0,-150,0,0">
+            <Ellipse x:Name="ellipse1" Width="30" Height="30" Stroke="White" StrokeThickness="2" Opacity="0"/>
+        </Grid>
+
+        <Button Click="Local_OnClick" Foreground="#62BDC5" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,0,0,0" Background="White">
             PRIVATE WORKSPACE
         </Button>
 
@@ -103,7 +115,7 @@
                    Text="Can't join workspace after a few seconds?"></TextBlock>
         <TextBlock TextAlignment="Right" Height="60" Width="915" FontSize="20" Margin="0,0,0,-450" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="White" 
                    Text="and then Network Workspace."></TextBlock>
-        <Button x:Name="fixButton" Height="30" Width="120" Margin="646,555,514,135" Click="clear_OnClick" Foreground="#51DCE7" FontWeight="Bold" FontSize="18" Style="{StaticResource WaitingRoomButton}" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button x:Name="fixButton" Height="30" Width="120" Margin="646,555,514,135" Click="clear_OnClick" Foreground="#62BDC5" FontWeight="Bold" FontSize="18" Style="{StaticResource WaitingRoomButton}" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
             CLICK THIS
         </Button>
     </Grid>

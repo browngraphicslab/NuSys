@@ -147,24 +147,24 @@
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
                 </Button>
                 <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_text.png" Height="20" Width="20"></Image>
+                    <Image Source="ms-appx:///Assets/icon_text.png" Height="30" Width="30" Stretch="Uniform"></Image>
                 </Button>
                 <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="20" Width="20"></Image>
+                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="30" Width="30"></Image>
                 </Button>
                 <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
                 <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
                         VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Opacity="0" IsHitTestVisible="False">
                     <StackPanel.RenderTransform>
                         <CompositeTransform />
-                    </StackPanel.RenderTransform>
-                    <Button x:Name="Green" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#bef08e"></Button>
-                    <Button x:Name="Red" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#ff9895"></Button>
-                    <Button x:Name="Blue" Click="Change_Color"  Style="{StaticResource NodeSubMenuItem}" Background="#ADD8E6"></Button>
-                    <Button x:Name="Parchment" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="BlanchedAlmond"></Button>
+                    </StackPanel.RenderTransform> 
+                    <Button x:Name="Green" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#98C071"></Button>
+                    <Button x:Name="Red" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#C75452"></Button>
+                    <Button x:Name="Blue" Click="Change_Color"  Style="{StaticResource NodeSubMenuItem}" Background="#62BDC5"></Button>
+                    <Button x:Name="Parchment" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#eed5b7"></Button>
                 </StackPanel>
             </StackPanel>
         </local:NodeTemplate.SubMenu>

@@ -17,7 +17,8 @@ namespace NuSysApp
         public WaitingRoomView()
         {
             this.InitializeComponent();
-            waitingroomanimation.Begin();
+            //waitingroomanimation.Begin();
+            ellipse.Begin();
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

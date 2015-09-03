@@ -16,7 +16,13 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel) : base(model, workspaceViewModel)
         {
-            this.View = new PdfNodeView2(this);
+            model.OnPdfImagesCreated += delegate
+            {
+                RenderedBitmapImage = model.RenderedPages[0];
+            };
+            if (model.RenderedPages.Count > 0)
+                RenderedBitmapImage = model.RenderedPages[0];
+
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;
@@ -24,7 +30,8 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             this.NodeType = NodeType.PDF;
             this.CurrentPageNumber = 0;
-            this.InkContainer = new List<HashSet<InqLine>>((int)PageCount);
+            this.RenderedLines = InqPages[0];
+            this.View = new PdfNodeView2(this);
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,
@@ -33,18 +40,34 @@ namespace NuSysApp
             this.InkScale = C;
         }
 
+        public void FlipRight()
+        {
+            if (CurrentPageNumber >= (PageCount - 1)) return;
+            RenderedBitmapImage = RenderedPages[(int)++CurrentPageNumber];
+            RenderedLines = InqPages[(int)CurrentPageNumber];
+            RaisePropertyChanged("RenderedBitmapImage");
+        }
+
+        public void FlipLeft()
+        {
+            if (CurrentPageNumber == 0) return;
+            RenderedBitmapImage = RenderedPages[(int)--CurrentPageNumber];
+            RenderedLines = InqPages[(int)CurrentPageNumber];
+            RaisePropertyChanged("RenderedBitmapImage");
+        }
+
         public override void Resize(double dx, double dy)
         {
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * ((PdfNodeModel)Model).RenderedPage.PixelWidth / ((PdfNodeModel)Model).RenderedPage.PixelHeight;
+                newDx = dy * RenderedBitmapImage.PixelWidth / RenderedBitmapImage.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * ((PdfNodeModel)Model).RenderedPage.PixelHeight / ((PdfNodeModel)Model).RenderedPage.PixelWidth;
+                newDy = dx * RenderedBitmapImage.PixelHeight / RenderedBitmapImage.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {
@@ -58,13 +81,10 @@ namespace NuSysApp
 
         public BitmapImage RenderedBitmapImage
         {
-            get { return ((PdfNodeModel)Model).RenderedPage; }
-            set
-            {
-                ((PdfNodeModel)Model).RenderedPage = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
+            get; set;
         }
+
+        public HashSet<InqLine> RenderedLines { get; set; }
 
         public List<BitmapImage> RenderedPages
         {
@@ -74,6 +94,11 @@ namespace NuSysApp
                 ((PdfNodeModel)Model).RenderedPages = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
+        }
+
+        public List<HashSet<InqLine>> InqPages
+        {
+            get { return ((PdfNodeModel) Model).InqLines; }
         }
 
         public uint CurrentPageNumber
@@ -92,16 +117,6 @@ namespace NuSysApp
             set
             {
                 ((PdfNodeModel)Model).PageCount = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
-        }
-
-        public List<HashSet<InqLine>> InkContainer
-        {
-            get { return ((PdfNodeModel)Model).InkContainer; }
-            set
-            {
-                ((PdfNodeModel)Model).InkContainer = value;
                 RaisePropertyChanged("PdfNodeModel");
             }
         }

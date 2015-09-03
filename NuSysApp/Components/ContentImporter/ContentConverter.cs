@@ -72,6 +72,12 @@ namespace NuSysApp
         public async static Task<string> HtmlToRtf(string htmlString )
         {
             var html = string.Empty;
+
+            if (htmlString == "")
+            {
+                htmlString = "<span>&nbsp;</span>";
+            }
+
             if (!htmlString.StartsWith("<html>")) {
                 html = "<html><body>" + htmlString + "</body></html>";
             } else
@@ -91,8 +97,7 @@ namespace NuSysApp
                 DataPackage p = await wv.CaptureSelectedContentToDataPackageAsync();
                 result = await p.GetView().GetRtfAsync();
                 manualReset.Set();
-            };
-            
+            };            
             
             SynchronizationContext context = SynchronizationContext.Current;
             await Task.Run(() =>

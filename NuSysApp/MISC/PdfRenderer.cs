@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.MISC;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -56,7 +57,9 @@ namespace NuSysApp
                         var pdfPage = _pdfDocument.GetPage(pageNum);
                         if (pdfPage == null) throw new NullReferenceException("Couldn't read all pages");
                         // generate a bitmap of the page
-                        var tempStorageFolder = ApplicationData.Current.TemporaryFolder;
+                        //var tempStorageFolder = ApplicationData.Current.TemporaryFolder;
+
+                        var tempStorageFolder = NuSysStorages.Media;
                         var pngStorageFile =
                             await
                                 tempStorageFolder.CreateFileAsync(Guid.NewGuid() + ".png",

@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -12,64 +13,37 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            this.Loaded += delegate(object sender, RoutedEventArgs e)
+            {
+                nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+                nodeTpl.inkCanvas.ReRenderLines();
+            };
         }
 
 
         private void OnEditInk(object sender, RoutedEventArgs e)
         {
             nodeTpl.ToggleInkMode();
-        }
 
+        }
 
         private void pageLeft_Click(object sender, RoutedEventArgs e)
         {
-
             var vm = (PdfNodeViewModel)this.DataContext;
-            var pageNum = vm.CurrentPageNumber;
+            vm.FlipLeft();
 
-            if (pageNum <= 0) return;
-            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum - 1];
-            vm.CurrentPageNumber--;
+            nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            nodeTpl.inkCanvas.ReRenderLines();
 
-            //foreach (var stroke in nodeTpl.inkCanvas.Strokes)
-            //{
-            //    nodeTpl.inkCanvas.Children.Remove(stroke);
-            //    vm.InkContainer[(int)pageNum].Add(stroke);
-            //}
-            //nodeTpl.inkCanvas.Strokes.Clear();
-            //foreach (var stroke in vm.InkContainer[(int)vm.CurrentPageNumber])
-            //{
-            //    nodeTpl.inkCanvas.Strokes.Add(stroke);
-            //    nodeTpl.inkCanvas.Children.Add(stroke);
-            //}
-      //      this.DataContext = vm;
         }
 
         private void pageRight_Click(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
-            var pageCount = vm.PageCount;
-            var pageNum = vm.CurrentPageNumber;
-            //vm.InkContainer[(int)pageNum] = inkCanvas.Strokes;
-            //inkCanvas.Strokes.Clear();
-            //inkCanvas.Children.Clear();
-            //inkCanvas.Manager = new Windows.UI.Input.Inking.InkManager();
-            if (pageNum >= (pageCount - 1)) return;
-            vm.RenderedBitmapImage = vm.RenderedPages[(int)pageNum + 1];
-            vm.CurrentPageNumber++;
-            //foreach (var stroke in nodeTpl.inkCanvas.Strokes)
-            //{
-            //    nodeTpl.inkCanvas.Children.Remove(stroke);
-            //    vm.InkContainer[(int)pageNum].Add(stroke);
-            //}
-            //nodeTpl.inkCanvas.Strokes.Clear();
-            //foreach (var stroke in vm.InkContainer[(int)vm.CurrentPageNumber])
-            //{
-            //    nodeTpl.inkCanvas.Strokes.Add(stroke);
-            //    nodeTpl.inkCanvas.Children.Add(stroke);
-            //}
-     //      this.DataContext = vm;
-            //inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
+            vm.FlipRight();
+
+            nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            nodeTpl.inkCanvas.ReRenderLines();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)

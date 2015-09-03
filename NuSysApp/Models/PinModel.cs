@@ -116,6 +116,7 @@ namespace NuSysApp
             Dictionary<string,string> props = new Dictionary<string, string>();
             props.Add("text",Text);
             props.Add("x", X.ToString());
+            props.Add("type", "pin");
             props.Add("y", Y.ToString());
             return props;
         }
@@ -134,6 +135,7 @@ namespace NuSysApp
             {
                 Y = double.Parse(props["y"]);
             }
+
         }
 
         public XmlElement WriteXML(XmlDocument doc)
