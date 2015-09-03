@@ -186,33 +186,30 @@ namespace NuSysApp
                 byteData = res.Data;
                 byteToString = (currType == "Text") ? (Encoding.UTF8.GetString(byteData)) : (Convert.ToBase64String(byteData));
             }
-
+            dict.Add("width", width);
+            dict.Add("height", height);
             switch (currType)
             {
                 case "Text":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), byteToString, ID, dict);
                     break;
                 case "Image":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Image.ToString(), byteToString, ID, dict);
                     break;
                 case "PDF":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID, dict);
                     break;
                 case "Ink":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID, dict);
                     break;
                 case "Audio":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Audio.ToString(), byteToString, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Audio.ToString(), byteToString, ID, dict);
                     break;
                 default:
                     break;
             }
 
             // store the properties of each node since they are always set to default once it is reloaded
-            dict.Add("width", width);
-            dict.Add("height", height);
-            dict.Add("id", ID);
-            _atomUpdateDicts.Add(dict);
         }
 
         /// <summary>
