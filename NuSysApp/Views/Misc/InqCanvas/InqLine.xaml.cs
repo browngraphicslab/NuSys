@@ -23,7 +23,6 @@ using System.Runtime.Serialization;
 
 namespace NuSysApp
 {
-    [DataContract]
     public sealed partial class InqLine : UserControl, ISelectable, Sendable
     {
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
@@ -47,9 +46,6 @@ namespace NuSysApp
             (this.Parent as InqCanvasView).Children.Remove(this);
         }
 
-
-        public InqLine()
-        { }
         public InqLine(string id)
         {
             this.InitializeComponent();
@@ -57,7 +53,6 @@ namespace NuSysApp
             this.CanEdit = Atom.EditStatus.Maybe;
         }
 
-        [DataMember]
         public string ID { get; }
 
         public Atom.EditStatus CanEdit { set; get; }
@@ -80,7 +75,6 @@ namespace NuSysApp
             }
         }
 
-
         public void ToggleSelection()
         {
             _isSelected = !_isSelected;
@@ -95,14 +89,12 @@ namespace NuSysApp
             }
         }
 
-        [DataMember]
         public double StrokeThickness
         {
             get { return VisibleLine.StrokeThickness; }
             set { VisibleLine.StrokeThickness = value; }
         }
 
-        [DataMember]
         public Brush Stroke
         {
             get { return VisibleLine.Stroke; }
@@ -115,13 +107,11 @@ namespace NuSysApp
             get { return _isHighlighting; }
         }
 
-        [DataMember]
         public List<Point> Points
         {
             get { return VisibleLine.Points.ToList(); }
         }
 
-        [DataMember]
         public bool IsSelected
         {
             get { return _isSelected; }

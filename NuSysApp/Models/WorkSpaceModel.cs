@@ -149,16 +149,12 @@ namespace NuSysApp
                     break;
                 case NodeType.Ink:
                     var lines = data as List<InqLine>;
-
-                        //var lines = data as List<InqLine>;
                     if (lines != null)
                     {
                         node = new InkModel(id, lines);
                     }
                     else
                     {
-                        //byte[] byteData = Convert.FromBase64String((string)data);
-                        //node = Serializer.Deserialize<InkModel>(byteData);
                         node = new InkModel((byte[])data, id);
                     }
                     break;

@@ -8,7 +8,6 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    [DataContract]
     public class InkModel : Node
    {
         private List<InqLine> _inqlines;
@@ -18,7 +17,7 @@ namespace NuSysApp
         public InkModel(byte[] byteData, string id) : base(id)
         {
             ID = id;
-            byteData = byteData;
+            //ByteArray = byteData;
             Content = new Content(byteData, id);
             _inqlines = new List<InqLine>();
         }
@@ -28,7 +27,6 @@ namespace NuSysApp
             PolyLines = lines;
         }
 
-        [DataMember]
         public List<InqLine> PolyLines
         {
             get { return _inqlines; }

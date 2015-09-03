@@ -78,7 +78,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("type") && props["type"] == "ink")
             {
-                    await HandleCreateNewInk(id, props);
+                await HandleCreateNewInk(id, props);
             }
             else if (props.ContainsKey("type") && props["type"] == "group")
             {
@@ -177,7 +177,8 @@ namespace NuSysApp
                         {
                             //byte[] byteData = Convert.FromBase64String((string)d);
                             //InkModel node = Serializer.Deserialize<InkModel>(byteData);
-                            data = ParseToPolylines(d, id);
+                            //props.Add("polylines", d);
+                            data = ParseToPolyline(d, id);
                         }
                         catch (Exception e)
                         {
@@ -354,10 +355,6 @@ namespace NuSysApp
             return InqLine.ParseToPolyline(s, id);
         }
 
-        private List<InqLine> ParseToPolylines(string s, string id)
-        {
-            return InqLine.ParseToPolylines(s, id);
-        }
         private HashSet<string> LocksNeeded(List<string> ids)
         {
             HashSet<string> set = new HashSet<string>();

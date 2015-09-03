@@ -4,12 +4,9 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Network;
-using System.Runtime.Serialization;
 
 namespace NuSysApp
 {
-
-    [DataContract]
     public abstract class Atom : Sendable
     {
         private DebouncingDictionary _debounceDict;
