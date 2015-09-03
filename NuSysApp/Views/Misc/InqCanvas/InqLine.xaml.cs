@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components;
 using NuSysApp.EventArgs;
+using System.Collections.Concurrent;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

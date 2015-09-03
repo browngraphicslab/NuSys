@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -18,15 +19,15 @@ namespace NuSysApp
     {
         public WorkSpaceModel WorkSpaceModel{get;}
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
-        public HashSet<string> _deletedIDs; 
-        private Dictionary<string, Action<string>> _creationCallbacks;
-        private HashSet<string> _sendablesLocked;
+        public ConcurrentDictionary<string, bool> _deletedIDs; 
+        private ConcurrentDictionary<string, Action<string>> _creationCallbacks;
+        private ConcurrentDictionary<string, bool> _sendablesLocked;
         public ModelIntermediate(WorkSpaceModel wsm)
         {
             WorkSpaceModel = wsm;
-            _creationCallbacks = new Dictionary<string, Action<string>>();
-             _sendablesLocked = new HashSet<string>();
-            _deletedIDs = new HashSet<string>();
+            _creationCallbacks = new ConcurrentDictionary<string, Action<string>>();
+             _sendablesLocked = new ConcurrentDictionary<string, bool>();
+            _deletedIDs = new ConcurrentDictionary<string, bool>();
 
         }
         public async Task HandleMessage(Dictionary<string,string> props)
@@ -37,7 +38,7 @@ namespace NuSysApp
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];//get id from dictionary
-                    _sendablesLocked.Add(id);
+                    _sendablesLocked.GetOrAdd(id, true);
                     if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                     {
                         Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
@@ -46,7 +47,7 @@ namespace NuSysApp
                     else//if the sendable doesn't yet exist
                     {
 
-                        if (!_deletedIDs.Contains(id))
+                        if (!_deletedIDs.ContainsKey(id))
                         {
                             await HandleCreateNewSendable(id, props); //create a new sendable
                             if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
@@ -57,11 +58,14 @@ namespace NuSysApp
                                 //check if a callback is waiting for that sendable to be created
                             {
                                 _creationCallbacks[id].DynamicInvoke(id);
-                                _creationCallbacks.Remove(id);
+
+                                Action<string> action;
+                                _creationCallbacks.TryRemove(id, out action);
                             }
                         }
                     }
-                    _sendablesLocked.Remove(id);
+                    bool r;
+                    _sendablesLocked.TryRemove(id, out r);
                 }
                 else
                 {
@@ -72,7 +76,7 @@ namespace NuSysApp
 
         public bool IsSendableLocked(string id)
         {
-            return _sendablesLocked.Contains(id);
+            return _sendablesLocked.ContainsKey(id);
         }
         public async Task HandleCreateNewSendable(string id, Dictionary<string,string> props)
         {
@@ -230,6 +234,7 @@ namespace NuSysApp
             await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
             if (props.ContainsKey("data"))
             {
+                string s;
                 props.Remove("data");
             }
         }
@@ -326,7 +331,7 @@ namespace NuSysApp
                 {
                     WorkSpaceModel.RemoveSendable(id);
                 }
-                _deletedIDs.Add(id);
+                _deletedIDs.GetOrAdd(id, true);
             });
         }
         public bool HasSendableID(string id)
@@ -396,7 +401,7 @@ namespace NuSysApp
                     var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
                     await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        Dictionary<string, string> parts = await atom.Pack();
+                        var parts = await atom.Pack();
                         foreach (KeyValuePair<string, string> tup in parts)
                         {
                             ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
@@ -424,7 +429,7 @@ namespace NuSysApp
 
         public void AddCreationCallback(string id, Action<string> d)
         {
-            _creationCallbacks.Add(id, d);
+            _creationCallbacks.GetOrAdd(id, d);
         }
         public bool HasLock(string id)
         {

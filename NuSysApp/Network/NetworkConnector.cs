@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,8 +24,8 @@ namespace NuSysApp
         private const string _UDPPort = "2156";
         private const string _TCPInputPort = "302";
         private const string _TCPOutputPort = "302";
-        private HashSet<Tuple<DatagramSocket, DataWriter>> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
-        private Dictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
+        private ConcurrentDictionary<Tuple<DatagramSocket, DataWriter>, bool> _UDPOutSockets; //the set of all UDP output sockets and the writers that send their data
+        private ConcurrentDictionary<string, Tuple<bool, List<Packet>>> _joiningMembers; //the dictionary of members in the loading process.  HOST ONLY
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
@@ -32,9 +33,9 @@ namespace NuSysApp
         private Timer _phpPingTimer;
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
-        private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
+        private ConcurrentDictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
         private bool _caughtUp = false;
-        private Dictionary<string, int> _pingResponses;
+        private ConcurrentDictionary<string, int> _pingResponses;
 
         private static volatile NetworkConnector _instance;
         private static readonly object _syncRoot = new Object();
@@ -94,12 +95,12 @@ namespace NuSysApp
 
             Debug.WriteLine("local IP: " + _localIP);
 
-            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
-            _addressToWriter = new Dictionary<string, DataWriter>();
-            _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
+            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
+            _addressToWriter = new ConcurrentDictionary<string, DataWriter>();
+            _UDPOutSockets = new ConcurrentDictionary<Tuple<DatagramSocket, DataWriter>, bool>();
             _otherIPs = new HashSet<string>();
-            _pingResponses = new Dictionary<string, int>();
-            _phpPingTimer = new Timer(SendPhpPing, null, 0, 3000);
+            _pingResponses = new ConcurrentDictionary<string, int>();
+            _phpPingTimer = new Timer(SendPhpPing, null, 0, 1000);
 
             var ips = GetOtherIPs();
             if (ips.Count == 1)
@@ -132,9 +133,9 @@ namespace NuSysApp
         private void MakeHost()//TODO temporary
         {
             _hostIP = _localIP;
-            _joiningMembers = new Dictionary<string, Tuple<bool, List<Packet>>>();
+            _joiningMembers = new ConcurrentDictionary<string, Tuple<bool, List<Packet>>>();
             _caughtUp = true;
-            _pingResponses = new Dictionary<string, int>();
+            _pingResponses = new ConcurrentDictionary<string, int>();
             Debug.WriteLine("This machine (IP: " + _localIP + ") set to be the host");
 
             //TODO add in other host responsibilities
@@ -143,7 +144,9 @@ namespace NuSysApp
         /*
         * method called every timer tick (2 seconds for host, 1 seconds for non-host)
         */
-        private async void PingTick(object state) { 
+        private async void PingTick(object state) {
+
+            
             var toDelete = new List<string>();
             var keys = _pingResponses.Keys.ToArray();
             foreach (var ip in keys)
@@ -217,7 +220,7 @@ namespace NuSysApp
 
         private void SendPhpPing( object state)
         {
-            Task.Run(() =>
+              Task.Run(() =>
             {
                 const string URL = "http://aint.ch/nusys/clients.php";
                 var urlParameters = "?action=ping&ip=" + _localIP;
@@ -237,26 +240,22 @@ namespace NuSysApp
         {
             if (_hostIP != null)
             {
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    await this.EndTimer();
-                    _pingResponses = new Dictionary<string, int>();
-                    if (_hostIP == _localIP)
-                    {
-                        _pingTimer = new Timer(PingTick, null, 0, 2000);
-                        foreach (string ip in _otherIPs)
-                        {
-                            _pingResponses.Add(ip, 0);
-                        }
-                    }
-                    else
-                    {
-                        _pingTimer = new Timer(PingTick, null, 0, 1000);
-                        _pingResponses.Add(_hostIP, 0);
-                    }
 
-                });
+                this.EndTimer();
+                _pingResponses = new ConcurrentDictionary<string, int>();
+                if (_hostIP == _localIP)
+                {
+                    _pingTimer = new Timer(PingTick, null, 0, 2000);
+                    foreach (string ip in _otherIPs)
+                    {
+                        _pingResponses.GetOrAdd(ip, 0);
+                    }
+                }
+                else
+                {
+                    _pingTimer = new Timer(PingTick, null, 0, 1000);
+                    _pingResponses.GetOrAdd(_hostIP, 0);
+                }
             }
         }
 
@@ -342,23 +341,27 @@ namespace NuSysApp
                 _otherIPs.Remove(ip); //remove from stright list
                 if (_addressToWriter.ContainsKey(ip))
                 {
-                    _addressToWriter.Remove(ip); //remove the datagram socket data writer
+                    DataWriter removeWriter;
+                    _addressToWriter.TryRemove(ip, out removeWriter); //remove the datagram socket data writer
                 }
-                foreach (var tup in _UDPOutSockets)
+                foreach (var tup in _UDPOutSockets.Keys)
                 {
                     if (tup.Item1.Information.RemoteAddress.RawName == ip)
                     {
-                        _UDPOutSockets.Remove(tup); //remove the outgoing socket
+                        bool r;
+                        _UDPOutSockets.TryRemove(tup, out r); //remove the outgoing socket
                         break;
                     }
                 }
                 var set = new HashSet<KeyValuePair<string, string>>(); //create a list of lcoks that need to be removed
 
                 ModelIntermediate.RemoveIPFromLocks(ip);
-                _pingResponses.Remove(ip);
+                int response;
+                _pingResponses.TryRemove(ip, out response);
                 if (_joiningMembers.ContainsKey(ip))
                 {
-                    _joiningMembers.Remove(ip); //if that IP was joining, remove it
+                    Tuple<bool, List<Packet>> member;
+                    _joiningMembers.TryRemove(ip, out member); //if that IP was joining, remove it
                 }
                 var s = "";
                 foreach (string i in _otherIPs)
@@ -454,6 +457,7 @@ namespace NuSysApp
                 var split = people.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                 var ips = split.ToList();
+                Debug.WriteLine("other Ips:" + ips);
                 return ips;
             }
         }
@@ -465,7 +469,7 @@ namespace NuSysApp
             var UDPsocket = new DatagramSocket();
             UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
             var UDPwriter = new DataWriter(UDPsocket.OutputStream);
-            _UDPOutSockets.Add(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter));
+            _UDPOutSockets.GetOrAdd(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter), true);
 
             if (_addressToWriter.ContainsKey(ip))
             {
@@ -473,7 +477,7 @@ namespace NuSysApp
             }
             else
             {
-                _addressToWriter.Add(ip, UDPwriter);
+                _addressToWriter.GetOrAdd(ip, UDPwriter);
             }
         }
         /*
@@ -539,7 +543,7 @@ namespace NuSysApp
         */
         private async Task SendMassUDPMessage(string message)
         {
-            foreach (var tup in this._UDPOutSockets)//iterates through everyone
+            foreach (var tup in this._UDPOutSockets.Keys)//iterates through everyone
             {
                 await this.SendUDPMessage(message, tup.Item2);
             }
@@ -946,7 +950,7 @@ namespace NuSysApp
         */
         private async Task SendUpdateForNode(string nodeId, string sendToIP)
         {
-            Dictionary<string, string> dict = await ModelIntermediate.GetNodeState(nodeId);
+            var dict = await ModelIntermediate.GetNodeState(nodeId);
             if (dict != null)
             {
                 string message = MakeSubMessageFromDict(dict);
@@ -1174,7 +1178,7 @@ namespace NuSysApp
         */
         public async Task RequestMakePin(string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
-            Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+            var props = properties == null ? new Dictionary<string, string>() : properties;
             string id = oldID == null ? GetID() : oldID;
             if (props.ContainsKey("x"))
             {

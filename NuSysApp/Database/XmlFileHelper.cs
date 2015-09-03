@@ -9,6 +9,7 @@ using SQLite.Net.Async;
 using SQLite.Net.Attributes;
 using System.Diagnostics;
 using System.Net;
+using System.Collections.Concurrent;
 
 namespace NuSysApp
 {
@@ -62,7 +63,7 @@ namespace NuSysApp
                        ID       = Convert.ToString(node.Attributes.GetNamedItem("id").Value),
                        x, y;
 
-                Dictionary<string, string> dict = new Dictionary<string, string>();
+                var dict = new Dictionary<string, string>();
 
                 switch (AtomType)
                 {
@@ -119,7 +120,7 @@ namespace NuSysApp
                         string text = node.Attributes.GetNamedItem("text").Value;
 
                         dict.Add("text", text);
-                        _atomUpdateDicts.Add(dict);
+                        _atomUpdateDicts.Add(new Dictionary<string, string>(dict));
 
                         CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                             CoreDispatcherPriority.Normal, async () =>
@@ -149,7 +150,7 @@ namespace NuSysApp
             }
 
             // this updates the properties (height, width, etc.) of each atom once it has been created
-            foreach (Dictionary<string, string> dict in _atomUpdateDicts)
+            foreach (var dict in _atomUpdateDicts)
             {
                 await NetworkConnector.Instance.QuickUpdateAtom(dict);
             }

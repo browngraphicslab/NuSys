@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Windows.UI.Xaml;
 
@@ -7,21 +9,22 @@ namespace NuSysApp.Network
 {
     public class DebouncingDictionary
     {
-        private Dictionary<string, string> _dict;
+        private ConcurrentDictionary<string, string> _dict;
         private bool _timing = false;
         private Timer _timer;
         private Sendable _atom;
         private bool _sendNextTCP = false;
-        private int _milliSecondDebounce = 100;
+        private int _milliSecondDebounce = 30;
+
         public DebouncingDictionary(Sendable atom)
         {
-            _dict = new Dictionary<string, string>();
+            _dict = new ConcurrentDictionary<string, string>();
             _atom = atom;
 
         }
         public DebouncingDictionary(Atom atom, int milliSecondDebounce)
         {
-            _dict = new Dictionary<string, string>();
+            _dict = new ConcurrentDictionary<string, string>();
             _atom = atom;
             _milliSecondDebounce = _milliSecondDebounce;
         }
@@ -38,8 +41,8 @@ namespace NuSysApp.Network
                 if (!_timing)
                 {
                     _timing = true;
-                    _dict.Add(id, value);
-                    _timer = new Timer(SendMessage, null, Timeout.Infinite, _milliSecondDebounce);
+                    _dict.GetOrAdd(id, value);
+                    _timer = new Timer(SendMessage, null, 0, _milliSecondDebounce);
                 }
                 else
                 {
@@ -48,27 +51,28 @@ namespace NuSysApp.Network
                         _dict[id] = value;
                         return;
                     }
-                    _dict.Add(id, value);
+                    _dict.GetOrAdd(id, value);
                 }
             }
         }
 
         private async void SendMessage(object state)
         {
+            Debug.WriteLine("SEND MESSAGE!");
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
-                _dict.Add("id", _atom.ID);
+                _dict.GetOrAdd("id", _atom.ID);
                 if (NetworkConnector.Instance.ModelIntermediate.HasSendableID(_atom.ID))
                 {
                     if (_sendNextTCP)
                     {
                         _sendNextTCP = false;
-                        await NetworkConnector.Instance.QuickUpdateAtom(_dict, NetworkConnector.PacketType.TCP);
+                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, string>(_dict), NetworkConnector.PacketType.TCP);
                     }
                     else
                     {
-                        await NetworkConnector.Instance.QuickUpdateAtom(_dict);
+                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, string>(_dict));
                     }
                 }
             }
