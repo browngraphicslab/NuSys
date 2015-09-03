@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Windows.UI.Xaml;
 
 namespace NuSysApp.Network
@@ -8,25 +9,21 @@ namespace NuSysApp.Network
     {
         private Dictionary<string, string> _dict;
         private bool _timing = false;
-        private DispatcherTimer _timer;
+        private Timer _timer;
         private Sendable _atom;
         private bool _sendNextTCP = false;
+        private int _milliSecondDebounce = 100;
         public DebouncingDictionary(Sendable atom)
         {
             _dict = new Dictionary<string, string>();
             _atom = atom;
-            _timer = new DispatcherTimer();
-            _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
-            _timer.Tick += SendMessage;
 
         }
         public DebouncingDictionary(Atom atom, int milliSecondDebounce)
         {
             _dict = new Dictionary<string, string>();
             _atom = atom;
-            _timer = new DispatcherTimer();
-            _timer.Interval = new TimeSpan(0, 0, 0, 0, milliSecondDebounce);
-            _timer.Tick += SendMessage;
+            _milliSecondDebounce = _milliSecondDebounce;
         }
 
         public void MakeNextMessageTCP()
@@ -42,7 +39,7 @@ namespace NuSysApp.Network
                 {
                     _timing = true;
                     _dict.Add(id, value);
-                    _timer.Start();
+                    _timer = new Timer(SendMessage, null, Timeout.Infinite, _milliSecondDebounce);
                 }
                 else
                 {
@@ -56,9 +53,9 @@ namespace NuSysApp.Network
             }
         }
 
-        private async void SendMessage(object sender, object e)
+        private async void SendMessage(object state)
         {
-            _timer.Stop();
+            _timer.Change(Timeout.Infinite, Timeout.Infinite);
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
                 _dict.Add("id", _atom.ID);

@@ -28,8 +28,8 @@ namespace NuSysApp
         private HashSet<string> _otherIPs;//the set of all other IP's currently known about
         private string _hostIP;
         private string _localIP;
-        private DispatcherTimer _pingTimer;
-        private DispatcherTimer _phpPingTimer;
+        private Timer _pingTimer;
+        private Timer _phpPingTimer;
         private DatagramSocket _UDPsocket;
         private StreamSocketListener _TCPlistener;
         private Dictionary<string, DataWriter> _addressToWriter; //A Dictionary of UDP socket writers that correspond to IP's
@@ -99,10 +99,7 @@ namespace NuSysApp
             _UDPOutSockets = new HashSet<Tuple<DatagramSocket, DataWriter>>();
             _otherIPs = new HashSet<string>();
             _pingResponses = new Dictionary<string, int>();
-            _phpPingTimer = new DispatcherTimer();
-            _phpPingTimer.Tick += SendPhpPing;
-            _phpPingTimer.Interval = new TimeSpan(0, 0, 0, 0,3000);
-            _phpPingTimer.Start();
+            _phpPingTimer = new Timer(SendPhpPing, null, 0, 3000);
 
             var ips = GetOtherIPs();
             if (ips.Count == 1)
@@ -146,8 +143,7 @@ namespace NuSysApp
         /*
         * method called every timer tick (2 seconds for host, 1 seconds for non-host)
         */
-        private async void PingTick(object sender, object args)
-        {
+        private async void PingTick(object state) { 
             var toDelete = new List<string>();
             var keys = _pingResponses.Keys.ToArray();
             foreach (var ip in keys)
@@ -219,7 +215,7 @@ namespace NuSysApp
             await SendMessage(ip, "SPECIAL11:", packetType);
         }
 
-        private void SendPhpPing(object sender, object args)
+        private void SendPhpPing( object state)
         {
             Task.Run(() =>
             {
@@ -246,11 +242,10 @@ namespace NuSysApp
                 {
                     await this.EndTimer();
                     _pingResponses = new Dictionary<string, int>();
-                    _pingTimer = new DispatcherTimer();
-                    _pingTimer.Tick += PingTick;
+                    _pingTimer = new Timer(PingTick, null, 0, 1000);
                     if (_hostIP == _localIP)
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 10);
+                        _pingTimer = new Timer(PingTick, null, 0, 1000);
                         foreach (string ip in _otherIPs)
                         {
                             _pingResponses.Add(ip, 0);
@@ -258,10 +253,10 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 10);
+                        _pingTimer = new Timer(PingTick, null, 0, 1000);
                         _pingResponses.Add(_hostIP, 0);
                     }
-                    _pingTimer.Start();
+
                 });
             }
         }
@@ -271,9 +266,9 @@ namespace NuSysApp
         */
         private async Task EndTimer()
         {
-            if (_pingTimer != null && _pingTimer.IsEnabled)
+            if (_pingTimer != null )
             {
-                _pingTimer.Stop();
+                _pingTimer.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
         public string LocalIP//Returns the local IP
