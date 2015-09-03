@@ -200,7 +200,7 @@ namespace NuSysApp
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID, dict);
                     break;
                 case "Ink":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID, dict);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Ink.ToString(), null, ID, dict);
                     break;
                 case "Audio":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Audio.ToString(), byteToString, ID, dict);
