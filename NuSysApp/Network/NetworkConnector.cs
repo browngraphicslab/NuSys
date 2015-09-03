@@ -101,7 +101,7 @@ namespace NuSysApp
             _pingResponses = new Dictionary<string, int>();
             _phpPingTimer = new DispatcherTimer();
             _phpPingTimer.Tick += SendPhpPing;
-            _phpPingTimer.Interval = new TimeSpan(0, 0, 0, 0,1000);
+            _phpPingTimer.Interval = new TimeSpan(0, 0, 0, 0,3000);
             _phpPingTimer.Start();
 
             var ips = GetOtherIPs();
@@ -221,14 +221,17 @@ namespace NuSysApp
 
         private void SendPhpPing(object sender, object args)
         {
-            const string URL = "http://aint.ch/nusys/clients.php";
-            var urlParameters = "?action=ping&ip=" + _localIP;
+            Task.Run(() =>
+            {
+                const string URL = "http://aint.ch/nusys/clients.php";
+                var urlParameters = "?action=ping&ip=" + _localIP;
 
-            var client = new HttpClient { BaseAddress = new Uri(URL) };
+                var client = new HttpClient { BaseAddress = new Uri(URL) };
 
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = client.GetAsync(urlParameters).Result;
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(urlParameters).Result;
+            });
         }
 
         /*
@@ -247,7 +250,7 @@ namespace NuSysApp
                     _pingTimer.Tick += PingTick;
                     if (_hostIP == _localIP)
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 2);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 10);
                         foreach (string ip in _otherIPs)
                         {
                             _pingResponses.Add(ip, 0);
@@ -255,7 +258,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 1);
+                        _pingTimer.Interval = new TimeSpan(0, 0, 0, 10);
                         _pingResponses.Add(_hostIP, 0);
                     }
                     _pingTimer.Start();

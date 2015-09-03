@@ -61,17 +61,8 @@
             <Button x:Name="stop" Click="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/stop.png" Height="30"></Image>
             </Button>
-            <Button x:Name="rewind" Click="OnRewind_Click" Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/rewind.png" Height="40"></Image>
-            </Button>
             <Button x:Name="play" Click="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/play.png" Height="40"></Image>
-            </Button>
-            <Button x:Name="pause" Click="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/pause.png" Height="40"></Image>
-            </Button>
-            <Button x:Name="fastforward" Click="OnFastforward_Click" Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/fast_forward.png" Height="40"></Image>
             </Button>
         </StackPanel>
         <Slider VerticalAlignment="Bottom" Width="350" Margin="0,0,0,10" Background="White" Foreground="White"></Slider>
