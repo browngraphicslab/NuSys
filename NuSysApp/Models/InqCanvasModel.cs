@@ -52,6 +52,11 @@ namespace NuSysApp
             
         }
 
+        public string StringLines
+        {
+            get { return InqlinesToString(); }
+        }
+
         private string InqlinesToString()
         {
             string plines = "";

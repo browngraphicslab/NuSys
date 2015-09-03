@@ -25,7 +25,7 @@ namespace NuSysApp
 
         public InkModel(string id, List<InqLine> lines) : base(id)
         {
-            _inqlines = lines;
+            PolyLines = lines;
         }
 
         [DataMember]
@@ -37,6 +37,11 @@ namespace NuSysApp
                 _inqlines = value;
                 DebounceDict.Add("polylines",InqlinesToString());
             }
+        }
+
+        public string stringLines
+        {
+            get { return InqlinesToString(); }
         }
 
         private string InqlinesToString()

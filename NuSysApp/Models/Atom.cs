@@ -2,10 +2,13 @@
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Network;
+using System.Runtime.Serialization;
 
 namespace NuSysApp
 {
-    public abstract class Atom :Sendable
+
+    [DataContract]
+    public abstract class Atom : Sendable
     {
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;

@@ -184,7 +184,7 @@ namespace NuSysApp
             if (res != null)
             {
                 byteData = res.Data;
-                byteToString = (currType == "Text") ? (Encoding.UTF8.GetString(byteData)) : (Convert.ToBase64String(byteData));
+                byteToString = (currType == "Text" || currType == "Ink") ? (Encoding.UTF8.GetString(byteData)) : (Convert.ToBase64String(byteData));
             }
 
             switch (currType)
@@ -199,7 +199,7 @@ namespace NuSysApp
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.PDF.ToString(), byteToString, ID);
                     break;
                 case "Ink":
-                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Text.ToString(), null, ID);
+                    await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Ink.ToString(), byteToString, ID);
                     break;
                 case "Audio":
                     await NetworkConnector.Instance.RequestMakeNode(X, Y, NodeType.Audio.ToString(), byteToString, ID);

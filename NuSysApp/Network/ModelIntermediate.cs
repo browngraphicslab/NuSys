@@ -175,7 +175,9 @@ namespace NuSysApp
                     case NodeType.Ink:
                         try
                         {
-                            data = ParseToPolyline(d, id);
+                            //byte[] byteData = Convert.FromBase64String((string)d);
+                            //InkModel node = Serializer.Deserialize<InkModel>(byteData);
+                            data = ParseToPolylines(d, id);
                         }
                         catch (Exception e)
                         {
@@ -350,6 +352,11 @@ namespace NuSysApp
         private InqLine ParseToPolyline(string s, string id)
         {
             return InqLine.ParseToPolyline(s, id);
+        }
+
+        private List<InqLine> ParseToPolylines(string s, string id)
+        {
+            return InqLine.ParseToPolylines(s, id);
         }
         private HashSet<string> LocksNeeded(List<string> ids)
         {
