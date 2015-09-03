@@ -114,6 +114,7 @@
     <Content Include="Assets\icon_record_node.png" />
     <Content Include="Assets\icon_scribble.png" />
     <Content Include="Assets\icon_select.png" />
+    <Content Include="Assets\icon_text.png" />
     <Content Include="Assets\image.png" />
     <Content Include="Assets\link.png" />
     <Content Include="Assets\icon_additional.png" />
@@ -125,7 +126,6 @@
     <Content Include="Assets\open icon.png" />
     <Content Include="Assets\pause.png" />
     <Content Include="Assets\pin icon.png" />
-    <Content Include="Assets\icon_text.png" />
     <Content Include="Assets\pin.png" />
     <Content Include="Assets\play.png" />
     <Content Include="Assets\record.png" />

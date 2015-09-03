@@ -21,13 +21,13 @@
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="30" Width="30"></Image>
                 </Button>
                 <Button x:Name="Grid" Click="OnClick_Grid" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_group_grid.png" Height="20" Width="20"></Image>
+                    <Image Source="ms-appx:///Assets/icon_group_grid.png" Height="30" Width="30"></Image>
                 </Button>
                 <Button x:Name="Freeform" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_group_freeform.png" Height="20" Width="20"></Image>
+                    <Image Source="ms-appx:///Assets/icon_group_freeform.png" Height="30" Width="30"></Image>
                 </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>

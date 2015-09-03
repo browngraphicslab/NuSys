@@ -28,7 +28,7 @@ namespace NuSysApp
             this.Width = Constants.DefaultNodeSize;
             this.Height = Constants.DefaultNodeSize;
             this.NodeType = NodeType.Text;
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 255, 235, 205));
+            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 152, 192, 113));
             ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
         }
 
