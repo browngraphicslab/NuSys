@@ -242,10 +242,9 @@ namespace NuSysApp
                 {
                     await this.EndTimer();
                     _pingResponses = new Dictionary<string, int>();
-                    _pingTimer = new Timer(PingTick, null, 0, 1000);
                     if (_hostIP == _localIP)
                     {
-                        _pingTimer = new Timer(PingTick, null, 0, 1000);
+                        _pingTimer = new Timer(PingTick, null, 0, 2000);
                         foreach (string ip in _otherIPs)
                         {
                             _pingResponses.Add(ip, 0);
