@@ -390,7 +390,7 @@ namespace NuSysApp
                 string ret = "";
                 while(list.Count > 0)
                 {
-                    ret += '<';
+                ret += '<';
                     Sendable atom = list.First.Value;
                     list.RemoveFirst();
                     var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;

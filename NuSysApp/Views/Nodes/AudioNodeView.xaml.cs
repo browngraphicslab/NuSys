@@ -92,7 +92,7 @@ namespace NuSysApp
             }
             else
             {
-                pause.Opacity = 1;
+               // pause.Opacity = 1;
                 play.Opacity = .3;
                 if (_stopped)
                 {
@@ -112,7 +112,7 @@ namespace NuSysApp
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             playbackElement.Pause();
-            pause.Opacity = .3;
+        //    pause.Opacity = .3;
         }
 
         private void OnFastforward_Click(object sender, RoutedEventArgs e)
