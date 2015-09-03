@@ -72,6 +72,12 @@ namespace NuSysApp
         public async static Task<string> HtmlToRtf(string htmlString )
         {
             var html = string.Empty;
+
+            if (htmlString == "")
+            {
+                htmlString = "<span>&nbsp;</span>";
+            }
+
             if (!htmlString.StartsWith("<html>")) {
                 html = "<html><body>" + htmlString + "</body></html>";
             } else

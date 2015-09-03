@@ -38,11 +38,10 @@ namespace NuSysApp
             mdTextBox.TextChanging += delegate
             {
                 model.Text = mdTextBox.Text;
-
                 AdjustScrollHeight();
             };
 
-            mdTextBox.TextChanging += delegate
+            mdTextBox.TextChanged += delegate
             {
                 model.Text = mdTextBox.Text;
                 AdjustScrollHeight();
@@ -139,7 +138,6 @@ namespace NuSysApp
             if (!vm.IsEditing)
             {
                 await vm.UpdateRtf();
-
                 RearrangeImagePlaceHolders();
             }
 

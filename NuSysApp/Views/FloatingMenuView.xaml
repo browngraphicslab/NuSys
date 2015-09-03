@@ -20,7 +20,7 @@
                                         <Storyboard>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                    Storyboard.TargetProperty="Opacity">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value=".5" />
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value=".9" />
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
@@ -34,7 +34,7 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Ellipse Height="85" Width ="85" Fill="#62BDC5" x:Name="Ellipse" Opacity=".5" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10"/>
+                            <Ellipse Height="85" Width ="85" Fill="#62BDC5" x:Name="Ellipse" Opacity=".9" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10"/>
                             <ContentPresenter></ContentPresenter>
                         </Grid>
                     </ControlTemplate>

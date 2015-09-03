@@ -10,10 +10,10 @@
     d:DesignWidth="400">
 
     <Grid>
-        <Border x:Name="Border" CornerRadius="10">
+        <Border x:Name="Border" CornerRadius="10" Background="#62BDC5">
             <Grid>
                 <Grid x:Name="ContentContainer" Height="550" Width="390" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5" >
-                    <Rectangle Fill="White" Opacity=".5"></Rectangle>
+                    <Rectangle Fill="White" Opacity=".7"></Rectangle>
                     <ItemsControl Name="IC2" ItemsSource="{Binding PinViewModelList}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
