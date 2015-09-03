@@ -58,7 +58,6 @@ namespace NuSysApp.Network
 
         private async void SendMessage(object state)
         {
-            Debug.WriteLine("SEND MESSAGE!");
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {

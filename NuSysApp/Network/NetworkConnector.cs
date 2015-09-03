@@ -13,6 +13,7 @@ using Windows.Networking;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using Windows.System.Threading;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 
@@ -1082,10 +1083,13 @@ namespace NuSysApp
         */
         public async Task RequestDeleteSendable(string id)
         {
-            if (ModelIntermediate.HasLock(id))
+            ThreadPool.RunAsync(async delegate
             {
-                await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
-            }
+                if (ModelIntermediate.HasLock(id))
+                {
+                    await SendMessageToHost("SPECIAL10:" + id); //tells host to delete the node
+                }
+            });
         }
 
         /*
@@ -1093,28 +1097,31 @@ namespace NuSysApp
         */
         public async Task QuickUpdateAtom(Dictionary<string, string> properties, PacketType packetType = PacketType.UDP)
         {
-            if (properties.ContainsKey("id"))
+            ThreadPool.RunAsync(async delegate
             {
-                if (ModelIntermediate.HasSendableID(properties["id"]))
+                if (properties.ContainsKey("id"))
                 {
-                    string message = MakeSubMessageFromDict(properties);
-                    await SendMassMessage(message, packetType);
-                    if (packetType == PacketType.TCP)
+                    if (ModelIntermediate.HasSendableID(properties["id"]))
                     {
-                        await HandleRegularMessage(_localIP, message, packetType);
+                        string message = MakeSubMessageFromDict(properties);
+                        await SendMassMessage(message, packetType);
+                        if (packetType == PacketType.TCP)
+                        {
+                            await HandleRegularMessage(_localIP, message, packetType);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidIDException(properties["id"]);
+                        return;
                     }
                 }
                 else
                 {
-                    throw new InvalidIDException(properties["id"]);
+                    throw new NoIDException();
                     return;
                 }
-            }
-            else
-            {
-                throw new NoIDException();
-                return;
-            }
+            });
         }
 
         /*
@@ -1122,55 +1129,58 @@ namespace NuSysApp
         */
         public async Task RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
-            if (x != "" && y != "" && nodeType != "")
+            ThreadPool.RunAsync(async delegate
             {
-                Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
-                string id = oldID == null ? GetID() : oldID;
+                if (x != "" && y != "" && nodeType != "")
+                {
+                    Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                    string id = oldID == null ? GetID() : oldID;
 
-                if (props.ContainsKey("x"))
-                {
-                    props.Remove("x");
-                }
-                if (props.ContainsKey("y"))
-                {
-                    props.Remove("y");
-                }
-                if (props.ContainsKey("id"))
-                {
-                    props.Remove("id");
-                }
-                if (props.ContainsKey("nodeType"))
-                {
-                    props.Remove("nodeType");
-                }
-                if (props.ContainsKey("type"))
-                {
-                    props.Remove("type");
-                }
-                props.Add("x", x);
-                props.Add("y", y);
-                props.Add("nodeType", nodeType);
-                props.Add("id", id);
-                props.Add("type", "node");
-                if (data != null && data != "null" && data != "")
-                {
-                    props.Add("data", data);
-                }
+                    if (props.ContainsKey("x"))
+                    {
+                        props.Remove("x");
+                    }
+                    if (props.ContainsKey("y"))
+                    {
+                        props.Remove("y");
+                    }
+                    if (props.ContainsKey("id"))
+                    {
+                        props.Remove("id");
+                    }
+                    if (props.ContainsKey("nodeType"))
+                    {
+                        props.Remove("nodeType");
+                    }
+                    if (props.ContainsKey("type"))
+                    {
+                        props.Remove("type");
+                    }
+                    props.Add("x", x);
+                    props.Add("y", y);
+                    props.Add("nodeType", nodeType);
+                    props.Add("id", id);
+                    props.Add("type", "node");
+                    if (data != null && data != "null" && data != "")
+                    {
+                        props.Add("data", data);
+                    }
 
-                if (callback != null)
-                {
-                    ModelIntermediate.AddCreationCallback(id, callback);
+                    if (callback != null)
+                    {
+                        ModelIntermediate.AddCreationCallback(id, callback);
+                    }
+
+                    string message = MakeSubMessageFromDict(props);
+
+                    await SendMessageToHost(message);
                 }
-
-                string message = MakeSubMessageFromDict(props);
-
-                await SendMessageToHost(message);
-            }
-            else
-            {
-                throw new InvalidCreationArgumentsException();
-                return;
-            }
+                else
+                {
+                    throw new InvalidCreationArgumentsException();
+                    return;
+                }
+            });
         }
 
         /*
@@ -1178,7 +1188,8 @@ namespace NuSysApp
         */
         public async Task RequestMakePin(string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
-            var props = properties == null ? new Dictionary<string, string>() : properties;
+ 
+                var props = properties == null ? new Dictionary<string, string>() : properties;
             string id = oldID == null ? GetID() : oldID;
             if (props.ContainsKey("x"))
             {
@@ -1366,7 +1377,9 @@ namespace NuSysApp
         }
         public async Task SendPartialLine(string id, string canvasNodeID, string x1, string y1, string x2, string y2)
         {
-            Dictionary<string, string> props = new Dictionary<string, string>
+            ThreadPool.RunAsync(async delegate
+            {
+                Dictionary<string, string> props = new Dictionary<string, string>
             {
                 {"x1", x1},
                 {"x2", x2},
@@ -1377,13 +1390,16 @@ namespace NuSysApp
                 {"type", "ink"},
                 {"inkType", "partial"}
             };
-            string m = MakeSubMessageFromDict(props);
-            await SendMassUDPMessage(m);
+                string m = MakeSubMessageFromDict(props);
+                await SendMassUDPMessage(m);
+            });
         }
 
         public async Task FinalizeGlobalInk(string previousID, string canvasNodeID,string data)
         {
-            Dictionary<string, string> props = new Dictionary<string, string>
+            ThreadPool.RunAsync(async delegate
+            {
+                Dictionary<string, string> props = new Dictionary<string, string>
             {
                 {"type", "ink"},
                 {"inkType", "full"},
@@ -1392,35 +1408,42 @@ namespace NuSysApp
                 {"data", data},
                 {"previousID", previousID}
             };
-            string m = MakeSubMessageFromDict(props);
-            await SendMessageToHost(m);
+                string m = MakeSubMessageFromDict(props);
+                await SendMessageToHost(m);
+            });
         }
         public async Task RequestLock(string id)
         {
-            if (ModelIntermediate.HasSendableID(id))
+            ThreadPool.RunAsync(async delegate
             {
-                Debug.WriteLine("Requesting lock for ID: " + id);
-            }
-            else
-            {
-                Debug.WriteLine("Requesting lock for ID: " + id + " although it doesn't exist yet");
-            }
-            await SendMessageToHost("SPECIAL5:" + id, PacketType.TCP);
+                if (ModelIntermediate.HasSendableID(id))
+                {
+                    Debug.WriteLine("Requesting lock for ID: " + id);
+                }
+                else
+                {
+                    Debug.WriteLine("Requesting lock for ID: " + id + " although it doesn't exist yet");
+                }
+                await SendMessageToHost("SPECIAL5:" + id, PacketType.TCP);
+            });
         }
 
         public async Task ReturnLock(string id)
         {
-            if (ModelIntermediate.HasSendableID(id))
+            ThreadPool.RunAsync(async delegate
             {
-                Debug.WriteLine("Returning lock for ID: " + id);
-            }
-            else
-            {
-                Debug.WriteLine("Attempted to return lock with ID: " + id + " When no such ID exists");
-                throw new InvalidIDException(id);
-            }
-            await SendMessageToHost("SPECIAL7:" + id);
-            await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
+                if (ModelIntermediate.HasSendableID(id))
+                {
+                    Debug.WriteLine("Returning lock for ID: " + id);
+                }
+                else
+                {
+                    Debug.WriteLine("Attempted to return lock with ID: " + id + " When no such ID exists");
+                    throw new InvalidIDException(id);
+                }
+                await SendMessageToHost("SPECIAL7:" + id);
+                await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
+            });
         }
         #endregion publicRequests
         #region customExceptions
