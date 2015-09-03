@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Views.Workspace;
 
 namespace NuSysApp
 {
@@ -56,6 +57,7 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             vm.DeleteMultiSelecttion();
+            _view.FloatingMenu.SetActive(Options.Select);
         }
 
         private void Group_OnClick(object sender, RoutedEventArgs e)

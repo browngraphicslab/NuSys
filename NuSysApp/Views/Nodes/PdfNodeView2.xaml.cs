@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -12,12 +13,18 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            this.Loaded += delegate(object sender, RoutedEventArgs e)
+            {
+                nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+                nodeTpl.inkCanvas.ReRenderLines();
+            };
         }
 
 
         private void OnEditInk(object sender, RoutedEventArgs e)
         {
             nodeTpl.ToggleInkMode();
+
         }
 
         private void pageLeft_Click(object sender, RoutedEventArgs e)
@@ -25,37 +32,18 @@ namespace NuSysApp
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.FlipLeft();
 
-            //foreach (var stroke in nodeTpl.inkCanvas.Strokes)
-            //{
-            //    nodeTpl.inkCanvas.Children.Remove(stroke);
-            //    vm.InkContainer[(int)pageNum].Add(stroke);
-            //}
-            //nodeTpl.inkCanvas.Strokes.Clear();
-            //foreach (var stroke in vm.InkContainer[(int)vm.CurrentPageNumber])
-            //{
-            //    nodeTpl.inkCanvas.Strokes.Add(stroke);
-            //    nodeTpl.inkCanvas.Children.Add(stroke);
-            //}
-      //      this.DataContext = vm;
+            nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            nodeTpl.inkCanvas.ReRenderLines();
+
         }
 
         private void pageRight_Click(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.FlipRight();
- 
-            //foreach (var stroke in nodeTpl.inkCanvas.Strokes)
-            //{
-            //    nodeTpl.inkCanvas.Children.Remove(stroke);
-            //    vm.InkContainer[(int)pageNum].Add(stroke);
-            //}
-            //nodeTpl.inkCanvas.Strokes.Clear();
-            //foreach (var stroke in vm.InkContainer[(int)vm.CurrentPageNumber])
-            //{
-            //    nodeTpl.inkCanvas.Strokes.Add(stroke);
-            //    nodeTpl.inkCanvas.Children.Add(stroke);
-            //}
-            //inkCanvas.Strokes = vm.InkContainer[(int)vm.CurrentPageNumber];
+
+            nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            nodeTpl.inkCanvas.ReRenderLines();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
