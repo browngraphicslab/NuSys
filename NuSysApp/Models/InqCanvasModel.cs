@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -92,6 +93,7 @@ namespace NuSysApp
 
         public void AddTemporaryInqline(InqLine line, string temporaryID)
         {
+            Debug.WriteLine("temp line added with temp ID: "+temporaryID);
             if (!_partialLines.ContainsKey(temporaryID))
             {
                 _partialLines.Add(temporaryID, new ObservableCollection<InqLine>());
@@ -101,11 +103,12 @@ namespace NuSysApp
 
         public void RemovePartialLines(string oldID)
         {
+            Debug.WriteLine("old id to be removed for partial line destruction: " + oldID);
             if (_partialLines.ContainsKey(oldID))
             {
                 foreach (InqLine l in _partialLines[oldID])
                 {
-                    _lines.Remove(l);
+                    l.Delete();
                 }
                 _partialLines.Remove(oldID);
             }
