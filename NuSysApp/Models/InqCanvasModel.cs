@@ -22,13 +22,15 @@ namespace NuSysApp
         public delegate void FinalizedLine();
 
         private HashSet<InqLine> _lines;
-        private ObservableDictionary<string, ObservableCollection<InqLine>> _partialLines;
+        private Dictionary<string, HashSet<InqLine>> _partialLines;
 
 
         public InqCanvasModel(string id)
         {
             ID = id;
             _lines = new HashSet<InqLine>();
+            _partialLines = new Dictionary<string, HashSet<InqLine>>();
+            /*
             _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
             _partialLines.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args)
             {
@@ -43,7 +45,7 @@ namespace NuSysApp
                         };
                     }
                 }
-            };
+            };*/
 
         }
         public HashSet<InqLine> Lines {
@@ -86,29 +88,29 @@ namespace NuSysApp
         {
             this._lines.Remove(deleteInqLineEventArgs.LineToDelete);
         }
-        public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines
+        public Dictionary<string, HashSet<InqLine>> PartialLines
         {
             get { return _partialLines; }
         }
 
         public void AddTemporaryInqline(InqLine line, string temporaryID)
         {
-            Debug.WriteLine("temp line added with temp ID: "+temporaryID);
             if (!_partialLines.ContainsKey(temporaryID))
             {
-                _partialLines.Add(temporaryID, new ObservableCollection<InqLine>());
+                _partialLines.Add(temporaryID, new HashSet<InqLine>());
             }
             _partialLines[temporaryID].Add(line);
+            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", line));
         }
 
         public void RemovePartialLines(string oldID)
         {
-            Debug.WriteLine("old id to be removed for partial line destruction: " + oldID);
             if (_partialLines.ContainsKey(oldID))
             {
                 foreach (InqLine l in _partialLines[oldID])
                 {
-                    l.Delete();
+                    (l.Parent as InqCanvasView).Children.Remove(l);
+                    _lines.Remove(l);
                 }
                 _partialLines.Remove(oldID);
             }

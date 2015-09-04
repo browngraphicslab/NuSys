@@ -306,7 +306,7 @@ namespace NuSysApp
                     ParseToLineSegment(props, out one, out two);                   
 
                     await UITask.Run(() => {
-                        var line = new InqLine(id, new List<Point>() { one, two }, 2, Colors.Black);
+                        var line = new InqLine(props["canvasNodeID"], new List<Point>() { one, two }, 2, Colors.Black);
                         canvas.AddTemporaryInqline(line, id);
                     });
                 }
@@ -448,7 +448,7 @@ namespace NuSysApp
             _creationCallbacks.GetOrAdd(id, d);
         }
         public bool HasLock(string id)
-        {
+        {   
             var sendable = WorkSpaceModel.IDToSendableDict[id];
             bool isLine = sendable is InqLine;
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
