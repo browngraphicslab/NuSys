@@ -229,10 +229,6 @@ namespace NuSysApp
             {
                 dict.Add("parentGroup", ParentGroup.ID);
             }
-            else
-            {
-                dict.Add("parentGroup", "null");
-            }
             return dict;
         }
         public virtual XmlElement WriteXML(XmlDocument doc)
