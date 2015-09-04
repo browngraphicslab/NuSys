@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Threading;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,46 +33,44 @@ namespace NuSysApp
         }
         public async Task HandleMessage(Dictionary<string,string> props)
         {
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+
+            if (props.ContainsKey("id"))
             {
-                if (props.ContainsKey("id"))
+                string id = props["id"];//get id from dictionary
+                _sendablesLocked.GetOrAdd(id, true);
+                if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
-                    string id = props["id"];//get id from dictionary
-                    _sendablesLocked.GetOrAdd(id, true);
-                    if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
-                    {
-                        Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
-                        await n.UnPack(props);//update the sendable with the dictionary info
-                    }
-                    else//if the sendable doesn't yet exist
-                    {
+                    Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
 
-                        if (!_deletedIDs.ContainsKey(id))
+                    await UITask.Run( async ()=> { await n.UnPack(props); });//update the sendable with the dictionary info
+                }
+                else//if the sendable doesn't yet exist
+                {
+
+                    if (!_deletedIDs.ContainsKey(id))
+                    {
+                        await HandleCreateNewSendable(id, props); //create a new sendable
+                        if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                         {
-                            await HandleCreateNewSendable(id, props); //create a new sendable
-                            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
-                            {
-                                await HandleMessage(props);
-                            }
-                            if (_creationCallbacks.ContainsKey(id))
-                                //check if a callback is waiting for that sendable to be created
-                            {
-                                _creationCallbacks[id].DynamicInvoke(id);
+                            await HandleMessage(props);
+                        }
+                        if (_creationCallbacks.ContainsKey(id))
+                            //check if a callback is waiting for that sendable to be created
+                        {
+                            _creationCallbacks[id].DynamicInvoke(id);
 
-                                Action<string> action;
-                                _creationCallbacks.TryRemove(id, out action);
-                            }
+                            Action<string> action;
+                            _creationCallbacks.TryRemove(id, out action);
                         }
                     }
-                    bool r;
-                    _sendablesLocked.TryRemove(id, out r);
                 }
-                else
-                {
-                    Debug.WriteLine("ID was not found in property list of message: ");
-                }
-            });
+                bool r;
+                _sendablesLocked.TryRemove(id, out r);
+            }
+            else
+            {
+                Debug.WriteLine("ID was not found in property list of message: ");
+            }
         }
 
         public bool IsSendableLocked(string id)
@@ -121,7 +120,10 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("Pin creation failed because coordinates could not be parsed to doubles");
                 }
-                await WorkSpaceModel.CreateNewPin(id, x, y);
+                await UITask.Run(async () =>
+                {
+                    await WorkSpaceModel.CreateNewPin(id, x, y);
+                });
             }
         }
         public async Task HandleCreateNewLink(string id, Dictionary<string, string> props)
@@ -149,7 +151,8 @@ namespace NuSysApp
 
             if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
             {
-                WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id);
+                await UITask.Run(async () => { WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id); });
+               
             }
         }
         public async Task HandleCreateNewNode(string id, Dictionary<string, string> props)
@@ -179,7 +182,12 @@ namespace NuSysApp
                     case NodeType.Ink:
                         try
                         {
-                            data = ParseToPolyline(d, id);
+                            List<Point> points;
+                            double thickness;
+                            Color stroke;
+                            InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
+                            data = null;
+                            //TODO!!
                         }
                         catch (Exception e)
                         {
@@ -231,7 +239,7 @@ namespace NuSysApp
                         break;
                 }
             }
-            await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data);
+            await UITask.Run (async()=> { await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data); } );
             if (props.ContainsKey("data"))
             {
                 string s;
@@ -252,7 +260,8 @@ namespace NuSysApp
             {
                 double.TryParse(props["y"], out y);
             }
-            await WorkSpaceModel.CreateEmptyGroup(id, x, y);
+
+            await UITask.Run(async () => { await WorkSpaceModel.CreateEmptyGroup(id, x, y); });            
         }
 
         public async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
@@ -274,7 +283,7 @@ namespace NuSysApp
             {
                 double.TryParse(props["y"], out y);
             }
-            await WorkSpaceModel.CreateGroup(id, node1, node2, x, y);
+            await UITask.Run(async ()=> { await WorkSpaceModel.CreateGroup(id, node1, node2, x, y); });
         }
         public async Task HandleCreateNewInk(string id, Dictionary<string, string> props)
         {
@@ -297,23 +306,29 @@ namespace NuSysApp
                         Debug.WriteLine("failed to parse message to inqline");
                         return;
                     }
-                    canvas.AddTemporaryInqline(l, id);
+                    await UITask.Run(() => { canvas.AddTemporaryInqline(l, id); });
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
                     if (props.ContainsKey("data"))
                     {
-                        InqLine line = ParseToPolyline(props["data"], id);
-                        WorkSpaceModel.IDToSendableDict.Add(id, line);
-                        if (props.ContainsKey("previousID") &&
-                            WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                        List<Point> points;
+                        double thickness;
+                        Color stroke;
+                        InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
+
+                        if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                         {
-                            canvas.OnFinalizedLine += delegate
+                            canvas.OnFinalizedLine += async delegate
                             {
-                               canvas.RemovePartialLines(props["previousID"]);
+                                await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
                             };
                         }
-                        canvas.FinalizeLine(line);
+
+                        await UITask.Run( () => {
+                            var line = new InqLine(id, points, thickness, stroke);
+                            canvas.FinalizeLine(line);
+                        });
                     }
                 }
             }
@@ -324,16 +339,15 @@ namespace NuSysApp
         }
         public async Task RemoveSendable(string id)
         {
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
+            await UITask.Run(async () => {
                 if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
                     WorkSpaceModel.RemoveSendable(id);
                 }
                 _deletedIDs.GetOrAdd(id, true);
-            });
+            });           
         }
+
         public bool HasSendableID(string id)
         {
             return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
@@ -352,10 +366,7 @@ namespace NuSysApp
         {
             return Convert.FromBase64String(s);
         }
-        private InqLine ParseToPolyline(string s, string id)
-        {
-            return InqLine.ParseToPolyline(s, id);
-        }
+
         private HashSet<string> LocksNeeded(List<string> ids)
         {
             HashSet<string> set = new HashSet<string>();
@@ -398,9 +409,9 @@ namespace NuSysApp
                 ret += '<';
                     Sendable atom = list.First.Value;
                     list.RemoveFirst();
-                    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                    await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                    {
+
+                    // TODO: Possibly factor non-UI related stuff out, not a big issue because this only happens at the beginning.
+                    await UITask.Run(async () => {
                         var parts = await atom.Pack();
                         foreach (KeyValuePair<string, string> tup in parts)
                         {
@@ -475,17 +486,14 @@ namespace NuSysApp
                 }
             }
         }
+
         public async Task ForceSetLocks(string message)
         {
-            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            WorkSpaceModel.Locks.Clear();
+            foreach (KeyValuePair<string, string> kvp in StringToDict(message))
             {
-                WorkSpaceModel.Locks.Clear();
-                foreach (KeyValuePair<string, string> kvp in StringToDict(message))
-                {
-                    await SetAtomLock(kvp.Key, kvp.Value);
-                }
-            });
+                await SetAtomLock(kvp.Key, kvp.Value);
+            }       
         }
 
         public string GetAllLocksToSend()

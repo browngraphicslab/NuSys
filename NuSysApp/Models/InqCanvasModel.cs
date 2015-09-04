@@ -68,11 +68,6 @@ namespace NuSysApp
             return plines;
         }
 
-        private InqLine ParseToPolyline(string s, string data)
-        {
-            return InqLine.ParseToPolyline(s, data);
-        }
-
         public void AddTemporaryPoint(Point p)
         {
             

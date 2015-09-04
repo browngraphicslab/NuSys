@@ -43,10 +43,6 @@ namespace NuSysApp
             }
             return plines;
         }
-        private InqLine ParseToPolyline(string s, string id)
-        {
-            return InqLine.ParseToPolyline(s, id);
-        }
         public override async Task<Dictionary<string,string>>  Pack()
         {
             Dictionary<string, string> props = await base.Pack();

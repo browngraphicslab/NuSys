@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Threading;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -251,11 +252,9 @@ namespace NuSysApp
 
             private async Task UpdateAtomLock(string id, string lockHolder)
             {
-                var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-                await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                if (_workSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
-                    if (_workSpaceModel.IDToSendableDict.ContainsKey(id))
-                    {
+                    await UITask.Run(() => { 
                         if (lockHolder == "")
                         {
                             _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.Maybe;
@@ -268,8 +267,8 @@ namespace NuSysApp
                         {
                             _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.No;
                         }
-                    }
-                });
+                    });
+                }
             }
 
             public void Clear()

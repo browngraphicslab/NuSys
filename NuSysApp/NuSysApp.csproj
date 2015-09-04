@@ -146,6 +146,8 @@
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Network\ConcurrentDictionary.cs" />
+    <Compile Include="Threading\Threading.cs" />
+    <Compile Include="Threading\UITask.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
     <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
       <DependentUpon>InqLine.xaml</DependentUpon>
