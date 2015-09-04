@@ -329,7 +329,8 @@ namespace NuSysApp
                         await UITask.Run( () => {
                             var line = new InqLine(id, points, thickness, stroke);
                             canvas.FinalizeLine(line);
-                        });
+                            WorkSpaceModel.IDToSendableDict.Add(id, line);
+                        });                       
                     }
                 }
             }
@@ -419,9 +420,9 @@ namespace NuSysApp
                             ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
                         }
                         ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
+                        ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                     });
                 }
-                ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                 return ret;
             }
             return "";

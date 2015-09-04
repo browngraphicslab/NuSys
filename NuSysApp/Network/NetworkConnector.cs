@@ -103,7 +103,7 @@ namespace NuSysApp
             _pingResponses = new ConcurrentDictionary<string, int>();
             _phpPingTimer = new Timer(SendPhpPing, null, 0, 1000);
 
-            var ips = GetOtherIPs();
+            var ips = await GetOtherIPs();
             if (ips.Count == 1)
             {
                 this.MakeHost();
@@ -221,7 +221,7 @@ namespace NuSysApp
 
         private void SendPhpPing( object state)
         {
-              Task.Run(() =>
+            Task.Run(async () =>
             {
                 const string URL = "http://aint.ch/nusys/clients.php";
                 var urlParameters = "?action=ping&ip=" + _localIP;
@@ -230,7 +230,7 @@ namespace NuSysApp
 
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = client.GetAsync(urlParameters).Result;
+                var response = await client.GetAsync(urlParameters);
             });
         }
 
@@ -302,7 +302,7 @@ namespace NuSysApp
             var client = new HttpClient { BaseAddress = new Uri(URL) };
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = client.GetAsync(urlParameters).Result;
+            var response = await client.GetAsync(urlParameters);
             if (_localIP == ip)
             {
                 this.TellRemoveLocalIP();
@@ -314,7 +314,7 @@ namespace NuSysApp
         */
         private async Task TellRemoveRemoteIP(string ip)
         {
-            await SendMassTCPMessage("SPECIAL9:" + ip);
+            ThreadPool.RunAsync(async delegate { await SendMassTCPMessage("SPECIAL9:" + ip); } );
         }
 
         /*
@@ -322,15 +322,17 @@ namespace NuSysApp
         */
         private async Task TellRemoveLocalIP()
         {
-            if (_otherIPs.Count > 0)
-            {
-                if (_localIP == _hostIP)
+            ThreadPool.RunAsync(async delegate {  
+                if (_otherIPs.Count > 0)
                 {
-                    //TODO tell everyone to stop actions and wait
-                    await SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);//if this is the host, tell everyone who the new host is because I'M OUT
+                    if (_localIP == _hostIP)
+                    {
+                        //TODO tell everyone to stop actions and wait
+                        await SendMassTCPMessage("SPECIAL1:" + _otherIPs.ToArray()[0]);//if this is the host, tell everyone who the new host is because I'M OUT
+                    }
+                    await SendMassTCPMessage("SPECIAL9:" + _localIP);//tell everyone else to remove myself from their IP list
                 }
-                await SendMassTCPMessage("SPECIAL9:" + _localIP);//tell everyone else to remove myself from their IP list
-            }
+            });
         }
         /*
         * Remove an IP from local list of IP's
@@ -424,7 +426,7 @@ namespace NuSysApp
         * adds self to php script list of IP's 
         * called once at the beginning to get the list of other IP's on the network
         */
-        private List<string> GetOtherIPs()
+        private async Task<List<string>> GetOtherIPs()
         {
             if (WaitingRoomView.IsLocal)
             {
@@ -444,7 +446,7 @@ namespace NuSysApp
 
                 var people = "";
 
-                var response = client.GetAsync(urlParameters).Result;
+                var response = await client.GetAsync(urlParameters);
                 if (response.IsSuccessStatusCode)
                 {
                     var d = response.Content.ReadAsStringAsync().Result; //gets the response from the php script
@@ -465,10 +467,10 @@ namespace NuSysApp
         /*
         * adds a new pair of sockets for a newly joining IP
         */
-        private void AddSocket(string ip)
+        private async Task AddSocket(string ip)
         {
             var UDPsocket = new DatagramSocket();
-            UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
+            await UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
             var UDPwriter = new DataWriter(UDPsocket.OutputStream);
             _UDPOutSockets.GetOrAdd(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter), true);
 
