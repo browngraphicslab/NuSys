@@ -448,9 +448,10 @@ namespace NuSysApp
             _creationCallbacks.GetOrAdd(id, d);
         }
         public bool HasLock(string id)
-        {   
+        {
+            if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
             var sendable = WorkSpaceModel.IDToSendableDict[id];
-            bool isLine = sendable is InqLine;
+            bool isLine = sendable is InqLine; // TODO there should be no special casing for inks
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         
