@@ -300,14 +300,14 @@ namespace NuSysApp
                 }
                 if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                 {
-                    List<Point> points;
-                    double thickness;
-                    Color stroke;
-                    InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
-                   
+                    Point one;
+                    Point two;
+                    ParseToLineSegment(props, out one, out two);                   
+
                     await UITask.Run(() => {
-                        var line = new InqLine(id, points, thickness, stroke);
-                        canvas.AddTemporaryInqline(line, id); });
+                        var line = new InqLine(id, new List<Point>() { one, two }, 2, Colors.Black);
+                        canvas.AddTemporaryInqline(line, id);
+                    });
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
@@ -539,22 +539,10 @@ namespace NuSysApp
             return dict;
         }
 
-        private InqLine ParseToLineSegment(Dictionary<string,string> props)
+        private void ParseToLineSegment(Dictionary<string,string> props, out Point one, out Point two)
         {
-            InqLine l = new InqLine("");
-            if (props.ContainsKey("x1") && props.ContainsKey("y1") && props.ContainsKey("x2") && props.ContainsKey("y2"))
-            {
-                Point one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
-                Point two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
-                l.AddPoint(one);
-                l.AddPoint(two);
-                l.StrokeThickness = 2;
-            }
-            else
-            {
-                return null;
-            }
-            return l;
+            one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
+            two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
         }
     }
 }
