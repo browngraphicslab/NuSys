@@ -112,7 +112,7 @@ namespace NuSysApp
             {
                 foreach (string ip in ips)
                 {
-                    await this.AddIP(ip);
+                    AddIP(ip);
                 }
             }
 
@@ -237,7 +237,7 @@ namespace NuSysApp
         /*
         * this ends a restarts a timer.  It starts it with the list of people to ping updating according to the current list of network members
         */
-        private async Task StartTimer()
+        private void StartTimer()
         {
             if (_hostIP != null)
             {
@@ -263,7 +263,7 @@ namespace NuSysApp
         /*
         * this ends the ping timer if it is running
         */
-        private async Task EndTimer()
+        private void EndTimer()
         {
             if (_pingTimer != null )
             {
@@ -278,13 +278,13 @@ namespace NuSysApp
         /*
         * adds an IP address to the list of IPs and instantiates the outgoing sockets
         */
-        private async Task AddIP(string ip)
+        private void AddIP(string ip)
         {
             if (!_otherIPs.Contains(ip) && ip != this._localIP)
             {
                 _otherIPs.Add(ip);
-                await AddSocket(ip);
-                await StartTimer();
+                AddSocket(ip);
+                StartTimer();
             }
         }
 
@@ -465,7 +465,7 @@ namespace NuSysApp
         /*
         * adds a new pair of sockets for a newly joining IP
         */
-        private async Task AddSocket(string ip)
+        private void AddSocket(string ip)
         {
             var UDPsocket = new DatagramSocket();
             UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
@@ -733,7 +733,7 @@ namespace NuSysApp
             switch (type)
             {
                 case "0"://inital request = "I'm joining with my IP, who's the host?"
-                    await this.AddIP(message);
+                    AddIP(message);
                     if (_hostIP != null)
                     {
                         await this.SendTCPMessage("SPECIAL1:" + _hostIP, ip);
@@ -762,7 +762,7 @@ namespace NuSysApp
                             this.MakeHost();
                             await SendMassTCPMessage("SPECIAL1:" + _localIP);
                         }
-                        await StartTimer();
+                        StartTimer();
                         Debug.WriteLine("Host returned and SET to be: " + message);
                         return;
                     }
