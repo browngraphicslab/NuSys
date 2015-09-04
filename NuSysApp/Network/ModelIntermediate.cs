@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
@@ -415,14 +416,16 @@ namespace NuSysApp
                     // TODO: Possibly factor non-UI related stuff out, not a big issue because this only happens at the beginning.
                     await UITask.Run(async () => {
                         var parts = await atom.Pack();
+
                         foreach (KeyValuePair<string, string> tup in parts)
                         {
                             ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
                         }
                         ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
-                        ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
+                        
                     });
                 }
+                ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
                 return ret;
             }
             return "";
