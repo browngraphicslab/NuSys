@@ -300,13 +300,14 @@ namespace NuSysApp
                 }
                 if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                 {
-                    InqLine l = ParseToLineSegment(props);
-                    if (l == null)
-                    {
-                        Debug.WriteLine("failed to parse message to inqline");
-                        return;
-                    }
-                    await UITask.Run(() => { canvas.AddTemporaryInqline(l, id); });
+                    List<Point> points;
+                    double thickness;
+                    Color stroke;
+                    InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
+                   
+                    await UITask.Run(() => {
+                        var line = new InqLine(id, points, thickness, stroke);
+                        canvas.AddTemporaryInqline(line, id); });
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
