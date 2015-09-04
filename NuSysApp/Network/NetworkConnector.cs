@@ -379,35 +379,37 @@ namespace NuSysApp
         */
         private async void TCPConnectionRecieved(StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
-            var reader = new DataReader(args.Socket.InputStream);
-            var ip = args.Socket.Information.RemoteAddress.RawName;//get the remote IP address
-            string message;
-            try
-            {
-                var fieldCount = await reader.LoadAsync(sizeof(uint));
-                if (fieldCount != sizeof(uint))
+            ThreadPool.RunAsync(async delegate { 
+                var reader = new DataReader(args.Socket.InputStream);
+                var ip = args.Socket.Information.RemoteAddress.RawName;//get the remote IP address
+                string message;
+                try
                 {
-                    Debug.WriteLine("TCP connection recieved FROM IP " + ip + " but socket closed before full stream was read");
-                    await RemoveIP(ip);
-                    if (_hostIP == ip)
+                    var fieldCount = await reader.LoadAsync(sizeof(uint));
+                    if (fieldCount != sizeof(uint))
                     {
-                        await SendMassTCPMessage("SPECIAL1:" + _localIP);
-                        MakeHost();
+                        Debug.WriteLine("TCP connection recieved FROM IP " + ip + " but socket closed before full stream was read");
+                        await RemoveIP(ip);
+                        if (_hostIP == ip)
+                        {
+                            await SendMassTCPMessage("SPECIAL1:" + _localIP);
+                            MakeHost();
+                        }
+                        await SendMassTCPMessage("SPECIAL9:" + ip);
+                        return;
                     }
-                    await SendMassTCPMessage("SPECIAL9:" + ip);
+                    var stringLength = reader.ReadUInt32();
+                    var actualLength = await reader.LoadAsync(stringLength);//Read the incoming message
+                    message = reader.ReadString(actualLength);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception caught during TCP connection recieve FROM IP " + ip + " with error code: " + e.Message);
                     return;
                 }
-                var stringLength = reader.ReadUInt32();
-                var actualLength = await reader.LoadAsync(stringLength);//Read the incoming message
-                message = reader.ReadString(actualLength);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Exception caught during TCP connection recieve FROM IP " + ip + " with error code: " + e.Message);
-                return;
-            }
-            Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
-            await this.MessageRecieved(ip, message, PacketType.TCP);//Process the message
+                Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
+                await this.MessageRecieved(ip, message, PacketType.TCP);//Process the message
+            });
         }
         /*
         * a method for creating a new ID
@@ -488,26 +490,29 @@ namespace NuSysApp
         */
         private async void DatagramMessageRecieved(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
         {
-            var ip = args.RemoteAddress.RawName;//get the remote IP
-            string message;
-            try
+            ThreadPool.RunAsync(async delegate
             {
-                var result = args.GetDataStream();
-                var resultStream = result.AsStreamForRead(1024);
-
-                using (var reader = new StreamReader(resultStream))
+                var ip = args.RemoteAddress.RawName;//get the remote IP
+                string message;
+                try
                 {
-                    message = await reader.ReadToEndAsync();//Reads the message to string
+                    var result = args.GetDataStream();
+                    var resultStream = result.AsStreamForRead(1024);
+
+                    using (var reader = new StreamReader(resultStream))
+                    {
+                        message = await reader.ReadToEndAsync();//Reads the message to string
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Exception caught during message recieve FROM IP " + ip + " with error code: " +
-                                e.Message);
-                return;
-            }
-            //Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
-            await this.MessageRecieved(ip, message, PacketType.UDP);//process the message
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception caught during message recieve FROM IP " + ip + " with error code: " +
+                                    e.Message);
+                    return;
+                }
+                //Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
+                await this.MessageRecieved(ip, message, PacketType.UDP);//process the message
+            });
         }
         /*
         * sends a TCP message to specific recieving IP
