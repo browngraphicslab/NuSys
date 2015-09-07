@@ -131,7 +131,9 @@ namespace NuSysApp
                 var lastNode = _nodeViewModelList[0];
                 var nodeModel = (Node)lastNode.Model;
                 nodeModel.MoveToGroup(null);
-                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
+                var x = lastNode.Transform.Matrix.OffsetX * lastNode.ParentGroup.LocalTransform.ScaleX;
+                var y = lastNode.Transform.Matrix.OffsetY * lastNode.ParentGroup.LocalTransform.ScaleY;
+                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX + x, this.Transform.Matrix.OffsetY + y);
                 WorkSpaceViewModel.DeleteNode(this);
                 //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
                 foreach (var link in lastNode.LinkList)
