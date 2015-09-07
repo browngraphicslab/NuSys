@@ -11,14 +11,16 @@ namespace NuSysApp
         private UserControl _view;
         private BaseINPC _model;
         private string _text = string.Empty;
+        private WorkspaceViewModel _workspace;
         
-        public PinViewModel(PinModel model) : base()
+        public PinViewModel(PinModel model, WorkspaceViewModel vm) : base()
         {
             Model = model;
             Transform = new MatrixTransform();   
             View = new PinView(this);
             this.Model.PropertyChanged += (s, e) => { Update(e); };
             Text = "<Enter Pin Name>";
+            Workspace = vm;
         }
         private void Update(PropertyChangedEventArgs e)
         {
@@ -89,6 +91,18 @@ namespace NuSysApp
                 RaisePropertyChanged("Model");
             }
         }        
+        public WorkspaceViewModel Workspace
+        {
+            get { return _workspace; }
+            set
+            {
+                if (_workspace == value)
+                {
+                    return;
+                }
+                _workspace = value;
+            }
+        }
 
     }
 }
