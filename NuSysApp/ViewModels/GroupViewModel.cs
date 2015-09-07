@@ -37,6 +37,11 @@ namespace NuSysApp
 
         public void AddNode(NodeViewModel toAdd)
         {
+            if (toAdd as GroupViewModel == null) {
+                toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+                toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+            }
+
             if (toAdd.ParentGroup == null) //node is currently in workspace
             {
                 WorkSpaceViewModel.AtomViewList.Remove(toAdd.View);
@@ -50,8 +55,6 @@ namespace NuSysApp
             toAdd.Transform = new MatrixTransform();
             _atomViewList.Add(toAdd.View);
             _nodeViewModelList.Add(toAdd);
-            toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
-            toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
             
             foreach (var link in toAdd.LinkList)
             {

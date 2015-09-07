@@ -129,7 +129,7 @@ namespace NuSysApp
                 {
                     if (node is GroupViewModel)//dragging nested group onto node or group
                     {
-                        return;//currently, do nothing
+                    //    return;//currently, do nothing
                     }
                     if (node2 is GroupViewModel)//dragging nested group onto existing group
                     {

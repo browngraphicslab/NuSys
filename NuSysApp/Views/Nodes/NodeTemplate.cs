@@ -69,6 +69,8 @@ namespace NuSysApp
 
             PointerReleased += OnPointerReleased;
 
+            ManipulationCompleted += OnManipulationCompleted;
+
             var vm = (NodeViewModel)this.DataContext;
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_MultiSelectionChanged);
@@ -115,19 +117,28 @@ namespace NuSysApp
         }
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            /*
+//            var vm = (NodeViewModel)this.DataContext;
+//            if (vm.WorkSpaceViewModel != null) { 
+//                vm.CreateAnnotation();
+//                vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
+//            }
+//                        if (vm.IsAnnotation)
+//                        {
+//                            SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
+//                            nodeTpl.Background = backgroundColorBrush;
+//                       }
+            
+            e.Handled = true;
+        }
+
+        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            
             var vm = (NodeViewModel)this.DataContext;
             if (vm.WorkSpaceViewModel != null) { 
                 vm.CreateAnnotation();
                 vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
             }
-            //            if (vm.IsAnnotation)
-            //            {
-            //                SolidColorBrush backgroundColorBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 111, 138, 150));
-            //                nodeTpl.Background = backgroundColorBrush;
-            //            }
-            */
-            e.Handled = true;
         }
 
         private void Node_MultiSelectionChanged(object sender, PropertyChangedEventArgs e)
