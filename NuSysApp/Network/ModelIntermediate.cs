@@ -81,7 +81,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("type") && props["type"] == "ink")
             {
-                    await HandleCreateNewInk(id, props);
+                await HandleCreateNewInk(id, props);
             }
             else if (props.ContainsKey("type") && props["type"] == "group")
             {
@@ -178,7 +178,7 @@ namespace NuSysApp
             {
                 string d = props["data"];
                 switch (type)
-                {                    
+                {            
                     case NodeType.Text:
                         if (!props.ContainsKey("text"))
                         {

@@ -1,12 +1,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
 
 
 namespace NuSysApp
 {
+    [DataContract]
     public class Node : Atom
     {
         #region Private Members

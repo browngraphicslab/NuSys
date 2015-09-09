@@ -6,6 +6,7 @@ using System.Xml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
+using System;
 
 namespace NuSysApp
 {
@@ -369,6 +370,15 @@ namespace NuSysApp
                     {
                         ((AudioModel)model).ByteArray = await ((AudioModel)model).ConvertAudioToByte(((AudioModel)model).AudioFile);
                     }
+
+                    /* TODO: there are no more Ink nodes
+                    if (model.NodeType == NodeType.Ink)
+                    {
+                        string stringData = model.InqCanvas.StringLines;
+                        ((InkModel)model).ByteArray = System.Text.Encoding.UTF8.GetBytes(stringData);
+                        //((InkModel)model).ByteArray = Serializer.Serialize<InkModel>((InkModel)model);
+                    }
+                    */
                     Content toInsert = model.Content;
                     await dbConnection.InsertAsync(toInsert);
                 }

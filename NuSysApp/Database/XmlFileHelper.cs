@@ -156,6 +156,32 @@ namespace NuSysApp
             }
         }
 
+        public async Task CreateInkFromXml(WorkspaceViewModel vm, XmlNode node, string canvasID)
+        {
+            string ID = node.Attributes.GetNamedItem("id").Value;
+
+            // look up the content of the current atom in the database
+            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
+            var res = await query.FirstOrDefaultAsync();
+
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string canvasNodeID = canvasID;
+            string data = Encoding.UTF8.GetString(res.Data);
+
+            await NetworkConnector.Instance.FinalizeGlobalInk(ID, canvasNodeID, data);
+        }
+
+        private string MakeSubMessageFromDict(Dictionary<string, string> dict)
+        {
+            var m = "<";
+            foreach (var kvp in dict)
+            {
+                m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
+            }
+            m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
+            return m;
+        }
+
         /// <summary>
         /// Helper method used in ParseXml method that parses just the nodes
         /// </summary>
@@ -185,7 +211,7 @@ namespace NuSysApp
             if (res != null)
             {
                 byteData = res.Data;
-                byteToString = (currType == "Text") ? (Encoding.UTF8.GetString(byteData)) : (Convert.ToBase64String(byteData));
+                byteToString = (currType == "Text" || currType == "Ink") ? (Encoding.UTF8.GetString(byteData)) : (Convert.ToBase64String(byteData));
             }
             dict.Add("width", width);
             dict.Add("height", height);

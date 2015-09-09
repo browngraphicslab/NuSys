@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class Atom :Sendable
+    public abstract class Atom : Sendable
     {
         private DebouncingDictionary _debounceDict;
         private EditStatus _editStatus;
