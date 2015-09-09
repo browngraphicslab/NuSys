@@ -129,7 +129,7 @@ namespace NuSysApp
                 {
                     if (node is GroupViewModel)//dragging nested group onto node or group
                     {
-                        return;//currently, do nothing
+                    //    return;//currently, do nothing
                     }
                     if (node2 is GroupViewModel)//dragging nested group onto existing group
                     {
@@ -424,7 +424,7 @@ namespace NuSysApp
 
         private void CreatePinHandler(object source, CreatePinEventArgs e)
         {
-            var vm = new PinViewModel(e.CreatedPin);
+            var vm = new PinViewModel(e.CreatedPin,this);
             PinViewModelList.Add(vm);
             AtomViewList.Add(vm.View);
             PositionPin(vm, e.CreatedPin.X, e.CreatedPin.Y);  

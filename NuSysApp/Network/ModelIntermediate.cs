@@ -306,7 +306,7 @@ namespace NuSysApp
                     ParseToLineSegment(props, out one, out two);                   
 
                     await UITask.Run(() => {
-                        var line = new InqLine(id, new List<Point>() { one, two }, 2, Colors.Black);
+                        var line = new InqLine(props["canvasNodeID"], new List<Point>() { one, two }, 2, Colors.Black);
                         canvas.AddTemporaryInqline(line, id);
                     });
                 }
@@ -449,8 +449,9 @@ namespace NuSysApp
         }
         public bool HasLock(string id)
         {
+            if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
             var sendable = WorkSpaceModel.IDToSendableDict[id];
-            bool isLine = sendable is InqLine;
+            bool isLine = sendable is InqLine; // TODO there should be no special casing for inks
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         

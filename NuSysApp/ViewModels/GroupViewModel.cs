@@ -37,6 +37,11 @@ namespace NuSysApp
 
         public void AddNode(NodeViewModel toAdd)
         {
+            if (toAdd as GroupViewModel == null) {
+                toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+                toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+            }
+
             if (toAdd.ParentGroup == null) //node is currently in workspace
             {
                 WorkSpaceViewModel.AtomViewList.Remove(toAdd.View);
@@ -50,8 +55,6 @@ namespace NuSysApp
             toAdd.Transform = new MatrixTransform();
             _atomViewList.Add(toAdd.View);
             _nodeViewModelList.Add(toAdd);
-            toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
-            toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
             
             foreach (var link in toAdd.LinkList)
             {
@@ -128,7 +131,9 @@ namespace NuSysApp
                 var lastNode = _nodeViewModelList[0];
                 var nodeModel = (Node)lastNode.Model;
                 nodeModel.MoveToGroup(null);
-                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX, this.Transform.Matrix.OffsetY);
+                var x = lastNode.Transform.Matrix.OffsetX * lastNode.ParentGroup.LocalTransform.ScaleX;
+                var y = lastNode.Transform.Matrix.OffsetY * lastNode.ParentGroup.LocalTransform.ScaleY;
+                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX + x, this.Transform.Matrix.OffsetY + y);
                 WorkSpaceViewModel.DeleteNode(this);
                 //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
                 foreach (var link in lastNode.LinkList)

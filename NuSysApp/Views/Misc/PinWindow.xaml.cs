@@ -44,5 +44,16 @@ namespace NuSysApp
             vm.CompositeTransform = c;
             e.Handled = true;
         }
+
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var pinvm = ((Button)sender).DataContext as PinViewModel;
+            var pinModel = (PinModel) pinvm.Model;
+
+            var vm = (WorkspaceViewModel)this.DataContext;
+
+            vm.AtomViewList.Remove(pinvm.View);
+            vm.PinViewModelList.Remove(pinvm);
+        }
     }
 }
