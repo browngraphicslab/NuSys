@@ -22,14 +22,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class BucketWindow : UserControl
+    public sealed partial class BucketWindowView : UserControl
     {
         private ContentImporter _contentImporter = new ContentImporter();
 
 
         public ObservableCollection<BucketItem> BucketItems { get; set; }
 
-        public BucketWindow()
+        public BucketWindowView()
         {
             this.InitializeComponent();
 

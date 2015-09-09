@@ -17,9 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class MultiSelectMenu : UserControl
+    public sealed partial class MultiSelectMenuView : UserControl
     {
-        public MultiSelectMenu()
+        public MultiSelectMenuView()
         {
             this.InitializeComponent();
         }

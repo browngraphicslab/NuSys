@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using Windows.UI.Xaml;
 
-namespace NuSysApp.Network
+namespace NuSysApp
 {
     public class DebouncingDictionary
     {

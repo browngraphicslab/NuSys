@@ -15,7 +15,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components;
 using NuSysApp.EventArgs;
 using System.Collections.Concurrent;
 
@@ -23,7 +22,7 @@ using System.Collections.Concurrent;
 
 namespace NuSysApp
 {
-    public sealed partial class InqLine : UserControl, ISelectable, Sendable
+    public sealed partial class InqLine : UserControl, Sendable
     {
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
         public event DeleteInqLineEventHandler OnDeleteInqLine;

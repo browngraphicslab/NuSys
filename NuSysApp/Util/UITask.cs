@@ -1,4 +1,4 @@
-﻿namespace NuSysApp.Threading
+﻿namespace NuSysApp
 {
     using System;
     using System.Threading.Tasks;
@@ -16,11 +16,6 @@
     public static class UITask
     {
         private static CoreDispatcher dispatcher;
-
-        public static void Initialize(CoreDispatcher dispather)
-        {
-            UITask.dispatcher = dispather;
-        }
 
         public static Task Run(Action action)
         {

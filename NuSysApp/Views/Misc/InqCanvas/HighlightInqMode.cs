@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuSysApp.Components
+namespace NuSysApp
 {
     class HighlightInqMode : IInqMode
     {

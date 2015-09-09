@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
-namespace NuSysApp.MISC
+namespace NuSysApp
 {
     public class Clip
     {

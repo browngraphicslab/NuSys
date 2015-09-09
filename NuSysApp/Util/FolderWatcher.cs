@@ -1,7 +1,7 @@
 ﻿using Windows.Storage;
 using Windows.Storage.Search;
 
-namespace NuSysApp.MISC
+namespace NuSysApp
 {
     public class FolderWatcher
     {

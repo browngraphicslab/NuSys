@@ -15,14 +15,14 @@ namespace NuSysApp
         private double _y;
         private string _text;
         private MatrixTransform _transform;
-        private Network.DebouncingDictionary _dict;
+        private DebouncingDictionary _dict;
 
         public PinModel (string id) : base()
         {
             this.Transform = new MatrixTransform();
             ID = id;
             this.Text = "NusysLand";
-            _dict = new Network.DebouncingDictionary(this);
+            _dict = new DebouncingDictionary(this);
         }
 
         public void Delete()

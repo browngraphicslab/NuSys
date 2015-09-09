@@ -9,7 +9,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components;
 
 namespace NuSysApp
 {
@@ -23,7 +22,7 @@ namespace NuSysApp
         private InqCanvasViewModel _viewModel;
         public InqCanvasView()
         {
-            MISC.Clip.SetToBounds(this, true);
+            //MISC.Clip.SetToBounds(this, true);
         }
 
         public InqCanvasViewModel ViewModel

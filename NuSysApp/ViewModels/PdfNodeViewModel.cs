@@ -6,7 +6,6 @@ using Windows.Storage;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.MISC;
 
 namespace NuSysApp
 {
@@ -31,7 +30,7 @@ namespace NuSysApp
             this.NodeType = NodeType.PDF;
             this.CurrentPageNumber = 0;
             this.RenderedLines = InqPages[0];
-            this.View = new PdfNodeView2(this);
+            this.View = new PdfNodeView(this);
             _workspaceViewModel = workspaceViewModel;
             var C = new CompositeTransform {
                 ScaleX = 1,

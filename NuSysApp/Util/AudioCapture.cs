@@ -10,7 +10,6 @@ using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.UI.Core;
-using NuSysApp.MISC;
 
 namespace NuSysApp
 {

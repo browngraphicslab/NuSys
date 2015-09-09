@@ -16,7 +16,7 @@ namespace NuSysApp
         public ImageNodeViewModel(ImageModel model, WorkspaceViewModel vm) : base(model, vm)
         {
             this.NodeType = NodeType.Image; //Also sets model value
-            this.View = new ImageNodeView2(this);
+            this.View = new ImageNodeView(this);
             this.Transform = new MatrixTransform();
             this.IsSelected = false;
             this.IsEditing = false;

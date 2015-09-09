@@ -17,16 +17,16 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class FloatingMenuButton : UserControl
+    public sealed partial class FloatingMenuButtonView : UserControl
     {
-        public static readonly DependencyProperty WindowProperty = DependencyProperty.RegisterAttached("Window", typeof(UserControl), typeof(FloatingMenuButton), null);
-        public static readonly DependencyProperty IconProperty = DependencyProperty.RegisterAttached("Icon", typeof(string), typeof(FloatingMenuButton), null);
-        public static readonly DependencyProperty ParentButtonProperty = DependencyProperty.RegisterAttached("ParentButton", typeof(FloatingMenuButton), typeof(FloatingMenuButton), null);
-        public static readonly DependencyProperty IsModeProperty = DependencyProperty.RegisterAttached("IsMode", typeof(bool), typeof(FloatingMenuButton), null);
+        public static readonly DependencyProperty WindowProperty = DependencyProperty.RegisterAttached("Window", typeof(UserControl), typeof(FloatingMenuButtonView), null);
+        public static readonly DependencyProperty IconProperty = DependencyProperty.RegisterAttached("Icon", typeof(string), typeof(FloatingMenuButtonView), null);
+        public static readonly DependencyProperty ParentButtonProperty = DependencyProperty.RegisterAttached("ParentButton", typeof(FloatingMenuButtonView), typeof(FloatingMenuButtonView), null);
+        public static readonly DependencyProperty IsModeProperty = DependencyProperty.RegisterAttached("IsMode", typeof(bool), typeof(FloatingMenuButtonView), null);
 
         private static readonly SolidColorBrush ColoredBorder = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
 
-        public FloatingMenuButton()
+        public FloatingMenuButtonView()
         {
             this.InitializeComponent();
         }
@@ -53,9 +53,9 @@ namespace NuSysApp
             }
         }
 
-        public FloatingMenuButton ParentButton
+        public FloatingMenuButtonView ParentButton
         {
-            get { return (FloatingMenuButton)GetValue(ParentButtonProperty); }
+            get { return (FloatingMenuButtonView)GetValue(ParentButtonProperty); }
             set
             {
                 SetValue(ParentButtonProperty, value);

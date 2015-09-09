@@ -1,6 +1,6 @@
 ﻿using Windows.UI.Xaml.Input;
 
-namespace NuSysApp.Components
+namespace NuSysApp
 {
     class EraseInqMode : IInqMode
     {

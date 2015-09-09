@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace NuSysApp.MISC
+namespace NuSysApp
 {
     public class StorageUtil
     {

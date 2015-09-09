@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+
+    /// <summary>
+    /// A dictionary that internally stores another dictionary with inverse Key-Value relationships, such that
+    /// Keys can be retrieved by passing in a value to the GetKeyByValue() method.
+    /// </summary>
+    /// <typeparam name="TK"></typeparam>
+    /// <typeparam name="TV"></typeparam>
     public class BiDictionary<TK, TV> : Dictionary<TK,TV>
     {
         private Dictionary<TV, TK> valueToKey = new Dictionary<TV, TK>();

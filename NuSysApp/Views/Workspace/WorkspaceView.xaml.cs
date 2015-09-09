@@ -2,7 +2,6 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using NuSysApp.Views.Workspace;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -71,7 +70,7 @@ namespace NuSysApp
             get { return floatingMenu; }
         }
 
-        public MultiSelectMenu MultiMenu
+        public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }
         }
@@ -104,9 +103,6 @@ namespace NuSysApp
                     break;
                 case Options.AddAudioCapture:
                     await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Audio, isFixed), new FloatingMenuMode(this)));
-                    break;
-                case Options.AddInkNode:
-                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Ink, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddMedia:
                     await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));

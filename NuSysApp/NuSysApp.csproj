@@ -144,14 +144,12 @@
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
-    <Compile Include="MISC\BiDirectionary.cs" />
+    <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
-    <Compile Include="Network\ConcurrentDictionary.cs" />
-    <Compile Include="Threading\Threading.cs" />
-    <Compile Include="Threading\UITask.cs" />
+    <Compile Include="Util\UITask.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
-    <Compile Include="Views\Misc\FloatingMenuButton.xaml.cs">
-      <DependentUpon>FloatingMenuButton.xaml</DependentUpon>
+    <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
+      <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
       <DependentUpon>InqLine.xaml</DependentUpon>
@@ -160,7 +158,6 @@
     <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
     <Compile Include="Views\Misc\InqCanvas\HighlightInqMode.cs" />
     <Compile Include="Views\Misc\InqCanvas\IInqMode.cs" />
-    <Compile Include="Components\RichTextBlockBinder.cs" />
     <Compile Include="Components\TextBoxExtended.cs" />
     <Compile Include="Components\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
@@ -221,27 +218,26 @@
     <Compile Include="Lib\ReverseMarkdownSharp\Converters\Text.cs" />
     <Compile Include="Lib\ReverseMarkdownSharp\Converters\Tr.cs" />
     <Compile Include="Lib\ReverseMarkdownSharp\StringUtils.cs" />
-    <Compile Include="MISC\AudioCapture.cs" />
-    <Compile Include="MISC\Clip.cs" />
-    <Compile Include="MISC\Command.cs" />
-    <Compile Include="MISC\Constants.cs" />
+    <Compile Include="Util\AudioCapture.cs" />
+    <Compile Include="Util\Clip.cs" />
+    <Compile Include="Util\Command.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Components\Cortana\Cortana.cs" />
     <Compile Include="Components\Cortana\CortanaContinuousRecognition.cs" />
     <Compile Include="Components\Cortana\CortanaPopup.xaml.cs">
       <DependentUpon>CortanaPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ContentImporter\ContentConverter.cs" />
-    <Compile Include="MISC\FileManager.cs" />
-    <Compile Include="MISC\FolderWatcher.cs" />
-    <Compile Include="MISC\Geometry.cs" />
+    <Compile Include="Util\FileManager.cs" />
+    <Compile Include="Util\FolderWatcher.cs" />
+    <Compile Include="Util\Geometry.cs" />
     <Compile Include="Views\Misc\InqCanvas\InqCanvasView.cs" />
-    <Compile Include="MISC\ISelectable.cs" />
-    <Compile Include="MISC\NodeType.cs" />
-    <Compile Include="MISC\NuSysStorages.cs" />
-    <Compile Include="MISC\ObservableDictionary.cs" />
-    <Compile Include="MISC\OfficeIntermediate.cs" />
-    <Compile Include="MISC\PdfRenderer.cs" />
-    <Compile Include="MISC\StorageUtil.cs" />
+    <Compile Include="Util\NodeType.cs" />
+    <Compile Include="Util\NuSysStorages.cs" />
+    <Compile Include="Util\ObservableDictionary.cs" />
+    <Compile Include="Util\OfficeIntermediate.cs" />
+    <Compile Include="Util\PdfRenderer.cs" />
+    <Compile Include="Util\StorageUtil.cs" />
     <Compile Include="Models\Atom.cs" />
     <Compile Include="Models\AudioModel.cs" />
     <Compile Include="Models\Content.cs" />
@@ -255,7 +251,7 @@
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNode.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
-    <Compile Include="MISC\BaseINPC.cs" />
+    <Compile Include="Util\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
@@ -268,8 +264,8 @@
     <Compile Include="ViewModels\FloatingMenuViewModel.cs" />
     <Compile Include="ViewModels\MinimapViewModel.cs" />
     <Compile Include="ViewModels\PinViewModel.cs" />
-    <Compile Include="Views\Misc\BucketWindow.xaml.cs">
-      <DependentUpon>BucketWindow.xaml</DependentUpon>
+    <Compile Include="Views\Misc\BucketWindowView.xaml.cs">
+      <DependentUpon>BucketWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Misc\MinimapView.xaml.cs">
       <DependentUpon>MinimapView.xaml</DependentUpon>
@@ -277,8 +273,8 @@
     <Compile Include="Views\Misc\PinView.xaml.cs">
       <DependentUpon>PinView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MultiSelectMenu.xaml.cs">
-      <DependentUpon>MultiSelectMenu.xaml</DependentUpon>
+    <Compile Include="Views\Misc\MultiSelectMenuView.xaml.cs">
+      <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
@@ -287,7 +283,6 @@
       <DependentUpon>GroupView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\ImageNodeViewModel.cs" />
-    <Compile Include="ViewModels\InkNodeViewModel.cs" />
     <Compile Include="ViewModels\LinkViewModel.cs" />
     <Compile Include="ViewModels\NodeViewModel.cs" />
     <Compile Include="ViewModels\PdfNodeViewModel.cs" />
@@ -297,24 +292,21 @@
       <DependentUpon>BezierLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\GroupViewModel.cs" />
-    <Compile Include="Views\Nodes\ImageNodeView2.xaml.cs">
-      <DependentUpon>ImageNodeView2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Nodes\InkNodeView2.xaml.cs">
-      <DependentUpon>InkNodeView2.xaml</DependentUpon>
+    <Compile Include="Views\Nodes\ImageNodeView.xaml.cs">
+      <DependentUpon>ImageNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\NodeTemplate.cs" />
-    <Compile Include="Views\Nodes\PdfNodeView2.xaml.cs">
-      <DependentUpon>PdfNodeView2.xaml</DependentUpon>
+    <Compile Include="Views\Nodes\PdfNodeView.xaml.cs">
+      <DependentUpon>PdfNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\PseudoNode.xaml.cs">
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\TextNodeView2.xaml.cs">
-      <DependentUpon>TextNodeView2.xaml</DependentUpon>
+    <Compile Include="Views\Nodes\TextNodeView.xaml.cs">
+      <DependentUpon>TextNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\AddNodeMode.cs" />
     <Compile Include="Views\Workspace\CortanaMode.cs" />
@@ -328,8 +320,8 @@
     <Compile Include="Views\Workspace\MultiSelectMode.cs" />
     <Compile Include="Views\Workspace\PanZoomMode.cs" />
     <Compile Include="Views\Workspace\PinMode.cs" />
-    <Compile Include="Views\Misc\PinWindow.xaml.cs">
-      <DependentUpon>PinWindow.xaml</DependentUpon>
+    <Compile Include="Views\Misc\PinWindowView.xaml.cs">
+      <DependentUpon>PinWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\PromoteInkMode.cs" />
     <Compile Include="Views\Workspace\SelectMode.cs" />
@@ -375,7 +367,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\Misc\FloatingMenuButton.xaml">
+    <Page Include="Views\Misc\FloatingMenuButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -391,7 +383,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\BucketWindow.xaml">
+    <Page Include="Views\Misc\BucketWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -403,7 +395,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MultiSelectMenu.xaml">
+    <Page Include="Views\Misc\MultiSelectMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -419,19 +411,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\ImageNodeView2.xaml">
+    <Page Include="Views\Nodes\ImageNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Nodes\InkNodeView2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\PdfNodeView2.xaml">
+    <Page Include="Views\Nodes\PdfNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -439,7 +427,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\TextNodeView2.xaml">
+    <Page Include="Views\Nodes\TextNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -447,7 +435,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\PinWindow.xaml">
+    <Page Include="Views\Misc\PinWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

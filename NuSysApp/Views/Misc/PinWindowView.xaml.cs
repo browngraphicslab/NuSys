@@ -18,9 +18,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class PinWindow : UserControl
+    public sealed partial class PinWindowView : UserControl
     {
-        public PinWindow()
+        public PinWindowView()
         {
             this.InitializeComponent();
           //  Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));           

@@ -1,5 +1,4 @@
-﻿using NuSysApp.Threading;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -179,24 +178,8 @@ namespace NuSysApp
             {
                 string d = props["data"];
                 switch (type)
-                {
-                    case NodeType.Ink:
-                        try
-                        {
-                            List<Point> points;
-                            double thickness;
-                            Color stroke;
-                            InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
-                            data = null;
-                            //TODO!!
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a polyline");
-                        }
-                        break;
+                {                    
                     case NodeType.Text:
-                    case NodeType.Richtext:
                         if (!props.ContainsKey("text"))
                         {
                             props.Add("text", d);
@@ -514,7 +497,7 @@ namespace NuSysApp
             }
             else
             {
-                return null;
+                return new Dictionary<string, string>();
             }
         }
 

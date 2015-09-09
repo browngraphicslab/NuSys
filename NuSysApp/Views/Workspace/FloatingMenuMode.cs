@@ -3,7 +3,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     public class FloatingMenuMode : AbstractWorkspaceViewMode
     {
@@ -42,7 +42,7 @@ namespace NuSysApp.Views.Workspace
 
         protected void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            var dc = ((FrameworkElement)sender).DataContext;
             if (!(dc is WorkspaceViewModel))
             {
                 e.Handled = true;

@@ -23,7 +23,7 @@ namespace NuSysApp
         #endregion Private Members
         public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, UserControl view = null) : base(model, workSpaceViewModel)
         {           
-            this.View = view ?? new TextNodeView2(this);  
+            this.View = view ?? new TextNodeView(this);  
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize;
             this.Height = Constants.DefaultNodeSize;

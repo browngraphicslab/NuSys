@@ -39,29 +39,29 @@ namespace NuSysApp
     {
         public event OnModeChangeHandler ModeChange;
         public delegate void OnModeChangeHandler(Options mode, bool isFixed);
-        private Dictionary<Tuple<FloatingMenuButton, int>, Tuple<Storyboard, string>> _storyboards;
+        private Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>> _storyboards;
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.
         /// </summary>
-        private readonly BiDictionary<FloatingMenuButton, Options> _buttons;
+        private readonly BiDictionary<FloatingMenuButtonView, Options> _buttons;
 
         
         /// <summary>
         /// Holds a reference to the currently active button
         /// </summary>
-        private FloatingMenuButton _activeButton;
+        private FloatingMenuButtonView _activeButton;
 
         /// <summary>
         /// Maps each main menu button to its current active submenu button
         /// </summary>
-        private Dictionary<FloatingMenuButton, FloatingMenuButton> _activeSubMenuButtons;
+        private Dictionary<FloatingMenuButtonView, FloatingMenuButtonView> _activeSubMenuButtons;
 
         public FloatingMenuView()
         {
             this.InitializeComponent();
 
-            _buttons = new BiDictionary<FloatingMenuButton, Options>();
+            _buttons = new BiDictionary<FloatingMenuButtonView, Options>();
             _buttons[btnSelect] = Options.MainSelect;
             _buttons[btnSelectNode] = Options.SelectNode;
             _buttons[btnMarqueeSelect] = Options.SelectMarquee;
@@ -73,7 +73,6 @@ namespace NuSysApp
 
             _buttons[btnAdd] = Options.MainAdd;
             _buttons[btnNewNode] = Options.AddTextNode;
-            _buttons[btnNewInkNode] = Options.AddInkNode;
             _buttons[btnNewMedia] = Options.AddMedia;
             _buttons[btnNewAudioCapture] = Options.AddAudioCapture;
             _buttons[btnBucket] = Options.AddBucket;
@@ -84,22 +83,22 @@ namespace NuSysApp
             _buttons[btnPin] = Options.MiscPin;
             _buttons[btnMisc] = Options.MainMisc;
 
-            _storyboards = new Dictionary<Tuple<FloatingMenuButton, int>, Tuple<Storyboard, string>>();
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnSelect, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSelect"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnSelect, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSelect"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnPen, 0), new Tuple<Storyboard, string>(slidein, "SubMenuPen"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnMisc, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnMisc, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnPin, 0), new Tuple<Storyboard, string>(windowClose, "pinWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnPin, 1), new Tuple<Storyboard, string>(windowOpen, "pinWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnBucket, 0), new Tuple<Storyboard, string>(windowClose, "bucketWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButton, int>(btnBucket, 1), new Tuple<Storyboard, string>(windowOpen, "bucketWindow"));
+            _storyboards = new Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>>();
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSelect"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSelect"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 0), new Tuple<Storyboard, string>(slidein, "SubMenuPen"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 0), new Tuple<Storyboard, string>(windowClose, "pinWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 1), new Tuple<Storyboard, string>(windowOpen, "pinWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 0), new Tuple<Storyboard, string>(windowClose, "bucketWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 1), new Tuple<Storyboard, string>(windowOpen, "bucketWindow"));
 
 
-            _activeSubMenuButtons = new Dictionary<FloatingMenuButton, FloatingMenuButton>();
+            _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
             _activeSubMenuButtons[btnSelect] = btnSelectNode;
             _activeSubMenuButtons[btnPen] = btnGlobalInk;
             _activeSubMenuButtons[btnAdd] = btnNewNode;
@@ -133,14 +132,14 @@ namespace NuSysApp
             SetActive(_buttons.GetKeyByValue(option), option, isFixed);
         }
 
-        public void SetActive(FloatingMenuButton btnToActivate, Options option, bool isFixed = false)
+        public void SetActive(FloatingMenuButtonView btnToActivate, Options option, bool isFixed = false)
         {
             // Close everything that's open
             CloseAllSubMenus();
 
             // Try to find a corresponding storyboard to play
             Tuple<Storyboard, string> val;
-            var hasAnim = _storyboards.TryGetValue(new Tuple<FloatingMenuButton, int>(btnToActivate, 1), out val);
+            var hasAnim = _storyboards.TryGetValue(new Tuple<FloatingMenuButtonView, int>(btnToActivate, 1), out val);
             if (hasAnim) {
                 val.Item1.Stop();
                 Storyboard.SetTargetName(val.Item1, val.Item2);
@@ -221,14 +220,14 @@ namespace NuSysApp
 
         private void OnBtnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var btn = (FloatingMenuButton)sender;
+            var btn = (FloatingMenuButtonView)sender;
             SetActive(btn, _buttons[btn], false);
             e.Handled = true;
         }
 
         private void OnBtnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var btn = (FloatingMenuButton)sender;
+            var btn = (FloatingMenuButtonView)sender;
             SetActive(btn, _buttons[btn], true);
             e.Handled = true;
         }    

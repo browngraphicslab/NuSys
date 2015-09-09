@@ -449,12 +449,6 @@ namespace NuSysApp
                 case NodeType.Text:
                     vm = new TextNodeViewModel((TextNode)model, this);
                     break;
-                case NodeType.Richtext:
-                    vm = new TextNodeViewModel((TextNode)model, this);
-                    break;
-                case NodeType.Ink:
-                    vm = new InkNodeViewModel((InkModel)model, this);
-                    break;
                 case NodeType.Image:
                     vm = new ImageNodeViewModel((ImageModel)model, this);
                     if (((ImageModel)vm.Model).Image != null)

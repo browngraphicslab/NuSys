@@ -6,7 +6,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuSysApp.Views.Workspace
+namespace NuSysApp
 {
     internal class PromoteInkMode : AbstractWorkspaceViewMode
     {
@@ -59,7 +59,8 @@ namespace NuSysApp.Views.Workspace
                     plines += "' thickness='" + pl.StrokeThickness + "'/>";
                 }
             }
-            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
+            // TODO: Add to text node inqcanvas
+            //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
         }
     }
 }
