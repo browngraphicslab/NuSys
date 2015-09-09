@@ -55,13 +55,13 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top">
-            <Button x:Name="record" Click="OnRecord_Click" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="record" Tapped="OnRecord_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/record.png" Height="30"></Image>
             </Button>
-            <Button x:Name="stop" Click="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/stop.png" Height="30"></Image>
             </Button>
-            <Button x:Name="play" Click="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
+            <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/play.png" Height="40"></Image>
             </Button>
         </StackPanel>

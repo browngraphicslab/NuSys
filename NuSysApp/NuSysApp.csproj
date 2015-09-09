@@ -144,11 +144,15 @@
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
+    <Compile Include="MISC\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Network\ConcurrentDictionary.cs" />
     <Compile Include="Threading\Threading.cs" />
     <Compile Include="Threading\UITask.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
+    <Compile Include="Views\Misc\FloatingMenuButton.xaml.cs">
+      <DependentUpon>FloatingMenuButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
       <DependentUpon>InqLine.xaml</DependentUpon>
     </Compile>
@@ -315,7 +319,7 @@
     <Compile Include="Views\Workspace\AddNodeMode.cs" />
     <Compile Include="Views\Workspace\CortanaMode.cs" />
     <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
-    <Compile Include="Views\FloatingMenuView.xaml.cs">
+    <Compile Include="Views\Misc\FloatingMenuView.xaml.cs">
       <DependentUpon>FloatingMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Workspace\GlobalInkMode.cs" />
@@ -371,6 +375,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\Misc\FloatingMenuButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Misc\InqCanvas\InqLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -435,7 +443,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\FloatingMenuView.xaml">
+    <Page Include="Views\Misc\FloatingMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

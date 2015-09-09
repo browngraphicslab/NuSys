@@ -33,10 +33,6 @@ namespace NuSysApp
             _view.PointerMoved += View_PointerMoved;
             _view.PointerReleased += View_PointerReleased;
             _view.DoubleTapped += View_OnDoubleTapped;
-
-            _view.MultiMenu.Visibility = Visibility.Visible;
-            _view.MultiMenu.Delete.Click += Delete_OnClick;
-            _view.MultiMenu.Group.Click += Group_OnClick;
         }
 
         public override async Task Deactivate()
@@ -57,13 +53,14 @@ namespace NuSysApp
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             vm.DeleteMultiSelecttion();
-            _view.FloatingMenu.SetActive(Options.Select);
+            _view.SwitchMode(Options.SelectNode, false);
         }
 
         private void Group_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             vm.GroupFromMultiSelection();
+            _view.SwitchMode(Options.SelectNode, false);
         }
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -164,6 +161,15 @@ namespace NuSysApp
                         vm.SetMultiSelection(avm);
                     }
                 }
+            }
+
+            if (vm.MultiSelectedAtomViewModels.Count > 0)
+            {
+                Canvas.SetLeft(_view.MultiMenu, _startPoint.X);
+                Canvas.SetTop(_view.MultiMenu, _startPoint.Y);
+                _view.MultiMenu.Visibility = Visibility.Visible;
+                _view.MultiMenu.Delete.Click += Delete_OnClick;
+                _view.MultiMenu.Group.Click += Group_OnClick;
             }
         }
     }

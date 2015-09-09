@@ -18,10 +18,12 @@ namespace NuSysApp
         private bool _isDragging;
         private PseudoNode _tempNode;
         private Point _startPos;
+        private bool _isFixed;
 
-        public AddNodeMode(WorkspaceView view, NodeType nodeType) : base(view) {
+        public AddNodeMode(WorkspaceView view, NodeType nodeType, bool isFixed) : base(view) {
             _nodeType = nodeType;
             _tempNode = new PseudoNode();
+            _isFixed = isFixed;
         }
         
         public override async Task Activate()
@@ -151,12 +153,11 @@ namespace NuSysApp
             vm.ClearSelection();
             vm.ClearMultiSelection();
 
-            // Switch back to select mode
-            // TODO: save select mode as variable
+            if (!_isFixed) { 
             await view.SetViewMode(new MultiMode(view, new PromoteInkMode(view), new PanZoomMode(view), new SelectMode(view),
                 new FloatingMenuMode(view)));
-
-            view.FloatingMenu.SetActive(Options.Select);
+                view.FloatingMenu.SetActive(Options.SelectNode);
+            }           
         }
     }
 }

@@ -62,12 +62,13 @@ namespace NuSysApp
             }
         }
 
-        private async void OnRecord_Click(object sender, RoutedEventArgs e)
+        private async void OnRecord_Click(object sender, TappedRoutedEventArgs e)
         {
             await ToggleRecording(FileName + ".mp3");
+            e.Handled = true;
         }
 
-        private void OnStop_Click(object sender, RoutedEventArgs e)
+        private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
             if (_recording)
             {
@@ -76,10 +77,11 @@ namespace NuSysApp
             playbackElement.Stop();
             _stopped = true;
             play.Opacity = 1;
+            e.Handled = true;
         }
 
 
-        private void OnRewind_Click(object sender, RoutedEventArgs e)
+        private void OnRewind_Click(object sender, TappedRoutedEventArgs e)
         {
             throw new NotImplementedException();
         }

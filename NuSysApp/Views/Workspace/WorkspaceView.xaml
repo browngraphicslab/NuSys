@@ -10,7 +10,7 @@
     Loaded="OnLoaded"    
     >
 
-    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="mainGrid_DragLeave">
+    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
         <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
             <local:InqCanvasView x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
         </Border>
@@ -28,7 +28,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-        <local:FloatingMenuView x:Name="floatingMenu" ModeChange="OnModeChange" />
+        <local:FloatingMenuView x:Name="floatingMenu" ModeChange="SwitchMode" />
         <local:MultiSelectMenu x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
     </Canvas>
 </Page>

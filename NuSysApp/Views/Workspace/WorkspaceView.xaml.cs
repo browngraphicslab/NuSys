@@ -44,7 +44,6 @@ namespace NuSysApp
             var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             this.DataContext = vm;
             Clip = new RectangleGeometry { Rect = new Rect(0, 0, Window.Current.Bounds.Width, Window.Current.Bounds.Height) };
-
             _cortanaInitialized = false;          
         }
 
@@ -53,7 +52,8 @@ namespace NuSysApp
         {
             await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
         }
-        public async Task SetViewMode(AbstractWorkspaceViewMode mode)
+
+        public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
             var deactivate = _mode?.Deactivate();
             if (deactivate != null) await deactivate;
@@ -84,59 +84,57 @@ namespace NuSysApp
         {
             //TODO remove a loading screen
         }
-        private async void OnModeChange(Options mode)
+
+        public async void SwitchMode(Options mode, bool isFixed)
         {
             switch (mode)
             {
-                case Options.Select:
-                    await SetViewMode(new MultiMode(this, new PromoteInkMode(this), new PanZoomMode(this), new SelectMode(this),
-                        new FloatingMenuMode(this)));
+                case Options.SelectNode:
+                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new SelectMode(this), new FloatingMenuMode(this)));
                     break;
-                case Options.GlobalInk:
+                case Options.SelectMarquee:
+                    await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
+                    break;
+                case Options.PenGlobalInk:
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
                     InqCanvas.SetErasing(false);
                     break;
                 case Options.AddTextNode:
-                    await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Text), new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Text, isFixed), new FloatingMenuMode(this)));
                     break;
-                case Options.AudioCapture:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new AddNodeMode(this, NodeType.Audio),
-                        new FloatingMenuMode(this)));
-                    break;
-                case Options.PromoteInk:
-                    SetViewMode(new MultiMode(this, new MultiSelectMode(this)));
+                case Options.AddAudioCapture:
+                    await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Audio, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddInkNode:
-                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Ink), new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Ink, isFixed), new FloatingMenuMode(this)));
                     break;
-                case Options.Document:
-                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document), new FloatingMenuMode(this)));
+                case Options.AddMedia:
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
-                case Options.Erase:
+                case Options.PenErase:
                     InqCanvas.SetErasing(true);
                     break;
-                case Options.Color:
+                case Options.PenHighlight:
                     InqCanvas.SetHighlighting(true);
                     break;
-                case Options.Save:
+                case Options.MiscSave:
                     var vm1 = (WorkspaceViewModel) this.DataContext;
                     vm1.SaveWorkspace();
                     break;
-                case Options.Load:
+                case Options.MiscLoad:
                     var vm2 = (WorkspaceViewModel)this.DataContext;
                     await vm2.LoadWorkspace();
                     break;
-                case Options.Pin:
+                case Options.MiscPin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
                     break;
-                case Options.Bucket:
+                case Options.AddBucket:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this)));
                     break;
             }
         }
 
-
-        private async void mainGrid_DragLeave(object sender, DragEventArgs e)
+        private async void OnDrop(object sender, DragEventArgs e)
         {
             string text = await e.Data.GetView().GetTextAsync();
             var pos = e.GetPosition(this);
