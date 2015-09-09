@@ -3,7 +3,7 @@
 // Licensed under MIT open source license http://opensource.org/licenses/MIT
 //
 // Orginal javascript code was by Mauricio Santos
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -2515,128 +2515,6 @@ var BrushStroke = (function () {
     }
     return BrushStroke;
 })();
-var MarqueeBrush = (function () {
-    function MarqueeBrush(x, y) {
-        this._startX = x;
-        this._startY = y;
-    }
-    MarqueeBrush.prototype.init = function (x, y, inkCanvas) {
-        inkCanvas._context.lineWidth = 4;
-        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'butt';
-    };
-    MarqueeBrush.prototype.draw = function (x, y, inkCanvas) {
-        var canvas = inkCanvas._canvas;
-        var ctx = inkCanvas._context;
-        ctx.globalCompositeOperation = "source-over";
-        ctx.beginPath();
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "rgb(222,214,0)";
-        ctx.setLineDash([6]);
-        ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
-        ctx.stroke();
-    };
-    MarqueeBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        var firstPoint = stroke.points[0];
-        var lastPoint = stroke.points[stroke.points.length - 1];
-        this._startX = firstPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
-        this._startY = firstPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
-        this.draw(lastPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX, lastPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY, inkCanvas);
-    };
-    return MarqueeBrush;
-})();
-var LineBrush = (function () {
-    function LineBrush() {
-    }
-    LineBrush.prototype.init = function (x, y, inkCanvas) {
-        inkCanvas._context.beginPath();
-        inkCanvas._context.globalAlpha = 1;
-        inkCanvas._context.globalCompositeOperation = "source-over";
-        inkCanvas._context.strokeStyle = "rgb(192,0,0)";
-        inkCanvas._context.lineWidth = 6;
-        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'round';
-        inkCanvas._context.moveTo(x, y);
-    };
-    LineBrush.prototype.draw = function (x, y, inkCanvas) {
-        inkCanvas._context.globalAlpha = 1;
-        inkCanvas._context.globalCompositeOperation = "source-over";
-        inkCanvas._context.strokeStyle = "rgb(192,0,0)";
-        inkCanvas._context.lineWidth = 6;
-        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'round';
-        inkCanvas._context.lineTo(x, y);
-        inkCanvas._context.stroke();
-        inkCanvas._context.moveTo(x, y);
-    };
-    LineBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        var first = stroke.points[0];
-        inkCanvas._context.beginPath();
-        inkCanvas._context.strokeStyle = "rgb(192,0,0)";
-        inkCanvas._context.lineWidth = 6;
-        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'round';
-        inkCanvas._context.moveTo(first.x, first.y);
-        for (var i = 1; i < stroke.points.length; i++) {
-            var p = stroke.points[i];
-            inkCanvas._context.lineTo(p.x, p.y);
-            inkCanvas._context.stroke();
-            inkCanvas._context.moveTo(p.x, p.y);
-        }
-    };
-    return LineBrush;
-})();
-var SelectionBrush = (function () {
-    function SelectionBrush(rect) {
-        this._rect = rect;
-    }
-    SelectionBrush.prototype.init = function (x, y, inkCanvas) {
-        // do nothing
-    };
-    SelectionBrush.prototype.draw = function (x, y, inkCanvas) {
-        // do nothing.
-    };
-    SelectionBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        if (this._rect != null) {
-            stroke = new Stroke();
-            stroke.points.push({ x: this._rect.x, y: this._rect.y });
-            stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });
-        }
-        var startX = stroke.points[0].x;
-        var startY = stroke.points[0].y;
-        var w = stroke.points[stroke.points.length - 1].x - startX;
-        var h = stroke.points[stroke.points.length - 1].y - startY;
-        startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
-        startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
-        var ctx = inkCanvas._context;
-        ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = 0.6;
-        ctx.beginPath();
-        ctx.fillStyle = "rgb(222,214,0)";
-        ctx.fillRect(startX, startY, w, h);
-        ctx.fill();
-    };
-    return SelectionBrush;
-})();
-var HighlightBrush = (function () {
-    function HighlightBrush() {
-        this._img = new Image();
-        this._img.src = chrome.extension.getURL("assets/brush.png");
-    }
-    HighlightBrush.prototype.init = function (x, y, inkCanvas) {
-        // do nothing
-    };
-    HighlightBrush.prototype.draw = function (x, y, inkCanvas) {
-        inkCanvas._context.globalCompositeOperation = "xor";
-        inkCanvas._context.globalAlpha = 0.6;
-        inkCanvas._context.drawImage(this._img, x - 15, y - 15, 30, 30);
-    };
-    HighlightBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        for (var i = 0; i < stroke.points.length; i++) {
-            var p = stroke.points[i];
-            inkCanvas._context.globalCompositeOperation = "xor";
-            inkCanvas._context.globalAlpha = 0.6;
-            inkCanvas._context.drawImage(this._img, p.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX - 15, p.y + stroke.documentOffsetY - inkCanvas._scrollOffset.y - 15, 30, 30);
-        }
-    };
-    return HighlightBrush;
-})();
 /// <reference path="brush/BrushStroke.ts"/>
 var InkCanvas = (function () {
     function InkCanvas(canvas) {
@@ -2725,6 +2603,61 @@ var InkCanvas = (function () {
     };
     return InkCanvas;
 })();
+var HighlightBrush = (function () {
+    function HighlightBrush() {
+        this._img = new Image();
+        this._img.src = chrome.extension.getURL("assets/brush.png");
+    }
+    HighlightBrush.prototype.init = function (x, y, inkCanvas) {
+        // do nothing
+    };
+    HighlightBrush.prototype.draw = function (x, y, inkCanvas) {
+        inkCanvas._context.globalCompositeOperation = "xor";
+        inkCanvas._context.globalAlpha = 0.6;
+        inkCanvas._context.drawImage(this._img, x - 15, y - 15, 30, 30);
+    };
+    HighlightBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        for (var i = 0; i < stroke.points.length; i++) {
+            var p = stroke.points[i];
+            inkCanvas._context.globalCompositeOperation = "xor";
+            inkCanvas._context.globalAlpha = 0.6;
+            inkCanvas._context.drawImage(this._img, p.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX - 15, p.y + stroke.documentOffsetY - inkCanvas._scrollOffset.y - 15, 30, 30);
+        }
+    };
+    return HighlightBrush;
+})();
+var SelectionBrush = (function () {
+    function SelectionBrush(rect) {
+        this._rect = rect;
+    }
+    SelectionBrush.prototype.init = function (x, y, inkCanvas) {
+        // do nothing
+    };
+    SelectionBrush.prototype.draw = function (x, y, inkCanvas) {
+        // do nothing.
+    };
+    SelectionBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        if (this._rect != null) {
+            stroke = new Stroke();
+            stroke.points.push({ x: this._rect.x, y: this._rect.y });
+            stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });
+        }
+        var startX = stroke.points[0].x;
+        var startY = stroke.points[0].y;
+        var w = stroke.points[stroke.points.length - 1].x - startX;
+        var h = stroke.points[stroke.points.length - 1].y - startY;
+        startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
+        startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.fillStyle = "rgb(222,214,0)";
+        ctx.fillRect(startX, startY, w, h);
+        ctx.fill();
+    };
+    return SelectionBrush;
+})();
 var Rectangle = (function () {
     function Rectangle(x, y, w, h) {
         this.x = x;
@@ -2733,584 +2666,9 @@ var Rectangle = (function () {
         this.h = h;
     }
     Rectangle.prototype.intersectsRectangle = function (r2) {
-        return !(r2.x > this.x + this.w ||
-            r2.x + r2.w < this.x ||
-            r2.y > this.y + this.h ||
-            r2.y + r2.h < this.y);
+        return !(r2.x > this.x + this.w || r2.x + r2.w < this.x || r2.y > this.y + this.h || r2.y + r2.h < this.y);
     };
     return Rectangle;
-})();
-/// <reference path="../util/Rectangle.ts"/>
-var Stroke = (function () {
-    function Stroke() {
-        this.documentOffsetX = 0;
-        this.documentOffsetY = 0;
-        this.points = new Array();
-    }
-    Stroke.fromPoints = function (points) {
-        var stroke = new Stroke();
-        stroke.points = points.slice(0);
-        return stroke;
-    };
-    Stroke.prototype.getBoundingRect = function () {
-        var minX = 1000000;
-        var maxX = -1000000;
-        var minY = 1000000;
-        var maxY = -1000000;
-        for (var i = 0; i < this.points.length; i++) {
-            var p = this.points[i];
-            maxY = p.y > maxY ? p.y : maxY;
-            maxX = p.x > maxX ? p.x : maxX;
-            minX = p.x < minX ? p.x : minX;
-            minY = p.y < minY ? p.y : minY;
-        }
-        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-    };
-    Stroke.prototype.breakUp = function () {
-        var segments = new Array();
-        for (var i = 1; i < this.points.length; i++) {
-            var p0 = this.points[i - 1];
-            var p1 = this.points[i];
-            segments.push(Line.fromPoint(p0, p1));
-        }
-        return segments;
-    };
-    Stroke.prototype.getResampled = function (samples) {
-        var c = this.getCopy();
-        c.resample(samples);
-        return c;
-    };
-    Stroke.prototype.getEntropy = function () {
-        var angles = [];
-        for (var i = 1; i < this.points.length; i++) {
-            var v0 = new Vector2(this.points[i - 1].x, this.points[i - 1].y);
-            var v1 = new Vector2(this.points[i].x, this.points[i].y);
-            angles.push(v0.angleTo(v1));
-        }
-    };
-    Stroke.prototype.getStrokeMetrics = function () {
-        var startPoint = Vector2.fromPoint(this.points[0]);
-        var endPoint = Vector2.fromPoint(this.points[this.points.length - 1]);
-        var l = endPoint.subtract(startPoint);
-        var ln = l.getNormalized();
-        var error = 0;
-        var errors = [];
-        for (var i = 0; i < this.points.length; i++) {
-            var a = Vector2.fromPoint(this.points[i]).subtract(startPoint);
-            var b = ln.multiply(a.dot(ln));
-            var c = a.subtract(b);
-            error += Math.abs(c.length());
-            errors.push(Math.abs(c.length()));
-        }
-        function median(values) {
-            values.sort(function (a, b) { return a - b; });
-            var half = Math.floor(values.length / 2);
-            if (values.length % 2)
-                return values[half];
-            else
-                return (values[half - 1] + values[half]) / 2.0;
-        }
-        var m = median(errors);
-        error /= this.points.length;
-        return { length: this.points.length, error: m };
-    };
-    Stroke.prototype.resample = function (numSamples) {
-        var oldSamples = this.points;
-        var scale = numSamples / oldSamples.length;
-        var newSamples = new Array(numSamples);
-        var radius = scale > 1 ? 1 : 1 / (2 * scale);
-        var startX = oldSamples[0].x;
-        var deltaX = oldSamples[oldSamples.length - 1].x - startX;
-        for (var i = 0; i < numSamples; ++i) {
-            var center = i / scale + (1.0 - scale) / (2.0 * scale);
-            var left = Math.ceil(center - radius);
-            var right = Math.floor(center + radius);
-            var sum = 0;
-            var sumWeights = 0;
-            for (var k = left; k <= right; k++) {
-                var weight = this.g(k - center, scale);
-                var index = Math.max(0, Math.min(oldSamples.length - 1, k));
-                sum += weight * oldSamples[index].y;
-                sumWeights += weight;
-            }
-            sum /= sumWeights;
-            newSamples[i] = { x: startX + i / numSamples * deltaX, y: sum };
-        }
-        this.points = newSamples.slice(0);
-    };
-    Stroke.prototype.g = function (x, a) {
-        var radius;
-        if (a < 1)
-            radius = 1.0 / a;
-        else
-            radius = 1.0;
-        if ((x < -radius) || (x > radius))
-            return 0;
-        else
-            return (1 - Math.abs(x) / radius) / radius;
-    };
-    Stroke.prototype.getCopy = function () {
-        var s = new Stroke();
-        s.points = this.points.slice(0);
-        s.documentOffsetX = this.documentOffsetX;
-        s.documentOffsetY = this.documentOffsetY;
-        return s;
-    };
-    return Stroke;
-})();
-var StrokeClassifier = (function () {
-    function StrokeClassifier() {
-    }
-    StrokeClassifier.getStrokeType = function (stroke) {
-        var p0 = stroke.points[0];
-        var p1 = stroke.points[stroke.points.length - 1];
-        var metrics = stroke.getStrokeMetrics();
-        if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
-            return StrokeType.Null;
-        }
-        if (metrics.error > 30) {
-            return StrokeType.Scribble;
-        }
-        if (Math.abs(p1.y - p0.y) < 20) {
-            return StrokeType.Line;
-        }
-        if (Math.abs(p1.x - p0.x) < 20) {
-            return StrokeType.Bracket;
-        }
-        if (Math.abs(p1.x - p0.x) > 50 && Math.abs(p1.y - p0.y) > 20) {
-            return StrokeType.Marquee;
-        }
-    };
-    return StrokeClassifier;
-})();
-var StrokeType;
-(function (StrokeType) {
-    StrokeType[StrokeType["Null"] = 0] = "Null";
-    StrokeType[StrokeType["Line"] = 1] = "Line";
-    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
-    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
-    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
-})(StrokeType || (StrokeType = {}));
-/// <reference path="../../lib/collections.ts"/>
-var BracketSelection = (function () {
-    function BracketSelection(inkCanvas, fromActiveStroke) {
-        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
-        this._brushStroke = null;
-        this._inkCanvas = inkCanvas;
-        if (fromActiveStroke) {
-            this._inkCanvas.setBrush(new HighlightBrush());
-            var t = this;
-            $.each(inkCanvas._activeStroke.stroke.points, function () {
-                t._inkCanvas.draw(this.x, this.y);
-            });
-        }
-    }
-    BracketSelection.prototype.start = function (x, y) {
-        this._inkCanvas.startDrawing(x, y, new HighlightBrush());
-    };
-    BracketSelection.prototype.update = function (x, y) {
-        this._inkCanvas.draw(x, y);
-    };
-    BracketSelection.prototype.end = function (x, y) {
-        this._inkCanvas.endDrawing(x, y);
-        this._brushStroke = this._inkCanvas._activeStroke;
-        this.analyzeContent();
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
-    };
-    BracketSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-    };
-    BracketSelection.prototype.getBoundingRect = function () {
-        var minX = 1000000;
-        var maxX = -1000000;
-        var minY = 1000000;
-        var maxY = -1000000;
-        for (var i = 0; i < this._clientRects.length; i++) {
-            var p = this._clientRects[i];
-            maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
-            maxX = p.left + p.width > maxX ? p.left + p.width : maxX;
-            minX = p.left < minX ? p.left : minX;
-            minY = p.top < minY ? p.top : minY;
-        }
-        return new Rectangle(minX, minY + window.pageYOffset, maxX - minX, maxY - minY);
-    };
-    BracketSelection.prototype.analyzeContent = function () {
-        var _this = this;
-        var stroke = this._brushStroke.stroke;
-        var selectionBB = stroke.getBoundingRect();
-        selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
-        var samplingRate = 20;
-        var numSamples = 0;
-        var totalScore = 0;
-        //var hitCounter = new Map<Element, number>();
-        var hitCounter = new collections.Dictionary();
-        for (var x = selectionBB.x; x < selectionBB.x + selectionBB.w; x += samplingRate) {
-            for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
-                var hitElem = document.elementFromPoint(x, y);
-                numSamples++;
-                if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
-                    continue;
-                var score = (1.0 - x / (selectionBB.x + selectionBB.w)) / (selectionBB.w * selectionBB.h);
-                if (hitCounter.getValue(hitElem) == undefined)
-                    hitCounter.setValue(hitElem, score);
-                else
-                    hitCounter.setValue(hitElem, hitCounter.getValue(hitElem) + score);
-                totalScore += score;
-            }
-        }
-        var candidates = [];
-        var precision = 4;
-        hitCounter.forEach(function (k, v) {
-            candidates.push(v / totalScore);
-        });
-        var std = Statistics.getStandardDeviation(candidates, precision);
-        var result = "";
-        this._clientRects = new Array();
-        var count = 0;
-        var result = "";
-        hitCounter.forEach(function (k, v) {
-            if (Statistics.isWithinStd(candidates[count++], 1, std)) {
-                result += k["outerHTML"];
-                var range = document.createRange();
-                range.selectNodeContents(k);
-                var rects = range.getClientRects();
-                _this._clientRects = _this._clientRects.concat.apply([], rects);
-            }
-        });
-        this._content = result;
-    };
-    BracketSelection.prototype.getContent = function () {
-        return this._content;
-    };
-    return BracketSelection;
-})();
-/// <reference path="../ink/brush/MarqueeBrush.ts" />
-var MarqueeSelection = (function () {
-    function MarqueeSelection(inkCanvas, fromActiveStroke) {
-        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
-        this._startX = 0;
-        this._startY = 0;
-        this._mouseX = 0;
-        this._mouseY = 0;
-        this._marqueeX1 = 0;
-        this._marqueeY1 = 0;
-        this._marqueeX2 = 0;
-        this._marqueeY2 = 0;
-        this._parentList = new Array();
-        this._selected = null;
-        this._ct = 0;
-        this._content = null;
-        this._offsetY = 0;
-        this._inkCanvas = inkCanvas;
-        if (fromActiveStroke) {
-            var stroke = inkCanvas._activeStroke.stroke;
-            this._offsetY = stroke.documentOffsetY;
-            this._startX = stroke.points[0].x;
-            this._startY = stroke.points[0].y;
-            this._mouseX = stroke.points[stroke.points.length - 1].x;
-            this._mouseY = stroke.points[stroke.points.length - 1].y;
-            this._ct = 0;
-            this._marqueeX1 = this._startX;
-            this._marqueeX2 = this._mouseX;
-            this._marqueeY1 = this._startY;
-            this._marqueeY2 = this._mouseY;
-            inkCanvas.setBrush(new MarqueeBrush(this._startX, this._startY));
-        }
-    }
-    MarqueeSelection.prototype.start = function (x, y) {
-        this._inkCanvas.startDrawing(x, y, new MarqueeBrush(x, y));
-        this._parentList = [];
-        this._startX = x;
-        this._startY = y;
-    };
-    MarqueeSelection.prototype.update = function (x, y) {
-        this._mouseX = x;
-        this._mouseY = y;
-        this._marqueeX1 = this._startX;
-        this._marqueeY1 = this._startY;
-        this._marqueeX2 = this._mouseX;
-        this._marqueeY2 = this._mouseY;
-        var canvas = this._inkCanvas._canvas;
-        var ctx = this._inkCanvas._context;
-        this._inkCanvas.update();
-        this._inkCanvas.draw(x, y);
-        // this.clearSelection();
-    };
-    MarqueeSelection.prototype.end = function (x, y) {
-        var el = document.elementFromPoint(this._startX, this._startY);
-        this._parentList.push(el);
-        this._selected = el;
-        //   this.drawPreviousMarquee();
-        if (this._marqueeX1 > this._marqueeX2) {
-            var temp = this._marqueeX1;
-            this._marqueeX1 = this._marqueeX2;
-            this._marqueeX2 = temp;
-        }
-        if (this._marqueeY1 > this._marqueeY2) {
-            var temp = this._marqueeY1;
-            this._marqueeY1 = this._marqueeY2;
-            this._marqueeY2 = temp;
-        }
-        this.getNextElement(el);
-        this._inkCanvas.endDrawing(x, y);
-        this._brushStroke = this._inkCanvas._activeStroke;
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
-        this.analyzeContent();
-    };
-    MarqueeSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-    };
-    MarqueeSelection.prototype.getNextElement = function (el) {
-        if (this._selected != el) {
-            return;
-        }
-        if (this._ct == 50) {
-            throw new Error("an exception! please add to edge case list!");
-        }
-        this._ct++;
-        var rect = el.getBoundingClientRect();
-        var nextX = this._mouseX - (rect.left + rect.width);
-        var nextY = this._mouseY - (rect.top + rect.height);
-        var newList = [];
-        if (nextX > 0) {
-            if (document.body.contains(this._inkCanvas._canvas)) {
-                document.body.removeChild(this._inkCanvas._canvas);
-            }
-            if (!this.isDescendant(el, document.elementFromPoint(this._mouseX - nextX + 1, this._startY))) {
-                var element = document.elementFromPoint(this._mouseX - nextX + 1, this._startY);
-                for (var i = 0; i < this._parentList.length; i++) {
-                    if (this.isDescendant(element, this._parentList[i])) {
-                    }
-                    else {
-                        newList.push(this._parentList[i]);
-                    }
-                }
-                this._selected = element;
-                this.drawPreviousMarquee();
-                this._startX = this._mouseX - nextX + 1;
-                this._parentList = newList;
-                this._parentList.push(element);
-                this.getNextElement(element);
-            }
-        }
-        if (nextY > 0) {
-            if (document.body.contains(this._inkCanvas._canvas)) {
-                document.body.removeChild(this._inkCanvas._canvas);
-            }
-            element = document.elementFromPoint(this._startX, this._mouseY - nextY + 1);
-            var contains = false;
-            for (var i = 0; i < this._parentList.length; i++) {
-                if (this.isDescendant(this._parentList[i], element) || this._parentList[i] == element) {
-                    contains = true;
-                }
-            }
-            if (contains) {
-                this.drawPreviousMarquee();
-                return;
-            }
-            for (var i = 0; i < this._parentList.length; i++) {
-                if (this.isDescendant(element, this._parentList[i])) {
-                }
-                else {
-                    newList.push(this._parentList[i]);
-                }
-            }
-            this._selected = element;
-            this._startY = this._mouseY - nextY + 1;
-            this._startX = this._marqueeX1;
-            this._parentList = newList;
-            this._parentList.push(element);
-            this.drawPreviousMarquee();
-            this.getNextElement(element);
-        }
-    };
-    MarqueeSelection.prototype.isDescendant = function (parent, child) {
-        var node = child.parentNode;
-        while (node != null) {
-            if (node == parent) {
-                return true;
-            }
-            node = node.parentNode;
-        }
-        return false;
-    };
-    MarqueeSelection.prototype.drawPreviousMarquee = function () {
-        var canvas = this._inkCanvas._canvas;
-        var ctx = this._inkCanvas._context;
-        document.body.appendChild(canvas);
-        this._inkCanvas.update();
-        this._inkCanvas.draw(this._marqueeX2, this._marqueeY2);
-    };
-    MarqueeSelection.prototype.getBoundingRect = function () {
-        return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
-    };
-    MarqueeSelection.prototype.analyzeContent = function () {
-        if (this._parentList.length != 1) {
-            for (var i = 1; i < this._parentList.length; i++) {
-                var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
-                this._parentList[0] = currAn;
-            }
-        }
-        var sel = this._parentList[0].cloneNode(true);
-        var selX = $(this._parentList[0]).clone(true);
-        this.rmChildNodes(sel, this._parentList[0]);
-        var htmlString = sel.innerHTML.replace(/"/g, "'");
-        if (sel.outerHTML == "") {
-            this._content = sel.innerHTML;
-        }
-        this._content = sel.outerHTML;
-    };
-    MarqueeSelection.prototype.commonAncestor = function (node1, node2) {
-        var parents1 = this.parents(node1);
-        var parents2 = this.parents(node2);
-        if (parents1[0] != parents2[0])
-            throw "No common ancestor!";
-        for (var i = 0; i < parents1.length; i++) {
-            if (parents1[i] != parents2[i])
-                return parents1[i - 1];
-        }
-    };
-    MarqueeSelection.prototype.parents = function (node) {
-        var nodes = [node];
-        for (; node; node == node.parentNode) {
-            nodes.unshift(node);
-        }
-        return nodes;
-    };
-    MarqueeSelection.prototype.bound = function (myEl, el) {
-        if (el.nodeName == "#text") {
-            var range = document.createRange();
-            range.selectNodeContents(el);
-            var rects = range.getClientRects();
-            if (rects.length == 0) {
-                return;
-            }
-            for (var i = 0; i < rects.length; i++) {
-                var ax1 = rects[i].left;
-                var ax2 = rects[i].left + rects[0].width;
-                var ay1 = rects[i].top;
-                var ay2 = rects[i].top + rects[0].height;
-                if (!(ax1 >= this._marqueeX1 &&
-                    ax2 <= this._marqueeX2 &&
-                    ay1 >= this._marqueeY1 &&
-                    ay2 <= this._marqueeY2)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        else if (el.nodeName != "#comment") {
-            var rectX = el.getBoundingClientRect();
-            if (rectX == null) {
-                return false;
-            }
-            if (rectX["left"] >= this._marqueeX1 &&
-                rectX["left"] + rectX["width"] <= this._marqueeX2 &&
-                rectX["top"] >= this._marqueeY1 &&
-                rectX["top"] + rectX["height"] <= this._marqueeY2) {
-                this.setTextStyle(myEl, el);
-                return true;
-            }
-            return false;
-        }
-    };
-    MarqueeSelection.prototype.rmChildNodes = function (el, trueEl) {
-        var removed = [];
-        var realNList = [];
-        var indexList = [];
-        //iterate through childNodes and add to list(removed).
-        for (var i = 0; i < el.childNodes.length; i++) {
-            if (!this.intersectWith(el.childNodes[i], trueEl.childNodes[i])) {
-                removed.push(el.childNodes[i]);
-            }
-            else {
-                realNList.push(trueEl.childNodes[i]);
-                indexList.push(i);
-            }
-        }
-        //remove not intersecting elements; 
-        for (var i = 0; i < removed.length; i++) {
-            el.removeChild(removed[i]);
-        }
-        for (var i = 0; i < el.childNodes.length; i++) {
-            if (!this.bound(el.childNodes[i], realNList[i])) {
-                if (el.childNodes[i].nodeName == "#text") {
-                    var index = indexList[i];
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
-                    var result = "";
-                    for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
-                        if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
-                            if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
-                                if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
-                                    result += " ";
-                                }
-                            }
-                            else {
-                                result += trueEl.childNodes[index].childNodes[j]["innerHTML"];
-                            }
-                        }
-                    }
-                    el.childNodes[i].data = result;
-                }
-                else {
-                    this.rmChildNodes(el.childNodes[i], realNList[i]);
-                }
-            }
-        }
-    };
-    MarqueeSelection.prototype.setTextStyle = function (el, trueEl) {
-        var elStyle = document.defaultView.getComputedStyle(trueEl["parentElement"]);
-        el = el.parentNode;
-        el.style.font = elStyle.font;
-    };
-    MarqueeSelection.prototype.intersectWith = function (myEl, el) {
-        if (!el) {
-            return false;
-        }
-        ;
-        var bx1 = this._marqueeX1;
-        var bx2 = this._marqueeX2;
-        var by1 = this._marqueeY1;
-        var by2 = this._marqueeY2;
-        if (el.nodeName == "#text") {
-            this.setTextStyle(myEl, el);
-            var range = document.createRange();
-            range.selectNodeContents(el);
-            var rects = range.getClientRects();
-            if (rects.length == 0) {
-                return;
-            }
-            for (var i = 0; i < rects.length; i++) {
-                var ax1 = rects[i].left;
-                var ax2 = rects[i].left + rects[i].width;
-                var ay1 = rects[i].top;
-                var ay2 = rects[i].top + rects[i].height;
-                if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        else if (el.nodeName != "#comment") {
-            var rectX = el.getBoundingClientRect();
-            ax1 = rectX["left"];
-            ax2 = rectX["left"] + rectX["width"];
-            ay1 = rectX["top"];
-            ay2 = rectX["top"] + rectX["height"];
-        }
-        if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    MarqueeSelection.prototype.getContent = function () {
-        return this._content;
-    };
-    return MarqueeSelection;
 })();
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 var DomUtil = (function () {
@@ -3336,46 +2694,6 @@ var DomUtil = (function () {
         return found;
     };
     return DomUtil;
-})();
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
-/// <reference path="../ink/InkCanvas.ts"/>
-/// <reference path="../ink/brush/BrushStroke.ts"/>
-/// <reference path="../ink/brush/HighlightBrush.ts"/>
-/// <reference path="../ink/brush/SelectionBrush.ts"/>
-/// <reference path="../ink/brush/LineBrush.ts"/>
-/// <reference path="../util/Rectangle.ts"/>
-/// <reference path="../util/DomUtil.ts"/>
-var UnknownSelection = (function () {
-    function UnknownSelection(inkCanvas, fromActiveStroke) {
-        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
-        this._brushStroke = null;
-        this._inkCanvas = inkCanvas;
-        if (fromActiveStroke) {
-            inkCanvas.setBrush(new LineBrush());
-        }
-    }
-    UnknownSelection.prototype.start = function (x, y) {
-        this._inkCanvas.startDrawing(x, y, new LineBrush());
-    };
-    UnknownSelection.prototype.update = function (x, y) {
-        this._inkCanvas.draw(x, y);
-    };
-    UnknownSelection.prototype.end = function (x, y) {
-        this._inkCanvas.endDrawing(x, y);
-    };
-    UnknownSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-    };
-    UnknownSelection.prototype.getBoundingRect = function () {
-        return this._brushStroke.stroke.getBoundingRect();
-    };
-    UnknownSelection.prototype.analyzeContent = function () {
-        // nothing to analyze.
-    };
-    UnknownSelection.prototype.getContent = function () {
-        return null;
-    };
-    return UnknownSelection;
 })();
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../ink/InkCanvas.ts"/>
@@ -3466,6 +2784,1475 @@ var LineSelection = (function () {
         return this._content;
     };
     return LineSelection;
+})();
+var LineBrush = (function () {
+    function LineBrush() {
+    }
+    LineBrush.prototype.init = function (x, y, inkCanvas) {
+        inkCanvas._context.beginPath();
+        inkCanvas._context.globalAlpha = 1;
+        inkCanvas._context.globalCompositeOperation = "source-over";
+        inkCanvas._context.strokeStyle = "rgb(192,0,0)";
+        inkCanvas._context.lineWidth = 6;
+        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'round';
+        inkCanvas._context.moveTo(x, y);
+    };
+    LineBrush.prototype.draw = function (x, y, inkCanvas) {
+        inkCanvas._context.globalAlpha = 1;
+        inkCanvas._context.globalCompositeOperation = "source-over";
+        inkCanvas._context.strokeStyle = "rgb(192,0,0)";
+        inkCanvas._context.lineWidth = 6;
+        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'round';
+        inkCanvas._context.lineTo(x, y);
+        inkCanvas._context.stroke();
+        inkCanvas._context.moveTo(x, y);
+    };
+    LineBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        var first = stroke.points[0];
+        inkCanvas._context.beginPath();
+        inkCanvas._context.strokeStyle = "rgb(192,0,0)";
+        inkCanvas._context.lineWidth = 6;
+        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'round';
+        inkCanvas._context.moveTo(first.x, first.y);
+        for (var i = 1; i < stroke.points.length; i++) {
+            var p = stroke.points[i];
+            inkCanvas._context.lineTo(p.x, p.y);
+            inkCanvas._context.stroke();
+            inkCanvas._context.moveTo(p.x, p.y);
+        }
+    };
+    return LineBrush;
+})();
+/// <reference path="../../typings/jquery/jquery.d.ts"/>
+/// <reference path="../ink/InkCanvas.ts"/>
+/// <reference path="../ink/brush/BrushStroke.ts"/>
+/// <reference path="../ink/brush/HighlightBrush.ts"/>
+/// <reference path="../ink/brush/SelectionBrush.ts"/>
+/// <reference path="../ink/brush/LineBrush.ts"/>
+/// <reference path="../util/Rectangle.ts"/>
+/// <reference path="../util/DomUtil.ts"/>
+var UnknownSelection = (function () {
+    function UnknownSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        this._brushStroke = null;
+        this._inkCanvas = inkCanvas;
+        if (fromActiveStroke) {
+            inkCanvas.setBrush(new LineBrush());
+        }
+    }
+    UnknownSelection.prototype.start = function (x, y) {
+        this._inkCanvas.startDrawing(x, y, new LineBrush());
+    };
+    UnknownSelection.prototype.update = function (x, y) {
+        this._inkCanvas.draw(x, y);
+    };
+    UnknownSelection.prototype.end = function (x, y) {
+        this._inkCanvas.endDrawing(x, y);
+    };
+    UnknownSelection.prototype.deselect = function () {
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    };
+    UnknownSelection.prototype.getBoundingRect = function () {
+        return this._brushStroke.stroke.getBoundingRect();
+    };
+    UnknownSelection.prototype.analyzeContent = function () {
+        // nothing to analyze.
+    };
+    UnknownSelection.prototype.getContent = function () {
+        return null;
+    };
+    return UnknownSelection;
+})();
+/// <reference path="../typings/chrome/chrome.d.ts"/>
+/// <reference path="../typings/jquery/jquery.d.ts"/>
+/// <reference path="ink/InkCanvas.ts"/>
+/// <reference path="selection/LineSelection.ts"/>
+/// <reference path="selection/UnknownSelection.ts"/>
+var Main = (function () {
+    function Main() {
+        var _this = this;
+        this.prevStrokeType = 1 /* Line */;
+        this.selections = new Array();
+        this.selectedArray = new Array();
+        this.rectangleArray = [];
+        this.urlGroup = Date.now();
+        this.previousSelections = new Array();
+        this.mouseMove = function (e) {
+            if (!_this.isSelecting) {
+                return;
+            }
+            var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
+            if (currType == 5 /* MultiLine */) {
+                document.body.removeChild(_this.canvas);
+            }
+            if (currType != _this.prevStrokeType) {
+                _this.prevStrokeType = currType;
+                switch (currType) {
+                    case 0 /* Null */:
+                        _this.selection = new LineSelection(_this.inkCanvas);
+                        break;
+                    case 1 /* Line */:
+                        _this.selection = new LineSelection(_this.inkCanvas);
+                        break;
+                    case 5 /* MultiLine */:
+                        _this.selection = new MultiLineSelection(_this.inkCanvas);
+                        _this.selection.start(e.clientX, e.clientY);
+                        console.log("switching to multiline Selection");
+                        break;
+                    case 2 /* Bracket */:
+                        _this.selection = new BracketSelection(_this.inkCanvas, true);
+                        console.log("switching to bracket!");
+                        break;
+                    case 3 /* Marquee */:
+                        _this.selection = new MarqueeSelection(_this.inkCanvas, true);
+                        console.log("switching to marquee!");
+                        break;
+                    case 4 /* Scribble */:
+                        _this.selection = new UnknownSelection(_this.inkCanvas, true);
+                        console.log("switching to unknown!");
+                        break;
+                }
+                _this.inkCanvas.redrawActiveStroke();
+            }
+            _this.selection.update(e.clientX, e.clientY);
+            document.body.appendChild(_this.canvas);
+        };
+        this.checkForOverlaySelection = function (x, y) {
+            var selection = null;
+            $(_this.selections).each(function (indx, elem) {
+                var rect = elem["getBoundingRect"]();
+                if (x < rect["x"] + rect["w"] && x > rect["x"] && y < rect["y"] + rect["h"] && y > rect["y"]) {
+                    console.log("=========================INTERSECT================");
+                    selection = elem;
+                }
+            });
+            return selection;
+            //$(this.rectangleArray).each(function (indx, elem) {
+            //    console.log(elem);
+            //    console.log(elem["w"]);
+            //    console.log(x + "$$$$" + y);
+            //    if (x < elem["x"] + elem["w"] && x > elem["x"] && y < elem["y"] + elem["h"] && y > elem["y"]) {
+            //        console.log(elem);
+            //        console.log(x + "$$$$" + y);
+            //        return true;
+            //    }
+            //});
+            //return false;
+        };
+        this.documentDown = function (e) {
+            _this.selection.start(e.clientX, e.clientY);
+            document.body.appendChild(_this.canvas);
+            console.log("=============docuentDown=====");
+            console.log(_this.selections);
+            var toComment = _this.checkForOverlaySelection(e.clientX, e.clientY); //checks if any selections exist at document drop
+            _this.canvas.addEventListener("mousemove", _this.mouseMove);
+            console.log(toComment);
+            console.log(_this.isCommenting);
+            if (toComment == null) {
+                _this.isSelecting = true;
+                _this.isCommenting = false;
+            }
+            else if (!_this.isCommenting || _this.selection != toComment) {
+                if (toComment["comment"] == null) {
+                    console.log("================NOT COMMENTING====");
+                    _this.selection = toComment;
+                    _this.annotate(toComment, e.clientX, e.clientY);
+                }
+            }
+            console.log(_this.isSelecting);
+        };
+        this.annotate = function (sel, x, y) {
+            console.log("====================annotate====================");
+            var commentBox = document.createElement("div");
+            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'>I am a textarea</textarea>";
+            commentBox.style.left = x + "px";
+            commentBox.style.top = y + "px";
+            //  commentBox.style.display = "none";
+            commentBox.style.position = "absolute";
+            commentBox.style.zIndex = "999";
+            _this.isCommenting = true;
+            var area = commentBox.querySelector("textarea");
+            _this.selection["comment"] = "";
+            area["onchange"] = function () {
+                //   this.selection["comment"] = 
+                console.log("========change======");
+                var sel = _this.selection;
+                sel["comment"] = document.getElementById(_this.selection["id"])["value"];
+                _this.selections[_this.selections.indexOf(_this.selection)] = sel;
+                _this.refreshChromeStorage();
+                //chrome.storage.local.get(null, function (data) {
+                //    var obj = data;
+                //    console.log(obj["selections"]);
+                //    $(obj["selections"]).each(function (indx, elem) {
+                //        //iterate through takes O(N)
+                //        console.log(elem);
+                //        if (elem["id"] == this.selection["id"]) {
+                //            elem["comment"] = document.getElementById(this.selection["id"])["value"];
+                //        }
+                //    });
+                //    console.log(obj);
+                //    chrome.storage.local.set(obj);
+                //});
+                console.log(_this.selection);
+            };
+            document.body.appendChild(commentBox);
+        };
+        this.refreshChromeStorage = function () {
+            var obj = {};
+            obj["selections"] = _this.previousSelections.concat(_this.selections);
+            chrome.storage.local.set(obj);
+            chrome.storage.local.get(null, function (data) {
+                console.log(data);
+            });
+        };
+        this.documentScroll = function (e) {
+            _this.inkCanvas.update();
+        };
+        this.windowUp = function (e) {
+            if (!_this.isSelecting)
+                return;
+            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+            _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
+            _this.inkCanvas.update();
+            window.getSelection().removeAllRanges();
+            _this.isSelecting = false;
+        };
+        this.canvasUp = function (e) {
+            if (!_this.isSelecting) {
+                return;
+            }
+            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+            document.body.removeChild(_this.canvas);
+            _this.selection.end(e.clientX, e.clientY);
+            var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
+            var currType = StrokeClassifier.getStrokeType(stroke);
+            if (currType == 0 /* Null */) {
+                console.log("JUST A TAP");
+                document.body.appendChild(_this.canvas);
+                _this.inkCanvas.update();
+                return;
+            }
+            else if (currType == 4 /* Scribble */) {
+                var segments = stroke.breakUp();
+                var p0 = stroke.points[0];
+                var p1 = stroke.points[stroke.points.length - 1];
+                var line = Line.fromPoint(p0, p1);
+                var intersectionCount = 0;
+                $.each(segments, function () {
+                    var intersects = line.intersectsLine(this);
+                    if (intersects)
+                        intersectionCount++;
+                });
+                if (intersectionCount > 2) {
+                    var strokeBB = stroke.getBoundingRect();
+                    strokeBB.y += stroke.documentOffsetY;
+                    _this.selections.forEach(function (s) {
+                        try {
+                            if (s.getBoundingRect().intersectsRectangle(strokeBB)) {
+                                s.deselect();
+                                console.log("RECT INTERSECTION");
+                                var selectionIndex = _this.selections.indexOf(s);
+                                if (selectionIndex > -1) {
+                                    _this.selections.splice(selectionIndex, 1);
+                                    _this.selectedArray.splice(selectionIndex, 1);
+                                    _this.rectangleArray.splice(selectionIndex, 1);
+                                    chrome.storage.local.set({ 'curr': _this.selectedArray });
+                                }
+                            }
+                        }
+                        catch (e) {
+                            console.log(e);
+                            console.log(_this);
+                        }
+                    });
+                }
+                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
+            }
+            else {
+                _this.selection["id"] = Date.now();
+                _this.selections.push(_this.selection);
+                _this.selectedArray.push(_this.relativeToAbsolute(_this.selection.getContent()));
+                console.log(_this.selection.getContent());
+                console.log(_this.relativeToAbsolute(_this.selection.getContent()));
+                _this.rectangleArray.push(_this.selection.getBoundingRect());
+                chrome.storage.local.set({ 'curr': _this.selectedArray });
+                var currentDate = new Date();
+            }
+            var selectionInfo = {};
+            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            console.log(window.location.protocol + '//' + window.location.host);
+            selectionInfo["selections"] = _this.selectedArray;
+            selectionInfo["boundingRects"] = _this.rectangleArray;
+            selectionInfo["date"] = (new Date()).toString();
+            _this.selection["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection["date"] = (new Date()).toString();
+            _this.selection["title"] = document.title;
+            _this.selection["brushType"] = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
+            _this.selection["urlGroup"] = _this.urlGroup;
+            // var obj = {};
+            //obj[this.objectKeyCount] = selectionInfo;
+            //obj["selections"] = this.selections;
+            //chrome.storage.local.set(obj);
+            //     chrome.storage.local.set(ob
+            _this.refreshChromeStorage();
+            _this.selection = new LineSelection(_this.inkCanvas);
+            _this.prevStrokeType = 1 /* Line */;
+            chrome.storage.local.get(null, function (data) {
+                console.info(data);
+            });
+            document.body.appendChild(_this.canvas);
+            _this.inkCanvas.update();
+            _this.isSelecting = false;
+        };
+        console.log("Starting NuSys.");
+        this.init();
+    }
+    Main.prototype.init = function () {
+        var _this = this;
+        // create and append canvas
+        var body = document.body, html = document.documentElement;
+        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = "fixed";
+        this.canvas.style.top = "0";
+        this.canvas.style.left = "0"; //fixes canvas placements
+        this.canvas.style.zIndex = "998";
+        this.inkCanvas = new InkCanvas(this.canvas);
+        this.selection = new LineSelection(this.inkCanvas);
+        chrome.storage.local.get(null, function (data) {
+            _this.previousSelections = data["selections"];
+        });
+        var currToggle = false;
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if (request.msg == "checkInjection")
+                sendResponse({ toggleState: currToggle, objectId: _this.urlGroup });
+            if (request.toggleState == true) {
+                _this.toggleEnabled(true);
+                console.log("show canvas");
+                currToggle = true;
+            }
+            if (request.toggleState == false) {
+                console.log("hide canvas");
+                _this.toggleEnabled(false);
+                currToggle = false;
+            }
+            if (request.pastPage != null) {
+                sendResponse({ farewell: "received Info" });
+                console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                _this.toggleEnabled(true);
+                var rects = null;
+                chrome.storage.local.get(null, function (data) {
+                    console.info(data);
+                    console.log(data[request.pastPage]);
+                    rects = data[request.pastPage]["boundingRects"];
+                    console.log(rects);
+                    _this.drawPastSelections(rects);
+                });
+            }
+        });
+    };
+    Main.prototype.toggleEnabled = function (flag) {
+        //called to add or remove canvas when toggle has been changed
+        this.isEnabled = flag;
+        console.log("enabled: " + this.isEnabled);
+        if (this.isEnabled) {
+            window.addEventListener("mouseup", this.windowUp);
+            document.body.addEventListener("mousedown", this.documentDown);
+            document.addEventListener("scroll", this.documentScroll);
+            this.canvas.addEventListener("mouseup", this.canvasUp);
+            document.body.appendChild(this.canvas);
+            this.inkCanvas.update();
+        }
+        else {
+            window.removeEventListener("mouseup", this.windowUp);
+            document.body.removeEventListener("mousedown", this.documentDown);
+            document.removeEventListener("scroll", this.documentScroll);
+            this.canvas.removeEventListener("mouseup", this.canvasUp);
+            try {
+                document.body.removeChild(this.canvas);
+            }
+            catch (e) {
+                console.log("no canvas visible." + e);
+            }
+        }
+    };
+    Main.prototype.relativeToAbsolute = function (content) {
+        //////change relative href of hyperlink and src of image in html string to absolute
+        chrome.storage.local.get(null, function (data) {
+            console.info(data);
+        });
+        var res = content.split('href="');
+        var newval = res[0];
+        for (var i = 1; i < res.length; i++) {
+            newval += 'href="';
+            if (res[i].slice(0, 4) != "http") {
+                newval += window.location.protocol + "//" + window.location.host;
+            }
+            newval += res[i];
+        }
+        var src = newval.split('src="');
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="';
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+        return finalval;
+    };
+    Main.prototype.drawPastSelections = function (rectArray) {
+        var _this = this;
+        $.each(rectArray, function (index, rect) {
+            var stroke = new Stroke();
+            stroke.points.push({ x: rect.x, y: rect.y });
+            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
+            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
+        });
+        this.inkCanvas.update();
+    };
+    return Main;
+})();
+/// <reference path="Main.ts"/>
+var greeter = new Main();
+var MarqueeBrush = (function () {
+    function MarqueeBrush(x, y) {
+        this._startX = x;
+        this._startY = y;
+    }
+    MarqueeBrush.prototype.init = function (x, y, inkCanvas) {
+        inkCanvas._context.lineWidth = 4;
+        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'butt';
+    };
+    MarqueeBrush.prototype.draw = function (x, y, inkCanvas) {
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "rgb(222,214,0)";
+        ctx.setLineDash([6]);
+        ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
+        ctx.stroke();
+    };
+    MarqueeBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        var firstPoint = stroke.points[0];
+        var lastPoint = stroke.points[stroke.points.length - 1];
+        this._startX = firstPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
+        this._startY = firstPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
+        this.draw(lastPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX, lastPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY, inkCanvas);
+    };
+    return MarqueeBrush;
+})();
+var MultiSelectionBrush = (function () {
+    function MultiSelectionBrush(rect, toRemove) {
+        this._rectlist = rect;
+        this._list = new Array();
+        this._remList = toRemove;
+        console.log("new Brush!!!!");
+    }
+    MultiSelectionBrush.prototype.init = function (x, y, inkCanvas) {
+        // do nothing
+    };
+    MultiSelectionBrush.prototype.draw = function (x, y, inkCanvas) {
+        // do nothing.
+    };
+    MultiSelectionBrush.prototype.setRectList = function (rectList) {
+        this._clientRectList = rectList;
+    };
+    MultiSelectionBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        console.log("draw Stroke =========================================");
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.fillStyle = "rgb(255,255,204)";
+        console.log(this._rectlist);
+        for (var i = 0; i < this._remList.length; i++) {
+            var el = this._remList[i];
+            ctx.clearRect(el.left, el.top, el.width, el.height);
+        }
+        for (var i = 0; i < this._rectlist.length; i++) {
+            var el = this._rectlist[i];
+            ctx.fillRect(el.left, el.top, el.width, el.height);
+        }
+        ctx.fill();
+    };
+    return MultiSelectionBrush;
+})();
+//var diff = this._rectlist.length - this._remList.length;
+//if (diff > 0) {
+//    console.log("add!!!!");
+//    var rec = this._remList[this._remList.length - 1];
+//    if (rec != null) {
+//        ctx.clearRect(rec.left, rec.top, rec.width, rec.height);
+//        var newRec = this._rectlist[this._remList.length - 1];
+//        ctx.fillRect(newRec.left, newRec.top, newRec.width, newRec.height);
+//    }
+//    console.log("===========!!!!" + diff);
+//    $(this._rectlist).each((indx, elem) => {
+//        console.log("====================" + indx);
+//        console.log(this._remList.length - 1);
+//        if (indx >= this._remList.length - 1) {
+//            console.log(elem);
+//            var x = elem.clientLeft;
+//            var y = elem.clientTop;
+//            var w = elem.clientWidth;
+//            var h = elem.clientHeight;
+//            ctx.fillRect(x, y, w, h);
+//            console.log("DRAWN");
+//        }
+//    });
+//}
+//else if (diff < 0) {
+//    console.log("must remove");
+//}
+//else {
+//    console.log("remove last & add last");
+//    var rec = this._remList[this._remList.length - 1];
+//    ctx.clearRect(rec.left, rec.top, rec.width, rec.height);
+//    var newrec = this._rectlist[this._rectlist.length - 1];
+//    ctx.fillRect(newrec.left, newrec.top, newrec.width, newrec.height);
+//}
+//for (var i = 0; i < this._rectlist.length; i++) {
+//        var startX = this._rectlist[i].left;
+//        var startY = this._rectlist[i].top;
+//        var w = this._rectlist[i].width;
+//        var h = this._rectlist[i].height;
+//        var rect = new Rectangle(startX, startY, w, h);
+//        console.log(rect);
+//        var count = 0;
+//        for (var j = 0; j < this._remList.length; j++) {
+//            if (this._remList[j].x == rect.x && this._remList[j].y == rect.y && this._remList[j].w == rect.w && this._remList[j].h == rect.h) {
+//                console.log("==========REMOVEREMOVEREMOVE====================");
+//                count++;
+//            }
+//        }
+//        if (count==0) {
+//            ctx.fillRect(startX, startY, w, h);
+//        }
+//        else {
+//            console.log("=====================RECTLISTREMOVED============================");
+//            console.log(rect);
+//        }
+//}
+//for (var i = 0; i < this._remList.length; i++) {
+//    var startX = this._remList[i].left;
+//    var startY = this._remList[i].top;
+//    var w = this._remList[i].width;
+//    var h = this._remList[i].height;
+//    ctx.clearRect(startX, startY, w, h);
+//  ctx.fill();
+// this._list = new Array<ClientRect>(); 
+/// <reference path="../util/Rectangle.ts"/>
+var Stroke = (function () {
+    function Stroke() {
+        this.documentOffsetX = 0;
+        this.documentOffsetY = 0;
+        this.points = new Array();
+    }
+    Stroke.fromPoints = function (points) {
+        var stroke = new Stroke();
+        stroke.points = points.slice(0);
+        return stroke;
+    };
+    Stroke.prototype.getBoundingRect = function () {
+        var minX = 1000000;
+        var maxX = -1000000;
+        var minY = 1000000;
+        var maxY = -1000000;
+        for (var i = 0; i < this.points.length; i++) {
+            var p = this.points[i];
+            maxY = p.y > maxY ? p.y : maxY;
+            maxX = p.x > maxX ? p.x : maxX;
+            minX = p.x < minX ? p.x : minX;
+            minY = p.y < minY ? p.y : minY;
+        }
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+    };
+    Stroke.prototype.breakUp = function () {
+        var segments = new Array();
+        for (var i = 1; i < this.points.length; i++) {
+            var p0 = this.points[i - 1];
+            var p1 = this.points[i];
+            segments.push(Line.fromPoint(p0, p1));
+        }
+        return segments;
+    };
+    Stroke.prototype.getResampled = function (samples) {
+        var c = this.getCopy();
+        c.resample(samples);
+        return c;
+    };
+    Stroke.prototype.getEntropy = function () {
+        var angles = [];
+        for (var i = 1; i < this.points.length; i++) {
+            var v0 = new Vector2(this.points[i - 1].x, this.points[i - 1].y);
+            var v1 = new Vector2(this.points[i].x, this.points[i].y);
+            angles.push(v0.angleTo(v1));
+        }
+    };
+    Stroke.prototype.getStrokeMetrics = function () {
+        var startPoint = Vector2.fromPoint(this.points[0]);
+        var endPoint = Vector2.fromPoint(this.points[this.points.length - 1]);
+        var l = endPoint.subtract(startPoint);
+        var ln = l.getNormalized();
+        var error = 0;
+        var errors = [];
+        for (var i = 0; i < this.points.length; i++) {
+            var a = Vector2.fromPoint(this.points[i]).subtract(startPoint);
+            var b = ln.multiply(a.dot(ln));
+            var c = a.subtract(b);
+            error += Math.abs(c.length());
+            errors.push(Math.abs(c.length()));
+        }
+        function median(values) {
+            values.sort(function (a, b) {
+                return a - b;
+            });
+            var half = Math.floor(values.length / 2);
+            if (values.length % 2)
+                return values[half];
+            else
+                return (values[half - 1] + values[half]) / 2.0;
+        }
+        var m = median(errors);
+        error /= this.points.length;
+        return { length: this.points.length, error: m };
+    };
+    Stroke.prototype.resample = function (numSamples) {
+        var oldSamples = this.points;
+        var scale = numSamples / oldSamples.length;
+        var newSamples = new Array(numSamples);
+        var radius = scale > 1 ? 1 : 1 / (2 * scale);
+        var startX = oldSamples[0].x;
+        var deltaX = oldSamples[oldSamples.length - 1].x - startX;
+        for (var i = 0; i < numSamples; ++i) {
+            var center = i / scale + (1.0 - scale) / (2.0 * scale);
+            var left = Math.ceil(center - radius);
+            var right = Math.floor(center + radius);
+            var sum = 0;
+            var sumWeights = 0;
+            for (var k = left; k <= right; k++) {
+                var weight = this.g(k - center, scale);
+                var index = Math.max(0, Math.min(oldSamples.length - 1, k));
+                sum += weight * oldSamples[index].y;
+                sumWeights += weight;
+            }
+            sum /= sumWeights;
+            newSamples[i] = { x: startX + i / numSamples * deltaX, y: sum };
+        }
+        this.points = newSamples.slice(0);
+    };
+    Stroke.prototype.g = function (x, a) {
+        var radius;
+        if (a < 1)
+            radius = 1.0 / a;
+        else
+            radius = 1.0;
+        if ((x < -radius) || (x > radius))
+            return 0;
+        else
+            return (1 - Math.abs(x) / radius) / radius;
+    };
+    Stroke.prototype.getCopy = function () {
+        var s = new Stroke();
+        s.points = this.points.slice(0);
+        s.documentOffsetX = this.documentOffsetX;
+        s.documentOffsetY = this.documentOffsetY;
+        return s;
+    };
+    return Stroke;
+})();
+var StrokeClassifier = (function () {
+    function StrokeClassifier() {
+    }
+    StrokeClassifier.getStrokeType = function (stroke) {
+        var p0 = stroke.points[0];
+        var p1 = stroke.points[stroke.points.length - 1];
+        var metrics = stroke.getStrokeMetrics();
+        if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
+            return 0 /* Null */;
+        }
+        if (metrics.error > 50) {
+            return 4 /* Scribble */;
+        }
+        //else {
+        //    return StrokeType.MultiLine;
+        //}
+        if (Math.abs(p1.y - p0.y) < 20) {
+            return 1 /* Line */;
+        }
+        if (Math.abs(p1.x - p0.x) < 20) {
+            return 2 /* Bracket */;
+        }
+        if (Math.abs(p1.x - p0.x) > 50 && Math.abs(p1.y - p0.y) > 20) {
+            return 3 /* Marquee */;
+        }
+    };
+    return StrokeClassifier;
+})();
+var StrokeType;
+(function (StrokeType) {
+    StrokeType[StrokeType["Null"] = 0] = "Null";
+    StrokeType[StrokeType["Line"] = 1] = "Line";
+    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
+    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
+    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
+    StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
+})(StrokeType || (StrokeType = {}));
+/// <reference path="../../lib/collections.ts"/>
+var BracketSelection = (function () {
+    function BracketSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        this._brushStroke = null;
+        this._inkCanvas = inkCanvas;
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
+    }
+    BracketSelection.prototype.start = function (x, y) {
+        this._inkCanvas.startDrawing(x, y, new HighlightBrush());
+    };
+    BracketSelection.prototype.update = function (x, y) {
+        this._inkCanvas.draw(x, y);
+    };
+    BracketSelection.prototype.end = function (x, y) {
+        this._inkCanvas.endDrawing(x, y);
+        this._brushStroke = this._inkCanvas._activeStroke;
+        this.analyzeContent();
+        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this._inkCanvas.update();
+    };
+    BracketSelection.prototype.deselect = function () {
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    };
+    BracketSelection.prototype.getBoundingRect = function () {
+        var minX = 1000000;
+        var maxX = -1000000;
+        var minY = 1000000;
+        var maxY = -1000000;
+        for (var i = 0; i < this._clientRects.length; i++) {
+            var p = this._clientRects[i];
+            maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
+            maxX = p.left + p.width > maxX ? p.left + p.width : maxX;
+            minX = p.left < minX ? p.left : minX;
+            minY = p.top < minY ? p.top : minY;
+        }
+        return new Rectangle(minX, minY + window.pageYOffset, maxX - minX, maxY - minY);
+    };
+    BracketSelection.prototype.analyzeContent = function () {
+        var _this = this;
+        var stroke = this._brushStroke.stroke;
+        var selectionBB = stroke.getBoundingRect();
+        selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
+        var samplingRate = 20;
+        var numSamples = 0;
+        var totalScore = 0;
+        //var hitCounter = new Map<Element, number>();
+        var hitCounter = new collections.Dictionary();
+        console.log("=================analyzeContent================");
+        console.log(selectionBB);
+        var elList = [];
+        var scoreList = [];
+        for (var x = selectionBB.x; x < selectionBB.x + selectionBB.w; x += samplingRate) {
+            for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
+                var hitElem = document.elementFromPoint(x, y);
+                numSamples++;
+                if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
+                    continue;
+                var score = (1.0 - x / (selectionBB.x + selectionBB.w)) / (selectionBB.w * selectionBB.h);
+                if (elList.indexOf(hitElem) < 0) {
+                    elList.push(hitElem);
+                    scoreList.push(score);
+                }
+                else {
+                    scoreList[elList.indexOf(hitElem)] += score;
+                }
+                if (hitCounter.getValue(hitElem) == undefined) {
+                    hitCounter.setValue(hitElem, score);
+                    console.log(hitElem);
+                }
+                else
+                    hitCounter.setValue(hitElem, hitCounter.getValue(hitElem) + score);
+                totalScore += score;
+            }
+        }
+        console.log(elList);
+        console.log(scoreList);
+        console.log(hitCounter);
+        var candidates = [];
+        var precision = 4;
+        hitCounter.forEach(function (k, v) {
+            candidates.push(v / totalScore);
+        });
+        var std = Statistics.getStandardDeviation(candidates, precision);
+        var result = "";
+        this._clientRects = new Array();
+        var count = 0;
+        var result = "";
+        hitCounter.forEach(function (k, v) {
+            if (Statistics.isWithinStd(candidates[count++], 1, std)) {
+                result += k["outerHTML"];
+                var range = document.createRange();
+                range.selectNodeContents(k);
+                var rects = range.getClientRects();
+                _this._clientRects = _this._clientRects.concat.apply([], rects);
+            }
+        });
+        this._content = result;
+    };
+    BracketSelection.prototype.getContent = function () {
+        return this._content;
+    };
+    return BracketSelection;
+})();
+/// <reference path="../ink/brush/MarqueeBrush.ts" />
+var MarqueeSelection = (function () {
+    function MarqueeSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        this._startX = 0;
+        this._startY = 0;
+        this._mouseX = 0;
+        this._mouseY = 0;
+        this._marqueeX1 = 0;
+        this._marqueeY1 = 0;
+        this._marqueeX2 = 0;
+        this._marqueeY2 = 0;
+        this._parentList = new Array();
+        this._selected = null;
+        this._ct = 0;
+        this._content = "";
+        this._offsetY = 0;
+        this._inkCanvas = inkCanvas;
+        if (fromActiveStroke) {
+            var stroke = inkCanvas._activeStroke.stroke;
+            this._offsetY = stroke.documentOffsetY;
+            this._startX = stroke.points[0].x;
+            this._startY = stroke.points[0].y;
+            this._mouseX = stroke.points[stroke.points.length - 1].x;
+            this._mouseY = stroke.points[stroke.points.length - 1].y;
+            this._ct = 0;
+            this._marqueeX1 = this._startX;
+            this._marqueeX2 = this._mouseX;
+            this._marqueeY1 = this._startY + $(window).scrollTop();
+            this._marqueeY2 = this._mouseY + $(window).scrollTop();
+            inkCanvas.setBrush(new MarqueeBrush(this._startX, this._startY));
+        }
+    }
+    MarqueeSelection.prototype.start = function (x, y) {
+        this._inkCanvas.startDrawing(x, y, new MarqueeBrush(x, y));
+        this._parentList = [];
+        this._startX = x;
+        this._startY = y;
+    };
+    MarqueeSelection.prototype.update = function (x, y) {
+        this._mouseX = x;
+        this._mouseY = y;
+        this._marqueeX1 = this._startX;
+        this._marqueeY1 = this._startY;
+        this._marqueeX2 = this._mouseX;
+        this._marqueeY2 = this._mouseY;
+        var canvas = this._inkCanvas._canvas;
+        var ctx = this._inkCanvas._context;
+        this._inkCanvas.update();
+        this._inkCanvas.draw(x, y);
+    };
+    MarqueeSelection.prototype.end = function (x, y) {
+        var el = document.elementFromPoint(this._startX, this._startY);
+        this._parentList.push(el);
+        this._selected = el;
+        if (this._marqueeX1 > this._marqueeX2) {
+            var temp = this._marqueeX1;
+            this._marqueeX1 = this._marqueeX2;
+            this._marqueeX2 = temp;
+        }
+        if (this._marqueeY1 > this._marqueeY2) {
+            var temp = this._marqueeY1;
+            this._marqueeY1 = this._marqueeY2;
+            this._marqueeY2 = temp;
+        }
+        //finds the common parent of all elements in selection range
+        console.log(el);
+        if (el != null) {
+            this.getNextElement(el);
+        }
+        console.log(this._parentList);
+        this._inkCanvas.endDrawing(x, y);
+        this._brushStroke = this._inkCanvas._activeStroke;
+        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this._inkCanvas.update();
+        this.analyzeContent();
+    };
+    MarqueeSelection.prototype.deselect = function () {
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    };
+    MarqueeSelection.prototype.getNextElement = function (el) {
+        //recursively adds elements in selection range to parentList. 
+        console.log(el.childNodes);
+        if (this._selected != el) {
+            return;
+        }
+        if (this._ct == 50) {
+            throw new Error("an exception! please add to edge case list!");
+        }
+        this._ct++;
+        var rect = el.getBoundingClientRect();
+        console.log(rect);
+        var nextX = this._mouseX - (rect.left + rect.width);
+        var nextY = this._mouseY - (rect.top + rect.height);
+        var newList = [];
+        console.log("============getNextElement=============");
+        console.log(el);
+        if (el.nodeName == "HTML") {
+            console.log("HTML");
+            return;
+        }
+        if (nextX > 0) {
+            console.log("========getnextX====");
+            if (document.body.contains(this._inkCanvas._canvas)) {
+                document.body.removeChild(this._inkCanvas._canvas);
+            }
+            if (!this.isDescendant(el, document.elementFromPoint(this._mouseX - nextX + 1, this._startY))) {
+                var element = document.elementFromPoint(this._mouseX - nextX + 1, this._startY);
+                for (var i = 0; i < this._parentList.length; i++) {
+                    if (this.isDescendant(element, this._parentList[i])) {
+                    }
+                    else {
+                        newList.push(this._parentList[i]);
+                    }
+                }
+                this._selected = element;
+                this.drawPreviousMarquee();
+                this._startX = this._mouseX - nextX + 1;
+                this._parentList = newList;
+                this._parentList.push(element);
+                this.getNextElement(element);
+            }
+        }
+        if (nextY > 0) {
+            console.log("========getnextY====");
+            if (document.body.contains(this._inkCanvas._canvas)) {
+                document.body.removeChild(this._inkCanvas._canvas);
+            }
+            element = document.elementFromPoint(this._startX, this._mouseY - nextY + 1);
+            console.log("===================2");
+            console.log(element);
+            var contains = false;
+            for (var i = 0; i < this._parentList.length; i++) {
+                if (this.isDescendant(this._parentList[i], element) || this._parentList[i] == element) {
+                    contains = true;
+                }
+            }
+            if (contains) {
+                this.drawPreviousMarquee();
+                console.log("=================2.5");
+                console.log(this._parentList);
+                return;
+            }
+            console.log("===================3");
+            for (var i = 0; i < this._parentList.length; i++) {
+                if (this.isDescendant(element, this._parentList[i])) {
+                }
+                else {
+                    newList.push(this._parentList[i]);
+                }
+            }
+            this._selected = element;
+            this._startY = this._mouseY - nextY + 1;
+            this._startX = this._marqueeX1;
+            this._parentList = newList;
+            this._parentList.push(element);
+            this.drawPreviousMarquee();
+            console.log("===================4");
+            this.getNextElement(element);
+        }
+    };
+    MarqueeSelection.prototype.isDescendant = function (parent, child) {
+        console.log("isDescendant===========");
+        var node = child.parentNode;
+        while (node != null) {
+            if (node == parent) {
+                return true;
+            }
+            node = node.parentNode;
+        }
+        return false;
+    };
+    MarqueeSelection.prototype.drawPreviousMarquee = function () {
+        var canvas = this._inkCanvas._canvas;
+        var ctx = this._inkCanvas._context;
+        document.body.appendChild(canvas);
+        this._inkCanvas.update();
+        this._inkCanvas.draw(this._marqueeX2, this._marqueeY2);
+    };
+    MarqueeSelection.prototype.getBoundingRect = function () {
+        return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
+    };
+    MarqueeSelection.prototype.analyzeContent = function () {
+        console.log(this._parentList.length);
+        //  console.log(this.commonAncestor(this._parentList[0], this._parentList[1]));
+        if (this._parentList.length != 1) {
+            for (var i = 1; i < this._parentList.length; i++) {
+                var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
+                console.log(currAn);
+                this._parentList[0] = currAn;
+            }
+        }
+        console.log("===========A");
+        var sel = this._parentList[0].cloneNode(true);
+        var selX = $(this._parentList[0]).clone(true);
+        console.log("======================ANALYZECONTENT===============");
+        console.log(this._parentList);
+        this.rmChildNodes(sel, this._parentList[0]);
+        var htmlString = sel.innerHTML.replace(/"/g, "'");
+        if (sel.outerHTML == "") {
+            this._content = sel.innerHTML;
+        }
+        this._content = sel.outerHTML;
+    };
+    MarqueeSelection.prototype.commonAncestor = function (node1, node2) {
+        //finds common ancestor between two nodes. 
+        var parents1 = this.parents(node1);
+        var parents2 = this.parents(node2);
+        if (parents1[0] != parents2[0]) {
+            throw "No common ancestor!";
+        }
+        for (var i = 0; i < parents1.length; i++) {
+            if (parents1[i] != parents2[i]) {
+                return parents1[i - 1];
+            }
+        }
+        return parents1[parents1.length - 1];
+    };
+    MarqueeSelection.prototype.parents = function (node) {
+        var nodes = [node];
+        while (node != null) {
+            node = node.parentNode;
+            nodes.unshift(node);
+        }
+        console.log(nodes);
+        return nodes;
+    };
+    MarqueeSelection.prototype.bound = function (myEl, el) {
+        if (el.nodeName == "#text") {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var rects = range.getClientRects();
+            if (rects.length == 0) {
+                return;
+            }
+            for (var i = 0; i < rects.length; i++) {
+                var ax1 = rects[i].left;
+                var ax2 = rects[i].left + rects[0].width;
+                var ay1 = rects[i].top;
+                var ay2 = rects[i].top + rects[0].height;
+                if (!(ax1 >= this._marqueeX1 && ax2 <= this._marqueeX2 && ay1 >= this._marqueeY1 && ay2 <= this._marqueeY2)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else if (el.nodeName != "#comment") {
+            var rectX = el.getBoundingClientRect();
+            var realDim = this.getRealHeightWidth(el.getClientRects());
+            var realHeight = realDim[0];
+            var realWidth = realDim[1];
+            if (rectX == null) {
+                return false;
+            }
+            if (rectX["left"] >= this._marqueeX1 && rectX["left"] + realWidth <= this._marqueeX2 && rectX["top"] >= this._marqueeY1 && rectX["top"] + realHeight <= this._marqueeY2) {
+                this.setTextStyle(myEl, el);
+                console.log("!!!!!!!!!!!!!!! +bound");
+                return true;
+            }
+            return false;
+        }
+    };
+    MarqueeSelection.prototype.rmChildNodes = function (el, trueEl) {
+        var removed = [];
+        var realNList = [];
+        var indexList = [];
+        //iterate through childNodes and add to list(removed).
+        console.log("============rmChildNodes===============");
+        console.log(el);
+        for (var i = 0; i < el.childNodes.length; i++) {
+            console.log(el.childNodes[i]);
+            if (!this.intersectWith(el.childNodes[i], trueEl.childNodes[i])) {
+                removed.push(el.childNodes[i]);
+            }
+            else {
+                realNList.push(trueEl.childNodes[i]);
+                indexList.push(i);
+                console.log("INTERSECT");
+            }
+        }
+        for (var i = 0; i < removed.length; i++) {
+            el.removeChild(removed[i]);
+        }
+        for (var i = 0; i < el.childNodes.length; i++) {
+            if (!this.bound(el.childNodes[i], realNList[i])) {
+                if (el.childNodes[i].nodeName == "#text") {
+                    var index = indexList[i];
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
+                    var result = "";
+                    for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
+                        if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
+                            if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
+                                if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
+                                    result += " ";
+                                }
+                            }
+                            else {
+                                result += trueEl.childNodes[index].childNodes[j]["innerHTML"];
+                            }
+                        }
+                    }
+                    el.childNodes[i].data = result;
+                }
+                else {
+                    this.rmChildNodes(el.childNodes[i], realNList[i]);
+                }
+            }
+        }
+    };
+    MarqueeSelection.prototype.setTextStyle = function (el, trueEl) {
+        var elStyle = document.defaultView.getComputedStyle(trueEl["parentElement"]);
+        el = el.parentNode;
+        el.style.font = elStyle.font;
+    };
+    MarqueeSelection.prototype.getRealHeightWidth = function (rectsList) {
+        //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
+        var maxH = Number.NEGATIVE_INFINITY;
+        var minH = Number.POSITIVE_INFINITY;
+        var maxW = Number.NEGATIVE_INFINITY;
+        var minW = Number.POSITIVE_INFINITY;
+        $(rectsList).each(function (indx, elem) {
+            if (elem["top"] + elem["height"] > maxH) {
+                maxH = elem["top"] + elem["height"];
+            }
+            if (elem["top"] < minH) {
+                minH = elem["top"];
+                console.log(elem);
+            }
+            if (elem["left"] < minW) {
+                minW = elem["left"];
+            }
+            if (elem["left"] + elem["width"] > maxW) {
+                maxW = elem["left"] + elem["width"];
+            }
+        });
+        return [(maxH - minH), (maxW - minW), minW, minH];
+    };
+    MarqueeSelection.prototype.intersectWith = function (myEl, el) {
+        //checks if element is intersecting with selection range 
+        if (!el) {
+            return false;
+        }
+        ;
+        var bx1 = this._marqueeX1;
+        var bx2 = this._marqueeX2;
+        var by1 = this._marqueeY1;
+        var by2 = this._marqueeY2;
+        if (el.nodeName == "#text") {
+            // this.setTextStyle(myEl, el);                        
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var rects = range.getClientRects();
+            if (rects.length == 0) {
+                return;
+            }
+            for (var i = 0; i < rects.length; i++) {
+                var ax1 = rects[i].left;
+                var ax2 = rects[i].left + rects[i].width;
+                var ay1 = rects[i].top;
+                var ay2 = rects[i].top + rects[i].height;
+                if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (el.nodeName != "#comment") {
+            console.log(el.nodeName);
+            var rangeY = document.createRange();
+            rangeY.selectNodeContents(el);
+            var realDim = this.getRealHeightWidth(rangeY.getClientRects());
+            var realHeight = realDim[0];
+            var realWidth = realDim[1];
+            var minX = realDim[2];
+            var minY = realDim[3];
+            /////works weird for Wikipedia. 
+            ax1 = el.getBoundingClientRect()["left"];
+            ax2 = el.getBoundingClientRect()["left"] + realWidth;
+            ay1 = el.getBoundingClientRect()["top"];
+            ay2 = el.getBoundingClientRect()["top"] + realHeight;
+        }
+        console.log(ax1 + "!!" + ax2 + "!!" + ay1 + "!!" + ay2);
+        console.log(bx2 + "!!" + bx1 + "!!" + by2 + "!!" + by1);
+        if (ax1 < bx2 && bx1 < ax2 && ay1 < by2) {
+            console.log(by1 < ay2);
+            return by1 < ay2;
+        }
+        else {
+            console.log(false);
+            return false;
+        }
+    };
+    MarqueeSelection.prototype.getContent = function () {
+        return this._content;
+    };
+    return MarqueeSelection;
+})();
+var MultiLineSelection = (function () {
+    function MultiLineSelection(inkCanvas, fromActiveStroke) {
+        var _this = this;
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        this.getTextRectangles = function (cont, nEnd) {
+            console.log(cont.childNodes);
+            $(cont.childNodes).each(function (index, el) {
+                console.log(el);
+                console.log(el.nodeName);
+                if (el.nodeName == "#text") {
+                    var range = document.createRange();
+                    range.selectNodeContents(el);
+                    console.log(range);
+                    console.log(range.getClientRects());
+                    console.log(range.getBoundingClientRect());
+                }
+            });
+            return new Array();
+        };
+        this.getNodesInRange = function (range) {
+            var start = range.startContainer;
+            var end = range.endContainer;
+            var commonAncestor = range.commonAncestorContainer;
+            var nodes = [];
+            var node;
+            for (node = start.parentNode; node; node = node.parentNode) {
+                nodes.push(node);
+                if (node == commonAncestor)
+                    break;
+            }
+            nodes.reverse();
+            for (node = start; node; node = _this.getNextNode(node)) {
+                nodes.push(node);
+                if (node == end)
+                    break;
+            }
+            return nodes;
+        };
+        this.getNextNode = function (node) {
+            if (node.firstChild)
+                return node.firstChild;
+            while (node) {
+                if (node.nextSibling)
+                    return node.nextSibling;
+                node = node.parentNode;
+            }
+        };
+        this.isDescendant = function (parent, child) {
+            var node = child.parentNode;
+            while (node != null) {
+                if (node == parent) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        };
+        this.getTextNodesBetween = function (range) {
+            var rootNode = range.commonAncestorContainer, startNode = range.startContainer, endNode = range.endContainer, startOffset = range.startOffset, endOffset = range.endOffset, pastStartNode = false, reachedEndNode = false, textNodes = [];
+            function getTextNodes(node) {
+                var val = node.nodeValue;
+                if (node == startNode && node == endNode && node !== rootNode) {
+                    if (val)
+                        textNodes.push(node);
+                    console.log(node);
+                    pastStartNode = reachedEndNode = true;
+                }
+                else if (node == startNode) {
+                    if (val)
+                        textNodes.push(node);
+                    pastStartNode = true;
+                    console.log(node);
+                }
+                else if (node == endNode) {
+                    if (val)
+                        textNodes.push(node);
+                    reachedEndNode = true;
+                    console.log(node);
+                }
+                else if (node.nodeType == 3) {
+                    if (val && pastStartNode && !reachedEndNode && !/^\s*$/.test(val)) {
+                        //    textNodes.push(val);
+                        textNodes.push(node);
+                        console.log(node);
+                    }
+                }
+                for (var i = 0, len = node.childNodes.length; !reachedEndNode && i < len; ++i) {
+                    getTextNodes(node.childNodes[i]);
+                }
+            }
+            getTextNodes(rootNode);
+            return textNodes;
+        };
+        this.update = function (x, y) {
+            _this._inkCanvas.draw(x, y);
+            var rg = document["caretRangeFromPoint"](x, y);
+            var nEnd = rg.commonAncestorContainer;
+            var offsetEnd = rg.startOffset;
+            var offsetStart = _this._offsetStart;
+            _this._nEnd = nEnd;
+            _this._range = document.createRange();
+            _this._range.setStart(_this._nStart, _this._offsetStart);
+            _this._range.setEnd(nEnd, offsetEnd);
+            var ans = _this._range.commonAncestorContainer;
+            var nodes = _this.getTextNodesBetween(_this._range);
+            var list = [];
+            $(nodes).each(function (indx, ele) {
+                var rg = document.createRange();
+                if (indx == 0) {
+                    if ($(nodes).length == 1) {
+                        rg.setStart(ele, offsetStart);
+                        rg.setEnd(ele, offsetEnd);
+                    }
+                    else {
+                        rg.setStart(ele, offsetStart);
+                        rg.setEndAfter(ele);
+                    }
+                }
+                else if (indx == $(nodes).length - 1) {
+                    rg.setStartBefore(ele);
+                    rg.setEnd(ele, offsetEnd);
+                }
+                else {
+                    rg.selectNode(ele);
+                }
+                console.log(rg.getClientRects());
+                $(rg.getClientRects()).each(function (idx, el) {
+                    list.push(el);
+                });
+            });
+            _this._brushStroke = _this._inkCanvas._activeStroke;
+            _this._brushStroke.brush = new MultiSelectionBrush(list, _this._prevList);
+            _this._brushStroke.brush.drawStroke(null, _this._inkCanvas);
+            _this._prevList = list;
+            //if (this._prevList == null) {
+            //    console.log("prev is null");
+            //    this._brushStroke.brush = new MultiSelectionBrush(list, []);
+            //}
+            //else if (list.length > this._prevList.length) {
+            //    ///delete last element of prevlist and add 
+            //    console.log("more clientrect selected");
+            //    var diff = list.length - this._prevList.length;
+            //    this._brushStroke.brush = new MultiSelectionBrush(list.slice(list.length - diff), [this._prevList[this._prevList.length - 1]]);
+            //}
+            //else if (list.length < this._prevList.length) {
+            //    ////remove previous and check last 
+            //    console.log("less clientrect selected!!!");
+            //}
+            //else {
+            //    ////check the last rect 
+            //    console.log("selection within same rect");
+            //    this._brushStroke.brush = new MultiSelectionBrush([list[list.length - 1]], [this._prevList[this._prevList.length - 1]]);
+            //}
+        };
+        this._brushStroke = null;
+        this._inkCanvas = inkCanvas;
+        this._rectList = new Array();
+        this._currLineTop = 0;
+        console.log("===============constructor============");
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
+    }
+    MultiLineSelection.prototype.addWordTag = function (nodes) {
+        var _this = this;
+        console.log(nodes);
+        $.each(nodes, function (index, value) {
+            if (value.nodeType == Node.TEXT_NODE) {
+                $(value).replaceWith("<span>" + $(value).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
+            }
+            else if (value.childNodes.length > 0) {
+                _this.addWordTag(value.childNodes);
+            }
+        });
+    };
+    MultiLineSelection.prototype.start = function (x, y) {
+        console.log("===================start===============");
+        console.log(document.elementFromPoint(x, y));
+        //      this.addWordTag(document.elementFromPoint(x, y).childNodes);
+        this._currParent = document.elementFromPoint(x, y);
+        var rg = document["caretRangeFromPoint"](x, y);
+        this._nStart = rg.commonAncestorContainer;
+        this._offsetStart = rg.startOffset;
+        console.log(this._offsetStart);
+        this._prevList = Array();
+    };
+    MultiLineSelection.prototype.end = function (x, y) {
+        this._inkCanvas.endDrawing(x, y);
+        //this._brushStroke = this._inkCanvas._activeStroke;
+        this.analyzeContent();
+        //  this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this._inkCanvas.update();
+    };
+    MultiLineSelection.prototype.deselect = function () {
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    };
+    MultiLineSelection.prototype.getBoundingRect = function () {
+        return new Rectangle(1, 10, 10, 10);
+    };
+    MultiLineSelection.prototype.analyzeContent = function () {
+        var content = this._range.cloneContents();
+        console.log(content);
+    };
+    MultiLineSelection.prototype.getContent = function () {
+        // console.log("getContent =======================");
+        var d = document.createElement('div');
+        d.appendChild(this._range.cloneContents());
+        console.log(d.innerHTML);
+        return d.innerHTML;
+        //return this._range.cloneContents();
+    };
+    return MultiLineSelection;
 })();
 var Line = (function () {
     function Line() {
@@ -3594,235 +4381,4 @@ var Vector2 = (function () {
     };
     return Vector2;
 })();
-/// <reference path="../typings/chrome/chrome.d.ts"/>
-/// <reference path="../typings/jquery/jquery.d.ts"/>
-/// <reference path="ink/InkCanvas.ts"/>
-/// <reference path="selection/LineSelection.ts"/>
-/// <reference path="selection/UnknownSelection.ts"/>
-var Main = (function () {
-    function Main() {
-        var _this = this;
-        this.prevStrokeType = StrokeType.Line;
-        this.selections = new Array();
-        this.selectedArray = new Array();
-        this.rectangleArray = [];
-        this.objectKeyCount = Date.now();
-        this.mouseMove = function (e) {
-            var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
-            if (currType != _this.prevStrokeType) {
-                _this.prevStrokeType = currType;
-                switch (currType) {
-                    case StrokeType.Null:
-                        _this.selection = new LineSelection(_this.inkCanvas);
-                        break;
-                    case StrokeType.Line:
-                        _this.selection = new LineSelection(_this.inkCanvas);
-                        break;
-                    case StrokeType.Bracket:
-                        _this.selection = new BracketSelection(_this.inkCanvas, true);
-                        console.log("switching to bracket!");
-                        break;
-                    case StrokeType.Marquee:
-                        _this.selection = new MarqueeSelection(_this.inkCanvas, true);
-                        console.log("switching to marquee!");
-                        break;
-                    case StrokeType.Scribble:
-                        _this.selection = new UnknownSelection(_this.inkCanvas, true);
-                        console.log("switching to unknown!");
-                        break;
-                }
-                _this.inkCanvas.redrawActiveStroke();
-            }
-            _this.selection.update(e.clientX, e.clientY);
-        };
-        this.documentDown = function (e) {
-            document.body.appendChild(_this.canvas);
-            _this.selection.start(e.clientX, e.clientY);
-            _this.canvas.addEventListener("mousemove", _this.mouseMove);
-            _this.isSelecting = true;
-        };
-        this.documentScroll = function (e) {
-            _this.inkCanvas.update();
-        };
-        this.windowUp = function (e) {
-            if (!_this.isSelecting)
-                return;
-            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
-            _this.inkCanvas.update();
-            window.getSelection().removeAllRanges();
-            _this.isSelecting = false;
-        };
-        this.canvasUp = function (e) {
-            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            document.body.removeChild(_this.canvas);
-            _this.selection.end(e.clientX, e.clientY);
-            var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
-            var currType = StrokeClassifier.getStrokeType(stroke);
-            if (currType == StrokeType.Null) {
-                console.log("JUST A TAP");
-                document.body.appendChild(_this.canvas);
-                _this.inkCanvas.update();
-                return;
-            }
-            else if (currType == StrokeType.Scribble) {
-                var segments = stroke.breakUp();
-                var p0 = stroke.points[0];
-                var p1 = stroke.points[stroke.points.length - 1];
-                var line = Line.fromPoint(p0, p1);
-                var intersectionCount = 0;
-                $.each(segments, function () {
-                    var intersects = line.intersectsLine(this);
-                    if (intersects)
-                        intersectionCount++;
-                });
-                if (intersectionCount > 2) {
-                    var strokeBB = stroke.getBoundingRect();
-                    strokeBB.y += stroke.documentOffsetY;
-                    _this.selections.forEach(function (s) {
-                        try {
-                            if (s.getBoundingRect().intersectsRectangle(strokeBB)) {
-                                s.deselect();
-                                console.log("RECT INTERSECTION");
-                                var selectionIndex = _this.selections.indexOf(s);
-                                if (selectionIndex > -1) {
-                                    _this.selections.splice(selectionIndex, 1);
-                                    _this.selectedArray.splice(selectionIndex, 1);
-                                    _this.rectangleArray.splice(selectionIndex, 1);
-                                    chrome.storage.local.set({ 'curr': _this.selectedArray });
-                                }
-                            }
-                        }
-                        catch (e) {
-                            console.log(e);
-                            console.log(_this);
-                        }
-                    });
-                }
-                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
-            }
-            else {
-                _this.selections.push(_this.selection);
-                _this.selectedArray.push(_this.relativeToAbsolute(_this.selection.getContent()));
-                console.log(_this.selection.getContent());
-                console.log(_this.relativeToAbsolute(_this.selection.getContent()));
-                _this.rectangleArray.push(_this.selection.getBoundingRect());
-                chrome.storage.local.set({ 'curr': _this.selectedArray });
-                var currentDate = new Date();
-                chrome.storage.local.get(null, function (data) { console.info(data); });
-            }
-            var selectionInfo = {};
-            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            console.log(window.location.protocol + '//' + window.location.host);
-            selectionInfo["selections"] = _this.selectedArray;
-            selectionInfo["boundingRects"] = _this.rectangleArray;
-            selectionInfo["date"] = (new Date()).toString();
-            selectionInfo["title"] = document.title;
-            var obj = {};
-            obj[_this.objectKeyCount] = selectionInfo;
-            chrome.storage.local.set(obj);
-            _this.selection = new LineSelection(_this.inkCanvas);
-            _this.prevStrokeType = StrokeType.Line;
-            document.body.appendChild(_this.canvas);
-            _this.inkCanvas.update();
-            _this.isSelecting = false;
-        };
-        console.log("Starting NuSys.");
-        this.init();
-    }
-    Main.prototype.toggleEnabled = function (flag) {
-        this.isEnabled = flag;
-        console.log("enabled: " + this.isEnabled);
-        if (this.isEnabled) {
-            window.addEventListener("mouseup", this.windowUp);
-            document.body.addEventListener("mousedown", this.documentDown);
-            document.addEventListener("scroll", this.documentScroll);
-            this.canvas.addEventListener("mouseup", this.canvasUp);
-            document.body.appendChild(this.canvas);
-            this.inkCanvas.update();
-        }
-        else {
-            window.removeEventListener("mouseup", this.windowUp);
-            document.body.removeEventListener("mousedown", this.documentDown);
-            document.removeEventListener("scroll", this.documentScroll);
-            this.canvas.removeEventListener("mouseup", this.canvasUp);
-            try {
-                document.body.removeChild(this.canvas);
-            }
-            catch (e) {
-                console.log("no canvas visible." + e);
-            }
-        }
-    };
-    Main.prototype.relativeToAbsolute = function (content) {
-        //////change relative path in html string to absolute
-        console.log(content);
-        var res = content.split('href="');
-        var newVal = res[0];
-        for (var i = 1; i < res.length; i++) {
-            newVal += 'href="';
-            if (res[i].slice(0, 4) != "http") {
-                newVal += window.location.protocol + "//" + window.location.host;
-            }
-            newVal += res[i];
-        }
-        return newVal;
-    };
-    Main.prototype.drawPastSelections = function (rectArray) {
-        var _this = this;
-        $.each(rectArray, function (index, rect) {
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-        this.inkCanvas.update();
-    };
-    Main.prototype.init = function () {
-        var _this = this;
-        // create and append canvas
-        var body = document.body, html = document.documentElement;
-        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
-        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.canvas.style.position = "fixed";
-        this.canvas.style.top = "0";
-        this.inkCanvas = new InkCanvas(this.canvas);
-        this.selection = new LineSelection(this.inkCanvas);
-        console.log(this.objectKeyCount);
-        var currToggle = false;
-        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            if (request.msg == "checkInjection")
-                sendResponse({ toggleState: currToggle, objectId: _this.objectKeyCount });
-            if (request.toggleState == true) {
-                _this.toggleEnabled(true);
-                console.log("show canvas");
-                currToggle = true;
-            }
-            if (request.toggleState == false) {
-                console.log("hide canvas");
-                _this.toggleEnabled(false);
-                currToggle = false;
-            }
-            if (request.pastPage != null) {
-                sendResponse({ farewell: "received Info" });
-                console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
-                _this.toggleEnabled(true);
-                var rects = null;
-                chrome.storage.local.get(null, function (data) {
-                    console.info(data);
-                    console.log(data[request.pastPage]);
-                    rects = data[request.pastPage]["boundingRects"];
-                    console.log(rects);
-                    _this.drawPastSelections(rects);
-                });
-            }
-        });
-    };
-    return Main;
-})();
-/// <reference path="Main.ts"/>
-var greeter = new Main();
 //# sourceMappingURL=NuSysChromeExtension.js.map

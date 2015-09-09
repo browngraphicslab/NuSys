@@ -15,7 +15,7 @@ class MarqueeSelection implements ISelection {
     _parentList: Array<any> = new Array<any>();
     _selected: Element = null;
     _ct: number = 0;
-    _content: string = null;
+    _content: string = "";
     _offsetY: number = 0;
 
 
@@ -35,8 +35,8 @@ class MarqueeSelection implements ISelection {
             this._ct = 0;
             this._marqueeX1 = this._startX;
             this._marqueeX2 = this._mouseX;
-            this._marqueeY1 = this._startY;
-            this._marqueeY2 = this._mouseY;
+            this._marqueeY1 = this._startY + $(window).scrollTop();
+            this._marqueeY2 = this._mouseY + $(window).scrollTop();
             inkCanvas.setBrush(new MarqueeBrush(this._startX, this._startY));
         }
     }
@@ -63,8 +63,6 @@ class MarqueeSelection implements ISelection {
 
         this._inkCanvas.update();
         this._inkCanvas.draw(x, y);
-
-       // this.clearSelection();
     }
 
     end(x: number, y: number): void {
@@ -72,8 +70,6 @@ class MarqueeSelection implements ISelection {
 
         this._parentList.push(el);
         this._selected = el;
-
-     //   this.drawPreviousMarquee();
         if (this._marqueeX1 > this._marqueeX2){
             var temp = this._marqueeX1;
             this._marqueeX1 = this._marqueeX2;
@@ -85,8 +81,12 @@ class MarqueeSelection implements ISelection {
             this._marqueeY2 = temp;
         }
         
-        this.getNextElement(el);
-        
+        //finds the common parent of all elements in selection range
+        console.log(el);
+        if (el != null) {
+            this.getNextElement(el);
+        }
+        console.log(this._parentList);
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
@@ -100,18 +100,26 @@ class MarqueeSelection implements ISelection {
     }
 
     getNextElement(el: Element): void{
-
+        //recursively adds elements in selection range to parentList. 
+        console.log(el.childNodes);
         if (this._selected!=el){return;} 
         if (this._ct==50){
             throw new Error("an exception! please add to edge case list!")
         }
         this._ct++;
         var rect = el.getBoundingClientRect();
+        console.log(rect);
         var nextX = this._mouseX- (rect.left + rect.width);
         var nextY = this._mouseY- (rect.top + rect.height);
         var newList = [];
-
-        if (nextX>0){
+        console.log("============getNextElement=============");
+        console.log(el);
+        if (el.nodeName == "HTML") {
+            console.log("HTML");
+            return;
+        }
+        if (nextX > 0) {
+            console.log("========getnextX====");
             if (document.body.contains(this._inkCanvas._canvas)) {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
@@ -131,25 +139,32 @@ class MarqueeSelection implements ISelection {
                 this._startX = this._mouseX - nextX +1;
                 this._parentList = newList;
                 this._parentList.push(element);
+
                 this.getNextElement(element);
             }
         }
         if (nextY > 0) {
+            console.log("========getnextY====");
             if (document.body.contains(this._inkCanvas._canvas)) {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
             element = document.elementFromPoint(this._startX, this._mouseY-nextY + 1);
+            console.log("===================2");
+            console.log(element);
             var contains = false;
             for (var i=0; i<this._parentList.length; i++){
                 if (this.isDescendant(this._parentList[i],element) || this._parentList[i]==element){
                     contains = true;
                 }
             }
+
             if (contains){
                 this.drawPreviousMarquee();
+                console.log("=================2.5");
+                console.log(this._parentList);
                 return;
             }
-
+            console.log("===================3");
             for (var i=0; i<this._parentList.length; i++){
                 if (this.isDescendant(element, this._parentList[i])){
                 }
@@ -164,11 +179,13 @@ class MarqueeSelection implements ISelection {
             this._parentList = newList;
             this._parentList.push(element);
             this.drawPreviousMarquee();
+            console.log("===================4");
             this.getNextElement(element);
         }
     }
 
     isDescendant(parent: Element, child: Element): boolean {
+        console.log("isDescendant===========");
         var node = child.parentNode;
         while (node != null) {
             if (node == parent) {
@@ -193,14 +210,21 @@ class MarqueeSelection implements ISelection {
     
 
     analyzeContent(): void {
-        if (this._parentList.length != 1) {
+        console.log(this._parentList.length);
+      //  console.log(this.commonAncestor(this._parentList[0], this._parentList[1]));
+        if (this._parentList.length != 1) {                     //finds the common parent of all elements in _parentList
             for (var i = 1; i < this._parentList.length; i++) {
                 var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
+                console.log(currAn);
                 this._parentList[0] = currAn;
             }
         }
+        console.log("===========A");
         var sel = this._parentList[0].cloneNode(true);
         var selX = $(this._parentList[0]).clone(true);
+        console.log("======================ANALYZECONTENT===============");
+        console.log(this._parentList);
+
         this.rmChildNodes(sel, this._parentList[0]);
 
         var htmlString = sel.innerHTML.replace(/"/g, "'");
@@ -211,21 +235,30 @@ class MarqueeSelection implements ISelection {
     }
 
     commonAncestor(node1: Element, node2: Element) {
+        //finds common ancestor between two nodes. 
         var parents1 = this.parents(node1)
         var parents2 = this.parents(node2)
-
-        if (parents1[0] != parents2[0]) throw "No common ancestor!"
-
-        for (var i = 0; i < parents1.length; i++) {
-            if (parents1[i] != parents2[i]) return parents1[i - 1]
+        
+        if (parents1[0] != parents2[0]) {
+            throw "No common ancestor!"
         }
+        for (var i = 0; i < parents1.length; i++) {
+            if (parents1[i] != parents2[i]) {
+                return parents1[i - 1];
+            }   
+        }
+        return parents1[parents1.length - 1];
+        
     }
 
-    parents(node: Element): Element[] {
+    parents(node: Node): Node[] {
         var nodes = [node]
-        for (; node; node == node.parentNode) {
-            nodes.unshift(node)
+        while (node != null) {
+            node = node.parentNode;
+            nodes.unshift(node);
         }
+
+        console.log(nodes);
         return nodes;
     }
 
@@ -251,14 +284,19 @@ class MarqueeSelection implements ISelection {
         }
         else if (el.nodeName != "#comment") {
             var rectX = el.getBoundingClientRect();
+            var realDim = this.getRealHeightWidth(el.getClientRects());
+            var realHeight = realDim[0];
+            var realWidth = realDim[1];
             if (rectX == null) {
                 return false;
             }
             if (rectX["left"] >= this._marqueeX1 &&
-                rectX["left"] + rectX["width"] <= this._marqueeX2 &&
+                rectX["left"] + realWidth <= this._marqueeX2 &&
                 rectX["top"] >= this._marqueeY1 &&
-                rectX["top"] + rectX["height"] <= this._marqueeY2) {
+                rectX["top"] + realHeight <= this._marqueeY2) {
                 this.setTextStyle(myEl, el);
+
+                console.log("!!!!!!!!!!!!!!! +bound");
                 return true;
             }
             return false;
@@ -271,14 +309,17 @@ class MarqueeSelection implements ISelection {
         var realNList = [];
         var indexList = [];
         //iterate through childNodes and add to list(removed).
+        console.log("============rmChildNodes===============");
+        console.log(el);
         for (var i = 0; i < el.childNodes.length; i++) {
-
+            console.log(el.childNodes[i]);
             if (!this.intersectWith(el.childNodes[i], trueEl.childNodes[i])) {
                 removed.push(el.childNodes[i]);
-            }
+                }
             else {
                 realNList.push(trueEl.childNodes[i]);
                 indexList.push(i);
+                console.log("INTERSECT");
             }
         }
 
@@ -314,24 +355,51 @@ class MarqueeSelection implements ISelection {
             }
         }
     }
+
+
     setTextStyle(el, trueEl): void {
         var elStyle = document.defaultView.getComputedStyle(trueEl["parentElement"]);
         el = el.parentNode;
         el.style.font = elStyle.font;
     }
 
+    getRealHeightWidth(rectsList): Array<number> {
+        //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
+        var maxH = Number.NEGATIVE_INFINITY;
+        var minH = Number.POSITIVE_INFINITY;
+        var maxW = Number.NEGATIVE_INFINITY;
+        var minW = Number.POSITIVE_INFINITY;
+        $(rectsList).each(function (indx, elem) {
+            
+            if (elem["top"] + elem["height"]> maxH) {
+                maxH = elem["top"] + elem["height"];
+            }
+            if (elem["top"]  < minH) {
+                minH = elem["top"];
+                console.log(elem);
+            }
+            if (elem["left"] < minW) {
+                minW = elem["left"];
+            }
+            if (elem["left"] + elem["width"] > maxW) {
+                maxW = elem["left"] + elem["width"];
+            }
+        });
+        return [(maxH - minH),(maxW - minW),minW, minH];
+    }
 
     intersectWith(myEl, el): boolean {
+
+        //checks if element is intersecting with selection range 
         if (!el) {
             return false
         };
-
         var bx1 = this._marqueeX1;
         var bx2 = this._marqueeX2;
         var by1 = this._marqueeY1;
         var by2 = this._marqueeY2;
         if (el.nodeName == "#text") {
-            this.setTextStyle(myEl, el);
+           // this.setTextStyle(myEl, el);                        
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
@@ -341,6 +409,7 @@ class MarqueeSelection implements ISelection {
                 var ax2 = rects[i].left + rects[i].width;
                 var ay1 = rects[i].top;
                 var ay2 = rects[i].top + rects[i].height;
+
                 if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
                     return true;
                 }
@@ -348,23 +417,36 @@ class MarqueeSelection implements ISelection {
             return false
 
         }
-        else if (el.nodeName != "#comment") {
-            var rectX = el.getBoundingClientRect();
-            ax1 = rectX["left"];
-            ax2 = rectX["left"] + rectX["width"];
-            ay1 = rectX["top"];
-            ay2 = rectX["top"] + rectX["height"];
+        else if (el.nodeName != "#comment") { 
+            console.log(el.nodeName);
+            var rangeY = document.createRange();
+            rangeY.selectNodeContents(el);
+            var realDim = this.getRealHeightWidth(rangeY.getClientRects());
+            var realHeight = realDim[0];
+            var realWidth = realDim[1];
+            var minX = realDim[2];
+            var minY = realDim[3];
+            /////works weird for Wikipedia. 
+            ax1 = el.getBoundingClientRect()["left"];
+            ax2 = el.getBoundingClientRect()["left"] + realWidth;
+            ay1 = el.getBoundingClientRect()["top"];
+            ay2 = el.getBoundingClientRect()["top"] + realHeight;
         }
+        console.log(ax1 + "!!" + ax2 + "!!" + ay1 + "!!" + ay2);
+        console.log(bx2 + "!!" + bx1 + "!!" + by2 + "!!" + by1);
 
-        if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
-            return true;
+        if (ax1 < bx2 && bx1 < ax2 && ay1 < by2) {
+            console.log(by1 < ay2);
+            return by1 < ay2;
         }
-        else { return false; }
+        else {
+            console.log(false);
+            return false;
+        }
     }
 
     getContent(): string {
         return this._content;
-
     }
 
 }

@@ -3,5 +3,6 @@
     Line,
     Bracket,
     Marquee,
-    Scribble
+    Scribble,
+    MultiLine
 }
