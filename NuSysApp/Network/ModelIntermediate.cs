@@ -273,10 +273,10 @@ namespace NuSysApp
         {
             if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"]== "WORKSPACE_ID"))
             {
-                InqCanvasModel canvas;
+                InqCanvasModel canvas = null;
                 if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
-                    canvas = ((Node) WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas;
+                    await UITask.Run(async delegate { canvas = ((Node)WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas; });
                 }
                 else
                 {
@@ -301,11 +301,13 @@ namespace NuSysApp
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
+                    PointCollection points;
+                    double thickness;
+                    Brush stroke;
                     if (props.ContainsKey("data"))
                     {
-                        PointCollection points;
-                        double thickness;
-                        Brush stroke;
+                        await UITask.Run(async delegate { 
+          
                         InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
 
                         if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
@@ -319,10 +321,13 @@ namespace NuSysApp
                         await UITask.Run( () =>
                         {
                             var lineModel = new InqLineModel(id);
+                            lineModel.Points = points;
                             var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
+                            lineModel.Stroke = stroke;
                             canvas.FinalizeLine(lineModel);
                             WorkSpaceModel.IDToSendableDict.Add(id, lineModel);
-                        });                       
+                        });
+                        });                 
                     }
                 }
             }
