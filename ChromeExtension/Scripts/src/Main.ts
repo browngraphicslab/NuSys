@@ -252,7 +252,12 @@ class Main {
 
     refreshChromeStorage = (): void => {
         var obj = {};
-        obj["selections"] = this.previousSelections.concat(this.selections);
+        if (this.previousSelections != null) {
+            obj["selections"] = this.previousSelections.concat(this.selections);
+        }
+        else {
+            obj["selections"] = this.selections;
+        }
 
         chrome.storage.local.set(obj);
         chrome.storage.local.get(null, function (data) { console.log(data) });

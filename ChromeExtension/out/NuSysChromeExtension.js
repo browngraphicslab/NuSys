@@ -2999,7 +2999,12 @@ var Main = (function () {
         };
         this.refreshChromeStorage = function () {
             var obj = {};
-            obj["selections"] = _this.previousSelections.concat(_this.selections);
+            if (_this.previousSelections != null) {
+                obj["selections"] = _this.previousSelections.concat(_this.selections);
+            }
+            else {
+                obj["selections"] = _this.selections;
+            }
             chrome.storage.local.set(obj);
             chrome.storage.local.get(null, function (data) {
                 console.log(data);
