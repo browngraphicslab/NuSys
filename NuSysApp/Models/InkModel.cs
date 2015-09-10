@@ -9,19 +9,19 @@ namespace NuSysApp
 {
     public class InkModel : Node
     {
-        private List<InqLine> _inqlines; 
+        private List<InqLineModel> _inqlines; 
         public InkModel(string id) : base(id)
         {
 
-            _inqlines = new List<InqLine>();
+            _inqlines = new List<InqLineModel>();
         }
 
-        public InkModel(string id, List<InqLine> lines) : base(id)
+        public InkModel(string id, List<InqLineModel> lines) : base(id)
         {
             _inqlines = lines;
         }
 
-        public List<InqLine> PolyLines
+        public List<InqLineModel> PolyLines
         {
             get { return _inqlines; }
             set
@@ -34,11 +34,11 @@ namespace NuSysApp
         private string InqlinesToString()
         {
             string plines = "";
-            foreach (InqLine pl in _inqlines)
+            foreach (InqLineModel pl in _inqlines)
             {
                 if (pl.Points.Count > 0)
                 {
-                    plines += pl.Stringify();
+                    plines += pl.GetString();
                 }
             }
             return plines;

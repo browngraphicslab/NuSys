@@ -130,9 +130,10 @@ namespace NuSysApp
         {
             this.Children.Clear();
             var lines = this.ViewModel.Model.Lines;
-            foreach (InqLine line in lines)
+            foreach (InqLineModel line in lines)
             {
-                this.Children.Add(line);
+                var inqView = new InqLineView(new InqLineViewModel(line), line.StrokeThickness, line.Stroke);
+                this.Children.Add(inqView);
             }
         }
 
@@ -170,7 +171,7 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    Children.Add(vm.LastPartialLine);
+                    Children.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
                     break;
             }
         }

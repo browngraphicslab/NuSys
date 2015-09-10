@@ -36,7 +36,7 @@ namespace NuSysApp
         #region Private Members
         private Dictionary<string, Sendable> _idDict;
 
-        //private ObservableDictionary<string,ObservableCollection<InqLine>> _partialLines;
+        //private ObservableDictionary<string,ObservableCollection<InqLineView>> _partialLines;
         private LockDictionary _locks;
         private InqCanvasModel _inqModel;
         #endregion Private members
@@ -48,16 +48,16 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
-            //_partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
+            //_partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
             //_partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
             //{
             //    if (args.Action == NotifyCollectionChangedAction.Add)
             //    {
-            //        foreach (ObservableCollection<InqLine> n in _partialLines.Values)
+            //        foreach (ObservableCollection<InqLineView> n in _partialLines.Values)
             //        {
             //            n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
             //            {
-            //                InqLine l = ((InqLine) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
+            //                InqLineView l = ((InqLineView) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
             //                OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
             //            };
             //        }
@@ -74,7 +74,7 @@ namespace NuSysApp
         {
             get { return _idDict; }
         }
-        //public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines 
+        //public ObservableDictionary<string, ObservableCollection<InqLineView>> PartialLines 
         //{
         //    get { return _partialLines; }
         //}
@@ -121,10 +121,10 @@ namespace NuSysApp
  
         }
 
-        public void AddGlobalInq(InqLine line)
+        public void AddGlobalInq(InqLineModel lineView)
         {
-            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
-            this._inqModel.FinalizeLine(line);
+            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
+            this._inqModel.FinalizeLine(lineView);
         }
 
         public async Task CreateNewPin(string id, double x, double y)

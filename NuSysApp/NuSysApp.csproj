@@ -144,15 +144,18 @@
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
+    <Compile Include="Models\AddPointEventArgs.cs" />
+    <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
+    <Compile Include="ViewModels\InqLineViewModel.cs" />
     <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
-      <DependentUpon>InqLine.xaml</DependentUpon>
+    <Compile Include="Views\Misc\InqCanvas\InqLineView.xaml.cs">
+      <DependentUpon>InqLineView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Misc\InqCanvas\DrawInqMode.cs" />
     <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
@@ -371,7 +374,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\InqCanvas\InqLine.xaml">
+    <Page Include="Views\Misc\InqCanvas\InqLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

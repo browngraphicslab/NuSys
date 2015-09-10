@@ -1416,7 +1416,8 @@ namespace NuSysApp
                 {"previousID", previousID}
             };
                 string m = MakeSubMessageFromDict(props);
-                await SendMessageToHost(m);
+                //TODO: reimplement to fix threading issues
+                //await SendMessageToHost(m);
             });
         }
         public async Task RequestLock(string id)

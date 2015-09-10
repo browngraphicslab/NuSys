@@ -129,7 +129,7 @@ namespace NuSysApp
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
             //foreach (UIElement element in _view.InqCanvas.Children)
             //{
-            //    var line = element as InqLine;
+            //    var line = element as InqLineView;
             //    if (line != null)
             //    {
             //        foreach (Point p in line.Points)

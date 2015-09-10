@@ -52,7 +52,7 @@ namespace NuSysApp
             this.InkContainer.Capacity = (int)this.PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                this.InkContainer.Add(new HashSet<InqLine>());
+                this.InkContainer.Add(new HashSet<InqLineView>());
             }
 
     */

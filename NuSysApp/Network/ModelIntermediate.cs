@@ -288,19 +288,25 @@ namespace NuSysApp
                     Point two;
                     ParseToLineSegment(props, out one, out two);                   
 
-                    await UITask.Run(() => {
-                        var line = new InqLine(props["canvasNodeID"], new List<Point>() { one, two }, 2, Colors.Black);
-                        canvas.AddTemporaryInqline(line, id);
+                    await UITask.Run(() =>
+                    {
+                        var lineModel = new InqLineModel(props["canvasNodeID"]);
+                        var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
+                        PointCollection pc = new PointCollection();
+                        pc.Add(one);
+                        pc.Add(two);
+                        lineModel.Points = pc;
+                        canvas.AddTemporaryInqline(lineModel, id);
                     });
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
                     if (props.ContainsKey("data"))
                     {
-                        List<Point> points;
+                        PointCollection points;
                         double thickness;
-                        Color stroke;
-                        InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
+                        Brush stroke;
+                        InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
 
                         if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                         {
@@ -310,10 +316,12 @@ namespace NuSysApp
                             };
                         }
 
-                        await UITask.Run( () => {
-                            var line = new InqLine(id, points, thickness, stroke);
-                            canvas.FinalizeLine(line);
-                            WorkSpaceModel.IDToSendableDict.Add(id, line);
+                        await UITask.Run( () =>
+                        {
+                            var lineModel = new InqLineModel(id);
+                            var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
+                            canvas.FinalizeLine(lineModel);
+                            WorkSpaceModel.IDToSendableDict.Add(id, lineModel);
                         });                       
                     }
                 }
@@ -434,7 +442,7 @@ namespace NuSysApp
         {
             if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
             var sendable = WorkSpaceModel.IDToSendableDict[id];
-            bool isLine = sendable is InqLine; // TODO there should be no special casing for inks
+            bool isLine = sendable is InqLineView; // TODO there should be no special casing for inks
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         

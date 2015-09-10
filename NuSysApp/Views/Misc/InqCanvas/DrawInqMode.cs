@@ -9,15 +9,18 @@ namespace NuSysApp
 {
     public class DrawInqMode : IInqMode
     {
-        private InqLine _currentStroke;
+        private InqLineModel _currentStroke;
+        private InqLineView _currentInqLineView;
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
-
-            _currentStroke = new InqLine(DateTime.UtcNow.Ticks.ToString());
+            _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
+            _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
+            //TODO: add data binding for thickness and color
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            inqCanvas.Children.Add(_currentStroke);
+            _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
+            inqCanvas.Children.Add(_currentInqLineView);
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -39,7 +42,7 @@ namespace NuSysApp
             NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).OnFinalizedLine += delegate
             {
-                inqCanvas.Children.Remove(_currentStroke);
+                inqCanvas.Children.Remove(_currentInqLineView);
             };
         }
     }

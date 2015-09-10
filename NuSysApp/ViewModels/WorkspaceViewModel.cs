@@ -453,7 +453,7 @@ namespace NuSysApp
                     vm = new ImageNodeViewModel((ImageModel)model, this);
                     if (((ImageModel)vm.Model).Image != null)
                     {
-                        vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
+                        vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this lineView and the next
                         vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
                     }
                     break;
@@ -462,7 +462,7 @@ namespace NuSysApp
                     /*
                     if (((PdfNodeModel)vm.Model).RenderedPage != null)
                     {
-                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
+                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this lineView and the next
                         vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
                     }*/
                     break;
@@ -488,7 +488,7 @@ namespace NuSysApp
 
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
-            LastPartialLine = e.AddedLine;
+            LastPartialLineModel = e.AddedLineModel;
             RaisePropertyChanged("PartialLineAdded");
         }
 
@@ -559,7 +559,7 @@ namespace NuSysApp
 
         public Dictionary<string, GroupViewModel> GroupDict { get; private set; }
 
-        public InqLine LastPartialLine { get; set; }
+        public InqLineModel LastPartialLineModel { get; set; }
         #endregion Public Members
 
         

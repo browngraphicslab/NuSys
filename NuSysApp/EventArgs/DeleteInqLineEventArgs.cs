@@ -8,11 +8,11 @@ namespace NuSysApp.EventArgs
 {
     public class DeleteInqLineEventArgs : System.EventArgs
     {
-        public DeleteInqLineEventArgs(InqLine line)
+        public DeleteInqLineEventArgs(InqLineModel lineModel)
         {
-            LineToDelete = line;
+            LineModelToDelete = lineModel;
         }
 
-        public InqLine LineToDelete { get; }
+        public InqLineModel LineModelToDelete { get; }
     }
 }
