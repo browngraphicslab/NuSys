@@ -19,7 +19,7 @@ namespace NuSysApp
         public event AddPartialLineEventHandler OnPartialLineAddition;
 
         public event FinalizedLine OnFinalizedLine;
-        public delegate void FinalizedLine();
+        public delegate void FinalizedLine(InqLineModel lineModel);
 
         private HashSet<InqLineModel> _lines;
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
@@ -81,7 +81,7 @@ namespace NuSysApp
             this._lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
-            OnFinalizedLine?.Invoke();
+            OnFinalizedLine?.Invoke( line );
         }
 
         private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)

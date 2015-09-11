@@ -19,16 +19,13 @@ namespace NuSysApp
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
         public event DeleteInqLineEventHandler OnDeleteInqLine;
 
-        public delegate void AddPointEventHandler(object source, AddPointEventArgs e);
-        public event AddPointEventHandler OnPointAdded;
-
         public PointCollection Points
         {
             get { return _points; }
             set
             {
                 _points = value;
-                OnPointAdded?.Invoke(this, new AddPointEventArgs(new Point()));
+                RaisePropertyChanged("Model.Points");
             }
         }
 
@@ -48,7 +45,8 @@ namespace NuSysApp
         public void AddPoint(Point p)
         {
             Points.Add(p);
-            OnPointAdded?.Invoke(this, new AddPointEventArgs(p));
+
+            RaisePropertyChanged("Model.Points");
         }
 
         public override void Delete()

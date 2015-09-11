@@ -12,6 +12,15 @@ namespace NuSysApp
         private InqLineModel _currentStroke;
         private InqLineView _currentInqLineView;
 
+        public DrawInqMode(InqCanvasView view)
+        {
+            (((InqCanvasViewModel)view.DataContext).Model).OnFinalizedLine += delegate(InqLineModel lineModel)
+            {
+                var lineView = new InqLineView(new InqLineViewModel(lineModel));
+                view.Children.Add(lineView);
+            };
+        }
+
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));

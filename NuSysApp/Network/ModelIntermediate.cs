@@ -301,34 +301,33 @@ namespace NuSysApp
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
-                    PointCollection points;
-                    double thickness;
-                    Brush stroke;
-                    if (props.ContainsKey("data"))
-                    {
-                        await UITask.Run(async delegate { 
-          
-                        InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
+                    await UITask.Run(async delegate {
 
-                        if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                        PointCollection points;
+                        double thickness;
+                        Brush stroke;
+
+                        if (props.ContainsKey("data"))
                         {
-                            canvas.OnFinalizedLine += async delegate
+                            InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
+
+                            if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                             {
-                                await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
-                            };
-                        }
+                                canvas.OnFinalizedLine += async delegate
+                                {
+                                    await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
+                                };
+                            }
 
-                        await UITask.Run( () =>
-                        {
                             var lineModel = new InqLineModel(id);
-                            lineModel.Points = points;
                             var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
+                            lineModel.Points = points;
                             lineModel.Stroke = stroke;
                             canvas.FinalizeLine(lineModel);
-                            WorkSpaceModel.IDToSendableDict.Add(id, lineModel);
-                        });
-                        });                 
-                    }
+                            WorkSpaceModel.IDToSendableDict.Add(id, lineModel);              
+                                       
+                        }
+                    });
                 }
             }
             else

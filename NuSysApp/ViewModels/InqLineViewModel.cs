@@ -13,14 +13,9 @@ namespace NuSysApp
     {
         public InqLineModel Model { get; }
 
-        public PointCollection Points
-        {
-            get { return Model.Points; }
-        } 
         public InqLineViewModel(InqLineModel model)
         {
             Model = model;
-            Model.OnPointAdded += Model_OnPointAdded;
             Model.OnDeleteInqLine += Model_OnDeleteInqLine;
         }
 
@@ -32,11 +27,6 @@ namespace NuSysApp
         private void Model_OnDeleteInqLine(object source, EventArgs.DeleteInqLineEventArgs e)
         {
             RaisePropertyChanged("ToDelete");
-        }
-
-        private void Model_OnPointAdded(object source, AddPointEventArgs e)
-        {
-            RaisePropertyChanged("Points");
         }
     }
 }

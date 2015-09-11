@@ -17,12 +17,17 @@ namespace NuSysApp
     {
         private bool _isEnabled;
         private uint _pointerId = uint.MaxValue;
-        private IInqMode _mode = new DrawInqMode();
+        private IInqMode _mode;
         public bool IsPressed = false;
         private InqCanvasViewModel _viewModel;
+
         public InqCanvasView()
         {
-            //MISC.Clip.SetToBounds(this, true);
+            // Initally, set mode to Inq drawing.
+            Loaded += delegate
+            {
+                _mode = new DrawInqMode(this);
+            };
         }
 
         public InqCanvasViewModel ViewModel
@@ -104,7 +109,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode();
+                _mode = new DrawInqMode(this);
             }
         }
 
@@ -121,7 +126,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode();
+                _mode = new DrawInqMode(this);
             }
         }
 
