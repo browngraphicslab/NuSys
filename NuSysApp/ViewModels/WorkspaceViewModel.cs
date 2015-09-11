@@ -197,7 +197,17 @@ namespace NuSysApp
         public void CreateNewGroup(Group groupModel)
         {
             //Create new group, because no group exists
-            var groupVm = new GroupViewModel(groupModel, this);
+            var groupView = new GroupView();
+            var groupVm = new GroupViewModel(groupView, groupModel, this);
+            groupView.DataContext = groupVm;
+
+            var tpl = groupView.FindName("nodeTpl") as NodeTemplate;
+            if (tpl != null)
+            {
+                tpl.OnTemplateReady += delegate {
+                    new InqCanvasViewModel(tpl.inkCanvas, groupModel.InqCanvas);
+                };
+            }
 
             //Set location to node2's location
             var xCoordinate = groupModel.X;
