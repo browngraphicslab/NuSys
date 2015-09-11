@@ -1044,6 +1044,7 @@ namespace NuSysApp
         */
         private Dictionary<string, string> ParseOutProperties(string message)
         {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(message);
             message = message.Substring(1, message.Length - 2);
             string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.RemoveEmptyEntries);
             Dictionary<string, string> props = new Dictionary<string, string>();
@@ -1074,13 +1075,15 @@ namespace NuSysApp
         */
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
         {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(dict);
+            /*
             var m = "<";
             foreach (var kvp in dict)
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
             m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
-            return m;
+            return m;*/
         }
 
 

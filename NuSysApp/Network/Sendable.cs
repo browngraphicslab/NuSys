@@ -58,8 +58,8 @@ namespace NuSysApp
             {
                 childs.Add(child.ID, await child.Stringify());
             }
-            props["children"] = await Newtonsoft.Json.JsonConvert.SerializeObjectAsync(childs);
-            return await Newtonsoft.Json.JsonConvert.SerializeObjectAsync(props);
+            props["children"] = Newtonsoft.Json.JsonConvert.SerializeObject(childs);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(props);
         }
     }
 }
