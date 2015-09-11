@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace NuSysApp
         public ContentImporter()
         {
             SetupChromeIntermediate();
+            SetupOfficeTransfer();
         }
 
         private void SetupChromeIntermediate()
@@ -48,51 +50,52 @@ namespace NuSysApp
             };
         }
 
-        
+
         private async void SetupOfficeTransfer()
         {
-            //TODO put this back in
-            //var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
-            //fw.FilesChanged += async delegate
-            //{            
-            //    var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
-            //    if (foundUpdate == null)
-            //    {
-            //        Debug.WriteLine("no update yet!");
-            //        return;
-            //    }
-            //    await foundUpdate.DeleteAsync();
+            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
+            fw.FilesChanged += async delegate
+            {
+                var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
+                if (foundUpdate == null)
+                {
+                    Debug.WriteLine("no update yet!");
+                    return;
+                }
+                await foundUpdate.DeleteAsync();
 
-            //    var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
-            //    var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
+                var contents = new List<string>();
+                var count = 0;
 
-            //    foreach (var file in transferFiles) { 
+                foreach (var file in transferFiles)
+                {
 
-            //        await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            //        {
-            //            var lines = await FileIO.ReadLinesAsync(file);
-            //            if (lines[0].EndsWith(".png"))
-            //            {
-            //                var str = lines[0];
-            //                var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-            //                var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-            //                var nodeVm = CreateNewNode("null",NodeType.Image, p.X, p.Y, imageFile);//TODO make actual Id's
-            //            } else {
-            //                var readFile = await FileIO.ReadTextAsync(file);
-            //                var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-            //                var nodeVm2 = CreateNewNode("null",NodeType.Richtext, p.X, p.Y, readFile);//TODO make actual Id's
-            //            }
-            //        });
-            //    }
+                    var lines = await FileIO.ReadLinesAsync(file);
+                    if (lines[0].EndsWith(".png"))
+                    {
+                        var str = lines[0];
+                        var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
+                        //var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                        //var nodeVm = CreateNewNode("null", NodeType.Image, p.X, p.Y, imageFile);//TODO make actual Id's
+                    }
+                    else
+                    {
+                        var readFile = await FileIO.ReadTextAsync(file);
+                        //var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
+                        //var nodeVm2 = CreateNewNode("null", NodeType.Richtext, p.X, p.Y, readFile);//TODO make actual Id's
+                        contents.Add(readFile);
+                    }
+                }
 
-            //    foreach (var file in transferFiles)
-            //    {
-            //        await file.DeleteAsync();
-            //    }
-            //};
-        }
+                foreach (var file in transferFiles)
+                {
+                    await file.DeleteAsync();
+                }
 
-        
+                ContentImported?.Invoke(contents.ToList());
+            };
+        }       
 
     }
 }

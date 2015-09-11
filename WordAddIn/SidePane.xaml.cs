@@ -71,19 +71,29 @@ namespace WordAddIn
                 Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
                 c.Author = "NuSys";
 
-                if (data.GetDataPresent(System.Windows.DataFormats.Rtf))
+                if (data.GetDataPresent(System.Windows.DataFormats.Html))
+                {
+                    result = (string)data.GetData(System.Windows.DataFormats.Html);
+                    int n = 2;
+                    string[] lines = result.Split(Environment.NewLine.ToCharArray()).Skip(n).ToArray();
+                    result = string.Join(Environment.NewLine, lines);
+                    Selections.Add(new SelectionItem { Content = result, Comment = c, Range = selection.Range, DOcument = doc });
+                }
+                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
+                {
+                    // result = imgFileName;
+                    // Bitmap bitmap = (Bitmap)(data.GetData(System.Windows.Forms.DataFormats.Bitmap, true));
+                    // bitmap.Save(mediaDir + "\\" + imgFileName, System.Drawing.Imaging.ImageFormat.Png);
+                    // System.IO.File.SetLastWriteTimeUtc(mediaDir + "\\" + imgFileName, DateTime.UtcNow);
+                }
+
+               /*     if (data.GetDataPresent(System.Windows.DataFormats.Rtf))
                 {
                     result = (string)data.GetData(System.Windows.DataFormats.Rtf);
                     Selections.Add(new SelectionItem { Content = result, Comment = c, Range = selection.Range, DOcument = doc });
 
-                }
-                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                   // result = imgFileName;
-                   // Bitmap bitmap = (Bitmap)(data.GetData(System.Windows.Forms.DataFormats.Bitmap, true));
-                   // bitmap.Save(mediaDir + "\\" + imgFileName, System.Drawing.Imaging.ImageFormat.Png);
-                   // System.IO.File.SetLastWriteTimeUtc(mediaDir + "\\" + imgFileName, DateTime.UtcNow);
-                }
+                }*/
+            
 
 
                 if (result == string.Empty)
