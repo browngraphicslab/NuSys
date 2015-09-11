@@ -10,13 +10,11 @@ namespace NuSysApp
         private double _margin;
         private CompositeTransform _localTransform;
         private ObservableCollection<UserControl> _atomViewList;
-
         public ObservableCollection<NodeViewModel> _nodeViewModelList;
-
         public ObservableCollection<LinkViewModel> _linkViewModelList;
 
 
-        public GroupViewModel(Group model, WorkspaceViewModel vm): base(model,vm)
+        public GroupViewModel(UserControl view, Group model, WorkspaceViewModel vm): base(model,vm)
         {
             this.AtomType = Constants.Node;
             _nodeViewModelList = new ObservableCollection<NodeViewModel>();
@@ -29,7 +27,7 @@ namespace NuSysApp
             this.IsEditing = false;
             this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            this.View = new GroupView(this);
+            this.View = view;
             this.NodeType = NodeType.Group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();

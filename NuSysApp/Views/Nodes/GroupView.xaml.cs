@@ -10,10 +10,9 @@ namespace NuSysApp
 {
     public sealed partial class GroupView : UserControl
     {
-        public GroupView(GroupViewModel vm)
+        public GroupView()
         {
             this.InitializeComponent();
-            this.DataContext = vm;
             Canvas.SetZIndex(this, -1);
             var groupViewModel = this.DataContext as GroupViewModel;
             if (groupViewModel != null)
@@ -95,6 +94,14 @@ namespace NuSysApp
         private void OnClick_Grid(object sender, RoutedEventArgs e)
         {
             this.ArrangeNodesInGrid();
+        }
+
+        public InqCanvasView InqCanvas
+        {
+            get
+            {
+                return nodeTpl.inkCanvas;
+            }
         }
     }
 }
