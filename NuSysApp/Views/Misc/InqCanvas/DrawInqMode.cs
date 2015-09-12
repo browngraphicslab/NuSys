@@ -26,6 +26,7 @@ namespace NuSysApp
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
             _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
+            _currentStroke.ParentID = inqCanvas.ViewModel.Model.ID;
             _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
 
             //TODO: add data binding for thickness and color

@@ -33,7 +33,7 @@ namespace NuSysApp
         }
         public async Task HandleMessage(Dictionary<string,string> props)
         {
-
+            Debug.WriteLine("handle message called");
             if (props.ContainsKey("id"))
             {
                 string id = props["id"];//get id from dictionary
@@ -320,6 +320,10 @@ namespace NuSysApp
                             }
 
                             var lineModel = new InqLineModel(id);
+                            if (props.ContainsKey("canvasNodeID"))
+                            {
+                                lineModel.ParentID = props["canvasNodeID"];
+                            }
                             var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
                             lineModel.Points = points;
                             lineModel.Stroke = stroke;
@@ -406,7 +410,19 @@ namespace NuSysApp
                 {
                     Sendable atom = list.First.Value;
                     list.RemoveFirst();
-                    ret += await atom.Stringify();
+                    string s = String.Empty;
+                    if (atom is InqLineModel)
+                    {
+                        await UITask.Run(async delegate
+                        {
+                            s = await atom.Stringify();
+                        });
+                    }
+                    else
+                    {
+                        s = await atom.Stringify();
+                    }
+                    ret += s;
                 }
                 /*
                 while(list.Count > 0)
