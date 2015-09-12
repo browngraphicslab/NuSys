@@ -37,7 +37,7 @@ namespace NuSysApp
             if (props.ContainsKey("id"))
             {
                 string id = props["id"];//get id from dictionary
-                _sendablesLocked.GetOrAdd(id, true);
+                _sendablesLocked.TryAdd(id, true);
                 if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
                     Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
@@ -342,7 +342,7 @@ namespace NuSysApp
                 {
                     WorkSpaceModel.RemoveSendable(id);
                 }
-                _deletedIDs.GetOrAdd(id, true);
+                _deletedIDs.TryAdd(id, true);
             });           
         }
 
@@ -449,7 +449,7 @@ namespace NuSysApp
 
         public void AddCreationCallback(string id, Action<string> d)
         {
-            _creationCallbacks.GetOrAdd(id, d);
+            _creationCallbacks.TryAdd(id, d);
         }
         public bool HasLock(string id)
         {
