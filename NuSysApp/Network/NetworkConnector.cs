@@ -1100,6 +1100,8 @@ namespace NuSysApp
             });
         }
 
+        //testing git settings
+
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
         */
