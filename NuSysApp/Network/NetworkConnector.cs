@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -676,7 +677,10 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.RemoveEmptyEntries); //break up message into subparts
+                    var matches = Regex.Match(message, "(?:({[^}]+}) *)*");
+                    string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
+
+                    //var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.RemoveEmptyEntries); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -1044,6 +1048,7 @@ namespace NuSysApp
         */
         private Dictionary<string, string> ParseOutProperties(string message)
         {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(message);
             message = message.Substring(1, message.Length - 2);
             string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.RemoveEmptyEntries);
             Dictionary<string, string> props = new Dictionary<string, string>();
@@ -1074,13 +1079,15 @@ namespace NuSysApp
         */
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
         {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(dict);
+            /*
             var m = "<";
             foreach (var kvp in dict)
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
             m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
-            return m;
+            return m;*/
         }
 
 

@@ -90,6 +90,7 @@ namespace NuSysApp
             if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
             {
                 Debug.WriteLine("add to debounce dict called");
+                DebounceDict.MakeNextMessageTCP();
                 DebounceDict.Add("audio", Convert.ToBase64String(bytes));
                 DebounceDict.MakeNextMessageTCP();
             }

@@ -137,7 +137,10 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "ToDelete":
-                    (this.Parent as InqCanvasView).Children.Remove(this);
+                    if (this.Parent != null)
+                    {
+                        (this.Parent as InqCanvasView).Children.Remove(this);
+                    }
                     break;
                 case "Parent":
                     (vm as InqLineViewModel).SetParentID((this.Parent as InqCanvasView).ViewModel.Model.ID);
