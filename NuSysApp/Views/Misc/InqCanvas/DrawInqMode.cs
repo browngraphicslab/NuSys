@@ -32,6 +32,8 @@ namespace NuSysApp
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
             _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
             inqCanvas.Children.Add(_currentInqLineView);
+            var currentPoint = e.GetCurrentPoint(inqCanvas);
+            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -50,6 +52,8 @@ namespace NuSysApp
 
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            var currentPoint = e.GetCurrentPoint(inqCanvas);
+            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
             NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).OnFinalizedLine += delegate
             {
