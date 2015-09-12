@@ -310,7 +310,7 @@ namespace NuSysApp
                     }
                 }
             }
-           
+            ClearMultiSelection();
         }
 
 
