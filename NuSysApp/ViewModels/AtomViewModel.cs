@@ -24,14 +24,14 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected AtomViewModel(Atom model, WorkspaceViewModel vm)
+        protected AtomViewModel(AtomModel model, WorkspaceViewModel vm)
         {
             WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
             this.IsVisible = true;
             this.Model = model;
             this.Model.OnCanEditChanged += CanEditChangedHandler;
-            ((Atom)this.Model).OnLinked += LinkedHappend;
+            ((AtomModel)this.Model).OnLinked += LinkedHappend;
         }
 
         private void LinkedHappend(object source, LinkedEventArgs e)
@@ -101,8 +101,8 @@ namespace NuSysApp
         /// </summary>
         public WorkspaceViewModel WorkSpaceViewModel {  get; }
 
-        private Atom.EditStatus _canEdit;
-        public Atom.EditStatus CanEdit
+        private AtomModel.EditStatus _canEdit;
+        public AtomModel.EditStatus CanEdit
         {
             get { return _canEdit; }
             set
@@ -110,12 +110,12 @@ namespace NuSysApp
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
                 Color color = this.Color.Color;
-                if (_canEdit == Atom.EditStatus.No)
+                if (_canEdit == AtomModel.EditStatus.No)
                 {
                     color.A = 50;
                     this.Color = new SolidColorBrush(color);
                 }
-                else if (_canEdit == Atom.EditStatus.Yes)
+                else if (_canEdit == AtomModel.EditStatus.Yes)
                 {
                     color.A = 255;
                     this.Color = new SolidColorBrush(color);
@@ -278,7 +278,7 @@ namespace NuSysApp
             }
         }
 
-        public Atom Model { get;}
+        public AtomModel Model { get;}
 
         public String AtomType { get; set; }
 

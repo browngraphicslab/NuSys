@@ -21,7 +21,7 @@ namespace NuSysApp
             var strokes = _view.InqCanvas.Children;
             foreach (var stroke in strokes)
             {
-                if (stroke is InqLine)
+                if (stroke is InqLineView)
                 {
                     stroke.RightTapped += OnRightTapped;
                 }
@@ -33,7 +33,7 @@ namespace NuSysApp
             var strokes = _view.InqCanvas.Children;
             foreach(var stroke in strokes)
             {
-                if (stroke is InqLine)
+                if (stroke is InqLineView)
                 {
                     stroke.RightTapped -= OnRightTapped;
                 }
@@ -42,12 +42,12 @@ namespace NuSysApp
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            _view.InqCanvas.Children.Remove(sender as InqLine);
+            _view.InqCanvas.Children.Remove(sender as InqLineView);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-            InqLine[] lines = {sender as InqLine};
+            InqLineView[] linesView = {sender as InqLineView};
             string plines = "";
-            foreach (InqLine pl in lines)
+            foreach (InqLineView pl in linesView)
             {
                 if (pl.Points.Count > 0)
                 {

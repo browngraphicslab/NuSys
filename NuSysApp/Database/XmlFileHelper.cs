@@ -95,10 +95,10 @@ namespace NuSysApp
                                 // append more nodes into the group if it contains more than two nodes
                                 if (NodeIdList.Count > 2)
                                 {
-                                    Group group = vm.Model.IDToSendableDict[ID] as Group;
+                                    GroupNodeModel group = vm.Model.IDToSendableDict[ID] as GroupNodeModel;
                                     for (int i = 2; i < NodeIdList.Count; i++)
                                     {
-                                        Node currNode = vm.Model.IDToSendableDict[NodeIdList[i]] as Node;
+                                        NodeModel currNode = vm.Model.IDToSendableDict[NodeIdList[i]] as NodeModel;
                                         currNode.MoveToGroup(group);
                                     }
                                 }
@@ -161,7 +161,7 @@ namespace NuSysApp
             string ID = node.Attributes.GetNamedItem("id").Value;
 
             // look up the content of the current atom in the database
-            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
+            var query = vm.myDB.DBConnection.Table<ContentModel>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -202,7 +202,7 @@ namespace NuSysApp
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
             // look up the content of the current atom in the database
-            var query = vm.myDB.DBConnection.Table<Content>().Where(v => v.assocAtomID == ID);
+            var query = vm.myDB.DBConnection.Table<ContentModel>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
 
             byte[] byteData = null;

@@ -43,7 +43,7 @@ namespace NuSysApp
                 if (contents.Count == 0)
                     return;
 
-                var nodes = new List<Node>();
+                var nodes = new List<NodeModel>();
                 var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
                 var createdNodes = new List<string>();
                 var cdEvent = new System.Threading.CountdownEvent(contents.Count);

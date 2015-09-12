@@ -4,11 +4,11 @@ namespace NuSysApp
 {
     public class CreateEventArgs : SuperEventArgs
     {
-        public CreateEventArgs(string text, Node node):base(text)
+        public CreateEventArgs(string text, NodeModel node):base(text)
         {
             CreatedNode = node;
         }
 
-        public Node CreatedNode { get; }
+        public NodeModel CreatedNode { get; }
     }
 }

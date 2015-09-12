@@ -8,17 +8,16 @@ using System.Xml;
 
 namespace NuSysApp
 {
-    public class TextNode : Node
+    public class TextNodeModel : NodeModel
     {
         private string _text;
         public delegate void TextChangedEventHandler(object source, TextChangedEventArgs e);
         public event TextChangedEventHandler OnTextChanged;
 
-        public TextNode(string data, string id): base(id)
+        public TextNodeModel(string data, string id): base(id)
         {
             ID = id;
-            Text = data;
-       
+            Text = data;       
         }
 
         public string Text
@@ -29,7 +28,7 @@ namespace NuSysApp
                 _text = value;
 
                 byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);
-                Content = new Content(newTextBytes, ID); //Update Content
+                Content = new ContentModel(newTextBytes, ID); //Update Content
 
                 if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
                 {
@@ -62,7 +61,7 @@ namespace NuSysApp
         public override XmlElement WriteXML(XmlDocument doc)
         {
             byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
-            Content = new Content(newTextBytes, ID); //Update Content
+            Content = new ContentModel(newTextBytes, ID); //Update Content
             
             //XmlElement 
             XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name

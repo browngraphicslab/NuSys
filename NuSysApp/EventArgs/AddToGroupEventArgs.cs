@@ -8,14 +8,14 @@ namespace NuSysApp
 {
     public class AddToGroupEventArgs : SuperEventArgs
     {
-        public AddToGroupEventArgs(string text, Group addedTo, Node sourceNode): base(text)
+        public AddToGroupEventArgs(string text, GroupNodeModel addedTo, NodeModel sourceNode): base(text)
         {
             Group = addedTo;
             Node = sourceNode;
         }
 
-        public Node Node { get;}
+        public NodeModel Node { get;}
 
-        public Group Group { get;}
+        public GroupNodeModel Group { get;}
     }
 }

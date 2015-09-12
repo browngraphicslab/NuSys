@@ -6,17 +6,17 @@ using System.Xml;
 
 namespace NuSysApp
 {
-    public class Group : Node
+    public class GroupNodeModel : NodeModel
     {
         private Dictionary<string, Sendable> _idDict;
-        public Group(string id): base(id)
+        public GroupNodeModel(string id): base(id)
         {
             this.ID = id;
             _idDict = new Dictionary<string, Sendable>();
-            NodeModelList = new ObservableCollection<Node>();
+            NodeModelList = new ObservableCollection<NodeModel>();
         }
 
-        public void Add(Atom atom)
+        public void Add(AtomModel atom)
         {
             if (_idDict.ContainsKey(atom.ID))
             {
@@ -26,7 +26,7 @@ namespace NuSysApp
             _idDict.Add(atom.ID, atom);
         }
 
-        public void Remove(Atom atom)
+        public void Remove(AtomModel atom)
         {
             if (!_idDict.ContainsKey(atom.ID))
             {
@@ -36,9 +36,9 @@ namespace NuSysApp
             _idDict.Remove(atom.ID);
         }
 
-        public ObservableCollection<Node> NodeModelList { get; set; }
+        public ObservableCollection<NodeModel> NodeModelList { get; set; }
 
-        public ObservableCollection<Link> LinkModelList { get; set; }
+        public ObservableCollection<LinkModel> LinkModelList { get; set; }
 
         public override XmlElement WriteXML(XmlDocument doc)
         {
@@ -55,7 +55,7 @@ namespace NuSysApp
             //get nodes within groups
             foreach (Sendable id in _idDict.Values)
             {
-                Node node = id as Node;
+                NodeModel node = id as NodeModel;
                 groupNode.AppendChild(node.WriteXML(doc));
             }
             return groupNode;

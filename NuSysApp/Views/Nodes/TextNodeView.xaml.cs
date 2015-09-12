@@ -33,7 +33,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
 
-            var model = (TextNode)vm.Model;
+            var model = (TextNodeModel)vm.Model;
 
             mdTextBox.TextChanging += delegate
             {

@@ -6,35 +6,25 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class Atom : Sendable
+    public abstract class AtomModel : Sendable
     {
         private DebouncingDictionary _debounceDict;
-        private EditStatus _editStatus;
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public event LinkedEventHandler OnLinked;
         public event CreateGroupEventHandler OnCreatedGroup;
-        public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
-        public event CanEditChangedEventHandler OnCanEditChanged;
-        public enum EditStatus
-        {
-            Yes,
-            No,
-            Maybe
-        }
+
 
         private SolidColorBrush _color;
 
-        protected Atom(string id)
+        protected AtomModel(string id) : base(id)
         {
             ID = id;
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
         }
 
-        public abstract void Delete();
-
-        public void AddToLink(Link link)
+        public void AddToLink(LinkModel link)
         {
             OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
         }
@@ -89,37 +79,16 @@ namespace NuSysApp
         {
             get { return _debounceDict; }
         }
-        public EditStatus CanEdit {
-            get
-            {
-                return _editStatus;
-            }
-            set
-            {
-                if (_editStatus == value)
-                {
-                    return;
-                }
-                _editStatus = value;
-                OnCanEditChanged?.Invoke(this, new CanEditChangedEventArg("Can edit changed", CanEdit));
-            }
-        } //Network locks
         public string ID { get; set; }
 
-        public virtual async Task UnPack(Dictionary<string, string> props)
-        { 
-            if (props.ContainsKey("color"))
-            {
-                //TODO add in color
-            }
+        public override async Task UnPack(Dictionary<string, string> props)
+        {
+            await base.UnPack(props);
         }
 
-        public virtual async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, string>> Pack()
         {
-            Dictionary<string,string> dict = new Dictionary<string, string>();
-            //dict.Add("color") //TODO add in color
-            dict.Add("id", ID);
-            return dict;
+            return await base.Pack();
         } 
     } 
 }

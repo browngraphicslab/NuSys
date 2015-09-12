@@ -5,15 +5,15 @@ namespace NuSysApp
     public class LinkedEventArgs : SuperEventArgs
     {
         
-        private Link _link;
+        private LinkModel _link;
 
-        public LinkedEventArgs(string text, Link link):base(text)
+        public LinkedEventArgs(string text, LinkModel link):base(text)
         {
  
             _link = link;
         }
 
-        public Link Link
+        public LinkModel Link
         {
             get
             {
@@ -21,12 +21,12 @@ namespace NuSysApp
             } 
         }
 
-        public Atom Atom1
+        public AtomModel Atom1
         {
             get { return _link.Atom1; }
         }
 
-        public Atom Atom2
+        public AtomModel Atom2
         {
             get { return _link.Atom2; }
         }

@@ -7,13 +7,63 @@ using Windows.System;
 
 namespace NuSysApp
 {
-    public interface Sendable
+    public abstract class Sendable : BaseINPC
     {
-        Task<Dictionary<string, string>> Pack();
-        Task UnPack(Dictionary<string, string> props);
-        string ID { get;}
-        Atom.EditStatus CanEdit { set; get; }
+        public enum EditStatus
+        {
+            Yes,
+            No,
+            Maybe
+        }
+        private EditStatus _editStatus;
+        public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
+        public event CanEditChangedEventHandler OnCanEditChanged;
+        public Sendable(string id) : base()
+        {
+            ID = id;
+            _editStatus = EditStatus.Maybe;
+            Children = new List<Sendable>();
+        }
+        public async virtual Task<Dictionary<string, string>> Pack()
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("id", ID);
+            return dict;
+        }
+        public async virtual Task UnPack(Dictionary<string, string> props) { }
+        public string ID { get;}
+        public EditStatus CanEdit
+        {
+            get
+            {
+                return _editStatus;
+            }
+            set
+            {
+                if (_editStatus == value)
+                {
+                    return;
+                }
+                _editStatus = value;
+                OnCanEditChanged?.Invoke(this, new CanEditChangedEventArg("Can edit changed", CanEdit));
+            }
+        } //Network locks
 
-        void Delete();
+        public abstract void Delete();
+        public List<Sendable> Children { set; get; }
+        public virtual async Task<string> Stringify()
+        {
+            Dictionary<string, string> props = await Pack();
+            Dictionary<string, string> childs = new Dictionary<string, string>();//YES, i know childs is bad grammars but I already used Children
+            if (Children.Count > 0)
+            {
+                foreach (Sendable child in Children)
+                {
+                    childs.Add(child.ID, await child.Stringify());
+                }
+                props["children"] = Newtonsoft.Json.JsonConvert.SerializeObject(childs);
+            }
+            return Newtonsoft.Json.JsonConvert.SerializeObject(props);
+        }
     }
 }

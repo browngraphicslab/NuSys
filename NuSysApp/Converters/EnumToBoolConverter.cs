@@ -7,8 +7,8 @@ namespace NuSysApp
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var status = (Atom.EditStatus) value;
-            if (status == Atom.EditStatus.No)
+            var status = (AtomModel.EditStatus) value;
+            if (status == AtomModel.EditStatus.No)
             {
                 return false;
             }

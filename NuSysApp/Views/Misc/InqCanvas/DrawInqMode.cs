@@ -9,15 +9,32 @@ namespace NuSysApp
 {
     public class DrawInqMode : IInqMode
     {
-        private InqLine _currentStroke;
+        private InqLineModel _currentStroke;
+        private InqLineView _currentInqLineView;
+
+        public DrawInqMode(InqCanvasView view)
+        {
+            // This adds the final line to the canvas, after the host send it to this client
+            (((InqCanvasViewModel)view.DataContext).Model).OnFinalizedLine += delegate(InqLineModel lineModel)
+            {
+                var lineView = new InqLineView(new InqLineViewModel(lineModel));
+                view.Children.Add(lineView);
+            };
+        }
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
+            _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
+            _currentStroke.ParentID = inqCanvas.ViewModel.Model.ID;
+            _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
 
-            _currentStroke = new InqLine(DateTime.UtcNow.Ticks.ToString());
+            //TODO: add data binding for thickness and color
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            inqCanvas.Children.Add(_currentStroke);
+            _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
+            inqCanvas.Children.Add(_currentInqLineView);
+            var currentPoint = e.GetCurrentPoint(inqCanvas);
+            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -36,10 +53,12 @@ namespace NuSysApp
 
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            var currentPoint = e.GetCurrentPoint(inqCanvas);
+            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
             NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).OnFinalizedLine += delegate
             {
-                inqCanvas.Children.Remove(_currentStroke);
+                inqCanvas.Children.Remove(_currentInqLineView);
             };
         }
     }

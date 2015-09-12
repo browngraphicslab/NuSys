@@ -9,11 +9,11 @@ namespace NuSysApp
     public class CreateGroupEventArgs : SuperEventArgs
     {
 
-        public CreateGroupEventArgs(string text, Group group):base(text)
+        public CreateGroupEventArgs(string text, GroupNodeModel group):base(text)
         {
             CreatedGroup = group;
         }
 
-        public Group CreatedGroup { get; }
+        public GroupNodeModel CreatedGroup { get; }
     }
 }

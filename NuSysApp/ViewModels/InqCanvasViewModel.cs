@@ -25,16 +25,16 @@ namespace NuSysApp
         {
             Model.AddTemporaryPoint(p);
         }
-        public InqLine LastPartialLine { get; set; }
+        public InqLineModel LastPartialLineModel { get; set; }
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
-            if (e.AddedLine != LastPartialLine)
+            if (e.AddedLineModel != LastPartialLineModel)
             {
-                LastPartialLine = e.AddedLine;
+                LastPartialLineModel = e.AddedLineModel;
                 RaisePropertyChanged("PartialLineAdded");
             }
         }
-        public void RemoveLine(InqLine line)
+        public void RemoveLine(InqLineView lineView)
         {
             
         }

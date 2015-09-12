@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         private CompositeTransform _inkScale;
 
-        public ImageNodeViewModel(ImageModel model, WorkspaceViewModel vm) : base(model, vm)
+        public ImageNodeViewModel(ImageNodeModel model, WorkspaceViewModel vm) : base(model, vm)
         {
             this.NodeType = NodeType.Image; //Also sets model value
             this.View = new ImageNodeView(this);
@@ -35,13 +35,13 @@ namespace NuSysApp
             double newDx, newDy;
             if (dx > dy)
             {
-                newDx = dy * ((ImageModel)Model).Image.PixelWidth / ((ImageModel)Model).Image.PixelHeight;
+                newDx = dy * ((ImageNodeModel)Model).Image.PixelWidth / ((ImageNodeModel)Model).Image.PixelHeight;
                 newDy = dy;
             }
             else
             {
                 newDx = dx;
-                newDy = dx * ((ImageModel)Model).Image.PixelHeight / ((ImageModel)Model).Image.PixelWidth;
+                newDy = dx * ((ImageNodeModel)Model).Image.PixelHeight / ((ImageNodeModel)Model).Image.PixelWidth;
             }
             if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
             {

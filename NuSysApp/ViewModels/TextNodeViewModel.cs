@@ -21,7 +21,7 @@ namespace NuSysApp
         private List<byte[]> _imgData = new List<byte[]>();
 
         #endregion Private Members
-        public TextNodeViewModel(TextNode model, WorkspaceViewModel workSpaceViewModel, UserControl view = null) : base(model, workSpaceViewModel)
+        public TextNodeViewModel(TextNodeModel model, WorkspaceViewModel workSpaceViewModel, UserControl view = null) : base(model, workSpaceViewModel)
         {           
             this.View = view ?? new TextNodeView(this);  
             this.Transform = new MatrixTransform();
@@ -32,7 +32,7 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 89, 189, 197));
 
 
-            ((TextNode) this.Model).OnTextChanged += TextChangedHandler;
+            ((TextNodeModel) this.Model).OnTextChanged += TextChangedHandler;
         }
 
         public async Task UpdateRtf()       
@@ -42,7 +42,7 @@ namespace NuSysApp
             _inlineImages.Clear();
 
             const string rtfImagePlaceholder = "---IMAGE---";
-            var md = ((TextNode)Model).Text;
+            var md = ((TextNodeModel)Model).Text;
 
             var imgData = new List<byte[]>();
             while (true)

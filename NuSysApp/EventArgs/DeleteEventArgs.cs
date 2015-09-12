@@ -5,22 +5,22 @@ namespace NuSysApp
     public class DeleteEventArgs : SuperEventArgs
     {
     
-        private Node _node;
-        private Link _link;
+        private NodeModel _node;
+        private LinkModel _link;
 
-        public DeleteEventArgs(string text, Node node):base(text)
+        public DeleteEventArgs(string text, NodeModel node):base(text)
         {
       
             _node = node;
         }
 
-        public DeleteEventArgs(string text, Link link) : base(text)
+        public DeleteEventArgs(string text, LinkModel link) : base(text)
         {
             _link = link;
         }
 
-        public Node DeletedNode => _node;
+        public NodeModel DeletedNode => _node;
 
-        public Link DeletedLink => _link;
+        public LinkModel DeletedLink => _link;
     }
 }

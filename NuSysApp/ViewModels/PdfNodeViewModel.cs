@@ -83,7 +83,7 @@ namespace NuSysApp
             get; set;
         }
 
-        public HashSet<InqLine> RenderedLines { get; set; }
+        public HashSet<InqLineModel> RenderedLines { get; set; }
 
         public List<BitmapImage> RenderedPages
         {
@@ -95,7 +95,7 @@ namespace NuSysApp
             }
         }
 
-        public List<HashSet<InqLine>> InqPages
+        public List<HashSet<InqLineModel>> InqPages
         {
             get { return ((PdfNodeModel) Model).InqLines; }
         }

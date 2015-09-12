@@ -22,7 +22,7 @@ namespace NuSysApp
         private AtomViewModel _atom1, _atom2;
         #endregion Private members
 
-        public LinkViewModel(Link model, AtomViewModel atom1,
+        public LinkViewModel(LinkModel model, AtomViewModel atom1,
             AtomViewModel atom2, WorkspaceViewModel workspace) : base(model, workspace)
         {
             this.Atom1 = atom1;
@@ -39,7 +39,7 @@ namespace NuSysApp
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
             this.View = new BezierLinkView(this);  
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));
-            ((Link)this.Model).OnDeletion += DeletionHappend;
+            ((LinkModel)this.Model).OnDeletion += DeletionHappend;
         }
         private void DeletionHappend(object source, DeleteEventArgs e)
         {
@@ -134,7 +134,7 @@ namespace NuSysApp
 
         public XmlElement WriteXML(XmlDocument doc)
         {
-            return ((Link)Model).WriteXML(doc);
+            return ((LinkModel)Model).WriteXML(doc);
         }
     }
 }

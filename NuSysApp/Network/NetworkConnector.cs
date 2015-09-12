@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -249,13 +250,13 @@ namespace NuSysApp
                     _pingTimer = new Timer(PingTick, null, 0, 2000);
                     foreach (string ip in _otherIPs)
                     {
-                        _pingResponses.GetOrAdd(ip, 0);
+                        _pingResponses.TryAdd(ip, 0);
                     }
                 }
                 else
                 {
                     _pingTimer = new Timer(PingTick, null, 0, 1000);
-                    _pingResponses.GetOrAdd(_hostIP, 0);
+                    _pingResponses.TryAdd(_hostIP, 0);
                 }
             }
         }
@@ -474,7 +475,7 @@ namespace NuSysApp
             var UDPsocket = new DatagramSocket();
             await UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
             var UDPwriter = new DataWriter(UDPsocket.OutputStream);
-            _UDPOutSockets.GetOrAdd(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter), true);
+            _UDPOutSockets.TryAdd(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter), true);
 
             if (_addressToWriter.ContainsKey(ip))
             {
@@ -482,7 +483,7 @@ namespace NuSysApp
             }
             else
             {
-                _addressToWriter.GetOrAdd(ip, UDPwriter);
+                _addressToWriter.TryAdd(ip, UDPwriter);
             }
         }
         /*
@@ -676,7 +677,10 @@ namespace NuSysApp
             {
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
-                    var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.RemoveEmptyEntries); //break up message into subparts
+                    var matches = Regex.Match(message, "(?:({[^}]+}) *)*");
+                    string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
+
+                    //var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.RemoveEmptyEntries); //break up message into subparts
                     foreach (var subMessage in miniStrings)
                     {
                         if (subMessage.Length > 0)
@@ -1017,25 +1021,19 @@ namespace NuSysApp
                     }
                 }
             }
-            if (message[0] == '<' && message[message.Length - 1] == '>' || true)
+
+            Dictionary<string, string> props = ParseOutProperties(message);
+            if (props.ContainsKey("id"))
             {
-                Dictionary<string, string> props = ParseOutProperties(message);
-                if (props.ContainsKey("id"))
+                await ModelIntermediate.HandleMessage(props);
+                if ((ModelIntermediate.HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _localIP == _hostIP)
                 {
-                    await ModelIntermediate.HandleMessage(props);
-                    if ((ModelIntermediate.HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _localIP == _hostIP)
-                    {
-                        await SendMassTCPMessage(message);
-                    }
-                }
-                else
-                {
-                    throw new InvalidIDException("there was no id, that's why this error is occurring...");
+                    await SendMassTCPMessage(message);
                 }
             }
             else
             {
-                throw new IncorrectFormatException(message);
+                throw new InvalidIDException("there was no id, that's why this error is occurring...");
             }
         }
 
@@ -1044,6 +1042,7 @@ namespace NuSysApp
         */
         private Dictionary<string, string> ParseOutProperties(string message)
         {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(message);
             message = message.Substring(1, message.Length - 2);
             string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.RemoveEmptyEntries);
             Dictionary<string, string> props = new Dictionary<string, string>();
@@ -1074,13 +1073,15 @@ namespace NuSysApp
         */
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
         {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(dict);
+            /*
             var m = "<";
             foreach (var kvp in dict)
             {
                 m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
             }
             m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
-            return m;
+            return m;*/
         }
 
 
@@ -1098,6 +1099,8 @@ namespace NuSysApp
                 }
             });
         }
+
+        //testing git settings
 
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
@@ -1416,6 +1419,7 @@ namespace NuSysApp
                 {"previousID", previousID}
             };
                 string m = MakeSubMessageFromDict(props);
+
                 await SendMessageToHost(m);
             });
         }
@@ -1446,7 +1450,7 @@ namespace NuSysApp
                 else
                 {
                     Debug.WriteLine("Attempted to return lock with ID: " + id + " When no such ID exists");
-                    throw new InvalidIDException(id);
+                    //throw new InvalidIDException(id);
                 }
                 await SendMessageToHost("SPECIAL7:" + id);
                 await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));

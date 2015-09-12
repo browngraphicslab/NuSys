@@ -2,10 +2,10 @@
 
 namespace NuSysApp
 {
-    public class Content
+    public class ContentModel
     {
-        public Content() { }
-        public Content(byte[] data, string id)
+        public ContentModel() { }
+        public ContentModel(byte[] data, string id)
         {
             Data = data;
             assocAtomID = id;

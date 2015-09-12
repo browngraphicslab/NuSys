@@ -17,12 +17,17 @@ namespace NuSysApp
     {
         private bool _isEnabled;
         private uint _pointerId = uint.MaxValue;
-        private IInqMode _mode = new DrawInqMode();
+        private IInqMode _mode;
         public bool IsPressed = false;
         private InqCanvasViewModel _viewModel;
+
         public InqCanvasView()
         {
-            //MISC.Clip.SetToBounds(this, true);
+            // Initally, set mode to Inq drawing.
+            Loaded += delegate
+            {
+                _mode = new DrawInqMode(this);
+            };
         }
 
         public InqCanvasViewModel ViewModel
@@ -104,7 +109,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode();
+                _mode = new DrawInqMode(this);
             }
         }
 
@@ -121,7 +126,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode();
+                _mode = new DrawInqMode(this);
             }
         }
 
@@ -130,9 +135,10 @@ namespace NuSysApp
         {
             this.Children.Clear();
             var lines = this.ViewModel.Model.Lines;
-            foreach (InqLine line in lines)
+            foreach (InqLineModel line in lines)
             {
-                this.Children.Add(line);
+                var inqView = new InqLineView(new InqLineViewModel(line), line.StrokeThickness, line.Stroke);
+                this.Children.Add(inqView);
             }
         }
 
@@ -170,7 +176,7 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    Children.Add(vm.LastPartialLine);
+                    Children.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
                     break;
             }
         }

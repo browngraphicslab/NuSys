@@ -25,14 +25,14 @@ namespace NuSysApp
         private GroupViewModel _group;
 
         #endregion Private Members
-        protected NodeViewModel(Node model, WorkspaceViewModel vm): base(model, vm)
+        protected NodeViewModel(NodeModel model, WorkspaceViewModel vm): base(model, vm)
         {
             this.AtomType = Constants.Node;       
-            ((Node)this.Model).OnDeletion += DeletionHappend;         
-            ((Node) this.Model).OnLocationUpdate += LocationUpdateHandler;
-            ((Node) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
+            ((NodeModel)this.Model).OnDeletion += DeletionHappend;         
+            ((NodeModel) this.Model).OnLocationUpdate += LocationUpdateHandler;
+            ((NodeModel) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
            
-            ((Node) this.Model).OnAddToGroup += AddToGroupHandler;
+            ((NodeModel) this.Model).OnAddToGroup += AddToGroupHandler;
             //X = 0;//TODO if commenting this out doesn't cause problems just delete
             //Y = 0;
         }
@@ -83,8 +83,8 @@ namespace NuSysApp
                 }
                 Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
-                ((Node)Model).X = transMat.OffsetX;
-                ((Node)Model).Y = transMat.OffsetY;
+                ((NodeModel)Model).X = transMat.OffsetX;
+                ((NodeModel)Model).Y = transMat.OffsetY;
                 this.UpdateAnchor();
                 foreach (var link in LinkList)
                 {
@@ -167,7 +167,7 @@ namespace NuSysApp
 
             if (this.WorkSpaceViewModel != null && this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
             {
-                ((Node)this.Model).IsAnnotation = true;
+                ((NodeModel)this.Model).IsAnnotation = true;
             }
         }
         #endregion Node Manipulations
@@ -180,14 +180,14 @@ namespace NuSysApp
 
         private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
         {
-            this.SetPosition(((Node)this.Model).X, ((Node)this.Model).Y);
+            this.SetPosition(((NodeModel)this.Model).X, ((NodeModel)this.Model).Y);
             this.UpdateAnchor();
         }
 
         private void WidthHeightChangedHandler(object source, WidthHeightUpdateEventArgs e)
         {
-            this.Width = ((Node)this.Model).Width;
-            this.Height = ((Node)this.Model).Height;
+            this.Width = ((NodeModel)this.Model).Width;
+            this.Height = ((NodeModel)this.Model).Height;
             this.UpdateAnchor();
         }
         #endregion Event Handlers
@@ -195,7 +195,7 @@ namespace NuSysApp
         #region XML methods
         public XmlElement WriteXML(XmlDocument doc)
         {
-            return ((Node)Model).WriteXML(doc);
+            return ((NodeModel)Model).WriteXML(doc);
         }
         #endregion XML methods
 
@@ -232,8 +232,8 @@ namespace NuSysApp
 
         public bool IsAnnotation
         {
-            get { return ((Node)Model).IsAnnotation; }
-            set { ((Node)Model).IsAnnotation = value; }
+            get { return ((NodeModel)Model).IsAnnotation; }
+            set { ((NodeModel)Model).IsAnnotation = value; }
         }
 
         public string id
@@ -273,7 +273,7 @@ namespace NuSysApp
                     return;
                 }
                 _width = value;
-                ((Node)Model).Width = value;
+                ((NodeModel)Model).Width = value;
          
                 RaisePropertyChanged("Width");
             }
@@ -292,7 +292,7 @@ namespace NuSysApp
                     return;
                 }
                 _height = value;
-                ((Node)Model).Height = value;
+                ((NodeModel)Model).Height = value;
                 RaisePropertyChanged("Height");
             }
         }
@@ -326,10 +326,10 @@ namespace NuSysApp
 
         public NodeType NodeType
         {
-            get { return ((Node)this.Model).NodeType; }
+            get { return ((NodeModel)this.Model).NodeType; }
             set
             {
-                ((Node)this.Model).NodeType = value;
+                ((NodeModel)this.Model).NodeType = value;
             }
         }
 
@@ -346,7 +346,7 @@ namespace NuSysApp
                     _group = value;
                     return;
                 }
-                if (value.Model != ((Node) this.Model).ParentGroup)
+                if (value.Model != ((NodeModel) this.Model).ParentGroup)
                 {
                     Debug.WriteLine("Different parent groups");
                     return;

@@ -33,11 +33,10 @@ namespace NuSysApp
         }
         public async Task HandleMessage(Dictionary<string,string> props)
         {
-
             if (props.ContainsKey("id"))
             {
                 string id = props["id"];//get id from dictionary
-                _sendablesLocked.GetOrAdd(id, true);
+                _sendablesLocked.TryAdd(id, true);
                 if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
                 {
                     Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
@@ -151,7 +150,7 @@ namespace NuSysApp
 
             if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
             {
-                await UITask.Run(async () => { WorkSpaceModel.CreateLink((Atom)WorkSpaceModel.IDToSendableDict[id1], (Atom)WorkSpaceModel.IDToSendableDict[id2], id); });
+                await UITask.Run(async () => { WorkSpaceModel.CreateLink((AtomModel)WorkSpaceModel.IDToSendableDict[id1], (AtomModel)WorkSpaceModel.IDToSendableDict[id2], id); });
                
             }
         }
@@ -250,14 +249,14 @@ namespace NuSysApp
 
         public async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
         {
-            Node node1 = null;
-            Node node2 = null;
+            NodeModel node1 = null;
+            NodeModel node2 = null;
             double x = 0;
             double y = 0;
             if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
             {
-                node1 = (Node)WorkSpaceModel.IDToSendableDict[props["id1"]];
-                node2 = (Node)WorkSpaceModel.IDToSendableDict[props["id2"]];
+                node1 = (NodeModel)WorkSpaceModel.IDToSendableDict[props["id1"]];
+                node2 = (NodeModel)WorkSpaceModel.IDToSendableDict[props["id2"]];
             }
             if (props.ContainsKey("x"))
             {
@@ -273,10 +272,10 @@ namespace NuSysApp
         {
             if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"]== "WORKSPACE_ID"))
             {
-                InqCanvasModel canvas;
+                InqCanvasModel canvas = null;
                 if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
-                    canvas = ((Node) WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas;
+                    await UITask.Run(async delegate { canvas = ((NodeModel)WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas; });
                 }
                 else
                 {
@@ -288,34 +287,50 @@ namespace NuSysApp
                     Point two;
                     ParseToLineSegment(props, out one, out two);                   
 
-                    await UITask.Run(() => {
-                        var line = new InqLine(props["canvasNodeID"], new List<Point>() { one, two }, 2, Colors.Black);
-                        canvas.AddTemporaryInqline(line, id);
+                    await UITask.Run(() =>
+                    {
+                        var lineModel = new InqLineModel(props["canvasNodeID"]);
+                        var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
+                        PointCollection pc = new PointCollection();
+                        pc.Add(one);
+                        pc.Add(two);
+                        lineModel.Points = pc;
+                        canvas.AddTemporaryInqline(lineModel, id);
                     });
                 }
                 else if (props.ContainsKey("inkType") && props["inkType"] == "full")
                 {
-                    if (props.ContainsKey("data"))
-                    {
-                        List<Point> points;
+                    await UITask.Run(async delegate {
+
+                        PointCollection points;
                         double thickness;
-                        Color stroke;
-                        InqLine.ParseToLineData(props["data"], out points, out thickness, out stroke);
+                        Brush stroke;
 
-                        if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                        if (props.ContainsKey("data"))
                         {
-                            canvas.OnFinalizedLine += async delegate
-                            {
-                                await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
-                            };
-                        }
+                            InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
 
-                        await UITask.Run( () => {
-                            var line = new InqLine(id, points, thickness, stroke);
-                            canvas.FinalizeLine(line);
-                            WorkSpaceModel.IDToSendableDict.Add(id, line);
-                        });                       
-                    }
+                            if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                            {
+                                canvas.OnFinalizedLine += async delegate
+                                {
+                                    await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
+                                };
+                            }
+
+                            var lineModel = new InqLineModel(id);
+                            if (props.ContainsKey("canvasNodeID"))
+                            {
+                                lineModel.ParentID = props["canvasNodeID"];
+                            }
+                            var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
+                            lineModel.Points = points;
+                            lineModel.Stroke = stroke;
+                            canvas.FinalizeLine(lineModel);
+                            WorkSpaceModel.IDToSendableDict.Add(id, lineModel);              
+                                       
+                        }
+                    });
                 }
             }
             else
@@ -330,7 +345,7 @@ namespace NuSysApp
                 {
                     WorkSpaceModel.RemoveSendable(id);
                 }
-                _deletedIDs.GetOrAdd(id, true);
+                _deletedIDs.TryAdd(id, true);
             });           
         }
 
@@ -380,8 +395,8 @@ namespace NuSysApp
             while(set.Count > 0)
             {
                 Sendable s = set[set.Keys.First()];
-                if (s.GetType() != typeof (Link) || (!set.ContainsKey(((Link) s).InAtomID) &&
-                    !set.ContainsKey(((Link) s).OutAtomID)))
+                if (s.GetType() != typeof (LinkModel) || (!set.ContainsKey(((LinkModel) s).InAtomID) &&
+                    !set.ContainsKey(((LinkModel) s).OutAtomID)))
                 {
                     list.AddLast(s);
                     set.Remove(s.ID);
@@ -390,6 +405,25 @@ namespace NuSysApp
             if (WorkSpaceModel.IDToSendableDict.Count > 0)
             {
                 string ret = "";
+                while (list.Count > 0)
+                {
+                    Sendable atom = list.First.Value;
+                    list.RemoveFirst();
+                    string s = String.Empty;
+                    if (atom is InqLineModel)
+                    {
+                        await UITask.Run(async delegate
+                        {
+                            s = await atom.Stringify();
+                        });
+                    }
+                    else
+                    {
+                        s = await atom.Stringify();
+                    }
+                    ret += s;
+                }
+                /*
                 while(list.Count > 0)
                 {
                 ret += '<';
@@ -409,6 +443,8 @@ namespace NuSysApp
                     });
                 }
                 ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
+                
+                */
                 return ret;
             }
             return "";
@@ -428,13 +464,13 @@ namespace NuSysApp
 
         public void AddCreationCallback(string id, Action<string> d)
         {
-            _creationCallbacks.GetOrAdd(id, d);
+            _creationCallbacks.TryAdd(id, d);
         }
         public bool HasLock(string id)
         {
             if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
             var sendable = WorkSpaceModel.IDToSendableDict[id];
-            bool isLine = sendable is InqLine; // TODO there should be no special casing for inks
+            bool isLine = sendable is InqLineModel; // TODO there should be no special casing for inks
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         

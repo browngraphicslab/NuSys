@@ -22,7 +22,7 @@ namespace NuSysApp
             _atom = atom;
 
         }
-        public DebouncingDictionary(Atom atom, int milliSecondDebounce)
+        public DebouncingDictionary(AtomModel atom, int milliSecondDebounce)
         {
             _dict = new ConcurrentDictionary<string, string>();
             _atom = atom;
@@ -36,12 +36,12 @@ namespace NuSysApp
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(_atom.ID) && (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe))
+            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(_atom.ID) && (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe))
             {
                 if (!_timing)
                 {
                     _timing = true;
-                    _dict.GetOrAdd(id, value);
+                    _dict.TryAdd(id, value);
                     _timer = new Timer(SendMessage, null, 0, _milliSecondDebounce);
                 }
                 else
@@ -51,7 +51,7 @@ namespace NuSysApp
                         _dict[id] = value;
                         return;
                     }
-                    _dict.GetOrAdd(id, value);
+                    _dict.TryAdd(id, value);
                 }
             }
         }
@@ -59,9 +59,9 @@ namespace NuSysApp
         private async void SendMessage(object state)
         {
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
-            if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
+            if (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe)
             {
-                _dict.GetOrAdd("id", _atom.ID);
+                _dict.TryAdd("id", _atom.ID);
                 if (NetworkConnector.Instance.ModelIntermediate.HasSendableID(_atom.ID))
                 {
                     if (_sendNextTCP)

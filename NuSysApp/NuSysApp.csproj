@@ -145,15 +145,17 @@
     <Compile Include="Database\Serializer.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
+    <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
+    <Compile Include="ViewModels\InqLineViewModel.cs" />
     <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\InqLine.xaml.cs">
-      <DependentUpon>InqLine.xaml</DependentUpon>
+    <Compile Include="Views\Misc\InqCanvas\InqLineView.xaml.cs">
+      <DependentUpon>InqLineView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Misc\InqCanvas\DrawInqMode.cs" />
     <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
@@ -239,13 +241,12 @@
     <Compile Include="Util\OfficeIntermediate.cs" />
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
-    <Compile Include="Models\Atom.cs" />
+    <Compile Include="Models\AtomModel.cs" />
     <Compile Include="Models\AudioModel.cs" />
-    <Compile Include="Models\Content.cs" />
+    <Compile Include="Models\ContentModel.cs" />
     <Compile Include="Models\FloatingMenuModel.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ImageModel.cs" />
-    <Compile Include="Models\InkModel.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\Node.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />
@@ -372,7 +373,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\InqCanvas\InqLine.xaml">
+    <Page Include="Views\Misc\InqCanvas\InqLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

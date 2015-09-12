@@ -9,13 +9,13 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageModel : Node
+    public class ImageNodeModel : NodeModel
     {
-        public ImageModel(byte[] byteArray, string id) : base(id)
+        public ImageNodeModel(byte[] byteArray, string id) : base(id)
         {
             ByteArray = byteArray;
             MakeImage(byteArray); // Todo: don't call async methods from a ctor
-            Content = new Content(byteArray, id);
+            Content = new ContentModel(byteArray, id);
         }
 
         private async Task MakeImage(byte[] bytes)
@@ -113,9 +113,9 @@ namespace NuSysApp
 
         public override async Task UnPack(Dictionary<string, string> props)
         {
-            if (props.ContainsKey("image"))
+            if (props.ContainsKey("data"))
             {
-                ByteArray = Convert.FromBase64String(props["image"]); //Converts to Byte Array
+                ByteArray = Convert.FromBase64String(props["data"]); //Converts to Byte Array
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
@@ -135,7 +135,7 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
-            props.Add("image", Convert.ToBase64String(ByteArray));
+            props.Add("data", Convert.ToBase64String(ByteArray));
             props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }

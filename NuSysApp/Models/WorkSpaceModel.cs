@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class WorkSpaceModel : Atom
+    public class WorkSpaceModel : AtomModel
     {
         #region Events and Delegates
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
@@ -36,7 +36,7 @@ namespace NuSysApp
         #region Private Members
         private Dictionary<string, Sendable> _idDict;
 
-        //private ObservableDictionary<string,ObservableCollection<InqLine>> _partialLines;
+        //private ObservableDictionary<string,ObservableCollection<InqLineView>> _partialLines;
         private LockDictionary _locks;
         private InqCanvasModel _inqModel;
         #endregion Private members
@@ -48,16 +48,16 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
-            //_partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
+            //_partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
             //_partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
             //{
             //    if (args.Action == NotifyCollectionChangedAction.Add)
             //    {
-            //        foreach (ObservableCollection<InqLine> n in _partialLines.Values)
+            //        foreach (ObservableCollection<InqLineView> n in _partialLines.Values)
             //        {
             //            n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
             //            {
-            //                InqLine l = ((InqLine) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
+            //                InqLineView l = ((InqLineView) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
             //                OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
             //            };
             //        }
@@ -74,7 +74,7 @@ namespace NuSysApp
         {
             get { return _idDict; }
         }
-        //public ObservableDictionary<string, ObservableCollection<InqLine>> PartialLines 
+        //public ObservableDictionary<string, ObservableCollection<InqLineView>> PartialLines 
         //{
         //    get { return _partialLines; }
         //}
@@ -86,17 +86,17 @@ namespace NuSysApp
 
         #endregion
 
-        public void CreateLink(Atom atom1, Atom atom2, string id)
+        public void CreateLink(AtomModel atom1, AtomModel atom2, string id)
         {
-            var link = new Link(atom1, atom2, id);
+            var link = new LinkModel(atom1, atom2, id);
             atom1.AddToLink(link);
             atom2.AddToLink(link);
             _idDict.Add(id,link);
         }
 
-        public async Task CreateGroup(string id, Node node1, Node node2, double xCooordinate, double yCoordinate)     
+        public async Task CreateGroup(string id, NodeModel node1, NodeModel node2, double xCooordinate, double yCoordinate)     
         {
-            var group = new Group(id)
+            var group = new GroupNodeModel(id)
             {
                 X = xCooordinate,
                 Y= yCoordinate,
@@ -110,7 +110,7 @@ namespace NuSysApp
 
         public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate)
         {
-            var group = new Group(id)
+            var group = new GroupNodeModel(id)
             {
                 X = xCooordinate,
                 Y = yCoordinate,
@@ -121,10 +121,10 @@ namespace NuSysApp
  
         }
 
-        public void AddGlobalInq(InqLine line)
+        public void AddGlobalInq(InqLineModel lineView)
         {
-            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
-            this._inqModel.FinalizeLine(line);
+            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
+            this._inqModel.FinalizeLine(lineView);
         }
 
         public async Task CreateNewPin(string id, double x, double y)
@@ -139,21 +139,21 @@ namespace NuSysApp
         }
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
         {
-            Node node;
+            NodeModel node;
             switch (type)
             {
                 case NodeType.Text:
-                    node = new TextNode((string)data ?? "", id);
+                    node = new TextNodeModel((string)data ?? "", id);
                     break;
                 case NodeType.Image:
-                    node = new ImageModel((byte[])data,id);
+                    node = new ImageNodeModel((byte[])data,id);
                     break;
                 case NodeType.PDF:
                     node = new PdfNodeModel((byte[])data, id);
                     await ((PdfNodeModel) node).SaveFile();
                     break;
                 case NodeType.Audio:
-                    node = new AudioModel((byte[])data, id);
+                    node = new AudioNodeModel((byte[])data, id);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
@@ -186,7 +186,7 @@ namespace NuSysApp
         public async Task UnPack(Dictionary<string, string> props){}
         public override void Delete(){}
         public string ID{get { return "WORKSPACE_ID"; }}
-        public Atom.EditStatus CanEdit {get; set; }
+        public AtomModel.EditStatus CanEdit {get; set; }
 
         public InqCanvasModel InqModel
         {
@@ -242,15 +242,15 @@ namespace NuSysApp
                     await UITask.Run(() => { 
                         if (lockHolder == "")
                         {
-                            _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.Maybe;
+                            _workSpaceModel.IDToSendableDict[id].CanEdit = AtomModel.EditStatus.Maybe;
                         }
                         else if (lockHolder == NetworkConnector.Instance.LocalIP)
                         {
-                            _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.Yes;
+                            _workSpaceModel.IDToSendableDict[id].CanEdit = AtomModel.EditStatus.Yes;
                         }
                         else
                         {
-                            _workSpaceModel.IDToSendableDict[id].CanEdit = Atom.EditStatus.No;
+                            _workSpaceModel.IDToSendableDict[id].CanEdit = AtomModel.EditStatus.No;
                         }
                     });
                 }
@@ -262,7 +262,7 @@ namespace NuSysApp
                 _locals.Clear();
                 foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IDToSendableDict)
                 {
-                    kvp.Value.CanEdit = Atom.EditStatus.Maybe;
+                    kvp.Value.CanEdit = AtomModel.EditStatus.Maybe;
                 }
             }
 

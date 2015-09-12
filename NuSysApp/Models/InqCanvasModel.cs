@@ -19,28 +19,28 @@ namespace NuSysApp
         public event AddPartialLineEventHandler OnPartialLineAddition;
 
         public event FinalizedLine OnFinalizedLine;
-        public delegate void FinalizedLine();
+        public delegate void FinalizedLine(InqLineModel lineModel);
 
-        private HashSet<InqLine> _lines;
-        private Dictionary<string, HashSet<InqLine>> _partialLines;
+        private HashSet<InqLineModel> _lines;
+        private Dictionary<string, HashSet<InqLineModel>> _partialLines;
 
 
         public InqCanvasModel(string id)
         {
             ID = id;
-            _lines = new HashSet<InqLine>();
-            _partialLines = new Dictionary<string, HashSet<InqLine>>();
+            _lines = new HashSet<InqLineModel>();
+            _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
             /*
-            _partialLines = new ObservableDictionary<string, ObservableCollection<InqLine>>();
+            _partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
             _partialLines.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args)
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    foreach (ObservableCollection<InqLine> n in _partialLines.Values)
+                    foreach (ObservableCollection<InqLineView> n in _partialLines.Values)
                     {
                         n.CollectionChanged += delegate (object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
-                            InqLine l = ((InqLine)((object[])eventArgs.NewItems.SyncRoot)[0]);
+                            InqLineView l = ((InqLineView)((object[])eventArgs.NewItems.SyncRoot)[0]);
                             OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", l));
                         };
                     }
@@ -48,7 +48,7 @@ namespace NuSysApp
             };*/
 
         }
-        public HashSet<InqLine> Lines {
+        public HashSet<InqLineModel> Lines {
             get { return _lines; } 
             set { _lines = value; }
         }
@@ -66,11 +66,11 @@ namespace NuSysApp
         private string InqlinesToString()
         {
             string plines = "";
-            foreach (InqLine pl in _lines)
+            foreach (InqLineModel pl in _lines)
             {
                 if (pl.Points.Count > 0)
                 {
-                    plines += pl.Stringify();
+                    plines += pl.GetString();
                 }
             }
             return plines;
@@ -81,45 +81,45 @@ namespace NuSysApp
             
         }
 
-        public void FinalizeLine(InqLine line)
+        public void FinalizeLine(InqLineModel line)
         {
             this._lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
-            OnFinalizedLine?.Invoke();
+            OnFinalizedLine?.Invoke( line );
         }
 
         private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)
         {
-            this._lines.Remove(deleteInqLineEventArgs.LineToDelete);
+            this._lines.Remove(deleteInqLineEventArgs.LineModelToDelete);
         }
-        public Dictionary<string, HashSet<InqLine>> PartialLines
+        public Dictionary<string, HashSet<InqLineModel>> PartialLines
         {
             get { return _partialLines; }
         }
 
-        public void AddTemporaryInqline(InqLine line, string temporaryID)
+        public void AddTemporaryInqline(InqLineModel lineModel, string temporaryID)
         {
             if (!_partialLines.ContainsKey(temporaryID))
             {
-                _partialLines.Add(temporaryID, new HashSet<InqLine>());
+                _partialLines.Add(temporaryID, new HashSet<InqLineModel>());
             }
-            _partialLines[temporaryID].Add(line);
-            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", line));
+            _partialLines[temporaryID].Add(lineModel);
+            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", lineModel));
         }
 
         public void RemovePartialLines(string oldID)
         {
             if (_partialLines.ContainsKey(oldID))
             {
-                foreach (InqLine l in _partialLines[oldID])
+                foreach (InqLineModel l in _partialLines[oldID])
                 {
-                    (l.Parent as InqCanvasView).Children.Remove(l);
+                    l.Delete();
                     _lines.Remove(l);
                 }
                 _partialLines.Remove(oldID);
             }
         }
-        public Atom.EditStatus CanEdit { get; set; }
+        public AtomModel.EditStatus CanEdit { get; set; }
     }
 }

@@ -90,8 +90,8 @@ namespace NuSysApp
                     if (link.IsVisible && Geometry.LinesIntersect(line1, line2) && link.Atom1 != node && link.Atom2 != node)
                     {
                         node.ClippedParent = link;
-                        ((Node)node.Model).ClippedParent = link.Model;
-                        ((Link)link.Model).Annotation = (Node)node.Model;
+                        ((NodeModel)node.Model).ClippedParent = link.Model;
+                        ((LinkModel)link.Model).Annotation = (NodeModel)node.Model;
                         return true;
                     }
                 }
@@ -115,7 +115,7 @@ namespace NuSysApp
                 var y = node.Transform.Matrix.OffsetY * node.ParentGroup.LocalTransform.ScaleY;
                 if (x > node.ParentGroup.Width || x < 0 || y > node.ParentGroup.Height || y < 0)//node has been moved out of its group
                 {
-                    var nodeModel = (Node)node.Model;
+                    var nodeModel = (NodeModel)node.Model;
                     nodeModel.MoveToGroup(null);//remove from group (meaning move back to workspace)
                     PositionNode(node, node.ParentGroup.Transform.Matrix.OffsetX + x, node.ParentGroup.Transform.Matrix.OffsetY + y);
                     return;
@@ -134,13 +134,13 @@ namespace NuSysApp
                     }
                     if (node2 is GroupViewModel)//dragging nested group onto existing group
                     {
-                        var group = (Group)(((GroupViewModel)node2).Model);
-                        var nodeModel = (Node)node.Model;
+                        var group = (GroupNodeModel)(((GroupViewModel)node2).Model);
+                        var nodeModel = (NodeModel)node.Model;
                         nodeModel.MoveToGroup(group);
                         return;
                     }
                     //no group exists, request network to make one
-                    NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((Node)node.Model).X.ToString(), ((Node)node.Model).Y.ToString());
+                    NetworkConnector.Instance.RequestMakeGroup(node.ID, node2.ID, ((NodeModel)node.Model).X.ToString(), ((NodeModel)node.Model).Y.ToString());
                     return;
                 }
             }
@@ -195,10 +195,20 @@ namespace NuSysApp
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
         }
-        public void CreateNewGroup(Group groupModel)
+        public void CreateNewGroup(GroupNodeModel groupModel)
         {
             //Create new group, because no group exists
-            var groupVm = new GroupViewModel(groupModel, this);
+            var groupView = new GroupView();
+            var groupVm = new GroupViewModel(groupView, groupModel, this);
+            groupView.DataContext = groupVm;
+
+            var tpl = groupView.FindName("nodeTpl") as NodeTemplate;
+            if (tpl != null)
+            {
+                tpl.OnTemplateReady += delegate {
+                    new InqCanvasViewModel(tpl.inkCanvas, groupModel.InqCanvas);
+                };
+            }
 
             //Set location to node2's location
             var xCoordinate = groupModel.X;
@@ -220,7 +230,7 @@ namespace NuSysApp
             List<string> locks = new List<string>();
             locks.Add(selected.Model.ID);
             NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
-            if (selected.Model.CanEdit == Atom.EditStatus.Maybe)
+            if (selected.Model.CanEdit == AtomModel.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);
             }
@@ -287,8 +297,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var node1 = (Node)MultiSelectedAtomViewModels[0].Model;
-            var node2 = (Node) MultiSelectedAtomViewModels[1].Model;
+            var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
+            var node2 = (NodeModel) MultiSelectedAtomViewModels[1].Model;
             await NetworkConnector.Instance.RequestMakeGroup(node1.ID, node2.ID, node1.X.ToString(),node2.Y.ToString());
             if (MultiSelectedAtomViewModels.Count > 2)
             {
@@ -297,11 +307,11 @@ namespace NuSysApp
                     var avm = MultiSelectedAtomViewModels[index];
                     if (avm is NodeViewModel)
                     {
-                        ((Node)avm.Model).MoveToGroup(node1.ParentGroup);
+                        ((NodeModel)avm.Model).MoveToGroup(node1.ParentGroup);
                     }
                 }
             }
-           
+            ClearMultiSelection();
         }
 
 
@@ -310,7 +320,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="atomVM1"></param>
         /// <param name="atomVM2"></param>
-        private void CreateNewLink(string id, AtomViewModel atomVm1, AtomViewModel atomVm2, Link link)
+        private void CreateNewLink(string id, AtomViewModel atomVm1, AtomViewModel atomVm2, LinkModel link)
         {
             var vm1 = atomVm1 as NodeViewModel;
             if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
@@ -348,11 +358,11 @@ namespace NuSysApp
             // clear the existing tables so that there is always only one workspace to load, just for testing purposes
             SQLiteAsyncConnection dbConnection = myDB.DBConnection;
             await dbConnection.DropTableAsync<XmlFileHelper>();
-            await dbConnection.DropTableAsync<Content>();
+            await dbConnection.DropTableAsync<ContentModel>();
 
             // recreate the table to store the xml file of the current workspace
             await dbConnection.CreateTableAsync<XmlFileHelper>(); // table to store the xml file of current workspace
-            await dbConnection.CreateTableAsync<Content>(); // table to store content of each node
+            await dbConnection.CreateTableAsync<ContentModel>(); // table to store content of each node
 
             // generate and save the xml of the current workspace
             XmlFileHelper currWorkspaceXml = new XmlFileHelper();
@@ -363,12 +373,12 @@ namespace NuSysApp
             // save the content of each atom in the current workspace
             foreach (NodeViewModel nodeVm in NodeViewModelList)
             {
-                Node model = ((Node)nodeVm.Model);
+                NodeModel model = ((NodeModel)nodeVm.Model);
                 if (model.Content != null)
                 {
                     if (model.NodeType == NodeType.Audio)
                     {
-                        ((AudioModel)model).ByteArray = await ((AudioModel)model).ConvertAudioToByte(((AudioModel)model).AudioFile);
+                        ((AudioNodeModel)model).ByteArray = await ((AudioNodeModel)model).ConvertAudioToByte(((AudioNodeModel)model).AudioFile);
                     }
 
                     /* TODO: there are no more Ink nodes
@@ -379,7 +389,7 @@ namespace NuSysApp
                         //((InkModel)model).ByteArray = Serializer.Serialize<InkModel>((InkModel)model);
                     }
                     */
-                    Content toInsert = model.Content;
+                    ContentModel toInsert = model.Content;
                     await dbConnection.InsertAsync(toInsert);
                 }
             }
@@ -457,14 +467,14 @@ namespace NuSysApp
             switch (type)
             {
                 case NodeType.Text:
-                    vm = new TextNodeViewModel((TextNode)model, this);
+                    vm = new TextNodeViewModel((TextNodeModel)model, this);
                     break;
                 case NodeType.Image:
-                    vm = new ImageNodeViewModel((ImageModel)model, this);
-                    if (((ImageModel)vm.Model).Image != null)
+                    vm = new ImageNodeViewModel((ImageNodeModel)model, this);
+                    if (((ImageNodeModel)vm.Model).Image != null)
                     {
-                        vm.Width = ((ImageModel)vm.Model).Image.PixelWidth;//TODO remove this line and the next
-                        vm.Height = ((ImageModel)vm.Model).Image.PixelHeight;
+                        vm.Width = ((ImageNodeModel)vm.Model).Image.PixelWidth;//TODO remove this lineView and the next
+                        vm.Height = ((ImageNodeModel)vm.Model).Image.PixelHeight;
                     }
                     break;
                 case NodeType.PDF:
@@ -472,12 +482,12 @@ namespace NuSysApp
                     /*
                     if (((PdfNodeModel)vm.Model).RenderedPage != null)
                     {
-                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this line and the next
+                        vm.Width = ((PdfNodeModel)vm.Model).RenderedPage.PixelWidth;//TODO remove this lineView and the next
                         vm.Height = ((PdfNodeModel)vm.Model).RenderedPage.PixelHeight;
                     }*/
                     break;
                 case NodeType.Audio:
-                    vm = new AudioNodeViewModel((AudioModel)model, this);
+                    vm = new AudioNodeViewModel((AudioNodeModel)model, this);
                     break;
                 default:
                     return;
@@ -498,13 +508,13 @@ namespace NuSysApp
 
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
-            LastPartialLine = e.AddedLine;
+            LastPartialLineModel = e.AddedLineModel;
             RaisePropertyChanged("PartialLineAdded");
         }
 
         #endregion Event Handlers
         #region Event Helpers
-        public void PrepareLink(string id, AtomViewModel atomVm, Link link)
+        public void PrepareLink(string id, AtomViewModel atomVm, LinkModel link)
         {
             if (_preparedAtomVm == null)
             {
@@ -569,7 +579,7 @@ namespace NuSysApp
 
         public Dictionary<string, GroupViewModel> GroupDict { get; private set; }
 
-        public InqLine LastPartialLine { get; set; }
+        public InqLineModel LastPartialLineModel { get; set; }
         #endregion Public Members
 
         

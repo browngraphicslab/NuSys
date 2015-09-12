@@ -7,7 +7,7 @@ namespace NuSysApp
 {
     public class AudioNodeViewModel: NodeViewModel
     {
-        public AudioNodeViewModel(AudioModel model, WorkspaceViewModel vm) : base(model, vm)
+        public AudioNodeViewModel(AudioNodeModel model, WorkspaceViewModel vm) : base(model, vm)
         {
             AudioRecorder = new AudioCapture();
             AudioRecorder.OnAudioStopped += async delegate
@@ -33,14 +33,14 @@ namespace NuSysApp
 
         public StorageFile CurrentAudioFile
         {
-            get { return ((AudioModel)Model).AudioFile; }
-            set { ((AudioModel)Model).AudioFile = value; }
+            get { return ((AudioNodeModel)Model).AudioFile; }
+            set { ((AudioNodeModel)Model).AudioFile = value; }
         }
 
         public string FileName
         {
-            get { return ((AudioModel)Model).FileName; }
-            set { ((AudioModel)Model).FileName = value; }
+            get { return ((AudioNodeModel)Model).FileName; }
+            set { ((AudioNodeModel)Model).FileName = value; }
         }
 
         public AudioCapture AudioRecorder { get; set; }

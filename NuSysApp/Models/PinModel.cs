@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class PinModel : BaseINPC, Sendable
+    public class PinModel : Sendable
     {
         public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
         public event LocationUpdateEventHandler OnLocationUpdate;
@@ -17,7 +17,7 @@ namespace NuSysApp
         private MatrixTransform _transform;
         private DebouncingDictionary _dict;
 
-        public PinModel (string id) : base()
+        public PinModel (string id) : base(id)
         {
             this.Transform = new MatrixTransform();
             ID = id;
@@ -25,10 +25,7 @@ namespace NuSysApp
             _dict = new DebouncingDictionary(this);
         }
 
-        public void Delete()
-        {
-
-        }
+        public override void Delete(){ }
 
         public double X
         {
@@ -72,7 +69,7 @@ namespace NuSysApp
             }
         }
 
-        public Atom.EditStatus CanEdit{get; set; }
+        public AtomModel.EditStatus CanEdit{get; set; }
 
         public string ID { get; }
 

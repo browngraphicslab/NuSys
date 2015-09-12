@@ -6,11 +6,11 @@ using System.Xml;
 namespace NuSysApp
 {
 
-    public class Link : Atom
+    public class LinkModel : AtomModel
     {
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public event DeleteEventHandler OnDeletion;
-        public Link(Atom inAtom, Atom outAtom, string id) : base(id)
+        public LinkModel(AtomModel inAtom, AtomModel outAtom, string id) : base(id)
         {
             InAtomID = inAtom.ID;
             OutAtomID = outAtom.ID;
@@ -50,11 +50,11 @@ namespace NuSysApp
             return dict;
         }
 
-        public Node Annotation { get; set; }
+        public NodeModel Annotation { get; set; }
 
-        public Atom Atom1 { get; private set; }
+        public AtomModel Atom1 { get; private set; }
 
-        public Atom Atom2 { get; private set; }
+        public AtomModel Atom2 { get; private set; }
 
         public XmlElement WriteXML(XmlDocument doc)
         {

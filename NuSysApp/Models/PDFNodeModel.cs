@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace NuSysApp
 {
-    public class PdfNodeModel : Node
+    public class PdfNodeModel : NodeModel
     {
         public delegate void PdfImagesCreatedHandler();
         public event PdfImagesCreatedHandler OnPdfImagesCreated;
@@ -22,7 +22,7 @@ namespace NuSysApp
         public PdfNodeModel(byte[] bytes,string id) : base(id)
         {
             ByteArray = bytes;
-            Content = new Content(ByteArray, id);
+            Content = new ContentModel(ByteArray, id);
         }
 
         public async Task SaveFile()
@@ -33,18 +33,18 @@ namespace NuSysApp
 
             RenderedPages = await PdfRenderer.RenderPdf(file);
             PageCount = (uint)RenderedPages.Count;
-            InqLines = new List<HashSet<InqLine>>();
+            InqLines = new List<HashSet<InqLineModel>>();
             InqLines.Capacity = (int) PageCount;
             for (int i = 0; i < PageCount; i++)
             {
                 InqLines.Add(new InqCanvasModel(ID).Lines);
             }
             /*
-            InkContainer = new List<HashSet<InqLine>>();
+            InkContainer = new List<HashSet<InqLineView>>();
             InkContainer.Capacity = (int) PageCount;
             for (var i = 0; i < PageCount; i++)
             {
-                InkContainer.Add(new HashSet<InqLine>());
+                InkContainer.Add(new HashSet<InqLineView>());
             }
             */
             OnPdfImagesCreated?.Invoke();
@@ -56,7 +56,8 @@ namespace NuSysApp
         public override async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string, string> props = await base.Pack();
-            props.Add("type", NodeType.PDF.ToString());
+            props.Add("nodeType", NodeType.PDF.ToString());
+            props.Add("data",Convert.ToBase64String(ByteArray));
             return props;
         }
 
@@ -151,9 +152,9 @@ namespace NuSysApp
         
 
         public uint PageCount { get; set; }
-        //public List<HashSet<InqLine>> InkContainer { get; set; }
+        //public List<HashSet<InqLineView>> InkContainer { get; set; }
 
-        public List<HashSet<InqLine>> InqLines { get; set; }
+        public List<HashSet<InqLineModel>> InqLines { get; set; }
 
         private byte[] ByteArray { set; get; }
         public List<BitmapImage> RenderedPages { get; set; }

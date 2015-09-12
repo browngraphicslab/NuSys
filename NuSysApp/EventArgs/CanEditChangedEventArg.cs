@@ -6,11 +6,11 @@ namespace NuSysApp
     {
        
 
-        public CanEditChangedEventArg(string text, Atom.EditStatus editStatus):base(text)
+        public CanEditChangedEventArg(string text, AtomModel.EditStatus editStatus):base(text)
         {
             EditStatus = editStatus;
         }
 
-        public Atom.EditStatus EditStatus { get; }
+        public AtomModel.EditStatus EditStatus { get; }
     }
 }

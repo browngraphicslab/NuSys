@@ -108,9 +108,11 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.PenErase:
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
                     InqCanvas.SetErasing(true);
                     break;
                 case Options.PenHighlight:
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
                     InqCanvas.SetHighlighting(true);
                     break;
                 case Options.MiscSave:

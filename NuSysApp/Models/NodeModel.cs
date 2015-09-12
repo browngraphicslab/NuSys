@@ -9,14 +9,14 @@ using System.Xml;
 namespace NuSysApp
 {
     [DataContract]
-    public class Node : Atom
+    public class NodeModel : AtomModel
     {
         #region Private Members
         private double _x;
         private double _y;
         private double _width;
         private double _height;
-        private Group _group;
+        private GroupNodeModel _group;
         #endregion Private Members
 
         #region Events and Handlers
@@ -34,7 +34,7 @@ namespace NuSysApp
         public event AddToGroupEventHandler OnAddToGroup;
         #endregion Events and Handlers
 
-        public Node(string id) : base(id)
+        public NodeModel(string id) : base(id)
         {
             InqCanvas = new InqCanvasModel(id);
         }
@@ -44,14 +44,14 @@ namespace NuSysApp
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
         }
 
-        public void MoveToGroup(Group group)
+        public void MoveToGroup(GroupNodeModel group)
         {
             this.ParentGroup = group;
             group?.Add(this);//only add if group isn't null
         }
 
         public InqCanvasModel InqCanvas { get;}
-        public Content Content { set; get; }
+        public ContentModel Content { set; get; }
 
         public double X
         {
@@ -153,9 +153,9 @@ namespace NuSysApp
 
         public NodeType NodeType { get; set; }
 
-        private Group _parentGroup;
+        private GroupNodeModel _parentGroup;
 
-        public Group ParentGroup
+        public GroupNodeModel ParentGroup
         {
             get
             {
@@ -179,7 +179,7 @@ namespace NuSysApp
 
         public bool IsAnnotation { get; set; }
 
-        public Atom ClippedParent { get; set; }
+        public AtomModel ClippedParent { get; set; }
 
         public virtual string GetContentSource()
         {
@@ -212,7 +212,7 @@ namespace NuSysApp
                 }
                 else if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
                 {
-                    this.MoveToGroup((Group)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
                 }
             }
            

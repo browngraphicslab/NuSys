@@ -133,12 +133,13 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            
+            /*
             var vm = (NodeViewModel)this.DataContext;
             if (vm.WorkSpaceViewModel != null) { 
                 vm.CreateAnnotation();
                 vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
-            }
+            }*/
+            e.Handled = true;
         }
 
         private void Node_MultiSelectionChanged(object sender, PropertyChangedEventArgs e)
