@@ -41,7 +41,7 @@ namespace NuSysApp
                 if (!_timing)
                 {
                     _timing = true;
-                    _dict.GetOrAdd(id, value);
+                    _dict.TryAdd(id, value);
                     _timer = new Timer(SendMessage, null, 0, _milliSecondDebounce);
                 }
                 else
@@ -51,7 +51,7 @@ namespace NuSysApp
                         _dict[id] = value;
                         return;
                     }
-                    _dict.GetOrAdd(id, value);
+                    _dict.TryAdd(id, value);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace NuSysApp
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
             if (_atom.CanEdit == Atom.EditStatus.Yes || _atom.CanEdit == Atom.EditStatus.Maybe)
             {
-                _dict.GetOrAdd("id", _atom.ID);
+                _dict.TryAdd("id", _atom.ID);
                 if (NetworkConnector.Instance.ModelIntermediate.HasSendableID(_atom.ID))
                 {
                     if (_sendNextTCP)
