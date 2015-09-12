@@ -250,13 +250,13 @@ namespace NuSysApp
                     _pingTimer = new Timer(PingTick, null, 0, 2000);
                     foreach (string ip in _otherIPs)
                     {
-                        _pingResponses.GetOrAdd(ip, 0);
+                        _pingResponses.TryAdd(ip, 0);
                     }
                 }
                 else
                 {
                     _pingTimer = new Timer(PingTick, null, 0, 1000);
-                    _pingResponses.GetOrAdd(_hostIP, 0);
+                    _pingResponses.TryAdd(_hostIP, 0);
                 }
             }
         }
@@ -475,7 +475,7 @@ namespace NuSysApp
             var UDPsocket = new DatagramSocket();
             await UDPsocket.ConnectAsync(new HostName(ip), _UDPPort);
             var UDPwriter = new DataWriter(UDPsocket.OutputStream);
-            _UDPOutSockets.GetOrAdd(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter), true);
+            _UDPOutSockets.TryAdd(new Tuple<DatagramSocket, DataWriter>(UDPsocket, UDPwriter), true);
 
             if (_addressToWriter.ContainsKey(ip))
             {
@@ -483,7 +483,7 @@ namespace NuSysApp
             }
             else
             {
-                _addressToWriter.GetOrAdd(ip, UDPwriter);
+                _addressToWriter.TryAdd(ip, UDPwriter);
             }
         }
         /*
