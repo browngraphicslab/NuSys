@@ -22,6 +22,7 @@ namespace NuSysApp
         {
             ID = id;
             _editStatus = EditStatus.Maybe;
+            Children = new List<Sendable>();
         }
         public async virtual Task<Dictionary<string, string>> Pack()
         {
@@ -54,11 +55,14 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await Pack();
             Dictionary<string, string> childs = new Dictionary<string, string>();//YES, i know childs is bad grammars but I already used Children
-            foreach(Sendable child in Children)
+            if (Children.Count > 0)
             {
-                childs.Add(child.ID, await child.Stringify());
+                foreach (Sendable child in Children)
+                {
+                    childs.Add(child.ID, await child.Stringify());
+                }
+                props["children"] = Newtonsoft.Json.JsonConvert.SerializeObject(childs);
             }
-            props["children"] = Newtonsoft.Json.JsonConvert.SerializeObject(childs);
             return Newtonsoft.Json.JsonConvert.SerializeObject(props);
         }
     }

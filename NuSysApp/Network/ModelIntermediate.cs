@@ -402,6 +402,13 @@ namespace NuSysApp
             if (WorkSpaceModel.IDToSendableDict.Count > 0)
             {
                 string ret = "";
+                while (list.Count > 0)
+                {
+                    Sendable atom = list.First.Value;
+                    list.RemoveFirst();
+                    ret += await atom.Stringify();
+                }
+                /*
                 while(list.Count > 0)
                 {
                 ret += '<';
@@ -421,6 +428,8 @@ namespace NuSysApp
                     });
                 }
                 ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
+                
+                */
                 return ret;
             }
             return "";
