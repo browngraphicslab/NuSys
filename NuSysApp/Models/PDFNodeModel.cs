@@ -57,6 +57,7 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("nodeType", NodeType.PDF.ToString());
+            props.Add("data",Convert.ToBase64String(ByteArray));
             return props;
         }
 
