@@ -1021,25 +1021,19 @@ namespace NuSysApp
                     }
                 }
             }
-            if (message[0] == '<' && message[message.Length - 1] == '>' || true)
+
+            Dictionary<string, string> props = ParseOutProperties(message);
+            if (props.ContainsKey("id"))
             {
-                Dictionary<string, string> props = ParseOutProperties(message);
-                if (props.ContainsKey("id"))
+                await ModelIntermediate.HandleMessage(props);
+                if ((ModelIntermediate.HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _localIP == _hostIP)
                 {
-                    await ModelIntermediate.HandleMessage(props);
-                    if ((ModelIntermediate.HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _localIP == _hostIP)
-                    {
-                        await SendMassTCPMessage(message);
-                    }
-                }
-                else
-                {
-                    throw new InvalidIDException("there was no id, that's why this error is occurring...");
+                    await SendMassTCPMessage(message);
                 }
             }
             else
             {
-                throw new IncorrectFormatException(message);
+                throw new InvalidIDException("there was no id, that's why this error is occurring...");
             }
         }
 
@@ -1454,7 +1448,7 @@ namespace NuSysApp
                 else
                 {
                     Debug.WriteLine("Attempted to return lock with ID: " + id + " When no such ID exists");
-                    throw new InvalidIDException(id);
+                    //throw new InvalidIDException(id);
                 }
                 await SendMessageToHost("SPECIAL7:" + id);
                 await SendMassTCPMessage(MakeSubMessageFromDict(await ModelIntermediate.GetNodeState(id)));
