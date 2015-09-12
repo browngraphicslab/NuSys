@@ -113,9 +113,9 @@ namespace NuSysApp
 
         public override async Task UnPack(Dictionary<string, string> props)
         {
-            if (props.ContainsKey("image"))
+            if (props.ContainsKey("data"))
             {
-                ByteArray = Convert.FromBase64String(props["image"]); //Converts to Byte Array
+                ByteArray = Convert.FromBase64String(props["data"]); //Converts to Byte Array
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
@@ -135,7 +135,7 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
-            props.Add("image", Convert.ToBase64String(ByteArray));
+            props.Add("data", Convert.ToBase64String(ByteArray));
             props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }
