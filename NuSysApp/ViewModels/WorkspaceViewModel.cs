@@ -173,7 +173,7 @@ namespace NuSysApp
         {
             //Remove all the node's links
             var toDelete = new List<LinkViewModel>();
-            foreach (var linkVm in nodeVM.LinkList)
+            foreach (var linkVm in nodeVM.LinkList)//get all links
             {
                 AtomViewList.Remove(linkVm.View);
                 toDelete.Add(linkVm);
@@ -194,6 +194,12 @@ namespace NuSysApp
             {
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
+        }
+
+        public void DeletePin(PinViewModel pinVM)
+        {
+            PinViewModelList.Remove(pinVM);
+            AtomViewList.Remove(pinVM.View);
         }
         public void CreateNewGroup(GroupNodeModel groupModel)
         {

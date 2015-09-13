@@ -21,7 +21,14 @@ namespace NuSysApp
             this.Model.PropertyChanged += (s, e) => { Update(e); };
             Text = "<Enter Pin Name>";
             Workspace = vm;
+            model.OnDeletion += DeletionHappened;
         }
+
+        private void DeletionHappened(object sender)
+        {
+            Workspace.DeletePin(this);
+        }
+
         private void Update(PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)

@@ -177,7 +177,7 @@ namespace NuSysApp
             }
             else
             {
-                throw new InvalidOperationException("Node no longer exists");
+                throw new InvalidOperationException("Sendable no longer exists");
             }
         }
 

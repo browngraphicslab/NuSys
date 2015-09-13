@@ -48,12 +48,17 @@ namespace NuSysApp
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var pinvm = ((Button)sender).DataContext as PinViewModel;
+            var pinModel = (PinModel)pinvm.Model;
+            NetworkConnector.Instance.RequestDeleteSendable(pinModel.ID);
+            e.Handled = true;
+            /*
+            var pinvm = ((Button)sender).DataContext as PinViewModel;
             var pinModel = (PinModel) pinvm.Model;
 
             var vm = (WorkspaceViewModel)this.DataContext;
 
             vm.AtomViewList.Remove(pinvm.View);
-            vm.PinViewModelList.Remove(pinvm);
+            vm.PinViewModelList.Remove(pinvm);*/
         }
     }
 }

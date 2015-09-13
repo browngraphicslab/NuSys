@@ -1043,6 +1043,7 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(message);
+            /*
             message = message.Substring(1, message.Length - 2);
             string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.RemoveEmptyEntries);
             Dictionary<string, string> props = new Dictionary<string, string>();
@@ -1066,6 +1067,7 @@ namespace NuSysApp
                 }
             }
             return props;
+            */
         }
 
         /*

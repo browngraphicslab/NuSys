@@ -28,7 +28,7 @@ namespace NuSysApp
             {
                 // TODO: Read hardcoded margins from xaml property
                 var r = new Windows.UI.Xaml.Media.RectangleGeometry();
-                r.Rect = new Rect(30, 30, Width-60, Height-60);
+                r.Rect = new Rect(30, 30, Math.Max(Width-60,0), Math.Max(Height-60,0));
                 Clip = r;
             };
 

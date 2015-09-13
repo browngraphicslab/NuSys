@@ -11,6 +11,9 @@ namespace NuSysApp
         public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
         public event LocationUpdateEventHandler OnLocationUpdate;
 
+        public delegate void DeleteEventHandler(object source);
+        public event DeleteEventHandler OnDeletion;
+
         private double _x;
         private double _y;
         private string _text;
@@ -25,7 +28,10 @@ namespace NuSysApp
             _dict = new DebouncingDictionary(this);
         }
 
-        public override void Delete(){ }
+        public override void Delete()
+        {
+            OnDeletion?.Invoke(this);
+        }
 
         public double X
         {

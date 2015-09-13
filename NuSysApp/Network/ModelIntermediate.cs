@@ -470,7 +470,7 @@ namespace NuSysApp
         {
             if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
             var sendable = WorkSpaceModel.IDToSendableDict[id];
-            bool isLine = sendable is InqLineModel; // TODO there should be no special casing for inks
+            bool isLine = sendable is InqLineModel || sendable is PinModel; // TODO there should be no special casing for inks
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
         
