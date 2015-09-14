@@ -113,7 +113,8 @@ namespace NuSysApp
         {
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
-            e.Handled = true;
+            e.Handled = true; 
+
         }
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
@@ -133,12 +134,12 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            /*
+            
             var vm = (NodeViewModel)this.DataContext;
             if (vm.WorkSpaceViewModel != null) { 
                 vm.CreateAnnotation();
                 vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
-            }*/
+            }
             e.Handled = true;
         }
 
@@ -150,7 +151,8 @@ namespace NuSysApp
             
         }
 
-        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e) 
+
         {     
             var slidein = (Storyboard)GetTemplateChild("slidein");
             var slideout = (Storyboard)GetTemplateChild("slideout");
