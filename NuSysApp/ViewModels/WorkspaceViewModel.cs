@@ -292,7 +292,7 @@ namespace NuSysApp
             }
             MultiSelectedAtomViewModels.Clear();
         }
-
+        delegate void Del(string s);
         public async void GroupFromMultiSelection()
         {
             if (MultiSelectedAtomViewModels.Count < 2)
@@ -303,21 +303,33 @@ namespace NuSysApp
             {
                 return;
             }
+            var nodesToAdd = new AtomViewModel[MultiSelectedAtomViewModels.Count];
+                MultiSelectedAtomViewModels.CopyTo(nodesToAdd);//TODO REMOVE
             var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
             var node2 = (NodeModel) MultiSelectedAtomViewModels[1].Model;
-            await NetworkConnector.Instance.RequestMakeGroup(node1.ID, node2.ID, node1.X.ToString(),node2.Y.ToString());
-            if (MultiSelectedAtomViewModels.Count > 2)
+            var gid = "";
+            Del del = delegate (string s)
             {
-                for (int index = 2; index < MultiSelectedAtomViewModels.Count; index++)
+                Debug.WriteLine("gid = " + s);
+                gid = s;
+            };
+            
+            Action<string> a = new Action<string>(del);
+            await NetworkConnector.Instance.RequestMakeEmptyGroup(node1.X.ToString(), node2.Y.ToString(),null,null,a);
+            //            await NetworkConnector.Instance.RequestMakeGroup(node1.ID, node2.ID, node1.X.ToString(),node2.Y.ToString());
+            //            if (MultiSelectedAtomViewModels.Count > 1)
+            //            {
+            var groupmodel = (GroupNodeModel)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[gid];
+                for (int index = 0; index < nodesToAdd.Length; index++)
                 {
-                    var avm = MultiSelectedAtomViewModels[index];
+                    var avm = nodesToAdd[index];
                     if (avm is NodeViewModel)
                     {
-                        ((NodeModel)avm.Model).MoveToGroup(node1.ParentGroup);
+                        ((NodeModel)avm.Model).MoveToGroup(groupmodel);
                     }
                 }
-            }
-            ClearMultiSelection();
+//            }
+           // ClearMultiSelection();
         }
 
 
