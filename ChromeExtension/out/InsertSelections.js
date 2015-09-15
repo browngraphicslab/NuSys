@@ -9,9 +9,42 @@ chrome.storage.local.get(null, function (data) {
     console.info(data);
     console.log();
     //	setData(data);
-    showInsertion(data);
+    //showInsertion(data);
+    sortByTime(data);
 });
+function sortByTime(obj){
+    var json = JSON.stringify(obj);
+    console.log(json);
+    var sortedJson = sortResults(obj['selections'], "urlGroup", true);
+    var newJson = {};
+    console.log(sortedJson);
+    var hash = {};
+    $(sortedJson).each(function (indx, value) {
+        var groupId = value["urlGroup"];
+        if (hash[groupId] == null) {
+            hash[groupId] = [value];
+        }
+        else {
+            var list = hash[groupId];
+            list = list.push(value);
+        }
+        
+    });
+    console.log(hash);
 
+    showInsertion(hash);
+
+}
+
+function sortResults(json, prop, asc) {
+  
+    json = json.sort(function (a, b) {
+        if (asc) return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
+        else return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
+    });
+
+    return json;
+}
 function injectScript(tab) {
     console.log("injectin!!!!!");
     chrome.tabs.executeScript({ file: 'jquery.js' });
@@ -43,26 +76,27 @@ function sendMessage(key) {
 }
 
 function showInsertion(data) {
-    console.log(document.caretRangeFromPoint(350, 75));
-    $.each(Object.keys(data).reverse(), function (index, val) {
-
+    $.each(data, function (index, val) {
+        console.log(val);
 
         var title = document.createElement("h3");
-        $(title).append("<span class='title'>" + data[val]["title"]);
-        $(title).append("<span>"+"Dec 28th 1992");
-        $(title).append("<span class='url'>" + data[val]["url"] + "</span>");
+        $(title).append("<span class='title'>" + val[0]["title"]);
+        
+        $(title).append("<span class='url'>" + val[0]["url"] + "</span>");
         $(title).append("<button class='toRemove button' type='button'>Remove</button>");
         $(title).append("<button class='pastPage button' type='button'>Open</button>");
         // $(title).append("<span>" + data[val]["date"] + "</span>");
 
         $(title).find(".pastPage").click(function () {
-            chrome.tabs.create({ 'url': data[val]["url"] }, injectScript);
+            chrome.tabs.create({ 'url': val[0]["url"] }, injectScript);
             sendMessage(val);
         });
 
         var selections = document.createElement("div");
-        $.each(data[val]["selections"], function (indx, v) {
-            var res = v.split('//');
+        $.each(val, function (indx, v) {
+            console.log(v);
+            var content = v["_content"];
+            var res = content.split('//');
             var newVal = "";
             for (var i = 0; i < res.length; i++) {
                 newVal += res[i];
@@ -76,14 +110,13 @@ function showInsertion(data) {
         $("#container").append(title);
         $("#container").append(selections);
 
-        $(title).find(".toRemove").click(function () {
-            console.log(data[val]);
-            $(title).remove();
-            $(selections).remove();
-            delete data[val];
-            console.log(data);
-            chrome.storage.local.remove(val);
-        });
+        //$(title).find(".toRemove").click(function () {
+        //    $(title).remove();
+        //    $(selections).remove();
+        //    delete data[val];
+        //    console.log(data);
+        //    chrome.storage.local.remove(val);
+        //});
     });
 
     $("#container").accordion({active: false,  collapsible: true});
