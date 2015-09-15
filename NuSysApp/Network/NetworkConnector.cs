@@ -975,39 +975,6 @@ namespace NuSysApp
         */
         private async Task HandleRegularMessage(string ip, string message, PacketType packetType)
         {
-            /*if (_hostIP == _localIP)//this HOST ONLY block is to special case for the host getting a 'make-node' request
-            {
-                if (message.IndexOf("OLDSQLID") != -1)
-                {
-                    Dictionary<string, string> dict = ParseOutProperties(message);
-                    dict["id"] = dict["OLDSQLID"];
-                    dict.Remove("OLDSQLID");
-                    string m = MakeSubMessageFromDict(dict);
-                    await HandleRegularMessage(ip, m, packetType);
-                    await SendMassTCPMessage(m);
-                    return;
-                }
-                else
-                {
-                    if (message.IndexOf("id=0" + Constants.CommaReplacement) != -1)
-                    {
-                        string id = GetID(ip);
-                        message = message.Replace(("id=0" + Constants.CommaReplacement),
-                            "id=" + id + Constants.CommaReplacement);
-                        await HandleRegularMessage(ip, message, packetType);
-                        await SendMassTCPMessage(message);
-                        return;
-                    }
-                    if (message.IndexOf("id=0>") != -1)
-                    {
-                        string id = GetID(ip);
-                        message = message.Replace(@"id=0>", "id=" + id + '>');
-                        await HandleRegularMessage(ip, message, packetType);
-                        await SendMassTCPMessage(message);
-                        return;
-                    }
-                }
-            }*/
             if (_localIP == _hostIP)//if host, add a new packet and store it in every joining member's stack of updates
             {
                 foreach (var kvp in _joiningMembers)
@@ -1043,31 +1010,6 @@ namespace NuSysApp
         private Dictionary<string, string> ParseOutProperties(string message)
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(message);
-            /*
-            message = message.Substring(1, message.Length - 2);
-            string[] parts = message.Split(new string[] { Constants.CommaReplacement }, StringSplitOptions.RemoveEmptyEntries);
-            Dictionary<string, string> props = new Dictionary<string, string>();
-            foreach (string part in parts)
-            {
-                if (part.Length > 0)
-                {
-                    string[] subParts = part.Split(new string[] { "=" }, 2, StringSplitOptions.RemoveEmptyEntries);
-                    if (subParts.Length != 2)
-                    {
-                        continue;
-                    }
-                    if (!props.ContainsKey(subParts[0]))
-                    {
-                        props.Add(subParts[0], subParts[1]);
-                    }
-                    else
-                    {
-                        props[subParts[0]] = subParts[1];
-                    }
-                }
-            }
-            return props;
-            */
         }
 
         /*
@@ -1076,16 +1018,7 @@ namespace NuSysApp
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(dict);
-            /*
-            var m = "<";
-            foreach (var kvp in dict)
-            {
-                m += kvp.Key + "=" + kvp.Value + Constants.CommaReplacement;
-            }
-            m = m.Substring(0, Math.Max(m.Length - Constants.CommaReplacement.Length, 0)) + ">";
-            return m;*/
         }
-
 
         #region publicRequests
         /*
@@ -1101,8 +1034,6 @@ namespace NuSysApp
                 }
             });
         }
-
-        //testing git settings
 
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
@@ -1233,6 +1164,7 @@ namespace NuSysApp
 
         /*
         * PUBLIC general method to create Group
+        * TODO factor this into one method with RequestMakeEmptyGroup that takes in a list os ID's to place in that group
         */
         public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
@@ -1244,37 +1176,12 @@ namespace NuSysApp
                     {
                         Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
                         string id = oldID == null ? GetID() : oldID;
-
-                        if (props.ContainsKey("id1"))
-                        {
-                            props.Remove("id1");
-                        }
-                        if (props.ContainsKey("id2"))
-                        {
-                            props.Remove("id2");
-                        }
-                        if (props.ContainsKey("x"))
-                        {
-                            props.Remove("x");
-                        }
-                        if (props.ContainsKey("y"))
-                        {
-                            props.Remove("y");
-                        }
-                        if (props.ContainsKey("id"))
-                        {
-                            props.Remove("id");
-                        }
-                        if (props.ContainsKey("type"))
-                        {
-                            props.Remove("type");
-                        }
-                        props.Add("x", x);
-                        props.Add("y", y);
-                        props.Add("id1", id1);
-                        props.Add("id2", id2);
-                        props.Add("id", id);
-                        props.Add("type", "group");
+                        props["id1"] = id1;
+                        props["id2"] = id2;
+                        props["x"] = x;
+                        props["y"] = y;
+                        props["id"] = id;
+                        props["type"] = "group";
                         if (callback != null)
                         {
                             ModelIntermediate.AddCreationCallback(id, callback);
@@ -1301,33 +1208,17 @@ namespace NuSysApp
 
         /*
        * PUBLIC general method to create Group
+       * TODO merge this into one request make group method
        */
         public async Task RequestMakeEmptyGroup( string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
 
             var props = properties == null ? new Dictionary<string, string>() : properties;
             string id = oldID == null ? GetID() : oldID;
-
-            if (props.ContainsKey("x"))
-            {
-                props.Remove("x");
-            }
-            if (props.ContainsKey("y"))
-            {
-                props.Remove("y");
-            }
-            if (props.ContainsKey("id"))
-            {
-                props.Remove("id");
-            }
-            if (props.ContainsKey("type"))
-            {
-                props.Remove("type");
-            }
-            props.Add("x", x);
-            props.Add("y", y);
-            props.Add("id", id);
-            props.Add("type", "emptygroup");
+            props["x"] = x;
+            props["y"] = y;
+            props["id"] = id;
+            props["type"] = "emptygroup";
             if (callback != null)
             {
                 ModelIntermediate.AddCreationCallback(id, callback);
@@ -1349,28 +1240,10 @@ namespace NuSysApp
             {
                 Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
                 string id = oldID == null ? GetID() : oldID;
-
-                if (props.ContainsKey("id1"))
-                {
-                    props.Remove("id1");
-                }
-                if (props.ContainsKey("id2"))
-                {
-                    props.Remove("id2");
-                }
-                if (props.ContainsKey("type"))
-                {
-                    props.Remove("type");
-                }
-                if (props.ContainsKey("id"))
-                {
-                    props.Remove("id");
-                }
-
-                props.Add("id1", id1);
-                props.Add("id2", id2);
-                props.Add("type", "link");
-                props.Add("id", id);
+                props["id1"] = id1;
+                props["id2"] = id2;
+                props["type"] = "link";
+                props["id"] = id;
 
                 if (callback != null)
                 {
