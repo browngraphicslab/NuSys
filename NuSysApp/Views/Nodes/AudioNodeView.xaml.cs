@@ -62,10 +62,9 @@ namespace NuSysApp
             }
         }
 
-        private async void OnRecord_Click(object sender, TappedRoutedEventArgs e)
+        private async void OnRecord_Click(object sender, RoutedEventArgs e)
         {
             await ToggleRecording(FileName + ".mp3");
-            e.Handled = true;
         }
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
