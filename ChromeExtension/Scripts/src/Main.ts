@@ -73,16 +73,15 @@ class Main {
                 }
                 if (request.pastPage != null) {
                     sendResponse({ farewell: "received Info" });
-                    console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                    console.log("this is a requested page");
+                    console.log(request.pastPage);
+
                     this.toggleEnabled(true);
                     var rects = null;
 
-                    chrome.storage.local.get(null,(data) => {
-                        console.info(data);
-                        console.log(data[request.pastPage]);
-                        rects = data[request.pastPage]["boundingRects"];
-                        console.log(rects);
-                        this.drawPastSelections(rects);
+                    $(request.pastPage).each((indx, elem) => {
+                        console.log(elem);
+                        this.drawPastSelections(elem["boundingRects"]);
                     });
                 }
             });
@@ -362,6 +361,11 @@ class Main {
         this.selection["title"] = document.title;
         this.selection["brushType"] = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
         this.selection["urlGroup"] = this.urlGroup;
+        this.selection["boundingRects"] = this.rectangleArray;
+
+
+        console.log("!!!!!!!!!!!!!!!!!!");
+        console.log(this.selection);
         // var obj = {};
         //obj[this.objectKeyCount] = selectionInfo;
         //obj["selections"] = this.selections;
