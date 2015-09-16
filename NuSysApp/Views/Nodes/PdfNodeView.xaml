@@ -13,10 +13,10 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
-    <UserControl.Resources>
+    <!--<UserControl.Resources>
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
