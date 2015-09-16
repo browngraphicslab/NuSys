@@ -5,22 +5,47 @@ chrome.storage.local.get(null, function (data) {
     console.log(data);
     allData = data;
     delete allData["curr"];
-
-    console.info(data);
-    console.log();
     //	setData(data);
-    showInsertion(data);
+    //showInsertion(data);
+    if (allData["selections"] != null) {
+        sortByTime(allData);
+    }   
 });
 
+function sortByTime(obj){
+    var json = JSON.stringify(obj);
+    var sortedJson = sortResults(obj['selections'], "urlGroup", false);
+    var newJson = {};
+    var hash = {};
+    $(sortedJson).each(function (indx, value) {
+        var groupId = value["urlGroup"];
+        if (hash[groupId] == null) {
+            hash[groupId] = [value];
+        }
+        else {
+            var list = hash[groupId];
+            list = list.push(value);
+        }
+        
+    });
+    showInsertion(hash);
+}
+
+function sortResults(json, prop, asc) {
+  
+    sortedJson = json.sort(function (a, b) {
+        if (asc) return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
+        else return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
+    });
+    return sortedJson;
+}
 function injectScript(tab) {
     console.log("injectin!!!!!");
     chrome.tabs.executeScript({ file: 'jquery.js' });
-    
     chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
 }
 
 $("#reset").click(function () {
-    console.log("DDDdd")
     chrome.storage.local.clear();
     $("#container").empty();
 });
@@ -28,10 +53,6 @@ $("#reset").click(function () {
 function sendMessage(key) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { pastPage: key }, function (response) {
-            // console.log(response.farewell);\
-            console.log("MESSAGE SENT!!!!");
-            console.log(tabs);
-            console.log(response);
             if (!response) {
                 sendMessage(key);
             }
@@ -43,26 +64,26 @@ function sendMessage(key) {
 }
 
 function showInsertion(data) {
-    console.log(document.caretRangeFromPoint(350, 75));
-    $.each(Object.keys(data).reverse(), function (index, val) {
-
+    console.log(data);
+    $.each(data, function (index, val) {
+        console.log(val);
 
         var title = document.createElement("h3");
-        $(title).append("<span class='title'>" + data[val]["title"]);
-        $(title).append("<span>"+"Dec 28th 1992");
-        $(title).append("<span class='url'>" + data[val]["url"] + "</span>");
+        $(title).append("<span class='title'>" + val[0]["title"]);
+        
+        $(title).append("<span class='url'>" + val[0]["url"] + "</span>");
         $(title).append("<button class='toRemove button' type='button'>Remove</button>");
         $(title).append("<button class='pastPage button' type='button'>Open</button>");
-        // $(title).append("<span>" + data[val]["date"] + "</span>");
-
+       
         $(title).find(".pastPage").click(function () {
-            chrome.tabs.create({ 'url': data[val]["url"] }, injectScript);
+            chrome.tabs.create({ 'url': val[0]["url"] }, injectScript);
             sendMessage(val);
         });
 
         var selections = document.createElement("div");
-        $.each(data[val]["selections"], function (indx, v) {
-            var res = v.split('//');
+        $.each(val, function (indx, v) {
+            var content = v["_content"];
+            var res = content.split('//');
             var newVal = "";
             for (var i = 0; i < res.length; i++) {
                 newVal += res[i];
@@ -72,17 +93,29 @@ function showInsertion(data) {
             }
             $(selections).append("<div style = 'clear:both'>" + newVal + "</div>");
         });
-    //    $("#container").append(date);
         $("#container").append(title);
         $("#container").append(selections);
 
         $(title).find(".toRemove").click(function () {
-            console.log(data[val]);
             $(title).remove();
             $(selections).remove();
-            delete data[val];
-            console.log(data);
-            chrome.storage.local.remove(val);
+            chrome.storage.local.get(null, (data) =>{
+                console.log(data);
+                var newSelections = [];
+                $(data["selections"]).each((indx, elem) =>{
+                    console.log(val[0]["urlGroup"] == elem["urlGroup"]);
+                    if (val[0]["urlGroup"]!= elem["urlGroup"]) {
+                        newSelections.push(elem);
+                    }
+                });
+
+                data["selections"] = newSelections;
+                console.log(data);
+                chrome.storage.local.set(data);
+            });
+
+         //   delete data[val];
+         //   chrome.storage.local.remove(val);
         });
     });
 

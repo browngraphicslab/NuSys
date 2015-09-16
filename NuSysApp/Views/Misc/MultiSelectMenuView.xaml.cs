@@ -22,6 +22,8 @@ namespace NuSysApp
         public MultiSelectMenuView()
         {
             this.InitializeComponent();
+            GroupButton.Opacity = 0;
+            GroupButton.IsHitTestVisible = false;
         }
 
         public Button Delete

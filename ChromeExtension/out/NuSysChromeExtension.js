@@ -3094,6 +3094,9 @@ var Main = (function () {
             _this.selection["title"] = document.title;
             _this.selection["brushType"] = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
             _this.selection["urlGroup"] = _this.urlGroup;
+            _this.selection["boundingRects"] = _this.rectangleArray;
+            console.log("!!!!!!!!!!!!!!!!!!");
+            console.log(_this.selection);
             // var obj = {};
             //obj[this.objectKeyCount] = selectionInfo;
             //obj["selections"] = this.selections;
@@ -3146,15 +3149,13 @@ var Main = (function () {
             }
             if (request.pastPage != null) {
                 sendResponse({ farewell: "received Info" });
-                console.log("$$$$$$$$$$$$$$$$$$" + request.pastPage);
+                console.log("this is a requested page");
+                console.log(request.pastPage);
                 _this.toggleEnabled(true);
                 var rects = null;
-                chrome.storage.local.get(null, function (data) {
-                    console.info(data);
-                    console.log(data[request.pastPage]);
-                    rects = data[request.pastPage]["boundingRects"];
-                    console.log(rects);
-                    _this.drawPastSelections(rects);
+                $(request.pastPage).each(function (indx, elem) {
+                    console.log(elem);
+                    _this.drawPastSelections(elem["boundingRects"]);
                 });
             }
         });
