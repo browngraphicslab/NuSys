@@ -41,8 +41,7 @@ namespace NuSysApp
                 _audioFile = value;
             }
         }
-        public string FileName { get;
-            set; }
+        public string FileName { get; set; }
 
         public override async Task<Dictionary<string, string>> Pack()
         {
@@ -97,9 +96,9 @@ namespace NuSysApp
         }
         public async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
         {
-            StorageFile _recordStorageFile = await _rootFolder.CreateFileAsync(ID + ".mp3", CreationCollisionOption.GenerateUniqueName);
-            await FileIO.WriteBytesAsync(_recordStorageFile, byteArray);
-            return _recordStorageFile;
+            var recordStorageFile = await _rootFolder.CreateFileAsync(ID + ".mp3", CreationCollisionOption.GenerateUniqueName);
+            await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
+            return recordStorageFile;
         }
     }
 }

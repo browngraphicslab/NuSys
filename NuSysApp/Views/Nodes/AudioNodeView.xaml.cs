@@ -145,12 +145,12 @@ namespace NuSysApp
 
                 if (vm.IsSelected)
                 {
-                    var slideout = (Storyboard)App.Current.Resources["slideout"];
+                    //var slideout = (Storyboard)Application.Current.Resources["slideout"];
                     slideout.Begin();
                 }
                 else
                 {
-                    var slidein = (Storyboard)App.Current.Resources["slidein"];
+                    //var slidein = (Storyboard)Application.Current.Resources["slidein"];
                     slidein.Begin();
                 }
             }

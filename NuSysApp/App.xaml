@@ -19,7 +19,7 @@
         <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledForegroundThemeBrush" Color="White" />
         <SolidColorBrush x:Key="ComboBoxItemSelectedPointerOverBackgroundThemeBrush" Color="LightBlue" />
 
-        <Storyboard x:Key="slideout" x:Name="slideout">
+        <!--<Storyboard x:Key="slideout">
             <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu"/>
             <DoubleAnimation Duration="0:0:0.2" To="-15" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu"/>
             <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu"/>
@@ -31,7 +31,7 @@
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
-        <Storyboard x:Key="slidein" x:Name="slidein">
+        <Storyboard x:Key="slidein">
             <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu"/>
             <DoubleAnimation Duration="0:0:0.2" To="100" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu"/>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
@@ -41,7 +41,7 @@
                     </DiscreteObjectKeyFrame.Value>
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
+        </Storyboard>-->
 
         <converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
