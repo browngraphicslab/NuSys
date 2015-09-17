@@ -21,10 +21,10 @@
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="30" Width="30"></Image>
+                    <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30"></Image>
                 </Button>
                 <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditInk" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="30" Width="30"></Image>
+                    <Image Source="ms-appx:///Assets/icon_node_ink.png" Height="30" Width="30"></Image>
                 </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
@@ -33,12 +33,12 @@
                 <Image Margin="3,3,3,3" Source="{Binding RenderedBitmapImage}" Stretch="Uniform"/>
                 <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Left" Click="pageLeft_Click">
                 <Button.Content>
-                    <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_left.png" />
+                    <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
                 </Button.Content>
             </Button>
             <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="pageRight_Click">
                 <Button.Content>
-                    <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_right.png" />
+                    <Image Opacity=".5" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                 </Button.Content>
             </Button>
             </Grid>
