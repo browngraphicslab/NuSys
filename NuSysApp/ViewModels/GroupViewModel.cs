@@ -21,7 +21,7 @@ namespace NuSysApp
             _linkViewModelList = new ObservableCollection<LinkViewModel>();
             _atomViewList = new ObservableCollection<UserControl>();
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DefaultNodeSize; //width set in /MISC/Constants.cs
+            this.Width = Constants.DefaultNodeSize;   //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
             this.IsSelected = false;
             this.IsEditing = false;
@@ -62,6 +62,7 @@ namespace NuSysApp
                     link.Annotation.IsVisible = false;
                 }
             }
+            (View as GroupView).ArrangeNodesInGrid();
             //TODO Handle links
         }
 

@@ -14,9 +14,9 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
     <UserControl.Resources>
-        <converters:SelectionToColorConverter x:Key="sConverter" />
+        <!--<converters:SelectionToColorConverter x:Key="sConverter" />
         <converters:BoolToVisibilityConverter x:Key="vConverter" />
-        <converters:SubStractConverter x:Key="subtractConverter" />
+        <converters:SubStractConverter x:Key="subtractConverter" />-->
 
         <Style TargetType="local:TextBoxExtended">
             <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />

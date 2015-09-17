@@ -64,6 +64,11 @@ namespace NuSysApp
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (dc is NodeViewModel)
+            {
+                return;
+            }
             _previousPoint = new Point(-1, -1);
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;

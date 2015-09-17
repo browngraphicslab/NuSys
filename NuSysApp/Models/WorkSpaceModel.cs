@@ -48,22 +48,6 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
-            //_partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
-            //_partialLines.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args)
-            //{
-            //    if (args.Action == NotifyCollectionChangedAction.Add)
-            //    {
-            //        foreach (ObservableCollection<InqLineView> n in _partialLines.Values)
-            //        {
-            //            n.CollectionChanged += delegate(object o, NotifyCollectionChangedEventArgs eventArgs)
-            //            {
-            //                InqLineView l = ((InqLineView) ((object[]) eventArgs.NewItems.SyncRoot)[0]);
-            //                OnPartialLineAddition?.Invoke(this,new AddPartialLineEventArgs("Added Partial Lines", l));
-            //            };
-            //        }
-            //    }
-            //};
-            
             NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
         }
 
@@ -164,7 +148,6 @@ namespace NuSysApp
             node.NodeType = type;
 
             _idDict.Add(id, node);
-            Debug.WriteLine("dict set");
             OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
         }
 

@@ -103,5 +103,24 @@ namespace NuSysApp
                 return nodeTpl.inkCanvas;
             }
         }
+        public void CheckForNodeNodeIntersection(NodeViewModel node)
+        {
+            var vm = this.DataContext as GroupViewModel;
+            foreach (var node2 in vm.NodeViewModelList)
+            {
+                var rect1 = Geometry.NodeToBoudingRect(node);
+                var rect2 = Geometry.NodeToBoudingRect(node2);
+                rect1.Intersect(rect2);//stores intersection rectangle in rect1
+                //if (node != node2 && !rect1.IsEmpty && node2 != node.ParentGroup)
+                {
+                    vm.NodeViewModelList.Remove(node);
+                    vm.NodeViewModelList.Insert(vm.NodeViewModelList.IndexOf(node2) + ((node2.AnchorX < node.AnchorX)?0:1),node);
+                    (vm.Model as GroupNodeModel).NodeModelList.Remove(node.Model as NodeModel);
+                    (vm.Model as GroupNodeModel).NodeModelList.Insert((vm.Model as GroupNodeModel).NodeModelList.IndexOf(node2.Model as NodeModel) + ((node2.AnchorX < node.AnchorX)?0:1),node.Model as NodeModel);
+                    ArrangeNodesInGrid();
+                    return;
+                }
+            }
+        }
     }
 }

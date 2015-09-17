@@ -145,13 +145,13 @@
     <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\InqLineView.xaml.cs">
+    <Compile Include="Views\InqCanvas\InqLineView.xaml.cs">
       <DependentUpon>InqLineView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\HighlightInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\IInqMode.cs" />
+    <Compile Include="Views\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Views\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Views\InqCanvas\HighlightInqMode.cs" />
+    <Compile Include="Views\InqCanvas\IInqMode.cs" />
     <Compile Include="Components\TextBoxExtended.cs" />
     <Compile Include="Components\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
@@ -225,7 +225,7 @@
     <Compile Include="Util\FileManager.cs" />
     <Compile Include="Util\FolderWatcher.cs" />
     <Compile Include="Util\Geometry.cs" />
-    <Compile Include="Views\Misc\InqCanvas\InqCanvasView.cs" />
+    <Compile Include="Views\InqCanvas\InqCanvasView.cs" />
     <Compile Include="Util\NodeType.cs" />
     <Compile Include="Util\NuSysStorages.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
@@ -350,7 +350,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\InqCanvas\InqLineView.xaml">
+    <Page Include="Views\InqCanvas\InqLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -16,6 +16,7 @@ namespace NuSysApp
 
         private void OnEditInk(object sender, RoutedEventArgs e)
         {
+            var nodeTpl = (NodeTemplate)Application.Current.Resources["nodeTpl"];
             nodeTpl.ToggleInkMode();
         }
 
