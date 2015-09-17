@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using System.Diagnostics;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -65,8 +66,18 @@ namespace NuSysApp
 
         private async void OnRecord_Click(object sender, TappedRoutedEventArgs e)
         {
-            await ToggleRecording(FileName + ".mp3");
-            e.Handled = true;
+            try
+            {
+                await ToggleRecording(FileName + ".mp3");
+                e.Handled = true;
+            }
+            catch
+            {
+                MessageBox.Text = "No microphone detected";
+                await Task.Delay(500);
+                MessageBox.Text = "";
+                Debug.WriteLine("Record failed");
+            }
         }
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
