@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
 using System;
+using Windows.Foundation;
 
 namespace NuSysApp
 {
@@ -273,6 +274,29 @@ namespace NuSysApp
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
         }
+
+
+        private delegate void AddInk(string s);
+        public async void PromoteInk(Rect nodeBounds, List<InqLineModel> linesToPromote)
+        {
+            var dict = new Dictionary<string, string>();
+            dict["width"] = nodeBounds.Width.ToString();
+            dict["height"] = nodeBounds.Height.ToString();
+            AddInk add = delegate (string s)
+            {
+                var v = this.Model.IDToSendableDict[s] as TextNodeModel;
+                if (v != null)
+                {
+                    foreach (var model in linesToPromote)
+                    {
+                        NetworkConnector.Instance.FinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                    }
+                }
+            };
+            Action<string> a = new Action<string>(add);
+            await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
+        }
+
 
         public void ClearMultiSelection()
         {

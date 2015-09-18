@@ -132,24 +132,6 @@ namespace NuSysApp
                 return;
             var vm = (WorkspaceViewModel)_view.DataContext;
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
-            //foreach (UIElement element in _view.InqCanvas.Children)
-            //{
-            //    var line = element as InqLineView;
-            //    if (line != null)
-            //    {
-            //        foreach (Point p in line.Points)
-            //        {
-            //            if (r.Contains(p))
-            //            {
-            //                if (!line.IsSelected)
-            //                {
-            //                    selected.Add(line);
-            //                }
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
 
             var atoms = vm.AtomViewList;
             foreach (var atom in atoms)
@@ -174,6 +156,24 @@ namespace NuSysApp
                 _view.MultiMenu.Visibility = Visibility.Visible;
                 _view.MultiMenu.Delete.Click += Delete_OnClick;
                 _view.MultiMenu.Group.Click += Group_OnClick;
+            }
+            else
+            {
+                var selectedLines = new List<InqLineModel>();
+                foreach (InqLineModel model in _view.InqCanvas.ViewModel.Model.Lines)
+                {
+                    foreach (var point in model.Points)
+                    {
+                        if (r.Contains(point))
+                        {
+                            selectedLines.Add(model);
+                            NetworkConnector.Instance.RequestDeleteSendable(model.ID);
+                            break;
+                        }
+                    }
+                }
+
+                vm.PromoteInk(r, selectedLines);
             }
         }
     }
