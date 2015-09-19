@@ -236,6 +236,10 @@ namespace NuSysApp
                     return;
                 }
 
+                if (_isMultiSelected)
+                {
+                    WorkSpaceViewModel.MoveMultiSelection(this, value - _anchorX, 0);
+                }
                 _anchorX = value;
 
                 RaisePropertyChanged("AnchorX");
@@ -253,6 +257,11 @@ namespace NuSysApp
                 if (_anchorY == value)
                 {
                     return;
+                }
+
+                if (_isMultiSelected)
+                {
+                    WorkSpaceViewModel.MoveMultiSelection(this, 0, value - _anchorY);
                 }
 
                 _anchorY = value;

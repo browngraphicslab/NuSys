@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
 using System;
 using Windows.Foundation;
+using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
@@ -261,6 +262,20 @@ namespace NuSysApp
                 selected.IsMultiSelected = true;
                 NetworkConnector.Instance.RequestLock(selected.ID);
                 this.MultiSelectedAtomViewModels.Add(selected);
+            }
+        }
+
+        public void MoveMultiSelection(AtomViewModel sender, double x, double y)
+        {
+            foreach (var atom in MultiSelectedAtomViewModels)
+            {
+                var node = atom as NodeViewModel;
+                if (node != null && atom != sender)
+                {
+                    node.IsMultiSelected = false;
+                    node.Translate(x, y);
+                    node.IsMultiSelected = true;
+                }
             }
         }
 
