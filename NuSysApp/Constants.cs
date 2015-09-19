@@ -25,7 +25,7 @@ namespace NuSysApp
         public const double DefaultAnnotationSize = 100;
         public const double ExtraPaddingSpace = 50;
         public const double MinNodeSize = 40;
-        public const double MinNodeSizeX = 150;
+        public const double MinNodeSizeX = 250;
         public const double MinNodeSizeY = 110;
 
         public const double DefaultVideoNodeSize = 300;
