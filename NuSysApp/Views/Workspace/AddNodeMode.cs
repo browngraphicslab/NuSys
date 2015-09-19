@@ -33,6 +33,7 @@ namespace NuSysApp
             _view.ManipulationStarted += OnManipulationStarted;
             _view.ManipulationDelta += OnManipulationDelta;
             _view.ManipulationCompleted += OnManipulationCompleted;
+            _view.ManipulationInertiaStarting += OnManipulationInertiaStarting;
         }
 
         private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -59,6 +60,13 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        private void OnManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
+        {
+            e.TranslationBehavior.DesiredDeceleration = 20.0 * 96.0 / (100000.0);
+
+            e.Handled =  true;
+        } 
+        
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (_isDragging) { 
@@ -79,6 +87,7 @@ namespace NuSysApp
             _view.ManipulationStarted -= OnManipulationStarted;
             _view.ManipulationDelta -= OnManipulationDelta;
             _view.ManipulationCompleted -= OnManipulationCompleted;
+            _view.ManipulationInertiaStarting -= OnManipulationInertiaStarting;
             _isDragging = false;
         }
 
