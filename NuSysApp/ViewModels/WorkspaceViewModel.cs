@@ -498,7 +498,7 @@ namespace NuSysApp
         #endregion Save/Load
         #region Event Handlers
 
-        private void CreatePinHandler(object source, CreatePinEventArgs e)
+        public void CreatePinHandler(object source, CreatePinEventArgs e)
         {
             var vm = new PinViewModel(e.CreatedPin,this);
             PinViewModelList.Add(vm);
