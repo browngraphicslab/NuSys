@@ -343,22 +343,27 @@ namespace NuSysApp
             {
                 return;
             }
-            var nodesToAdd = new AtomViewModel[MultiSelectedAtomViewModels.Count];
-                MultiSelectedAtomViewModels.CopyTo(nodesToAdd);//TODO REMOVE
             var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
             var node2 = (NodeModel) MultiSelectedAtomViewModels[1].Model;
             Del del = delegate (string s)
             {
                 Debug.WriteLine("gid = " + s);
+                Debug.WriteLine(MultiSelectedAtomViewModels.ToString());
+
                 var groupmodel = (GroupNodeModel)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[s];
-                for (int index = 0; index < nodesToAdd.Length; index++)
+                for (int index = 0; index < MultiSelectedAtomViewModels.Count; index++)
                 {
-                    var avm = nodesToAdd[index];
-                    if (avm is NodeViewModel)
-                    {
+                    Debug.WriteLine(NetworkConnector.Instance.ModelIntermediate.HasLock(s));
+                    Debug.WriteLine(MultiSelectedAtomViewModels.Count);
+                    var avm = MultiSelectedAtomViewModels[index];
+        //            if (avm is NodeViewModel)
+         //           {
                         ((NodeModel)avm.Model).MoveToGroup(groupmodel);
-                    }
+                    Debug.WriteLine((avm.Model  as NodeModel).ParentGroup.ID);
+                    Debug.WriteLine(((avm.Model  as NodeModel).ParentGroup as GroupNodeModel).NodeModelList.Count);
+         //           }
                 }
+            ClearMultiSelection();
             };
             
             Action<string> a = new Action<string>(del);
@@ -367,7 +372,6 @@ namespace NuSysApp
             //            if (MultiSelectedAtomViewModels.Count > 1)
             //            {
 //            }
-           // ClearMultiSelection();
         }
 
 

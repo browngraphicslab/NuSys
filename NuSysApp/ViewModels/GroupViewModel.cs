@@ -51,8 +51,8 @@ namespace NuSysApp
                 WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
             }
             toAdd.Transform = new MatrixTransform();
-            _atomViewList.Add(toAdd.View);
-            _nodeViewModelList.Add(toAdd);
+            AtomViewList.Add(toAdd.View);
+            NodeViewModelList.Add(toAdd);
             
             foreach (var link in toAdd.LinkList)
             {

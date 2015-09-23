@@ -28,6 +28,9 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
+            
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.ClearMultiSelection();
             _view.PointerPressed += View_PointerPressed;
             _view.PointerMoved += View_PointerMoved;
             _view.PointerReleased += View_PointerReleased;
@@ -44,8 +47,8 @@ namespace NuSysApp
             _view.MultiMenu.Visibility = Visibility.Collapsed;
             _view.MultiMenu.Delete.Click -= Delete_OnClick;
             _view.MultiMenu.Group.Click -= Group_OnClick;
-            var vm = (WorkspaceViewModel)_view.DataContext;
-            vm.ClearMultiSelection();
+       //     var vm = (WorkspaceViewModel)_view.DataContext;
+      //      vm.ClearMultiSelection();
         }
 
         private void Delete_OnClick(object sender, RoutedEventArgs e)
@@ -64,6 +67,8 @@ namespace NuSysApp
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
+                _view.MultiMenu.Delete.Click -= Delete_OnClick;
+                _view.MultiMenu.Group.Click -= Group_OnClick;
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc is NodeViewModel)
             {
@@ -128,9 +133,10 @@ namespace NuSysApp
 
         private async void SelectContainedComponents()
         {
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.ClearMultiSelection();
             if (_currentRect == null)
                 return;
-            var vm = (WorkspaceViewModel)_view.DataContext;
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
 
             var atoms = vm.AtomViewList;
