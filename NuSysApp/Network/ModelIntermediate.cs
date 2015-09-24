@@ -304,7 +304,7 @@ namespace NuSysApp
 
                         PointCollection points;
                         double thickness;
-                        Brush stroke;
+                        SolidColorBrush stroke;
 
                         if (props.ContainsKey("data"))
                         {
