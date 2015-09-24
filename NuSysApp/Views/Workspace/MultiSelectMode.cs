@@ -84,10 +84,14 @@ namespace NuSysApp
         private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc is NodeViewModel)
+            var nvm = dc as NodeViewModel;
+            if (nvm != null)
             {
-                var vm = (NodeViewModel)dc;
-                vm.ToggleSelection();
+                var vm = (WorkspaceViewModel)_view.DataContext;
+                vm.SetMultiSelection(nvm);
+                _view.MultiMenu.Visibility = Visibility.Visible;
+                _view.MultiMenu.Delete.Click += Delete_OnClick;
+                _view.MultiMenu.Group.Click += Group_OnClick;
             }
 
             _isMouseDown = false;
@@ -178,8 +182,10 @@ namespace NuSysApp
                         }
                     }
                 }
-
-                vm.PromoteInk(r, selectedLines);
+                if (selectedLines.Count > 0)
+                {
+                    vm.PromoteInk(r, selectedLines);
+                }
             }
         }
     }
