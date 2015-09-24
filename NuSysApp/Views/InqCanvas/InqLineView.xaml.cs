@@ -34,7 +34,6 @@ namespace NuSysApp
             this.InitializeComponent();
             this.CanEdit = AtomModel.EditStatus.Maybe;
             this.DataContext = vm;
-            VisibleLine.Stroke = vm.Model.Stroke;
             vm.PropertyChanged += Update;
         }
 
