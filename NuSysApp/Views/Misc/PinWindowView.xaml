@@ -12,15 +12,15 @@
     <Grid>
         <Border x:Name="Border" CornerRadius="10" Background="#62BDC5">
             <Grid>
-                <Grid x:Name="ContentContainer" Height="550" Width="390" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5" >
+                <Grid x:Name="ContentContainer" Height="550" Width="290" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5" >
                     <Rectangle Fill="White" Opacity=".7"></Rectangle>
                     <ItemsControl Name="IC2" ItemsSource="{Binding PinViewModelList}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Text}" DataContext="{Binding}" Width="Auto" Tapped="TextBlock_Tapped" TextAlignment="Left" FontSize="14" Foreground="Black" Padding="10,10,10,10"/>
-                                    <Button DataContext="{Binding}" Tapped="Button_Tapped">
-                                        <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_x2.png"></Image>
+                                    <Button DataContext="{Binding}" Tapped="Button_Tapped" Background="{x:Null}">
+                                        <Image Height="10" Width="10" Source="ms-appx:///Assets/icon_x.png"></Image>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>
