@@ -63,7 +63,7 @@ namespace NuSysApp
             vm.PinViewModelList.Remove(pinvm);*/
         }
 
-        public void getFloatingMenu(FloatingMenuView floatingMenu)
+        public void setFloatingMenu(FloatingMenuView floatingMenu)
         {
             _floatingMenu = floatingMenu;
         }

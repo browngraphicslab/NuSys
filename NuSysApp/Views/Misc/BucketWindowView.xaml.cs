@@ -87,7 +87,7 @@ namespace NuSysApp
             Debug.WriteLine("drag items completed!");
         }
 
-        public void getFloatingMenu(FloatingMenuView floatingMenu)
+        public void setFloatingMenu(FloatingMenuView floatingMenu)
         {
             _floatingMenu = floatingMenu;
         }
