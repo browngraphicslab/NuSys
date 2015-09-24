@@ -83,6 +83,9 @@ namespace NuSysApp
             _buttons[btnPin] = Options.MiscPin;
             _buttons[btnMisc] = Options.MainMisc;
 
+            pinWindow.getFloatingMenu(this);
+            bucketWindow.getFloatingMenu(this);
+
             _storyboards = new Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>>();
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSelect"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSelect"));
@@ -180,7 +183,7 @@ namespace NuSysApp
             ModeChange?.Invoke(option, isFixed);
         }
 
-        private void CloseAllSubMenus()
+        public void CloseAllSubMenus()
         {
             foreach (var key in _storyboards.Keys)
             {

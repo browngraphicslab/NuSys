@@ -26,6 +26,8 @@ namespace NuSysApp
     {
         private ContentImporter _contentImporter = new ContentImporter();
 
+        private FloatingMenuView _floatingMenu;
+
 
         public ObservableCollection<BucketItem> BucketItems { get; set; }
 
@@ -84,7 +86,18 @@ namespace NuSysApp
             BucketItems.Remove((BucketItem)args.Items[0]);            
             Debug.WriteLine("drag items completed!");
         }
+
+        public void getFloatingMenu(FloatingMenuView floatingMenu)
+        {
+            _floatingMenu = floatingMenu;
+        }
+
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
+        {
+            _floatingMenu.CloseAllSubMenus();
+        }
     }
+
 
 
     public class BucketItem
