@@ -48,7 +48,7 @@ namespace NuSysApp
             _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
-            NetworkConnector.Instance.ModelIntermediate = new ModelIntermediate(this);
+            NetworkConnector.Instance.WorkSpaceModel = this;
         }
 
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
