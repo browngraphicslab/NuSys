@@ -185,7 +185,7 @@ namespace NuSysApp.Network
         }
         public async Task SendDeleteMessage(string id)
         {
-            await SendMessageToHost("SPECIAL10:" + id);
+            await SendMessageToHost("SPECIALDELETE_REQUEST:" + id);
         }
 
         /*
@@ -208,7 +208,7 @@ namespace NuSysApp.Network
         */
         private async Task SendPing(string ip, NetworkConnector.PacketType packetType)
         {
-            await SendMessage(ip, "SPECIAL11:", packetType);
+            await SendMessage(ip, "SPECIALPING:", packetType);
         }
 
         private void SendPhpPing(object state)
@@ -300,7 +300,7 @@ namespace NuSysApp.Network
        */
         private async Task TellRemoveRemoteIP(string ip)
         {
-            ThreadPool.RunAsync(async delegate { await SendMassTCPMessage("SPECIAL9:" + ip); });
+            ThreadPool.RunAsync(async delegate { await SendMassTCPMessage("SPECIALREMOVE_IP_REQUEST:" + ip); });
         }
 
         /*
@@ -316,7 +316,7 @@ namespace NuSysApp.Network
                         //TODO tell everyone to stop actions and wait
                         await SendMassTCPMessage("SPECIALJOINING_RESPONSE:" + _otherIPs.ToArray()[0]);//if this is the host, tell everyone who the new host is because I'M OUT
                     }
-                    await SendMassTCPMessage("SPECIAL9:" + _localIP);//tell everyone else to remove myself from their IP list
+                    await SendMassTCPMessage("SPECIALREMOVE_IP_REQUEST:" + _localIP);//tell everyone else to remove myself from their IP list
                 }
             });
         }
@@ -382,7 +382,7 @@ namespace NuSysApp.Network
                             await SendMassTCPMessage("SPECIALJOINING_RESPONSE:" + _localIP);
                             MakeHost();
                         }
-                        await SendMassTCPMessage("SPECIAL9:" + ip);
+                        await SendMassTCPMessage("SPECIALREMOVE_IP_REQUEST:" + ip);
                         return;
                     }
                     var stringLength = reader.ReadUInt32();
@@ -664,19 +664,6 @@ namespace NuSysApp.Network
                 if (message.Substring(0, 7) != "SPECIAL") //if not a special message
                 {
                     OnNewMessage?.Invoke(ip,message,packetType);
-
-                    /*
-                    var matches = Regex.Match(message, "(?:({[^}]+}) *)*");
-                    string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
-
-                    //var miniStrings = message.Split(new string[] { Constants.AndReplacement }, StringSplitOptions.RemoveEmptyEntries); //break up message into subparts
-                    foreach (var subMessage in miniStrings)
-                    {
-                        if (subMessage.Length > 0)
-                        {
-                            await HandleRegularMessage(ip, subMessage, packetType); //handle each submessage
-                        }
-                    }*/
                 }
                 else
                 {
@@ -732,7 +719,7 @@ namespace NuSysApp.Network
                         }
                         else
                         {
-                            await SendTCPMessage("SPECIAL4:0", ip);
+                            await SendTCPMessage("SPECIALCAUGHT_UP:0", ip);
                         }
                         return;
                     }
@@ -782,9 +769,9 @@ namespace NuSysApp.Network
                                 }
                                 else
                                 {
-                                    //await SendTCPMessage("SPECIAL4:" + _joiningMembers[ip].Item2.Count, ip);
-                                    await SendTCPMessage("SPECIAL4:" + 0, ip);//TODO remove this line and uncomment above line
-                                    await SendTCPMessage("SPECIAL12:" + _networkConnector.GetAllLocksToSend(), ip);
+                                    //await SendTCPMessage("SPECIALCAUGHT_UP:" + _joiningMembers[ip].Item2.Count, ip);
+                                    await SendTCPMessage("SPECIALCAUGHT_UP:" + 0, ip);//TODO remove this line and uncomment above line
+                                    await SendTCPMessage("SPECIALFULL_LOCK_UPDATE:" + _networkConnector.GetAllLocksToSend(), ip);
                                     //while(_joiningMembers[ip].Item2.Count>0)
                                     //{
                                     //await _joiningMembers[ip].Item2[0].Send(ip); TODO Uncomment this stuff
@@ -810,7 +797,7 @@ namespace NuSysApp.Network
                         throw new NetworkConnector.NotHostException(origMessage, ip);
                     }
                     break;
-                case "4": //Sent by Host only, "you are caught up and ready to join". message is simply the number of catch-up UDP packets also being sent
+                case "CAUGHT_UP": //Sent by Host only, "you are caught up and ready to join". message is simply the number of catch-up UDP packets also being sent
                     if (_localIP == _hostIP)
                     {
                         throw new NetworkConnector.HostException(origMessage, ip);
@@ -818,13 +805,13 @@ namespace NuSysApp.Network
                     }
                     Debug.WriteLine("Ready to Join Workspace");
                     return;
-                case "5"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
+                case "LOCK_REQUEST"://HOST ONLY  request from someone to checkout a lock = "may I have a lock for the following id number" ex: message = "6"
                     if (_hostIP == _localIP)
                     {
                         await _networkConnector.Locks.Set(message, ip);
-                        //await HandleSpecialMessage(_localIP,"SPECIAL6:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
+                        //await HandleSpecialMessage(_localIP,"SPECIALLOCK_SET:" + message + "=" + ModelIntermediate.Locks[message],PacketType.TCP);
                         OnLockUpdateRecieved?.Invoke(message, _networkConnector.Locks.Value(message));
-                        await SendMassTCPMessage("SPECIAL6:" + message + "=" + _networkConnector.Locks.Value(message));
+                        await SendMassTCPMessage("SPECIALLOCK_SET:" + message + "=" + _networkConnector.Locks.Value(message));
                         return;
                     }
                     else
@@ -833,7 +820,7 @@ namespace NuSysApp.Network
                         return;
                     }
                     break;
-                case "6"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
+                case "LOCK_SET"://Response from Lock get request = "the id number has a lock holder of the following IP"  ex: message = "6=10.10.10.10"
                     var parts = message.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length != 2 && parts.Length != 1)
                     {
@@ -852,13 +839,13 @@ namespace NuSysApp.Network
                     OnLockUpdateRecieved?.Invoke(lockId, lockHolder);
                     return;
                     break;
-                case "7"://Returning lock  ex: message = "6"
+                case "LOCK_RETURN"://Returning lock  ex: message = "6"
                     if (_localIP == _hostIP)
                     {
                         if (_networkConnector.HasSendableID(message))
                         {
                             await _networkConnector.Locks.Set(message, "");
-                            await SendMessage(ip, "SPECIAL6:" + message + "=", NetworkConnector.PacketType.TCP, true, true);
+                            await SendMessage(ip, "SPECIALLOCK_SET:" + message + "=", NetworkConnector.PacketType.TCP, true, true);
                             return;
                         }
                         else
@@ -873,7 +860,7 @@ namespace NuSysApp.Network
                         return;
                     }
                     break;
-                case "8"://Request full node update for certain id -- HOST ONLY ex: message = "6"
+                case "NODE_UPDATE_REQUEST"://Request full node update for certain id -- HOST ONLY ex: message = "6"
                     if (_localIP == _hostIP)
                     {
                         if (!_networkConnector.HasSendableID(message))
@@ -893,15 +880,15 @@ namespace NuSysApp.Network
                         return;
                     }
                     break;
-                case "9"://Tell others to remove IP from self ex: message = "10.10.10.10"
+                case "REMOVE_IP_REQUEST"://Tell others to remove IP from self ex: message = "10.10.10.10"
                     RemoveIP(message);
                     break;
-                case "10":// Request to delete a node.  HOST ONLY.   ex: message = an ID
+                case "DELETE_REQUEST":// Request to delete a node.  HOST ONLY.   ex: message = an ID
                     if (_networkConnector.HasSendableID(message))
                     {
                         if (_hostIP == _localIP)
                         {
-                            await SendMassTCPMessage("SPECIAL10:" + message);
+                            await SendMassTCPMessage("SPECIALDELETE_REQUEST:" + message);
                         }
                         OnDeleteRequestRecieved?.Invoke(message);
                         return;
@@ -911,22 +898,33 @@ namespace NuSysApp.Network
                         Debug.WriteLine("tried to delete ID " + message + " when it doesn't locally exist");
                     }
                     break;
-                case "11"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
+                case "PING"://a simple 'ping'.  Will respond to ping with a 'NO' meaning 'dont reply'.  ex: message = "" or "NO"
                     this.Pingged(ip);
                     if (message != "NO")
                     {
-                        await SendMessage(ip, "SPECIAL11:NO", packetType);
+                        await SendMessage(ip, "SPECIALPING:NO", packetType);
                     }
                     break;
-                case "12"://A full update from the host about the current locks
+                case "FULL_LOCK_UPDATE"://A full update from the host about the current locks
                     if (message != "")
                     {
                         OnAllLocksSet?.Invoke(message);
                     }
                     break;
+                default:
+                    throw new NetworkConnector.IncorrectFormatException("SPECIAL message was unknown");
+                    break;
             }
         }
+        public async Task RequestLock(string id)
+        {
+            await SendMessageToHost("SPECIALLOCK_REQUEST:" + id);
+        }
 
+        public async Task ReturnLock(string id)
+        {
+            await SendMessageToHost("SPECIALLOCK_RETURN:" + id);
+        }
         /*
         * sends TCP update to someone with the entire current state of a node
         */

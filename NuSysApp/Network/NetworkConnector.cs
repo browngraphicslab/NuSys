@@ -454,7 +454,7 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("Requesting lock for ID: " + id + " although it doesn't exist yet");
                 }
-                await _clientHandler.SendMessageToHost("SPECIAL5:" + id, PacketType.TCP);
+                await _clientHandler.RequestLock(id);
             });
         }
 
@@ -471,7 +471,7 @@ namespace NuSysApp
                     Debug.WriteLine("Attempted to return lock with ID: " + id + " When no such ID exists");
                     //throw new InvalidIDException(id);
                 }
-                await _clientHandler.SendMessageToHost("SPECIAL7:" + id);
+                await _clientHandler.ReturnLock(id);
                 await _clientHandler.SendMassTCPMessage(MakeSubMessageFromDict(await GetNodeState(id)));
             });
         }
