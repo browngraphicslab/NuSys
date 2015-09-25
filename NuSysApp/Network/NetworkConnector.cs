@@ -89,7 +89,12 @@ namespace NuSysApp
             {
                 if (subMessage.Length > 0)
                 {
-                    await HandleMessage(ParseOutProperties(subMessage)); //handle each submessage
+                    Dictionary<string, string> props = ParseOutProperties(message);
+                    await HandleMessage(props); //handle each submessage
+                    if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
+                    {
+                        await _clientHandler.SendMassTCPMessage(message);
+                    }
                 }
             }
         }
