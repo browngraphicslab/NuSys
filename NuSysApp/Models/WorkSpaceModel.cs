@@ -34,7 +34,6 @@ namespace NuSysApp
         #endregion Events and Delegates
 
         #region Private Members
-        private Dictionary<string, Sendable> _idDict;
 
         //private ObservableDictionary<string,ObservableCollection<InqLineView>> _partialLines;
         private LockDictionary _locks;
@@ -45,7 +44,6 @@ namespace NuSysApp
         public WorkSpaceModel(InqCanvasModel inqModel) : base("WORKSPACE_ID")
         {
             this._inqModel = inqModel;
-            _idDict = new Dictionary<string, Sendable>();
             AtomDict = new Dictionary<string, AtomViewModel>();
             _locks = new LockDictionary(this);
             NetworkConnector.Instance.WorkSpaceModel = this;
@@ -54,14 +52,6 @@ namespace NuSysApp
         public Dictionary<string, AtomViewModel> AtomDict { set; get; }
 
         #region Public Members
-        public Dictionary<string, Sendable> IDToSendableDict
-        {
-            get { return _idDict; }
-        }
-        //public ObservableDictionary<string, ObservableCollection<InqLineView>> PartialLines 
-        //{
-        //    get { return _partialLines; }
-        //}
         public LockDictionary Locks
         {
             get { return _locks; }
@@ -75,7 +65,7 @@ namespace NuSysApp
             var link = new LinkModel(atom1, atom2, id);
             atom1.AddToLink(link);
             atom2.AddToLink(link);
-            _idDict.Add(id,link);
+            Children.Add(id,link);
         }
 
         public async Task CreateGroup(string id, NodeModel node1, NodeModel node2, double xCooordinate, double yCoordinate)     
@@ -89,7 +79,7 @@ namespace NuSysApp
             OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
             node1.MoveToGroup(group);
             node2.MoveToGroup(group);
-            _idDict.Add(id, group);  
+            Children.Add(id, group);  
         }
 
         public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate)
@@ -100,7 +90,7 @@ namespace NuSysApp
                 Y = yCoordinate,
                 NodeType = NodeType.Group
             };
-            _idDict.Add(id, group);
+            Children.Add(id, group);
             OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
  
         }
@@ -117,8 +107,8 @@ namespace NuSysApp
             pinModel.X = x;
             pinModel.Y = y;
 
-            _idDict.Add(id, pinModel);
-            OnPinCreation?.Invoke(_idDict[id], new CreatePinEventArgs("Created", pinModel));
+            Children.Add(id, pinModel);
+            OnPinCreation?.Invoke(Children[id], new CreatePinEventArgs("Created", pinModel));
 
         }
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
@@ -147,16 +137,16 @@ namespace NuSysApp
             node.Y = yCoordinate;
             node.NodeType = type;
 
-            _idDict.Add(id, node);
-            OnCreation?.Invoke(_idDict[id], new CreateEventArgs("Created", node));
+            Children.Add(id, node);
+            OnCreation?.Invoke(Children[id], new CreateEventArgs("Created", node));
         }
 
         public async Task RemoveSendable(string id)
         {
-            if (_idDict.ContainsKey(id))
+            if (Children.ContainsKey(id))
             {
-                _idDict[id].Delete();
-                _idDict.Remove(id);
+                Children[id].Delete();
+                Children.Remove(id);
             }
             else
             {
@@ -165,7 +155,6 @@ namespace NuSysApp
         }
 
         public async Task<Dictionary<string, string>> Pack(){return new Dictionary<string, string>();}
-
         public async Task UnPack(Dictionary<string, string> props){}
         public override void Delete(){}
         public string ID{get { return "WORKSPACE_ID"; }}
@@ -220,20 +209,20 @@ namespace NuSysApp
 
             private async Task UpdateAtomLock(string id, string lockHolder)
             {
-                if (_workSpaceModel.IDToSendableDict.ContainsKey(id))
+                if (_workSpaceModel.Children.ContainsKey(id))
                 {
                     await UITask.Run(() => { 
                         if (lockHolder == "")
                         {
-                            _workSpaceModel.IDToSendableDict[id].CanEdit = AtomModel.EditStatus.Maybe;
+                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Maybe;
                         }
                         else if (lockHolder == NetworkConnector.Instance.LocalIP)
                         {
-                            _workSpaceModel.IDToSendableDict[id].CanEdit = AtomModel.EditStatus.Yes;
+                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Yes;
                         }
                         else
                         {
-                            _workSpaceModel.IDToSendableDict[id].CanEdit = AtomModel.EditStatus.No;
+                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.No;
                         }
                     });
                 }
@@ -243,7 +232,7 @@ namespace NuSysApp
             {
                 _dict.Clear();
                 _locals.Clear();
-                foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IDToSendableDict)
+                foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.Children)
                 {
                     kvp.Value.CanEdit = AtomModel.EditStatus.Maybe;
                 }

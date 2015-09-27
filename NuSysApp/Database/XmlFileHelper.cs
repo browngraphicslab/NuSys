@@ -95,10 +95,10 @@ namespace NuSysApp
                                 // append more nodes into the group if it contains more than two nodes
                                 if (NodeIdList.Count > 2)
                                 {
-                                    GroupNodeModel group = vm.Model.IDToSendableDict[ID] as GroupNodeModel;
+                                    GroupNodeModel group = vm.Model.Children[ID] as GroupNodeModel;
                                     for (int i = 2; i < NodeIdList.Count; i++)
                                     {
-                                        NodeModel currNode = vm.Model.IDToSendableDict[NodeIdList[i]] as NodeModel;
+                                        NodeModel currNode = vm.Model.Children[NodeIdList[i]] as NodeModel;
                                         currNode.MoveToGroup(group);
                                     }
                                 }
@@ -293,7 +293,7 @@ namespace NuSysApp
         {
             foreach (string id in _createdNodeList)
             {
-                if (vm.Model.IDToSendableDict.ContainsKey(id))
+                if (vm.Model.Children.ContainsKey(id))
                 {
                     copy.Remove(id);
                 }
