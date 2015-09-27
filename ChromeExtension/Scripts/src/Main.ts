@@ -21,6 +21,7 @@ class Main {
     isCommenting: boolean;
     rectangleArray = [];
     urlGroup: number = Date.now();
+    commentTextBox: Element;
     previousSelections: Array<ISelection> = new Array<ISelection>();
     constructor() {
 
@@ -190,10 +191,12 @@ class Main {
         this.canvas.addEventListener("mousemove", this.mouseMove);
         console.log(toComment);
         console.log(this.isCommenting);
+        this.isSelecting = true;
         if (toComment == null) {
             this.isSelecting = true;
             this.isCommenting = false;
         }
+        //if 
         else if (!this.isCommenting || this.selection != toComment) {
             if (toComment["comment"] == null) {
                 console.log("================NOT COMMENTING====");
@@ -207,19 +210,23 @@ class Main {
     annotate = (sel: ISelection, x: Number, y: Number): void => {
         console.log("====================annotate====================");
         var commentBox = document.createElement("div");
-        commentBox.innerHTML = "<textarea id='"+sel["id"]+"'>I am a textarea</textarea>";
+        commentBox.innerHTML = "<textarea id='"+sel["id"]+"'></textarea>";
         commentBox.style.left = x + "px";
         commentBox.style.top = y + "px";
       //  commentBox.style.display = "none";
         commentBox.style.position = "absolute";
         commentBox.style.zIndex = "999";
+        commentBox.focus();
         this.isCommenting = true;
         var area: Element = commentBox.querySelector("textarea");
+
+
         this.selection["comment"] = "";
         
         area["onchange"] = () => {
 
          //   this.selection["comment"] = 
+            
             console.log("========change======");
             var sel = this.selection;
             sel["comment"] = document.getElementById(this.selection["id"])["value"]; 
@@ -245,6 +252,13 @@ class Main {
 
 
         document.body.appendChild(commentBox);
+        var txtarea = document.getElementById(sel["id"]);
+        txtarea.focus();
+        this.commentTextBox = txtarea;
+        $(txtarea).click(function () {
+            
+            txtarea.focus();
+        });
 
 
     }
@@ -272,9 +286,10 @@ class Main {
         this.canvas.removeEventListener("mousemove", this.mouseMove);
         this.inkCanvas.removeBrushStroke(this.inkCanvas._activeStroke);
         this.inkCanvas.update();
-        window.getSelection().removeAllRanges();
+     //   window.getSelection().removeAllRanges();
 
         this.isSelecting = false;
+        
     }
 
     canvasUp = (e): void => {
@@ -292,6 +307,10 @@ class Main {
             console.log("JUST A TAP");
             document.body.appendChild(this.canvas);
             this.inkCanvas.update();
+
+            var toComment = this.checkForOverlaySelection(e.clientX, e.clientY);
+
+
             return;
         }
         else if (currType == StrokeType.Scribble) {
