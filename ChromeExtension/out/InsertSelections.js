@@ -12,6 +12,32 @@ chrome.storage.local.get(null, function (data) {
     }   
 });
 
+$('#filter').change(function () {
+    switch ($("#filter").val()) {
+        case "chrono":
+            alert("chrono");
+            break;
+        case "key":
+            
+            break;
+        case "comment":
+            break;
+    }
+});
+
+$('#submit').click(function () {
+    changeFilter();
+});
+
+function changeFilter() {
+    switch ($("#filter").val()) {
+        case "comment":
+            alert($("#searchInput").val());
+            break;
+    }
+}
+
+
 function sortByTime(obj){
     var json = JSON.stringify(obj);
     var sortedJson = sortResults(obj['selections'], "urlGroup", false);
@@ -108,14 +134,9 @@ function showInsertion(data) {
                         newSelections.push(elem);
                     }
                 });
-
                 data["selections"] = newSelections;
-                console.log(data);
                 chrome.storage.local.set(data);
             });
-
-         //   delete data[val];
-         //   chrome.storage.local.remove(val);
         });
     });
 

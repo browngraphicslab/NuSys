@@ -2948,6 +2948,7 @@ var Main = (function () {
             _this.canvas.addEventListener("mousemove", _this.mouseMove);
             console.log(toComment);
             console.log(_this.isCommenting);
+            _this.isSelecting = true;
             if (toComment == null) {
                 _this.isSelecting = true;
                 _this.isCommenting = false;
@@ -2964,12 +2965,13 @@ var Main = (function () {
         this.annotate = function (sel, x, y) {
             console.log("====================annotate====================");
             var commentBox = document.createElement("div");
-            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'>I am a textarea</textarea>";
+            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'></textarea>";
             commentBox.style.left = x + "px";
             commentBox.style.top = y + "px";
             //  commentBox.style.display = "none";
             commentBox.style.position = "absolute";
             commentBox.style.zIndex = "999";
+            commentBox.focus();
             _this.isCommenting = true;
             var area = commentBox.querySelector("textarea");
             _this.selection["comment"] = "";
@@ -2996,6 +2998,12 @@ var Main = (function () {
                 console.log(_this.selection);
             };
             document.body.appendChild(commentBox);
+            var txtarea = document.getElementById(sel["id"]);
+            txtarea.focus();
+            _this.commentTextBox = txtarea;
+            $(txtarea).click(function () {
+                txtarea.focus();
+            });
         };
         this.refreshChromeStorage = function () {
             var obj = {};
@@ -3019,7 +3027,7 @@ var Main = (function () {
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
             _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
             _this.inkCanvas.update();
-            window.getSelection().removeAllRanges();
+            //   window.getSelection().removeAllRanges();
             _this.isSelecting = false;
         };
         this.canvasUp = function (e) {
@@ -3035,6 +3043,7 @@ var Main = (function () {
                 console.log("JUST A TAP");
                 document.body.appendChild(_this.canvas);
                 _this.inkCanvas.update();
+                var toComment = _this.checkForOverlaySelection(e.clientX, e.clientY);
                 return;
             }
             else if (currType == 4 /* Scribble */) {
