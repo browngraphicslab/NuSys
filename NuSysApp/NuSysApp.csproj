@@ -139,6 +139,8 @@
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
+    <Compile Include="Network\ID.cs" />
+    <Compile Include="Network\Message.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\UITask.cs" />

@@ -89,7 +89,7 @@ namespace NuSysApp
             {
                 if (subMessage.Length > 0)
                 {
-                    Dictionary<string, string> props = ParseOutProperties(subMessage);
+                    Message props = new Message(subMessage);
                     await HandleMessage(props); //handle each submessage
                     if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
                     {
@@ -128,7 +128,8 @@ namespace NuSysApp
                 }*/
             }
 
-            Dictionary<string, string> props = ParseOutProperties(message);
+            //Dictionary<string, string> props = ParseOutProperties(message);
+            Message props = new Message(message);
             if (props.ContainsKey("id"))
             {
                 await HandleMessage(props);
@@ -479,7 +480,7 @@ namespace NuSysApp
 
         #region oldModelIntermediate
             public WorkSpaceModel WorkSpaceModel { get; set; }
-            private async Task HandleMessage(Dictionary<string, string> props)
+            private async Task HandleMessage(Message props)
             {
                 if (props.ContainsKey("id"))
                 {
@@ -524,7 +525,7 @@ namespace NuSysApp
             {
                 return _sendablesBeingUpdated.ContainsKey(id);
             }
-            private async Task HandleCreateNewSendable(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewSendable(string id, Message props)
             {
                 if (props.ContainsKey("type") && props["type"] == "ink")
                 {
@@ -552,7 +553,7 @@ namespace NuSysApp
                 }
             }
 
-            private async Task HandleCreateNewPin(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewPin(string id, Message props)
             {
                 double x = 0;
                 double y = 0;
@@ -573,7 +574,7 @@ namespace NuSysApp
                     });
                 }
             }
-            private async Task HandleCreateNewLink(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewLink(string id,Message props)
             {
                 string id1 = "null";
                 string id2 = "null";
@@ -602,7 +603,7 @@ namespace NuSysApp
 
                 }
             }
-            private async Task HandleCreateNewNode(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewNode(string id, Message props)
             {
                 NodeType type = NodeType.Text;
                 double x = 0;
@@ -627,16 +628,8 @@ namespace NuSysApp
                     switch (type)
                     {
                         case NodeType.Text:
-                            if (!props.ContainsKey("text"))
-                            {
-                                props.Add("text", d);
-                                data = d;
-                            }
-                            else
-                            {
-                                props["text"] = d;
-                                data = d;
-                            }
+                            props.Add("text", d);
+                            data = d;
                             break;
                         case NodeType.Image:
                             try
@@ -678,7 +671,7 @@ namespace NuSysApp
                 }
             }
 
-            private async Task HandleCreateNewEmptyGroup(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewEmptyGroup(string id, Message props)
             {
                 double x = 0;
                 double y = 0;
@@ -695,7 +688,7 @@ namespace NuSysApp
                 await UITask.Run(async () => { await WorkSpaceModel.CreateEmptyGroup(id, x, y); });
             }
 
-            private async Task HandleCreateNewGroup(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewGroup(string id, Message props)
             {
                 NodeModel node1 = null;
                 NodeModel node2 = null;
@@ -716,7 +709,7 @@ namespace NuSysApp
                 }
                 await UITask.Run(async () => { await WorkSpaceModel.CreateGroup(id, node1, node2, x, y); });
             }
-            private async Task HandleCreateNewInk(string id, Dictionary<string, string> props)
+            private async Task HandleCreateNewInk(string id, Message props)
             {
                 if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"] == "WORKSPACE_ID"))
                 {
@@ -989,7 +982,7 @@ namespace NuSysApp
                 return dict;
             }
 
-            private void ParseToLineSegment(Dictionary<string, string> props, out Point one, out Point two)
+            private void ParseToLineSegment(Message props, out Point one, out Point two)
             {
                 one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
                 two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));

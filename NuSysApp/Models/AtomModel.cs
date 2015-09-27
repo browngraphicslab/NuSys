@@ -81,7 +81,7 @@ namespace NuSysApp
         }
         public string ID { get; set; }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
         }

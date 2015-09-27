@@ -75,7 +75,7 @@ namespace NuSysApp
 
             return dict;
         }//TODO add in pack functions
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             base.UnPack(props);
 
