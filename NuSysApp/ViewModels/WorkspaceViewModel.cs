@@ -238,7 +238,7 @@ namespace NuSysApp
         {
             List<string> locks = new List<string>();
             locks.Add(selected.Model.ID);
-            NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
+            NetworkConnector.Instance.CheckLocks(locks);
             if (selected.Model.CanEdit == AtomModel.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);
@@ -284,7 +284,7 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
-            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
+            NetworkConnector.Instance.ReturnAllLocks();
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
@@ -304,7 +304,7 @@ namespace NuSysApp
                 {
                     foreach (var model in linesToPromote)
                     {
-                        NetworkConnector.Instance.FinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                        NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
                     }
                 }
             };
@@ -315,10 +315,10 @@ namespace NuSysApp
 
         public void ClearMultiSelection()
         {
-            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
+            NetworkConnector.Instance.ReturnAllLocks();
             foreach (var avm in MultiSelectedAtomViewModels)
             {
-                NetworkConnector.Instance.ReturnLock(avm.ID);
+                NetworkConnector.Instance.RequestReturnLock(avm.ID);
                 avm.IsMultiSelected = false;
             }
             MultiSelectedAtomViewModels.Clear();
@@ -350,10 +350,10 @@ namespace NuSysApp
                 Debug.WriteLine("gid = " + s);
                 Debug.WriteLine(MultiSelectedAtomViewModels.ToString());
 
-                var groupmodel = (GroupNodeModel)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[s];
+                var groupmodel = (GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict[s];
                 for (int index = 0; index < MultiSelectedAtomViewModels.Count; index++)
                 {
-                    Debug.WriteLine(NetworkConnector.Instance.ModelIntermediate.HasLock(s));
+                    Debug.WriteLine(NetworkConnector.Instance.HasLock(s));
                     Debug.WriteLine(MultiSelectedAtomViewModels.Count);
                     var avm = MultiSelectedAtomViewModels[index];
         //            if (avm is NodeViewModel)

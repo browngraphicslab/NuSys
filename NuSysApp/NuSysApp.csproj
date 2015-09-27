@@ -122,6 +122,7 @@
     <Content Include="Assets\icon_audionode_record.png" />
     <Content Include="Assets\icon_audionode_rewind.png" />
     <Content Include="Assets\icon_audionode_stop.png" />
+    <Content Include="Assets\icon_users.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -137,6 +138,7 @@
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqLineModel.cs" />
+    <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\UITask.cs" />
@@ -269,6 +271,9 @@
     <Compile Include="Views\Misc\MultiSelectMenuView.xaml.cs">
       <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Misc\UserWindowView.xaml.cs">
+      <DependentUpon>UserWindowView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
     </Compile>
@@ -375,6 +380,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Misc\MultiSelectMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Misc\UserWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

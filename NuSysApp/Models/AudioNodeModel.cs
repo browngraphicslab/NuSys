@@ -86,7 +86,7 @@ namespace NuSysApp
         public async Task SendNetworkUpdate()
         {
             byte[] bytes = await ConvertAudioToByte(AudioFile);
-            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+            if (!NetworkConnector.Instance.IsSendableBeingUpdated(ID))
             {
                 Debug.WriteLine("add to debounce dict called");
                 DebounceDict.MakeNextMessageTCP();

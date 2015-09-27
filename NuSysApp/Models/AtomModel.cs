@@ -63,7 +63,7 @@ namespace NuSysApp
                 if (value != null && _color != value)
                 {
                     _color = value;
-                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                    if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                     {
                         //TODO raise property changed
                     }
