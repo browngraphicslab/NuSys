@@ -11,9 +11,6 @@ namespace NuSysApp
     public class GroupNodeModel : NodeModel
     {
         #region Private Members
-        private ObservableCollection<UserControl> _atomViewList;
-        public ObservableCollection<NodeViewModel> _nodeViewModelList;
-        public ObservableCollection<LinkViewModel> _linkViewModelList;
 
         private Dictionary<string, Sendable> _idDict;
         #endregion Private Members

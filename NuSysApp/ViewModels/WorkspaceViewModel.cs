@@ -208,7 +208,7 @@ namespace NuSysApp
         {
             //Create new group, because no group exists
             var groupView = new GroupView();
-            var groupVm = new GroupViewModel(groupView, groupModel, this);
+            var groupVm = new GroupViewModel(groupModel, this, groupView);
             groupView.DataContext = groupVm;
 
             var tpl = groupView.FindName("nodeTpl") as NodeTemplate;

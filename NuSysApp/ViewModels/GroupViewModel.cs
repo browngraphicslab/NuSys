@@ -10,21 +10,21 @@ namespace NuSysApp
 
         private double _margin;
         private CompositeTransform _localTransform;
+        public ObservableCollection<LinkViewModel> _linkViewModelList;
 
-        public GroupViewModel(UserControl view, GroupNodeModel model, WorkspaceViewModel vm): base(model,vm)
+        public GroupViewModel(GroupNodeModel model, WorkspaceViewModel vm, UserControl view = null): base(model,vm)
         {
-            this.AtomType = Constants.Node;
-            _nodeViewModelList = new ObservableCollection<NodeViewModel>();
+            NodeViewModelList = new ObservableCollection<NodeViewModel>();
             _linkViewModelList = new ObservableCollection<LinkViewModel>();
-            _atomViewList = new ObservableCollection<UserControl>();
+            AtomViewList = new ObservableCollection<UserControl>();
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize;   //width set in /MISC/Constants.cs
             this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
-            this.IsSelected = false;
-            this.IsEditing = false;
-            this.IsEditingInk = false;
+//            this.IsSelected = false;
+//            this.IsEditing = false;
+//            this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            this.View = view;
+            this.View = view ?? new GroupView();
             this.NodeType = NodeType.Group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
@@ -63,23 +63,9 @@ namespace NuSysApp
             //TODO Handle links
         }
 
-        public ObservableCollection<UserControl> AtomViewList
-        {
-            get { return _atomViewList; }
-            set
-            {
-                _atomViewList = value;
-            }
-        }
+        public ObservableCollection<UserControl> AtomViewList { get; set; }
 
-        public ObservableCollection<NodeViewModel> NodeViewModelList
-        {
-            get { return _nodeViewModelList; }
-            set
-            {
-                _nodeViewModelList = value;
-            }
-        }
+        public ObservableCollection<NodeViewModel> NodeViewModelList { get; set; }
          
         public override void Resize(double dx, double dy)
         {
@@ -118,13 +104,13 @@ namespace NuSysApp
                 link.UpdateAnchor();
             }
             toRemove.UpdateAnchor();
-            _atomViewList.Remove(toRemove.View);
-            _nodeViewModelList.Remove(toRemove);
+            AtomViewList.Remove(toRemove.View);
+            NodeViewModelList.Remove(toRemove);
             ((GroupNodeModel)Model).NodeModelList.Remove((NodeModel)toRemove.Model);
 
             if (NodeViewModelList.Count == 1)
             {
-                var lastNode = _nodeViewModelList[0];
+                var lastNode = NodeViewModelList[0];
                 var nodeModel = (NodeModel)lastNode.Model;
                 nodeModel.MoveToGroup(null);
                 var x = lastNode.Transform.Matrix.OffsetX * lastNode.ParentGroup.LocalTransform.ScaleX;
