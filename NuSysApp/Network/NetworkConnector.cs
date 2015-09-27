@@ -1,25 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Networking;
-using Windows.Networking.Connectivity;
-using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Network;
 
@@ -46,7 +34,6 @@ namespace NuSysApp
             TCP,
             Both
         }
-
         public static NetworkConnector Instance
         {
             get
@@ -65,7 +52,6 @@ namespace NuSysApp
             }
         }
         #endregion
-
         private NetworkConnector()//pls keep this private or shit won't work anymore
         {
             _creationCallbacks = new ConcurrentDictionary<string, Action<string>>();
@@ -102,7 +88,6 @@ namespace NuSysApp
         /*
         * removes this local ip from the php script that keeps track of all the members on the server
         */
-
         public async Task Disconnect(string ip = null) //called by the closing of the application
         {
             _clientHandler.Disconnect(ip);
@@ -218,32 +203,11 @@ namespace NuSysApp
                 {
                     Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
                     string id = oldID == null ? _clientHandler.GetID() : oldID;
-
-                    if (props.ContainsKey("x"))
-                    {
-                        props.Remove("x");
-                    }
-                    if (props.ContainsKey("y"))
-                    {
-                        props.Remove("y");
-                    }
-                    if (props.ContainsKey("id"))
-                    {
-                        props.Remove("id");
-                    }
-                    if (props.ContainsKey("nodeType"))
-                    {
-                        props.Remove("nodeType");
-                    }
-                    if (props.ContainsKey("type"))
-                    {
-                        props.Remove("type");
-                    }
-                    props.Add("x", x);
-                    props.Add("y", y);
-                    props.Add("nodeType", nodeType);
-                    props.Add("id", id);
-                    props.Add("type", "node");
+                    props["x"] = x;
+                    props["y"] = y;
+                    props["nodeType"] = nodeType;
+                    props["type"] = "node";
+                    props["id"] = id;
                     if (data != null && data != "null" && data != "")
                     {
                         props.Add("data", data);
@@ -272,28 +236,12 @@ namespace NuSysApp
         public async Task RequestMakePin(string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
  
-                var props = properties == null ? new Dictionary<string, string>() : properties;
+            var props = properties == null ? new Dictionary<string, string>() : properties;
             string id = oldID == null ? _clientHandler.GetID() : oldID;
-            if (props.ContainsKey("x"))
-            {
-                props.Remove("x");
-            }
-            if (props.ContainsKey("y"))
-            {
-                props.Remove("y");
-            }
-            if (props.ContainsKey("id"))
-            {
-                props.Remove("id");
-            }
-            if (props.ContainsKey("type"))
-            {
-                props.Remove("type");
-            }
-            props.Add("x", x);
-            props.Add("y", y);
-            props.Add("id", id);
-            props.Add("type", "pin");
+            props["x"] = x;
+            props["y"] = y;
+            props["type"] = "pin";
+            props["id"] = id;
             string message = MakeSubMessageFromDict(props);
             if (callback != null)
             {
@@ -486,9 +434,9 @@ namespace NuSysApp
                 {
                     string id = props["id"];//get id from dictionary
                     _sendablesBeingUpdated.TryAdd(id, true);
-                    if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                    if (WorkSpaceModel.Children.ContainsKey(id))
                     {
-                        Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
+                        Sendable n = WorkSpaceModel.Children[id];//if the id exists, get the sendable
 
                         await UITask.Run(async () => { await n.UnPack(props); });//update the sendable with the dictionary info
                     }
@@ -498,7 +446,7 @@ namespace NuSysApp
                         if (!_deletedIDs.ContainsKey(id))
                         {
                             await HandleCreateNewSendable(id, props); //create a new sendable
-                            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                            if (WorkSpaceModel.Children.ContainsKey(id))
                             {
                                 await HandleMessage(props);
                             }
@@ -597,9 +545,9 @@ namespace NuSysApp
                     return;
                 }
 
-                if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
+                if (WorkSpaceModel.Children.ContainsKey(id1) && (WorkSpaceModel.Children.ContainsKey(id2)))
                 {
-                    await UITask.Run(async () => { WorkSpaceModel.CreateLink((AtomModel)WorkSpaceModel.IDToSendableDict[id1], (AtomModel)WorkSpaceModel.IDToSendableDict[id2], id); });
+                    await UITask.Run(async () => { WorkSpaceModel.CreateLink((AtomModel)WorkSpaceModel.Children[id1], (AtomModel)WorkSpaceModel.Children[id2], id); });
 
                 }
             }
@@ -694,10 +642,10 @@ namespace NuSysApp
                 NodeModel node2 = null;
                 double x = 0;
                 double y = 0;
-                if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
+                if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.Children.ContainsKey(props["id1"]) && WorkSpaceModel.Children.ContainsKey(props["id2"]))
                 {
-                    node1 = (NodeModel)WorkSpaceModel.IDToSendableDict[props["id1"]];
-                    node2 = (NodeModel)WorkSpaceModel.IDToSendableDict[props["id2"]];
+                    node1 = (NodeModel)WorkSpaceModel.Children[props["id1"]];
+                    node2 = (NodeModel)WorkSpaceModel.Children[props["id2"]];
                 }
                 if (props.ContainsKey("x"))
                 {
@@ -716,7 +664,7 @@ namespace NuSysApp
                     InqCanvasModel canvas = null;
                     if (props["canvasNodeID"] != "WORKSPACE_ID")
                     {
-                        await UITask.Run(async delegate { canvas = ((NodeModel)WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas; });
+                        await UITask.Run(async delegate { canvas = ((NodeModel)WorkSpaceModel.Children[props["canvasNodeID"]]).InqCanvas; });
                     }
                     else
                     {
@@ -768,7 +716,7 @@ namespace NuSysApp
                                 lineModel.Points = points;
                                 lineModel.Stroke = stroke;
                                 canvas.FinalizeLine(lineModel);
-                                WorkSpaceModel.IDToSendableDict.Add(id, lineModel);
+                                WorkSpaceModel.Children.Add(id, lineModel);
 
                             }
                         });
@@ -782,7 +730,7 @@ namespace NuSysApp
             private async Task RemoveSendable(string id)
             {
                 await UITask.Run(async () => {
-                    if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                    if (WorkSpaceModel.Children.ContainsKey(id))
                     {
                         WorkSpaceModel.RemoveSendable(id);
                     }
@@ -792,7 +740,7 @@ namespace NuSysApp
 
             public bool HasSendableID(string id)
             {
-                return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
+                return WorkSpaceModel.Children.ContainsKey(id);
             }
             private async Task SetAtomLock(string id, string ip)
             {
@@ -828,7 +776,7 @@ namespace NuSysApp
                 LinkedList<Sendable> list = new LinkedList<Sendable>();
                 Dictionary<string, Sendable> set = new Dictionary<string, Sendable>();
 
-                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
+                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.Children)
                 {
                     set.Add(kvp.Key, kvp.Value);
                 }
@@ -843,7 +791,7 @@ namespace NuSysApp
                         set.Remove(s.ID);
                     }
                 }
-                if (WorkSpaceModel.IDToSendableDict.Count > 0)
+                if (WorkSpaceModel.Children.Count > 0)
                 {
                     string ret = "";
                     while (list.Count > 0)
@@ -887,8 +835,8 @@ namespace NuSysApp
             }
             public bool HasLock(string id)
             {
-                if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
-                var sendable = WorkSpaceModel.IDToSendableDict[id];
+                if (!WorkSpaceModel.Children.ContainsKey(id)) return false;
+                var sendable = WorkSpaceModel.Children[id];
                 bool isLine = sendable is InqLineModel || sendable is PinModel; // TODO there should be no special casing for inks
                 return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
             }
@@ -948,7 +896,7 @@ namespace NuSysApp
             {
                 if (HasSendableID(id))
                 {
-                    return await WorkSpaceModel.IDToSendableDict[id].Pack();
+                    return await WorkSpaceModel.Children[id].Pack();
                 }
                 else
                 {
