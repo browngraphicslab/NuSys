@@ -3,12 +3,36 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
     public class GroupNodeModel : NodeModel
     {
+        #region Private Members
+        private ObservableCollection<UserControl> _atomViewList;
+        public ObservableCollection<NodeViewModel> _nodeViewModelList;
+        public ObservableCollection<LinkViewModel> _linkViewModelList;
+
         private Dictionary<string, Sendable> _idDict;
+        #endregion Private Members
+
+        #region Events and Handlers
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+        public event DeleteEventHandler OnDeletion;
+
+        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
+        public event LocationUpdateEventHandler OnLocationUpdate;
+
+        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
+        public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
+
+        public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
+
+        public event AddToGroupEventHandler OnAddToGroup;
+        #endregion Events and Handlers
+
         public GroupNodeModel(string id): base(id)
         {
             this.ID = id;

@@ -7,12 +7,9 @@ namespace NuSysApp
 {
     public class GroupViewModel: NodeViewModel
     {
+
         private double _margin;
         private CompositeTransform _localTransform;
-        private ObservableCollection<UserControl> _atomViewList;
-        public ObservableCollection<NodeViewModel> _nodeViewModelList;
-        public ObservableCollection<LinkViewModel> _linkViewModelList;
-
 
         public GroupViewModel(UserControl view, GroupNodeModel model, WorkspaceViewModel vm): base(model,vm)
         {
