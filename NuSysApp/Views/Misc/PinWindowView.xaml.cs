@@ -20,6 +20,8 @@ namespace NuSysApp
 {
     public sealed partial class PinWindowView : UserControl
     {
+        private FloatingMenuView _floatingMenu;
+
         public PinWindowView()
         {
             this.InitializeComponent();
@@ -59,6 +61,16 @@ namespace NuSysApp
 
             vm.AtomViewList.Remove(pinvm.View);
             vm.PinViewModelList.Remove(pinvm);*/
+        }
+
+        public void setFloatingMenu(FloatingMenuView floatingMenu)
+        {
+            _floatingMenu = floatingMenu;
+        }
+
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
+        {
+            _floatingMenu.CloseAllSubMenus();
         }
     }
 }

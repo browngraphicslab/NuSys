@@ -63,7 +63,7 @@ namespace NuSysApp
                 if (value != null && _color != value)
                 {
                     _color = value;
-                    if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                    if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                     {
                         //TODO raise property changed
                     }
@@ -81,7 +81,7 @@ namespace NuSysApp
         }
         public string ID { get; set; }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
         }

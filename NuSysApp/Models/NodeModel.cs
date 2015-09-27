@@ -66,7 +66,7 @@ namespace NuSysApp
                     return;
                 }
                 _x = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
@@ -90,7 +90,7 @@ namespace NuSysApp
                     return;
                 }
                 _y = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
@@ -114,7 +114,7 @@ namespace NuSysApp
                     return;
                 }
                 _width = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
@@ -140,7 +140,7 @@ namespace NuSysApp
                 }
                 _height = value;
 
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
@@ -164,7 +164,7 @@ namespace NuSysApp
             set
             {
                 _parentGroup = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", _parentGroup, this));
                 }
@@ -186,7 +186,7 @@ namespace NuSysApp
             return null;
         }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("x"))
             {
@@ -210,9 +210,9 @@ namespace NuSysApp
                 {
                     this.MoveToGroup(null);
                 }
-                else if (NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
+                else if (NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
                 {
-                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
                 }
             }
            

@@ -22,7 +22,7 @@ namespace NuSysApp
         {
             ID = id;
             _editStatus = EditStatus.Maybe;
-            Children = new List<Sendable>();
+            Children = new Dictionary<string, Sendable>();
         }
         public async virtual Task<Dictionary<string, string>> Pack()
         {
@@ -30,7 +30,7 @@ namespace NuSysApp
             dict.Add("id", ID);
             return dict;
         }
-        public async virtual Task UnPack(Dictionary<string, string> props) { }
+        public async virtual Task UnPack(Message props) { }
         public string ID { get;}
         public EditStatus CanEdit
         {
@@ -50,16 +50,16 @@ namespace NuSysApp
         } //Network locks
 
         public abstract void Delete();
-        public List<Sendable> Children { set; get; }
+        public Dictionary<string,Sendable> Children { set; get; }
         public virtual async Task<string> Stringify()
         {
             Dictionary<string, string> props = await Pack();
             Dictionary<string, string> childs = new Dictionary<string, string>();//YES, i know childs is bad grammars but I already used Children
             if (Children.Count > 0)
             {
-                foreach (Sendable child in Children)
+                foreach (KeyValuePair<string,Sendable> child in Children)
                 {
-                    childs.Add(child.ID, await child.Stringify());
+                    childs.Add(child.Value.ID, await child.Value.Stringify());
                 }
                 props["children"] = Newtonsoft.Json.JsonConvert.SerializeObject(childs);
             }

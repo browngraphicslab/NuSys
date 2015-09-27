@@ -36,7 +36,7 @@ namespace NuSysApp
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(_atom.ID) && (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe))
+            if (!NetworkConnector.Instance.IsSendableBeingUpdated(_atom.ID) && (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe))
             {
                 if (!_timing)
                 {
@@ -62,7 +62,7 @@ namespace NuSysApp
             if (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe)
             {
                 _dict.TryAdd("id", _atom.ID);
-                if (NetworkConnector.Instance.ModelIntermediate.HasSendableID(_atom.ID))
+                if (NetworkConnector.Instance.HasSendableID(_atom.ID))
                 {
                     if (_sendNextTCP)
                     {

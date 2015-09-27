@@ -17,21 +17,25 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class MultiSelectMenuView : UserControl
+    public sealed partial class UserWindowView : UserControl
     {
-        public MultiSelectMenuView()
+        private FloatingMenuView _floatingMenu;
+
+        public UserWindowView()
         {
             this.InitializeComponent();
         }
 
-        public Button Delete
+        public void setFloatingMenu(FloatingMenuView floatingMenu)
         {
-            get { return DeleteButton; }
+            _floatingMenu = floatingMenu;
         }
 
-        public Button Group
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
         {
-            get { return GroupButton; }
+            _floatingMenu.CloseAllSubMenus();
         }
     }
+
+    
 }

@@ -27,6 +27,7 @@ namespace NuSysApp
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
             _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
             _currentStroke.ParentID = inqCanvas.ViewModel.Model.ID;
+            _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
             _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
 
             //TODO: add data binding for thickness and color
@@ -43,7 +44,7 @@ namespace NuSysApp
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
                 if (_currentStroke.Points.Count > 1)
                 {
-                    NetworkConnector.Instance.SendPartialLine(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID,
+                    NetworkConnector.Instance.RequestSendPartialLine(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID,
                         _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
@@ -55,7 +56,7 @@ namespace NuSysApp
         {
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
-            NetworkConnector.Instance.FinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
+            NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).OnFinalizedLine += delegate
             {
                 inqCanvas.Children.Remove(_currentInqLineView);

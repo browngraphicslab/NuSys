@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Shapes;
 namespace NuSysApp
 {
     public class ModelIntermediate
-    {
+    {/*
         public WorkSpaceModel WorkSpaceModel{get;}
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
         public ConcurrentDictionary<string, bool> _deletedIDs; 
@@ -72,7 +72,7 @@ namespace NuSysApp
             }
         }
 
-        public bool IsSendableLocked(string id)
+        public bool IsSendableBeingUpdated(string id)
         {
             return _sendablesLocked.ContainsKey(id);
         }
@@ -304,7 +304,7 @@ namespace NuSysApp
 
                         PointCollection points;
                         double thickness;
-                        Brush stroke;
+                        SolidColorBrush stroke;
 
                         if (props.ContainsKey("data"))
                         {
@@ -423,34 +423,12 @@ namespace NuSysApp
                     }
                     ret += s;
                 }
-                /*
-                while(list.Count > 0)
-                {
-                ret += '<';
-                    Sendable atom = list.First.Value;
-                    list.RemoveFirst();
-
-                    // TODO: Possibly factor non-UI related stuff out, not a big issue because this only happens at the beginning.
-                    await UITask.Run(async () => {
-                        var parts = await atom.Pack();
-
-                        foreach (KeyValuePair<string, string> tup in parts)
-                        {
-                            ret += tup.Key + '=' + tup.Value + Constants.CommaReplacement;
-                        }
-                        ret += "id=" + atom.ID + ">" + Constants.AndReplacement;
-                        
-                    });
-                }
-                ret = ret.Substring(0, ret.Length - Constants.AndReplacement.Length);
-                
-                */
                 return ret;
             }
             return "";
         }
 
-        public async Task ClearLocks()
+        public async Task ReturnAllLocks()
         {
             List<string> locks = new List<string>();
             locks.AddRange(WorkSpaceModel.Locks.LocalLocks);
@@ -458,7 +436,7 @@ namespace NuSysApp
             {
                 string l = locks.First();
                 locks.Remove(l);
-                await NetworkConnector.Instance.ReturnLock(l);
+                await NetworkConnector.Instance.RequestReturnLock(l);
             }
         }
 
@@ -490,7 +468,7 @@ namespace NuSysApp
             {
                 string l = locksToReturn.First();
                 locksToReturn.Remove(l);
-                await NetworkConnector.Instance.ReturnLock(l);
+                await NetworkConnector.Instance.RequestReturnLock(l);
             }
         }
 
@@ -567,6 +545,6 @@ namespace NuSysApp
         {
             one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
             two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
-        }
+        }*/
     }
 }
