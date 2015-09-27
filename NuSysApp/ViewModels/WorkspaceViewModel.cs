@@ -299,7 +299,7 @@ namespace NuSysApp
             dict["height"] = nodeBounds.Height.ToString();
             AddInk add = delegate (string s)
             {
-                var v = this.Model.IDToSendableDict[s] as TextNodeModel;
+                var v = this.Model.Children[s] as TextNodeModel;
                 if (v != null)
                 {
                     foreach (var model in linesToPromote)
@@ -350,7 +350,7 @@ namespace NuSysApp
                 Debug.WriteLine("gid = " + s);
                 Debug.WriteLine(MultiSelectedAtomViewModels.ToString());
 
-                var groupmodel = (GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict[s];
+                var groupmodel = (GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.Children[s];
                 for (int index = 0; index < MultiSelectedAtomViewModels.Count; index++)
                 {
                     Debug.WriteLine(NetworkConnector.Instance.HasLock(s));
