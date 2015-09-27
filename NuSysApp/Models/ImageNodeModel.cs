@@ -111,7 +111,7 @@ namespace NuSysApp
             return imageNode;
         }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("data"))
             {
