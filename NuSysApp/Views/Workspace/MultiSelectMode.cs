@@ -28,6 +28,9 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
+            
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.ClearMultiSelection();
             _view.PointerPressed += View_PointerPressed;
             _view.PointerMoved += View_PointerMoved;
             _view.PointerReleased += View_PointerReleased;
@@ -44,8 +47,8 @@ namespace NuSysApp
             _view.MultiMenu.Visibility = Visibility.Collapsed;
             _view.MultiMenu.Delete.Click -= Delete_OnClick;
             _view.MultiMenu.Group.Click -= Group_OnClick;
-            var vm = (WorkspaceViewModel)_view.DataContext;
-            vm.ClearMultiSelection();
+       //     var vm = (WorkspaceViewModel)_view.DataContext;
+      //      vm.ClearMultiSelection();
         }
 
         private void Delete_OnClick(object sender, RoutedEventArgs e)
@@ -64,6 +67,13 @@ namespace NuSysApp
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
+                _view.MultiMenu.Delete.Click -= Delete_OnClick;
+                _view.MultiMenu.Group.Click -= Group_OnClick;
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (dc is NodeViewModel)
+            {
+                return;
+            }
             _previousPoint = new Point(-1, -1);
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;
@@ -74,10 +84,14 @@ namespace NuSysApp
         private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc is NodeViewModel)
+            var nvm = dc as NodeViewModel;
+            if (nvm != null)
             {
-                var vm = (NodeViewModel)dc;
-                vm.ToggleSelection();
+                var vm = (WorkspaceViewModel)_view.DataContext;
+                vm.SetMultiSelection(nvm);
+                _view.MultiMenu.Visibility = Visibility.Visible;
+                _view.MultiMenu.Delete.Click += Delete_OnClick;
+                _view.MultiMenu.Group.Click += Group_OnClick;
             }
 
             _isMouseDown = false;
@@ -123,28 +137,11 @@ namespace NuSysApp
 
         private async void SelectContainedComponents()
         {
+            var vm = (WorkspaceViewModel)_view.DataContext;
+            vm.ClearMultiSelection();
             if (_currentRect == null)
                 return;
-            var vm = (WorkspaceViewModel)_view.DataContext;
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
-            //foreach (UIElement element in _view.InqCanvas.Children)
-            //{
-            //    var line = element as InqLineView;
-            //    if (line != null)
-            //    {
-            //        foreach (Point p in line.Points)
-            //        {
-            //            if (r.Contains(p))
-            //            {
-            //                if (!line.IsSelected)
-            //                {
-            //                    selected.Add(line);
-            //                }
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
 
             var atoms = vm.AtomViewList;
             foreach (var atom in atoms)
@@ -169,6 +166,26 @@ namespace NuSysApp
                 _view.MultiMenu.Visibility = Visibility.Visible;
                 _view.MultiMenu.Delete.Click += Delete_OnClick;
                 _view.MultiMenu.Group.Click += Group_OnClick;
+            }
+            else
+            {
+                var selectedLines = new List<InqLineModel>();
+                foreach (InqLineModel model in _view.InqCanvas.ViewModel.Model.Lines)
+                {
+                    foreach (var point in model.Points)
+                    {
+                        if (r.Contains(point))
+                        {
+                            selectedLines.Add(model);
+                            NetworkConnector.Instance.RequestDeleteSendable(model.ID);
+                            break;
+                        }
+                    }
+                }
+                if (selectedLines.Count > 0)
+                {
+                    vm.PromoteInk(r, selectedLines);
+                }
             }
         }
     }

@@ -27,6 +27,7 @@ $('#filter').change(function () {
 
 $('#submit').click(function () {
     changeFilter();
+
 });
 
 function changeFilter() {

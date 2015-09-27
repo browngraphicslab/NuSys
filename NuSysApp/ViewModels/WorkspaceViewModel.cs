@@ -7,6 +7,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
 using System;
+using Windows.Foundation;
+using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
@@ -236,7 +238,7 @@ namespace NuSysApp
         {
             List<string> locks = new List<string>();
             locks.Add(selected.Model.ID);
-            NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
+            NetworkConnector.Instance.CheckLocks(locks);
             if (selected.Model.CanEdit == AtomModel.EditStatus.Maybe)
             {
                 NetworkConnector.Instance.RequestLock(selected.Model.ID);
@@ -263,23 +265,60 @@ namespace NuSysApp
             }
         }
 
+        public void MoveMultiSelection(AtomViewModel sender, double x, double y)
+        {
+            foreach (var atom in MultiSelectedAtomViewModels)
+            {
+                var node = atom as NodeViewModel;
+                if (node != null && atom != sender)
+                {
+                    node.IsMultiSelected = false;
+                    node.Translate(x, y);
+                    node.IsMultiSelected = true;
+                }
+            }
+        }
+
         /// <summary>
         /// Unselects the currently selected node.
         /// </summary> 
         public void ClearSelection()
         {
-            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
+            NetworkConnector.Instance.ReturnAllLocks();
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.IsSelected = false;
             SelectedAtomViewModel = null;
         }
 
+
+        private delegate void AddInk(string s);
+        public async void PromoteInk(Rect nodeBounds, List<InqLineModel> linesToPromote)
+        {
+            var dict = new Dictionary<string, string>();
+            dict["width"] = nodeBounds.Width.ToString();
+            dict["height"] = nodeBounds.Height.ToString();
+            AddInk add = delegate (string s)
+            {
+                var v = this.Model.IDToSendableDict[s] as TextNodeModel;
+                if (v != null)
+                {
+                    foreach (var model in linesToPromote)
+                    {
+                        NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                    }
+                }
+            };
+            Action<string> a = new Action<string>(add);
+            await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
+        }
+
+
         public void ClearMultiSelection()
         {
-            NetworkConnector.Instance.ModelIntermediate.ClearLocks();
+            NetworkConnector.Instance.ReturnAllLocks();
             foreach (var avm in MultiSelectedAtomViewModels)
             {
-                NetworkConnector.Instance.ReturnLock(avm.ID);
+                NetworkConnector.Instance.RequestReturnLock(avm.ID);
                 avm.IsMultiSelected = false;
             }
             MultiSelectedAtomViewModels.Clear();
@@ -304,22 +343,27 @@ namespace NuSysApp
             {
                 return;
             }
-            var nodesToAdd = new AtomViewModel[MultiSelectedAtomViewModels.Count];
-                MultiSelectedAtomViewModels.CopyTo(nodesToAdd);//TODO REMOVE
             var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
             var node2 = (NodeModel) MultiSelectedAtomViewModels[1].Model;
             Del del = delegate (string s)
             {
                 Debug.WriteLine("gid = " + s);
-                var groupmodel = (GroupNodeModel)NetworkConnector.Instance.ModelIntermediate.WorkSpaceModel.IDToSendableDict[s];
-                for (int index = 0; index < nodesToAdd.Length; index++)
+                Debug.WriteLine(MultiSelectedAtomViewModels.ToString());
+
+                var groupmodel = (GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict[s];
+                for (int index = 0; index < MultiSelectedAtomViewModels.Count; index++)
                 {
-                    var avm = nodesToAdd[index];
-                    if (avm is NodeViewModel)
-                    {
+                    Debug.WriteLine(NetworkConnector.Instance.HasLock(s));
+                    Debug.WriteLine(MultiSelectedAtomViewModels.Count);
+                    var avm = MultiSelectedAtomViewModels[index];
+        //            if (avm is NodeViewModel)
+         //           {
                         ((NodeModel)avm.Model).MoveToGroup(groupmodel);
-                    }
+                    Debug.WriteLine((avm.Model  as NodeModel).ParentGroup.ID);
+                    Debug.WriteLine(((avm.Model  as NodeModel).ParentGroup as GroupNodeModel).NodeModelList.Count);
+         //           }
                 }
+            ClearMultiSelection();
             };
             
             Action<string> a = new Action<string>(del);
@@ -328,7 +372,6 @@ namespace NuSysApp
             //            if (MultiSelectedAtomViewModels.Count > 1)
             //            {
 //            }
-           // ClearMultiSelection();
         }
 
 
@@ -459,7 +502,7 @@ namespace NuSysApp
         #endregion Save/Load
         #region Event Handlers
 
-        private void CreatePinHandler(object source, CreatePinEventArgs e)
+        public void CreatePinHandler(object source, CreatePinEventArgs e)
         {
             var vm = new PinViewModel(e.CreatedPin,this);
             PinViewModelList.Add(vm);

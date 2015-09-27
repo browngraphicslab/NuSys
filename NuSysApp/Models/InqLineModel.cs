@@ -31,7 +31,7 @@ namespace NuSysApp
 
         public double StrokeThickness { get; set; }
         public string ParentID { get; set; }
-        public Brush Stroke { get; set; }
+        public SolidColorBrush Stroke { get; set; }
         public InqLineModel(string id) : base(id)
         {
             _points = new PointCollection();
@@ -76,7 +76,7 @@ namespace NuSysApp
         {
             PointCollection points;
             double thickness;
-            Brush stroke;
+            SolidColorBrush stroke;
             ParseToLineData(data, out points, out thickness, out stroke);
             Points = points;
             StrokeThickness = thickness;
@@ -84,15 +84,15 @@ namespace NuSysApp
             var view = new InqLineView(new InqLineViewModel(this), StrokeThickness, Stroke);
         }
 
-        public static void ParseToLineData(string s, out PointCollection pc, out double thickness, out Brush stroke)
+        public static void ParseToLineData(string s, out PointCollection pc, out double thickness, out SolidColorBrush stroke)
         {
             pc = new PointCollection();
             thickness = 1;
             stroke = new SolidColorBrush(Colors.Black);
-
             string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.RemoveEmptyEntries);
             string part = parts[0];
             string[] subparts = part.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            SolidColorBrush color;
             foreach (string subpart in subparts)
             {
                 if (subpart.Length > 0 && subpart != "polyline")
@@ -119,9 +119,15 @@ namespace NuSysApp
                     }
                     else if (subpart.Substring(0, 6) == "stroke")
                     {
-                        string sp = subpart.Substring(8, subpart.Length - 10);
-                        stroke = new SolidColorBrush(Colors.Black);
-                        //poly.Stroke = new SolidColorBrush(color.psp); TODO add in color
+                        string sp = subpart.Substring(subpart.IndexOf("'") + 1);
+                        sp = sp.Substring(0, sp.IndexOf("'"));
+                        if (sp.Equals("#FF000000"))
+                        {
+                            stroke.Color = Colors.Black;
+                        } else if (sp.Equals("#FFFFFF00"))
+                        {
+                            stroke.Color = Colors.Yellow;
+                        }
                     }
                 }
             }
@@ -137,7 +143,8 @@ namespace NuSysApp
                 {
                     plines += point.X + "," + point.Y + ";";
                 }
-                plines += "' thickness='" + StrokeThickness + "'>";
+                plines += "' thickness='" + StrokeThickness + "';";
+                plines += "' stroke='" + Stroke.Color.ToString() + "'>";
             }
             return plines;
         }

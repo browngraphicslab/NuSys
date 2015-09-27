@@ -30,7 +30,7 @@ namespace NuSysApp
                 byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);
                 Content = new ContentModel(newTextBytes, ID); //Update Content
 
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnTextChanged?.Invoke(this, new TextChangedEventArgs("Text changed", Text));
                 }

@@ -43,7 +43,7 @@ namespace NuSysApp
             {
                 if (_x == value) return;
                 _x = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("pin X change", X, Y));
                 }
@@ -64,7 +64,7 @@ namespace NuSysApp
             {
                 if (_y == value) return;
                 _y = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("pin Y change", X, Y));
                 }
@@ -89,7 +89,7 @@ namespace NuSysApp
                     return;
                 }
                 _text = value;
-                if (NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
                     RaisePropertyChanged("Model_Text");
                 }

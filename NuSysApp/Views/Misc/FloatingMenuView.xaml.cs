@@ -33,6 +33,7 @@ namespace NuSysApp
             MiscLoad,
             MiscSave,
             MiscPin,
+            MiscUsers
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -82,6 +83,11 @@ namespace NuSysApp
             _buttons[btnExport] = Options.MiscSave;
             _buttons[btnPin] = Options.MiscPin;
             _buttons[btnMisc] = Options.MainMisc;
+            _buttons[btnUsers] = Options.MiscUsers;
+
+            pinWindow.setFloatingMenu(this);
+            bucketWindow.setFloatingMenu(this);
+            userWindow.setFloatingMenu(this);
 
             _storyboards = new Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>>();
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSelect"));
@@ -96,6 +102,8 @@ namespace NuSysApp
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 1), new Tuple<Storyboard, string>(windowOpen, "pinWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 0), new Tuple<Storyboard, string>(windowClose, "bucketWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 1), new Tuple<Storyboard, string>(windowOpen, "bucketWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 0), new Tuple<Storyboard, string>(windowClose, "userWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 1), new Tuple<Storyboard, string>(windowOpen, "userWindow"));
 
 
             _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
@@ -180,7 +188,7 @@ namespace NuSysApp
             ModeChange?.Invoke(option, isFixed);
         }
 
-        private void CloseAllSubMenus()
+        public void CloseAllSubMenus()
         {
             foreach (var key in _storyboards.Keys)
             {

@@ -98,39 +98,31 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\bold.png" />
-    <Content Include="Assets\bullets.png" />
-    <Content Include="Assets\fast_forward.png" />
-    <Content Include="Assets\font size.png" />
-    <Content Include="Assets\icon_add_annotation.png" />
-    <Content Include="Assets\icon_collapse.png" />
-    <Content Include="Assets\icon_eraser.png" />
-    <Content Include="Assets\icon_export.png" />
+    <Content Include="Assets\icon_audionode_fast_forward.png" />
+    <Content Include="Assets\icon_mainmenu_collapse.png" />
+    <Content Include="Assets\icon_mainmenu_eraser.png" />
+    <Content Include="Assets\icon_mainmenu_export.png" />
     <Content Include="Assets\icon_group_freeform.png" />
     <Content Include="Assets\icon_group_grid.png" />
-    <Content Include="Assets\icon_highlight.png" />
-    <Content Include="Assets\icon_media.png" />
-    <Content Include="Assets\icon_node.png" />
-    <Content Include="Assets\icon_record_node.png" />
-    <Content Include="Assets\icon_scribble.png" />
-    <Content Include="Assets\icon_select.png" />
-    <Content Include="Assets\icon_text.png" />
-    <Content Include="Assets\image.png" />
-    <Content Include="Assets\link.png" />
-    <Content Include="Assets\icon_additional.png" />
-    <Content Include="Assets\icon_add_node.png" />
-    <Content Include="Assets\icon_global_ink.png" />
-    <Content Include="Assets\icon_multiselect.png" />
-    <Content Include="Assets\icon_bucket.png" />
-    <Content Include="Assets\icon_record.png" />
-    <Content Include="Assets\open icon.png" />
-    <Content Include="Assets\pause.png" />
-    <Content Include="Assets\pin icon.png" />
-    <Content Include="Assets\pin.png" />
-    <Content Include="Assets\play.png" />
-    <Content Include="Assets\record.png" />
-    <Content Include="Assets\rewind.png" />
-    <Content Include="Assets\stop.png" />
+    <Content Include="Assets\icon_mainmenu_highlight.png" />
+    <Content Include="Assets\icon_mainmenu_media.png" />
+    <Content Include="Assets\icon_mainmenu_node.png" />
+    <Content Include="Assets\icon_mainmenu_audionode.png" />
+    <Content Include="Assets\icon_mainmenu_select.png" />
+    <Content Include="Assets\icon_node_text.png" />
+    <Content Include="Assets\icon_mainmenu_additional.png" />
+    <Content Include="Assets\icon_mainmenu_add_node.png" />
+    <Content Include="Assets\icon_mainmenu_global_ink.png" />
+    <Content Include="Assets\icon_mainmenu_multiselect.png" />
+    <Content Include="Assets\icon_mainmenu_bucket.png" />
+    <Content Include="Assets\icon_mainmenu_open icon.png" />
+    <Content Include="Assets\icon_audionode_pause.png" />
+    <Content Include="Assets\icon_mainmenu_pin.png" />
+    <Content Include="Assets\icon_audionode_play.png" />
+    <Content Include="Assets\icon_audionode_record.png" />
+    <Content Include="Assets\icon_audionode_rewind.png" />
+    <Content Include="Assets\icon_audionode_stop.png" />
+    <Content Include="Assets\icon_users.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -146,6 +138,7 @@
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqLineModel.cs" />
+    <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\UITask.cs" />
@@ -154,13 +147,13 @@
     <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\InqLineView.xaml.cs">
+    <Compile Include="Views\InqCanvas\InqLineView.xaml.cs">
       <DependentUpon>InqLineView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\HighlightInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\IInqMode.cs" />
+    <Compile Include="Views\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Views\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Views\InqCanvas\HighlightInqMode.cs" />
+    <Compile Include="Views\InqCanvas\IInqMode.cs" />
     <Compile Include="Components\TextBoxExtended.cs" />
     <Compile Include="Components\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
@@ -234,7 +227,7 @@
     <Compile Include="Util\FileManager.cs" />
     <Compile Include="Util\FolderWatcher.cs" />
     <Compile Include="Util\Geometry.cs" />
-    <Compile Include="Views\Misc\InqCanvas\InqCanvasView.cs" />
+    <Compile Include="Views\InqCanvas\InqCanvasView.cs" />
     <Compile Include="Util\NodeType.cs" />
     <Compile Include="Util\NuSysStorages.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
@@ -277,6 +270,9 @@
     </Compile>
     <Compile Include="Views\Misc\MultiSelectMenuView.xaml.cs">
       <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Misc\UserWindowView.xaml.cs">
+      <DependentUpon>UserWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
@@ -341,28 +337,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\icon.png" />
-    <Content Include="Assets\icon_ink.png" />
-    <Content Include="Assets\icon_left.png" />
-    <Content Include="Assets\icon_right.png" />
-    <Content Include="Assets\icon_search.png" />
-    <Content Include="Assets\icon_x.png" />
-    <Content Include="Assets\icon_x2.png" />
-    <Content Include="Assets\italic.png" />
-    <Content Include="Assets\Logo.scale-100.png" />
-    <Content Include="Assets\SmallLogo.scale-100.png" />
+    <Content Include="Assets\icon_node_ink.png" />
+    <Content Include="Assets\icon_pdf_left.png" />
+    <Content Include="Assets\icon_pdf_right.png" />
+    <Content Include="Assets\icon_window_search.png" />
+    <Content Include="Assets\icon_node_x.png" />
+    <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
-    <Content Include="Assets\SplashScreen.scale-1001.png" />
-    <Content Include="Assets\StoreLogo.scale-100.png" />
-    <Content Include="Assets\underline.png" />
-    <Content Include="Assets\WideLogo.scale-100.png" />
     <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -373,7 +355,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\InqCanvas\InqLineView.xaml">
+    <Page Include="Views\InqCanvas\InqLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -398,6 +380,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Misc\MultiSelectMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Misc\UserWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
