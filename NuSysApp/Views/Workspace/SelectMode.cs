@@ -42,7 +42,7 @@ namespace NuSysApp
                 var vm = (NodeViewModel)dc;
                 List<string> locks = new List<string>();
                 locks.Add(vm.ID);
-                NetworkConnector.Instance.ModelIntermediate.CheckLocks(locks);
+                NetworkConnector.Instance.CheckLocks(locks);
                 NetworkConnector.Instance.RequestLock(vm.ID);
             }
             e.Handled = true;

@@ -3,7 +3,7 @@
 // Licensed under MIT open source license http://opensource.org/licenses/MIT
 //
 // Orginal javascript code was by Mauricio Santos
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -2833,10 +2833,7 @@ var Rectangle = (function () {
         this.h = h;
     }
     Rectangle.prototype.intersectsRectangle = function (r2) {
-        return !(r2.x > this.x + this.w ||
-            r2.x + r2.w < this.x ||
-            r2.y > this.y + this.h ||
-            r2.y + r2.h < this.y);
+        return !(r2.x > this.x + this.w || r2.x + r2.w < this.x || r2.y > this.y + this.h || r2.y + r2.h < this.y);
     };
     return Rectangle;
 })();
@@ -2903,7 +2900,9 @@ var Stroke = (function () {
             errors.push(Math.abs(c.length()));
         }
         function median(values) {
-            values.sort(function (a, b) { return a - b; });
+            values.sort(function (a, b) {
+                return a - b;
+            });
             var half = Math.floor(values.length / 2);
             if (values.length % 2)
                 return values[half];
@@ -2966,22 +2965,22 @@ var StrokeClassifier = (function () {
         var p1 = stroke.points[stroke.points.length - 1];
         var metrics = stroke.getStrokeMetrics();
         if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
-            return StrokeType.Null;
+            return 0 /* Null */;
         }
         if (metrics.error > 50) {
-            return StrokeType.Scribble;
+            return 4 /* Scribble */;
         }
         //else {
         //    return StrokeType.MultiLine;
         //}
         if (Math.abs(p1.y - p0.y) < 20) {
-            return StrokeType.Line;
+            return 1 /* Line */;
         }
         if (Math.abs(p1.x - p0.x) < 20) {
-            return StrokeType.Bracket;
+            return 2 /* Bracket */;
         }
         if (Math.abs(p1.x - p0.x) > 50 && Math.abs(p1.y - p0.y) > 20) {
-            return StrokeType.Marquee;
+            return 3 /* Marquee */;
         }
     };
     return StrokeClassifier;
@@ -3345,10 +3344,7 @@ var MarqueeSelection = (function () {
                 var ax2 = rects[i].left + rects[0].width;
                 var ay1 = rects[i].top;
                 var ay2 = rects[i].top + rects[0].height;
-                if (!(ax1 >= this._marqueeX1 &&
-                    ax2 <= this._marqueeX2 &&
-                    ay1 >= this._marqueeY1 &&
-                    ay2 <= this._marqueeY2)) {
+                if (!(ax1 >= this._marqueeX1 && ax2 <= this._marqueeX2 && ay1 >= this._marqueeY1 && ay2 <= this._marqueeY2)) {
                     return false;
                 }
             }
@@ -3362,10 +3358,7 @@ var MarqueeSelection = (function () {
             if (rectX == null) {
                 return false;
             }
-            if (rectX["left"] >= this._marqueeX1 &&
-                rectX["left"] + realWidth <= this._marqueeX2 &&
-                rectX["top"] >= this._marqueeY1 &&
-                rectX["top"] + realHeight <= this._marqueeY2) {
+            if (rectX["left"] >= this._marqueeX1 && rectX["left"] + realWidth <= this._marqueeX2 && rectX["top"] >= this._marqueeY1 && rectX["top"] + realHeight <= this._marqueeY2) {
                 this.setTextStyle(myEl, el);
                 console.log("!!!!!!!!!!!!!!! +bound");
                 return true;
@@ -3391,7 +3384,6 @@ var MarqueeSelection = (function () {
                 console.log("INTERSECT");
             }
         }
-        //remove not intersecting elements; 
         for (var i = 0; i < removed.length; i++) {
             el.removeChild(removed[i]);
         }
@@ -3534,14 +3526,12 @@ var MultiLineSelection = (function () {
             var commonAncestor = range.commonAncestorContainer;
             var nodes = [];
             var node;
-            // walk parent nodes from start to common ancestor
             for (node = start.parentNode; node; node = node.parentNode) {
                 nodes.push(node);
                 if (node == commonAncestor)
                     break;
             }
             nodes.reverse();
-            // walk children and siblings from start until end is found
             for (node = start; node; node = _this.getNextNode(node)) {
                 nodes.push(node);
                 if (node == end)
@@ -3597,10 +3587,6 @@ var MultiLineSelection = (function () {
                         console.log(node);
                     }
                 }
-                //else if (node.nodeName == "IMG") {
-                //    //list.push(node);
-                //    addEventLis
-                //}
                 for (var i = 0, len = node.childNodes.length; !reachedEndNode && i < len; ++i) {
                     getTextNodes(node.childNodes[i]);
                 }
@@ -4022,7 +4008,7 @@ var Vector2 = (function () {
 var Main = (function () {
     function Main() {
         var _this = this;
-        this.prevStrokeType = StrokeType.Line;
+        this.prevStrokeType = 1 /* Line */;
         this.selections = new Array();
         this.selectedArray = new Array();
         this.rectangleArray = [];
@@ -4033,32 +4019,32 @@ var Main = (function () {
                 return;
             }
             var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
-            if (currType == StrokeType.MultiLine) {
+            if (currType == 5 /* MultiLine */) {
                 document.body.removeChild(_this.canvas);
             }
             if (currType != _this.prevStrokeType) {
                 _this.prevStrokeType = currType;
                 switch (currType) {
-                    case StrokeType.Null:
+                    case 0 /* Null */:
                         _this.selection = new LineSelection(_this.inkCanvas);
                         break;
-                    case StrokeType.Line:
+                    case 1 /* Line */:
                         _this.selection = new LineSelection(_this.inkCanvas);
                         break;
-                    case StrokeType.MultiLine:
+                    case 5 /* MultiLine */:
                         _this.selection = new MultiLineSelection(_this.inkCanvas);
                         _this.selection.start(e.clientX, e.clientY);
                         console.log("switching to multiline Selection");
                         break;
-                    case StrokeType.Bracket:
+                    case 2 /* Bracket */:
                         _this.selection = new BracketSelection(_this.inkCanvas, true);
                         console.log("switching to bracket!");
                         break;
-                    case StrokeType.Marquee:
+                    case 3 /* Marquee */:
                         _this.selection = new MarqueeSelection(_this.inkCanvas, true);
                         console.log("switching to marquee!");
                         break;
-                    case StrokeType.Scribble:
+                    case 4 /* Scribble */:
                         _this.selection = new UnknownSelection(_this.inkCanvas, true);
                         console.log("switching to unknown!");
                         break;
@@ -4099,6 +4085,7 @@ var Main = (function () {
             _this.canvas.addEventListener("mousemove", _this.mouseMove);
             console.log(toComment);
             console.log(_this.isCommenting);
+            _this.isSelecting = true;
             if (toComment == null) {
                 _this.isSelecting = true;
                 _this.isCommenting = false;
@@ -4115,12 +4102,13 @@ var Main = (function () {
         this.annotate = function (sel, x, y) {
             console.log("====================annotate====================");
             var commentBox = document.createElement("div");
-            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'>I am a textarea</textarea>";
+            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'></textarea>";
             commentBox.style.left = x + "px";
             commentBox.style.top = y + "px";
             //  commentBox.style.display = "none";
             commentBox.style.position = "absolute";
             commentBox.style.zIndex = "999";
+            commentBox.focus();
             _this.isCommenting = true;
             var area = commentBox.querySelector("textarea");
             _this.selection["comment"] = "";
@@ -4147,6 +4135,12 @@ var Main = (function () {
                 console.log(_this.selection);
             };
             document.body.appendChild(commentBox);
+            var txtarea = document.getElementById(sel["id"]);
+            txtarea.focus();
+            _this.commentTextBox = txtarea;
+            $(txtarea).click(function () {
+                txtarea.focus();
+            });
         };
         this.refreshChromeStorage = function () {
             var obj = {};
@@ -4157,7 +4151,9 @@ var Main = (function () {
                 obj["selections"] = _this.selections;
             }
             chrome.storage.local.set(obj);
-            chrome.storage.local.get(null, function (data) { console.log(data); });
+            chrome.storage.local.get(null, function (data) {
+                console.log(data);
+            });
         };
         this.documentScroll = function (e) {
             _this.inkCanvas.update();
@@ -4168,7 +4164,7 @@ var Main = (function () {
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
             _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
             _this.inkCanvas.update();
-            window.getSelection().removeAllRanges();
+            //   window.getSelection().removeAllRanges();
             _this.isSelecting = false;
         };
         this.canvasUp = function (e) {
@@ -4180,13 +4176,14 @@ var Main = (function () {
             _this.selection.end(e.clientX, e.clientY);
             var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
             var currType = StrokeClassifier.getStrokeType(stroke);
-            if (currType == StrokeType.Null) {
+            if (currType == 0 /* Null */) {
                 console.log("JUST A TAP");
                 document.body.appendChild(_this.canvas);
                 _this.inkCanvas.update();
+                var toComment = _this.checkForOverlaySelection(e.clientX, e.clientY);
                 return;
             }
-            else if (currType == StrokeType.Scribble) {
+            else if (currType == 4 /* Scribble */) {
                 var segments = stroke.breakUp();
                 var p0 = stroke.points[0];
                 var p1 = stroke.points[stroke.points.length - 1];
@@ -4253,8 +4250,10 @@ var Main = (function () {
             //     chrome.storage.local.set(ob
             _this.refreshChromeStorage();
             _this.selection = new LineSelection(_this.inkCanvas);
-            _this.prevStrokeType = StrokeType.Line;
-            chrome.storage.local.get(null, function (data) { console.info(data); });
+            _this.prevStrokeType = 1 /* Line */;
+            chrome.storage.local.get(null, function (data) {
+                console.info(data);
+            });
             document.body.appendChild(_this.canvas);
             _this.inkCanvas.update();
             _this.isSelecting = false;
@@ -4334,7 +4333,9 @@ var Main = (function () {
     };
     Main.prototype.relativeToAbsolute = function (content) {
         //////change relative href of hyperlink and src of image in html string to absolute
-        chrome.storage.local.get(null, function (data) { console.info(data); });
+        chrome.storage.local.get(null, function (data) {
+            console.info(data);
+        });
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {

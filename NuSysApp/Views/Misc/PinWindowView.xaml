@@ -12,15 +12,15 @@
     <Grid>
         <Border x:Name="Border" CornerRadius="10" Background="#62BDC5">
             <Grid>
-                <Grid x:Name="ContentContainer" Height="550" Width="390" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5" >
+                <Grid x:Name="ContentContainer" Height="550" Width="290" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5" >
                     <Rectangle Fill="White" Opacity=".7"></Rectangle>
                     <ItemsControl Name="IC2" ItemsSource="{Binding PinViewModelList}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Text}" DataContext="{Binding}" Width="Auto" Tapped="TextBlock_Tapped" TextAlignment="Left" FontSize="14" Foreground="Black" Padding="10,10,10,10"/>
-                                    <Button DataContext="{Binding}" Tapped="Button_Tapped">
-                                        <Image Height="40" Width="40" Source="ms-appx:///Assets/icon_x2.png"></Image>
+                                    <Button DataContext="{Binding}" Tapped="Button_Tapped" Background="{x:Null}">
+                                        <Image Height="10" Width="10" Source="ms-appx:///Assets/icon_x.png"></Image>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>
@@ -35,8 +35,12 @@
                 </Grid>
                 <TextBlock Height="25" Width="100" Margin="5,5,5,5" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" 
                      Text="PINS" Foreground="White" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="20" FontWeight="Bold"></TextBlock>
-                <SearchBox Width="100" Height="15" VerticalAlignment="Top" Margin="5,10,5,5" FontSize="10" Padding="0" HorizontalAlignment="Right" BorderThickness="0" Foreground="DimGray"></SearchBox>
-
+                <SearchBox Width="100" Height="15" VerticalAlignment="Top" Margin="57,12,30,5" FontSize="10" Padding="0" HorizontalAlignment="Left" BorderThickness="0" Foreground="DimGray"></SearchBox>
+                <Button Height="20" Click="Exit_OnClick" Width="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,9,5,0" Background="{x:Null}" Padding="0">
+                    <Button.Content>
+                        <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="15" Width="15"></Image>
+                    </Button.Content>
+                </Button>
             </Grid>
         </Border>
     </Grid>

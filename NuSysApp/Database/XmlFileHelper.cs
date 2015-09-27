@@ -168,7 +168,7 @@ namespace NuSysApp
             string canvasNodeID = canvasID;
             string data = Encoding.UTF8.GetString(res.Data);
 
-            await NetworkConnector.Instance.FinalizeGlobalInk(ID, canvasNodeID, data);
+            await NetworkConnector.Instance.RequestFinalizeGlobalInk(ID, canvasNodeID, data);
         }
 
         private string MakeSubMessageFromDict(Dictionary<string, string> dict)
