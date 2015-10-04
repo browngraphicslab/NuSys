@@ -683,7 +683,7 @@ namespace NuSysApp
                             pc.Add(two);
                             lineModel.Points = pc;
                             lineModel.Stroke = new SolidColorBrush(Colors.Black);
-                            if (props.ContainsKey("color") && props["color"] != "black")
+                            if (props.ContainsKey("stroke") && props["stroke"] != "black")
                             {
                                 lineModel.Stroke = new SolidColorBrush(Colors.Yellow);
                             }
