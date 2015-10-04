@@ -29,6 +29,7 @@ namespace NuSysApp
             AddMedia,
             AddAudioCapture,
             AddBucket,
+            AddVideo,
         MainMisc,
             MiscLoad,
             MiscSave,
@@ -41,6 +42,7 @@ namespace NuSysApp
         public event OnModeChangeHandler ModeChange;
         public delegate void OnModeChangeHandler(Options mode, bool isFixed);
         private Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>> _storyboards;
+        private WorkspaceView _workspaceView;
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.
@@ -77,6 +79,7 @@ namespace NuSysApp
             _buttons[btnNewMedia] = Options.AddMedia;
             _buttons[btnNewAudioCapture] = Options.AddAudioCapture;
             _buttons[btnBucket] = Options.AddBucket;
+            _buttons[btnVideo] = Options.AddVideo;
 
             _buttons[btnMisc] = Options.MainMisc;
             _buttons[btnLoad] = Options.MiscLoad;
@@ -239,5 +242,10 @@ namespace NuSysApp
             SetActive(btn, _buttons[btn], true);
             e.Handled = true;
         }    
+
+        public WorkspaceView WorkspaceView
+        {
+            get;set;
+        }
     }
 }

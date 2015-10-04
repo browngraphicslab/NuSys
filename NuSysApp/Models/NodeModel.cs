@@ -186,7 +186,7 @@ namespace NuSysApp
             return null;
         }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("x"))
             {
@@ -210,9 +210,9 @@ namespace NuSysApp
                 {
                     this.MoveToGroup(null);
                 }
-                else if (NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict.ContainsKey(props["parentGroup"]))
+                else if (NetworkConnector.Instance.WorkSpaceModel.Children.ContainsKey(props["parentGroup"]))
                 {
-                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IDToSendableDict[props["parentGroup"]]);
+                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.Children[props["parentGroup"]]);
                 }
             }
            

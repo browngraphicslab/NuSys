@@ -28,7 +28,7 @@ namespace NuSysApp
             OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
         }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("id1"))
             {

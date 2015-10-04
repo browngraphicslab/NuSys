@@ -37,9 +37,9 @@ namespace NuSysApp
             {
                 string id = props["id"];//get id from dictionary
                 _sendablesLocked.TryAdd(id, true);
-                if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                if (WorkSpaceModel.Children.ContainsKey(id))
                 {
-                    Sendable n = WorkSpaceModel.IDToSendableDict[id];//if the id exists, get the sendable
+                    Sendable n = WorkSpaceModel.Children[id];//if the id exists, get the sendable
 
                     await UITask.Run( async ()=> { await n.UnPack(props); });//update the sendable with the dictionary info
                 }
@@ -49,7 +49,7 @@ namespace NuSysApp
                     if (!_deletedIDs.ContainsKey(id))
                     {
                         await HandleCreateNewSendable(id, props); //create a new sendable
-                        if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                        if (WorkSpaceModel.Children.ContainsKey(id))
                         {
                             await HandleMessage(props);
                         }
@@ -148,9 +148,9 @@ namespace NuSysApp
                 return;
             }
 
-            if (WorkSpaceModel.IDToSendableDict.ContainsKey(id1) && (WorkSpaceModel.IDToSendableDict.ContainsKey(id2)))
+            if (WorkSpaceModel.Children.ContainsKey(id1) && (WorkSpaceModel.Children.ContainsKey(id2)))
             {
-                await UITask.Run(async () => { WorkSpaceModel.CreateLink((AtomModel)WorkSpaceModel.IDToSendableDict[id1], (AtomModel)WorkSpaceModel.IDToSendableDict[id2], id); });
+                await UITask.Run(async () => { WorkSpaceModel.CreateLink((AtomModel)WorkSpaceModel.Children[id1], (AtomModel)WorkSpaceModel.Children[id2], id); });
                
             }
         }
@@ -253,10 +253,10 @@ namespace NuSysApp
             NodeModel node2 = null;
             double x = 0;
             double y = 0;
-            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id1"]) && WorkSpaceModel.IDToSendableDict.ContainsKey(props["id2"]))
+            if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.Children.ContainsKey(props["id1"]) && WorkSpaceModel.Children.ContainsKey(props["id2"]))
             {
-                node1 = (NodeModel)WorkSpaceModel.IDToSendableDict[props["id1"]];
-                node2 = (NodeModel)WorkSpaceModel.IDToSendableDict[props["id2"]];
+                node1 = (NodeModel)WorkSpaceModel.Children[props["id1"]];
+                node2 = (NodeModel)WorkSpaceModel.Children[props["id2"]];
             }
             if (props.ContainsKey("x"))
             {
@@ -275,7 +275,7 @@ namespace NuSysApp
                 InqCanvasModel canvas = null;
                 if (props["canvasNodeID"] != "WORKSPACE_ID")
                 {
-                    await UITask.Run(async delegate { canvas = ((NodeModel)WorkSpaceModel.IDToSendableDict[props["canvasNodeID"]]).InqCanvas; });
+                    await UITask.Run(async delegate { canvas = ((NodeModel)WorkSpaceModel.Children[props["canvasNodeID"]]).InqCanvas; });
                 }
                 else
                 {
@@ -327,7 +327,7 @@ namespace NuSysApp
                             lineModel.Points = points;
                             lineModel.Stroke = stroke;
                             canvas.FinalizeLine(lineModel);
-                            WorkSpaceModel.IDToSendableDict.Add(id, lineModel);              
+                            WorkSpaceModel.Children.Add(id, lineModel);              
                                        
                         }
                     });
@@ -341,7 +341,7 @@ namespace NuSysApp
         public async Task RemoveSendable(string id)
         {
             await UITask.Run(async () => {
-                if (WorkSpaceModel.IDToSendableDict.ContainsKey(id))
+                if (WorkSpaceModel.Children.ContainsKey(id))
                 {
                     WorkSpaceModel.RemoveSendable(id);
                 }
@@ -351,7 +351,7 @@ namespace NuSysApp
 
         public bool HasSendableID(string id)
         {
-            return WorkSpaceModel.IDToSendableDict.ContainsKey(id);
+            return WorkSpaceModel.Children.ContainsKey(id);
         }
         public async Task SetAtomLock(string id, string ip)
         {
@@ -387,7 +387,7 @@ namespace NuSysApp
             LinkedList<Sendable> list = new LinkedList<Sendable>();
             Dictionary<string,Sendable> set = new Dictionary<string, Sendable>();
 
-            foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.IDToSendableDict)
+            foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.Children)
             {
                 set.Add(kvp.Key,kvp.Value);
             }
@@ -402,7 +402,7 @@ namespace NuSysApp
                     set.Remove(s.ID);
                 }
             }
-            if (WorkSpaceModel.IDToSendableDict.Count > 0)
+            if (WorkSpaceModel.Children.Count > 0)
             {
                 string ret = "";
                 while (list.Count > 0)
@@ -446,8 +446,8 @@ namespace NuSysApp
         }
         public bool HasLock(string id)
         {
-            if (!WorkSpaceModel.IDToSendableDict.ContainsKey(id)) return false;
-            var sendable = WorkSpaceModel.IDToSendableDict[id];
+            if (!WorkSpaceModel.Children.ContainsKey(id)) return false;
+            var sendable = WorkSpaceModel.Children[id];
             bool isLine = sendable is InqLineModel || sendable is PinModel; // TODO there should be no special casing for inks
             return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
         }
@@ -507,7 +507,7 @@ namespace NuSysApp
         {
             if (HasSendableID(id))
             {
-                return await WorkSpaceModel.IDToSendableDict[id].Pack();
+                return await WorkSpaceModel.Children[id].Pack();
             }
             else
             {

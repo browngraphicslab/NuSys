@@ -72,5 +72,19 @@ namespace NuSysApp
         {
             _floatingMenu.CloseAllSubMenus();
         }
+
+        private void PinWindow_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = _floatingMenu.WorkspaceView.DataContext as WorkspaceViewModel;
+            vm.Model.OnPinCreation -= vm.CreatePinHandler;
+            e.Handled = true;
+        }
+
+        private void PinWindow_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = _floatingMenu.WorkspaceView.DataContext as WorkspaceViewModel;
+            vm.Model.OnPinCreation += vm.CreatePinHandler;
+            e.Handled = true;
+        }
     }
 }

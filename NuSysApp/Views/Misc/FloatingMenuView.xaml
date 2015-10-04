@@ -135,6 +135,7 @@
             <local:FloatingMenuButtonView x:Name="btnNewMedia" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_media.png" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnNewAudioCapture" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnBucket" Icon="ms-appx:///Assets/icon_mainmenu_bucket.png" Window="{Binding ElementName=bucketWindow}" ParentButton="{Binding ElementName=btnAdd}" />
+            <local:FloatingMenuButtonView x:Name="btnVideo" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />
         </StackPanel>
         
         <StackPanel x:Name="SubMenuAdditional" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,320,0,0" Opacity="0" IsHitTestVisible="False">

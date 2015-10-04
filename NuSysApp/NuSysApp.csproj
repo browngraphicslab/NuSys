@@ -138,12 +138,21 @@
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\InqLineModel.cs" />
+    <Compile Include="Models\MainModel.cs" />
+    <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
+    <Compile Include="Network\ID.cs" />
+    <Compile Include="Network\Message.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="ViewModels\InqCanvasViewModel.cs" />
     <Compile Include="ViewModels\InqLineViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\VideoNodeViewModel.cs" />
+    <Compile Include="Views\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
@@ -306,6 +315,9 @@
     <Compile Include="Views\Nodes\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Nodes\VideoNodeView.xaml.cs">
+      <DependentUpon>VideoNodeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Workspace\AddNodeMode.cs" />
     <Compile Include="Views\Workspace\CortanaMode.cs" />
     <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
@@ -351,6 +363,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Misc\FloatingMenuButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -424,6 +440,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Misc\PinWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Nodes\VideoNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
