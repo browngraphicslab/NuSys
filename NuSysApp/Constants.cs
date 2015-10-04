@@ -67,7 +67,8 @@ namespace NuSysApp
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg" };
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf", ".pptx", ".docx" };
-        public static IEnumerable<string> AllFileTypes   = ImageFileTypes.Concat(PdfFileTypes);
+        public static IEnumerable<string> VideoFileTypes   = new List<string> { ".mp4"};//TODO add more types
+        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes));
 
         #region Cortana
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };

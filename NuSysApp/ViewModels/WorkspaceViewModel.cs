@@ -549,6 +549,9 @@ namespace NuSysApp
                 case NodeType.Audio:
                     vm = new AudioNodeViewModel((AudioNodeModel)model, this);
                     break;
+                case NodeType.Video:
+                    vm = new VideoNodeViewModel((VideoNodeModel)model, this);
+                    break;
                 default:
                     return;
                     break;

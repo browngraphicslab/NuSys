@@ -129,6 +129,9 @@ namespace NuSysApp
                 case NodeType.Audio:
                     node = new AudioNodeModel((byte[])data, id);
                     break;
+                case NodeType.Video:
+                    node = new VideoNodeModel((byte[])data, id);
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
                     return;
