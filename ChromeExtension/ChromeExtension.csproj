@@ -22,39 +22,14 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="old\assets\brush.png" />
-    <Content Include="old\assets\icon.png" />
-    <Content Include="old\bg.js" />
-    <Content Include="old\lib\jquery-1.11.2.js" />
-    <Content Include="old\popup.html" />
-    <Content Include="old\select.js" />
-    <Content Include="old\src\BracketSelection.js" />
-    <Content Include="old\src\BrushStroke.js" />
-    <Content Include="old\src\CircleBrush.js" />
-    <Content Include="old\src\DomUtil.js" />
-    <Content Include="old\src\HashMap.js" />
-    <Content Include="old\src\HighlightBrush.js" />
-    <Content Include="old\src\InkCanvas.js" />
-    <Content Include="old\src\Line.js" />
-    <Content Include="old\src\LineBrush.js" />
-    <Content Include="old\src\LineSelection.js" />
-    <Content Include="old\src\main.js" />
-    <Content Include="old\src\MarqueeBrush.js" />
-    <Content Include="old\src\MarqueeSelection.js" />
-    <Content Include="old\src\MathUtil.js" />
-    <Content Include="old\src\Rectangle.js" />
-    <Content Include="old\src\SelectionBrush.js" />
-    <Content Include="old\src\Statistics.js" />
-    <Content Include="old\src\Stroke.js" />
-    <Content Include="old\src\StrokeClassifier.js" />
-    <Content Include="old\src\UnknownSelection.js" />
-    <Content Include="old\src\Vector2.js" />
     <Content Include="out\AllSelections.html" />
     <Content Include="out\assets\brush.png" />
     <Content Include="out\assets\icon.png" />
+    <Content Include="out\assets\icon_active.png" />
     <Content Include="out\InsertSelections.js" />
     <Content Include="out\jquery.js" />
     <Content Include="out\NuSysChromeExtension.js" />
+    <Content Include="out\menu.html" />
     <Content Include="Scripts\src\app.css" />
     <Content Include="out\bg.js" />
     <Content Include="out\popup.html" />
@@ -67,8 +42,6 @@
     <Content Include="README.md" />
     <Content Include="out\manifest.json" />
     <Content Include="packages.config" />
-    <Content Include="old\manifest.json" />
-    <Content Include="old\README.md" />
     <Content Include="out\NuSysChromeExtension.js.map" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>

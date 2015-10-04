@@ -1,6 +1,7 @@
 ﻿/// <reference path="../typings/chrome/chrome.d.ts"/>
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 /// <reference path="ink/InkCanvas.ts"/>
+/// <reference path="ink/StrokeType.ts" />
 /// <reference path="selection/LineSelection.ts"/>
 /// <reference path="selection/UnknownSelection.ts"/>
 
@@ -13,12 +14,14 @@ class Main {
     inkCanvas: InkCanvas;
     selection: ISelection;
     canvas: HTMLCanvasElement;
+    menu:any;
 
     selections: Array<ISelection> = new Array<ISelection>();
     selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;
     isEnabled: boolean;
     isCommenting: boolean;
+    isMenuVisible: boolean;
     rectangleArray = [];
     urlGroup: number = Date.now();
     commentTextBox: Element;
@@ -49,7 +52,6 @@ class Main {
         this.canvas.style.left = "0";           //fixes canvas placements
         this.canvas.style.zIndex = "998";
 
-
         this.inkCanvas = new InkCanvas(this.canvas);
         this.selection = new LineSelection(this.inkCanvas);
         chrome.storage.local.get(null,(data) => {
@@ -57,10 +59,36 @@ class Main {
         });
        
         var currToggle = false;
+
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
-                if (request.msg == "checkInjection")
-                    sendResponse({ toggleState: currToggle, objectId: this.urlGroup })
+
+                console.log("message received ");
+                console.log(request);
+
+                if (request.msg == "check_injection")
+                    sendResponse({ toggleState: currToggle, objectId: this.urlGroup });
+
+                if (request.msg == "show_menu") {
+                    this.showMenu();
+                }
+
+                if (request.msg == "hide_menu") {
+                    this.hideMenu();
+                }
+
+                if (request.msg == "enable_selections") {
+                    this.toggleEnabled(true);
+                }
+
+                if (request.msg == "disable_selections") {
+                    this.toggleEnabled(false);
+                }
+
+                if (request.msg == "build_menu") {
+                    this.buildMenu(request.data);
+                    sendResponse();
+                }
 
                 if (request.toggleState == true) {
                     this.toggleEnabled(true);
@@ -88,13 +116,39 @@ class Main {
             });
     }
 
-    
+    buildMenu(html: string): void {
+
+        console.log("building menu");
+        this.menu = $(html)[0];    
+        document.body.appendChild(this.menu);
+
+        $(this.menu).css("display", "none");
+
+        chrome.runtime.sendMessage({ msg: "query_active" }, function(isActive) {
+            $("#toggle").prop("checked", isActive);
+        });
+       
+    }
+
+    showMenu(): void {
+        this.isMenuVisible = true;
+        $(this.menu).css("display", "block");
+        
+        $("#toggle").change(function () {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $("#toggle").prop("checked") });
+        });
+    }
+
+    hideMenu(): void {
+        this.isMenuVisible = false;
+        $(this.menu).css("display", "none");
+    }
     
     toggleEnabled(flag: boolean): void {
+        console.log("toggleEnabled: " + flag);
+        $("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
-
-        console.log("enabled: " + this.isEnabled);
 
         if (this.isEnabled) {
             window.addEventListener("mouseup", this.windowUp);
@@ -111,7 +165,7 @@ class Main {
             try {
                 document.body.removeChild(this.canvas);
             } catch (e) {
-                console.log("no canvas visible." + e)
+                console.log("no canvas visible." + e);
             }
         }
     }
