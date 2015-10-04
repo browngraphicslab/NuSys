@@ -36,7 +36,7 @@ namespace NuSysApp
                     _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
                     _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
                     _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
-                    _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString());
+                    _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString(),"yellow");
             }
         }
 

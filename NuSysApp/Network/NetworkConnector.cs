@@ -22,7 +22,6 @@ namespace NuSysApp
         #endregion Private Members
 
         #region Public Members
-
         private ClientHandler _clientHandler;
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
         private ConcurrentDictionary<string, bool> _deletedIDs;
@@ -353,7 +352,7 @@ namespace NuSysApp
         {
             get { return _clientHandler.LocalIP(); }
         }
-        public async Task RequestSendPartialLine(string id, string canvasNodeID, string x1, string y1, string x2, string y2)
+        public async Task RequestSendPartialLine(string id, string canvasNodeID, string x1, string y1, string x2, string y2, string color = "black")
         {
             ThreadPool.RunAsync(async delegate
             {
@@ -361,6 +360,7 @@ namespace NuSysApp
             {
                 {"x1", x1},
                 {"x2", x2},
+                {"stroke",color },
                 {"y1", y1},
                 {"y2", y2},
                 {"id", id},
@@ -633,7 +633,6 @@ namespace NuSysApp
             {
                 double x = 0;
                 double y = 0;
-
                 if (props.ContainsKey("x"))
                 {
                     double.TryParse(props["x"], out x);
@@ -642,7 +641,6 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-
                 await UITask.Run(async () => { await WorkSpaceModel.CreateEmptyGroup(id, x, y); });
             }
 
@@ -694,6 +692,11 @@ namespace NuSysApp
                             pc.Add(one);
                             pc.Add(two);
                             lineModel.Points = pc;
+                            lineModel.Stroke = new SolidColorBrush(Colors.Black);
+                            if (props.ContainsKey("stroke") && props["stroke"] != "black")
+                            {
+                                lineModel.Stroke = new SolidColorBrush(Colors.Yellow);
+                            }
                             canvas.AddTemporaryInqline(lineModel, id);
                         });
                     }
