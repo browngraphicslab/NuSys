@@ -43,7 +43,8 @@ namespace NuSysApp
             var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             this.DataContext = vm;
             Clip = new RectangleGeometry { Rect = new Rect(0, 0, Window.Current.Bounds.Width, Window.Current.Bounds.Height) };
-            _cortanaInitialized = false;          
+            _cortanaInitialized = false;
+            floatingMenu.WorkspaceView = this;
         }
 
 
