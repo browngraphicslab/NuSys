@@ -22,7 +22,6 @@ namespace NuSysApp
         #endregion Private Members
 
         #region Public Members
-
         private ClientHandler _clientHandler;
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
         private ConcurrentDictionary<string, bool> _deletedIDs;
@@ -623,7 +622,6 @@ namespace NuSysApp
             {
                 double x = 0;
                 double y = 0;
-
                 if (props.ContainsKey("x"))
                 {
                     double.TryParse(props["x"], out x);
@@ -632,7 +630,6 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-
                 await UITask.Run(async () => { await WorkSpaceModel.CreateEmptyGroup(id, x, y); });
             }
 
