@@ -41,6 +41,7 @@ namespace NuSysApp
         public event OnModeChangeHandler ModeChange;
         public delegate void OnModeChangeHandler(Options mode, bool isFixed);
         private Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>> _storyboards;
+        private WorkspaceView _workspaceView;
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.
@@ -239,5 +240,10 @@ namespace NuSysApp
             SetActive(btn, _buttons[btn], true);
             e.Handled = true;
         }    
+
+        public WorkspaceView WorkspaceView
+        {
+            get;set;
+        }
     }
 }
