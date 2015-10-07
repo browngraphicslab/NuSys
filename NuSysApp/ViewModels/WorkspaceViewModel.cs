@@ -304,7 +304,10 @@ namespace NuSysApp
                 {
                     foreach (var model in linesToPromote)
                     {
-                        NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                        UITask.Run( async() =>
+                        {
+                            NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                        });
                     }
                 }
             };
