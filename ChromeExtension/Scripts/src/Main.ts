@@ -209,7 +209,8 @@ class Main {
         if (!this.isSelecting) {
             return;
         }
-        
+        //if (this.currentStrokeType == StrokeType.MultiLine)
+        //    document.body.removeChild(this.canvas);
         if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
             var currType = GestireClassifier.getGestureType(this.inkCanvas._activeStroke.stroke);
 

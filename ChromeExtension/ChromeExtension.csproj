@@ -60,6 +60,7 @@
     <TypeScriptCompile Include="Scripts\src\ink\brush\SelectionBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\HighlightBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\brush\IBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\ink\GestureType.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\InkCanvas.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\Stroke.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\StrokeClassifier.ts" />

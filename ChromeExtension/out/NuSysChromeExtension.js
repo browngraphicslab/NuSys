@@ -2915,6 +2915,8 @@ var Main = (function () {
             if (!_this.isSelecting) {
                 return;
             }
+            //if (this.currentStrokeType == StrokeType.MultiLine)
+            //    document.body.removeChild(this.canvas);
             if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
                 var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
                 if (_this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
@@ -3382,14 +3384,6 @@ var MultiSelectionBrush = (function () {
 //    ctx.clearRect(startX, startY, w, h);
 //  ctx.fill();
 // this._list = new Array<ClientRect>(); 
-var GestureType;
-(function (GestureType) {
-    GestureType[GestureType["Null"] = 0] = "Null";
-    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
-    GestureType[GestureType["Vertical"] = 2] = "Vertical";
-    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
-    GestureType[GestureType["Scribble"] = 4] = "Scribble";
-})(GestureType || (GestureType = {}));
 /// <reference path="../util/Rectangle.ts"/>
 var Stroke = (function () {
     function Stroke() {
@@ -4166,6 +4160,7 @@ var MultiLineSelection = (function (_super) {
     };
     MultiLineSelection.prototype.start = function (x, y) {
         console.log("===================start===============");
+        document.body.removeChild(this._inkCanvas._canvas);
         console.log(document.elementFromPoint(x, y));
         //      this.addWordTag(document.elementFromPoint(x, y).childNodes);
         this._currParent = document.elementFromPoint(x, y);
@@ -4174,48 +4169,64 @@ var MultiLineSelection = (function (_super) {
         this._offsetStart = rg.startOffset;
         console.log(this._offsetStart);
         this._prevList = Array();
+        this._startX = x;
+        this._startY = y;
     };
     MultiLineSelection.prototype.update = function (x, y) {
+        if (this._startX == x && this._startY == y) {
+            console.log("=========================!!!==");
+            return;
+        }
         this._inkCanvas.draw(x, y);
+        document.body.removeChild(this._inkCanvas._canvas);
         var rg = document["caretRangeFromPoint"](x, y);
         var nEnd = rg.commonAncestorContainer;
         var offsetEnd = rg.startOffset;
-        var offsetStart = this._offsetStart;
-        this._nEnd = nEnd;
+        //var offsetStart = this._offsetStart;
+        //this._nEnd = nEnd;
         this._range = document.createRange();
         this._range.setStart(this._nStart, this._offsetStart);
         this._range.setEnd(nEnd, offsetEnd);
-        var ans = this._range.commonAncestorContainer;
-        var nodes = this.getTextNodesBetween(this._range);
-        var list = [];
-        $(nodes).each(function (indx, ele) {
-            var rg = document.createRange();
-            if (indx == 0) {
-                if ($(nodes).length == 1) {
-                    rg.setStart(ele, offsetStart);
-                    rg.setEnd(ele, offsetEnd);
-                }
-                else {
-                    rg.setStart(ele, offsetStart);
-                    rg.setEndAfter(ele);
-                }
-            }
-            else if (indx == $(nodes).length - 1) {
-                rg.setStartBefore(ele);
-                rg.setEnd(ele, offsetEnd);
-            }
-            else {
-                rg.selectNode(ele);
-            }
-            console.log(rg.getClientRects());
-            $(rg.getClientRects()).each(function (idx, el) {
-                list.push(el);
-            });
-        });
-        this._brushStroke = this._inkCanvas._activeStroke;
-        this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
-        this._brushStroke.brush.drawStroke(null, this._inkCanvas);
-        this._prevList = list;
+        //this._inkCanvas.draw(x, y);
+        //var rg = document["caretRangeFromPoint"](x, y);
+        //var nEnd = rg.commonAncestorContainer;
+        //var offsetEnd = rg.startOffset;
+        //var offsetStart = this._offsetStart;
+        //this._nEnd = nEnd;
+        //this._range = document.createRange();
+        //this._range.setStart(this._nStart, this._offsetStart);
+        //this._range.setEnd(nEnd, offsetEnd);
+        //var ans = this._range.commonAncestorContainer;
+        //var nodes = this.getTextNodesBetween(this._range);
+        //var list = [];
+        //$(nodes).each(function (indx, ele) {
+        //    var rg = document.createRange();
+        //    if (indx == 0) {
+        //        if ($(nodes).length == 1) {
+        //            rg.setStart(ele, offsetStart);
+        //            rg.setEnd(ele, offsetEnd);
+        //        }
+        //        else {
+        //                rg.setStart(ele, offsetStart);
+        //                rg.setEndAfter(ele);
+        //        }
+        //    }
+        //    else if (indx == $(nodes).length - 1) {
+        //        rg.setStartBefore(ele);
+        //        rg.setEnd(ele, offsetEnd);
+        //    }
+        //    else {
+        //        rg.selectNode(ele);
+        //    }
+        //    console.log(rg.getClientRects());
+        //    $(rg.getClientRects()).each(function (idx, el) {
+        //        list.push(el);
+        //    });
+        //});
+        //this._brushStroke = this._inkCanvas._activeStroke;
+        //this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
+        //this._brushStroke.brush.drawStroke(null, this._inkCanvas);
+        //this._prevList = list;
         //if (this._prevList == null) {
         //    console.log("prev is null");
         //    this._brushStroke.brush = new MultiSelectionBrush(list, []);
@@ -4263,6 +4274,14 @@ var MultiLineSelection = (function (_super) {
     };
     return MultiLineSelection;
 })(AbstractSelection);
+var GestureType;
+(function (GestureType) {
+    GestureType[GestureType["Null"] = 0] = "Null";
+    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
+    GestureType[GestureType["Vertical"] = 2] = "Vertical";
+    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
+    GestureType[GestureType["Scribble"] = 4] = "Scribble";
+})(GestureType || (GestureType = {}));
 var Line = (function () {
     function Line() {
     }

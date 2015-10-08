@@ -20,6 +20,8 @@
     _temp: Element;
     _prevList: Array<ClientRect>;
     _imgList: Array<ClientRect>;
+    _startX: Number;
+    _startY: Number;
 
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
         super("MultiLineSelection");
@@ -60,6 +62,7 @@
     start(x: number, y: number): void {
 
         console.log("===================start===============");
+        document.body.removeChild(this._inkCanvas._canvas); 
         console.log(document.elementFromPoint(x, y));
         //      this.addWordTag(document.elementFromPoint(x, y).childNodes);
         this._currParent = document.elementFromPoint(x, y);
@@ -68,7 +71,8 @@
         this._offsetStart = rg.startOffset;
         console.log(this._offsetStart);
         this._prevList = Array<ClientRect>();
-
+        this._startX = x;
+        this._startY = y;
 
 
     }
@@ -179,53 +183,70 @@
 
     update (x: number, y: number): void {
 
+        if (this._startX == x && this._startY == y) {
+            console.log("=========================!!!==");
+            return;
+        }
         this._inkCanvas.draw(x, y);
-
+        document.body.removeChild(this._inkCanvas._canvas);
         var rg = document["caretRangeFromPoint"](x, y);
         var nEnd = rg.commonAncestorContainer;
         var offsetEnd = rg.startOffset;
-        var offsetStart = this._offsetStart;
-        this._nEnd = nEnd;
+        //var offsetStart = this._offsetStart;
+        //this._nEnd = nEnd;
         this._range = document.createRange();
+
+
         this._range.setStart(this._nStart, this._offsetStart);
-        
+
         this._range.setEnd(nEnd, offsetEnd);
-        var ans = this._range.commonAncestorContainer;
-        var nodes = this.getTextNodesBetween(this._range);
-        var list = [];
+        //this._inkCanvas.draw(x, y);
+
+        //var rg = document["caretRangeFromPoint"](x, y);
+        //var nEnd = rg.commonAncestorContainer;
+        //var offsetEnd = rg.startOffset;
+        //var offsetStart = this._offsetStart;
+        //this._nEnd = nEnd;
+        //this._range = document.createRange();
+        //this._range.setStart(this._nStart, this._offsetStart);
         
-        $(nodes).each(function (indx, ele) {
+        //this._range.setEnd(nEnd, offsetEnd);
+        //var ans = this._range.commonAncestorContainer;
+        //var nodes = this.getTextNodesBetween(this._range);
+        //var list = [];
+        
+        //$(nodes).each(function (indx, ele) {
             
-            var rg = document.createRange();
-            if (indx == 0) {
-                if ($(nodes).length == 1) {
-                    rg.setStart(ele, offsetStart);
-                    rg.setEnd(ele, offsetEnd);
-                }
-                else {
-                        rg.setStart(ele, offsetStart);
-                        rg.setEndAfter(ele);
-                }
-            }
-            else if (indx == $(nodes).length - 1) {
-                rg.setStartBefore(ele);
+        //    var rg = document.createRange();
+        //    if (indx == 0) {
+        //        if ($(nodes).length == 1) {
+        //            rg.setStart(ele, offsetStart);
+        //            rg.setEnd(ele, offsetEnd);
+        //        }
+        //        else {
+        //                rg.setStart(ele, offsetStart);
+        //                rg.setEndAfter(ele);
+        //        }
+        //    }
+        //    else if (indx == $(nodes).length - 1) {
+        //        rg.setStartBefore(ele);
                 
-                rg.setEnd(ele, offsetEnd);
-            }
-            else {
-                rg.selectNode(ele);
-            }
-            console.log(rg.getClientRects());
-            $(rg.getClientRects()).each(function (idx, el) {
-                list.push(el);
-            });
-        });
+        //        rg.setEnd(ele, offsetEnd);
+        //    }
+        //    else {
+        //        rg.selectNode(ele);
+        //    }
+        //    console.log(rg.getClientRects());
+        //    $(rg.getClientRects()).each(function (idx, el) {
+        //        list.push(el);
+        //    });
+        //});
 
 
-        this._brushStroke = this._inkCanvas._activeStroke;
-        this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
-        this._brushStroke.brush.drawStroke(null, this._inkCanvas);
-        this._prevList = list;
+        //this._brushStroke = this._inkCanvas._activeStroke;
+        //this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
+        //this._brushStroke.brush.drawStroke(null, this._inkCanvas);
+        //this._prevList = list;
         
         //if (this._prevList == null) {
         //    console.log("prev is null");
@@ -279,4 +300,11 @@
         return d.innerHTML;
         //return this._range.cloneContents();
     }
+}
+enum GestureType {
+    Null,
+    Diagonal,
+    Vertical,
+    Horizontal,
+    Scribble
 }
