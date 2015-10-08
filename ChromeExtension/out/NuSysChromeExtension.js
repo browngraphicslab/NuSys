@@ -2712,12 +2712,35 @@ var DomUtil = (function () {
 })();
 var AbstractSelection = (function () {
     function AbstractSelection(className) {
+        this.selectedElements = new Array();
         this.className = className;
     }
     AbstractSelection.prototype.start = function (x, y) { };
     AbstractSelection.prototype.update = function (x, y) { };
     AbstractSelection.prototype.end = function (x, y) { };
-    AbstractSelection.prototype.deselect = function () { };
+    AbstractSelection.prototype.select = function () {
+        console.log("select");
+        this.selectedElements.forEach(function (selectedElement) {
+            var foundElement = $(selectedElement.tagName)[selectedElement.index];
+            if (foundElement.tagName.toLowerCase() == "img") {
+                var label = $("<span>Selected</span>");
+                label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                $("body").append(label);
+                label.css("top", $(foundElement).offset().top);
+                label.css("left", $(foundElement).offset().left);
+            }
+            else {
+                $(foundElement).css("background-color", "yellow");
+            }
+        });
+    };
+    AbstractSelection.prototype.deselect = function () {
+        console.log("deselect");
+        this.selectedElements.forEach(function (selectedElement) {
+            var foundElement = $(selectedElement.tagName)[selectedElement.index];
+            $(foundElement).css("background-color", "");
+        });
+    };
     AbstractSelection.prototype.getBoundingRect = function () { return null; };
     AbstractSelection.prototype.analyzeContent = function () { };
     AbstractSelection.prototype.getContent = function () { return null; };
@@ -3012,15 +3035,6 @@ var Main = (function () {
                 _this.selection.id = Date.now();
                 _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
                 _this.selections.push(_this.selection);
-                /*
-                var selectionInfo = {};
-                selectionInfo["id"] = this.selection["id"];
-                selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                selectionInfo["boundingRect"] = this.selection.getBoundingRect();
-                selectionInfo["date"] = (new Date()).toString();
-                selectionInfo["title"] = document.title;
-                selectionInfo["content"] = this.relativeToAbsolute(this.selection.getContent());
-                */
                 chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             }
             if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
@@ -3072,8 +3086,6 @@ var Main = (function () {
                 _this.selections = [];
                 request.data.forEach(function (d) {
                     var ls = null;
-                    console.log("inkcanvas");
-                    console.log(_this.inkCanvas);
                     if (d["className"] == "LineSelection")
                         ls = new LineSelection(_this.inkCanvas);
                     if (d["className"] == "BracketSelection")
@@ -3088,16 +3100,9 @@ var Main = (function () {
                     console.log(ls);
                     $.extend(stroke, ls._brushStroke.stroke);
                     ls._brushStroke.stroke = stroke;
-                    console.log("marked content");
-                    console.log(ls.getContent());
-                    /*
-                    document.body.removeChild(this.canvas);
-                    ls.analyzeContent();
-                    this.inkCanvas.addBrushStroke(new BrushStroke(new SelectionBrush(ls.getBoundingRect()), new Stroke()));
-                    this.inkCanvas.update();
-                    document.body.appendChild(this.canvas);
-                    */
+                    _this.selections.push(ls);
                 });
+                sendResponse();
             }
         });
     }
@@ -3151,6 +3156,15 @@ var Main = (function () {
         $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
+        console.log("asdfasdf");
+        console.log(this.selections);
+        this.selections.forEach(function (selection) {
+            if (flag) {
+                selection.select();
+            }
+            else
+                selection.deselect();
+        });
         if (this.isEnabled) {
             window.addEventListener("mouseup", this.windowUp);
             document.body.addEventListener("mousedown", this.documentDown);
@@ -3227,27 +3241,6 @@ var Main = (function () {
             finalval += src[i];
         }
         return finalval;
-    };
-    Main.prototype.drawAllSelections = function (prevSelections) {
-        var _this = this;
-        this.selections.forEach(function (selection) {
-            var rect = selection["boundingRect"];
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-        this.inkCanvas.update();
-    };
-    Main.prototype.drawPastSelections = function (rectArray) {
-        var _this = this;
-        $.each(rectArray, function (index, rect) {
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-        this.inkCanvas.update();
     };
     return Main;
 })();
@@ -3559,11 +3552,9 @@ var BracketSelection = (function (_super) {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
         this.analyzeContent();
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
-    };
-    BracketSelection.prototype.deselect = function () {
+        this.select();
         this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
     };
     BracketSelection.prototype.getBoundingRect = function () {
         var minX = 1000000;
@@ -3652,6 +3643,8 @@ var BracketSelection = (function (_super) {
             range.selectNodeContents(el);
             var rects = range.getClientRects();
             _this._clientRects = _this._clientRects.concat.apply([], rects);
+            var index = $(el.tagName).index(el);
+            _this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
             result += el.outerHTML;
         });
         console.log(this._clientRects);

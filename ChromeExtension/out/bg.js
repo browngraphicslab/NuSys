@@ -89,14 +89,14 @@ function initTab(tabId) {
 
                         if (_isActive) {
                             
-                            chrome.tabs.sendMessage(tabId, { msg: "enable_selections" });
-
                             chrome.storage.local.get(function (cTedStorage) {
                                 chrome.tabs.get(tabId, function(tab) {
                                     var selections = cTedStorage.selections.filter(function (obj) {
                                         return obj.url == tab.url;
                                     });
-                                    chrome.tabs.sendMessage(tabId, { msg: "set_selections", data: selections });
+                                    chrome.tabs.sendMessage(tabId, { msg: "set_selections", data: selections }, function () {
+                                        chrome.tabs.sendMessage(tabId, { msg: "enable_selections" });
+                                    });
                                 });
                             });
                         }
@@ -133,9 +133,8 @@ function setActive(active) {
                     chrome.tabs.sendMessage(tab.id, { msg: "set_selections", data: selections });
                 });
             });
+            msgAllTabs({ msg: "enable_selections" });
         });
-
-        msgAllTabs({ msg: "enable_selections" });
 
     } else {
         chrome.browserAction.setIcon({ path: { 19: "assets/icon.png", 38: "assets/icon.png" } });

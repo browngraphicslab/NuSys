@@ -85,10 +85,7 @@ class Main {
                     this.selections = [];
                     request.data.forEach((d) => {
 
-
                         var ls = null;
-                        console.log("inkcanvas");
-                        console.log(this.inkCanvas);
                         if (d["className"] == "LineSelection")
                             ls = new LineSelection(this.inkCanvas);
 
@@ -109,20 +106,9 @@ class Main {
                         $.extend(stroke, ls._brushStroke.stroke);
                         ls._brushStroke.stroke = stroke;
 
-                        console.log("marked content");
-                        console.log(ls.getContent());
-
-                        /*
-                        document.body.removeChild(this.canvas);
-                        ls.analyzeContent();
-                        this.inkCanvas.addBrushStroke(new BrushStroke(new SelectionBrush(ls.getBoundingRect()), new Stroke()));
-                        this.inkCanvas.update();
-                        document.body.appendChild(this.canvas);
-                        */
-
+                        this.selections.push(ls);
                     });
-                    
-                    //this.drawAllSelections();
+                    sendResponse();
                 }
             });
     }
@@ -185,6 +171,15 @@ class Main {
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
 
+        console.log("asdfasdf");
+        console.log(this.selections)
+        this.selections.forEach((selection) => {
+            if (flag) {
+                selection.select();
+            } else
+                selection.deselect();
+        });
+
         if (this.isEnabled) {
             window.addEventListener("mouseup", this.windowUp);
             document.body.addEventListener("mousedown", this.documentDown);
@@ -203,6 +198,8 @@ class Main {
                 console.log("no canvas visible." + e);
             }
         }
+
+
     }
 
     mouseMove = (e): void => {
@@ -328,16 +325,6 @@ class Main {
             this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
             this.selections.push(this.selection);
 
-            /*
-            var selectionInfo = {};
-            selectionInfo["id"] = this.selection["id"];
-            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            selectionInfo["boundingRect"] = this.selection.getBoundingRect();
-            selectionInfo["date"] = (new Date()).toString();
-            selectionInfo["title"] = document.title;
-            selectionInfo["content"] = this.relativeToAbsolute(this.selection.getContent());
-            */
-
             chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         }
         
@@ -415,28 +402,5 @@ class Main {
                 finalval += src[i];
             }
         return finalval;
-    }
-
-    drawAllSelections(prevSelections:any): void {
-
-        this.selections.forEach((selection) => {
-            var rect = selection["boundingRect"];
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-
-        this.inkCanvas.update();
-    }
-
-    drawPastSelections(rectArray): void {
-        $.each(rectArray, (index, rect) => {
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-        this.inkCanvas.update();
     }
 }
