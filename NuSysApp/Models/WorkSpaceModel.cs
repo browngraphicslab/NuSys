@@ -211,18 +211,21 @@ namespace NuSysApp
             {
                 if (_workSpaceModel.Children.ContainsKey(id))
                 {
-                    await UITask.Run(() => { 
-                        if (lockHolder == "")
+                    await UITask.Run(() => {
+                        if (_workSpaceModel.Children.ContainsKey(id))
                         {
-                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Maybe;
-                        }
-                        else if (lockHolder == NetworkConnector.Instance.LocalIP)
-                        {
-                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Yes;
-                        }
-                        else
-                        {
-                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.No;
+                            if (lockHolder == "")
+                            {
+                                _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Maybe;
+                            }
+                            else if (lockHolder == NetworkConnector.Instance.LocalIP)
+                            {
+                                _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Yes;
+                            }
+                            else
+                            {
+                                _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.No;
+                            }
                         }
                     });
                 }
