@@ -1,86 +1,114 @@
-<div class="enabler">
-    <div class="btnclose"></div>
 
-    <div class="popup_menu">
-        <button id="btnSend" class="menu_button">Send To Nusys</button>
-        <button id="view" class="menu_button">View All</button>
-        <button id="clear" class="menu_button">Clear Data</button>
-        <div class="switch">
-            <input id="toggle" class="toggle toggle-round" type="checkbox">
-            <label for="toggle"></label>
+    <div class="enabler">
+        <div class="btnclose"></div>
+
+        <div class="popup_menu">
+            <button id="btnLineSelect" class="menu_button">S</button>
+            <button id="btnBlockSelect" class="menu_button">B</button>
+            <button id="btnClear" class="menu_button">Clear Data</button>
+            <div class="switch">
+                <input id="toggle" class="toggle toggle-round" type="checkbox">
+                <label for="toggle"></label>
+            </div>
+            <button id="btnExpand"></button>
         </div>
-        <!--<button id="reg" class="menu_button">Regular Selection</button>-->
-    </div>
 
-    <style>
+        <div id="selected_list"></div>
 
-        .enabler {
-            text-align: left;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.7);;
-            font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-            width: 400px;
-            position: fixed;
-            z-index:1200;
-            top: 5px;
-            right: 5px;
-            border: 2px solid;
-            border-color: rgba(255, 255, 255, 0.7);
-            border-radius: 5px;
-        }
+        <style>
+            .enabler {
+                text-align: left;
+                min-height: 80px;
+                background: rgba(0, 0, 0, 0.7);
+                font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+                font-size: 12px;
+                width: 400px;
+                position: fixed;
+                z-index: 1200;
+                top: 5px;
+                right: 5px;
+                border: 2px solid;
+                border-color: rgba(255, 255, 255, 0.7);
+                border-radius: 5px;
+            }
 
-        .switch_caption {
-            font-size: 16px;
-            font-weight: bold;
-            display: inline-block;
-            line-height: 100%;
-            vertical-align: middle;
-        }
+            #btnExpand {
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                width: 15px;
+                height: 15px;
+            }
 
-        .switch {
-            margin-left: 20px;
-            display: inline-block;
-            vertical-align: middle;
-        }
+            #selected_list {
+                display: none;
+                height: 400px;
+                overflow-y: scroll;
+                box-sizing: border-box;
+            }
 
-        .popup_menu {
-            display: inline-block;
-            margin-left: 20px;
-        }
+            .selected_list_item {
+                box-sizing: border-box;
+                margin: 20px 20px;
+                margin: 10px 10px;
+                background: rgba(255, 255, 255, 0.7);
+                border: 2px solid;
+                border-color: rgba(255, 255, 255, 0.9);
+                clear: both;
+            }
 
-        .btnclose {
-            position: absolute;
-            top: 0;
-            right: 20px;
-            /*background-image: url(assets/close.png);*/
-            background-size: 30px 30px;
-            background-repeat: no-repeat;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-        }
+            .switch_caption {
+                font-size: 16px;
+                font-weight: bold;
+                display: inline-block;
+                line-height: 100%;
+                vertical-align: middle;
+            }
 
-        .menu_button {
-            width: 70px;
-            height: 50px;
-            font-size: 12px;
-            font-weight: bold;
-            vertical-align: middle;
-        }
+            .switch {
+                margin-left: 20px;
+                display: inline-block;
+                vertical-align: middle;
+            }
 
-        #status {
-            /* avoid an excessively wide status text */
-            white-space: pre;
-            text-overflow: ellipsis;
-            /*        overflow: hidden;
-          max-width: 400px; */
-        }
+            .popup_menu {
+                display: inline-block;
+                margin-left: 20px;
+            }
 
-        .toggle {
-            position: absolute;
-            margin-left: -9999px;
-            visibility: hidden;
-        }
+            .btnclose {
+                position: absolute;
+                top: 0;
+                right: 20px;
+                /*background-image: url(assets/close.png);*/
+                background-size: 30px 30px;
+                background-repeat: no-repeat;
+                width: 30px;
+                height: 30px;
+                cursor: pointer;
+            }
+
+            .menu_button {
+                width: 70px;
+                height: 50px;
+                font-size: 12px;
+                font-weight: bold;
+                vertical-align: middle;
+            }
+
+            #status {
+                /* avoid an excessively wide status text */
+                white-space: pre;
+                text-overflow: ellipsis;
+                /*        overflow: hidden;
+              max-width: 400px; */
+            }
+
+            .toggle {
+                position: absolute;
+                margin-left: -9999px;
+                visibility: hidden;
+            }
 
             .toggle + label {
                 display: block;
@@ -93,20 +121,20 @@
                 user-select: none;
             }
 
-        /* ============================================================
-          SWITCH 1 - ROUND
-        ============================================================ */
-        input.toggle-round + label {
-            padding: 2px;
-            width: 60px;
-            height: 20px;
-            background-color: #dddddd;
-            -webkit-border-radius: 30px;
-            -moz-border-radius: 30px;
-            -ms-border-radius: 30px;
-            -o-border-radius: 30px;
-            border-radius: 30px;
-        }
+            /* ============================================================
+              SWITCH 1 - ROUND
+            ============================================================ */
+            input.toggle-round + label {
+                padding: 2px;
+                width: 60px;
+                height: 20px;
+                background-color: #dddddd;
+                -webkit-border-radius: 30px;
+                -moz-border-radius: 30px;
+                -ms-border-radius: 30px;
+                -o-border-radius: 30px;
+                border-radius: 30px;
+            }
 
             input.toggle-round + label:before, input.toggle-round + label:after {
                 display: block;
@@ -148,13 +176,13 @@
                 transition: margin 0.4s;
             }
 
-        input.toggle-round:checked + label:before {
-            background-color: #8ce196;
-        }
+            input.toggle-round:checked + label:before {
+                background-color: #8ce196;
+            }
 
-        input.toggle-round:checked + label:after {
-            margin-left: 30px;
-        }
-    </style>
+            input.toggle-round:checked + label:after {
+                margin-left: 30px;
+            }
+        </style>
 
-</div>
+    </div>

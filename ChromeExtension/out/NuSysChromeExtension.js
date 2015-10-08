@@ -2560,6 +2560,10 @@ var InkCanvas = (function () {
         this._isDrawing = false;
         this._brushStrokes.push(this._activeStroke);
     };
+    InkCanvas.prototype.addBrushStroke = function (brushStroke) {
+        if (this._brushStrokes.indexOf(brushStroke) == -1)
+            this._brushStrokes.push(brushStroke);
+    };
     InkCanvas.prototype.removeBrushStroke = function (brushStroke) {
         var index = this._brushStrokes.indexOf(brushStroke);
         if (index > -1) {
@@ -2706,6 +2710,19 @@ var DomUtil = (function () {
     };
     return DomUtil;
 })();
+var AbstractSelection = (function () {
+    function AbstractSelection(className) {
+        this.className = className;
+    }
+    AbstractSelection.prototype.start = function (x, y) { };
+    AbstractSelection.prototype.update = function (x, y) { };
+    AbstractSelection.prototype.end = function (x, y) { };
+    AbstractSelection.prototype.deselect = function () { };
+    AbstractSelection.prototype.getBoundingRect = function () { return null; };
+    AbstractSelection.prototype.analyzeContent = function () { };
+    AbstractSelection.prototype.getContent = function () { return null; };
+    return AbstractSelection;
+})();
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../ink/InkCanvas.ts"/>
 /// <reference path="../ink/brush/BrushStroke.ts"/>
@@ -2713,8 +2730,11 @@ var DomUtil = (function () {
 /// <reference path="../ink/brush/SelectionBrush.ts"/>
 /// <reference path="../util/Rectangle.ts"/>
 /// <reference path="../util/DomUtil.ts"/>
-var LineSelection = (function () {
+/// <reference path="AbstractSelection.ts"/>
+var LineSelection = (function (_super) {
+    __extends(LineSelection, _super);
     function LineSelection(inkCanvas) {
+        _super.call(this, "LineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
     }
@@ -2750,7 +2770,6 @@ var LineSelection = (function () {
     };
     LineSelection.prototype.addWordTag = function (nodes) {
         var _this = this;
-        console.log(nodes);
         $.each(nodes, function (index, value) {
             if (value.nodeType == Node.TEXT_NODE) {
                 $(value).replaceWith($(value).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
@@ -2761,12 +2780,14 @@ var LineSelection = (function () {
         });
     };
     LineSelection.prototype.analyzeContent = function () {
+        console.log("analyzing content.");
         var stroke = this._brushStroke.stroke;
         var pStart = stroke.points[0];
         var pEnd = stroke.points[stroke.points.length - 1];
         var nStart = document.elementFromPoint(pStart.x, pStart.y);
         var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
         var commonParent = DomUtil.getCommonAncestor(nStart, nEnd);
+        console.log(commonParent);
         var nodes = $(commonParent).contents();
         if (nodes.length > 0) {
             var original_content = $(commonParent).clone();
@@ -2795,7 +2816,7 @@ var LineSelection = (function () {
         return this._content;
     };
     return LineSelection;
-})();
+})(AbstractSelection);
 var LineBrush = (function () {
     function LineBrush() {
     }
@@ -2842,9 +2863,11 @@ var LineBrush = (function () {
 /// <reference path="../ink/brush/LineBrush.ts"/>
 /// <reference path="../util/Rectangle.ts"/>
 /// <reference path="../util/DomUtil.ts"/>
-var UnknownSelection = (function () {
+var UnknownSelection = (function (_super) {
+    __extends(UnknownSelection, _super);
     function UnknownSelection(inkCanvas, fromActiveStroke) {
         if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        _super.call(this, "UnknownSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
         if (fromActiveStroke) {
@@ -2873,7 +2896,7 @@ var UnknownSelection = (function () {
         return null;
     };
     return UnknownSelection;
-})();
+})(AbstractSelection);
 /// <reference path="../typings/chrome/chrome.d.ts"/>
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 /// <reference path="ink/InkCanvas.ts"/>
@@ -2884,149 +2907,47 @@ var Main = (function () {
     function Main() {
         var _this = this;
         this.prevStrokeType = StrokeType.Line;
+        this.currentStrokeType = StrokeType.Line;
         this.selections = new Array();
-        this.selectedArray = new Array();
-        this.rectangleArray = [];
         this.urlGroup = Date.now();
         this.previousSelections = new Array();
         this.mouseMove = function (e) {
             if (!_this.isSelecting) {
                 return;
             }
-            var currType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
-            if (currType == StrokeType.MultiLine) {
-                document.body.removeChild(_this.canvas);
-            }
-            if (currType != _this.prevStrokeType) {
-                _this.prevStrokeType = currType;
-                switch (currType) {
-                    case StrokeType.Null:
-                        _this.selection = new LineSelection(_this.inkCanvas);
-                        break;
-                    case StrokeType.Line:
-                        _this.selection = new LineSelection(_this.inkCanvas);
-                        break;
-                    case StrokeType.MultiLine:
-                        _this.selection = new MultiLineSelection(_this.inkCanvas);
-                        _this.selection.start(e.clientX, e.clientY);
-                        console.log("switching to multiline Selection");
-                        break;
-                    case StrokeType.Bracket:
-                        _this.selection = new BracketSelection(_this.inkCanvas, true);
-                        console.log("switching to bracket!");
-                        break;
-                    case StrokeType.Marquee:
-                        _this.selection = new MarqueeSelection(_this.inkCanvas, true);
-                        console.log("switching to marquee!");
-                        break;
-                    case StrokeType.Scribble:
-                        _this.selection = new UnknownSelection(_this.inkCanvas, true);
-                        console.log("switching to unknown!");
-                        break;
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+                var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
+                if (_this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
+                    _this.selection = new MarqueeSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Marquee;
+                    _this.inkCanvas.redrawActiveStroke();
                 }
-                _this.inkCanvas.redrawActiveStroke();
+                if (_this.currentStrokeType == StrokeType.Marquee && currType == GestureType.Horizontal) {
+                    _this.selection = new BracketSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Bracket;
+                    _this.inkCanvas.redrawActiveStroke();
+                }
             }
             _this.selection.update(e.clientX, e.clientY);
             document.body.appendChild(_this.canvas);
         };
-        this.checkForOverlaySelection = function (x, y) {
-            var selection = null;
-            $(_this.selections).each(function (indx, elem) {
-                var rect = elem["getBoundingRect"]();
-                if (x < rect["x"] + rect["w"] && x > rect["x"] && y < rect["y"] + rect["h"] && y > rect["y"]) {
-                    console.log("=========================INTERSECT================");
-                    selection = elem;
-                }
-            });
-            return selection;
-            //$(this.rectangleArray).each(function (indx, elem) {
-            //    console.log(elem);
-            //    console.log(elem["w"]);
-            //    console.log(x + "$$$$" + y);
-            //    if (x < elem["x"] + elem["w"] && x > elem["x"] && y < elem["y"] + elem["h"] && y > elem["y"]) {
-            //        console.log(elem);
-            //        console.log(x + "$$$$" + y);
-            //        return true;
-            //    }
-            //});
-            //return false;
-        };
         this.documentDown = function (e) {
+            switch (_this.currentStrokeType) {
+                case StrokeType.MultiLine:
+                    _this.selection = new MultiLineSelection(_this.inkCanvas);
+                    break;
+                case StrokeType.Bracket:
+                    _this.selection = new BracketSelection(_this.inkCanvas);
+                    break;
+                case StrokeType.Marquee:
+                    _this.selection = new MarqueeSelection(_this.inkCanvas);
+                    break;
+            }
+            console.log("current selection:" + _this.currentStrokeType);
             _this.selection.start(e.clientX, e.clientY);
             document.body.appendChild(_this.canvas);
-            console.log("=============docuentDown=====");
-            console.log(_this.selections);
-            var toComment = _this.checkForOverlaySelection(e.clientX, e.clientY); //checks if any selections exist at document drop
             _this.canvas.addEventListener("mousemove", _this.mouseMove);
-            console.log(toComment);
-            console.log(_this.isCommenting);
             _this.isSelecting = true;
-            if (toComment == null) {
-                _this.isSelecting = true;
-                _this.isCommenting = false;
-            }
-            else if (!_this.isCommenting || _this.selection != toComment) {
-                if (toComment["comment"] == null) {
-                    console.log("================NOT COMMENTING====");
-                    _this.selection = toComment;
-                    _this.annotate(toComment, e.clientX, e.clientY);
-                }
-            }
-            console.log(_this.isSelecting);
-        };
-        this.annotate = function (sel, x, y) {
-            console.log("====================annotate====================");
-            var commentBox = document.createElement("div");
-            commentBox.innerHTML = "<textarea id='" + sel["id"] + "'></textarea>";
-            commentBox.style.left = x + "px";
-            commentBox.style.top = y + "px";
-            //  commentBox.style.display = "none";
-            commentBox.style.position = "absolute";
-            commentBox.style.zIndex = "999";
-            commentBox.focus();
-            _this.isCommenting = true;
-            var area = commentBox.querySelector("textarea");
-            _this.selection["comment"] = "";
-            area["onchange"] = function () {
-                //   this.selection["comment"] = 
-                console.log("========change======");
-                var sel = _this.selection;
-                sel["comment"] = document.getElementById(_this.selection["id"])["value"];
-                _this.selections[_this.selections.indexOf(_this.selection)] = sel;
-                _this.refreshChromeStorage();
-                //chrome.storage.local.get(null, function (data) {
-                //    var obj = data;
-                //    console.log(obj["selections"]);
-                //    $(obj["selections"]).each(function (indx, elem) {
-                //        //iterate through takes O(N)
-                //        console.log(elem);
-                //        if (elem["id"] == this.selection["id"]) {
-                //            elem["comment"] = document.getElementById(this.selection["id"])["value"];
-                //        }
-                //    });
-                //    console.log(obj);
-                //    chrome.storage.local.set(obj);
-                //});
-                console.log(_this.selection);
-            };
-            document.body.appendChild(commentBox);
-            var txtarea = document.getElementById(sel["id"]);
-            txtarea.focus();
-            _this.commentTextBox = txtarea;
-            $(txtarea).click(function () {
-                txtarea.focus();
-            });
-        };
-        this.refreshChromeStorage = function () {
-            var obj = {};
-            if (_this.previousSelections != null) {
-                obj["selections"] = _this.previousSelections.concat(_this.selections);
-            }
-            else {
-                obj["selections"] = _this.selections;
-            }
-            chrome.storage.local.set(obj);
-            chrome.storage.local.get(null, function (data) { console.log(data); });
         };
         this.documentScroll = function (e) {
             _this.inkCanvas.update();
@@ -3037,7 +2958,6 @@ var Main = (function () {
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
             _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
             _this.inkCanvas.update();
-            //   window.getSelection().removeAllRanges();
             _this.isSelecting = false;
         };
         this.canvasUp = function (e) {
@@ -3046,17 +2966,17 @@ var Main = (function () {
             }
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
             document.body.removeChild(_this.canvas);
+            $(_this.menuIframe).hide();
             _this.selection.end(e.clientX, e.clientY);
             var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
-            var currType = StrokeClassifier.getStrokeType(stroke);
-            if (currType == StrokeType.Null) {
+            var currType = GestireClassifier.getGestureType(stroke);
+            if (currType == GestureType.Null) {
                 console.log("JUST A TAP");
                 document.body.appendChild(_this.canvas);
                 _this.inkCanvas.update();
-                var toComment = _this.checkForOverlaySelection(e.clientX, e.clientY);
                 return;
             }
-            else if (currType == StrokeType.Scribble) {
+            else if (currType == GestureType.Scribble) {
                 var segments = stroke.breakUp();
                 var p0 = stroke.points[0];
                 var p1 = stroke.points[stroke.points.length - 1];
@@ -3074,13 +2994,9 @@ var Main = (function () {
                         try {
                             if (s.getBoundingRect().intersectsRectangle(strokeBB)) {
                                 s.deselect();
-                                console.log("RECT INTERSECTION");
                                 var selectionIndex = _this.selections.indexOf(s);
                                 if (selectionIndex > -1) {
                                     _this.selections.splice(selectionIndex, 1);
-                                    _this.selectedArray.splice(selectionIndex, 1);
-                                    _this.rectangleArray.splice(selectionIndex, 1);
-                                    chrome.storage.local.set({ 'curr': _this.selectedArray });
                                 }
                             }
                         }
@@ -3093,47 +3009,30 @@ var Main = (function () {
                 _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
             }
             else {
-                _this.selection["id"] = Date.now();
+                _this.selection.id = Date.now();
+                _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
                 _this.selections.push(_this.selection);
-                _this.selectedArray.push(_this.relativeToAbsolute(_this.selection.getContent()));
-                console.log(_this.selection.getContent());
-                console.log(_this.relativeToAbsolute(_this.selection.getContent()));
-                _this.rectangleArray.push(_this.selection.getBoundingRect());
-                chrome.storage.local.set({ 'curr': _this.selectedArray });
-                var currentDate = new Date();
+                /*
+                var selectionInfo = {};
+                selectionInfo["id"] = this.selection["id"];
+                selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                selectionInfo["boundingRect"] = this.selection.getBoundingRect();
+                selectionInfo["date"] = (new Date()).toString();
+                selectionInfo["title"] = document.title;
+                selectionInfo["content"] = this.relativeToAbsolute(this.selection.getContent());
+                */
+                chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             }
-            var selectionInfo = {};
-            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            console.log(window.location.protocol + '//' + window.location.host);
-            selectionInfo["selections"] = _this.selectedArray;
-            selectionInfo["boundingRects"] = _this.rectangleArray;
-            selectionInfo["date"] = (new Date()).toString();
-            _this.selection["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            _this.selection["date"] = (new Date()).toString();
-            _this.selection["title"] = document.title;
-            _this.selection["brushType"] = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke.stroke);
-            _this.selection["urlGroup"] = _this.urlGroup;
-            _this.selection["boundingRects"] = _this.rectangleArray;
-            console.log("!!!!!!!!!!!!!!!!!!");
-            console.log(_this.selection);
-            // var obj = {};
-            //obj[this.objectKeyCount] = selectionInfo;
-            //obj["selections"] = this.selections;
-            //chrome.storage.local.set(obj);
-            //     chrome.storage.local.set(ob
-            _this.refreshChromeStorage();
-            _this.selection = new LineSelection(_this.inkCanvas);
-            _this.prevStrokeType = StrokeType.Line;
-            chrome.storage.local.get(null, function (data) { console.info(data); });
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+                _this.currentStrokeType = StrokeType.Bracket;
+            }
             document.body.appendChild(_this.canvas);
+            $(_this.menuIframe).show();
             _this.inkCanvas.update();
             _this.isSelecting = false;
+            _this.updateSelectedList();
         };
         console.log("Starting NuSys.");
-        this.init();
-    }
-    Main.prototype.init = function () {
-        var _this = this;
         // create and append canvas
         var body = document.body, html = document.documentElement;
         Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
@@ -3146,16 +3045,17 @@ var Main = (function () {
         this.canvas.style.left = "0"; //fixes canvas placements
         this.canvas.style.zIndex = "998";
         this.inkCanvas = new InkCanvas(this.canvas);
-        this.selection = new LineSelection(this.inkCanvas);
         chrome.storage.local.get(null, function (data) {
             _this.previousSelections = data["selections"];
         });
-        var currToggle = false;
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            console.log("message received ");
             console.log(request);
             if (request.msg == "check_injection")
-                sendResponse({ toggleState: currToggle, objectId: _this.urlGroup });
+                sendResponse(true);
+            if (request.msg == "init") {
+                _this.init(request.data);
+                sendResponse();
+            }
             if (request.msg == "show_menu") {
                 _this.showMenu();
             }
@@ -3168,56 +3068,87 @@ var Main = (function () {
             if (request.msg == "disable_selections") {
                 _this.toggleEnabled(false);
             }
-            if (request.msg == "build_menu") {
-                _this.buildMenu(request.data);
-                sendResponse();
-            }
-            if (request.toggleState == true) {
-                _this.toggleEnabled(true);
-                console.log("show canvas");
-                currToggle = true;
-            }
-            if (request.toggleState == false) {
-                console.log("hide canvas");
-                _this.toggleEnabled(false);
-                currToggle = false;
-            }
-            if (request.pastPage != null) {
-                sendResponse({ farewell: "received Info" });
-                console.log("this is a requested page");
-                console.log(request.pastPage);
-                _this.toggleEnabled(true);
-                var rects = null;
-                $(request.pastPage).each(function (indx, elem) {
-                    console.log(elem);
-                    _this.drawPastSelections(elem["boundingRects"]);
+            if (request.msg == "set_selections") {
+                _this.selections = [];
+                request.data.forEach(function (d) {
+                    var ls = null;
+                    console.log("inkcanvas");
+                    console.log(_this.inkCanvas);
+                    if (d["className"] == "LineSelection")
+                        ls = new LineSelection(_this.inkCanvas);
+                    if (d["className"] == "BracketSelection")
+                        ls = new BracketSelection(_this.inkCanvas);
+                    if (d["className"] == "MarqueeSelection")
+                        ls = new MarqueeSelection(_this.inkCanvas);
+                    if (d["className"] == "MultiLineSelection")
+                        ls = new MultiLineSelection(_this.inkCanvas);
+                    $.extend(ls, d);
+                    ls._inkCanvas = _this.inkCanvas;
+                    var stroke = new Stroke();
+                    console.log(ls);
+                    $.extend(stroke, ls._brushStroke.stroke);
+                    ls._brushStroke.stroke = stroke;
+                    console.log("marked content");
+                    console.log(ls.getContent());
+                    /*
+                    document.body.removeChild(this.canvas);
+                    ls.analyzeContent();
+                    this.inkCanvas.addBrushStroke(new BrushStroke(new SelectionBrush(ls.getBoundingRect()), new Stroke()));
+                    this.inkCanvas.update();
+                    document.body.appendChild(this.canvas);
+                    */
                 });
             }
         });
-    };
-    Main.prototype.buildMenu = function (html) {
-        console.log("building menu");
-        this.menu = $(html)[0];
-        document.body.appendChild(this.menu);
-        $(this.menu).css("display", "none");
+    }
+    Main.prototype.init = function (menuHtml) {
+        var _this = this;
+        this.menuIframe = $("<iframe frameborder=0>")[0];
+        document.body.appendChild(this.menuIframe);
+        this.menu = $(menuHtml)[0];
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "90px", "z-index": 1001 });
+        $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
+        $(this.menuIframe).css("display", "none");
+        $(this.menuIframe).contents().find("#btnLineSelect").click(function () {
+            console.log("switching to multiline selection");
+            _this.currentStrokeType = StrokeType.MultiLine;
+        });
+        $(this.menuIframe).contents().find("#btnBlockSelect").click(function () {
+            _this.currentStrokeType = StrokeType.Bracket;
+        });
+        $(this.menuIframe).contents().find("#btnClear").click(function () {
+            chrome.runtime.sendMessage({ msg: "clear_page_selections" });
+        });
         chrome.runtime.sendMessage({ msg: "query_active" }, function (isActive) {
-            $("#toggle").prop("checked", isActive);
+            $(_this.menuIframe).contents().find("#toggle").prop("checked", isActive);
         });
     };
     Main.prototype.showMenu = function () {
+        var _this = this;
         this.isMenuVisible = true;
-        $(this.menu).css("display", "block");
-        $("#toggle").change(function () {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $("#toggle").prop("checked") });
+        $(this.menuIframe).css("display", "block");
+        $(this.menuIframe).contents().find("#toggle").change(function () {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+        $(this.menuIframe).contents().find("#btnExpand").click(function () {
+            console.log("expanding.");
+            var list = $(_this.menuIframe).contents().find("#selected_list");
+            if (list.css("display") == "none") {
+                list.css("display", "block");
+                $(_this.menuIframe).css("height", "500px");
+            }
+            else {
+                list.css("display", "none");
+                $(_this.menuIframe).css("height", "80px");
+            }
         });
     };
     Main.prototype.hideMenu = function () {
         this.isMenuVisible = false;
-        $(this.menu).css("display", "none");
+        $(this.menuIframe).css("display", "none");
     };
     Main.prototype.toggleEnabled = function (flag) {
-        console.log("toggleEnabled: " + flag);
-        $("#toggle").prop("checked", flag);
+        $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
         if (this.isEnabled) {
@@ -3240,6 +3171,13 @@ var Main = (function () {
                 console.log("no canvas visible." + e);
             }
         }
+    };
+    Main.prototype.updateSelectedList = function () {
+        var list = $(this.menuIframe).contents().find("#selected_list");
+        list.empty();
+        this.selections.forEach(function (s) {
+            list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
+        });
     };
     Main.prototype.relativeToAbsolute = function (content) {
         //////change relative href of hyperlink and src of image in html string to absolute
@@ -3289,6 +3227,17 @@ var Main = (function () {
             finalval += src[i];
         }
         return finalval;
+    };
+    Main.prototype.drawAllSelections = function (prevSelections) {
+        var _this = this;
+        this.selections.forEach(function (selection) {
+            var rect = selection["boundingRect"];
+            var stroke = new Stroke();
+            stroke.points.push({ x: rect.x, y: rect.y });
+            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
+            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
+        });
+        this.inkCanvas.update();
     };
     Main.prototype.drawPastSelections = function (rectArray) {
         var _this = this;
@@ -3433,6 +3382,14 @@ var MultiSelectionBrush = (function () {
 //    ctx.clearRect(startX, startY, w, h);
 //  ctx.fill();
 // this._list = new Array<ClientRect>(); 
+var GestureType;
+(function (GestureType) {
+    GestureType[GestureType["Null"] = 0] = "Null";
+    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
+    GestureType[GestureType["Vertical"] = 2] = "Vertical";
+    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
+    GestureType[GestureType["Scribble"] = 4] = "Scribble";
+})(GestureType || (GestureType = {}));
 /// <reference path="../util/Rectangle.ts"/>
 var Stroke = (function () {
     function Stroke() {
@@ -3551,38 +3508,37 @@ var Stroke = (function () {
     };
     return Stroke;
 })();
-var StrokeClassifier = (function () {
-    function StrokeClassifier() {
+var GestireClassifier = (function () {
+    function GestireClassifier() {
     }
-    StrokeClassifier.getStrokeType = function (stroke) {
+    GestireClassifier.getGestureType = function (stroke) {
         var p0 = stroke.points[0];
         var p1 = stroke.points[stroke.points.length - 1];
         var metrics = stroke.getStrokeMetrics();
         if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
-            return StrokeType.Null;
+            return GestureType.Null;
         }
-        if (metrics.error > 50) {
-            return StrokeType.Scribble;
-        }
-        //else {
-        //    return StrokeType.MultiLine;
+        //if (metrics.error > 50) {
+        //    return GestureType.Scribble;
         //}
         if (Math.abs(p1.y - p0.y) < 20) {
-            return StrokeType.Line;
+            return GestureType.Horizontal;
         }
         if (Math.abs(p1.x - p0.x) < 20) {
-            return StrokeType.Bracket;
+            return GestureType.Vertical;
         }
         if (Math.abs(p1.x - p0.x) > 50 && Math.abs(p1.y - p0.y) > 20) {
-            return StrokeType.Marquee;
+            return GestureType.Diagonal;
         }
     };
-    return StrokeClassifier;
+    return GestireClassifier;
 })();
 /// <reference path="../../lib/collections.ts"/>
-var BracketSelection = (function () {
+var BracketSelection = (function (_super) {
+    __extends(BracketSelection, _super);
     function BracketSelection(inkCanvas, fromActiveStroke) {
         if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        _super.call(this, "BracketSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
         if (fromActiveStroke) {
@@ -3628,22 +3584,21 @@ var BracketSelection = (function () {
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
         selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
-        var samplingRate = 20;
+        var samplingRate = 30;
         var numSamples = 0;
         var totalScore = 0;
-        //var hitCounter = new Map<Element, number>();
-        var hitCounter = new collections.Dictionary();
-        console.log("=================analyzeContent================");
-        console.log(selectionBB);
+        var hitCounter = new collections.Dictionary(function (elem) { return elem.outerHTML.toString(); });
         var elList = [];
         var scoreList = [];
         for (var x = selectionBB.x; x < selectionBB.x + selectionBB.w; x += samplingRate) {
             for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
                 var hitElem = document.elementFromPoint(x, y);
-                numSamples++;
-                if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
+                if ($(hitElem).height() > selectionBB.h + 50)
                     continue;
-                var score = (1.0 - x / (selectionBB.x + selectionBB.w)) / (selectionBB.w * selectionBB.h);
+                numSamples++;
+                //if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
+                //    continue;
+                var score = 1.0 - Math.sqrt((x - selectionBB.x) / selectionBB.w);
                 if (elList.indexOf(hitElem) < 0) {
                     elList.push(hitElem);
                     scoreList.push(score);
@@ -3651,48 +3606,71 @@ var BracketSelection = (function () {
                 else {
                     scoreList[elList.indexOf(hitElem)] += score;
                 }
-                if (hitCounter.getValue(hitElem) == undefined) {
+                if (!hitCounter.containsKey(hitElem)) {
                     hitCounter.setValue(hitElem, score);
-                    console.log(hitElem);
                 }
-                else
+                else {
                     hitCounter.setValue(hitElem, hitCounter.getValue(hitElem) + score);
+                }
                 totalScore += score;
             }
         }
-        console.log(elList);
-        console.log(scoreList);
-        console.log(hitCounter);
+        var maxScore = -10000;
+        var bestMatch = null;
+        hitCounter.forEach(function (k, v) {
+            if (v > maxScore) {
+                maxScore = v;
+                bestMatch = k;
+            }
+        });
         var candidates = [];
         var precision = 4;
         hitCounter.forEach(function (k, v) {
-            candidates.push(v / totalScore);
+            candidates.push(v);
         });
         var std = Statistics.getStandardDeviation(candidates, precision);
-        var result = "";
-        this._clientRects = new Array();
-        var count = 0;
-        var result = "";
+        var maxDev = maxScore - 2 * std;
+        var finalCandiates = [];
         hitCounter.forEach(function (k, v) {
-            if (Statistics.isWithinStd(candidates[count++], 1, std)) {
-                result += k["outerHTML"];
-                var range = document.createRange();
-                range.selectNodeContents(k);
-                var rects = range.getClientRects();
-                _this._clientRects = _this._clientRects.concat.apply([], rects);
+            if (v >= maxDev && v <= maxScore) {
+                finalCandiates.push(k);
             }
         });
+        var selectedElements = finalCandiates.filter(function (candidate) {
+            var containedByOtherCandidate = false;
+            finalCandiates.forEach(function (otherCandidate) {
+                if (candidate != otherCandidate && $(otherCandidate).has(candidate)) {
+                    containedByOtherCandidate = true;
+                }
+            });
+            return !containedByOtherCandidate;
+        });
+        this._clientRects = new Array();
+        var result = "";
+        selectedElements.forEach(function (el) {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var rects = range.getClientRects();
+            _this._clientRects = _this._clientRects.concat.apply([], rects);
+            result += el.outerHTML;
+        });
+        console.log(this._clientRects);
+        console.log("final candidates");
+        console.log(selectedElements);
         this._content = result;
+        console.log(this._content);
     };
     BracketSelection.prototype.getContent = function () {
         return this._content;
     };
     return BracketSelection;
-})();
+})(AbstractSelection);
 /// <reference path="../ink/brush/MarqueeBrush.ts" />
-var MarqueeSelection = (function () {
+var MarqueeSelection = (function (_super) {
+    __extends(MarqueeSelection, _super);
     function MarqueeSelection(inkCanvas, fromActiveStroke) {
         if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        _super.call(this, "MarqueeSelection");
         this._startX = 0;
         this._startY = 0;
         this._mouseX = 0;
@@ -3725,8 +3703,11 @@ var MarqueeSelection = (function () {
     MarqueeSelection.prototype.start = function (x, y) {
         this._inkCanvas.startDrawing(x, y, new MarqueeBrush(x, y));
         this._parentList = [];
+        this._offsetY = window.pageYOffset;
         this._startX = x;
         this._startY = y;
+        this._mouseX = x;
+        this._mouseY = y;
     };
     MarqueeSelection.prototype.update = function (x, y) {
         this._mouseX = x;
@@ -3735,8 +3716,6 @@ var MarqueeSelection = (function () {
         this._marqueeY1 = this._startY;
         this._marqueeX2 = this._mouseX;
         this._marqueeY2 = this._mouseY;
-        var canvas = this._inkCanvas._canvas;
-        var ctx = this._inkCanvas._context;
         this._inkCanvas.update();
         this._inkCanvas.draw(x, y);
     };
@@ -3755,11 +3734,9 @@ var MarqueeSelection = (function () {
             this._marqueeY2 = temp;
         }
         //finds the common parent of all elements in selection range
-        console.log(el);
         if (el != null) {
             this.getNextElement(el);
         }
-        console.log(this._parentList);
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
         this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
@@ -3771,7 +3748,6 @@ var MarqueeSelection = (function () {
     };
     MarqueeSelection.prototype.getNextElement = function (el) {
         //recursively adds elements in selection range to parentList. 
-        console.log(el.childNodes);
         if (this._selected != el) {
             return;
         }
@@ -3780,18 +3756,13 @@ var MarqueeSelection = (function () {
         }
         this._ct++;
         var rect = el.getBoundingClientRect();
-        console.log(rect);
         var nextX = this._mouseX - (rect.left + rect.width);
         var nextY = this._mouseY - (rect.top + rect.height);
         var newList = [];
-        console.log("============getNextElement=============");
-        console.log(el);
         if (el.nodeName == "HTML") {
-            console.log("HTML");
             return;
         }
         if (nextX > 0) {
-            console.log("========getnextX====");
             if (document.body.contains(this._inkCanvas._canvas)) {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
@@ -3813,13 +3784,10 @@ var MarqueeSelection = (function () {
             }
         }
         if (nextY > 0) {
-            console.log("========getnextY====");
             if (document.body.contains(this._inkCanvas._canvas)) {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
             element = document.elementFromPoint(this._startX, this._mouseY - nextY + 1);
-            console.log("===================2");
-            console.log(element);
             var contains = false;
             for (var i = 0; i < this._parentList.length; i++) {
                 if (this.isDescendant(this._parentList[i], element) || this._parentList[i] == element) {
@@ -3828,11 +3796,8 @@ var MarqueeSelection = (function () {
             }
             if (contains) {
                 this.drawPreviousMarquee();
-                console.log("=================2.5");
-                console.log(this._parentList);
                 return;
             }
-            console.log("===================3");
             for (var i = 0; i < this._parentList.length; i++) {
                 if (this.isDescendant(element, this._parentList[i])) {
                 }
@@ -3846,12 +3811,10 @@ var MarqueeSelection = (function () {
             this._parentList = newList;
             this._parentList.push(element);
             this.drawPreviousMarquee();
-            console.log("===================4");
             this.getNextElement(element);
         }
     };
     MarqueeSelection.prototype.isDescendant = function (parent, child) {
-        console.log("isDescendant===========");
         var node = child.parentNode;
         while (node != null) {
             if (node == parent) {
@@ -3872,20 +3835,14 @@ var MarqueeSelection = (function () {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     };
     MarqueeSelection.prototype.analyzeContent = function () {
-        console.log(this._parentList.length);
-        //  console.log(this.commonAncestor(this._parentList[0], this._parentList[1]));
         if (this._parentList.length != 1) {
             for (var i = 1; i < this._parentList.length; i++) {
                 var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
-                console.log(currAn);
                 this._parentList[0] = currAn;
             }
         }
-        console.log("===========A");
         var sel = this._parentList[0].cloneNode(true);
         var selX = $(this._parentList[0]).clone(true);
-        console.log("======================ANALYZECONTENT===============");
-        console.log(this._parentList);
         this.rmChildNodes(sel, this._parentList[0]);
         var htmlString = sel.innerHTML.replace(/"/g, "'");
         if (sel.outerHTML == "") {
@@ -3913,7 +3870,6 @@ var MarqueeSelection = (function () {
             node = node.parentNode;
             nodes.unshift(node);
         }
-        console.log(nodes);
         return nodes;
     };
     MarqueeSelection.prototype.bound = function (myEl, el) {
@@ -3951,7 +3907,6 @@ var MarqueeSelection = (function () {
                 rectX["top"] >= this._marqueeY1 &&
                 rectX["top"] + realHeight <= this._marqueeY2) {
                 this.setTextStyle(myEl, el);
-                console.log("!!!!!!!!!!!!!!! +bound");
                 return true;
             }
             return false;
@@ -3962,17 +3917,13 @@ var MarqueeSelection = (function () {
         var realNList = [];
         var indexList = [];
         //iterate through childNodes and add to list(removed).
-        console.log("============rmChildNodes===============");
-        console.log(el);
         for (var i = 0; i < el.childNodes.length; i++) {
-            console.log(el.childNodes[i]);
             if (!this.intersectWith(el.childNodes[i], trueEl.childNodes[i])) {
                 removed.push(el.childNodes[i]);
             }
             else {
                 realNList.push(trueEl.childNodes[i]);
                 indexList.push(i);
-                console.log("INTERSECT");
             }
         }
         //remove not intersecting elements; 
@@ -4022,7 +3973,6 @@ var MarqueeSelection = (function () {
             }
             if (elem["top"] < minH) {
                 minH = elem["top"];
-                console.log(elem);
             }
             if (elem["left"] < minW) {
                 minW = elem["left"];
@@ -4063,7 +4013,6 @@ var MarqueeSelection = (function () {
             return false;
         }
         else if (el.nodeName != "#comment") {
-            console.log(el.nodeName);
             var rangeY = document.createRange();
             rangeY.selectNodeContents(el);
             var realDim = this.getRealHeightWidth(rangeY.getClientRects());
@@ -4077,14 +4026,10 @@ var MarqueeSelection = (function () {
             ay1 = el.getBoundingClientRect()["top"];
             ay2 = el.getBoundingClientRect()["top"] + realHeight;
         }
-        console.log(ax1 + "!!" + ax2 + "!!" + ay1 + "!!" + ay2);
-        console.log(bx2 + "!!" + bx1 + "!!" + by2 + "!!" + by1);
         if (ax1 < bx2 && bx1 < ax2 && ay1 < by2) {
-            console.log(by1 < ay2);
             return by1 < ay2;
         }
         else {
-            console.log(false);
             return false;
         }
     };
@@ -4092,11 +4037,13 @@ var MarqueeSelection = (function () {
         return this._content;
     };
     return MarqueeSelection;
-})();
-var MultiLineSelection = (function () {
+})(AbstractSelection);
+var MultiLineSelection = (function (_super) {
+    __extends(MultiLineSelection, _super);
     function MultiLineSelection(inkCanvas, fromActiveStroke) {
         var _this = this;
         if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        _super.call(this, "MultiLineSelection");
         this.getTextRectangles = function (cont, nEnd) {
             console.log(cont.childNodes);
             $(cont.childNodes).each(function (index, el) {
@@ -4192,67 +4139,6 @@ var MultiLineSelection = (function () {
             getTextNodes(rootNode);
             return textNodes;
         };
-        this.update = function (x, y) {
-            _this._inkCanvas.draw(x, y);
-            var rg = document["caretRangeFromPoint"](x, y);
-            var nEnd = rg.commonAncestorContainer;
-            var offsetEnd = rg.startOffset;
-            var offsetStart = _this._offsetStart;
-            _this._nEnd = nEnd;
-            _this._range = document.createRange();
-            _this._range.setStart(_this._nStart, _this._offsetStart);
-            _this._range.setEnd(nEnd, offsetEnd);
-            var ans = _this._range.commonAncestorContainer;
-            var nodes = _this.getTextNodesBetween(_this._range);
-            var list = [];
-            $(nodes).each(function (indx, ele) {
-                var rg = document.createRange();
-                if (indx == 0) {
-                    if ($(nodes).length == 1) {
-                        rg.setStart(ele, offsetStart);
-                        rg.setEnd(ele, offsetEnd);
-                    }
-                    else {
-                        rg.setStart(ele, offsetStart);
-                        rg.setEndAfter(ele);
-                    }
-                }
-                else if (indx == $(nodes).length - 1) {
-                    rg.setStartBefore(ele);
-                    rg.setEnd(ele, offsetEnd);
-                }
-                else {
-                    rg.selectNode(ele);
-                }
-                console.log(rg.getClientRects());
-                $(rg.getClientRects()).each(function (idx, el) {
-                    list.push(el);
-                });
-            });
-            _this._brushStroke = _this._inkCanvas._activeStroke;
-            _this._brushStroke.brush = new MultiSelectionBrush(list, _this._prevList);
-            _this._brushStroke.brush.drawStroke(null, _this._inkCanvas);
-            _this._prevList = list;
-            //if (this._prevList == null) {
-            //    console.log("prev is null");
-            //    this._brushStroke.brush = new MultiSelectionBrush(list, []);
-            //}
-            //else if (list.length > this._prevList.length) {
-            //    ///delete last element of prevlist and add 
-            //    console.log("more clientrect selected");
-            //    var diff = list.length - this._prevList.length;
-            //    this._brushStroke.brush = new MultiSelectionBrush(list.slice(list.length - diff), [this._prevList[this._prevList.length - 1]]);
-            //}
-            //else if (list.length < this._prevList.length) {
-            //    ////remove previous and check last 
-            //    console.log("less clientrect selected!!!");
-            //}
-            //else {
-            //    ////check the last rect 
-            //    console.log("selection within same rect");
-            //    this._brushStroke.brush = new MultiSelectionBrush([list[list.length - 1]], [this._prevList[this._prevList.length - 1]]);
-            //}
-        };
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
         this._rectList = new Array();
@@ -4289,6 +4175,67 @@ var MultiLineSelection = (function () {
         console.log(this._offsetStart);
         this._prevList = Array();
     };
+    MultiLineSelection.prototype.update = function (x, y) {
+        this._inkCanvas.draw(x, y);
+        var rg = document["caretRangeFromPoint"](x, y);
+        var nEnd = rg.commonAncestorContainer;
+        var offsetEnd = rg.startOffset;
+        var offsetStart = this._offsetStart;
+        this._nEnd = nEnd;
+        this._range = document.createRange();
+        this._range.setStart(this._nStart, this._offsetStart);
+        this._range.setEnd(nEnd, offsetEnd);
+        var ans = this._range.commonAncestorContainer;
+        var nodes = this.getTextNodesBetween(this._range);
+        var list = [];
+        $(nodes).each(function (indx, ele) {
+            var rg = document.createRange();
+            if (indx == 0) {
+                if ($(nodes).length == 1) {
+                    rg.setStart(ele, offsetStart);
+                    rg.setEnd(ele, offsetEnd);
+                }
+                else {
+                    rg.setStart(ele, offsetStart);
+                    rg.setEndAfter(ele);
+                }
+            }
+            else if (indx == $(nodes).length - 1) {
+                rg.setStartBefore(ele);
+                rg.setEnd(ele, offsetEnd);
+            }
+            else {
+                rg.selectNode(ele);
+            }
+            console.log(rg.getClientRects());
+            $(rg.getClientRects()).each(function (idx, el) {
+                list.push(el);
+            });
+        });
+        this._brushStroke = this._inkCanvas._activeStroke;
+        this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
+        this._brushStroke.brush.drawStroke(null, this._inkCanvas);
+        this._prevList = list;
+        //if (this._prevList == null) {
+        //    console.log("prev is null");
+        //    this._brushStroke.brush = new MultiSelectionBrush(list, []);
+        //}
+        //else if (list.length > this._prevList.length) {
+        //    ///delete last element of prevlist and add 
+        //    console.log("more clientrect selected");
+        //    var diff = list.length - this._prevList.length;
+        //    this._brushStroke.brush = new MultiSelectionBrush(list.slice(list.length - diff), [this._prevList[this._prevList.length - 1]]);
+        //}
+        //else if (list.length < this._prevList.length) {
+        //    ////remove previous and check last 
+        //    console.log("less clientrect selected!!!");
+        //}
+        //else {
+        //    ////check the last rect 
+        //    console.log("selection within same rect");
+        //    this._brushStroke.brush = new MultiSelectionBrush([list[list.length - 1]], [this._prevList[this._prevList.length - 1]]);
+        //}
+    };
     MultiLineSelection.prototype.end = function (x, y) {
         this._inkCanvas.endDrawing(x, y);
         //this._brushStroke = this._inkCanvas._activeStroke;
@@ -4315,7 +4262,7 @@ var MultiLineSelection = (function () {
         //return this._range.cloneContents();
     };
     return MultiLineSelection;
-})();
+})(AbstractSelection);
 var Line = (function () {
     function Line() {
     }

@@ -11,28 +11,22 @@ class Main {
     static DOC_HEIGHT: number;
 
     prevStrokeType: StrokeType = StrokeType.Line;
+    currentStrokeType: StrokeType = StrokeType.Line;
     inkCanvas: InkCanvas;
-    selection: ISelection;
+    selection: AbstractSelection;
     canvas: HTMLCanvasElement;
+    menuIframe:HTMLIFrameElement;
     menu:any;
 
     selections: Array<ISelection> = new Array<ISelection>();
-    selectedArray: Array<string> = new Array<string>();
     isSelecting: boolean;
     isEnabled: boolean;
-    isCommenting: boolean;
     isMenuVisible: boolean;
-    rectangleArray = [];
     urlGroup: number = Date.now();
-    commentTextBox: Element;
     previousSelections: Array<ISelection> = new Array<ISelection>();
+    
     constructor() {
-
         console.log("Starting NuSys.");
-        this.init();
-    }
-
-    init() {
 
         // create and append canvas
         var body = document.body,
@@ -53,21 +47,23 @@ class Main {
         this.canvas.style.zIndex = "998";
 
         this.inkCanvas = new InkCanvas(this.canvas);
-        this.selection = new LineSelection(this.inkCanvas);
-        chrome.storage.local.get(null,(data) => {
+        
+        chrome.storage.local.get(null, (data) => {
             this.previousSelections = data["selections"];
         });
-       
-        var currToggle = false;
 
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
 
-                console.log("message received ");
                 console.log(request);
 
                 if (request.msg == "check_injection")
-                    sendResponse({ toggleState: currToggle, objectId: this.urlGroup });
+                    sendResponse(true);
+
+                if (request.msg == "init") {
+                    this.init(request.data);
+                    sendResponse();
+                }
 
                 if (request.msg == "show_menu") {
                     this.showMenu();
@@ -85,68 +81,107 @@ class Main {
                     this.toggleEnabled(false);
                 }
 
-                if (request.msg == "build_menu") {
-                    this.buildMenu(request.data);
-                    sendResponse();
-                }
+                if (request.msg == "set_selections") {
+                    this.selections = [];
+                    request.data.forEach((d) => {
 
-                if (request.toggleState == true) {
-                    this.toggleEnabled(true);
-                    console.log("show canvas");
-                    currToggle = true;
-                }
-                if (request.toggleState == false) {
-                    console.log("hide canvas");
-                    this.toggleEnabled(false);
-                    currToggle = false;
-                }
-                if (request.pastPage != null) {
-                    sendResponse({ farewell: "received Info" });
-                    console.log("this is a requested page");
-                    console.log(request.pastPage);
 
-                    this.toggleEnabled(true);
-                    var rects = null;
+                        var ls = null;
+                        console.log("inkcanvas");
+                        console.log(this.inkCanvas);
+                        if (d["className"] == "LineSelection")
+                            ls = new LineSelection(this.inkCanvas);
 
-                    $(request.pastPage).each((indx, elem) => {
-                        console.log(elem);
-                        this.drawPastSelections(elem["boundingRects"]);
+                        if (d["className"] == "BracketSelection")
+                            ls = new BracketSelection(this.inkCanvas);
+
+                        if (d["className"] == "MarqueeSelection")
+                            ls = new MarqueeSelection(this.inkCanvas);
+
+                        if (d["className"] == "MultiLineSelection")
+                            ls = new MultiLineSelection(this.inkCanvas);
+
+                        
+                        $.extend(ls, d);
+                        ls._inkCanvas = this.inkCanvas;
+                        var stroke = new Stroke();
+                        console.log(ls);
+                        $.extend(stroke, ls._brushStroke.stroke);
+                        ls._brushStroke.stroke = stroke;
+
+                        console.log("marked content");
+                        console.log(ls.getContent());
+
+                        /*
+                        document.body.removeChild(this.canvas);
+                        ls.analyzeContent();
+                        this.inkCanvas.addBrushStroke(new BrushStroke(new SelectionBrush(ls.getBoundingRect()), new Stroke()));
+                        this.inkCanvas.update();
+                        document.body.appendChild(this.canvas);
+                        */
+
                     });
+                    
+                    //this.drawAllSelections();
                 }
             });
     }
 
-    buildMenu(html: string): void {
+    init(menuHtml:string) {
 
-        console.log("building menu");
-        this.menu = $(html)[0];    
-        document.body.appendChild(this.menu);
+        this.menuIframe = <HTMLIFrameElement>$("<iframe frameborder=0>")[0];
+        document.body.appendChild(this.menuIframe);
+        this.menu = $(menuHtml)[0];
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "90px", "z-index": 1001 });
+        $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
+        $(this.menuIframe).css("display", "none");
 
-        $(this.menu).css("display", "none");
-
-        chrome.runtime.sendMessage({ msg: "query_active" }, function(isActive) {
-            $("#toggle").prop("checked", isActive);
+        $(this.menuIframe).contents().find("#btnLineSelect").click(() => {
+            console.log("switching to multiline selection");
+            this.currentStrokeType = StrokeType.MultiLine;
         });
-       
+
+        $(this.menuIframe).contents().find("#btnBlockSelect").click(() => {
+            this.currentStrokeType = StrokeType.Bracket;
+        });
+
+        $(this.menuIframe).contents().find("#btnClear").click(() => {
+            chrome.runtime.sendMessage({ msg: "clear_page_selections" });
+        });
+
+        chrome.runtime.sendMessage({ msg: "query_active" }, (isActive) => {
+            $(this.menuIframe).contents().find("#toggle").prop("checked", isActive);
+        });
     }
 
     showMenu(): void {
         this.isMenuVisible = true;
-        $(this.menu).css("display", "block");
+        $(this.menuIframe).css("display", "block");
         
-        $("#toggle").change(function () {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $("#toggle").prop("checked") });
+        $(this.menuIframe).contents().find("#toggle").change( () => {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+
+        $(this.menuIframe).contents().find("#btnExpand").click(() => {
+            console.log("expanding.");
+            var list = $(this.menuIframe).contents().find("#selected_list");
+            if (list.css("display") == "none") {
+                list.css("display", "block");
+                $(this.menuIframe).css("height", "500px");
+            } else {
+                list.css("display", "none");
+                $(this.menuIframe).css("height", "80px");
+            }
         });
     }
 
     hideMenu(): void {
         this.isMenuVisible = false;
-        $(this.menu).css("display", "none");
+        $(this.menuIframe).css("display", "none");
     }
     
     toggleEnabled(flag: boolean): void {
-        console.log("toggleEnabled: " + flag);
-        $("#toggle").prop("checked", flag);
+        $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
 
@@ -174,161 +209,49 @@ class Main {
         if (!this.isSelecting) {
             return;
         }
-        var currType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
-        if (currType == StrokeType.MultiLine) {
-            document.body.removeChild(this.canvas);
-        }
-        if (currType != this.prevStrokeType) {
-            this.prevStrokeType = currType;
-            switch (currType) {
-                case StrokeType.Null:
-                    this.selection = new LineSelection(this.inkCanvas);
-                    break;
-                case StrokeType.Line:
-                    this.selection = new LineSelection(this.inkCanvas);
-                    break;
-                case StrokeType.MultiLine:
-                    this.selection = new MultiLineSelection(this.inkCanvas);
-                    this.selection.start(e.clientX, e.clientY);
-                    console.log("switching to multiline Selection");
-                    break; 
-                case StrokeType.Bracket:
-                    this.selection = new BracketSelection(this.inkCanvas, true);
-                    console.log("switching to bracket!")
-                    break;
-                case StrokeType.Marquee:
-                    this.selection = new MarqueeSelection(this.inkCanvas, true);
-                    console.log("switching to marquee!")
-                    break;
-                case StrokeType.Scribble:
-                    this.selection = new UnknownSelection(this.inkCanvas, true);
-                    console.log("switching to unknown!")
-                    break;
+        
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+            var currType = GestireClassifier.getGestureType(this.inkCanvas._activeStroke.stroke);
+
+            if (this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
+                this.selection = new MarqueeSelection(this.inkCanvas, true);
+                this.currentStrokeType = StrokeType.Marquee;       
+                this.inkCanvas.redrawActiveStroke();
+
             }
 
-            this.inkCanvas.redrawActiveStroke();
+            if (this.currentStrokeType == StrokeType.Marquee && currType == GestureType.Horizontal) {
+                this.selection = new BracketSelection(this.inkCanvas, true);
+                this.currentStrokeType = StrokeType.Bracket;
+                this.inkCanvas.redrawActiveStroke();
+            }
         }
+    
+        
         this.selection.update(e.clientX, e.clientY);
         document.body.appendChild(this.canvas); 
     }
 
-    checkForOverlaySelection = (x: Number, y: Number): ISelection => {
-        var selection = null;
-        $(this.selections).each(function (indx, elem) {
-            var rect = elem["getBoundingRect"]();
-            if (x < rect["x"] + rect["w"] && x > rect["x"] && y < rect["y"] + rect["h"] && y > rect["y"]) {
-                console.log("=========================INTERSECT================");
-                selection = elem;
-            }
-        });
-        return selection;
-        //$(this.rectangleArray).each(function (indx, elem) {
-
-        //    console.log(elem);
-        //    console.log(elem["w"]);
-        //    console.log(x + "$$$$" + y);
-        //    if (x < elem["x"] + elem["w"] && x > elem["x"] && y < elem["y"] + elem["h"] && y > elem["y"]) {
-        //        console.log(elem);
-        //        console.log(x + "$$$$" + y);
-        //        return true;
-        //    }
-        //});
-
-        //return false;
-    }
     documentDown = (e): void => {
+        switch (this.currentStrokeType) {
+            case StrokeType.MultiLine:
+                this.selection = new MultiLineSelection(this.inkCanvas);
+                break;
+            case StrokeType.Bracket:
+                this.selection = new BracketSelection(this.inkCanvas);
+                break;
+            case StrokeType.Marquee:
+                this.selection = new MarqueeSelection(this.inkCanvas);
+                break;
+        }
+        console.log("current selection:" + this.currentStrokeType);
         this.selection.start(e.clientX, e.clientY);
+
         document.body.appendChild(this.canvas);
-        console.log("=============docuentDown=====");
-        console.log(this.selections);
-        var toComment = this.checkForOverlaySelection(e.clientX, e.clientY);      //checks if any selections exist at document drop
         this.canvas.addEventListener("mousemove", this.mouseMove);
-        console.log(toComment);
-        console.log(this.isCommenting);
         this.isSelecting = true;
-        if (toComment == null) {
-            this.isSelecting = true;
-            this.isCommenting = false;
-        }
-        //if 
-        else if (!this.isCommenting || this.selection != toComment) {
-            if (toComment["comment"] == null) {
-                console.log("================NOT COMMENTING====");
-                this.selection = toComment;
-                this.annotate(toComment, e.clientX, e.clientY);
-            }
-        }
-        console.log(this.isSelecting);
     }
 
-    annotate = (sel: ISelection, x: Number, y: Number): void => {
-        console.log("====================annotate====================");
-        var commentBox = document.createElement("div");
-        commentBox.innerHTML = "<textarea id='"+sel["id"]+"'></textarea>";
-        commentBox.style.left = x + "px";
-        commentBox.style.top = y + "px";
-      //  commentBox.style.display = "none";
-        commentBox.style.position = "absolute";
-        commentBox.style.zIndex = "999";
-        commentBox.focus();
-        this.isCommenting = true;
-        var area: Element = commentBox.querySelector("textarea");
-
-
-        this.selection["comment"] = "";
-        
-        area["onchange"] = () => {
-
-         //   this.selection["comment"] = 
-            
-            console.log("========change======");
-            var sel = this.selection;
-            sel["comment"] = document.getElementById(this.selection["id"])["value"]; 
-            this.selections[this.selections.indexOf(this.selection)] = sel;
-            this.refreshChromeStorage();
-            //chrome.storage.local.get(null, function (data) {
-            //    var obj = data;
-            //    console.log(obj["selections"]);
-            //    $(obj["selections"]).each(function (indx, elem) {
-            //        //iterate through takes O(N)
-            //        console.log(elem);
-            //        if (elem["id"] == this.selection["id"]) {
-            //            elem["comment"] = document.getElementById(this.selection["id"])["value"];
-            //        }
-            //    });
-                
-            //    console.log(obj);
-            //    chrome.storage.local.set(obj);
-            //});
-            
-            console.log(this.selection);
-        }
-
-
-        document.body.appendChild(commentBox);
-        var txtarea = document.getElementById(sel["id"]);
-        txtarea.focus();
-        this.commentTextBox = txtarea;
-        $(txtarea).click(function () {
-            
-            txtarea.focus();
-        });
-
-
-    }
-
-    refreshChromeStorage = (): void => {
-        var obj = {};
-        if (this.previousSelections != null) {
-            obj["selections"] = this.previousSelections.concat(this.selections);
-        }
-        else {
-            obj["selections"] = this.selections;
-        }
-
-        chrome.storage.local.set(obj);
-        chrome.storage.local.get(null, function (data) { console.log(data) });
-    }
     documentScroll = (e): void => {
         this.inkCanvas.update();
     }
@@ -340,34 +263,28 @@ class Main {
         this.canvas.removeEventListener("mousemove", this.mouseMove);
         this.inkCanvas.removeBrushStroke(this.inkCanvas._activeStroke);
         this.inkCanvas.update();
-     //   window.getSelection().removeAllRanges();
-
         this.isSelecting = false;
-        
     }
 
     canvasUp = (e): void => {
         if (!this.isSelecting) {
-
             return;
         }
+
         this.canvas.removeEventListener("mousemove", this.mouseMove);
         document.body.removeChild(this.canvas);
+        $(this.menuIframe).hide();
         this.selection.end(e.clientX, e.clientY);
         var stroke = this.inkCanvas._activeStroke.stroke.getCopy();
-        var currType = StrokeClassifier.getStrokeType(stroke);
+        var currType = GestireClassifier.getGestureType(stroke);
 
-        if (currType == StrokeType.Null) {
+        if (currType == GestureType.Null) {
             console.log("JUST A TAP");
             document.body.appendChild(this.canvas);
             this.inkCanvas.update();
-
-            var toComment = this.checkForOverlaySelection(e.clientX, e.clientY);
-
-
             return;
         }
-        else if (currType == StrokeType.Scribble) {
+        else if (currType == GestureType.Scribble) {
 
             var segments = stroke.breakUp();
             var p0 = stroke.points[0];
@@ -391,18 +308,15 @@ class Main {
                     try {
                         if (s.getBoundingRect().intersectsRectangle(strokeBB)) {
                             s.deselect();
-                            console.log("RECT INTERSECTION");
 
                             var selectionIndex = this.selections.indexOf(s);
                             if (selectionIndex > -1) {
                                 this.selections.splice(selectionIndex, 1);
-                                this.selectedArray.splice(selectionIndex, 1);
-                                this.rectangleArray.splice(selectionIndex, 1);
-                                chrome.storage.local.set({ 'curr': this.selectedArray });
-                                }
+                                //chrome.storage.local.set({ 'curr': this.selections });
+                            }
                         }
                     } catch (e) {
-                        console.log(e)
+                        console.log(e);
                         console.log(this);
                     }
                 });
@@ -410,118 +324,119 @@ class Main {
             this.inkCanvas.removeBrushStroke(this.inkCanvas._activeStroke);
         }
         else {
-            this.selection["id"] = Date.now();
+            this.selection.id = Date.now();
+            this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
             this.selections.push(this.selection);
-            this.selectedArray.push(this.relativeToAbsolute(this.selection.getContent()));
-            console.log(this.selection.getContent());
-            console.log(this.relativeToAbsolute(this.selection.getContent()));
-            this.rectangleArray.push(this.selection.getBoundingRect());
 
-            chrome.storage.local.set({ 'curr': this.selectedArray });
+            /*
+            var selectionInfo = {};
+            selectionInfo["id"] = this.selection["id"];
+            selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            selectionInfo["boundingRect"] = this.selection.getBoundingRect();
+            selectionInfo["date"] = (new Date()).toString();
+            selectionInfo["title"] = document.title;
+            selectionInfo["content"] = this.relativeToAbsolute(this.selection.getContent());
+            */
 
-            var currentDate = new Date();
+            chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         }
-        var selectionInfo = {};
-        selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        console.log(window.location.protocol + '//' + window.location.host);
-      
-        selectionInfo["selections"] = this.selectedArray;
-        selectionInfo["boundingRects"] = this.rectangleArray;
-        selectionInfo["date"] = (new Date()).toString();
+        
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+            this.currentStrokeType = StrokeType.Bracket;
+        }
 
-        this.selection["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname; 
-        this.selection["date"] = (new Date()).toString();
-        this.selection["title"] = document.title;
-        this.selection["brushType"] = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke.stroke);
-        this.selection["urlGroup"] = this.urlGroup;
-        this.selection["boundingRects"] = this.rectangleArray;
-
-
-        console.log("!!!!!!!!!!!!!!!!!!");
-        console.log(this.selection);
-        // var obj = {};
-        //obj[this.objectKeyCount] = selectionInfo;
-        //obj["selections"] = this.selections;
-
-        //chrome.storage.local.set(obj);
-        //     chrome.storage.local.set(ob
-        this.refreshChromeStorage();
-        this.selection = new LineSelection(this.inkCanvas);
-        this.prevStrokeType = StrokeType.Line;
-        chrome.storage.local.get(null, function (data) { console.info(data) });
         document.body.appendChild(this.canvas);
+        $(this.menuIframe).show();
         this.inkCanvas.update();
         this.isSelecting = false;
+        this.updateSelectedList();
+    }
+
+    updateSelectedList(): void {
+        var list = $(this.menuIframe).contents().find("#selected_list");
+        list.empty();
+        this.selections.forEach((s) => {
+            list.append("<div class='selected_list_item'>" + s.getContent() + "</div>"); 
+        });
     }
 
     relativeToAbsolute(content: string): string {
         //////change relative href of hyperlink and src of image in html string to absolute
         chrome.storage.local.get(null, function (data) { console.info(data) });
 
-        var res = content.split('href="');
-        var newval = res[0];
-        for (var i = 1; i < res.length; i++) {                  //first change href to absolute
-            newval += 'href="';
-            if (res[i].slice(0, 4) != "http") {
-                newval += window.location.protocol + "//" + window.location.host;
+            var res = content.split('href="');
+            var newval = res[0];
+            for (var i = 1; i < res.length; i++) {                  //first change href to absolute
+                newval += 'href="';
+                if (res[i].slice(0, 4) != "http") {
+                    newval += window.location.protocol + "//" + window.location.host;
+                }
+                newval += res[i];
             }
-            newval += res[i];
-        }
 
 
-        var src = newval.split('src="');
-        var finalval = src[0];
-        for (var i = 1; i < src.length; i++) {
-            finalval += 'src="';
-            if (src[i].slice(0, 4) != "http" && src[i].slice(0,2) != "//") {
-                finalval += window.location["origin"];
+            var src = newval.split('src="');
+            var finalval = src[0];
+            for (var i = 1; i < src.length; i++) {
+                finalval += 'src="';
+                if (src[i].slice(0, 4) != "http" && src[i].slice(0,2) != "//") {
+                    finalval += window.location["origin"];
                 
-                var path = window.location.pathname;
-                var pathSplit = path.split('/');
-                var newpath = "";
-                var pIndex = pathSplit.length - 1;
+                    var path = window.location.pathname;
+                    var pathSplit = path.split('/');
+                    var newpath = "";
+                    var pIndex = pathSplit.length - 1;
 
-                $(pathSplit).each(function (indx, elem) {
-                    if (indx < pathSplit.length-1) {
-                       newpath += (elem+"/");
+                    $(pathSplit).each(function (indx, elem) {
+                        if (indx < pathSplit.length-1) {
+                           newpath += (elem+"/");
+                        }
+                    });
+                    var newpathSplit = newpath.split("/");
+                    var p = "";
+                    pIndex = newpathSplit.length-1;
+                    if (src[i][0] == "/") {
+                        pIndex = pIndex - 1;
                     }
-                });
-                var newpathSplit = newpath.split("/");
-                var p = "";
-                pIndex = newpathSplit.length-1;
-                if (src[i][0] == "/") {
-                    pIndex = pIndex - 1;
-                }
-                else {
-                    src[i] = "/" + src[i];
-                }
-
-                $(newpathSplit).each(function (index, elem) {
-                    if (index < pIndex) {
-                        p += (elem + "/");
+                    else {
+                        src[i] = "/" + src[i];
                     }
-                });
-                p = p.substring(0, p.length - 1);
-                newpath = p;
 
-                finalval += newpath;
+                    $(newpathSplit).each(function (index, elem) {
+                        if (index < pIndex) {
+                            p += (elem + "/");
+                        }
+                    });
+                    p = p.substring(0, p.length - 1);
+                    newpath = p;
+
+                    finalval += newpath;
+                }
+                finalval += src[i];
             }
-            finalval += src[i];
-        }
         return finalval;
     }
 
-    drawPastSelections(rectArray): void {
-            $.each(rectArray, (index, rect) => {
-                var stroke = new Stroke();
-                stroke.points.push({ x: rect.x, y: rect.y });
-                stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-                this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-            });
-            this.inkCanvas.update();
+    drawAllSelections(prevSelections:any): void {
+
+        this.selections.forEach((selection) => {
+            var rect = selection["boundingRect"];
+            var stroke = new Stroke();
+            stroke.points.push({ x: rect.x, y: rect.y });
+            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
+            this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
+        });
+
+        this.inkCanvas.update();
     }
 
-
-   
-} 
-
+    drawPastSelections(rectArray): void {
+        $.each(rectArray, (index, rect) => {
+            var stroke = new Stroke();
+            stroke.points.push({ x: rect.x, y: rect.y });
+            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
+            this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
+        });
+        this.inkCanvas.update();
+    }
+}

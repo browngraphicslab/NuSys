@@ -1,26 +1,49 @@
-var port;
-var localPort;
-var selectedContent = new Array();
 var isOpen;
 var _isOpen = false;
 var _isActive = false;
 
+chrome.storage.local.clear(function() {
+    chrome.storage.local.set({ selections: [] });
+});
+
 
 chrome.extension.onMessage.addListener(function(request, sender, response) {
-
     if (request.msg == "set_active")
         setActive(request.data);
 
     if (request.msg == "query_active")
         response(_isActive);
+
+    if (request.msg == "store_selection") {
+       
+        chrome.storage.local.get(function (cTedStorage) {
+            cTedStorage.selections.push(request.data);
+            chrome.storage.local.set(cTedStorage, function() {
+                printSelections();
+            });
+        });
+        
+    }
+
+    if (request.msg == "delete_selection") {
+        chrome.storage.local.get("selections", function (selections) {
+            selections = selections.filter(function (obj) {
+                return obj.url !== sender.tab.url;
+            });
+            chrome.storage.local.set({selections: selections});
+        });
+    }
+
+    if (request.msg == "clear_page_selections") {
+        console.log(sender.tab.url);
+    }
 });
 
 chrome.browserAction.onClicked.addListener(function() {
     if (!_isOpen) {
         initAllTabs();
         _isOpen = true;
-    }
-    else {
+    } else {
         msgAllTabs({ msg: "hide_menu" });
         setActive(false);
         _isOpen = false;
@@ -29,7 +52,6 @@ chrome.browserAction.onClicked.addListener(function() {
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (_isOpen && changeInfo.status == "complete") {
-        console.log("WOOOOOOO");
         initTab(tabId);
     }
 });
@@ -46,7 +68,6 @@ function initTab(tabId) {
     chrome.tabs.sendMessage(tabId, { msg: "check_injection" }, function (response) {
 
         if (!response) {
-            console.log("injecting scripts in : " + tabId);
             chrome.tabs.executeScript(tabId, { file: "jquery.js" }, function (result) {
                 if (chrome.runtime.lastError) { // or if (!result)
                     return;
@@ -61,14 +82,26 @@ function initTab(tabId) {
                 if (chrome.runtime.lastError) { // or if (!result)
                     return;
                 }
-                $.get(chrome.extension.getURL("menu.html"), function (data) {
-                    chrome.tabs.sendMessage(tabId, { msg: "build_menu", data: data }, function () {
+                $.get(chrome.extension.getURL("menu.html"), function (menuData) {
+
+                    chrome.tabs.sendMessage(tabId, { msg: "init", data: menuData }, function () {
                         chrome.tabs.sendMessage(tabId, { msg: "show_menu" });
-                        if (_isActive)
+
+                        if (_isActive) {
+                            
                             chrome.tabs.sendMessage(tabId, { msg: "enable_selections" });
+
+                            chrome.storage.local.get(function (cTedStorage) {
+                                chrome.tabs.get(tabId, function(tab) {
+                                    var selections = cTedStorage.selections.filter(function (obj) {
+                                        return obj.url == tab.url;
+                                    });
+                                    chrome.tabs.sendMessage(tabId, { msg: "set_selections", data: selections });
+                                });
+                            });
+                        }
                     });
                 });
-
             });
         } else {
             chrome.tabs.sendMessage(tabId, { msg: "show_menu" });
@@ -85,13 +118,25 @@ function msgAllTabs(message) {
 }
 
 function setActive(active) {
-    console.log("setActive to :" + active);
     _isActive = active;
 
     // change icon based on current state
     if (_isActive) {
         chrome.browserAction.setIcon({ path: { 19: "assets/icon_active.png", 38: "assets/icon_active.png" } });
-        msgAllTabs({msg: "enable_selections"});
+        
+        chrome.storage.local.get(function (cTedStorage) {
+            chrome.tabs.query({}, function (tabs) {
+                tabs.forEach(function(tab) {
+                    var selections = cTedStorage.selections.filter(function(obj) {
+                        return obj.url === tab.url;
+                    });
+                    chrome.tabs.sendMessage(tab.id, { msg: "set_selections", data: selections });
+                });
+            });
+        });
+
+        msgAllTabs({ msg: "enable_selections" });
+
     } else {
         chrome.browserAction.setIcon({ path: { 19: "assets/icon.png", 38: "assets/icon.png" } });
         msgAllTabs({ msg: "disable_selections" });
@@ -102,10 +147,18 @@ function isActive() {
     return _isActive;
 }
 
-function startConnection() {
-    port = chrome.runtime.connectNative('com.browngraphicslab.chromenusysintermediate');
-}
-
 function log(msg, response) {
     console.log(msg);
 }
+
+function printSelections() {
+    console.log("=== SELECTIONS ===");
+    chrome.storage.local.get(function (cTedStorage) {
+        console.log(cTedStorage);
+        cTedStorage.selections.forEach(function (val) {
+            console.log(val);
+        });
+    });
+    console.log("==================");
+}
+

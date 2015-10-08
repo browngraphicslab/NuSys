@@ -1,4 +1,4 @@
-﻿class MultiLineSelection implements ISelection {
+﻿class MultiLineSelection extends AbstractSelection {
 
     _brushStroke: BrushStroke;
     _inkCanvas: InkCanvas;
@@ -21,10 +21,8 @@
     _prevList: Array<ClientRect>;
     _imgList: Array<ClientRect>;
 
-
-
-
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
+        super("MultiLineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
         this._rectList = new Array<Rectangle>();
@@ -179,7 +177,7 @@
         return textNodes;
     }
 
-    update = (x: number, y: number): void => {
+    update (x: number, y: number): void {
 
         this._inkCanvas.draw(x, y);
 
@@ -225,8 +223,6 @@
 
 
         this._brushStroke = this._inkCanvas._activeStroke;
-
-
         this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
         this._brushStroke.brush.drawStroke(null, this._inkCanvas);
         this._prevList = list;

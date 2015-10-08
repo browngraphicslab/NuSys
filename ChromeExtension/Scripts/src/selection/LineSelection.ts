@@ -5,8 +5,9 @@
 /// <reference path="../ink/brush/SelectionBrush.ts"/>
 /// <reference path="../util/Rectangle.ts"/>
 /// <reference path="../util/DomUtil.ts"/>
+/// <reference path="AbstractSelection.ts"/>
 
-class LineSelection implements ISelection {
+class LineSelection extends AbstractSelection {
     
     _brushStroke:BrushStroke;
     _inkCanvas:InkCanvas;
@@ -14,10 +15,10 @@ class LineSelection implements ISelection {
     _range:Range;
     _content:string;
 
-    constructor(inkCanvas:InkCanvas) {
+    constructor(inkCanvas: InkCanvas) {
+        super("LineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
-
     }
 
     start(x: number, y: number): void {
@@ -31,8 +32,8 @@ class LineSelection implements ISelection {
     end(x: number, y: number): void {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-
         this.analyzeContent();
+
         this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
     }
@@ -63,8 +64,6 @@ class LineSelection implements ISelection {
 
     addWordTag(nodes): void {
 
-        console.log(nodes);
-
         $.each(nodes, (index, value) =>{
 
             if (value.nodeType == Node.TEXT_NODE) {
@@ -75,20 +74,23 @@ class LineSelection implements ISelection {
             }
         });
     }
+
     analyzeContent(): void {
+
+        console.log("analyzing content.");
 
         var stroke = this._brushStroke.stroke;
         var pStart = stroke.points[0];
         var pEnd = stroke.points[stroke.points.length - 1];
-
         var nStart = document.elementFromPoint(pStart.x, pStart.y);
         var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
 
         var commonParent = DomUtil.getCommonAncestor(nStart, nEnd);
-
+        console.log(commonParent);
         var nodes = $(commonParent).contents();
 
         if (nodes.length > 0) {
+            
             var original_content = $(commonParent).clone();
 
             $.each(nodes, function () {
@@ -117,10 +119,8 @@ class LineSelection implements ISelection {
             $(commonParent).replaceWith(original_content);
         }
     }
-
     
-
     getContent(): string {
-             return this._content;
-        }
+        return this._content;
+    }
 }

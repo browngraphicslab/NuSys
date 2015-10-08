@@ -26,7 +26,7 @@ $("#view").click(function () {
 
 $("#clear").click(function () {
     $("#selected").remove();
-    chrome.storage.local.remove(id);
+    chrome.storage.local.remove();
 });
 
 $("#toggle").change(function () {
@@ -48,7 +48,6 @@ $("#toggle").change(function () {
 
 
 /*
-
 function addToSelection(array) {
     console.log($("selected").data);
     $.each(array, function (index, value) {
@@ -65,6 +64,5 @@ function addToSelection(array) {
         $("#selected").append("<div style='clear: both'>" + newVal + "</div>");
 
     });
-
 }
 */
