@@ -208,7 +208,7 @@ namespace NuSysApp
         {
             //Create new group, because no group exists
             var groupView = new GroupView();
-            var groupVm = new GroupViewModel(groupView, groupModel, this);
+            var groupVm = new GroupViewModel(groupModel, this, groupView);
             groupView.DataContext = groupVm;
 
             var tpl = groupView.FindName("nodeTpl") as NodeTemplate;
@@ -304,7 +304,10 @@ namespace NuSysApp
                 {
                     foreach (var model in linesToPromote)
                     {
-                        NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                        UITask.Run( async() =>
+                        {
+                            NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                        });
                     }
                 }
             };
@@ -548,6 +551,9 @@ namespace NuSysApp
                     break;
                 case NodeType.Audio:
                     vm = new AudioNodeViewModel((AudioNodeModel)model, this);
+                    break;
+                case NodeType.Video:
+                    vm = new VideoNodeViewModel((VideoNodeModel)model, this);
                     break;
                 default:
                     return;

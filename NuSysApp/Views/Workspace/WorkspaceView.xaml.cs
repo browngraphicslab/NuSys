@@ -130,6 +130,9 @@ namespace NuSysApp
                 case Options.AddBucket:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this)));
                     break;
+                case Options.AddVideo:
+                    await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Video, isFixed), new FloatingMenuMode(this)));
+                    break;
             }
         }
 

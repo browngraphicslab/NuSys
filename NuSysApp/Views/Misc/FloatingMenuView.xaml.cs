@@ -29,6 +29,7 @@ namespace NuSysApp
             AddMedia,
             AddAudioCapture,
             AddBucket,
+            AddVideo,
         MainMisc,
             MiscLoad,
             MiscSave,
@@ -78,6 +79,7 @@ namespace NuSysApp
             _buttons[btnNewMedia] = Options.AddMedia;
             _buttons[btnNewAudioCapture] = Options.AddAudioCapture;
             _buttons[btnBucket] = Options.AddBucket;
+            _buttons[btnVideo] = Options.AddVideo;
 
             _buttons[btnMisc] = Options.MainMisc;
             _buttons[btnLoad] = Options.MiscLoad;

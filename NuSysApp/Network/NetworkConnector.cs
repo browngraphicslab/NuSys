@@ -609,6 +609,16 @@ namespace NuSysApp
                                 Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
                             }
                             break;
+                    case NodeType.Video:
+                            try
+                            {
+                                data = ParseToByteArray(d);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                            }
+                        break;
                     }
                 }
                 await UITask.Run(async () => { await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data); });
@@ -683,7 +693,7 @@ namespace NuSysApp
                             pc.Add(two);
                             lineModel.Points = pc;
                             lineModel.Stroke = new SolidColorBrush(Colors.Black);
-                            if (props.ContainsKey("color") && props["color"] != "black")
+                            if (props.ContainsKey("stroke") && props["stroke"] != "black")
                             {
                                 lineModel.Stroke = new SolidColorBrush(Colors.Yellow);
                             }
