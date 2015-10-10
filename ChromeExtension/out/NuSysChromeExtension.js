@@ -3384,6 +3384,14 @@ var MultiSelectionBrush = (function () {
 //    ctx.clearRect(startX, startY, w, h);
 //  ctx.fill();
 // this._list = new Array<ClientRect>(); 
+var GestureType;
+(function (GestureType) {
+    GestureType[GestureType["Null"] = 0] = "Null";
+    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
+    GestureType[GestureType["Vertical"] = 2] = "Vertical";
+    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
+    GestureType[GestureType["Scribble"] = 4] = "Scribble";
+})(GestureType || (GestureType = {}));
 /// <reference path="../util/Rectangle.ts"/>
 var Stroke = (function () {
     function Stroke() {
@@ -3733,7 +3741,7 @@ var MarqueeSelection = (function (_super) {
         }
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        //        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
     };
@@ -3932,6 +3940,16 @@ var MarqueeSelection = (function (_super) {
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
+                            //   console.log((trueEl.childNodes[index].childNodes[j]));
+                            // console.log("YELLOW!!!!!!!!!!!!");
+                            if (trueEl.childNodes[index].childNodes[j].style) {
+                                trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                            }
+                            //else {
+                            //   var wrap = document.createElement('span');
+                            //   wrap.appendChild(trueEl.childNodes[index].childNodes[j]);
+                            //    wrap.style.backgroundColor = "yellow";
+                            //}
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     result += " ";
@@ -3947,6 +3965,19 @@ var MarqueeSelection = (function (_super) {
                 else {
                     this.rmChildNodes(el.childNodes[i], realNList[i]);
                 }
+            }
+            else {
+                console.log(realNList[i]);
+                if (realNList[i].nodeName == "#text") {
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<word>" + $(realNList[i]).text() + "</word>");
+                    console.log("=====================");
+                }
+                //$(realNList[i]).css("background-color", "yellow"); 
+                trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                //if (trueEl.childNodes[index].childNodes[j]) {
+                //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                //}
+                console.log("!!!!!!!!!!!!!!!!!!!!!!BOUNDDED");
             }
         }
     };

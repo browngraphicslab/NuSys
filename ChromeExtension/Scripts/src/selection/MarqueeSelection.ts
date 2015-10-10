@@ -87,7 +87,7 @@ class MarqueeSelection extends AbstractSelection {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+//        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
     }
@@ -291,6 +291,8 @@ class MarqueeSelection extends AbstractSelection {
             else {
                 realNList.push(trueEl.childNodes[i]);
                 indexList.push(i);
+        //        console.log("PAAAAAASSSSSED!!");
+         //       console.log(trueEl.childNodes[i]);
             }
         }
 
@@ -310,6 +312,16 @@ class MarqueeSelection extends AbstractSelection {
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
+                         //   console.log((trueEl.childNodes[index].childNodes[j]));
+                           // console.log("YELLOW!!!!!!!!!!!!");
+                            if (trueEl.childNodes[index].childNodes[j].style) {
+                                trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                            }
+                            //else {
+                            //   var wrap = document.createElement('span');
+                            //   wrap.appendChild(trueEl.childNodes[index].childNodes[j]);
+                            //    wrap.style.backgroundColor = "yellow";
+                            //}
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     result += " ";
@@ -323,7 +335,24 @@ class MarqueeSelection extends AbstractSelection {
                 else {
                     this.rmChildNodes(el.childNodes[i], realNList[i]);
                 }
+            }   
+            else {
+                console.log(realNList[i]);
+                if (realNList[i].nodeName == "#text") {
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<word>" + $(realNList[i]).text() + "</word>");
+                    console.log("=====================");
+                   
+                }
+                //$(realNList[i]).css("background-color", "yellow"); 
+                trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                //if (trueEl.childNodes[index].childNodes[j]) {
+                //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                //}
+                console.log("!!!!!!!!!!!!!!!!!!!!!!BOUNDDED");
+
+               // realNList[i].style.backgroundColor = "yellow";
             }
+
         }
     }
 
@@ -406,7 +435,7 @@ class MarqueeSelection extends AbstractSelection {
             return by1 < ay2;
         }
         else {
-            return false;
+            return false
         }
     }
 
