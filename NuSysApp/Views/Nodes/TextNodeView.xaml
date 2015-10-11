@@ -155,7 +155,7 @@
                 <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_node_ink.png" Height="30" Width="30"></Image>
                 </Button>
-                <Button x:Name="RecordVoice" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                <Button x:Name="RecordVoice" Click="OnRecordClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_audionode_record.png" Height="30" Width="30" Stretch="Uniform"></Image>
                 </Button>
                 <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>

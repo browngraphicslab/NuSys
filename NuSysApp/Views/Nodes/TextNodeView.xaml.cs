@@ -114,9 +114,10 @@ namespace NuSysApp
             };
         }
 
-        private void Bold_Click(object sender, RoutedEventArgs e)
+        private void OnRecordClick(object sender, RoutedEventArgs e)
         {
-
+            var vm = (TextNodeViewModel)this.DataContext;
+            vm.TranscribeVoice();
         }
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
