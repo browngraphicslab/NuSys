@@ -29,6 +29,7 @@
                         <Image Source="ms-appx:///Assets/icon_audionode_record.png" Height="30"></Image>
                     </Button>
                 </StackPanel>
+
                 <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <CaptureElement Name="preview"/>
                  <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True" Visibility="Collapsed" Stretch="Uniform" />        
