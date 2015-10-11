@@ -306,7 +306,9 @@ namespace NuSysApp
                     {
                         UITask.Run( async() =>
                         {
+                            //NetworkConnector.Instance.RequestLock(v.ID);
                             NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
+                            //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
                         });
                     }
                 }

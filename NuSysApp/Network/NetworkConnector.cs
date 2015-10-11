@@ -711,7 +711,7 @@ namespace NuSysApp
                             if (props.ContainsKey("data"))
                             {
                                 InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
-
+                                thickness = 2;
                                 if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                                 {
                                     canvas.OnFinalizedLine += async delegate

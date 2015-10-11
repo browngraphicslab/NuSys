@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -33,6 +34,30 @@ namespace NuSysApp
 
 
             ((TextNodeModel) this.Model).OnTextChanged += TextChangedHandler;
+        }
+
+        public async Task transcribeVoice()
+        {
+            // Create an instance of SpeechRecognizer. 
+            var speechRecognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
+
+            // Compile the dictation grammar that is loaded by default. 
+            await speechRecognizer.CompileConstraintsAsync();
+            string spokenString = ""; 
+            // Start recognition. 
+            try 
+            {
+                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await speechRecognizer.RecognizeWithUIAsync();
+                // If successful, display the recognition result. 
+                if (speechRecognitionResult.Status == Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
+                {
+                    spokenString = speechRecognitionResult.Text;
+                }
+            } 
+            catch (Exception exception)
+            {
+            }
+            ((TextNodeModel)this.Model).Text = spokenString;
         }
 
         public async Task UpdateRtf()       
