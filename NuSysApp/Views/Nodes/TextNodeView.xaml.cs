@@ -115,24 +115,34 @@ namespace NuSysApp
             };
         }
 
-        private void OnRecordClick(object sender, RoutedEventArgs e)
+        private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
-            TranscribeVoice();
+            var oldColor = this.RecordVoice.Background;
+            Color c = new Color();
+            c.A = 255;
+            c.R = 199;
+            c.G = 84;
+            c.B = 82;
+            this.RecordVoice.Background = new SolidColorBrush(c);
+            await TranscribeVoice();
+            this.RecordVoice.Background = oldColor;
         }
 
         private async Task TranscribeVoice()
         {
             // Create an instance of SpeechRecognizer. 
             var speechRecognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
-            speechRecognizer.UIOptions.IsReadBackEnabled = false;
-            speechRecognizer.UIOptions.AudiblePrompt = "";
+            //speechRecognizer.
+            //speechRecognizer.UIOptions.ShowConfirmation = false;
+            //speechRecognizer.UIOptions.IsReadBackEnabled = false;
+            //speechRecognizer.UIOptions.AudiblePrompt = "";
             // Compile the dictation grammar that is loaded by default. = ""; 
             await speechRecognizer.CompileConstraintsAsync();
             string spokenString = "";
             // Start recognition. 
             try
             {
-                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await speechRecognizer.RecognizeWithUIAsync();
+                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await speechRecognizer.RecognizeAsync();
                 // If successful, display the recognition result. 
                 if (speechRecognitionResult.Status == Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
                 {
