@@ -3,7 +3,7 @@
     id: number;
     url: string;
     className: string;
-    protected  selectedElements:Array<any> = new Array<any>();
+    public selectedElements:Array<any> = new Array<any>();
 
     constructor(className) {
         this.className = className;
@@ -21,11 +21,11 @@
             var foundElement = $(selectedElement.tagName)[selectedElement.index];
 
             if (foundElement.tagName.toLowerCase() == "img") {
-            var label = $("<span>Selected</span>");
-            label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
-            $("body").append(label);
-            label.css("top", $(foundElement).offset().top);
-            label.css("left", $(foundElement).offset().left);
+                var label = $("<span>Selected</span>");
+                label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                $("body").append(label);
+                label.css("top", $(foundElement).offset().top);
+                label.css("left", $(foundElement).offset().left);
             } else {
                 $(foundElement).css("background-color", "yellow");
             }

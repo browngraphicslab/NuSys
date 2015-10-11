@@ -158,7 +158,6 @@ class BracketSelection extends AbstractSelection{
         console.log(selectedElements);
 
         this._content = result;
-        console.log(this._content);
     }
 
     getContent(): string {

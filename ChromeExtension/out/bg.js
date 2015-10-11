@@ -7,7 +7,11 @@ chrome.storage.local.clear(function() {
 });
 
 
-chrome.extension.onMessage.addListener(function(request, sender, response) {
+chrome.extension.onMessage.addListener(function (request, sender, response) {
+
+    if (request.msg == "view_all")
+        chrome.tabs.create({ 'url': chrome.extension.getURL('AllSelections.html') });
+
     if (request.msg == "set_active")
         setActive(request.data);
 
@@ -15,11 +19,13 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
         response(_isActive);
 
     if (request.msg == "store_selection") {
-       
+        
         chrome.storage.local.get(function (cTedStorage) {
             cTedStorage.selections.push(request.data);
+            console.log("storing selection");
             chrome.storage.local.set(cTedStorage, function() {
                 printSelections();
+                console.log("selection stored");
             });
         });
         
