@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
 
 namespace NuSysApp
 {
     public class VideoNodeModel : NodeModel
     {
         private byte[] _byteArray;
+        private InMemoryRandomAccessStream _recording;
         public VideoNodeModel(byte[] byteArray, string id) : base(id)
         {
             ByteArray = byteArray;
+            Recording = new InMemoryRandomAccessStream();
+        }
+        public InMemoryRandomAccessStream Recording
+        {
+            get {return _recording;}
+            set {_recording = value;}
         }
         public byte[] ByteArray
         {
