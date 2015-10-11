@@ -36,33 +36,6 @@ namespace NuSysApp
             ((TextNodeModel) this.Model).OnTextChanged += TextChangedHandler;
         }
 
-        public async Task TranscribeVoice()
-        {
-            // Create an instance of SpeechRecognizer. 
-            var speechRecognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
-            speechRecognizer.UIOptions.IsReadBackEnabled = false;
-            speechRecognizer.UIOptions.AudiblePrompt = "";
-            // Compile the dictation grammar that is loaded by default. = ""; 
-            await speechRecognizer.CompileConstraintsAsync();
-            string spokenString = ""; 
-            // Start recognition. 
-            try 
-            {
-                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await speechRecognizer.RecognizeWithUIAsync();
-                // If successful, display the recognition result. 
-                if (speechRecognitionResult.Status == Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
-                {
-                    spokenString = speechRecognitionResult.Text;
-                }
-            } 
-            catch (Exception exception)
-            {
-            }
-            speechRecognizer.Dispose();
-            ((TextNodeModel)this.Model).Text = spokenString;
-            UpdateRtf();
-        }
-
         public async Task UpdateRtf()       
         {
            
