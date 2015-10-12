@@ -2993,6 +2993,7 @@ var Main = (function () {
                 _this.selection.end(e.clientX, e.clientY);
             _this.selection.id = Date.now();
             _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
             _this.selections.push(_this.selection);
             chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             _this.selection = new MultiLineSelection(_this.inkCanvas);
@@ -3036,6 +3037,7 @@ var Main = (function () {
             }
             _this.selection.id = Date.now();
             _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
             _this.selections.push(_this.selection);
             chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             _this.updateSelectedList();
@@ -3058,6 +3060,10 @@ var Main = (function () {
         });
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             console.log(request);
+            if (request.msg == "tags_changed") {
+                console.log("tags_changed");
+                $(_this.menuIframe).contents().find("#tagfield").val(request.data);
+            }
             if (request.msg == "check_injection")
                 sendResponse(true);
             if (request.msg == "init") {
@@ -3133,7 +3139,7 @@ var Main = (function () {
         this.menuIframe = $("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "90px", "z-index": 1001 });
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
         $(this.menuIframe).contents().find("#btnLineSelect").click(function () {
@@ -3150,6 +3156,9 @@ var Main = (function () {
                 console.log("could't add canvas");
             }
             document.removeEventListener("mouseup", _this.documentUp);
+        });
+        $(this.menuIframe).contents().find("#tagfield").change(function () {
+            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(_this.menuIframe).contents().find("#tagfield").val() });
         });
         $(this.menuIframe).contents().find("#btnViewAll").click(function () {
             chrome.runtime.sendMessage({ msg: "view_all" });
@@ -3222,9 +3231,8 @@ var Main = (function () {
             list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
         });
     };
-    Main.prototype.relativeToAbsolute = function (content) {
+    Main.relativeToAbsolute = function (content) {
         //////change relative href of hyperlink and src of image in html string to absolute
-        chrome.storage.local.get(null, function (data) { console.info(data); });
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {
@@ -3668,6 +3676,10 @@ var BracketSelection = (function (_super) {
         this._clientRects = new Array();
         var result = "";
         selectedElements.forEach(function (el) {
+            $(el).find("img")["andSelf"]().each(function (i, e) {
+                $(e).attr("src", e.src);
+                $(e).removeAttr("srcset");
+            });
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
@@ -3869,6 +3881,11 @@ var MarqueeSelection = (function (_super) {
         if (sel.outerHTML == "") {
             this._content = sel.innerHTML;
         }
+        $(sel).find("img")["andSelf"]().each(function (i, e) {
+            console.log(e.src);
+            $(e).attr("src", e.src);
+            $(e).removeAttr("srcset");
+        });
         this._content = sel.outerHTML;
     };
     MarqueeSelection.prototype.commonAncestor = function (node1, node2) {

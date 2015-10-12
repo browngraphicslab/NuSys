@@ -1,6 +1,7 @@
 var isOpen;
 var _isOpen = false;
 var _isActive = false;
+var _tags = "";
 
 chrome.storage.local.clear(function() {
     chrome.storage.local.set({ selections: [] });
@@ -9,8 +10,17 @@ chrome.storage.local.clear(function() {
 
 chrome.extension.onMessage.addListener(function (request, sender, response) {
 
+    if (request.msg == "tags_changed") {
+        _tags = request.data;
+        chrome.tabs.query({}, function(tabs) {
+            for (var i = 0; i < tabs.length; ++i) {
+                chrome.tabs.sendMessage(tabs[i].id, { msg: "tags_changed", data: request.data });
+            }
+        });
+    }
+
     if (request.msg == "view_all")
-        chrome.tabs.create({ 'url': chrome.extension.getURL('AllSelections.html') });
+        chrome.tabs.create({ 'url': chrome.extension.getURL('allselections/index.html') });
 
     if (request.msg == "set_active")
         setActive(request.data);
@@ -92,7 +102,7 @@ function initTab(tabId) {
 
                     chrome.tabs.sendMessage(tabId, { msg: "init", data: menuData }, function () {
                         chrome.tabs.sendMessage(tabId, { msg: "show_menu" });
-
+                        chrome.tabs.sendMessage(tabId, { msg: "tags_changed", data: _tags });
                         if (_isActive) {
                             
                             chrome.storage.local.get(function (cTedStorage) {
@@ -102,6 +112,7 @@ function initTab(tabId) {
                                     });
                                     chrome.tabs.sendMessage(tabId, { msg: "set_selections", data: selections }, function () {
                                         chrome.tabs.sendMessage(tabId, { msg: "enable_selections" });
+                                        
                                     });
                                 });
                             });
@@ -137,6 +148,7 @@ function setActive(active) {
                         return obj.url === tab.url;
                     });
                     chrome.tabs.sendMessage(tab.id, { msg: "set_selections", data: selections });
+                    
                 });
             });
             msgAllTabs({ msg: "enable_selections" });

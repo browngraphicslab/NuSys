@@ -23,9 +23,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="out\AllSelections.html" />
+    <Content Include="out\allselections\allselections.js" />
+    <Content Include="out\allselections\iframe.css" />
+    <Content Include="out\allselections\shuffleStyles.css" />
+    <Content Include="out\allselections\styles.css" />
+    <Content Include="out\allselections\bootstrap.css" />
+    <Content Include="out\allselections\bootstrap.js" />
+    <Content Include="out\allselections\index.html" />
+    <Content Include="out\allselections\jquery.js" />
+    <Content Include="out\allselections\jquery.shuffle.min.js" />
+    <Content Include="out\allselections\jquery.shuffle.modernizr.js" />
+    <Content Include="out\allselections\test.png" />
+    <Content Include="out\allselections\throttle.js" />
+    <Content Include="out\allselections\underscore.js" />
+    <Content Include="out\assets\block_select.png" />
     <Content Include="out\assets\brush.png" />
     <Content Include="out\assets\icon.png" />
     <Content Include="out\assets\icon_active.png" />
+    <Content Include="out\assets\text_select.png" />
     <Content Include="out\InsertSelections.js" />
     <Content Include="out\jquery.js" />
     <Content Include="out\NuSysChromeExtension.js" />
@@ -34,6 +49,7 @@
     <Content Include="out\bg.js" />
     <Content Include="out\popup.html" />
     <Content Include="out\select.js" />
+    <Content Include="Scripts\src\util\PathReplacer.js" />
     <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>

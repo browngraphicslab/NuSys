@@ -57,6 +57,11 @@ class Main {
 
             console.log(request);
 
+            if (request.msg == "tags_changed") {
+                console.log("tags_changed")
+                $(this.menuIframe).contents().find("#tagfield").val(request.data);
+            }
+
             if (request.msg == "check_injection")
                 sendResponse(true);
 
@@ -150,7 +155,8 @@ class Main {
         this.menuIframe = <HTMLIFrameElement>$("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "90px", "z-index": 1001 });
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
+
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
 
@@ -169,6 +175,10 @@ class Main {
                 console.log("could't add canvas");
             }
             document.removeEventListener("mouseup", this.documentUp);
+        });
+
+        $(this.menuIframe).contents().find("#tagfield").change(() => {
+            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(this.menuIframe).contents().find("#tagfield").val() });
         });
 
         $(this.menuIframe).contents().find("#btnViewAll").click(() => {
@@ -309,6 +319,7 @@ class Main {
 
         this.selection.id = Date.now();
         this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
         this.selections.push(this.selection);
         chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
 
@@ -363,6 +374,7 @@ class Main {
         
         this.selection.id = Date.now();
         this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
         this.selections.push(this.selection);
 
         chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
@@ -378,9 +390,8 @@ class Main {
         });
     }
 
-    relativeToAbsolute(content: string): string {
+    static relativeToAbsolute(content: string): string {
         //////change relative href of hyperlink and src of image in html string to absolute
-        chrome.storage.local.get(null, function (data) { console.info(data) });
 
             var res = content.split('href="');
             var newval = res[0];

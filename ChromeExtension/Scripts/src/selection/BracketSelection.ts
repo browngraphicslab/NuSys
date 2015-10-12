@@ -145,6 +145,11 @@ class BracketSelection extends AbstractSelection{
         this._clientRects = new Array<ClientRect>();
         var result = "";
         selectedElements.forEach((el) => {
+
+            $(el).find("img")["andSelf"]().each((i, e: any) => {
+                $(e).attr("src", e.src);
+                $(e).removeAttr("srcset");
+            }); 
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
