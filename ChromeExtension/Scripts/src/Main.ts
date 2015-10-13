@@ -151,6 +151,10 @@ class Main {
     }
 
     init(menuHtml: string) {
+        console.log("init!");
+
+        this.currentStrokeType = StrokeType.MultiLine;
+        document.addEventListener("mouseup", this.documentUp);
 
         this.menuIframe = <HTMLIFrameElement>$("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
@@ -160,14 +164,35 @@ class Main {
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
 
-        $(this.menuIframe).contents().find("#btnLineSelect").click(() => {
+        $(this.menuIframe).contents().find("#btnLineSelect").click((ev) => {
+            if (this.currentStrokeType == StrokeType.MultiLine)
+                return;
+            var other = $(this.menuIframe).contents().find("#btnBlockSelect");
             console.log("switching to multiline selection");
+
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            } else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
+
             this.currentStrokeType = StrokeType.MultiLine;
             document.addEventListener("mouseup", this.documentUp);
             
         });
 
-        $(this.menuIframe).contents().find("#btnBlockSelect").click(() => {
+        $(this.menuIframe).contents().find("#btnBlockSelect").click((ev) => {
+            if (this.currentStrokeType == StrokeType.Bracket)
+                return;
+            var other = $(this.menuIframe).contents().find("#btnLineSelect");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            } else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
+
             this.currentStrokeType = StrokeType.Bracket;
             try {
                 document.body.appendChild(this.canvas);
@@ -185,6 +210,24 @@ class Main {
             chrome.runtime.sendMessage({ msg: "view_all" });
         });
 
+        $(this.menuIframe).contents().find("#toggle").change(() => {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+
+        $(this.menuIframe).contents().find("#btnExpand").click((ev) => {
+            console.log("expand");
+            var list = $(this.menuIframe).contents().find("#selected_list");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+                $(list).removeClass("open");
+
+            } else {
+                $(ev.target).addClass("active");
+                $(list).addClass("open");
+                $(this.menuIframe).height(500);
+            }
+        });
+
         chrome.runtime.sendMessage({ msg: "query_active" }, (isActive) => {
             $(this.menuIframe).contents().find("#toggle").prop("checked", isActive);
         });
@@ -193,22 +236,6 @@ class Main {
     showMenu(): void {
         this.isMenuVisible = true;
         $(this.menuIframe).css("display", "block");
-
-        $(this.menuIframe).contents().find("#toggle").change(() => {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $(this.menuIframe).contents().find("#toggle").prop("checked") });
-        });
-
-        $(this.menuIframe).contents().find("#btnExpand").click(() => {
-            console.log("expanding.");
-            var list = $(this.menuIframe).contents().find("#selected_list");
-            if (list.css("display") == "none") {
-                list.css("display", "block");
-                $(this.menuIframe).css("height", "500px");
-            } else {
-                list.css("display", "none");
-                $(this.menuIframe).css("height", "80px");
-            }
-        });
     }
 
     hideMenu(): void {

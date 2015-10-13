@@ -3136,18 +3136,41 @@ var Main = (function () {
     }
     Main.prototype.init = function (menuHtml) {
         var _this = this;
+        console.log("init!");
+        this.currentStrokeType = StrokeType.MultiLine;
+        document.addEventListener("mouseup", this.documentUp);
         this.menuIframe = $("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
         $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
-        $(this.menuIframe).contents().find("#btnLineSelect").click(function () {
+        $(this.menuIframe).contents().find("#btnLineSelect").click(function (ev) {
+            if (_this.currentStrokeType == StrokeType.MultiLine)
+                return;
+            var other = $(_this.menuIframe).contents().find("#btnBlockSelect");
             console.log("switching to multiline selection");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
             _this.currentStrokeType = StrokeType.MultiLine;
             document.addEventListener("mouseup", _this.documentUp);
         });
-        $(this.menuIframe).contents().find("#btnBlockSelect").click(function () {
+        $(this.menuIframe).contents().find("#btnBlockSelect").click(function (ev) {
+            if (_this.currentStrokeType == StrokeType.Bracket)
+                return;
+            var other = $(_this.menuIframe).contents().find("#btnLineSelect");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
             _this.currentStrokeType = StrokeType.Bracket;
             try {
                 document.body.appendChild(_this.canvas);
@@ -3163,29 +3186,29 @@ var Main = (function () {
         $(this.menuIframe).contents().find("#btnViewAll").click(function () {
             chrome.runtime.sendMessage({ msg: "view_all" });
         });
+        $(this.menuIframe).contents().find("#toggle").change(function () {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+        $(this.menuIframe).contents().find("#btnExpand").click(function (ev) {
+            console.log("expand");
+            var list = $(_this.menuIframe).contents().find("#selected_list");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+                $(list).removeClass("open");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(list).addClass("open");
+                $(_this.menuIframe).height(500);
+            }
+        });
         chrome.runtime.sendMessage({ msg: "query_active" }, function (isActive) {
             $(_this.menuIframe).contents().find("#toggle").prop("checked", isActive);
         });
     };
     Main.prototype.showMenu = function () {
-        var _this = this;
         this.isMenuVisible = true;
         $(this.menuIframe).css("display", "block");
-        $(this.menuIframe).contents().find("#toggle").change(function () {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
-        });
-        $(this.menuIframe).contents().find("#btnExpand").click(function () {
-            console.log("expanding.");
-            var list = $(_this.menuIframe).contents().find("#selected_list");
-            if (list.css("display") == "none") {
-                list.css("display", "block");
-                $(_this.menuIframe).css("height", "500px");
-            }
-            else {
-                list.css("display", "none");
-                $(_this.menuIframe).css("height", "80px");
-            }
-        });
     };
     Main.prototype.hideMenu = function () {
         this.isMenuVisible = false;
