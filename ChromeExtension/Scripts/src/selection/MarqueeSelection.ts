@@ -199,7 +199,7 @@ class MarqueeSelection extends AbstractSelection {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     }
     
-    addToHighLights(el: Element, txtindx: Number): void {
+    addToHighLights(el: Element, txtindx: Number, wordindx): void {
         console.log("ADD TO HIGHLIGHTS====================");
         console.info(el);
         console.log(el.attributes);
@@ -211,10 +211,11 @@ class MarqueeSelection extends AbstractSelection {
             console.log(el.attributes);
             var par = el.attributes[0]["ownerElement"].parentElement;
             if (el.tagName == "WORD") {
-                
-                var startIndex = Array.prototype.indexOf.call(par.childNodes, el);
+
+                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
                 par = par.parentElement;
-                obj["wordIndx"] = startIndex;
+                obj["wordIndx"] = wordindx;
+                console.log(par);
             }
             var parIndex = $(par.tagName).index(par);
             obj["parIndex"] = parIndex;
@@ -343,11 +344,10 @@ class MarqueeSelection extends AbstractSelection {
 
         for (var i = 0; i < el.childNodes.length; i++) {
            //console.log("====================!!!!" + startIndex);
-             var startIndex = Array.prototype.indexOf.call(el.childNodes, el.childNodes[i]);
-
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
-                    console.log(el.childNodes);
+                //    var startIndex = trueEl.childNodes.indexOf(trueEl.childNodes[i]);
+                    
                     var index = indexList[i];
                     $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
@@ -357,7 +357,8 @@ class MarqueeSelection extends AbstractSelection {
                             // console.log("YELLOW!!!!!!!!!!!!");
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
-                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], startIndex);
+                                console.log(trueEl.childNodes[index]);
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
                             }
                             //else {
                             //   var wrap = document.createElement('span');
@@ -381,7 +382,7 @@ class MarqueeSelection extends AbstractSelection {
             else {
                 console.log("BOUNDEDDDD=====");
                 console.log(trueEl.childNodes[indexList[i]]);
-                startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+                var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
                 
                 if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
                     console.log("-----------TEXT?-------");
@@ -390,7 +391,7 @@ class MarqueeSelection extends AbstractSelection {
                 //$(realNList[i]).css("background-color", "yellow"); 
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
                 console.log(startIndex);
-                this.addToHighLights(trueEl.childNodes[indexList[i]], startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], 0);
                  
                 //if (trueEl.childNodes[index].childNodes[j]) {
                 //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";

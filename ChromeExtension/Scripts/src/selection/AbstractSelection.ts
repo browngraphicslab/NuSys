@@ -4,8 +4,8 @@
     url: string;
     className: string;
     tags:string;
-    public selectedElements:Array<any> = new Array<any>();
-
+    public selectedElements: Array<any> = new Array<any>();
+    public selectedTags: Array<String> = new Array<String>();
     constructor(className) {
         this.className = className;
     }
@@ -22,8 +22,10 @@
         this.selectedElements.forEach((selectedElement) => {
             if (selectedElement.type == "marquee") {
                 this.parseSelections(selectedElement);
+                this.highlightSelection(selectedElement);
             }
             else {
+                console.log("-=-=====--=");
                 var foundElement = $(selectedElement.tagName)[selectedElement.index];
 
                 if (foundElement.tagName.toLowerCase() == "img") {
@@ -67,9 +69,26 @@
     parseString(node: Node, par: Element, obj:Object, callback): void {
         
         $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-        callback(par, obj);
+        //callback(par, obj);
     }
+    highlightSelection(obj: Object): void {
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
+        }
+        else {
+            var parent = $(obj["par"])[obj["parIndex"]];
+            var textN = parent.childNodes[obj["txtnIndx"]];
+            if (tagName == "WORD") {
+                var word = textN.childNodes[obj["wordIndx"]];
+                $(word).css("background-color","yellow");
+            }
+            else {
+                $(textN).css("background-color", "yellow");
+            }
+        }
 
+    }
     parseSelections(obj: Object): void {
         console.log("=======parseSelections====");
         console.log(obj);
@@ -79,16 +98,28 @@
             console.log(tagName != "WORD");
             return;
         }
-
+      //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
+      //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
+      //      return;
+      //  }
+       // this.selectedTags.push(tag);
+       // console.log(tag);
         var parElement = $(obj["par"])[obj["parIndex"]];
         console.log(parElement);
         var textN = parElement.childNodes[obj["txtnIndx"]];
+        console.log(textN);
+        if (!textN) {
+            return;
+        }
         if (textN.nodeName == "#text") {
             if (tagName == "WORD") {
                 console.log("W------------------------");
+                console.log($(textN));
                 $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
             }
             else if (tagName == "HILIGHT") {
+                console.log("H-----------------------");
+                console.log($(textN));
                 $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
             }
         }

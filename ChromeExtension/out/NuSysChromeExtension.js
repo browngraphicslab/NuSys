@@ -2713,6 +2713,7 @@ var DomUtil = (function () {
 var AbstractSelection = (function () {
     function AbstractSelection(className) {
         this.selectedElements = new Array();
+        this.selectedTags = new Array();
         this.className = className;
     }
     AbstractSelection.prototype.start = function (x, y) { };
@@ -2725,8 +2726,10 @@ var AbstractSelection = (function () {
         this.selectedElements.forEach(function (selectedElement) {
             if (selectedElement.type == "marquee") {
                 _this.parseSelections(selectedElement);
+                _this.highlightSelection(selectedElement);
             }
             else {
+                console.log("-=-=====--=");
                 var foundElement = $(selectedElement.tagName)[selectedElement.index];
                 if (foundElement.tagName.toLowerCase() == "img") {
                     var label = $("<span>Selected</span>");
@@ -2764,7 +2767,24 @@ var AbstractSelection = (function () {
     ;
     AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
         $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-        callback(par, obj);
+        //callback(par, obj);
+    };
+    AbstractSelection.prototype.highlightSelection = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
+        }
+        else {
+            var parent = $(obj["par"])[obj["parIndex"]];
+            var textN = parent.childNodes[obj["txtnIndx"]];
+            if (tagName == "WORD") {
+                var word = textN.childNodes[obj["wordIndx"]];
+                $(word).css("background-color", "yellow");
+            }
+            else {
+                $(textN).css("background-color", "yellow");
+            }
+        }
     };
     AbstractSelection.prototype.parseSelections = function (obj) {
         console.log("=======parseSelections====");
@@ -2775,15 +2795,28 @@ var AbstractSelection = (function () {
             console.log(tagName != "WORD");
             return;
         }
+        //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
+        //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
+        //      return;
+        //  }
+        // this.selectedTags.push(tag);
+        // console.log(tag);
         var parElement = $(obj["par"])[obj["parIndex"]];
         console.log(parElement);
         var textN = parElement.childNodes[obj["txtnIndx"]];
+        console.log(textN);
+        if (!textN) {
+            return;
+        }
         if (textN.nodeName == "#text") {
             if (tagName == "WORD") {
                 console.log("W------------------------");
+                console.log($(textN));
                 $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
             }
             else if (tagName == "HILIGHT") {
+                console.log("H-----------------------");
+                console.log($(textN));
                 $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
             }
         }
@@ -4037,7 +4070,7 @@ var MarqueeSelection = (function (_super) {
     MarqueeSelection.prototype.getBoundingRect = function () {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     };
-    MarqueeSelection.prototype.addToHighLights = function (el, txtindx) {
+    MarqueeSelection.prototype.addToHighLights = function (el, txtindx, wordindx) {
         console.log("ADD TO HIGHLIGHTS====================");
         console.info(el);
         console.log(el.attributes);
@@ -4049,9 +4082,10 @@ var MarqueeSelection = (function (_super) {
             console.log(el.attributes);
             var par = el.attributes[0]["ownerElement"].parentElement;
             if (el.tagName == "WORD") {
-                var startIndex = Array.prototype.indexOf.call(par.childNodes, el);
+                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
                 par = par.parentElement;
-                obj["wordIndx"] = startIndex;
+                obj["wordIndx"] = wordindx;
+                console.log(par);
             }
             var parIndex = $(par.tagName).index(par);
             obj["parIndex"] = parIndex;
@@ -4165,10 +4199,9 @@ var MarqueeSelection = (function (_super) {
         }
         for (var i = 0; i < el.childNodes.length; i++) {
             //console.log("====================!!!!" + startIndex);
-            var startIndex = Array.prototype.indexOf.call(el.childNodes, el.childNodes[i]);
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
-                    console.log(el.childNodes);
+                    //    var startIndex = trueEl.childNodes.indexOf(trueEl.childNodes[i]);
                     var index = indexList[i];
                     $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
@@ -4178,7 +4211,8 @@ var MarqueeSelection = (function (_super) {
                             // console.log("YELLOW!!!!!!!!!!!!");
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
-                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], startIndex);
+                                console.log(trueEl.childNodes[index]);
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
                             }
                             //else {
                             //   var wrap = document.createElement('span');
@@ -4204,7 +4238,7 @@ var MarqueeSelection = (function (_super) {
             else {
                 console.log("BOUNDEDDDD=====");
                 console.log(trueEl.childNodes[indexList[i]]);
-                startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+                var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
                 if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
                     console.log("-----------TEXT?-------");
                     $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
@@ -4212,7 +4246,7 @@ var MarqueeSelection = (function (_super) {
                 //$(realNList[i]).css("background-color", "yellow"); 
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
                 console.log(startIndex);
-                this.addToHighLights(trueEl.childNodes[indexList[i]], startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], 0);
             }
         }
     };
