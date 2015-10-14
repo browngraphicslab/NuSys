@@ -1,6 +1,3 @@
-console.log("ADDED");
-
-
 chrome.storage.local.get(null, function (data) {
     console.log(data);
     allData = data;
@@ -147,14 +144,14 @@ function showInsertion(data) {
 
 function setData(data) {
 
-    $.each(allUrls, function (index, url) {
+    $.each(allUrls, function(index, url) {
         console.log(url);
         var div = document.createElement("div");
         div.setAttribute("id", index);
         document.body.appendChild(div);
         $("#" + index).append("<p style='font-size:160%' >" + url + "</p>");
         console.log(allData[url]);
-        $.each(allData[url], function (indx, val) {
+        $.each(allData[url], function(indx, val) {
             var res = val.split('//');
             var newVal = "";
             for (var i = 0; i < res.length; i++) {
@@ -169,5 +166,5 @@ function setData(data) {
         $("#" + index).append("<hr>");
         document.getElementById("container").appendChild(div);
 
-    })
+    });
 }

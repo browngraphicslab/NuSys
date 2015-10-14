@@ -65,6 +65,7 @@
     <TypeScriptCompile Include="Scripts\src\ink\Stroke.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\StrokeClassifier.ts" />
     <TypeScriptCompile Include="Scripts\src\ink\StrokeType.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\AbstractSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\ISelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\MarqueeSelection.ts" />

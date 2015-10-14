@@ -35,13 +35,10 @@ class BracketSelection extends AbstractSelection{
         this._brushStroke = this._inkCanvas._activeStroke;
 
         this.analyzeContent();
+        this.select();
 
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
-    }
-
-    deselect(): void {
         this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
     }
 
     getBoundingRect(): Rectangle {
@@ -152,6 +149,8 @@ class BracketSelection extends AbstractSelection{
             range.selectNodeContents(el);
             var rects = range.getClientRects();
             this._clientRects = this._clientRects.concat.apply([], rects);
+            var index = $(el.tagName).index(el);
+            this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
             result += el.outerHTML;
         });
         console.log(this._clientRects);
@@ -159,7 +158,6 @@ class BracketSelection extends AbstractSelection{
         console.log(selectedElements);
 
         this._content = result;
-        console.log(this._content);
     }
 
     getContent(): string {

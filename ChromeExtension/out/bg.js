@@ -7,7 +7,11 @@ chrome.storage.local.clear(function() {
 });
 
 
-chrome.extension.onMessage.addListener(function(request, sender, response) {
+chrome.extension.onMessage.addListener(function (request, sender, response) {
+
+    if (request.msg == "view_all")
+        chrome.tabs.create({ 'url': chrome.extension.getURL('AllSelections.html') });
+
     if (request.msg == "set_active")
         setActive(request.data);
 
@@ -15,11 +19,13 @@ chrome.extension.onMessage.addListener(function(request, sender, response) {
         response(_isActive);
 
     if (request.msg == "store_selection") {
-       
+        
         chrome.storage.local.get(function (cTedStorage) {
             cTedStorage.selections.push(request.data);
+            console.log("storing selection");
             chrome.storage.local.set(cTedStorage, function() {
                 printSelections();
+                console.log("selection stored");
             });
         });
         
@@ -89,14 +95,14 @@ function initTab(tabId) {
 
                         if (_isActive) {
                             
-                            chrome.tabs.sendMessage(tabId, { msg: "enable_selections" });
-
                             chrome.storage.local.get(function (cTedStorage) {
                                 chrome.tabs.get(tabId, function(tab) {
                                     var selections = cTedStorage.selections.filter(function (obj) {
                                         return obj.url == tab.url;
                                     });
-                                    chrome.tabs.sendMessage(tabId, { msg: "set_selections", data: selections });
+                                    chrome.tabs.sendMessage(tabId, { msg: "set_selections", data: selections }, function () {
+                                        chrome.tabs.sendMessage(tabId, { msg: "enable_selections" });
+                                    });
                                 });
                             });
                         }
@@ -133,9 +139,8 @@ function setActive(active) {
                     chrome.tabs.sendMessage(tab.id, { msg: "set_selections", data: selections });
                 });
             });
+            msgAllTabs({ msg: "enable_selections" });
         });
-
-        msgAllTabs({ msg: "enable_selections" });
 
     } else {
         chrome.browserAction.setIcon({ path: { 19: "assets/icon.png", 38: "assets/icon.png" } });

@@ -2712,12 +2712,103 @@ var DomUtil = (function () {
 })();
 var AbstractSelection = (function () {
     function AbstractSelection(className) {
+        this.selectedElements = new Array();
         this.className = className;
     }
     AbstractSelection.prototype.start = function (x, y) { };
     AbstractSelection.prototype.update = function (x, y) { };
     AbstractSelection.prototype.end = function (x, y) { };
-    AbstractSelection.prototype.deselect = function () { };
+    AbstractSelection.prototype.select = function () {
+        var _this = this;
+        console.log("select");
+        console.log(this.selectedElements);
+        this.selectedElements.forEach(function (selectedElement) {
+            if (selectedElement.type == "marquee") {
+                _this.parseSelections(selectedElement);
+            }
+            else {
+                var foundElement = $(selectedElement.tagName)[selectedElement.index];
+                if (foundElement.tagName.toLowerCase() == "img") {
+                    var label = $("<span>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                    $("body").append(label);
+                    label.css("top", $(foundElement).offset().top);
+                    label.css("left", $(foundElement).offset().left);
+                }
+                else {
+                    $(foundElement).css("background-color", "yellow");
+                }
+            }
+        });
+    };
+    AbstractSelection.prototype.deselect = function () {
+        console.log("deselect");
+        this.selectedElements.forEach(function (selectedElement) {
+            var foundElement = $(selectedElement.tagName)[selectedElement.index];
+            $(foundElement).css("background-color", "");
+        });
+    };
+    AbstractSelection.prototype.highlightCallback = function (parElement, obj) {
+        var words = parElement.childNodes; //[obj["txtnIndx"]];
+        console.log(words);
+        var wordList = words[obj["txtnIndx"]]["childNodes"];
+        console.log("===================================WORDLIST");
+        console.log(wordList);
+        console.log(obj);
+        var word = wordList[obj["wordIndx"]];
+        console.log(word);
+        //    $(word).replaceWith("<word style=\"background-color: yellow\">" + word[obj["wordIndx"]].textContent + "</word>");
+        //   word["style"]["backgroundColor"] = "yellow";
+        $(word).css("background-color", "yellow");
+    };
+    ;
+    AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
+        $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+        callback(par, obj);
+    };
+    AbstractSelection.prototype.parseSelections = function (obj) {
+        console.log("=======parseSelections====");
+        console.log(obj);
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            console.log(tagName + "=======================");
+            console.log(tagName != "WORD");
+            return;
+        }
+        var parElement = $(obj["par"])[obj["parIndex"]];
+        console.log(parElement);
+        var textN = parElement.childNodes[obj["txtnIndx"]];
+        if (textN.nodeName == "#text") {
+            if (tagName == "WORD") {
+                console.log("W------------------------");
+                $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+            }
+            else if (tagName == "HILIGHT") {
+                $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            }
+        }
+    };
+    AbstractSelection.prototype.selectMarqueeHighlights = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName == "WORD") {
+            console.log("W------------------------");
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            this.parseString(textN, parElement, obj, this.highlightCallback);
+            console.log(textN);
+        }
+        else if (tagName == "HILIGHT") {
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            $(parElement.childNodes[obj["txtnIndx"]]).css("background-color", "yellow");
+        }
+        else {
+            console.log(tagName);
+            var foundElement = $(tagName)[obj["index"]];
+            $(foundElement).css("background-color", "yellow");
+        }
+    };
     AbstractSelection.prototype.getBoundingRect = function () { return null; };
     AbstractSelection.prototype.analyzeContent = function () { };
     AbstractSelection.prototype.getContent = function () { return null; };
@@ -2915,8 +3006,6 @@ var Main = (function () {
             if (!_this.isSelecting) {
                 return;
             }
-            //if (this.currentStrokeType == StrokeType.MultiLine)
-            //    document.body.removeChild(this.canvas);
             if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
                 var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
                 if (_this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
@@ -2929,9 +3018,8 @@ var Main = (function () {
                     _this.currentStrokeType = StrokeType.Bracket;
                     _this.inkCanvas.redrawActiveStroke();
                 }
+                _this.selection.update(e.clientX, e.clientY);
             }
-            _this.selection.update(e.clientX, e.clientY);
-            document.body.appendChild(_this.canvas);
         };
         this.documentDown = function (e) {
             switch (_this.currentStrokeType) {
@@ -2945,93 +3033,79 @@ var Main = (function () {
                     _this.selection = new MarqueeSelection(_this.inkCanvas);
                     break;
             }
-            console.log("current selection:" + _this.currentStrokeType);
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+                console.log("current selection: " + _this.currentStrokeType);
+                document.body.appendChild(_this.canvas);
+                _this.canvas.addEventListener("mousemove", _this.mouseMove);
+            }
+            else {
+                try {
+                    document.body.removeChild(_this.canvas);
+                }
+                catch (e) {
+                    console.log("no canvas visible." + e);
+                }
+            }
             _this.selection.start(e.clientX, e.clientY);
-            document.body.appendChild(_this.canvas);
-            _this.canvas.addEventListener("mousemove", _this.mouseMove);
             _this.isSelecting = true;
         };
         this.documentScroll = function (e) {
             _this.inkCanvas.update();
         };
+        this.documentUp = function (e) {
+            console.log("document up");
+            if (!_this.isSelecting)
+                return;
+            _this.isSelecting = false;
+            if (_this.currentStrokeType == StrokeType.MultiLine)
+                _this.selection.end(e.clientX, e.clientY);
+            _this.selection.id = Date.now();
+            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selections.push(_this.selection);
+            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
+            _this.selection = new MultiLineSelection(_this.inkCanvas);
+            _this.updateSelectedList();
+        };
         this.windowUp = function (e) {
             if (!_this.isSelecting)
                 return;
-            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
-            _this.inkCanvas.update();
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+                _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
+                _this.inkCanvas.update();
+            }
             _this.isSelecting = false;
         };
         this.canvasUp = function (e) {
+            console.log("canvas up");
             if (!_this.isSelecting) {
                 return;
             }
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            document.body.removeChild(_this.canvas);
-            $(_this.menuIframe).hide();
-            _this.selection.end(e.clientX, e.clientY);
-            var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
-            var currType = GestireClassifier.getGestureType(stroke);
-            if (currType == GestureType.Null) {
-                console.log("JUST A TAP");
-                document.body.appendChild(_this.canvas);
-                _this.inkCanvas.update();
-                return;
-            }
-            else if (currType == GestureType.Scribble) {
-                var segments = stroke.breakUp();
-                var p0 = stroke.points[0];
-                var p1 = stroke.points[stroke.points.length - 1];
-                var line = Line.fromPoint(p0, p1);
-                var intersectionCount = 0;
-                $.each(segments, function () {
-                    var intersects = line.intersectsLine(this);
-                    if (intersects)
-                        intersectionCount++;
-                });
-                if (intersectionCount > 2) {
-                    var strokeBB = stroke.getBoundingRect();
-                    strokeBB.y += stroke.documentOffsetY;
-                    _this.selections.forEach(function (s) {
-                        try {
-                            if (s.getBoundingRect().intersectsRectangle(strokeBB)) {
-                                s.deselect();
-                                var selectionIndex = _this.selections.indexOf(s);
-                                if (selectionIndex > -1) {
-                                    _this.selections.splice(selectionIndex, 1);
-                                }
-                            }
-                        }
-                        catch (e) {
-                            console.log(e);
-                            console.log(_this);
-                        }
-                    });
-                }
-                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
-            }
-            else {
-                _this.selection.id = Date.now();
-                _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                _this.selections.push(_this.selection);
-                /*
-                var selectionInfo = {};
-                selectionInfo["id"] = this.selection["id"];
-                selectionInfo["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                selectionInfo["boundingRect"] = this.selection.getBoundingRect();
-                selectionInfo["date"] = (new Date()).toString();
-                selectionInfo["title"] = document.title;
-                selectionInfo["content"] = this.relativeToAbsolute(this.selection.getContent());
-                */
-                chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
-            }
             if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+                document.body.removeChild(_this.canvas);
+                $(_this.menuIframe).hide();
+                _this.selection.end(e.clientX, e.clientY);
+                var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
+                var currType = GestireClassifier.getGestureType(stroke);
+                if (currType == GestureType.Null) {
+                    console.log("JUST A TAP");
+                    document.body.appendChild(_this.canvas);
+                    _this.inkCanvas.update();
+                    return;
+                }
+                else {
+                    document.body.appendChild(_this.canvas);
+                    $(_this.menuIframe).show();
+                    _this.inkCanvas.update();
+                    _this.isSelecting = false;
+                }
                 _this.currentStrokeType = StrokeType.Bracket;
             }
-            document.body.appendChild(_this.canvas);
-            $(_this.menuIframe).show();
-            _this.inkCanvas.update();
-            _this.isSelecting = false;
+            _this.selection.id = Date.now();
+            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selections.push(_this.selection);
+            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             _this.updateSelectedList();
         };
         console.log("Starting NuSys.");
@@ -3074,8 +3148,6 @@ var Main = (function () {
                 _this.selections = [];
                 request.data.forEach(function (d) {
                     var ls = null;
-                    console.log("inkcanvas");
-                    console.log(_this.inkCanvas);
                     if (d["className"] == "LineSelection")
                         ls = new LineSelection(_this.inkCanvas);
                     if (d["className"] == "BracketSelection")
@@ -3086,20 +3158,41 @@ var Main = (function () {
                         ls = new MultiLineSelection(_this.inkCanvas);
                     $.extend(ls, d);
                     ls._inkCanvas = _this.inkCanvas;
-                    var stroke = new Stroke();
-                    console.log(ls);
-                    $.extend(stroke, ls._brushStroke.stroke);
-                    ls._brushStroke.stroke = stroke;
-                    console.log("marked content");
-                    console.log(ls.getContent());
-                    /*
-                    document.body.removeChild(this.canvas);
-                    ls.analyzeContent();
-                    this.inkCanvas.addBrushStroke(new BrushStroke(new SelectionBrush(ls.getBoundingRect()), new Stroke()));
-                    this.inkCanvas.update();
-                    document.body.appendChild(this.canvas);
-                    */
+                    if (ls._brushStroke != null) {
+                        var stroke = new Stroke();
+                        $.extend(stroke, ls._brushStroke.stroke);
+                        ls._brushStroke.stroke = stroke;
+                    }
+                    _this.selections.push(ls);
                 });
+                var count = 0;
+                _this.selections.forEach(function (sel) {
+                    if (sel instanceof MultiLineSelection) {
+                        console.log("found MultiSelection");
+                        sel.selectedElements.forEach(function (el) {
+                            var startNode = $(el.start.tagName)[el.start.parentIndex];
+                            var endNode = $(el.end.tagName)[el.end.parentIndex];
+                            var startParentData = count++;
+                            var endParentData = count++;
+                            if ($(startNode).attr("data-cTedId") == undefined) {
+                                $(startNode).attr("data-cTedId", startParentData);
+                            }
+                            else {
+                                startParentData = parseInt($(startNode).attr("data-cTedId"));
+                            }
+                            if ($(endNode).attr("data-cTedId") == undefined) {
+                                $(endNode).attr("data-cTedId", endParentData);
+                            }
+                            else {
+                                endParentData = parseInt($(endNode).attr("data-cTedId"));
+                            }
+                            $(endNode).attr("data-cTedId", endParentData);
+                            el.start.id = startParentData;
+                            el.end.id = endParentData;
+                        });
+                    }
+                });
+                sendResponse();
             }
         });
     }
@@ -3114,12 +3207,20 @@ var Main = (function () {
         $(this.menuIframe).contents().find("#btnLineSelect").click(function () {
             console.log("switching to multiline selection");
             _this.currentStrokeType = StrokeType.MultiLine;
+            document.addEventListener("mouseup", _this.documentUp);
         });
         $(this.menuIframe).contents().find("#btnBlockSelect").click(function () {
             _this.currentStrokeType = StrokeType.Bracket;
+            try {
+                document.body.appendChild(_this.canvas);
+            }
+            catch (ex) {
+                console.log("could't add canvas");
+            }
+            document.removeEventListener("mouseup", _this.documentUp);
         });
-        $(this.menuIframe).contents().find("#btnClear").click(function () {
-            chrome.runtime.sendMessage({ msg: "clear_page_selections" });
+        $(this.menuIframe).contents().find("#btnViewAll").click(function () {
+            chrome.runtime.sendMessage({ msg: "view_all" });
         });
         chrome.runtime.sendMessage({ msg: "query_active" }, function (isActive) {
             $(_this.menuIframe).contents().find("#toggle").prop("checked", isActive);
@@ -3153,6 +3254,14 @@ var Main = (function () {
         $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
+        console.log(this.selections);
+        this.selections.forEach(function (selection) {
+            if (flag) {
+                selection.select();
+            }
+            else
+                selection.deselect();
+        });
         if (this.isEnabled) {
             window.addEventListener("mouseup", this.windowUp);
             document.body.addEventListener("mousedown", this.documentDown);
@@ -3229,27 +3338,6 @@ var Main = (function () {
             finalval += src[i];
         }
         return finalval;
-    };
-    Main.prototype.drawAllSelections = function (prevSelections) {
-        var _this = this;
-        this.selections.forEach(function (selection) {
-            var rect = selection["boundingRect"];
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-        this.inkCanvas.update();
-    };
-    Main.prototype.drawPastSelections = function (rectArray) {
-        var _this = this;
-        $.each(rectArray, function (index, rect) {
-            var stroke = new Stroke();
-            stroke.points.push({ x: rect.x, y: rect.y });
-            stroke.points.push({ x: rect.x + rect.w, y: rect.y + rect.h });
-            _this.inkCanvas.drawStroke(stroke, new SelectionBrush(rect));
-        });
-        this.inkCanvas.update();
     };
     return Main;
 })();
@@ -3561,11 +3649,9 @@ var BracketSelection = (function (_super) {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
         this.analyzeContent();
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
-    };
-    BracketSelection.prototype.deselect = function () {
+        this.select();
         this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
     };
     BracketSelection.prototype.getBoundingRect = function () {
         var minX = 1000000;
@@ -3654,13 +3740,14 @@ var BracketSelection = (function (_super) {
             range.selectNodeContents(el);
             var rects = range.getClientRects();
             _this._clientRects = _this._clientRects.concat.apply([], rects);
+            var index = $(el.tagName).index(el);
+            _this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
             result += el.outerHTML;
         });
         console.log(this._clientRects);
         console.log("final candidates");
         console.log(selectedElements);
         this._content = result;
-        console.log(this._content);
     };
     BracketSelection.prototype.getContent = function () {
         return this._content;
@@ -3668,6 +3755,9 @@ var BracketSelection = (function (_super) {
     return BracketSelection;
 })(AbstractSelection);
 /// <reference path="../ink/brush/MarqueeBrush.ts" />
+///find parent element p of word 
+///find word index compared to container
+///store/ find/ color 
 var MarqueeSelection = (function (_super) {
     __extends(MarqueeSelection, _super);
     function MarqueeSelection(inkCanvas, fromActiveStroke) {
@@ -3686,6 +3776,7 @@ var MarqueeSelection = (function (_super) {
         this._ct = 0;
         this._content = "";
         this._offsetY = 0;
+        this._selectedElement = new Array();
         this._inkCanvas = inkCanvas;
         if (fromActiveStroke) {
             var stroke = inkCanvas._activeStroke.stroke;
@@ -3744,6 +3835,7 @@ var MarqueeSelection = (function (_super) {
         //        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
+        console.log(this.selectedElements);
     };
     MarqueeSelection.prototype.deselect = function () {
         this._inkCanvas.removeBrushStroke(this._brushStroke);
@@ -3835,6 +3927,31 @@ var MarqueeSelection = (function (_super) {
     };
     MarqueeSelection.prototype.getBoundingRect = function () {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
+    };
+    MarqueeSelection.prototype.addToHighLights = function (el, txtindx) {
+        console.log("ADD TO HIGHLIGHTS====================");
+        console.info(el);
+        console.log(el.attributes);
+        var index = $(el.tagName).index(el);
+        console.log(index);
+        var obj = { type: "marquee", tagName: el.tagName, index: index };
+        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
+            console.log("-------------DIFFICULT--------------");
+            console.log(el.attributes);
+            var par = el.attributes[0]["ownerElement"].parentElement;
+            if (el.tagName == "WORD") {
+                var startIndex = Array.prototype.indexOf.call(par.childNodes, el);
+                par = par.parentElement;
+                obj["wordIndx"] = startIndex;
+            }
+            var parIndex = $(par.tagName).index(par);
+            obj["parIndex"] = parIndex;
+            obj["txtnIndx"] = txtindx;
+            obj["par"] = par.tagName;
+            obj["val"] = el;
+            console.log(el.attributes[0]["ownerElement"].parentElement);
+        }
+        this.selectedElements.push(obj);
     };
     MarqueeSelection.prototype.analyzeContent = function () {
         if (this._parentList.length != 1) {
@@ -3933,10 +4050,13 @@ var MarqueeSelection = (function (_super) {
             el.removeChild(removed[i]);
         }
         for (var i = 0; i < el.childNodes.length; i++) {
+            //console.log("====================!!!!" + startIndex);
+            var startIndex = Array.prototype.indexOf.call(el.childNodes, el.childNodes[i]);
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
+                    console.log(el.childNodes);
                     var index = indexList[i];
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
@@ -3944,6 +4064,7 @@ var MarqueeSelection = (function (_super) {
                             // console.log("YELLOW!!!!!!!!!!!!");
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], startIndex);
                             }
                             //else {
                             //   var wrap = document.createElement('span');
@@ -3967,17 +4088,17 @@ var MarqueeSelection = (function (_super) {
                 }
             }
             else {
-                console.log(realNList[i]);
-                if (realNList[i].nodeName == "#text") {
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<word>" + $(realNList[i]).text() + "</word>");
-                    console.log("=====================");
+                console.log("BOUNDEDDDD=====");
+                console.log(trueEl.childNodes[indexList[i]]);
+                startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+                if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
+                    console.log("-----------TEXT?-------");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
                 }
                 //$(realNList[i]).css("background-color", "yellow"); 
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
-                //if (trueEl.childNodes[index].childNodes[j]) {
-                //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
-                //}
-                console.log("!!!!!!!!!!!!!!!!!!!!!!BOUNDDED");
+                console.log(startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], startIndex);
             }
         }
     };
@@ -4063,256 +4184,156 @@ var MarqueeSelection = (function (_super) {
     };
     return MarqueeSelection;
 })(AbstractSelection);
+/// <reference path="../ink/GestureType.ts"/>
 var MultiLineSelection = (function (_super) {
     __extends(MultiLineSelection, _super);
     function MultiLineSelection(inkCanvas, fromActiveStroke) {
-        var _this = this;
         if (fromActiveStroke === void 0) { fromActiveStroke = false; }
         _super.call(this, "MultiLineSelection");
-        this.getTextRectangles = function (cont, nEnd) {
-            console.log(cont.childNodes);
-            $(cont.childNodes).each(function (index, el) {
-                console.log(el);
-                console.log(el.nodeName);
-                if (el.nodeName == "#text") {
-                    var range = document.createRange();
-                    range.selectNodeContents(el);
-                    console.log(range);
-                    console.log(range.getClientRects());
-                    console.log(range.getBoundingClientRect());
-                }
-            });
-            return new Array();
-        };
-        this.getNodesInRange = function (range) {
-            var start = range.startContainer;
-            var end = range.endContainer;
-            var commonAncestor = range.commonAncestorContainer;
-            var nodes = [];
-            var node;
-            // walk parent nodes from start to common ancestor
-            for (node = start.parentNode; node; node = node.parentNode) {
-                nodes.push(node);
-                if (node == commonAncestor)
-                    break;
-            }
-            nodes.reverse();
-            // walk children and siblings from start until end is found
-            for (node = start; node; node = _this.getNextNode(node)) {
-                nodes.push(node);
-                if (node == end)
-                    break;
-            }
-            return nodes;
-        };
-        this.getNextNode = function (node) {
-            if (node.firstChild)
-                return node.firstChild;
-            while (node) {
-                if (node.nextSibling)
-                    return node.nextSibling;
-                node = node.parentNode;
-            }
-        };
-        this.isDescendant = function (parent, child) {
-            var node = child.parentNode;
-            while (node != null) {
-                if (node == parent) {
-                    return true;
-                }
-                node = node.parentNode;
-            }
-            return false;
-        };
-        this.getTextNodesBetween = function (range) {
-            var rootNode = range.commonAncestorContainer, startNode = range.startContainer, endNode = range.endContainer, startOffset = range.startOffset, endOffset = range.endOffset, pastStartNode = false, reachedEndNode = false, textNodes = [];
-            function getTextNodes(node) {
-                var val = node.nodeValue;
-                if (node == startNode && node == endNode && node !== rootNode) {
-                    if (val)
-                        textNodes.push(node);
-                    console.log(node);
-                    pastStartNode = reachedEndNode = true;
-                }
-                else if (node == startNode) {
-                    if (val)
-                        textNodes.push(node);
-                    pastStartNode = true;
-                    console.log(node);
-                }
-                else if (node == endNode) {
-                    if (val)
-                        textNodes.push(node);
-                    reachedEndNode = true;
-                    console.log(node);
-                }
-                else if (node.nodeType == 3) {
-                    if (val && pastStartNode && !reachedEndNode && !/^\s*$/.test(val)) {
-                        //    textNodes.push(val);
-                        textNodes.push(node);
-                        console.log(node);
-                    }
-                }
-                //else if (node.nodeName == "IMG") {
-                //    //list.push(node);
-                //    addEventLis
-                //}
-                for (var i = 0, len = node.childNodes.length; !reachedEndNode && i < len; ++i) {
-                    getTextNodes(node.childNodes[i]);
-                }
-            }
-            getTextNodes(rootNode);
-            return textNodes;
-        };
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
         this._rectList = new Array();
         this._currLineTop = 0;
-        console.log("===============constructor============");
-        if (fromActiveStroke) {
-            this._inkCanvas.setBrush(new HighlightBrush());
-            var t = this;
-            $.each(inkCanvas._activeStroke.stroke.points, function () {
-                t._inkCanvas.draw(this.x, this.y);
-            });
-        }
     }
-    MultiLineSelection.prototype.addWordTag = function (nodes) {
-        var _this = this;
-        console.log(nodes);
-        $.each(nodes, function (index, value) {
-            if (value.nodeType == Node.TEXT_NODE) {
-                $(value).replaceWith("<span>" + $(value).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
-            }
-            else if (value.childNodes.length > 0) {
-                _this.addWordTag(value.childNodes);
-            }
-        });
-    };
     MultiLineSelection.prototype.start = function (x, y) {
-        console.log("===================start===============");
-        document.body.removeChild(this._inkCanvas._canvas);
-        console.log(document.elementFromPoint(x, y));
-        //      this.addWordTag(document.elementFromPoint(x, y).childNodes);
-        this._currParent = document.elementFromPoint(x, y);
-        var rg = document["caretRangeFromPoint"](x, y);
-        this._nStart = rg.commonAncestorContainer;
-        this._offsetStart = rg.startOffset;
-        console.log(this._offsetStart);
-        this._prevList = Array();
-        this._startX = x;
-        this._startY = y;
+        console.log("multiline start.");
+        this._startElement = document.elementFromPoint(x, y);
     };
     MultiLineSelection.prototype.update = function (x, y) {
-        if (this._startX == x && this._startY == y) {
-            console.log("=========================!!!==");
-            return;
-        }
-        this._inkCanvas.draw(x, y);
-        document.body.removeChild(this._inkCanvas._canvas);
-        var rg = document["caretRangeFromPoint"](x, y);
-        var nEnd = rg.commonAncestorContainer;
-        var offsetEnd = rg.startOffset;
-        //var offsetStart = this._offsetStart;
-        //this._nEnd = nEnd;
-        this._range = document.createRange();
-        this._range.setStart(this._nStart, this._offsetStart);
-        this._range.setEnd(nEnd, offsetEnd);
-        //this._inkCanvas.draw(x, y);
-        //var rg = document["caretRangeFromPoint"](x, y);
-        //var nEnd = rg.commonAncestorContainer;
-        //var offsetEnd = rg.startOffset;
-        //var offsetStart = this._offsetStart;
-        //this._nEnd = nEnd;
-        //this._range = document.createRange();
-        //this._range.setStart(this._nStart, this._offsetStart);
-        //this._range.setEnd(nEnd, offsetEnd);
-        //var ans = this._range.commonAncestorContainer;
-        //var nodes = this.getTextNodesBetween(this._range);
-        //var list = [];
-        //$(nodes).each(function (indx, ele) {
-        //    var rg = document.createRange();
-        //    if (indx == 0) {
-        //        if ($(nodes).length == 1) {
-        //            rg.setStart(ele, offsetStart);
-        //            rg.setEnd(ele, offsetEnd);
-        //        }
-        //        else {
-        //                rg.setStart(ele, offsetStart);
-        //                rg.setEndAfter(ele);
-        //        }
-        //    }
-        //    else if (indx == $(nodes).length - 1) {
-        //        rg.setStartBefore(ele);
-        //        rg.setEnd(ele, offsetEnd);
-        //    }
-        //    else {
-        //        rg.selectNode(ele);
-        //    }
-        //    console.log(rg.getClientRects());
-        //    $(rg.getClientRects()).each(function (idx, el) {
-        //        list.push(el);
-        //    });
-        //});
-        //this._brushStroke = this._inkCanvas._activeStroke;
-        //this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
-        //this._brushStroke.brush.drawStroke(null, this._inkCanvas);
-        //this._prevList = list;
-        //if (this._prevList == null) {
-        //    console.log("prev is null");
-        //    this._brushStroke.brush = new MultiSelectionBrush(list, []);
-        //}
-        //else if (list.length > this._prevList.length) {
-        //    ///delete last element of prevlist and add 
-        //    console.log("more clientrect selected");
-        //    var diff = list.length - this._prevList.length;
-        //    this._brushStroke.brush = new MultiSelectionBrush(list.slice(list.length - diff), [this._prevList[this._prevList.length - 1]]);
-        //}
-        //else if (list.length < this._prevList.length) {
-        //    ////remove previous and check last 
-        //    console.log("less clientrect selected!!!");
-        //}
-        //else {
-        //    ////check the last rect 
-        //    console.log("selection within same rect");
-        //    this._brushStroke.brush = new MultiSelectionBrush([list[list.length - 1]], [this._prevList[this._prevList.length - 1]]);
-        //}
     };
     MultiLineSelection.prototype.end = function (x, y) {
-        this._inkCanvas.endDrawing(x, y);
-        //this._brushStroke = this._inkCanvas._activeStroke;
-        this.analyzeContent();
-        //  this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
+        if (window.getSelection) {
+            var sel = window.getSelection();
+            if (sel.rangeCount) {
+                var range = sel.getRangeAt(0).cloneRange();
+                var d = document.createElement('div');
+                d.appendChild(range.cloneContents());
+                this._content = d.innerHTML;
+                var start = range["startContainer"];
+                var end = range["endContainer"];
+                var startParent = start.parentElement;
+                var startParentIndex = $(startParent.tagName).index(startParent);
+                var startIndex = Array.prototype.indexOf.call(startParent.childNodes, start);
+                var endParent = end.parentElement;
+                var endParentIndex = $(endParent.tagName).index(endParent);
+                var endIndex = Array.prototype.indexOf.call(endParent.childNodes, end);
+                var selectionInfo = {
+                    start: { tagName: startParent.tagName, parentIndex: startParentIndex, textIndex: startIndex, offset: range.startOffset },
+                    end: { tagName: endParent.tagName, parentIndex: endParentIndex, textIndex: endIndex, offset: range.endOffset }
+                };
+                this.selectedElements.push(selectionInfo);
+                this.highlightMultiline(selectionInfo.start, selectionInfo.end);
+                window.getSelection().removeAllRanges();
+            }
+        }
     };
-    MultiLineSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    MultiLineSelection.prototype.highlightMultiline = function (start, end) {
+        var startNode, endNode, startParentNode, endParentNode;
+        if (start.id != null) {
+            startParentNode = $('[data-ctedid="' + start.id + '"]')[0];
+            endParentNode = $('[data-ctedid="' + end.id + '"]')[0];
+        }
+        else {
+            startParentNode = $(start.tagName)[start.parentIndex];
+            endParentNode = $(end.tagName)[end.parentIndex];
+        }
+        startNode = startParentNode.childNodes[start.textIndex];
+        endNode = endParentNode.childNodes[end.textIndex];
+        console.log("-----------------");
+        console.log(startNode);
+        console.log(endNode);
+        if (startNode != endNode) {
+            var newStart = document.createElement("span");
+            newStart.innerHTML = "<span>" + startNode.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + startNode.nodeValue.substring(start.offset, startNode.nodeValue.length) + "</span>";
+            startNode.parentNode.replaceChild(newStart, startNode);
+            var newEnd = document.createElement("span");
+            newEnd.innerHTML = "<span style='background-color:yellow;'>" + endNode.nodeValue.substring(0, end.offset) + "</span>" + "<span>" + endNode.nodeValue.substring(end.offset, endNode.nodeValue.length) + "</span>";
+            endNode.parentNode.replaceChild(newEnd, endNode);
+            this.highlightSiblingsOf(newStart.nextSibling, newEnd);
+            if (newStart.parentNode != newEnd.parentNode) {
+                this.highlightSiblingsOf(newEnd.parentNode.firstChild, newEnd);
+            }
+            var between = this.getElementsBetweenTree(newStart, newEnd);
+            $(between).css("background-color", "yellow");
+        }
+        else {
+            console.log("blaah");
+            var newStart = document.createElement("span");
+            newStart.innerHTML = "<span>" + startNode.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + startNode.nodeValue.substring(start.offset, end.offset) + "</span>" + "<span>" + startNode.nodeValue.substring(end.offset, endNode.nodeValue.length) + "</span>";
+            startNode.parentNode.replaceChild(newStart, startNode);
+        }
+    };
+    MultiLineSelection.prototype.select = function () {
+        var _this = this;
+        console.log("select!!");
+        this.selectedElements.forEach(function (el) {
+            _this.highlightMultiline(el.start, el.end);
+        });
+    };
+    MultiLineSelection.prototype.highlightSiblingsOf = function (next, newEnd) {
+        while (next != null) {
+            var sib = next.nextSibling;
+            if (next == newEnd) {
+                console.log("breaking");
+                break;
+            }
+            if (next.innerHTML == undefined) {
+                var newNode = document.createElement("span");
+                newNode.style.backgroundColor = "yellow";
+                newNode.innerHTML = next.nodeValue;
+                if (next.parentNode != null)
+                    next.parentNode.replaceChild(newNode, next);
+                else {
+                    console.log("parent is null:");
+                }
+            }
+            else {
+                next.style.backgroundColor = "yellow";
+            }
+            next = sib;
+        }
+    };
+    MultiLineSelection.prototype.getElementsBetweenTree = function (start, end) {
+        var ancestor = this.getCommonAncestor(start, end);
+        var before = [];
+        while (start.parentNode !== ancestor) {
+            var el = start;
+            while (el.nextSibling)
+                before.push(el = el.nextSibling);
+            start = start.parentNode;
+        }
+        var after = [];
+        while (end.parentNode !== ancestor) {
+            var el = end;
+            while (el.previousSibling)
+                after.push(el = el.previousSibling);
+            end = end.parentNode;
+        }
+        after.reverse();
+        while ((start = start.nextSibling) !== end)
+            before.push(start);
+        return before.concat(after);
+    };
+    MultiLineSelection.prototype.getCommonAncestor = function (a, b) {
+        var parents = $(a).parents()["andSelf"]();
+        while (b) {
+            var ix = parents.index(b);
+            if (ix !== -1)
+                return b;
+            b = b.parentNode;
+        }
+        return null;
     };
     MultiLineSelection.prototype.getBoundingRect = function () {
         return new Rectangle(1, 10, 10, 10);
     };
     MultiLineSelection.prototype.analyzeContent = function () {
-        var content = this._range.cloneContents();
-        console.log(content);
     };
     MultiLineSelection.prototype.getContent = function () {
-        // console.log("getContent =======================");
-        var d = document.createElement('div');
-        d.appendChild(this._range.cloneContents());
-        console.log(d.innerHTML);
-        return d.innerHTML;
-        //return this._range.cloneContents();
+        return this._content;
     };
     return MultiLineSelection;
 })(AbstractSelection);
-var GestureType;
-(function (GestureType) {
-    GestureType[GestureType["Null"] = 0] = "Null";
-    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
-    GestureType[GestureType["Vertical"] = 2] = "Vertical";
-    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
-    GestureType[GestureType["Scribble"] = 4] = "Scribble";
-})(GestureType || (GestureType = {}));
 var Line = (function () {
     function Line() {
     }

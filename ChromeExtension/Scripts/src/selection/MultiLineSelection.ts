@@ -1,4 +1,6 @@
-﻿class MultiLineSelection extends AbstractSelection {
+﻿/// <reference path="../ink/GestureType.ts"/>
+
+class MultiLineSelection extends AbstractSelection {
 
     _brushStroke: BrushStroke;
     _inkCanvas: InkCanvas;
@@ -16,12 +18,16 @@
     _rectangle: Rectangle;
     _rectList: Array<Rectangle>;
     _currParent: Element;
-    _content: DocumentFragment;
+    _content: string;
     _temp: Element;
     _prevList: Array<ClientRect>;
     _imgList: Array<ClientRect>;
     _startX: Number;
     _startY: Number;
+
+
+    _startElement: Element;
+    _endElement:Element;
 
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
         super("MultiLineSelection");
@@ -29,259 +35,169 @@
         this._inkCanvas = inkCanvas;
         this._rectList = new Array<Rectangle>();
         this._currLineTop = 0;
-        console.log("===============constructor============");
-        if (fromActiveStroke) {
-            this._inkCanvas.setBrush(new HighlightBrush());
-            var t = this;
-            $.each(inkCanvas._activeStroke.stroke.points, function () {
-                t._inkCanvas.draw(this.x, this.y);
-            });
-        }
-
-
-    }
-
-    addWordTag(nodes): void {
-
-        console.log(nodes);
-
-        $.each(nodes,(index, value) => {
-
-            if (value.nodeType == Node.TEXT_NODE) {
-                $(value).replaceWith("<span>" + $(value).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
-                //$(value).find("span").find("word").each(function (){
-                //    console.log(this);
-                //});
-            }
-            else if (value.childNodes.length > 0) {
-                this.addWordTag(value.childNodes);
-            }
-        });
     }
 
     start(x: number, y: number): void {
-
-        console.log("===================start===============");
-        document.body.removeChild(this._inkCanvas._canvas); 
-        console.log(document.elementFromPoint(x, y));
-        //      this.addWordTag(document.elementFromPoint(x, y).childNodes);
-        this._currParent = document.elementFromPoint(x, y);
-        var rg = document["caretRangeFromPoint"](x, y);
-        this._nStart = rg.commonAncestorContainer;
-        this._offsetStart = rg.startOffset;
-        console.log(this._offsetStart);
-        this._prevList = Array<ClientRect>();
-        this._startX = x;
-        this._startY = y;
-
-
-    }
-
-    getTextRectangles = (cont: Element, nEnd: Element) => {
-        console.log(cont.childNodes);
-        $(cont.childNodes).each((index, el) => {
-            console.log(el);
-            console.log(el.nodeName);
-
-            if (el.nodeName == "#text") {
-                var range = document.createRange();
-                range.selectNodeContents(el);
-                console.log(range);
-                console.log(range.getClientRects());
-                console.log(range.getBoundingClientRect());
-            }
-        });
-        return new Array<Rectangle>();
-    }
-
-    getNodesInRange = (range: Range): Array<Node>=> {
-        var start = range.startContainer;
-        var end = range.endContainer;
-        var commonAncestor = range.commonAncestorContainer;
-        var nodes = [];
-        var node;
-
-        // walk parent nodes from start to common ancestor
-        for (node = start.parentNode; node; node = node.parentNode) {
-            nodes.push(node);
-            if (node == commonAncestor)
-                break;
-        }
-        nodes.reverse();
-
-        // walk children and siblings from start until end is found
-        for (node = start; node; node = this.getNextNode(node)) {
-            nodes.push(node);
-            if (node == end)
-                break;
-        }
-
-        return nodes;
-    }
-
-    getNextNode = (node: Node): Node => {
-        if (node.firstChild)
-            return node.firstChild;
-        while (node) {
-            if (node.nextSibling)
-                return node.nextSibling;
-            node = node.parentNode;
-        }
-    }
-    isDescendant = (parent: Node, child: Node): Boolean => {
-        var node = child.parentNode;
-        while (node != null) {
-            if (node == parent) {
-                return true;
-            }
-            node = node.parentNode;
-        }
-        return false;
-    }
-
-
-    getTextNodesBetween = (range): Array<Node>=> {
-        var rootNode = range.commonAncestorContainer,
-            startNode = range.startContainer, endNode = range.endContainer,
-            startOffset = range.startOffset, endOffset = range.endOffset,
-            pastStartNode = false, reachedEndNode = false, textNodes = [];
-
-        function getTextNodes(node) {
-            var val = node.nodeValue;
-            if (node == startNode && node == endNode && node !== rootNode) {
-                if (val) textNodes.push(node);
-                console.log(node);
-
-                pastStartNode = reachedEndNode = true;
-            } else if (node == startNode) {
-                if (val) textNodes.push(node);
-                pastStartNode = true;
-                console.log(node);
-            } else if (node == endNode) {
-                if (val) textNodes.push(node);
-                reachedEndNode = true;
-                console.log(node);
-            } else if (node.nodeType == 3) {
-                if (val && pastStartNode && !reachedEndNode && !/^\s*$/.test(val)) {
-                    //    textNodes.push(val);
-                    textNodes.push(node);
-                    console.log(node);
-                }
-            }
-            //else if (node.nodeName == "IMG") {
-            //    //list.push(node);
-            //    addEventLis
-            //}
-
-            for (var i = 0, len = node.childNodes.length; !reachedEndNode && i < len; ++i) {
-                getTextNodes(node.childNodes[i]);
-            }
-        }
-        getTextNodes(rootNode);
-        return textNodes;
-    }
+        console.log("multiline start.");
+        this._startElement = document.elementFromPoint(x, y);
+    }   
 
     update (x: number, y: number): void {
-
-        if (this._startX == x && this._startY == y) {
-            console.log("=========================!!!==");
-            return;
-        }
-        this._inkCanvas.draw(x, y);
-        document.body.removeChild(this._inkCanvas._canvas);
-        var rg = document["caretRangeFromPoint"](x, y);
-        var nEnd = rg.commonAncestorContainer;
-        var offsetEnd = rg.startOffset;
-        //var offsetStart = this._offsetStart;
-        //this._nEnd = nEnd;
-        this._range = document.createRange();
-
-
-        this._range.setStart(this._nStart, this._offsetStart);
-
-        this._range.setEnd(nEnd, offsetEnd);
-        //this._inkCanvas.draw(x, y);
-
-        //var rg = document["caretRangeFromPoint"](x, y);
-        //var nEnd = rg.commonAncestorContainer;
-        //var offsetEnd = rg.startOffset;
-        //var offsetStart = this._offsetStart;
-        //this._nEnd = nEnd;
-        //this._range = document.createRange();
-        //this._range.setStart(this._nStart, this._offsetStart);
-        
-        //this._range.setEnd(nEnd, offsetEnd);
-        //var ans = this._range.commonAncestorContainer;
-        //var nodes = this.getTextNodesBetween(this._range);
-        //var list = [];
-        
-        //$(nodes).each(function (indx, ele) {
-            
-        //    var rg = document.createRange();
-        //    if (indx == 0) {
-        //        if ($(nodes).length == 1) {
-        //            rg.setStart(ele, offsetStart);
-        //            rg.setEnd(ele, offsetEnd);
-        //        }
-        //        else {
-        //                rg.setStart(ele, offsetStart);
-        //                rg.setEndAfter(ele);
-        //        }
-        //    }
-        //    else if (indx == $(nodes).length - 1) {
-        //        rg.setStartBefore(ele);
-                
-        //        rg.setEnd(ele, offsetEnd);
-        //    }
-        //    else {
-        //        rg.selectNode(ele);
-        //    }
-        //    console.log(rg.getClientRects());
-        //    $(rg.getClientRects()).each(function (idx, el) {
-        //        list.push(el);
-        //    });
-        //});
-
-
-        //this._brushStroke = this._inkCanvas._activeStroke;
-        //this._brushStroke.brush = new MultiSelectionBrush(list, this._prevList);
-        //this._brushStroke.brush.drawStroke(null, this._inkCanvas);
-        //this._prevList = list;
-        
-        //if (this._prevList == null) {
-        //    console.log("prev is null");
-        //    this._brushStroke.brush = new MultiSelectionBrush(list, []);
-        //}
-        //else if (list.length > this._prevList.length) {
-        //    ///delete last element of prevlist and add 
-        //    console.log("more clientrect selected");
-        //    var diff = list.length - this._prevList.length;
-        //    this._brushStroke.brush = new MultiSelectionBrush(list.slice(list.length - diff), [this._prevList[this._prevList.length - 1]]);
-        //}
-        //else if (list.length < this._prevList.length) {
-        //    ////remove previous and check last 
-        //    console.log("less clientrect selected!!!");
-        //}
-        //else {
-        //    ////check the last rect 
-        //    console.log("selection within same rect");
-        //    this._brushStroke.brush = new MultiSelectionBrush([list[list.length - 1]], [this._prevList[this._prevList.length - 1]]);
-        //}
-        
     }
-
 
     end(x: number, y: number): void {
-        this._inkCanvas.endDrawing(x, y);
-        //this._brushStroke = this._inkCanvas._activeStroke;
+        
+        if (window.getSelection) {
+            var sel = window.getSelection();
 
-        this.analyzeContent();
-        //  this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
-        this._inkCanvas.update();
+
+
+            if (sel.rangeCount) {
+                var range = sel.getRangeAt(0).cloneRange();
+
+                var d = document.createElement('div');
+                d.appendChild(range.cloneContents());
+                this._content = d.innerHTML;
+                             
+                var start = range["startContainer"];
+                var end = range["endContainer"];
+
+                var startParent = start.parentElement;
+                var startParentIndex = $(startParent.tagName).index(startParent);
+                var startIndex = Array.prototype.indexOf.call(startParent.childNodes, start);
+
+                var endParent = end.parentElement;
+                var endParentIndex = $(endParent.tagName).index(endParent);
+                var endIndex = Array.prototype.indexOf.call(endParent.childNodes, end);
+                var selectionInfo = {
+                    start: { tagName: startParent.tagName, parentIndex: startParentIndex, textIndex: startIndex, offset: range.startOffset },
+                    end: { tagName: endParent.tagName, parentIndex: endParentIndex, textIndex: endIndex, offset: range.endOffset }
+                };
+                this.selectedElements.push(selectionInfo);
+ 
+                this.highlightMultiline(selectionInfo.start, selectionInfo.end);
+           
+               
+
+                window.getSelection().removeAllRanges();
+            }
+        }
     }
 
-    deselect(): void {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    highlightMultiline(start: any, end: any): void {
+
+
+        var startNode, endNode, startParentNode, endParentNode;
+
+        if (start.id != null) {
+            startParentNode = $('[data-ctedid="' + start.id + '"]')[0];
+            endParentNode = $('[data-ctedid="' + end.id + '"]')[0];
+        } else {
+            startParentNode = $(start.tagName)[start.parentIndex];
+            endParentNode = $(end.tagName)[end.parentIndex];
+        }
+
+        startNode = startParentNode.childNodes[start.textIndex];
+        endNode = endParentNode.childNodes[end.textIndex];
+
+        console.log("-----------------");
+        console.log(startNode);
+        console.log(endNode );
+
+
+        if (startNode != endNode) {
+
+            var newStart = document.createElement("span");
+            newStart.innerHTML = "<span>" + startNode.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + startNode.nodeValue.substring(start.offset, startNode.nodeValue.length) + "</span>";
+            startNode.parentNode.replaceChild(newStart, startNode);
+
+            var newEnd = document.createElement("span");
+            newEnd.innerHTML = "<span style='background-color:yellow;'>" + endNode.nodeValue.substring(0, end.offset) + "</span>" + "<span>" + endNode.nodeValue.substring(end.offset, endNode.nodeValue.length) + "</span>";
+            endNode.parentNode.replaceChild(newEnd, endNode);
+
+            this.highlightSiblingsOf(newStart.nextSibling, newEnd);
+            if (newStart.parentNode != newEnd.parentNode) {
+                this.highlightSiblingsOf(newEnd.parentNode.firstChild, newEnd);
+            }
+
+            var between = this.getElementsBetweenTree(newStart, newEnd);
+            $(between).css("background-color", "yellow");
+        } else {
+            console.log("blaah");
+            var newStart = document.createElement("span");
+            newStart.innerHTML = "<span>" + startNode.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + startNode.nodeValue.substring(start.offset, end.offset) + "</span>" + "<span>" + startNode.nodeValue.substring(end.offset, endNode.nodeValue.length) + "</span>";
+            startNode.parentNode.replaceChild(newStart, startNode);
+        }
+    }
+
+    select(): void {
+        console.log("select!!");
+        this.selectedElements.forEach((el:any) => {
+            this.highlightMultiline(el.start, el.end);
+        });
+    }
+
+    highlightSiblingsOf(next: any, newEnd:any): void {
+        while (next != null) {
+            var sib = next.nextSibling;
+
+            if (next == newEnd) {
+                console.log("breaking");
+                break;
+            }
+
+            if (next.innerHTML == undefined) {
+
+                var newNode = document.createElement("span");
+                newNode.style.backgroundColor = "yellow";
+                newNode.innerHTML = next.nodeValue;
+                if (next.parentNode != null)
+                    next.parentNode.replaceChild(newNode, next);
+                else {
+                    console.log("parent is null:");
+                }
+
+            } else {
+                next.style.backgroundColor = "yellow";
+            }
+            next = sib;
+        }
+    }
+    
+    getElementsBetweenTree(start, end):any[] {
+        var ancestor = this.getCommonAncestor(start, end);
+
+        var before = [];
+        while (start.parentNode !== ancestor) {
+            var el = start;
+            while (el.nextSibling)
+                before.push(el = el.nextSibling);
+            start = start.parentNode;
+        }
+
+        var after = [];
+        while (end.parentNode !== ancestor) {
+            var el = end;
+            while (el.previousSibling)
+                after.push(el = el.previousSibling);
+            end = end.parentNode;
+        }
+        after.reverse();
+
+        while ((start = start.nextSibling) !== end)
+            before.push(start);
+        return before.concat(after);
+    }
+
+    getCommonAncestor(a, b) {
+        var parents = $(a).parents()["andSelf"]();
+        while (b) {
+            var ix = parents.index(b);
+            if (ix !== -1)
+                return b;
+            b = b.parentNode;
+        }
+        return null;
     }
 
     getBoundingRect(): Rectangle {
@@ -289,22 +205,10 @@
     }
 
     analyzeContent(): void {
-        var content = this._range.cloneContents();
-        console.log(content);
+        
     }
+
     getContent(): string {
-        // console.log("getContent =======================");
-        var d = document.createElement('div');
-        d.appendChild(this._range.cloneContents());
-        console.log(d.innerHTML);
-        return d.innerHTML;
-        //return this._range.cloneContents();
+        return this._content;
     }
-}
-enum GestureType {
-    Null,
-    Diagonal,
-    Vertical,
-    Horizontal,
-    Scribble
 }
