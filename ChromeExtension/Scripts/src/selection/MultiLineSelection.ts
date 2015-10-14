@@ -108,8 +108,8 @@ class MultiLineSelection extends AbstractSelection {
         if (startNode != endNode) {
 
             var newStart = document.createElement("span");
-            newStart.innerHTML = "<span>" + startNode.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + startNode.nodeValue.substring(start.offset, startNode.nodeValue.length) + "</span>";
-            startNode.parentNode.replaceChild(newStart, startNode);
+            newStart.innerHTML = "<span>" + start.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + start.nodeValue.substring(start.offset, start.nodeValue.length) + "</span>";
+            start.parentNode.replaceChild(newStart, start);
 
             var newEnd = document.createElement("span");
             newEnd.innerHTML = "<span style='background-color:yellow;'>" + endNode.nodeValue.substring(0, end.offset) + "</span>" + "<span>" + endNode.nodeValue.substring(end.offset, endNode.nodeValue.length) + "</span>";

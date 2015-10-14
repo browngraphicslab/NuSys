@@ -2817,37 +2817,23 @@ var LineSelection = (function (_super) {
         var stroke = this._brushStroke.stroke;
         var pStart = stroke.points[0];
         var pEnd = stroke.points[stroke.points.length - 1];
-        var nStart = document.elementFromPoint(pStart.x, pStart.y);
-        var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
-        var commonParent = DomUtil.getCommonAncestor(nStart, nEnd);
-        console.log(commonParent);
-        var nodes = $(commonParent).contents();
-        if (nodes.length > 0) {
-            var original_content = $(commonParent).clone();
-            $.each(nodes, function () {
-                if (this.nodeType == Node.TEXT_NODE) {
-                    $(this).replaceWith($(this).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
-                }
-            });
-            nStart = document.elementFromPoint(pStart.x, pStart.y);
-            nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
-            this._range = new Range();
-            this._range.setStart(nStart, 0);
-            this._range.setEndAfter(nEnd);
-            this._clientRects = this._range.getClientRects();
-            $(nStart).nextUntil($(nEnd)).css("background-color", "yellow");
-            $(nStart).css("background-color", "yellow");
-            $(nEnd).css("background-color", "yellow");
-            var frag = this._range.cloneContents();
-            var result = "";
-            $.each(frag["children"], function () {
-                result += $(this)[0].outerHTML.replace(/<word>|<\/word>/g, " ");
-            });
-            result = result.replace(/\s\s+/g, ' ').trim();
-            this._content = result;
-            //$(commonParent).replaceWith(original_content);
-            console.log("done analyzing line selection.");
-        }
+        // var nStart = document.elementFromPoint(pStart.x, pStart.y);
+        // var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
+        var startRange = document["caretRangeFromPoint"](pStart.x, pStart.y);
+        var endRange = document["caretRangeFromPoint"](pEnd.x, pEnd.y);
+        console.log("----------------");
+        console.log(startRange);
+        console.log(endRange);
+        console.log(startRange.startContainer.nodeValue);
+        console.log(startRange.startContainer.nodeValue.substring(0, startRange.startOffset));
+        console.log(startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset));
+        console.log(startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length));
+        this._content = startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset);
+        var newStart = document.createElement("span");
+        newStart.innerHTML = "<span>" + startRange.startContainer.nodeValue.substring(0, startRange.startOffset) + "</span>" + "<span style='background: yellow;'>" + startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset) + "</span>" + "<span>" + startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length) + "</span>";
+        startRange.startContainer.parentNode.replaceChild(newStart, startRange.startContainer);
+        //$(commonParent).replaceWith(original_content);
+        console.log("done analyzing line selection.");
     };
     LineSelection.prototype.getContent = function () {
         return this._content;
@@ -4233,8 +4219,8 @@ var MultiLineSelection = (function (_super) {
         console.log(endNode);
         if (startNode != endNode) {
             var newStart = document.createElement("span");
-            newStart.innerHTML = "<span>" + startNode.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + startNode.nodeValue.substring(start.offset, startNode.nodeValue.length) + "</span>";
-            startNode.parentNode.replaceChild(newStart, startNode);
+            newStart.innerHTML = "<span>" + start.nodeValue.substring(0, start.offset) + "</span><span style='background-color:yellow;'>" + start.nodeValue.substring(start.offset, start.nodeValue.length) + "</span>";
+            start.parentNode.replaceChild(newStart, start);
             var newEnd = document.createElement("span");
             newEnd.innerHTML = "<span style='background-color:yellow;'>" + endNode.nodeValue.substring(0, end.offset) + "</span>" + "<span>" + endNode.nodeValue.substring(end.offset, endNode.nodeValue.length) + "</span>";
             endNode.parentNode.replaceChild(newEnd, endNode);
