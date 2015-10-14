@@ -242,7 +242,13 @@ class MarqueeSelection extends AbstractSelection {
         if (sel.outerHTML == "") {
             this._content= sel.innerHTML;
         }
-        this._content =  sel.outerHTML;
+
+        $(sel).find("img")["andSelf"]().each((i, e: any) => {
+            console.log(e.src);
+            $(e).attr("src", e.src);
+            $(e).removeAttr("srcset");
+        });
+        this._content = sel.outerHTML;
     }
 
     commonAncestor(node1: Element, node2: Element) {

@@ -57,6 +57,11 @@ class Main {
 
             console.log(request);
 
+            if (request.msg == "tags_changed") {
+                console.log("tags_changed")
+                $(this.menuIframe).contents().find("#tagfield").val(request.data);
+            }
+
             if (request.msg == "check_injection")
                 sendResponse(true);
 
@@ -146,22 +151,48 @@ class Main {
     }
 
     init(menuHtml: string) {
+        console.log("init!");
+
+        this.currentStrokeType = StrokeType.MultiLine;
+        document.addEventListener("mouseup", this.documentUp);
 
         this.menuIframe = <HTMLIFrameElement>$("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "90px", "z-index": 1001 });
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
+
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
 
-        $(this.menuIframe).contents().find("#btnLineSelect").click(() => {
+        $(this.menuIframe).contents().find("#btnLineSelect").click((ev) => {
+            if (this.currentStrokeType == StrokeType.MultiLine)
+                return;
+            var other = $(this.menuIframe).contents().find("#btnBlockSelect");
             console.log("switching to multiline selection");
+
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            } else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
+
             this.currentStrokeType = StrokeType.MultiLine;
             document.addEventListener("mouseup", this.documentUp);
             
         });
 
-        $(this.menuIframe).contents().find("#btnBlockSelect").click(() => {
+        $(this.menuIframe).contents().find("#btnBlockSelect").click((ev) => {
+            if (this.currentStrokeType == StrokeType.Bracket)
+                return;
+            var other = $(this.menuIframe).contents().find("#btnLineSelect");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            } else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
+
             this.currentStrokeType = StrokeType.Bracket;
             try {
                 document.body.appendChild(this.canvas);
@@ -171,8 +202,30 @@ class Main {
             document.removeEventListener("mouseup", this.documentUp);
         });
 
+        $(this.menuIframe).contents().find("#tagfield").change(() => {
+            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(this.menuIframe).contents().find("#tagfield").val() });
+        });
+
         $(this.menuIframe).contents().find("#btnViewAll").click(() => {
             chrome.runtime.sendMessage({ msg: "view_all" });
+        });
+
+        $(this.menuIframe).contents().find("#toggle").change(() => {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+
+        $(this.menuIframe).contents().find("#btnExpand").click((ev) => {
+            console.log("expand");
+            var list = $(this.menuIframe).contents().find("#selected_list");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+                $(list).removeClass("open");
+
+            } else {
+                $(ev.target).addClass("active");
+                $(list).addClass("open");
+                $(this.menuIframe).height(500);
+            }
         });
 
         chrome.runtime.sendMessage({ msg: "query_active" }, (isActive) => {
@@ -183,22 +236,6 @@ class Main {
     showMenu(): void {
         this.isMenuVisible = true;
         $(this.menuIframe).css("display", "block");
-
-        $(this.menuIframe).contents().find("#toggle").change(() => {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $(this.menuIframe).contents().find("#toggle").prop("checked") });
-        });
-
-        $(this.menuIframe).contents().find("#btnExpand").click(() => {
-            console.log("expanding.");
-            var list = $(this.menuIframe).contents().find("#selected_list");
-            if (list.css("display") == "none") {
-                list.css("display", "block");
-                $(this.menuIframe).css("height", "500px");
-            } else {
-                list.css("display", "none");
-                $(this.menuIframe).css("height", "80px");
-            }
-        });
     }
 
     hideMenu(): void {
@@ -245,17 +282,22 @@ class Main {
             return;
         }
 
-        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee || this.currentStrokeType == StrokeType.Line) {
             var currType = GestireClassifier.getGestureType(this.inkCanvas._activeStroke.stroke);
+            
+            if (this.currentStrokeType != StrokeType.Line && currType == GestureType.Horizontal) {
+                this.selection = new LineSelection(this.inkCanvas, true);
+                this.currentStrokeType = StrokeType.Line;
+                this.inkCanvas.redrawActiveStroke();
+            }
 
-            if (this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
+            if (this.currentStrokeType != StrokeType.Marquee && currType == GestureType.Diagonal) {
                 this.selection = new MarqueeSelection(this.inkCanvas, true);
                 this.currentStrokeType = StrokeType.Marquee;
                 this.inkCanvas.redrawActiveStroke();
-
             }
 
-            if (this.currentStrokeType == StrokeType.Marquee && currType == GestureType.Horizontal) {
+            if (this.currentStrokeType != StrokeType.Bracket && currType == GestureType.Vertical) {
                 this.selection = new BracketSelection(this.inkCanvas, true);
                 this.currentStrokeType = StrokeType.Bracket;
                 this.inkCanvas.redrawActiveStroke();
@@ -266,10 +308,22 @@ class Main {
     }
 
     documentDown = (e): void => {
+
+        try {
+            document.body.removeChild(this.canvas);
+        } catch (e) {
+            console.log("no canvas visible." + e);
+        }
+
+        var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+        console.log(hitElem);
+
         switch (this.currentStrokeType) {
+
         case StrokeType.MultiLine:
             this.selection = new MultiLineSelection(this.inkCanvas);
             break;
+        case StrokeType.Line:
         case StrokeType.Bracket:
             this.selection = new BracketSelection(this.inkCanvas);
             break;
@@ -278,7 +332,7 @@ class Main {
             break;
         }
 
-        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee || this.currentStrokeType == StrokeType.Line) {
             console.log("current selection: " + this.currentStrokeType);
             document.body.appendChild(this.canvas);
             this.canvas.addEventListener("mousemove", this.mouseMove);
@@ -310,6 +364,7 @@ class Main {
 
         this.selection.id = Date.now();
         this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
         this.selections.push(this.selection);
         chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
 
@@ -339,7 +394,7 @@ class Main {
 
         this.canvas.removeEventListener("mousemove", this.mouseMove);
         
-        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee || this.currentStrokeType == StrokeType.Line) {
             document.body.removeChild(this.canvas);
             $(this.menuIframe).hide();
             this.selection.end(e.clientX, e.clientY);
@@ -364,6 +419,7 @@ class Main {
         
         this.selection.id = Date.now();
         this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
         this.selections.push(this.selection);
 
         chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
@@ -379,9 +435,8 @@ class Main {
         });
     }
 
-    relativeToAbsolute(content: string): string {
+    static relativeToAbsolute(content: string): string {
         //////change relative href of hyperlink and src of image in html string to absolute
-        chrome.storage.local.get(null, function (data) { console.info(data) });
 
             var res = content.split('href="');
             var newval = res[0];

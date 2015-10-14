@@ -2824,10 +2824,19 @@ var AbstractSelection = (function () {
 /// <reference path="AbstractSelection.ts"/>
 var LineSelection = (function (_super) {
     __extends(LineSelection, _super);
-    function LineSelection(inkCanvas) {
+    function LineSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
         _super.call(this, "LineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
+        console.log("making line selection");
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
     }
     LineSelection.prototype.start = function (x, y) {
         this._inkCanvas.startDrawing(x, y, new HighlightBrush());
@@ -2839,7 +2848,8 @@ var LineSelection = (function (_super) {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
         this.analyzeContent();
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this.select();
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
         this._inkCanvas.update();
     };
     LineSelection.prototype.deselect = function () {
@@ -2893,6 +2903,9 @@ var LineSelection = (function (_super) {
             this._range.setStart(nStart, 0);
             this._range.setEndAfter(nEnd);
             this._clientRects = this._range.getClientRects();
+            $(nStart).nextUntil($(nEnd)).css("background-color", "yellow");
+            $(nStart).css("background-color", "yellow");
+            $(nEnd).css("background-color", "yellow");
             var frag = this._range.cloneContents();
             var result = "";
             $.each(frag["children"], function () {
@@ -2900,7 +2913,8 @@ var LineSelection = (function (_super) {
             });
             result = result.replace(/\s\s+/g, ' ').trim();
             this._content = result;
-            $(commonParent).replaceWith(original_content);
+            //$(commonParent).replaceWith(original_content);
+            console.log("done analyzing line selection.");
         }
     };
     LineSelection.prototype.getContent = function () {
@@ -3006,14 +3020,19 @@ var Main = (function () {
             if (!_this.isSelecting) {
                 return;
             }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
-                if (_this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
+                if (_this.currentStrokeType != StrokeType.Line && currType == GestureType.Horizontal) {
+                    _this.selection = new LineSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Line;
+                    _this.inkCanvas.redrawActiveStroke();
+                }
+                if (_this.currentStrokeType != StrokeType.Marquee && currType == GestureType.Diagonal) {
                     _this.selection = new MarqueeSelection(_this.inkCanvas, true);
                     _this.currentStrokeType = StrokeType.Marquee;
                     _this.inkCanvas.redrawActiveStroke();
                 }
-                if (_this.currentStrokeType == StrokeType.Marquee && currType == GestureType.Horizontal) {
+                if (_this.currentStrokeType != StrokeType.Bracket && currType == GestureType.Vertical) {
                     _this.selection = new BracketSelection(_this.inkCanvas, true);
                     _this.currentStrokeType = StrokeType.Bracket;
                     _this.inkCanvas.redrawActiveStroke();
@@ -3022,10 +3041,19 @@ var Main = (function () {
             }
         };
         this.documentDown = function (e) {
+            try {
+                document.body.removeChild(_this.canvas);
+            }
+            catch (e) {
+                console.log("no canvas visible." + e);
+            }
+            var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+            console.log(hitElem);
             switch (_this.currentStrokeType) {
                 case StrokeType.MultiLine:
                     _this.selection = new MultiLineSelection(_this.inkCanvas);
                     break;
+                case StrokeType.Line:
                 case StrokeType.Bracket:
                     _this.selection = new BracketSelection(_this.inkCanvas);
                     break;
@@ -3033,7 +3061,7 @@ var Main = (function () {
                     _this.selection = new MarqueeSelection(_this.inkCanvas);
                     break;
             }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 console.log("current selection: " + _this.currentStrokeType);
                 document.body.appendChild(_this.canvas);
                 _this.canvas.addEventListener("mousemove", _this.mouseMove);
@@ -3061,6 +3089,7 @@ var Main = (function () {
                 _this.selection.end(e.clientX, e.clientY);
             _this.selection.id = Date.now();
             _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
             _this.selections.push(_this.selection);
             chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             _this.selection = new MultiLineSelection(_this.inkCanvas);
@@ -3082,7 +3111,7 @@ var Main = (function () {
                 return;
             }
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 document.body.removeChild(_this.canvas);
                 $(_this.menuIframe).hide();
                 _this.selection.end(e.clientX, e.clientY);
@@ -3104,6 +3133,7 @@ var Main = (function () {
             }
             _this.selection.id = Date.now();
             _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
             _this.selections.push(_this.selection);
             chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             _this.updateSelectedList();
@@ -3126,6 +3156,10 @@ var Main = (function () {
         });
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             console.log(request);
+            if (request.msg == "tags_changed") {
+                console.log("tags_changed");
+                $(_this.menuIframe).contents().find("#tagfield").val(request.data);
+            }
             if (request.msg == "check_injection")
                 sendResponse(true);
             if (request.msg == "init") {
@@ -3198,18 +3232,41 @@ var Main = (function () {
     }
     Main.prototype.init = function (menuHtml) {
         var _this = this;
+        console.log("init!");
+        this.currentStrokeType = StrokeType.MultiLine;
+        document.addEventListener("mouseup", this.documentUp);
         this.menuIframe = $("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "90px", "z-index": 1001 });
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
-        $(this.menuIframe).contents().find("#btnLineSelect").click(function () {
+        $(this.menuIframe).contents().find("#btnLineSelect").click(function (ev) {
+            if (_this.currentStrokeType == StrokeType.MultiLine)
+                return;
+            var other = $(_this.menuIframe).contents().find("#btnBlockSelect");
             console.log("switching to multiline selection");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
             _this.currentStrokeType = StrokeType.MultiLine;
             document.addEventListener("mouseup", _this.documentUp);
         });
-        $(this.menuIframe).contents().find("#btnBlockSelect").click(function () {
+        $(this.menuIframe).contents().find("#btnBlockSelect").click(function (ev) {
+            if (_this.currentStrokeType == StrokeType.Bracket)
+                return;
+            var other = $(_this.menuIframe).contents().find("#btnLineSelect");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
             _this.currentStrokeType = StrokeType.Bracket;
             try {
                 document.body.appendChild(_this.canvas);
@@ -3219,32 +3276,35 @@ var Main = (function () {
             }
             document.removeEventListener("mouseup", _this.documentUp);
         });
+        $(this.menuIframe).contents().find("#tagfield").change(function () {
+            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(_this.menuIframe).contents().find("#tagfield").val() });
+        });
         $(this.menuIframe).contents().find("#btnViewAll").click(function () {
             chrome.runtime.sendMessage({ msg: "view_all" });
+        });
+        $(this.menuIframe).contents().find("#toggle").change(function () {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+        $(this.menuIframe).contents().find("#btnExpand").click(function (ev) {
+            console.log("expand");
+            var list = $(_this.menuIframe).contents().find("#selected_list");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+                $(list).removeClass("open");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(list).addClass("open");
+                $(_this.menuIframe).height(500);
+            }
         });
         chrome.runtime.sendMessage({ msg: "query_active" }, function (isActive) {
             $(_this.menuIframe).contents().find("#toggle").prop("checked", isActive);
         });
     };
     Main.prototype.showMenu = function () {
-        var _this = this;
         this.isMenuVisible = true;
         $(this.menuIframe).css("display", "block");
-        $(this.menuIframe).contents().find("#toggle").change(function () {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
-        });
-        $(this.menuIframe).contents().find("#btnExpand").click(function () {
-            console.log("expanding.");
-            var list = $(_this.menuIframe).contents().find("#selected_list");
-            if (list.css("display") == "none") {
-                list.css("display", "block");
-                $(_this.menuIframe).css("height", "500px");
-            }
-            else {
-                list.css("display", "none");
-                $(_this.menuIframe).css("height", "80px");
-            }
-        });
     };
     Main.prototype.hideMenu = function () {
         this.isMenuVisible = false;
@@ -3290,9 +3350,8 @@ var Main = (function () {
             list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
         });
     };
-    Main.prototype.relativeToAbsolute = function (content) {
+    Main.relativeToAbsolute = function (content) {
         //////change relative href of hyperlink and src of image in html string to absolute
-        chrome.storage.local.get(null, function (data) { console.info(data); });
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {
@@ -3672,7 +3731,7 @@ var BracketSelection = (function (_super) {
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
         selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
-        var samplingRate = 30;
+        var samplingRate = 50;
         var numSamples = 0;
         var totalScore = 0;
         var hitCounter = new collections.Dictionary(function (elem) { return elem.outerHTML.toString(); });
@@ -3681,8 +3740,11 @@ var BracketSelection = (function (_super) {
         for (var x = selectionBB.x; x < selectionBB.x + selectionBB.w; x += samplingRate) {
             for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
                 var hitElem = document.elementFromPoint(x, y);
-                if ($(hitElem).height() > selectionBB.h + 50)
+                if ($(hitElem).height() > selectionBB.h + selectionBB.h / 2.0) {
                     continue;
+                }
+                else {
+                }
                 numSamples++;
                 //if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
                 //    continue;
@@ -3705,6 +3767,7 @@ var BracketSelection = (function (_super) {
         }
         var maxScore = -10000;
         var bestMatch = null;
+        console.log(hitCounter);
         hitCounter.forEach(function (k, v) {
             if (v > maxScore) {
                 maxScore = v;
@@ -3716,6 +3779,8 @@ var BracketSelection = (function (_super) {
         hitCounter.forEach(function (k, v) {
             candidates.push(v);
         });
+        console.log("initial candidates");
+        console.log(candidates);
         var std = Statistics.getStandardDeviation(candidates, precision);
         var maxDev = maxScore - 2 * std;
         var finalCandiates = [];
@@ -3724,18 +3789,65 @@ var BracketSelection = (function (_super) {
                 finalCandiates.push(k);
             }
         });
-        var selectedElements = finalCandiates.filter(function (candidate) {
-            var containedByOtherCandidate = false;
-            finalCandiates.forEach(function (otherCandidate) {
-                if (candidate != otherCandidate && $(otherCandidate).has(candidate)) {
-                    containedByOtherCandidate = true;
-                }
-            });
-            return !containedByOtherCandidate;
+        console.log("initial candidates");
+        console.log(finalCandiates);
+        //finalCandiates = [finalCandiates[0]];
+        /*
+        var selectedElements = finalCandiates.filter((candidate) => {
+            
+            if ($(candidate).prop('style').float == "left") {
+                console.log("found float");
+                return true;
+            }
+
+            return false;
         });
+        
+        if (selectedElements.length == 0) {
+            selectedElements = finalCandiates.filter((candidate) => {
+           
+                if ($(candidate).offset().left - selectionBB.x < 100) {
+                    return true;
+                }
+
+                return false;
+            });
+        }
+        */
+        finalCandiates.concat().forEach(function (c) {
+            var maxDelta = 120;
+            var largerParents = [];
+            var parents = $(c).parents();
+            for (var i = 0; i < parents.length; i++) {
+                var parent = $(parents[i]);
+                if (parent.width() - $(c).width() < maxDelta && parent.height() - $(c).height() < maxDelta) {
+                    var index = finalCandiates.indexOf(c);
+                    if (index > 0) {
+                        finalCandiates.splice(index, 1);
+                        largerParents.push(parent[0]);
+                    }
+                }
+            }
+            if (largerParents.length > 0)
+                finalCandiates.push(largerParents.pop());
+        });
+        console.log("initial candidates with parents");
+        console.log(finalCandiates);
+        var selectedElements = finalCandiates.filter(function (candidate) {
+            if ($(candidate).offset().left - selectionBB.x < 100) {
+                return true;
+            }
+            return false;
+        });
+        console.log("selected elements");
+        console.log(selectedElements);
         this._clientRects = new Array();
         var result = "";
         selectedElements.forEach(function (el) {
+            $(el).find("img")["andSelf"]().each(function (i, e) {
+                $(e).attr("src", e.src);
+                $(e).removeAttr("srcset");
+            });
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
@@ -3744,9 +3856,6 @@ var BracketSelection = (function (_super) {
             _this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
             result += el.outerHTML;
         });
-        console.log(this._clientRects);
-        console.log("final candidates");
-        console.log(selectedElements);
         this._content = result;
     };
     BracketSelection.prototype.getContent = function () {
@@ -3967,6 +4076,11 @@ var MarqueeSelection = (function (_super) {
         if (sel.outerHTML == "") {
             this._content = sel.innerHTML;
         }
+        $(sel).find("img")["andSelf"]().each(function (i, e) {
+            console.log(e.src);
+            $(e).attr("src", e.src);
+            $(e).removeAttr("srcset");
+        });
         this._content = sel.outerHTML;
     };
     MarqueeSelection.prototype.commonAncestor = function (node1, node2) {

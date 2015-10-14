@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <link href="styles.css" rel="stylesheet"/>
+    <link href="shuffleStyles.css" rel="stylesheet"/>
+
+    <title>cTed</title>
+</head>
+<body>
+
+    <section id="demo">
+        <div class="container-fluid">
+            <h2>Your Selections</h2>
+        </div>
+
+        <div class="container-fluid filter search_container">
+
+            <div class="row-fluid ">
+                <input class="filter__search js-shuffle-search" type="search" placeholder="Search..." />
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="filter-options">                       
+                    </div>
+                </div>
+            <!--
+            <div class="span3">
+                <div class="m-nofloat pull-right">
+                    <p class="filter__label">Sort:</p>
+                    <select class="sort-options">
+                        <option value>Default</option>
+                        <option value="title">Title</option>
+                        <option value="date-created">Date Created</option>
+                    </select>
+                </div>
+            </div>
+                -->
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div id="grid" class="row-fluid m-row shuffle--container shuffle--fluid">
+                <div class="span3 m-span3 shuffle__sizer"></div>
+            </div>
+        </div>
+    </section>
+
+
+<script type="text/template" class="template">
+        <figure class="span5 m-span5 picture-item" data-groups='<%- rc.tags %>' data-date-created=" <%- rc.timestamp %>" data-title=" <%- rc.title %>">
+            <div class="picture-item__inner">
+                <iframe class="contentframe" frameborder="0" style=""></iframe>
+                <div class="picture-item__details clearfix">
+                    <figcaption class="picture-item__title pull-left"><a href="<%- rc.url %>" target="_blank"><%- rc.displayUrl %></a></figcaption>
+                    <p class="picture-item__tags pull-right"><%- rc.tagArray %></p>
+                </div>
+            </div>
+        </figure>  
+    
+</script>
+
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="throttle.js"></script>
+    <script type="text/javascript" src="jquery.shuffle.modernizr.js"></script>
+    <script type="text/javascript" src="jquery.shuffle.min.js"></script>
+    <script type="text/javascript" src="underscore.js"></script>
+    <script type="text/javascript" src="allselections.js"></script>
+</body>
+</html>

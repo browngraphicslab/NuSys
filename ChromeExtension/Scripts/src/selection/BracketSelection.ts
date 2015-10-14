@@ -66,7 +66,7 @@ class BracketSelection extends AbstractSelection{
        
         selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
 
-        var samplingRate = 30;
+        var samplingRate = 50;
         var numSamples = 0;
         var totalScore = 0;
         var hitCounter = new collections.Dictionary<Element, number>((elem:Element)=>{return (<HTMLElement>elem).outerHTML.toString()});
@@ -77,8 +77,12 @@ class BracketSelection extends AbstractSelection{
             for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
                 var hitElem = document.elementFromPoint(x, y);
 
-                if ($(hitElem).height() > selectionBB.h + 50)
+                if ($(hitElem).height() > selectionBB.h + selectionBB.h/2.0) {
                     continue;
+                } else {
+                   // console.log("hit");
+                   // console.log(hitElem); 
+                }
 
                 numSamples++;
 
@@ -107,6 +111,7 @@ class BracketSelection extends AbstractSelection{
         
         var maxScore = -10000;
         var bestMatch = null;
+        console.log(hitCounter);
         hitCounter.forEach((k, v) => {
 
             if (v > maxScore) {
@@ -121,6 +126,9 @@ class BracketSelection extends AbstractSelection{
         hitCounter.forEach((k, v) => {            
             candidates.push(v);
         });
+
+        console.log("initial candidates");
+        console.log(candidates);
         
         var std = Statistics.getStandardDeviation(candidates, precision);
         var maxDev = maxScore - 2 * std;
@@ -132,19 +140,77 @@ class BracketSelection extends AbstractSelection{
             }
         });
 
+        console.log("initial candidates");
+        console.log(finalCandiates);
+
+        //finalCandiates = [finalCandiates[0]];
+
+  
+        /*
         var selectedElements = finalCandiates.filter((candidate) => {
-            var containedByOtherCandidate = false;
-            finalCandiates.forEach((otherCandidate) => {
-                if (candidate != otherCandidate && $(otherCandidate).has(candidate)) {
-                    containedByOtherCandidate = true;
-                }
-            });
-            return !containedByOtherCandidate;
+            
+            if ($(candidate).prop('style').float == "left") {
+                console.log("found float");
+                return true;
+            }
+
+            return false;
         });
+        
+        if (selectedElements.length == 0) {
+            selectedElements = finalCandiates.filter((candidate) => {
+           
+                if ($(candidate).offset().left - selectionBB.x < 100) {
+                    return true;
+                }
+
+                return false;
+            });
+        }
+        */
+
+        finalCandiates.concat().forEach((c) => {
+            var maxDelta = 120;
+            var largerParents = [];
+            var parents = $(c).parents();
+            for (var i = 0; i < parents.length; i++) {
+                var parent = $(parents[i]);
+                if (parent.width() - $(c).width() < maxDelta && parent.height() - $(c).height() < maxDelta) {
+                    var index = finalCandiates.indexOf(c);
+                    if (index >0) {
+                        finalCandiates.splice(index, 1);
+                        largerParents.push(parent[0]);
+                    }
+                }
+            }
+            if (largerParents.length > 0)
+                finalCandiates.push(largerParents.pop());
+        });
+
+        console.log("initial candidates with parents");
+        console.log(finalCandiates);
+
+        var selectedElements = finalCandiates.filter((candidate) => {
+
+            if ($(candidate).offset().left - selectionBB.x < 100) {
+                return true;
+            }
+
+            return false;
+        });
+        
+
+        console.log("selected elements");
+        console.log(selectedElements);
 
         this._clientRects = new Array<ClientRect>();
         var result = "";
         selectedElements.forEach((el) => {
+
+            $(el).find("img")["andSelf"]().each((i, e: any) => {
+                $(e).attr("src", e.src);
+                $(e).removeAttr("srcset");
+            }); 
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
@@ -153,9 +219,7 @@ class BracketSelection extends AbstractSelection{
             this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
            result += el.outerHTML;
         });
-        console.log(this._clientRects);
-        console.log("final candidates");
-        console.log(selectedElements);
+       
 
         this._content = result;
     }

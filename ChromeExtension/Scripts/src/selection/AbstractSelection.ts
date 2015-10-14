@@ -3,6 +3,7 @@
     id: number;
     url: string;
     className: string;
+    tags:string;
     public selectedElements:Array<any> = new Array<any>();
 
     constructor(className) {
