@@ -107,7 +107,8 @@
                 }
 
                 var text = $.trim($el.find('.picture-item__title').text()).toLowerCase();
-                return text.indexOf(val) !== -1;
+                var text2 = $.trim($el.find('.html_content').text()).toLowerCase();
+                return text.indexOf(val) !== -1 || text2.indexOf(val) !== -1;
             });
         });
     },
@@ -193,14 +194,14 @@ $(document).ready(function () {
 
 
             var tpl = $(template(item));
-            $(tpl).find(".contentframe")[0].src = "data:text/html;charset=utf-8,"
-                + encodeURI('<html><head>' +
-                    '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel="stylesheet" type="text/css">'
-                    + '<style> '
-                      + 'body { font-family: "Open Sans", sans-serif; font-size:75%;} ' +
+            $(tpl).find(".contentframe")[0].srcdoc = ""
+                + '<html><head>' +
+                '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel="stylesheet" type="text/css">'
+                + '<style> '
+                + 'body { font-family: "Open Sans", sans-serif; font-size:75%;} ' +
                 "::-webkit-scrollbar { width: 7px; } ::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3); -webkit-border-radius: 10px; border-radius: 10px; } ::-webkit-scrollbar-thumb { -webkit-border-radius: 10px; border-radius: 10px; background: rgba(48,48,48,0.4); -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); } ::-webkit-scrollbar-thumb:window-inactive { background: rgba(255,0,0,0.4); } "
-                +    '</style></head><body>'
-                + val._content + "</body></html>");
+                + '</style></head><body>'
+                + val._content + "</body></html>";
 
             console.log($(tpl).find(".contentframe"));
 

@@ -1,20 +1,19 @@
 
     <div class="enabler">
-        <div class="btnclose"></div>
 
     <div class="popup_menu">
-        <button id="btnLineSelect" class="menu_button btnTextSelect active"></button>
-        <button id="btnBlockSelect" class="menu_button btnBlockSelect"></button>
-        <button id="btnViewAll" class="menu_button">View All</button>
-        <span class="label_enabled">Enabled</span>
+        <h2>cTed</h2>
+        <div class="tag_container">
+            <input type="text" id="tagfield" placeholder="Tags..." />
+        </div>
         <div class="switch">
             <input id="toggle" class="toggle toggle-round" type="checkbox">
             <label for="toggle"></label>
         </div>
-        <div class="tag_container">
-            <span class="label_tags">Tags:</span>
-            <input type="text" id="tagfield" placeholder="Tags..."/>
-        </div>
+        <button id="btnViewAll" class="menu_button">
+            View All
+        </button>
+
         <button id="btnExpand"></button>
     </div>
 
@@ -24,9 +23,23 @@
         body {
             
         }
+
+        #btnViewAll {
+            position: absolute;
+            top: 17px;
+            right: 9px;
+            color: white;
+            background-color: rgba(55, 154, 228, 0.6);
+        }
+
+        h2 {
+            color: white;
+            margin: 0;
+            margin-bottom: 10px;
+        }
          .enabler {
              text-align: left;
-             min-height: 110px;
+             min-height: 97px;
              background: rgba(0, 0, 0, 0.8);
              font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
              font-size: 12px;
@@ -54,13 +67,14 @@
         }
 
         .tag_container {
-            margin-top: 20px;
+            margin-top: 15px;
+            width: 100%;
         }
 
         #tagfield {
             display: inline-block;
-            width: 216px;
-            height: 22px;
+            width: 82%;
+            height: 28px;
             border-radius: 12px 12px;
             border: 2px solid lightgrey;
             background-color: transparent;
@@ -70,8 +84,8 @@
 
         #btnExpand {
             position: absolute;
-            top: 80px;
-            right: 30px;
+            top: 55px;
+            right: 15px;
             cursor: pointer;
             border: none;
             width: 25px;
@@ -127,12 +141,15 @@
 
         .switch {
             margin-left: 20px;
-            display: inline-block;
+            display: block;
             vertical-align: middle;
+            position: absolute;
+            top: 18px;
+            left: 50px;
         }
 
         .popup_menu {
-            display: inline-block;
+            display: block;
             margin: 15px 15px;
         }
 
@@ -168,10 +185,9 @@
         .menu_button {
             cursor: pointer;
             border: solid #CECECE 2px;
-            border-radius: 50%;
+            border-radius: 10px;
             background-color: #ADADAD;
-            width: 43px;
-            height: 43px;
+            padding: 3px 5px;
             font-size: 12px;
             font-weight: bold;
             vertical-align: middle;
@@ -263,7 +279,7 @@
         }
 
         input.toggle-round:checked + label:before {
-            background-color: #8ce196;
+            background-color: #379ae4;
         }
 
         input.toggle-round:checked + label:after {

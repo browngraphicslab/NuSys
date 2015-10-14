@@ -244,11 +244,11 @@ class Main {
     }
 
     toggleEnabled(flag: boolean): void {
+
         $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.isEnabled = flag;
 
-        console.log(this.selections)
         this.selections.forEach((selection) => {
             if (flag) {
                 selection.select();
@@ -257,6 +257,17 @@ class Main {
         });
 
         if (this.isEnabled) {
+
+            this.currentStrokeType = StrokeType.Bracket;
+            try {
+                document.body.appendChild(this.canvas);
+            } catch (ex) {
+                console.log("could't add canvas");
+            }
+            document.removeEventListener("mouseup", this.documentUp);
+
+
+
             window.addEventListener("mouseup", this.windowUp);
             document.body.addEventListener("mousedown", this.documentDown);
             document.addEventListener("scroll", this.documentScroll);
@@ -316,6 +327,15 @@ class Main {
 
         var hitElem = document.elementFromPoint(e.clientX, e.clientY);
         console.log(hitElem);
+       if (hitElem.nodeName == "A") {
+           var link = hitElem.getAttribute("href").toString();
+
+           if (link.indexOf("http") == -1) {
+               link = "http://" + window.location.host + link;
+           }
+           console.log(link);
+           window.open(link, "_self");
+       }
 
         switch (this.currentStrokeType) {
 

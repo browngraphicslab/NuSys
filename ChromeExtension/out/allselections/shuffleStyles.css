@@ -40,6 +40,9 @@ h2::after {
     font-size: 14px;
 }
 
+.html_content {
+    display: none;
+}
 
 .picture-item__details {
     font-size: 12px;
