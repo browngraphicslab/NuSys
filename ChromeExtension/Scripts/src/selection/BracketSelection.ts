@@ -151,7 +151,7 @@ class BracketSelection extends AbstractSelection{
             this._clientRects = this._clientRects.concat.apply([], rects);
             var index = $(el.tagName).index(el);
             this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
-            result += el.outerHTML;
+           result += el.outerHTML;
         });
         console.log(this._clientRects);
         console.log("final candidates");

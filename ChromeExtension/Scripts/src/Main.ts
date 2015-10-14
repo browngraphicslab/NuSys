@@ -215,6 +215,7 @@ class Main {
         this.selections.forEach((selection) => {
             if (flag) {
                 selection.select();
+                
             } else
                 selection.deselect();
         });

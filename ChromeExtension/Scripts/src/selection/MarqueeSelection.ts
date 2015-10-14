@@ -1,5 +1,11 @@
 ﻿/// <reference path="../ink/brush/MarqueeBrush.ts" />
 
+
+///find parent element p of word 
+///find word index compared to container
+///store/ find/ color 
+
+
 class MarqueeSelection extends AbstractSelection {
 
     _brushStroke: BrushStroke;
@@ -17,6 +23,7 @@ class MarqueeSelection extends AbstractSelection {
     _ct: number = 0;
     _content: string = "";
     _offsetY: number = 0;
+    _selectedElement: Array<any> = new Array<any>();
 
 
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
@@ -90,6 +97,7 @@ class MarqueeSelection extends AbstractSelection {
 //        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
+        console.log(this.selectedElements);
     }
 
     deselect(): void {
@@ -191,6 +199,33 @@ class MarqueeSelection extends AbstractSelection {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     }
     
+    addToHighLights(el: Element, txtindx: Number): void {
+        console.log("ADD TO HIGHLIGHTS====================");
+        console.info(el);
+        console.log(el.attributes);
+        var index = $(el.tagName).index(el);
+        console.log(index);
+        var obj = { type: "marquee", tagName: el.tagName, index: index };
+        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
+            console.log("-------------DIFFICULT--------------");
+            console.log(el.attributes);
+            var par = el.attributes[0]["ownerElement"].parentElement;
+            if (el.tagName == "WORD") {
+                
+                var startIndex = Array.prototype.indexOf.call(par.childNodes, el);
+                par = par.parentElement;
+                obj["wordIndx"] = startIndex;
+            }
+            var parIndex = $(par.tagName).index(par);
+            obj["parIndex"] = parIndex;
+            obj["txtnIndx"] = txtindx;
+            obj["par"] = par.tagName;
+           obj["val"] = el;
+            
+            console.log(el.attributes[0]["ownerElement"].parentElement);   
+        }
+        this.selectedElements.push(obj);
+    }
 
     analyzeContent(): void {
         if (this._parentList.length != 1) {                     //finds the common parent of all elements in _parentList
@@ -203,7 +238,6 @@ class MarqueeSelection extends AbstractSelection {
         var selX = $(this._parentList[0]).clone(true);
         
         this.rmChildNodes(sel, this._parentList[0]);
-
         var htmlString = sel.innerHTML.replace(/"/g, "'");
         if (sel.outerHTML == "") {
             this._content= sel.innerHTML;
@@ -302,20 +336,22 @@ class MarqueeSelection extends AbstractSelection {
         }
 
         for (var i = 0; i < el.childNodes.length; i++) {
+           //console.log("====================!!!!" + startIndex);
+             var startIndex = Array.prototype.indexOf.call(el.childNodes, el.childNodes[i]);
+
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
+                    console.log(el.childNodes);
                     var index = indexList[i];
-
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
-
-
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
-                         //   console.log((trueEl.childNodes[index].childNodes[j]));
-                           // console.log("YELLOW!!!!!!!!!!!!");
+                            //   console.log((trueEl.childNodes[index].childNodes[j]));
+                            // console.log("YELLOW!!!!!!!!!!!!");
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], startIndex);
                             }
                             //else {
                             //   var wrap = document.createElement('span');
@@ -337,18 +373,22 @@ class MarqueeSelection extends AbstractSelection {
                 }
             }   
             else {
-                console.log(realNList[i]);
-                if (realNList[i].nodeName == "#text") {
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<word>" + $(realNList[i]).text() + "</word>");
-                    console.log("=====================");
-                   
+                console.log("BOUNDEDDDD=====");
+                console.log(trueEl.childNodes[indexList[i]]);
+                startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+                
+                if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
+                    console.log("-----------TEXT?-------");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
                 }
                 //$(realNList[i]).css("background-color", "yellow"); 
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                console.log(startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], startIndex);
+                 
                 //if (trueEl.childNodes[index].childNodes[j]) {
                 //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                 //}
-                console.log("!!!!!!!!!!!!!!!!!!!!!!BOUNDDED");
 
                // realNList[i].style.backgroundColor = "yellow";
             }
@@ -363,7 +403,7 @@ class MarqueeSelection extends AbstractSelection {
         el.style.font = elStyle.font;
     }
 
-    getRealHeightWidth(rectsList): Array<number> {
+        getRealHeightWidth(rectsList): Array<number> {
         //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
         var maxH = Number.NEGATIVE_INFINITY;
         var minH = Number.POSITIVE_INFINITY;
