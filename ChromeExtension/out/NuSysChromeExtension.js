@@ -2756,10 +2756,19 @@ var AbstractSelection = (function () {
 /// <reference path="AbstractSelection.ts"/>
 var LineSelection = (function (_super) {
     __extends(LineSelection, _super);
-    function LineSelection(inkCanvas) {
+    function LineSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
         _super.call(this, "LineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
+        console.log("making line selection");
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
     }
     LineSelection.prototype.start = function (x, y) {
         this._inkCanvas.startDrawing(x, y, new HighlightBrush());
@@ -2771,7 +2780,8 @@ var LineSelection = (function (_super) {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
         this.analyzeContent();
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this.select();
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
         this._inkCanvas.update();
     };
     LineSelection.prototype.deselect = function () {
@@ -2825,6 +2835,9 @@ var LineSelection = (function (_super) {
             this._range.setStart(nStart, 0);
             this._range.setEndAfter(nEnd);
             this._clientRects = this._range.getClientRects();
+            $(nStart).nextUntil($(nEnd)).css("background-color", "yellow");
+            $(nStart).css("background-color", "yellow");
+            $(nEnd).css("background-color", "yellow");
             var frag = this._range.cloneContents();
             var result = "";
             $.each(frag["children"], function () {
@@ -2832,7 +2845,8 @@ var LineSelection = (function (_super) {
             });
             result = result.replace(/\s\s+/g, ' ').trim();
             this._content = result;
-            $(commonParent).replaceWith(original_content);
+            //$(commonParent).replaceWith(original_content);
+            console.log("done analyzing line selection.");
         }
     };
     LineSelection.prototype.getContent = function () {
@@ -2938,14 +2952,19 @@ var Main = (function () {
             if (!_this.isSelecting) {
                 return;
             }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
-                if (_this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
+                if (_this.currentStrokeType != StrokeType.Line && currType == GestureType.Horizontal) {
+                    _this.selection = new LineSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Line;
+                    _this.inkCanvas.redrawActiveStroke();
+                }
+                if (_this.currentStrokeType != StrokeType.Marquee && currType == GestureType.Diagonal) {
                     _this.selection = new MarqueeSelection(_this.inkCanvas, true);
                     _this.currentStrokeType = StrokeType.Marquee;
                     _this.inkCanvas.redrawActiveStroke();
                 }
-                if (_this.currentStrokeType == StrokeType.Marquee && currType == GestureType.Horizontal) {
+                if (_this.currentStrokeType != StrokeType.Bracket && currType == GestureType.Vertical) {
                     _this.selection = new BracketSelection(_this.inkCanvas, true);
                     _this.currentStrokeType = StrokeType.Bracket;
                     _this.inkCanvas.redrawActiveStroke();
@@ -2954,10 +2973,19 @@ var Main = (function () {
             }
         };
         this.documentDown = function (e) {
+            try {
+                document.body.removeChild(_this.canvas);
+            }
+            catch (e) {
+                console.log("no canvas visible." + e);
+            }
+            var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+            console.log(hitElem);
             switch (_this.currentStrokeType) {
                 case StrokeType.MultiLine:
                     _this.selection = new MultiLineSelection(_this.inkCanvas);
                     break;
+                case StrokeType.Line:
                 case StrokeType.Bracket:
                     _this.selection = new BracketSelection(_this.inkCanvas);
                     break;
@@ -2965,7 +2993,7 @@ var Main = (function () {
                     _this.selection = new MarqueeSelection(_this.inkCanvas);
                     break;
             }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 console.log("current selection: " + _this.currentStrokeType);
                 document.body.appendChild(_this.canvas);
                 _this.canvas.addEventListener("mousemove", _this.mouseMove);
@@ -3015,7 +3043,7 @@ var Main = (function () {
                 return;
             }
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 document.body.removeChild(_this.canvas);
                 $(_this.menuIframe).hide();
                 _this.selection.end(e.clientX, e.clientY);
@@ -3635,7 +3663,7 @@ var BracketSelection = (function (_super) {
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
         selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
-        var samplingRate = 30;
+        var samplingRate = 50;
         var numSamples = 0;
         var totalScore = 0;
         var hitCounter = new collections.Dictionary(function (elem) { return elem.outerHTML.toString(); });
@@ -3644,8 +3672,11 @@ var BracketSelection = (function (_super) {
         for (var x = selectionBB.x; x < selectionBB.x + selectionBB.w; x += samplingRate) {
             for (var y = selectionBB.y; y < selectionBB.y + selectionBB.h; y += samplingRate) {
                 var hitElem = document.elementFromPoint(x, y);
-                if ($(hitElem).height() > selectionBB.h + 50)
+                if ($(hitElem).height() > selectionBB.h + selectionBB.h / 2.0) {
                     continue;
+                }
+                else {
+                }
                 numSamples++;
                 //if (($(hitElem).width() * $(hitElem).height()) / (selectionBB.w * selectionBB.h) < 0.1)
                 //    continue;
@@ -3668,6 +3699,7 @@ var BracketSelection = (function (_super) {
         }
         var maxScore = -10000;
         var bestMatch = null;
+        console.log(hitCounter);
         hitCounter.forEach(function (k, v) {
             if (v > maxScore) {
                 maxScore = v;
@@ -3679,6 +3711,8 @@ var BracketSelection = (function (_super) {
         hitCounter.forEach(function (k, v) {
             candidates.push(v);
         });
+        console.log("initial candidates");
+        console.log(candidates);
         var std = Statistics.getStandardDeviation(candidates, precision);
         var maxDev = maxScore - 2 * std;
         var finalCandiates = [];
@@ -3687,15 +3721,58 @@ var BracketSelection = (function (_super) {
                 finalCandiates.push(k);
             }
         });
-        var selectedElements = finalCandiates.filter(function (candidate) {
-            var containedByOtherCandidate = false;
-            finalCandiates.forEach(function (otherCandidate) {
-                if (candidate != otherCandidate && $(otherCandidate).has(candidate)) {
-                    containedByOtherCandidate = true;
-                }
-            });
-            return !containedByOtherCandidate;
+        console.log("initial candidates");
+        console.log(finalCandiates);
+        //finalCandiates = [finalCandiates[0]];
+        /*
+        var selectedElements = finalCandiates.filter((candidate) => {
+            
+            if ($(candidate).prop('style').float == "left") {
+                console.log("found float");
+                return true;
+            }
+
+            return false;
         });
+        
+        if (selectedElements.length == 0) {
+            selectedElements = finalCandiates.filter((candidate) => {
+           
+                if ($(candidate).offset().left - selectionBB.x < 100) {
+                    return true;
+                }
+
+                return false;
+            });
+        }
+        */
+        finalCandiates.concat().forEach(function (c) {
+            var maxDelta = 120;
+            var largerParents = [];
+            var parents = $(c).parents();
+            for (var i = 0; i < parents.length; i++) {
+                var parent = $(parents[i]);
+                if (parent.width() - $(c).width() < maxDelta && parent.height() - $(c).height() < maxDelta) {
+                    var index = finalCandiates.indexOf(c);
+                    if (index > 0) {
+                        finalCandiates.splice(index, 1);
+                        largerParents.push(parent[0]);
+                    }
+                }
+            }
+            if (largerParents.length > 0)
+                finalCandiates.push(largerParents.pop());
+        });
+        console.log("initial candidates with parents");
+        console.log(finalCandiates);
+        var selectedElements = finalCandiates.filter(function (candidate) {
+            if ($(candidate).offset().left - selectionBB.x < 100) {
+                return true;
+            }
+            return false;
+        });
+        console.log("selected elements");
+        console.log(selectedElements);
         this._clientRects = new Array();
         var result = "";
         selectedElements.forEach(function (el) {
@@ -3711,9 +3788,6 @@ var BracketSelection = (function (_super) {
             _this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
             result += el.outerHTML;
         });
-        console.log(this._clientRects);
-        console.log("final candidates");
-        console.log(selectedElements);
         this._content = result;
     };
     BracketSelection.prototype.getContent = function () {

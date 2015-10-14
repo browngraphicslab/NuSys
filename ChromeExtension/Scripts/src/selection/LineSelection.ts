@@ -15,10 +15,19 @@ class LineSelection extends AbstractSelection {
     _range:Range;
     _content:string;
 
-    constructor(inkCanvas: InkCanvas) {
+    constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
         super("LineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
+        console.log("making line selection");
+
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
     }
 
     start(x: number, y: number): void {
@@ -34,7 +43,9 @@ class LineSelection extends AbstractSelection {
         this._brushStroke = this._inkCanvas._activeStroke;
         this.analyzeContent();
 
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        this.select();
+
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
         this._inkCanvas.update();
     }
 
@@ -107,16 +118,22 @@ class LineSelection extends AbstractSelection {
             this._range.setEndAfter(nEnd);
             this._clientRects = this._range.getClientRects();
 
+            $(nStart).nextUntil($(nEnd)).css("background-color", "yellow");
+            $(nStart).css("background-color", "yellow");
+            $(nEnd).css("background-color", "yellow");
+
             var frag = this._range.cloneContents();
             var result = "";
             $.each(frag["children"], function () {
+               
                 result += $(this)[0].outerHTML.replace(/<word>|<\/word>/g, " ");
             });
             result = result.replace(/\s\s+/g, ' ').trim();
 
             this._content = result;
 
-            $(commonParent).replaceWith(original_content);
+            //$(commonParent).replaceWith(original_content);
+            console.log("done analyzing line selection.");
         }
     }
     

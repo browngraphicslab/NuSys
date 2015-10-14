@@ -281,17 +281,22 @@ class Main {
             return;
         }
 
-        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee || this.currentStrokeType == StrokeType.Line) {
             var currType = GestireClassifier.getGestureType(this.inkCanvas._activeStroke.stroke);
+            
+            if (this.currentStrokeType != StrokeType.Line && currType == GestureType.Horizontal) {
+                this.selection = new LineSelection(this.inkCanvas, true);
+                this.currentStrokeType = StrokeType.Line;
+                this.inkCanvas.redrawActiveStroke();
+            }
 
-            if (this.currentStrokeType == StrokeType.Bracket && currType == GestureType.Diagonal) {
+            if (this.currentStrokeType != StrokeType.Marquee && currType == GestureType.Diagonal) {
                 this.selection = new MarqueeSelection(this.inkCanvas, true);
                 this.currentStrokeType = StrokeType.Marquee;
                 this.inkCanvas.redrawActiveStroke();
-
             }
 
-            if (this.currentStrokeType == StrokeType.Marquee && currType == GestureType.Horizontal) {
+            if (this.currentStrokeType != StrokeType.Bracket && currType == GestureType.Vertical) {
                 this.selection = new BracketSelection(this.inkCanvas, true);
                 this.currentStrokeType = StrokeType.Bracket;
                 this.inkCanvas.redrawActiveStroke();
@@ -302,10 +307,22 @@ class Main {
     }
 
     documentDown = (e): void => {
+
+        try {
+            document.body.removeChild(this.canvas);
+        } catch (e) {
+            console.log("no canvas visible." + e);
+        }
+
+        var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+        console.log(hitElem);
+
         switch (this.currentStrokeType) {
+
         case StrokeType.MultiLine:
             this.selection = new MultiLineSelection(this.inkCanvas);
             break;
+        case StrokeType.Line:
         case StrokeType.Bracket:
             this.selection = new BracketSelection(this.inkCanvas);
             break;
@@ -314,7 +331,7 @@ class Main {
             break;
         }
 
-        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee || this.currentStrokeType == StrokeType.Line) {
             console.log("current selection: " + this.currentStrokeType);
             document.body.appendChild(this.canvas);
             this.canvas.addEventListener("mousemove", this.mouseMove);
@@ -376,7 +393,7 @@ class Main {
 
         this.canvas.removeEventListener("mousemove", this.mouseMove);
         
-        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee) {
+        if (this.currentStrokeType == StrokeType.Bracket || this.currentStrokeType == StrokeType.Marquee || this.currentStrokeType == StrokeType.Line) {
             document.body.removeChild(this.canvas);
             $(this.menuIframe).hide();
             this.selection.end(e.clientX, e.clientY);
