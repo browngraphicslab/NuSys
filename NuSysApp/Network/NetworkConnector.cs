@@ -22,7 +22,6 @@ namespace NuSysApp
         #endregion Private Members
 
         #region Public Members
-
         private ClientHandler _clientHandler;
         public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
         private ConcurrentDictionary<string, bool> _deletedIDs;
@@ -353,7 +352,7 @@ namespace NuSysApp
         {
             get { return _clientHandler.LocalIP(); }
         }
-        public async Task RequestSendPartialLine(string id, string canvasNodeID, string x1, string y1, string x2, string y2)
+        public async Task RequestSendPartialLine(string id, string canvasNodeID, string x1, string y1, string x2, string y2, string color = "black")
         {
             ThreadPool.RunAsync(async delegate
             {
@@ -361,6 +360,7 @@ namespace NuSysApp
             {
                 {"x1", x1},
                 {"x2", x2},
+                {"stroke",color },
                 {"y1", y1},
                 {"y2", y2},
                 {"id", id},
@@ -609,6 +609,16 @@ namespace NuSysApp
                                 Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
                             }
                             break;
+                    case NodeType.Video:
+                            try
+                            {
+                                data = ParseToByteArray(d);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                            }
+                        break;
                     }
                 }
                 await UITask.Run(async () => { await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data); });
@@ -623,7 +633,6 @@ namespace NuSysApp
             {
                 double x = 0;
                 double y = 0;
-
                 if (props.ContainsKey("x"))
                 {
                     double.TryParse(props["x"], out x);
@@ -632,7 +641,6 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-
                 await UITask.Run(async () => { await WorkSpaceModel.CreateEmptyGroup(id, x, y); });
             }
 
@@ -684,6 +692,11 @@ namespace NuSysApp
                             pc.Add(one);
                             pc.Add(two);
                             lineModel.Points = pc;
+                            lineModel.Stroke = new SolidColorBrush(Colors.Black);
+                            if (props.ContainsKey("stroke") && props["stroke"] != "black")
+                            {
+                                lineModel.Stroke = new SolidColorBrush(Colors.Yellow);
+                            }
                             canvas.AddTemporaryInqline(lineModel, id);
                         });
                     }
@@ -698,7 +711,7 @@ namespace NuSysApp
                             if (props.ContainsKey("data"))
                             {
                                 InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
-
+                                thickness = 2;
                                 if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
                                 {
                                     canvas.OnFinalizedLine += async delegate

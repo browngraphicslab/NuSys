@@ -3159,6 +3159,9 @@ var Main = (function () {
                 }
                 _this.currentStrokeType = StrokeType.Bracket;
             }
+            if (_this.selection.getContent() == "" || _this.selection.getContent() == " ") {
+                return;
+            }
             _this.selection.id = Date.now();
             _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
             _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
@@ -3270,6 +3273,9 @@ var Main = (function () {
         $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "106px", "z-index": 1001 });
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
+        $(this.menuIframe).contents().find("#btnExport").click(function (ev) {
+            chrome.runtime.sendMessage({ msg: "export" });
+        });
         $(this.menuIframe).contents().find("#btnLineSelect").click(function (ev) {
             if (_this.currentStrokeType == StrokeType.MultiLine)
                 return;
@@ -3744,10 +3750,10 @@ var BracketSelection = (function (_super) {
     BracketSelection.prototype.end = function (x, y) {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-        //this.analyzeContent();
-        //this.select();
-        //this._inkCanvas.removeBrushStroke(this._brushStroke);
-        //this._inkCanvas.update();
+        this.analyzeContent();
+        this.select();
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
     };
     BracketSelection.prototype.getBoundingRect = function () {
         var minX = 1000000;
@@ -3767,7 +3773,7 @@ var BracketSelection = (function (_super) {
         var _this = this;
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
-        selectionBB.w = Main.DOC_WIDTH / 2 - selectionBB.x; // TODO: fix this magic number
+        selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
         var samplingRate = 50;
         var numSamples = 0;
         var totalScore = 0;

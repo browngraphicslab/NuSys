@@ -19,7 +19,6 @@ namespace NuSysApp
         {
             Content = new ContentModel(byteArray, id);
             ByteArray = byteArray;
-            ID = id;
             MakeAudio(byteArray);
             //FileName = "nusysAudioCapture" + DateTime.Now + ".mp3";
         }

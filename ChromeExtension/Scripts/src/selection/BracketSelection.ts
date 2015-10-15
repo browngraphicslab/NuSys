@@ -34,11 +34,11 @@ class BracketSelection extends AbstractSelection{
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
-        //this.analyzeContent();
-        //this.select();
+        this.analyzeContent();
+        this.select();
 
-        //this._inkCanvas.removeBrushStroke(this._brushStroke);
-        //this._inkCanvas.update();
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
     }
 
     getBoundingRect(): Rectangle {
@@ -64,7 +64,7 @@ class BracketSelection extends AbstractSelection{
         var selectionBB = stroke.getBoundingRect();
 
        
-        selectionBB.w = Main.DOC_WIDTH/2 - selectionBB.x; // TODO: fix this magic number
+        selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
 
         var samplingRate = 50;
         var numSamples = 0;

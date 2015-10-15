@@ -32,8 +32,9 @@ namespace NuSysApp
 
             while (true)
             {
-                var match = Regex.Match(md, @"\[!\[.*\]\((.*)\)\]", RegexOptions.IgnoreCase);
-                Regex rgx = new Regex(@"\[!\[.*\]\(.*\)\]\(.*\)");
+                Debug.WriteLine(md);
+                var match = Regex.Match(md, @"!\[.*\]\((.*)\)", RegexOptions.IgnoreCase);
+                Regex rgx = new Regex(@"!\[.*\]\(.*\)");
                 md = rgx.Replace(md, rtfImagePlaceholder, 1);
 
                 if (match.Groups.Count <= 1)
@@ -41,7 +42,7 @@ namespace NuSysApp
                     break;
                 }
 
-                string imgUrl = "http:" + match.Groups[1].Value;
+                string imgUrl = match.Groups[1].Value;
                 var img = await DownloadImageFromWebsiteAsync(imgUrl);
 
                 imgData.Add(img);
@@ -166,6 +167,7 @@ namespace NuSysApp
             }
             catch (WebException ex)
             {
+                Debug.WriteLine("WEB EXCEPTION");
                 return null;
             }
         }

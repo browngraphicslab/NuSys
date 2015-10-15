@@ -4,10 +4,6 @@
 	"path" : "bin/Debug/ChromeNusysIntermediate.exe",
 	"type" : "stdio",
 	"allowed_origins": [
-<<<<<<< HEAD
-		"chrome-extension://gikomogoemcfechecjloalkehaobfemp/"
-=======
-		"chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop/"
->>>>>>> mvvm-inqlines
+		"chrome-extension://eklonkiohbnjgidcfbljmgbfbgkdonpb/"
 	]
 }

@@ -43,7 +43,8 @@ namespace NuSysApp
             var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
             this.DataContext = vm;
             Clip = new RectangleGeometry { Rect = new Rect(0, 0, Window.Current.Bounds.Width, Window.Current.Bounds.Height) };
-            _cortanaInitialized = false;          
+            _cortanaInitialized = false;
+            floatingMenu.WorkspaceView = this;
         }
 
 
@@ -128,6 +129,9 @@ namespace NuSysApp
                     break;
                 case Options.AddBucket:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this)));
+                    break;
+                case Options.AddVideo:
+                    await SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Video, isFixed), new FloatingMenuMode(this)));
                     break;
             }
         }

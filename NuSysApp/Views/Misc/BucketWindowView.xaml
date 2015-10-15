@@ -24,7 +24,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid BorderBrush="LightGray"  MaxHeight="180">
-                            <local:TextBoxExtended x:Name="textBox" Rtf="{Binding Rtf}" Width="720" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Calibri"
+                            <local:TextBoxExtended x:Name="textBox" Rtf="{Binding Rtf}" Width="720" Height="160"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Calibri"
                                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" IsHitTestVisible="False"  />
                         </Grid>
                     </DataTemplate>

@@ -165,6 +165,10 @@ class Main {
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
 
+        $(this.menuIframe).contents().find("#btnExport").click((ev) => {
+            chrome.runtime.sendMessage({ msg: "export" });
+        });
+
         $(this.menuIframe).contents().find("#btnLineSelect").click((ev) => {
             if (this.currentStrokeType == StrokeType.MultiLine)
                 return;
@@ -384,6 +388,7 @@ class Main {
         if (this.currentStrokeType == StrokeType.MultiLine)
             this.selection.end(e.clientX, e.clientY);
 
+       
         this.selection.id = Date.now();
         this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
@@ -438,6 +443,9 @@ class Main {
             this.currentStrokeType = StrokeType.Bracket;
         } 
         
+        if (this.selection.getContent() == "" || this.selection.getContent() == " ") {
+            return;
+        }
         this.selection.id = Date.now();
         this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();

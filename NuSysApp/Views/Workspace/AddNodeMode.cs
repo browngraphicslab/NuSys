@@ -105,7 +105,7 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
-            if (nodeType == NodeType.Document || nodeType == NodeType.Image || nodeType == NodeType.PDF)
+            if (nodeType == NodeType.Document || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
@@ -113,7 +113,7 @@ namespace NuSysApp
                 var fileType = storageFile.ContentType;
                 try
                 {
-                    CheckFileType(fileType);
+             //       CheckFileType(fileType); TODO readd
                 }
                 catch (Exception e)
                 {
@@ -140,6 +140,22 @@ namespace NuSysApp
                 if (Constants.PdfFileTypes.Contains(storageFile.FileType))
                 {
                     nodeType = NodeType.PDF;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync()){
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream)){
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                if (Constants.VideoFileTypes.Contains(storageFile.FileType))
+                {
+                    nodeType = NodeType.Video;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;

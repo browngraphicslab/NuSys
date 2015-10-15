@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Media.SpeechRecognition;
@@ -35,6 +36,8 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            string imgSrc = Regex.Match("asdfasdfasd", "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1].Value;
         }
 
         /// <summary>

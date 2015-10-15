@@ -2,6 +2,20 @@ var isOpen;
 var _isOpen = false;
 var _isActive = false;
 var _tags = "";
+var port = null;
+var localPort;
+
+chrome.runtime.onConnect.addListener(function (mesPort) {
+    localPort = mesPort;
+    console.debug("local messaging connected");
+
+    localPort.onMessage.addListener(function(msg) {
+        port.postMessage(msg);
+        console.debug("sent to nusys");
+    });
+});
+
+port = chrome.runtime.connectNative('com.browngraphicslab.chromenusysintermediate');
 
 chrome.storage.local.clear(function() {
     chrome.storage.local.set({ selections: [] });
@@ -19,6 +33,21 @@ chrome.extension.onMessage.addListener(function (request, sender, response) {
         });
     }
 
+    if (request.msg == "export") {
+        console.log("exporting!");
+        var allContent = [];
+        chrome.storage.local.get(function (cTedStorage) {
+
+            cTedStorage.selections.forEach(function (i, c) {
+                console.log(i);
+                allContent.push(i._content);
+            });
+            port.postMessage(JSON.stringify(allContent));
+ 
+        });
+
+        
+    }
     if (request.msg == "view_all")
         chrome.tabs.create({ 'url': chrome.extension.getURL('allselections/index.html') });
 
