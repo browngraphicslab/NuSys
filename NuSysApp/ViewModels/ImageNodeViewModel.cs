@@ -43,7 +43,7 @@ namespace NuSysApp
                 newDx = dx;
                 newDy = dx * ((ImageNodeModel)Model).Image.PixelHeight / ((ImageNodeModel)Model).Image.PixelWidth;
             }
-            if (newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
+            if ((newDx / WorkSpaceViewModel.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX && dx < 1) || (newDy / WorkSpaceViewModel.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY && dy < 1))
             {
                 return;
             }
