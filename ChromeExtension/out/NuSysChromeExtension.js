@@ -2713,24 +2713,35 @@ var DomUtil = (function () {
 var AbstractSelection = (function () {
     function AbstractSelection(className) {
         this.selectedElements = new Array();
+        this.selectedTags = new Array();
         this.className = className;
     }
     AbstractSelection.prototype.start = function (x, y) { };
     AbstractSelection.prototype.update = function (x, y) { };
     AbstractSelection.prototype.end = function (x, y) { };
     AbstractSelection.prototype.select = function () {
+        var _this = this;
         console.log("select");
+        console.log(this.selectedElements);
         this.selectedElements.forEach(function (selectedElement) {
-            var foundElement = $(selectedElement.tagName)[selectedElement.index];
-            if (foundElement.tagName.toLowerCase() == "img") {
-                var label = $("<span>Selected</span>");
-                label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
-                $("body").append(label);
-                label.css("top", $(foundElement).offset().top);
-                label.css("left", $(foundElement).offset().left);
+            if (selectedElement.type == "marquee") {
+                _this.parseSelections(selectedElement);
+                _this.highlightSelection(selectedElement);
             }
             else {
-                $(foundElement).css("background-color", "yellow");
+                console.log("-=-=====--=");
+                var foundElement = $(selectedElement.tagName)[selectedElement.index];
+                if (foundElement.tagName.toLowerCase() == "img") {
+                    var label = $("<span>Selected</span>");
+                    //label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", $(foundElement).offset().top);
+                    label.css("left", $(foundElement).offset().left);
+                }
+                else {
+                    $(foundElement).css("background-color", "yellow");
+                }
             }
         });
     };
@@ -2740,6 +2751,97 @@ var AbstractSelection = (function () {
             var foundElement = $(selectedElement.tagName)[selectedElement.index];
             $(foundElement).css("background-color", "");
         });
+    };
+    AbstractSelection.prototype.highlightCallback = function (parElement, obj) {
+        var words = parElement.childNodes; //[obj["txtnIndx"]];
+        console.log(words);
+        var wordList = words[obj["txtnIndx"]]["childNodes"];
+        console.log("===================================WORDLIST");
+        console.log(wordList);
+        console.log(obj);
+        var word = wordList[obj["wordIndx"]];
+        console.log(word);
+        //    $(word).replaceWith("<word style=\"background-color: yellow\">" + word[obj["wordIndx"]].textContent + "</word>");
+        //   word["style"]["backgroundColor"] = "yellow";
+        $(word).css("background-color", "yellow");
+    };
+    ;
+    AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
+        $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+        //callback(par, obj);
+    };
+    AbstractSelection.prototype.highlightSelection = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
+        }
+        else {
+            var parent = $(obj["par"])[obj["parIndex"]];
+            var textN = parent.childNodes[obj["txtnIndx"]];
+            if (tagName == "WORD") {
+                var word = textN.childNodes[obj["wordIndx"]];
+                $(word).css("background-color", "yellow");
+            }
+            else {
+                $(textN).css("background-color", "yellow");
+            }
+        }
+    };
+    AbstractSelection.prototype.parseSelections = function (obj) {
+        console.log("=======parseSelections====");
+        console.log(obj);
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            console.log(tagName + "=======================");
+            console.log(tagName != "WORD");
+            return;
+        }
+        //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
+        //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
+        //      return;
+        //  }
+        // this.selectedTags.push(tag);
+        // console.log(tag);
+        var parElement = $(obj["par"])[obj["parIndex"]];
+        console.log(parElement);
+        var textN = parElement.childNodes[obj["txtnIndx"]];
+        console.log(textN);
+        if (!textN) {
+            return;
+        }
+        if (textN.nodeName == "#text") {
+            if (tagName == "WORD") {
+                console.log("W------------------------");
+                console.log($(textN));
+                $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+            }
+            else if (tagName == "HILIGHT") {
+                console.log("H-----------------------");
+                console.log($(textN));
+                $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            }
+        }
+    };
+    AbstractSelection.prototype.selectMarqueeHighlights = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName == "WORD") {
+            console.log("W------------------------");
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            this.parseString(textN, parElement, obj, this.highlightCallback);
+            console.log(textN);
+        }
+        else if (tagName == "HILIGHT") {
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            $(parElement.childNodes[obj["txtnIndx"]]).css("background-color", "yellow");
+        }
+        else {
+            console.log(tagName);
+            var foundElement = $(tagName)[obj["index"]];
+            $(foundElement).css("background-color", "yellow");
+        }
     };
     AbstractSelection.prototype.getBoundingRect = function () { return null; };
     AbstractSelection.prototype.analyzeContent = function () { };
@@ -3153,6 +3255,7 @@ var Main = (function () {
                     }
                 });
                 sendResponse();
+                _this.updateSelectedList();
             }
         });
     }
@@ -3164,7 +3267,7 @@ var Main = (function () {
         this.menuIframe = $("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "106px", "z-index": 1001 });
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
         $(this.menuIframe).contents().find("#btnLineSelect").click(function (ev) {
@@ -3217,6 +3320,7 @@ var Main = (function () {
             if ($(ev.target).hasClass("active")) {
                 $(ev.target).removeClass("active");
                 $(list).removeClass("open");
+                $(_this.menuIframe).height(106);
             }
             else {
                 $(ev.target).addClass("active");
@@ -3640,10 +3744,10 @@ var BracketSelection = (function (_super) {
     BracketSelection.prototype.end = function (x, y) {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-        this.analyzeContent();
-        this.select();
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-        this._inkCanvas.update();
+        //this.analyzeContent();
+        //this.select();
+        //this._inkCanvas.removeBrushStroke(this._brushStroke);
+        //this._inkCanvas.update();
     };
     BracketSelection.prototype.getBoundingRect = function () {
         var minX = 1000000;
@@ -3663,7 +3767,7 @@ var BracketSelection = (function (_super) {
         var _this = this;
         var stroke = this._brushStroke.stroke;
         var selectionBB = stroke.getBoundingRect();
-        selectionBB.w = Main.DOC_WIDTH - selectionBB.x; // TODO: fix this magic number
+        selectionBB.w = Main.DOC_WIDTH / 2 - selectionBB.x; // TODO: fix this magic number
         var samplingRate = 50;
         var numSamples = 0;
         var totalScore = 0;
@@ -3797,6 +3901,9 @@ var BracketSelection = (function (_super) {
     return BracketSelection;
 })(AbstractSelection);
 /// <reference path="../ink/brush/MarqueeBrush.ts" />
+///find parent element p of word 
+///find word index compared to container
+///store/ find/ color 
 var MarqueeSelection = (function (_super) {
     __extends(MarqueeSelection, _super);
     function MarqueeSelection(inkCanvas, fromActiveStroke) {
@@ -3815,6 +3922,7 @@ var MarqueeSelection = (function (_super) {
         this._ct = 0;
         this._content = "";
         this._offsetY = 0;
+        this._selectedElement = new Array();
         this._inkCanvas = inkCanvas;
         if (fromActiveStroke) {
             var stroke = inkCanvas._activeStroke.stroke;
@@ -3870,9 +3978,12 @@ var MarqueeSelection = (function (_super) {
         }
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+        //        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
+        console.log(this.selectedElements);
     };
     MarqueeSelection.prototype.deselect = function () {
         this._inkCanvas.removeBrushStroke(this._brushStroke);
@@ -3964,6 +4075,32 @@ var MarqueeSelection = (function (_super) {
     };
     MarqueeSelection.prototype.getBoundingRect = function () {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
+    };
+    MarqueeSelection.prototype.addToHighLights = function (el, txtindx, wordindx) {
+        console.log("ADD TO HIGHLIGHTS====================");
+        console.info(el);
+        console.log(el.attributes);
+        var index = $(el.tagName).index(el);
+        console.log(index);
+        var obj = { type: "marquee", tagName: el.tagName, index: index };
+        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
+            console.log("-------------DIFFICULT--------------");
+            console.log(el.attributes);
+            var par = el.attributes[0]["ownerElement"].parentElement;
+            if (el.tagName == "WORD") {
+                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
+                par = par.parentElement;
+                obj["wordIndx"] = wordindx;
+                console.log(par);
+            }
+            var parIndex = $(par.tagName).index(par);
+            obj["parIndex"] = parIndex;
+            obj["txtnIndx"] = txtindx;
+            obj["par"] = par.tagName;
+            obj["val"] = el;
+            console.log(el.attributes[0]["ownerElement"].parentElement);
+        }
+        this.selectedElements.push(obj);
     };
     MarqueeSelection.prototype.analyzeContent = function () {
         if (this._parentList.length != 1) {
@@ -4067,13 +4204,38 @@ var MarqueeSelection = (function (_super) {
             el.removeChild(removed[i]);
         }
         for (var i = 0; i < el.childNodes.length; i++) {
+            //console.log("====================!!!!" + startIndex);
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
+                    //    var startIndex = trueEl.childNodes.indexOf(trueEl.childNodes[i]);
                     var index = indexList[i];
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
+                            //   console.log((trueEl.childNodes[index].childNodes[j]));
+                            // console.log("YELLOW!!!!!!!!!!!!");
+                            if (trueEl.childNodes[index].childNodes[j].style) {
+                                trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                                console.log(trueEl.childNodes[index]);
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                            }
+                            var foundElement = $(trueEl.childNodes[index]).find("img");
+                            console.log("FOUND IIIMMAAAAGGGEE!");
+                            if (foundElement.length > 0) {
+                                console.log("FOUND IMG");
+                                console.log(foundElement);
+                                var label = $("<span class='wow'>Selected</span>");
+                                label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                                $("body").append(label);
+                                label.css("top", $(foundElement).offset().top + "px");
+                                label.css("left", $(foundElement).offset().left + "px");
+                            }
+                            //else {
+                            //   var wrap = document.createElement('span');
+                            //   wrap.appendChild(trueEl.childNodes[index].childNodes[j]);
+                            //    wrap.style.backgroundColor = "yellow";
+                            //}
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     result += " ";
@@ -4089,6 +4251,30 @@ var MarqueeSelection = (function (_super) {
                 else {
                     this.rmChildNodes(el.childNodes[i], realNList[i]);
                 }
+            }
+            else {
+                console.log("BOUNDEDDDD=====");
+                console.log(trueEl.childNodes[indexList[i]]);
+                var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+                var foundElement = $(trueEl.childNodes[indexList[i]]).find("img");
+                console.log("FOUND IIIMMAAAAGGGEE!");
+                if (foundElement.length > 0) {
+                    console.log("FOUND IMG");
+                    console.log(foundElement);
+                    var label = $("<span class='wow'>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", ($(foundElement).offset().top - 5) + "px");
+                    label.css("left", ($(foundElement).offset().left - 5) + "px");
+                }
+                if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
+                    console.log("-----------TEXT?-------");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
+                }
+                //$(realNList[i]).css("background-color", "yellow"); 
+                trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                console.log(startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], 0);
             }
         }
     };

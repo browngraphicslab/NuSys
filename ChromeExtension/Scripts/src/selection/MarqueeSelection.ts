@@ -1,5 +1,11 @@
 ﻿/// <reference path="../ink/brush/MarqueeBrush.ts" />
 
+
+///find parent element p of word 
+///find word index compared to container
+///store/ find/ color 
+
+
 class MarqueeSelection extends AbstractSelection {
 
     _brushStroke: BrushStroke;
@@ -17,6 +23,7 @@ class MarqueeSelection extends AbstractSelection {
     _ct: number = 0;
     _content: string = "";
     _offsetY: number = 0;
+    _selectedElement: Array<any> = new Array<any>();
 
 
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
@@ -87,9 +94,14 @@ class MarqueeSelection extends AbstractSelection {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+//        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
+
+
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
+        console.log(this.selectedElements);
     }
 
     deselect(): void {
@@ -191,6 +203,34 @@ class MarqueeSelection extends AbstractSelection {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     }
     
+    addToHighLights(el: Element, txtindx: Number, wordindx): void {
+        console.log("ADD TO HIGHLIGHTS====================");
+        console.info(el);
+        console.log(el.attributes);
+        var index = $(el.tagName).index(el);
+        console.log(index);
+        var obj = { type: "marquee", tagName: el.tagName, index: index };
+        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
+            console.log("-------------DIFFICULT--------------");
+            console.log(el.attributes);
+            var par = el.attributes[0]["ownerElement"].parentElement;
+            if (el.tagName == "WORD") {
+
+                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
+                par = par.parentElement;
+                obj["wordIndx"] = wordindx;
+                console.log(par);
+            }
+            var parIndex = $(par.tagName).index(par);
+            obj["parIndex"] = parIndex;
+            obj["txtnIndx"] = txtindx;
+            obj["par"] = par.tagName;
+           obj["val"] = el;
+            
+            console.log(el.attributes[0]["ownerElement"].parentElement);   
+        }
+        this.selectedElements.push(obj);
+    }
 
     analyzeContent(): void {
         if (this._parentList.length != 1) {                     //finds the common parent of all elements in _parentList
@@ -203,7 +243,6 @@ class MarqueeSelection extends AbstractSelection {
         var selX = $(this._parentList[0]).clone(true);
         
         this.rmChildNodes(sel, this._parentList[0]);
-
         var htmlString = sel.innerHTML.replace(/"/g, "'");
         if (sel.outerHTML == "") {
             this._content= sel.innerHTML;
@@ -214,6 +253,12 @@ class MarqueeSelection extends AbstractSelection {
             $(e).attr("src", e.src);
             $(e).removeAttr("srcset");
         });
+
+   
+
+
+        
+
         this._content = sel.outerHTML;
     }
 
@@ -297,6 +342,8 @@ class MarqueeSelection extends AbstractSelection {
             else {
                 realNList.push(trueEl.childNodes[i]);
                 indexList.push(i);
+        //        console.log("PAAAAAASSSSSED!!");
+         //       console.log(trueEl.childNodes[i]);
             }
         }
 
@@ -306,16 +353,43 @@ class MarqueeSelection extends AbstractSelection {
         }
 
         for (var i = 0; i < el.childNodes.length; i++) {
+           //console.log("====================!!!!" + startIndex);
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
+                //    var startIndex = trueEl.childNodes.indexOf(trueEl.childNodes[i]);
+                    
                     var index = indexList[i];
-
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
-
-
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
+                            //   console.log((trueEl.childNodes[index].childNodes[j]));
+                            // console.log("YELLOW!!!!!!!!!!!!");
+                            if (trueEl.childNodes[index].childNodes[j].style) {
+                                trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                                console.log(trueEl.childNodes[index]);
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                            }
+
+                            var foundElement = $(trueEl.childNodes[index]).find("img");
+                                console.log("FOUND IIIMMAAAAGGGEE!");
+                                if (foundElement.length > 0) {
+                                console.log("FOUND IMG");
+                                console.log(foundElement);
+                                var label = $("<span class='wow'>Selected</span>");
+                                label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                                $("body").append(label);
+                                label.css("top", $(foundElement).offset().top + "px");
+                                label.css("left", $(foundElement).offset().left + "px");
+                            }
+
+                       
+
+                            //else {
+                            //   var wrap = document.createElement('span');
+                            //   wrap.appendChild(trueEl.childNodes[index].childNodes[j]);
+                            //    wrap.style.backgroundColor = "yellow";
+                            //}
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     result += " ";
@@ -329,7 +403,42 @@ class MarqueeSelection extends AbstractSelection {
                 else {
                     this.rmChildNodes(el.childNodes[i], realNList[i]);
                 }
+            }   
+            else {
+                console.log("BOUNDEDDDD=====");
+                console.log(trueEl.childNodes[indexList[i]]);
+                var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+
+           
+                var foundElement = $(trueEl.childNodes[indexList[i]]).find("img");
+                console.log("FOUND IIIMMAAAAGGGEE!");
+                if (foundElement.length > 0) {
+                    console.log("FOUND IMG");
+                    console.log(foundElement);
+                    var label = $("<span class='wow'>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding:"3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", ($(foundElement).offset().top-5) + "px");
+                    label.css("left", ($(foundElement).offset().left-5) + "px");
+                }
+
+                if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
+                    console.log("-----------TEXT?-------");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
+                }
+                //$(realNList[i]).css("background-color", "yellow"); 
+                trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                console.log(startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], 0);
+                 
+                //if (trueEl.childNodes[index].childNodes[j]) {
+                //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                //}
+
+               // realNList[i].style.backgroundColor = "yellow";
             }
+            
+
         }
     }
 
@@ -340,7 +449,7 @@ class MarqueeSelection extends AbstractSelection {
         el.style.font = elStyle.font;
     }
 
-    getRealHeightWidth(rectsList): Array<number> {
+        getRealHeightWidth(rectsList): Array<number> {
         //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
         var maxH = Number.NEGATIVE_INFINITY;
         var minH = Number.POSITIVE_INFINITY;
@@ -412,7 +521,7 @@ class MarqueeSelection extends AbstractSelection {
             return by1 < ay2;
         }
         else {
-            return false;
+            return false
         }
     }
 

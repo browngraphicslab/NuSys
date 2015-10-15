@@ -146,6 +146,7 @@ class Main {
                 });
 
                 sendResponse();
+                this.updateSelectedList();
             }
         });
     }
@@ -159,7 +160,7 @@ class Main {
         this.menuIframe = <HTMLIFrameElement>$("<iframe frameborder=0>")[0];
         document.body.appendChild(this.menuIframe);
         this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "140px", "z-index": 1001 });
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "106px", "z-index": 1001 });
 
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");
@@ -220,6 +221,7 @@ class Main {
             if ($(ev.target).hasClass("active")) {
                 $(ev.target).removeClass("active");
                 $(list).removeClass("open");
+                $(this.menuIframe).height(106);
 
             } else {
                 $(ev.target).addClass("active");
@@ -252,6 +254,7 @@ class Main {
         this.selections.forEach((selection) => {
             if (flag) {
                 selection.select();
+                
             } else
                 selection.deselect();
         });
@@ -386,7 +389,6 @@ class Main {
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
         this.selections.push(this.selection);
         chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
-
         this.selection = new MultiLineSelection(this.inkCanvas);
 
         this.updateSelectedList();
