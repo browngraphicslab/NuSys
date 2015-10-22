@@ -17,9 +17,14 @@ namespace NuSysApp
     {
 
         private bool _isMouseDown;
+
+        //these are used to update the displayed rectangle
         private Point _startPoint;
         private Point _currentPoint;
-        private Point _previousPoint;
+
+        //this is used to adjust the inq points to the correct values for the node
+        private Point _canvasStartPoint;
+
         private Rectangle _currentRect;
 
         public MultiSelectMode(WorkspaceView view) : base(view)
@@ -74,10 +79,10 @@ namespace NuSysApp
             {
                 return;
             }
-            _previousPoint = new Point(-1, -1);
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;
             _currentPoint = e.GetCurrentPoint(_view).Position;
+            _canvasStartPoint = e.GetCurrentPoint(_view.InqCanvas).Position;
             _view.InqCanvas.CapturePointer(e.Pointer);
         }
 
@@ -103,7 +108,6 @@ namespace NuSysApp
         {
             if (_isMouseDown)
             {
-                _previousPoint = _currentPoint;
                 _currentPoint = e.GetCurrentPoint(_view).Position;
                 UpdateVisableRect();
             }
@@ -172,13 +176,18 @@ namespace NuSysApp
                 var selectedLines = new List<InqLineModel>();
                 foreach (InqLineModel model in _view.InqCanvas.ViewModel.Model.Lines)
                 {
+                    InqLineModel newModel = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
+                    newModel.Stroke = model.Stroke;
+                    newModel.StrokeThickness = model.StrokeThickness;
+                    bool isContained = false;
                     foreach (var point in model.Points)
                     {
-                        if (r.Contains(point))
+                        newModel.AddPoint(new Point(point.X - _canvasStartPoint.X, point.Y - _canvasStartPoint.Y));
+                        if (!isContained && r.Contains(point))
                         {
-                            selectedLines.Add(model);
+                            isContained = true;
                             NetworkConnector.Instance.RequestDeleteSendable(model.ID);
-                            break;
+                            selectedLines.Add(newModel);
                         }
                     }
                 }

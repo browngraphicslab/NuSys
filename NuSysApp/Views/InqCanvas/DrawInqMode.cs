@@ -20,13 +20,8 @@ namespace NuSysApp
             // This adds the final line to the canvas, after the host send it to this client
             (((InqCanvasViewModel)view.DataContext).Model).OnFinalizedLine += delegate(InqLineModel lineModel)
             {
-                //var lineView = new InqLineView(new InqLineViewModel(lineModel));
-                var lm = new InqLineModel("");
-                lm.AddPoint(new Point(288, 48));
-                lm.AddPoint(new Point(248, 283));
-                var lineView = new InqLineView(new InqLineViewModel(lm));
-                lineView.StrokeThickness = 2;
-                lineView.Stroke = new SolidColorBrush(Colors.Black);
+                var lineView = new InqLineView(new InqLineViewModel(lineModel));
+                var points = lineModel.Points;
                 view.Children.Add(lineView);
             };
         }
