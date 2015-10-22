@@ -194,14 +194,15 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task<string> RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
-            ThreadPool.RunAsync(async delegate
+            string id = null;
+            await ThreadPool.RunAsync(async delegate
             {
                 if (x != "" && y != "" && nodeType != "")
                 {
                     Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
-                    string id = oldID == null ? _clientHandler.GetID() : oldID;
+                    id = oldID == null ? _clientHandler.GetID() : oldID;
                     props["x"] = x;
                     props["y"] = y;
                     props["nodeType"] = nodeType;
@@ -227,6 +228,7 @@ namespace NuSysApp
                     return;
                 }
             });
+            return id;
         }
 
         /*

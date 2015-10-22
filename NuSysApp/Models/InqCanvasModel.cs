@@ -85,7 +85,7 @@ namespace NuSysApp
         {
             this._lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
-            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
+            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
             OnFinalizedLine?.Invoke( line );
         }
 

@@ -35,7 +35,6 @@ namespace NuSysApp
             var pinModel = (PinModel) pinvm.Model;
 
             var vm = (WorkspaceViewModel)this.DataContext;
-
             var c = new CompositeTransform
             {
                 ScaleX = 1,

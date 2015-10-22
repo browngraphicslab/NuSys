@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
 using System;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -304,7 +305,7 @@ namespace NuSysApp
                 {
                     foreach (var model in linesToPromote)
                     {
-                        UITask.Run( async() =>
+                        UITask.Run(async () =>
                         {
                             //NetworkConnector.Instance.RequestLock(v.ID);
                             NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
