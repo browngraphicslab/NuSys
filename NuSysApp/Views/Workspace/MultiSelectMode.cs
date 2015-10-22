@@ -182,6 +182,7 @@ namespace NuSysApp
                     bool isContained = false;
                     foreach (var point in model.Points)
                     {
+                        //we need to adjust the point so that it is in the correct place on the node's canvas
                         newModel.AddPoint(new Point(point.X - _canvasStartPoint.X, point.Y - _canvasStartPoint.Y));
                         if (!isContained && r.Contains(point))
                         {
