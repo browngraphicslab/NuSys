@@ -75,7 +75,8 @@ namespace NuSysApp
                 if (subMessage.Length > 0)
                 {
                     Message props = new Message(subMessage);
-                    await HandleMessage(props); //handle each submessage
+                    //await HandleMessage(props); //handle each submessage
+                    await HandleMessage(props);
                     if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
                     {
                         await _clientHandler.SendMassTCPMessage(message);
@@ -731,7 +732,14 @@ namespace NuSysApp
                                 lineModel.Points = points;
                                 lineModel.Stroke = stroke;
                                 canvas.FinalizeLine(lineModel);
-                                WorkSpaceModel.Children.Add(id, lineModel);
+                                try
+                                {
+                                    WorkSpaceModel.Children.Add(id, lineModel);
+                                }
+                                catch (System.ArgumentException argument)
+                                {
+                                    Debug.Write(argument.StackTrace);
+                                }
 
                             }
                         });
