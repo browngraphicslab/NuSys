@@ -176,7 +176,7 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    //Children.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
+                    Children.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
                     break;
             }
         }
