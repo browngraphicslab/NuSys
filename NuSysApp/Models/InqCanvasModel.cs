@@ -30,6 +30,10 @@ namespace NuSysApp
             ID = id;
             _lines = new HashSet<InqLineModel>();
             _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
+            OnFinalizedLine += delegate(InqLineModel model)
+            {
+                int i = 0;
+            };
             /*
             _partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
             _partialLines.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args)

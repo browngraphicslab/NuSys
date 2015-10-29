@@ -18,12 +18,12 @@ namespace NuSysApp
         public DrawInqMode(InqCanvasView view)
         {
             // This adds the final line to the canvas, after the host send it to this client
-            (((InqCanvasViewModel)view.DataContext).Model).OnFinalizedLine += delegate(InqLineModel lineModel)
-            {
-                var lineView = new InqLineView(new InqLineViewModel(lineModel));
-                var points = lineModel.Points;
-                view.Children.Add(lineView);
-            };
+            //(((InqCanvasViewModel)view.DataContext).Model).OnFinalizedLine += delegate(InqLineModel lineModel)
+            //{
+            //    var lineView = new InqLineView(new InqLineViewModel(lineModel));
+            //    var points = lineModel.Points;
+            //    view.Children.Add(lineView);
+            //};
         }
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)

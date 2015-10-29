@@ -27,6 +27,12 @@ namespace NuSysApp
             Loaded += delegate
             {
                 _mode = new DrawInqMode(this);
+                _viewModel.Model.OnFinalizedLine += delegate(InqLineModel lineModel)
+                {
+                    var lineView = new InqLineView(new InqLineViewModel(lineModel));
+                    var points = lineModel.Points;
+                    this.Children.Add(lineView);
+                };
             };
         }
 
