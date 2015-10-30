@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -36,14 +37,42 @@ namespace NuSysApp
 
             var vm = (WorkspaceViewModel)this.DataContext;
 
-            var c = new CompositeTransform
+            _floatingMenu.WorkspaceView.TranslateXAnimation.To = -pinModel.X + Window.Current.Bounds.Width/2;
+            _floatingMenu.WorkspaceView.TranslateYAnimation.To = -pinModel.Y + Window.Current.Bounds.Height/2;
+            _floatingMenu.WorkspaceView.ScaleXAnimation.To = 1;
+            _floatingMenu.WorkspaceView.ScaleYAnimation.To = 1;
+            _floatingMenu.WorkspaceView.PinAnimationStoryboard.Completed += delegate(object o, object o1)
             {
-                ScaleX = 1,
-                ScaleY = 1,
-                TranslateX = -pinModel.X + Window.Current.Bounds.Width / 2,
-                TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
+                var c = new CompositeTransform
+                {
+                    ScaleX = 1,
+                    ScaleY = 1,
+                    TranslateX = -pinModel.X + Window.Current.Bounds.Width / 2,
+                    TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
+                };
+                vm.CompositeTransform = c;
             };
-            vm.CompositeTransform = c;
+            _floatingMenu.WorkspaceView.PinAnimationStoryboard.Begin();
+            
+
+
+            //        < !--< DoubleAnimation Duration = "0:0:0.2" To = "1.25" Storyboard.TargetProperty = "(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName = "SubMenu" d:
+            //IsOptimized = "True" />
+            //        < DoubleAnimation Duration = "0:0:0.2" To = "-73" Storyboard.TargetProperty = "(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName = "SubMenu" d:
+            //IsOptimized = "True" >
+            //            < DoubleAnimation.EasingFunction >
+            //                < CubicEase  EasingMode = "EaseOut" />
+            //            </ DoubleAnimation.EasingFunction >
+            //        </ DoubleAnimation > -->
+
+            //var c = new CompositeTransform
+            //{
+            //    ScaleX = 1,
+            //    ScaleY = 1,
+            //    TranslateX = -pinModel.X + Window.Current.Bounds.Width / 2,
+            //    TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
+            //};
+            //vm.CompositeTransform = c;
             e.Handled = true;
         }
 
