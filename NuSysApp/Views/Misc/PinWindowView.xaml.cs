@@ -53,26 +53,7 @@ namespace NuSysApp
                 vm.CompositeTransform = c;
             };
             _floatingMenu.WorkspaceView.PinAnimationStoryboard.Begin();
-            
 
-
-            //        < !--< DoubleAnimation Duration = "0:0:0.2" To = "1.25" Storyboard.TargetProperty = "(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName = "SubMenu" d:
-            //IsOptimized = "True" />
-            //        < DoubleAnimation Duration = "0:0:0.2" To = "-73" Storyboard.TargetProperty = "(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName = "SubMenu" d:
-            //IsOptimized = "True" >
-            //            < DoubleAnimation.EasingFunction >
-            //                < CubicEase  EasingMode = "EaseOut" />
-            //            </ DoubleAnimation.EasingFunction >
-            //        </ DoubleAnimation > -->
-
-            //var c = new CompositeTransform
-            //{
-            //    ScaleX = 1,
-            //    ScaleY = 1,
-            //    TranslateX = -pinModel.X + Window.Current.Bounds.Width / 2,
-            //    TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
-            //};
-            //vm.CompositeTransform = c;
             e.Handled = true;
         }
 

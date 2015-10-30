@@ -20,20 +20,7 @@
                     <DoubleAnimation x:Name="scaleYAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="inkBorder"/>
                 </Storyboard>
             </Border.Resources>
-            <!--< DoubleAnimation Duration = "0:0:0.2" To = "1.25" Storyboard.TargetProperty = "(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName = "SubMenu" d:
-            //IsOptimized = "True" />
-                //
-                <DoubleAnimation Duration = "0:0:0.2" To = "-73" Storyboard.TargetProperty = "(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName = "SubMenu" d:
-            //IsOptimized = "True" >
-                //
-                <DoubleAnimation.EasingFunction >
-                    //
-                    <CubicEase  EasingMode = "EaseOut" />
-                    //
-                </ DoubleAnimation.EasingFunction >
-                //
-                </ DoubleAnimation > -->
-                <local:InqCanvasView x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
+            <local:InqCanvasView x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
         </Border>
         <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All" >
             <Grid.RowDefinitions>
