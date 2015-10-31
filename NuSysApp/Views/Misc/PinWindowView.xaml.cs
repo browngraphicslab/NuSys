@@ -96,5 +96,24 @@ namespace NuSysApp
             vm.Model.OnPinCreation += vm.CreatePinHandler;
             e.Handled = true;
         }
+
+        private void PinWindow_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            //var transMat = ((MatrixTransform) this.RenderTransform).Matrix;
+            //transMat.OffsetX += e.Delta.Translation.X;
+            //transMat.OffsetY += e.Delta.Translation.Y;
+            //var transform = new MatrixTransform();
+            //transform.Matrix = transMat;
+            //this.RenderTransform = transform;
+            //e.Handled = true;
+            CompositeTransform current = (CompositeTransform)(this.RenderTransform);
+            CompositeTransform c = new CompositeTransform
+            {
+                TranslateX = current.TranslateX +  e.Delta.Translation.X,
+                TranslateY = current.TranslateY + e.Delta.Translation.Y
+            };
+            this.RenderTransform = c;
+            e.Handled = true;
+        }
     }
 }
