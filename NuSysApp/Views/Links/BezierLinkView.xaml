@@ -94,7 +94,7 @@
             </StackPanel.RenderTransform>
             <!--delete button needs to be hooked up to delete handler-->
             <Button x:Name="Delete" Click="Delete_Click"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                <Image Source="ms-appx:///Assets/icon_x2.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="20" Width="20"></Image>
             </Button>
             <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
             <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
