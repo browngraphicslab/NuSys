@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -36,14 +37,23 @@ namespace NuSysApp
 
             var vm = (WorkspaceViewModel)this.DataContext;
 
-            var c = new CompositeTransform
+            _floatingMenu.WorkspaceView.TranslateXAnimation.To = -pinModel.X + Window.Current.Bounds.Width/2;
+            _floatingMenu.WorkspaceView.TranslateYAnimation.To = -pinModel.Y + Window.Current.Bounds.Height/2;
+            _floatingMenu.WorkspaceView.ScaleXAnimation.To = 1;
+            _floatingMenu.WorkspaceView.ScaleYAnimation.To = 1;
+            _floatingMenu.WorkspaceView.PinAnimationStoryboard.Completed += delegate(object o, object o1)
             {
-                ScaleX = 1,
-                ScaleY = 1,
-                TranslateX = -pinModel.X + Window.Current.Bounds.Width / 2,
-                TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
+                var c = new CompositeTransform
+                {
+                    ScaleX = 1,
+                    ScaleY = 1,
+                    TranslateX = -pinModel.X + Window.Current.Bounds.Width / 2,
+                    TranslateY = -pinModel.Y + Window.Current.Bounds.Height / 2,
+                };
+                vm.CompositeTransform = c;
             };
-            vm.CompositeTransform = c;
+            _floatingMenu.WorkspaceView.PinAnimationStoryboard.Begin();
+
             e.Handled = true;
         }
 
@@ -84,6 +94,25 @@ namespace NuSysApp
         {
             var vm = _floatingMenu.WorkspaceView.DataContext as WorkspaceViewModel;
             vm.Model.OnPinCreation += vm.CreatePinHandler;
+            e.Handled = true;
+        }
+
+        private void PinWindow_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            //var transMat = ((MatrixTransform) this.RenderTransform).Matrix;
+            //transMat.OffsetX += e.Delta.Translation.X;
+            //transMat.OffsetY += e.Delta.Translation.Y;
+            //var transform = new MatrixTransform();
+            //transform.Matrix = transMat;
+            //this.RenderTransform = transform;
+            //e.Handled = true;
+            CompositeTransform current = (CompositeTransform)(this.RenderTransform);
+            CompositeTransform c = new CompositeTransform
+            {
+                TranslateX = current.TranslateX +  e.Delta.Translation.X,
+                TranslateY = current.TranslateY + e.Delta.Translation.Y
+            };
+            this.RenderTransform = c;
             e.Handled = true;
         }
     }

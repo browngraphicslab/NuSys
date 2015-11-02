@@ -9,7 +9,7 @@
     d:DesignHeight="600"
     d:DesignWidth="400">
 
-    <Grid PointerEntered="PinWindow_PointerEntered"  PointerExited="PinWindow_PointerExited" >
+    <Grid PointerEntered="PinWindow_PointerEntered"  PointerExited="PinWindow_PointerExited" ManipulationMode="All" ManipulationDelta="PinWindow_OnManipulationDelta">
         <Border x:Name="Border" CornerRadius="10" Background="#62BDC5">
             <Grid>
                 <Grid x:Name="ContentContainer" Height="550" Width="290" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5,35,5,5">

@@ -4,11 +4,14 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
+
+        private bool _isPinAnimating;
 
         public PanZoomMode(WorkspaceView view) : base(view) { }
 
@@ -82,7 +85,20 @@ namespace NuSysApp
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (((FrameworkElement)e.OriginalSource).DataContext != _view.DataContext) {
+            if (e.IsInertial)
+            {
+                if (_view.PinAnimationStoryboard.GetCurrentState() == ClockState.Active)
+                {
+                    _isPinAnimating = true;
+                    return;
+                }
+            }
+            else
+            {
+                _isPinAnimating = false;
+            }
+
+            if (((FrameworkElement)e.OriginalSource).DataContext != _view.DataContext || _isPinAnimating) {
                 return;
             }
 
