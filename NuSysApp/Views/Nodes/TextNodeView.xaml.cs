@@ -83,7 +83,7 @@ namespace NuSysApp
 
                 var groups = Regex.Match(str, "\"(.*?)\"").Groups;
                 var url = groups[1].Value;
-                Launcher.LaunchUriAsync(new Uri(url));
+                Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
                 e.Handled = true;
             };
 
