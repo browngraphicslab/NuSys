@@ -24,9 +24,8 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected AtomViewModel(AtomModel model, WorkspaceViewModel vm)
+        protected AtomViewModel(AtomModel model)
         {
-            WorkSpaceViewModel = vm;
             LinkList = new ObservableCollection<LinkViewModel>();
             this.IsVisible = true;
             this.Model = model;
@@ -36,7 +35,8 @@ namespace NuSysApp
 
         private void LinkedHappend(object source, LinkedEventArgs e)
         {
-            WorkSpaceViewModel.PrepareLink(e.ID, this, e.Link);
+            //TODO: Re-add
+           // WorkSpaceViewModel.PrepareLink(e.ID, this, e.Link);
         }
 
         private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
@@ -61,8 +61,10 @@ namespace NuSysApp
         public void ToggleSelection()
         {
             this.IsSelected = !this.IsSelected;
-            if(IsSelected)
-                WorkSpaceViewModel.SetSelection(this);
+
+            // TODO:: Re-add
+            //if (IsSelected)
+            //    WorkSpaceViewModel.SetSelection(this);
         }
   
         /// <summary>
@@ -99,7 +101,6 @@ namespace NuSysApp
         /// <summary>
         /// Accessor only reference to the workspace in which the atom is contained
         /// </summary>
-        public WorkspaceViewModel WorkSpaceViewModel {  get; }
 
         private AtomModel.EditStatus _canEdit;
         public AtomModel.EditStatus CanEdit
@@ -238,7 +239,8 @@ namespace NuSysApp
 
                 if (_isMultiSelected)
                 {
-                    WorkSpaceViewModel.MoveMultiSelection(this, value - _anchorX, 0);
+                    // TODO: re-add
+                    //WorkSpaceViewModel.MoveMultiSelection(this, value - _anchorX, 0);
                 }
                 _anchorX = value;
 
@@ -261,7 +263,8 @@ namespace NuSysApp
 
                 if (_isMultiSelected)
                 {
-                    WorkSpaceViewModel.MoveMultiSelection(this, 0, value - _anchorY);
+                    // TODO: Re-add
+                    //WorkSpaceViewModel.MoveMultiSelection(this, 0, value - _anchorY);
                 }
 
                 _anchorY = value;

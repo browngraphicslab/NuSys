@@ -2,9 +2,9 @@
 
 namespace NuSysApp
 {
-    public class CreateEventArgs : SuperEventArgs
+    public class CreateEventArgs : System.EventArgs
     {
-        public CreateEventArgs(string text, NodeModel node):base(text)
+        public CreateEventArgs(NodeType type, NodeModel node, NodeViewModel)
         {
             CreatedNode = node;
         }

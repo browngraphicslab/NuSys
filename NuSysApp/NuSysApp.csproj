@@ -134,12 +134,16 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Controller\LockDictionary.cs" />
+    <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Database\Serializer.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="EventArgs\CreatePinEventArgs.cs" />
+    <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
+    <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
@@ -254,7 +258,6 @@
     <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNodeModel.cs" />
-    <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
@@ -312,6 +315,9 @@
     <Compile Include="Views\Nodes\PseudoNode.xaml.cs">
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
+      <DependentUpon>WorkspaceView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Nodes\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
     </Compile>
@@ -335,8 +341,8 @@
     </Compile>
     <Compile Include="Views\Workspace\PromoteInkMode.cs" />
     <Compile Include="Views\Workspace\SelectMode.cs" />
-    <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
-      <DependentUpon>WorkspaceView.xaml</DependentUpon>
+    <Compile Include="Views\Workspace\SessionView.xaml.cs">
+      <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
@@ -431,6 +437,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Workspace\WorkspaceView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Nodes\TextNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -447,7 +457,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Workspace\WorkspaceView.xaml">
+    <Page Include="Views\Workspace\SessionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

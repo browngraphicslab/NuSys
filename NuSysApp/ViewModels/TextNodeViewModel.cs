@@ -22,9 +22,8 @@ namespace NuSysApp
         private List<byte[]> _imgData = new List<byte[]>();
 
         #endregion Private Members
-        public TextNodeViewModel(TextNodeModel model, WorkspaceViewModel workSpaceViewModel, UserControl view = null) : base(model, workSpaceViewModel)
+        public TextNodeViewModel(TextNodeModel model) : base(model)
         {           
-            this.View = view ?? new TextNodeView(this);  
             this.Transform = new MatrixTransform();
             this.Width = Constants.DefaultNodeSize;
             this.Height = Constants.DefaultNodeSize;

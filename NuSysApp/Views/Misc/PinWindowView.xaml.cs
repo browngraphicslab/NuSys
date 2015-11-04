@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using NuSysApp;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -37,11 +38,11 @@ namespace NuSysApp
 
             var vm = (WorkspaceViewModel)this.DataContext;
 
-            _floatingMenu.WorkspaceView.TranslateXAnimation.To = -pinModel.X + Window.Current.Bounds.Width/2;
-            _floatingMenu.WorkspaceView.TranslateYAnimation.To = -pinModel.Y + Window.Current.Bounds.Height/2;
-            _floatingMenu.WorkspaceView.ScaleXAnimation.To = 1;
-            _floatingMenu.WorkspaceView.ScaleYAnimation.To = 1;
-            _floatingMenu.WorkspaceView.PinAnimationStoryboard.Completed += delegate(object o, object o1)
+            transXAnimation.To = -pinModel.X + Window.Current.Bounds.Width/2;
+            transYAnimation.To = -pinModel.Y + Window.Current.Bounds.Height/2;
+            scaleXAnimation.To = 1;
+            scaleYAnimation.To = 1;
+            canvasStoryboard.Completed += delegate(object o, object o1)
             {
                 var c = new CompositeTransform
                 {
@@ -52,7 +53,8 @@ namespace NuSysApp
                 };
                 vm.CompositeTransform = c;
             };
-            _floatingMenu.WorkspaceView.PinAnimationStoryboard.Begin();
+
+            canvasStoryboard.Begin();
 
             e.Handled = true;
         }
@@ -85,15 +87,15 @@ namespace NuSysApp
 
         private void PinWindow_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            var vm = _floatingMenu.WorkspaceView.DataContext as WorkspaceViewModel;
-            vm.Model.OnPinCreation -= vm.CreatePinHandler;
+            var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
+            SessionController.Instance.OnPinCreation -= vm.CreatePinHandler;
             e.Handled = true;
         }
 
         private void PinWindow_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            var vm = _floatingMenu.WorkspaceView.DataContext as WorkspaceViewModel;
-            vm.Model.OnPinCreation += vm.CreatePinHandler;
+            var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
+            SessionController.Instance.OnPinCreation += vm.CreatePinHandler;
             e.Handled = true;
         }
 

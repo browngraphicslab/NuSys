@@ -53,10 +53,10 @@ namespace NuSysApp
 
         private void SetUpHandlers()
         {
-            this.Model.OnCreation += CreatedHandler;
+            SessionController.Instance.OnCreation += CreatedHandler;
             //this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
-            this.Model.OnGroupCreation += CreateNewGroupHandler;
-            this.Model.OnPinCreation += CreatePinHandler;
+            SessionController.Instance.OnGroupCreation += CreateNewGroupHandler;
+            SessionController.Instance.OnPinCreation += CreatePinHandler;
         }
 
         #endregion Helper Methods
@@ -111,6 +111,7 @@ namespace NuSysApp
         /// <param name="node"></param>
         public void CheckForNodeNodeIntersection(NodeViewModel node)
         {
+            /*
             if (node.ParentGroup != null)//Node is in a group (meaning not the workspace)
             {
                 var x = node.Transform.Matrix.OffsetX * node.ParentGroup.LocalTransform.ScaleX;
@@ -123,7 +124,8 @@ namespace NuSysApp
                     return;
                 }
                 (node.ParentGroup.View as GroupView).CheckForNodeNodeIntersection(node);
-            }
+            }*/
+
             foreach (var node2 in NodeViewModelList)
             {
                 var rect1 = Geometry.NodeToBoudingRect(node);
@@ -187,7 +189,7 @@ namespace NuSysApp
                 linkVm.Remove();
                 nodeVM.LinkList.Remove(linkVm);
             }
-
+            /*
             if (nodeVM.ParentGroup == null)
             {
                 AtomViewList.Remove(nodeVM.View);
@@ -197,6 +199,7 @@ namespace NuSysApp
             {
                 nodeVM.ParentGroup.RemoveNode(nodeVM);
             }
+            */
         }
 
         public void DeletePin(PinViewModel pinVM)
@@ -364,8 +367,8 @@ namespace NuSysApp
         //            if (avm is NodeViewModel)
          //           {
                         ((NodeModel)avm.Model).MoveToGroup(groupmodel);
-                    Debug.WriteLine((avm.Model  as NodeModel).ParentGroup.ID);
-                    Debug.WriteLine(((avm.Model  as NodeModel).ParentGroup as GroupNodeModel).NodeModelList.Count);
+                    //Debug.WriteLine((avm.Model  as NodeModel).ParentGroup.ID);
+                    //Debug.WriteLine(((avm.Model  as NodeModel).ParentGroup as GroupNodeModel).NodeModelList.Count);
          //           }
                 }
             ClearMultiSelection();
@@ -403,12 +406,16 @@ namespace NuSysApp
             }
             if (atomVm1 == atomVm2) return;
             var vm = new LinkViewModel(link, atomVm1, atomVm2, this);//TODO fix this
-            Model.AtomDict.Add(id, vm);
 
+            //TODO: asdfasdf
+            //SessionController.Instance.Children.Add(id, vm);
+
+            /*
             if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
             {
                 vm.IsVisible = false;
             }
+            */
 
             LinkViewModelList.Add(vm);
             AtomViewList.Add(vm.View);

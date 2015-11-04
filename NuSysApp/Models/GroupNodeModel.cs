@@ -45,6 +45,7 @@ namespace NuSysApp
                 return;
             }
             _idDict.Add(atom.ID, atom);
+            OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("Added node group", this, (NodeModel)atom));
         }
 
         public void Remove(AtomModel atom)
@@ -107,7 +108,7 @@ namespace NuSysApp
                 var idDict = new Dictionary<string, Sendable>();
                 foreach (string id in idList)
                 {
-                    var tempNode = (NodeModel)NetworkConnector.Instance.WorkSpaceModel.Children[id];
+                    var tempNode = (NodeModel)NetworkConnector.Instance.WorkSpaceModel.IdToSendables[id];
                     idDict.Add(id, tempNode);
                 }
                 _idDict = idDict;

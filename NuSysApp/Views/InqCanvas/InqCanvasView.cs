@@ -24,9 +24,10 @@ namespace NuSysApp
         public InqCanvasView()
         {
             // Initally, set mode to Inq drawing.
-            Loaded += delegate
+            DataContextChanged += delegate
             {
-                _mode = new DrawInqMode(this);
+                if (DataContext != null)
+                    _mode = new DrawInqMode(this);
             };
         }
 

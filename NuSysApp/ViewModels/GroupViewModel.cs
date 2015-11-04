@@ -28,15 +28,18 @@ namespace NuSysApp
             this.NodeType = NodeType.Group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
+            model.OnAddToGroup += AddNode;
         }
 
-        public void AddNode(NodeViewModel toAdd)
+        public void AddNode(object source, AddToGroupEventArgs e)
         {
-            if (toAdd as GroupViewModel == null) {
-                toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
-                toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
-            }
+           
 
+            if (!(e.Node is GroupViewModel)) {
+           //     toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+           //     toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
+            }
+            /*
             if (toAdd.ParentGroup == null) //node is currently in workspace
             {
                 WorkSpaceViewModel.AtomViewList.Remove(toAdd.View);
@@ -47,6 +50,8 @@ namespace NuSysApp
                 toAdd.ParentGroup.AtomViewList.Remove(toAdd.View);
                 WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
             }
+            
+
             toAdd.Transform = new MatrixTransform();
             AtomViewList.Add(toAdd.View);
             NodeViewModelList.Add(toAdd);
@@ -59,8 +64,9 @@ namespace NuSysApp
                     link.Annotation.IsVisible = false;
                 }
             }
-            (View as GroupView).ArrangeNodesInGrid();
+           // (View as GroupView).ArrangeNodesInGrid();
             //TODO Handle links
+    */
         }
 
         public ObservableCollection<UserControl> AtomViewList { get; set; }
@@ -113,9 +119,9 @@ namespace NuSysApp
                 var lastNode = NodeViewModelList[0];
                 var nodeModel = (NodeModel)lastNode.Model;
                 nodeModel.MoveToGroup(null);
-                var x = lastNode.Transform.Matrix.OffsetX * lastNode.ParentGroup.LocalTransform.ScaleX;
-                var y = lastNode.Transform.Matrix.OffsetY * lastNode.ParentGroup.LocalTransform.ScaleY;
-                WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX + x, this.Transform.Matrix.OffsetY + y);
+               // var x = lastNode.Transform.Matrix.OffsetX * lastNode.ParentGroup.LocalTransform.ScaleX;
+               // var y = lastNode.Transform.Matrix.OffsetY * lastNode.ParentGroup.LocalTransform.ScaleY;
+               // WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX + x, this.Transform.Matrix.OffsetY + y);
                 WorkSpaceViewModel.DeleteNode(this);
                 //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
                 foreach (var link in lastNode.LinkList)

@@ -8,6 +8,14 @@
     mc:Ignorable="d"
     d:DesignHeight="600"
     d:DesignWidth="400">
+    <UserControl.Resources>
+        <Storyboard x:Name="canvasStoryboard">
+            <DoubleAnimation x:Name="transXAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="inkBorder"/>
+            <DoubleAnimation x:Name="transYAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="inkBorder"/>
+            <DoubleAnimation x:Name="scaleXAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="inkBorder"/>
+            <DoubleAnimation x:Name="scaleYAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="inkBorder"/>
+        </Storyboard>
+    </UserControl.Resources>
 
     <Grid PointerEntered="PinWindow_PointerEntered"  PointerExited="PinWindow_PointerExited" ManipulationMode="All" ManipulationDelta="PinWindow_OnManipulationDelta">
         <Border x:Name="Border" CornerRadius="10" Background="#62BDC5">

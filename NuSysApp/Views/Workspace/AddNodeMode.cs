@@ -38,7 +38,7 @@ namespace NuSysApp
 
         private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (!(e.OriginalSource is WorkspaceView))
+            if (!(e.OriginalSource is SessionView))
             {
                 e.Handled = true;
                 return;
@@ -48,7 +48,7 @@ namespace NuSysApp
             _startPos = new Point(e.Position.X, e.Position.Y);
             Canvas.SetLeft(_tempNode, _startPos.X);
             Canvas.SetTop(_tempNode, _startPos.Y);
-            _view.MainCanvas.Children.Add(_tempNode);         
+            _view.Wrapper.Children.Add(_tempNode);         
             _isDragging = true;
             e.Handled = true;
         }
@@ -56,6 +56,7 @@ namespace NuSysApp
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (_isDragging) {
+                Debug.WriteLine("bluuuu");
                 var translation = e.Cumulative.Translation;
                 if (translation.X > 0)
                     _tempNode.Width = translation.X;
@@ -75,7 +76,7 @@ namespace NuSysApp
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (_isDragging) { 
-                _view.MainCanvas.Children.Remove(_tempNode);
+                _view.Wrapper.Children.Remove(_tempNode);
 
                 var wvm = (WorkspaceViewModel) _view.DataContext;
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));
@@ -185,7 +186,8 @@ namespace NuSysApp
             if (!_isFixed) { 
             await view.SetViewMode(new MultiMode(view, new PromoteInkMode(view), new PanZoomMode(view), new SelectMode(view),
                 new FloatingMenuMode(view)));
-                view.FloatingMenu.SetActive(Options.SelectNode);
+                // TODO: re-add
+                //view.FloatingMenu.SetActive(Options.SelectNode);
             }           
         }
     }

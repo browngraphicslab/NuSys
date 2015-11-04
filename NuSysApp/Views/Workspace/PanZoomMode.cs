@@ -87,11 +87,14 @@ namespace NuSysApp
         {
             if (e.IsInertial)
             {
+                // TODO: Re-add
+                /*
                 if (_view.PinAnimationStoryboard.GetCurrentState() == ClockState.Active)
                 {
                     _isPinAnimating = true;
                     return;
                 }
+                */
             }
             else
             {

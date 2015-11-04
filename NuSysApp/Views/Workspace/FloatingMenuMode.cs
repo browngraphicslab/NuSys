@@ -14,8 +14,8 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
 
-            _view.FloatingMenu.ManipulationMode = ManipulationModes.All;
-            _view.FloatingMenu.ManipulationDelta += OnManipulationDelta;
+            //_view.FloatingMenu.ManipulationMode = ManipulationModes.All;
+            //_view.FloatingMenu.ManipulationDelta += OnManipulationDelta;
 
         }
 
@@ -24,8 +24,8 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = false;
             _view.DoubleTapped -= OnDoubleTapped;
 
-            _view.FloatingMenu.ManipulationMode = ManipulationModes.None;
-            _view.FloatingMenu.ManipulationDelta -= OnManipulationDelta;
+           // _view.FloatingMenu.ManipulationMode = ManipulationModes.None;
+           // _view.FloatingMenu.ManipulationDelta -= OnManipulationDelta;
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -57,7 +57,7 @@ namespace NuSysApp
             floatingMenuTransform.TranslateY = p.Y;
             vm.FMTransform = floatingMenuTransform;
 
-            _view.FloatingMenu.Visibility = Visibility.Visible;
+           // _view.FloatingMenu.Visibility = Visibility.Visible;
 
             e.Handled = true;
         }

@@ -117,6 +117,9 @@ namespace NuSysApp
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
+            TextNodeViewModel vm = (TextNodeViewModel) DataContext;
+            vm.Model.SetMetaData("bling", "poof");
+            return;
             var oldColor = this.RecordVoice.Background;
             Color c = new Color();
             c.A = 255;

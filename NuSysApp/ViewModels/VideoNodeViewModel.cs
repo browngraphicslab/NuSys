@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class VideoNodeViewModel : NodeViewModel
     {
-        public VideoNodeViewModel(VideoNodeModel model,WorkspaceViewModel vm) : base(model,vm)
+        public VideoNodeViewModel(VideoNodeModel model) : base(model)
         {
             this.View = new VideoNodeView(this);
             this.Transform = new MatrixTransform();

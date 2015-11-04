@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
@@ -8,13 +9,15 @@ namespace NuSysApp
 {
     public abstract class AtomModel : Sendable
     {
-        private DebouncingDictionary _debounceDict;
-        public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
-        public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
-        public event LinkedEventHandler OnLinked;
-        public event CreateGroupEventHandler OnCreatedGroup;
         
+        public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
+        public event LinkedEventHandler OnLinked;
+
+        protected Dictionary<string, string> Metadata = new Dictionary<string, string>();
+
+        private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
+        
 
         protected AtomModel(string id) : base(id)
         {
@@ -74,20 +77,45 @@ namespace NuSysApp
             }
         }
 
+        public string GetMetaData(string key)
+        {
+            return Metadata[key];
+        }
+
+        public void SetMetaData(string key, string value)
+        {
+            Metadata[key] = value;
+            if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+            {
+                Debug.WriteLine("Senable is currently being updated");
+                this.DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
+            }
+            else
+            {
+                this.DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
+            }
+        }
+
         public DebouncingDictionary DebounceDict
         {
             get { return _debounceDict; }
         }
         public string ID { get; set; }
 
-        public override async Task UnPack(Message props)
-        {
-            await base.UnPack(props);
-        }
-
         public override async Task<Dictionary<string, string>> Pack()
         {
-            return await base.Pack();
-        } 
+            Dictionary<string, string> dict = await base.Pack();
+            dict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
+            return dict;
+        }
+
+        public override async Task UnPack(Message props)
+        {
+            if (props.ContainsKey("metadata"))
+            {
+                Metadata = (Dictionary<string,string>)Newtonsoft.Json.JsonConvert.DeserializeObject(props["metadata"]);
+            }
+            base.UnPack(props);
+        }
     } 
 }

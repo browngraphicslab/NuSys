@@ -23,12 +23,12 @@ namespace NuSysApp
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof (WorkspaceView));
+            this.Frame.Navigate(typeof (SessionView));
         }
         private void Local_OnClick(object sender, RoutedEventArgs e)
         {
             IsLocal = true;
-            this.Frame.Navigate(typeof(WorkspaceView));
+            this.Frame.Navigate(typeof(SessionView));
         }
         private void clear_OnClick(object sender, RoutedEventArgs e)
         {

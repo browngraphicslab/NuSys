@@ -25,7 +25,7 @@ namespace NuSysApp
         private GroupViewModel _group;
 
         #endregion Private Members
-        protected NodeViewModel(NodeModel model, WorkspaceViewModel vm): base(model, vm)
+        protected NodeViewModel(NodeModel model): base(model)
         {
             this.AtomType = Constants.Node;       
             ((NodeModel)this.Model).OnDeletion += DeletionHappend;         
@@ -39,18 +39,21 @@ namespace NuSysApp
 
         private void AddToGroupHandler(object source, AddToGroupEventArgs e)
         {
+            /*
             var group = e.Group;
             if (group == null)
             {
-                this.ParentGroup.RemoveNode(this);
+               // this.ParentGroup.RemoveNode(this);
                 WorkSpaceViewModel.NodeViewModelList.Add(this);
                 WorkSpaceViewModel.AtomViewList.Add(this.View);
-                this.ParentGroup = null;
+                //this.ParentGroup = null;
                 return;
             }
+
             var groupVm = WorkSpaceViewModel.GroupDict[e.Group.ID];
             groupVm.AddNode(this);
-            this.ParentGroup = groupVm;
+            //this.ParentGroup = groupVm;
+            */
         }
        
         #region Node Manipulations
@@ -71,17 +74,21 @@ namespace NuSysApp
             if (!this.IsEditing)
             {
                 var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
-                if (ParentGroup == null)
-                {
+                
+               // if (ParentGroup == null)
+               // {
                     transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
                     transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+                    /*
                 }
                 else
                 {
+             
                     transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX / ParentGroup.LocalTransform.ScaleX;
                     transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY / ParentGroup.LocalTransform.ScaleX;
-                }
-                Transform = new MatrixTransform();
+      //          }
+         */
+                    Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
                 ((NodeModel)Model).X = transMat.OffsetX;
                 ((NodeModel)Model).Y = transMat.OffsetY;
@@ -333,6 +340,7 @@ namespace NuSysApp
             }
         }
 
+        /*
         public GroupViewModel ParentGroup
         {
             get
@@ -354,6 +362,7 @@ namespace NuSysApp
                 _group = value;     
             }
         }
+        */
 
          /// <summary>
         /// DEPRICATED X-coordinate of this atom

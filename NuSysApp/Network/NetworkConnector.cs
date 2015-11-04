@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using NuSysApp;
 using NuSysApp.Network;
 
 namespace NuSysApp
@@ -23,7 +24,7 @@ namespace NuSysApp
 
         #region Public Members
         private ClientHandler _clientHandler;
-        public WorkSpaceModel.LockDictionary Locks { get { return WorkSpaceModel.Locks; } }
+        public LockDictionary Locks { get { return SessionController.Instance.Locks; } }
         private ConcurrentDictionary<string, bool> _deletedIDs;
         private ConcurrentDictionary<string, Action<string>> _creationCallbacks;
         private ConcurrentDictionary<string, bool> _sendablesBeingUpdated;
@@ -427,8 +428,13 @@ namespace NuSysApp
         #endregion publicRequests
 
         #region oldModelIntermediate
-            public WorkSpaceModel WorkSpaceModel { get; set; }
-            private async Task HandleMessage(Message props)
+
+        public SessionController WorkSpaceModel
+        {
+            get { return SessionController.Instance; }
+        }
+
+        private async Task HandleMessage(Message props)
             {
                 if (props.ContainsKey("id"))
                 {
@@ -667,6 +673,7 @@ namespace NuSysApp
             }
             private async Task HandleCreateNewInk(string id, Message props)
             {
+            /*
                 if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"] == "WORKSPACE_ID"))
                 {
                     InqCanvasModel canvas = null;
@@ -739,6 +746,7 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("Ink creation failed because no canvas ID was given or the ID wasn't valid");
                 }
+            */
             }
             private async Task RemoveSendable(string id)
             {

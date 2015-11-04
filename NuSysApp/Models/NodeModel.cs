@@ -24,7 +24,7 @@ namespace NuSysApp
         public event DeleteEventHandler OnDeletion;
 
         public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
-        public event LocationUpdateEventHandler OnLocationUpdate;
+        public event LocationUpdateEventHandler OnLocationUpdate;   
 
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
         public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
@@ -46,7 +46,8 @@ namespace NuSysApp
 
         public void MoveToGroup(GroupNodeModel group)
         {
-            this.ParentGroup = group;
+            //this.ParentGroup = group;
+            Metadata["group"] = group.ID;
             group?.Add(this);//only add if group isn't null
         }
 
@@ -153,8 +154,9 @@ namespace NuSysApp
 
         public NodeType NodeType { get; set; }
 
-        private GroupNodeModel _parentGroup;
+        //private GroupNodeModel _parentGroup;
 
+            /*
         public GroupNodeModel ParentGroup
         {
             get
@@ -174,8 +176,7 @@ namespace NuSysApp
                     this.DebounceDict.MakeNextMessageTCP();
                 }
             }
-          
-        }
+        }*/
 
         public bool IsAnnotation { get; set; }
 
@@ -210,9 +211,9 @@ namespace NuSysApp
                 {
                     this.MoveToGroup(null);
                 }
-                else if (NetworkConnector.Instance.WorkSpaceModel.Children.ContainsKey(props["parentGroup"]))
+                else if (NetworkConnector.Instance.WorkSpaceModel.IdToSendables.ContainsKey(props["parentGroup"]))
                 {
-                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.Children[props["parentGroup"]]);
+                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IdToSendables[props["parentGroup"]]);
                 }
             }
            
@@ -227,10 +228,6 @@ namespace NuSysApp
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
             dict.Add("type", "node");
-            if (ParentGroup != null)
-            {
-                dict.Add("parentGroup", ParentGroup.ID);
-            }
             return dict;
         }
         public virtual XmlElement WriteXML(XmlDocument doc)
@@ -266,12 +263,14 @@ namespace NuSysApp
             id.Value = ID.ToString();
             basicXml.Add(id);
 
+            /*
             if (ParentGroup != null)
             {
                 XmlAttribute groupID = doc.CreateAttribute("groupID");
                 groupID.Value = this.ParentGroup.ID.ToString();
                 basicXml.Add(groupID);
             }
+            */
 
             XmlAttribute x = doc.CreateAttribute("x");
             x.Value = X.ToString();

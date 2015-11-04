@@ -243,7 +243,7 @@ namespace NuSysApp
             e.Handled = true;
         }    
 
-        public WorkspaceView WorkspaceView
+        public SessionView SessionView
         {
             get;set;
         }
