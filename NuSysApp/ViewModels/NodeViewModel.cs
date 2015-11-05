@@ -120,8 +120,8 @@ namespace NuSysApp
         public override void UpdateAnchor()
         {
             var nodeModel = (NodeModel) Model;
-            this.AnchorX = (int)(nodeModel.X + this.Transform.Matrix.OffsetX + this.Width / 2); //this is the midpoint
-            this.AnchorY = (int)(nodeModel.Y + this.Transform.Matrix.OffsetY + this.Height / 2);
+            this.AnchorX = (int)(this.Transform.Matrix.OffsetX + this.Width / 2); //this is the midpoint
+            this.AnchorY = (int)(this.Transform.Matrix.OffsetY + this.Height / 2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }
 

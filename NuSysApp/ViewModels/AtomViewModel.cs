@@ -35,7 +35,6 @@ namespace NuSysApp
 
         private void LinkedHappend(object source, LinkedEventArgs e)
         {
-            //TODO: Re-add
             SessionController.Instance.ActiveWorkspace.PrepareLink(e.ID, this, e.Link);
         }
 
