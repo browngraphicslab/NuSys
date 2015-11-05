@@ -36,14 +36,14 @@ namespace NuSysApp
         {
             var pinvm = this.DataContext as PinViewModel;
             var vm = pinvm.Workspace;
-            SessionController.Instance.OnPinCreation -= vm.CreatePinHandler;
+            SessionController.Instance.PinCreated -= vm.OnPinCreated;
         }
 
         private void textBox_LostFocus(object sender, RoutedEventArgs e)
         {
             var pinvm = this.DataContext as PinViewModel;
             var vm = pinvm.Workspace;
-            SessionController.Instance.OnPinCreation += vm.CreatePinHandler;
+            SessionController.Instance.PinCreated += vm.OnPinCreated;
         }
     }
 }

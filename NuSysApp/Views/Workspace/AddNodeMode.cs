@@ -38,7 +38,7 @@ namespace NuSysApp
 
         private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (!(e.OriginalSource is SessionView))
+            if (!(e.OriginalSource is WorkspaceView))
             {
                 e.Handled = true;
                 return;

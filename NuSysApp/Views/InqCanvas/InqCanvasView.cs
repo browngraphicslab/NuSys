@@ -26,7 +26,7 @@ namespace NuSysApp
             // Initally, set mode to Inq drawing.
             DataContextChanged += delegate
             {
-                if (DataContext != null)
+                if (DataContext is InqCanvasViewModel)
                     _mode = new DrawInqMode(this);
             };
         }

@@ -88,14 +88,14 @@ namespace NuSysApp
         private void PinWindow_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
-            SessionController.Instance.OnPinCreation -= vm.CreatePinHandler;
+            SessionController.Instance.PinCreated -= vm.OnPinCreated;
             e.Handled = true;
         }
 
         private void PinWindow_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
-            SessionController.Instance.OnPinCreation += vm.CreatePinHandler;
+            SessionController.Instance.PinCreated += vm.OnPinCreated;
             e.Handled = true;
         }
 

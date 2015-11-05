@@ -98,8 +98,8 @@ namespace NuSysApp
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (NodeViewModel)this.DataContext;
-            vm.Remove();
+            var model = (NodeModel)((NodeViewModel) this.DataContext).Model;
+            NetworkConnector.Instance.RequestDeleteSendable(model.ID);
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -134,12 +134,14 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            
+            //TODO: re-add
+            /*
             var vm = (NodeViewModel)this.DataContext;
             if (vm.WorkSpaceViewModel != null) { 
                 vm.CreateAnnotation();
                 vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
             }
+            */
             e.Handled = true;
         }
 

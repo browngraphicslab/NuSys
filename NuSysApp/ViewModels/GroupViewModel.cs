@@ -12,7 +12,7 @@ namespace NuSysApp
         private CompositeTransform _localTransform;
         public ObservableCollection<LinkViewModel> _linkViewModelList;
 
-        public GroupViewModel(GroupNodeModel model, WorkspaceViewModel vm, UserControl view = null): base(model,vm)
+        public GroupViewModel(GroupNodeModel model): base(model)
         {
             NodeViewModelList = new ObservableCollection<NodeViewModel>();
             _linkViewModelList = new ObservableCollection<LinkViewModel>();
@@ -24,7 +24,7 @@ namespace NuSysApp
 //            this.IsEditing = false;
 //            this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            this.View = view ?? new GroupView();
+            this.View = new GroupView();
             this.NodeType = NodeType.Group;
             _margin = 75;
             this.LocalTransform = new CompositeTransform();
@@ -75,6 +75,8 @@ namespace NuSysApp
          
         public override void Resize(double dx, double dy)
         {
+            // TODO: re-add
+            /*
             var trans = LocalTransform;
             var newDx = 0.0;
             var newDy = 0.0;
@@ -99,7 +101,8 @@ namespace NuSysApp
             
             _margin += newDx;
             (View as GroupView).ArrangeNodesInGrid();
-            base.Resize(newDx, newDy);
+            */
+          //  base.Resize(newDx, newDy);
         }
 
         public void RemoveNode(NodeViewModel toRemove)
@@ -122,7 +125,7 @@ namespace NuSysApp
                // var x = lastNode.Transform.Matrix.OffsetX * lastNode.ParentGroup.LocalTransform.ScaleX;
                // var y = lastNode.Transform.Matrix.OffsetY * lastNode.ParentGroup.LocalTransform.ScaleY;
                // WorkSpaceViewModel.PositionNode(lastNode, this.Transform.Matrix.OffsetX + x, this.Transform.Matrix.OffsetY + y);
-                WorkSpaceViewModel.DeleteNode(this);
+                //WorkSpaceViewModel.DeleteNode(this);
                 //NetworkConnector.Instance.RequestDeleteSendable(this.Model.ID);//TODO use an actual network delete
                 foreach (var link in lastNode.LinkList)
                 {

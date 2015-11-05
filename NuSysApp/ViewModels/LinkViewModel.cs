@@ -23,7 +23,7 @@ namespace NuSysApp
         #endregion Private members
 
         public LinkViewModel(LinkModel model, AtomViewModel atom1,
-            AtomViewModel atom2, WorkspaceViewModel workspace) : base(model, workspace)
+            AtomViewModel atom2) : base(model)
         {
             this.Atom1 = atom1;
             this.Atom2 = atom2;
@@ -43,7 +43,8 @@ namespace NuSysApp
         }
         private void DeletionHappend(object source, DeleteEventArgs e)
         {
-            this.WorkSpaceViewModel.DeleteLink(this);
+            //TODO: re-add
+            //this.WorkSpaceViewModel.DeleteLink(this);
         }
 
         #region Link Manipulation Methods
@@ -52,7 +53,8 @@ namespace NuSysApp
             NetworkConnector.Instance.RequestDeleteSendable(ID);
             if (this.IsSelected)
             {
-                WorkSpaceViewModel.ClearSelection();
+                //TODO: re-add
+                SessionController.Instance.ActiveWorkspace.ClearSelection();
             }
             //this.Atom1.LinkList.Remove(this);
             //this.Atom2.LinkList.Remove(this);

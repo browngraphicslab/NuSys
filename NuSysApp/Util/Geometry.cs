@@ -78,8 +78,9 @@ namespace NuSysApp
         public static Line[] NodeToLineSegment(NodeViewModel node)
         {
             var lines = new Line[4];
-            var x = node.X + node.Transform.Matrix.OffsetX;
-            var y = node.Y + node.Transform.Matrix.OffsetY;
+            var nodeModel = (NodeModel) node.Model;
+            var x = nodeModel.X + node.Transform.Matrix.OffsetX;
+            var y = nodeModel.Y + node.Transform.Matrix.OffsetY;
 
             //AB line  
             lines[0] = new Line

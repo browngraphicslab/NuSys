@@ -28,11 +28,6 @@ namespace NuSysApp
             _dict = new DebouncingDictionary(this);
         }
 
-        public override void Delete()
-        {
-            OnDeletion?.Invoke(this);
-        }
-
         public double X
         {
             get

@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
-        public PdfNodeViewModel(PdfNodeModel model, WorkspaceViewModel workspaceViewModel) : base(model, workspaceViewModel)
+        public PdfNodeViewModel(PdfNodeModel model) : base(model)
         {
             model.OnPdfImagesCreated += delegate
             {
@@ -31,7 +31,7 @@ namespace NuSysApp
             this.CurrentPageNumber = 0;
             this.RenderedLines = InqPages[0];
             this.View = new PdfNodeView(this);
-            _workspaceViewModel = workspaceViewModel;
+ 
             var C = new CompositeTransform {
                 ScaleX = 1,
                 ScaleY = 1
@@ -57,6 +57,8 @@ namespace NuSysApp
 
         public override void Resize(double dx, double dy)
         {
+            // TODO: re-add
+            /*
             double newDx, newDy;
             if (dx > dy)
             {
@@ -76,6 +78,7 @@ namespace NuSysApp
             ct.ScaleX *= (Width + newDx / WorkSpaceViewModel.CompositeTransform.ScaleX) / Width;
             ct.ScaleY *= (Height + newDy / WorkSpaceViewModel.CompositeTransform.ScaleY) / Height;
             base.Resize(newDx, newDy);
+            */
         }
 
         public BitmapImage RenderedBitmapImage

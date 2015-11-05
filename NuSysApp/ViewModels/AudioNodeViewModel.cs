@@ -7,7 +7,7 @@ namespace NuSysApp
 {
     public class AudioNodeViewModel: NodeViewModel
     {
-        public AudioNodeViewModel(AudioNodeModel model, WorkspaceViewModel vm) : base(model, vm)
+        public AudioNodeViewModel(AudioNodeModel model) : base(model)
         {
             AudioRecorder = new AudioCapture();
             AudioRecorder.OnAudioStopped += async delegate

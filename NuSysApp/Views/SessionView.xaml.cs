@@ -37,10 +37,14 @@ namespace NuSysApp
                 Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
             };
 
-            // InqCanvasModel inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
-            //   new InqCanvasViewModel(inqCanvas, inqCanvasModel);
-            // var vm = new WorkspaceViewModel(new WorkSpaceModel(inqCanvasModel));
-            // this.DataContext = vm;
+            var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
+            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel);
+            xWorkspace.InqCanvas.ViewModel = inqCanvasViewModel;
+            var workspaceModel = new WorkSpaceModel(inqCanvasModel);
+            var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
+            xWorkspace.DataContext = workspaceViewModel;
+
+            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
 
           //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
 

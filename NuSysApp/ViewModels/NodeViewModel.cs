@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Xml;
 using Windows.Foundation;
 using Windows.System.Power.Diagnostics;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -20,51 +21,37 @@ namespace NuSysApp
         #region Private Members      
 
         private bool _isEditing, _isEditingInk;
+        private double _height, _width;
         private AtomViewModel _clippedParent;
         private MatrixTransform _transform;
         private GroupViewModel _group;
 
         #endregion Private Members
-        protected NodeViewModel(NodeModel model): base(model)
+
+        protected NodeViewModel(NodeModel model) : base(model)
         {
-            this.AtomType = Constants.Node;       
-            ((NodeModel)this.Model).OnDeletion += DeletionHappend;         
-            ((NodeModel) this.Model).OnLocationUpdate += LocationUpdateHandler;
-            ((NodeModel) this.Model).OnWidthHeightUpdate += WidthHeightChangedHandler;
-           
-            ((NodeModel) this.Model).OnAddToGroup += AddToGroupHandler;
-            //X = 0;//TODO if commenting this out doesn't cause problems just delete
-            //Y = 0;
+            AtomType = Constants.Node;
+            ((NodeModel) Model).PositionChanged += LocationUpdateHandler;
+            ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
         }
 
-        private void AddToGroupHandler(object source, AddToGroupEventArgs e)
+        public void Init(UserControl view)
         {
-            /*
-            var group = e.Group;
-            if (group == null)
-            {
-               // this.ParentGroup.RemoveNode(this);
-                WorkSpaceViewModel.NodeViewModelList.Add(this);
-                WorkSpaceViewModel.AtomViewList.Add(this.View);
-                //this.ParentGroup = null;
-                return;
-            }
-
-            var groupVm = WorkSpaceViewModel.GroupDict[e.Group.ID];
-            groupVm.AddNode(this);
-            //this.ParentGroup = groupVm;
-            */
+            View = view;
+            var nodeModel = (NodeModel)Model;
+            SetPosition(nodeModel.X, nodeModel.Y);
         }
-       
+        
+               
         #region Node Manipulations
 
         public override void Remove()
         {
-            NetworkConnector.Instance.RequestDeleteSendable(ID);
             //WorkSpaceViewModel.DeleteNode(this);
             if (this.IsSelected)
             {
-                WorkSpaceViewModel.ClearSelection();
+                //TODO: re-add
+                SessionController.Instance.ActiveWorkspace.ClearSelection();
             } 
         }
 
@@ -75,24 +62,15 @@ namespace NuSysApp
             {
                 var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
                 
-               // if (ParentGroup == null)
-               // {
-                    transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-                    transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
-                    /*
-                }
-                else
-                {
-             
-                    transMat.OffsetX += dx / WorkSpaceViewModel.CompositeTransform.ScaleX / ParentGroup.LocalTransform.ScaleX;
-                    transMat.OffsetY += dy / WorkSpaceViewModel.CompositeTransform.ScaleY / ParentGroup.LocalTransform.ScaleX;
-      //          }
-         */
-                    Transform = new MatrixTransform();
+                transMat.OffsetX += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+                transMat.OffsetY += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+                        
+                Transform = new MatrixTransform();
                 this.Transform.Matrix = transMat;
                 ((NodeModel)Model).X = transMat.OffsetX;
                 ((NodeModel)Model).Y = transMat.OffsetY;
                 this.UpdateAnchor();
+
                 foreach (var link in LinkList)
                 {
                     link.UpdateAnchor();
@@ -116,8 +94,6 @@ namespace NuSysApp
             {
                 Matrix = transMat
             };
-            this.X = 0;
-            this.Y = 0;
             foreach (var link in LinkList)
             {
                 link.UpdateAnchor();
@@ -143,8 +119,9 @@ namespace NuSysApp
         /// </summary>
         public override void UpdateAnchor()
         {
-            this.AnchorX = (int)(this.X + this.Transform.Matrix.OffsetX + this.Width / 2); //this is the midpoint
-            this.AnchorY = (int)(this.Y + this.Transform.Matrix.OffsetY + this.Height / 2);
+            var nodeModel = (NodeModel) Model;
+            this.AnchorX = (int)(nodeModel.X + this.Transform.Matrix.OffsetX + this.Width / 2); //this is the midpoint
+            this.AnchorY = (int)(nodeModel.Y + this.Transform.Matrix.OffsetY + this.Height / 2);
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
         }
 
@@ -154,9 +131,9 @@ namespace NuSysApp
         /// <param name="dx"></param>
         /// <param name="dy"></param>
         public virtual void Resize(double dx, double dy)
-        {
-            double changeX = dx / WorkSpaceViewModel.CompositeTransform.ScaleX;
-            double changeY = dy / WorkSpaceViewModel.CompositeTransform.ScaleY;
+        {   
+            double changeX = dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+            double changeY = dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
             if (this.Width > Constants.MinNodeSizeX || changeX > 0)
             {
                 this.Width += changeX;
@@ -172,22 +149,20 @@ namespace NuSysApp
         {
             if (this.LinkList.Count > 0) return;
 
+            //TODO: re-add
+            /*
             if (this.WorkSpaceViewModel != null && this.WorkSpaceViewModel.CheckForNodeLinkIntersections(this))
             {
                 ((NodeModel)this.Model).IsAnnotation = true;
-            }
+            }*/
         }
         #endregion Node Manipulations
 
         #region Event Handlers
-        private void DeletionHappend(object source, DeleteEventArgs e)
-        {
-            this.WorkSpaceViewModel.DeleteNode(this);
-        }
 
         private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
         {
-            this.SetPosition(((NodeModel)this.Model).X, ((NodeModel)this.Model).Y);
+            this.SetPosition(((NodeModel)Model).X, ((NodeModel)Model).Y);
             this.UpdateAnchor();
         }
 
@@ -249,9 +224,6 @@ namespace NuSysApp
             set { Model.ID = value; }
         }
 
-        private double _x, _y;
-       
-
         public MatrixTransform Transform
         {
             get { return _transform; }
@@ -266,10 +238,6 @@ namespace NuSysApp
             }
         }
 
-        private double _height, _width;
-        /// <summary>
-        /// Width of this atom
-        /// </summary>
         public virtual double Width
         {
             get { return _width; }
@@ -339,66 +307,7 @@ namespace NuSysApp
                 ((NodeModel)this.Model).NodeType = value;
             }
         }
-
-        /*
-        public GroupViewModel ParentGroup
-        {
-            get
-            {
-                return _group;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    _group = value;
-                    return;
-                }
-                if (value.Model != ((NodeModel) this.Model).ParentGroup)
-                {
-                    Debug.WriteLine("Different parent groups");
-                    return;
-                }
-                _group = value;     
-            }
-        }
-        */
-
-         /// <summary>
-        /// DEPRICATED X-coordinate of this atom
-        /// </summary>
-        [Obsolete("Use X and Y at model level only", false)]
-        public double X
-        {
-            get { return _x; }
-            private set
-            {
-                if (_x == value)
-                {
-                    return;
-                }
-                _x = value;
-                RaisePropertyChanged("X");
-            }
-        }
-
-        /// <summary>
-        /// DEPRICATED Y-coordinate of this atom
-        /// </summary>      
-        [Obsolete("Use X and Y at model level only", false)]
-        public double Y
-        {
-            get { return _y; }
-            private set
-            {
-                if (_y == value)
-                {
-                    return;
-                }
-                _y = value;
-                RaisePropertyChanged("Y");
-            }
-        }
+        
         #endregion Public Properties
     }
 }

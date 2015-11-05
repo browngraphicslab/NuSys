@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         private CompositeTransform _inkScale;
 
-        public ImageNodeViewModel(ImageNodeModel model, WorkspaceViewModel vm) : base(model, vm)
+        public ImageNodeViewModel(ImageNodeModel model) : base(model)
         {
             this.NodeType = NodeType.Image; //Also sets model value
             this.View = new ImageNodeView(this);
@@ -31,7 +31,7 @@ namespace NuSysApp
         }
 
         public override void Resize(double dx, double dy)
-        {
+        { /*
             double newDx, newDy;
             if (dx > dy)
             {
@@ -53,6 +53,7 @@ namespace NuSysApp
             this.InkScale = ct;
 
             base.Resize(newDx, newDy);
+            */
             
         }
 

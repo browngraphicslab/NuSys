@@ -23,11 +23,6 @@ namespace NuSysApp
 
         public string OutAtomID { get; set; }
 
-        public override void Delete()
-        {
-            OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
-        }
-
         public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("id1"))

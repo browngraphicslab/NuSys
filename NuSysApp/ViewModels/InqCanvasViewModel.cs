@@ -13,12 +13,10 @@ namespace NuSysApp
     {
         public InqCanvasModel Model { get; }
         public Panel View { get; }
-        public InqCanvasViewModel(InqCanvasView inqCanvasView, InqCanvasModel model)
+        public InqCanvasViewModel(InqCanvasModel model)
         {
             Model = model;
-            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
-            inqCanvasView.ViewModel = this;
-            View = inqCanvasView;
+            Model.OnPartialLineAddition += PartialLineAdditionHandler;
         }
 
         public void AddTemporaryPoint(Point p)

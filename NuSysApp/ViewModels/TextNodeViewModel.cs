@@ -28,16 +28,13 @@ namespace NuSysApp
             this.Width = Constants.DefaultNodeSize;
             this.Height = Constants.DefaultNodeSize;
             this.NodeType = NodeType.Text;
-            //this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 152, 192, 113));
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 89, 189, 197));
-
-
+            
             ((TextNodeModel) this.Model).OnTextChanged += TextChangedHandler;
         }
 
         public async Task UpdateRtf()       
-        {
-           
+        {  
             try { 
             _inlineImages.Clear();
 
@@ -143,10 +140,7 @@ namespace NuSysApp
         #region Public Properties
 
         private string _data = string.Empty;
-        /// <summary>
-        /// data contained by text node
-        /// </summary>
-      
+        
 
         public string RtfText
         {

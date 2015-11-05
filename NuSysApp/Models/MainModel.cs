@@ -20,6 +20,5 @@ namespace NuSysApp
         }
 
         public string ID { get { return "MAIN_ID"; } }
-        public override void Delete() { }
     }
 }

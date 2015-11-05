@@ -99,11 +99,11 @@ namespace NuSysApp
                     break;
                 case Options.MiscSave:
                     var vm1 = (WorkspaceViewModel) this.DataContext;
-                    vm1.SaveWorkspace();
+                    //vm1.SaveWorkspace();
                     break;
                 case Options.MiscLoad:
                     var vm2 = (WorkspaceViewModel) this.DataContext;
-                    await vm2.LoadWorkspace();
+                    //await vm2.LoadWorkspace();
                     break;
                 case Options.MiscPin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));

@@ -4,7 +4,7 @@ namespace NuSysApp
 {
     public class CreateEventArgs : System.EventArgs
     {
-        public CreateEventArgs(NodeType type, NodeModel node, NodeViewModel)
+        public CreateEventArgs(NodeModel node)
         {
             CreatedNode = node;
         }

@@ -114,7 +114,7 @@ namespace NuSysApp
             {
                 foreach (InqLineModel l in _partialLines[oldID])
                 {
-                    l.Delete();
+//                    l.Delete();
                     _lines.Remove(l);
                 }
                 _partialLines.Remove(oldID);

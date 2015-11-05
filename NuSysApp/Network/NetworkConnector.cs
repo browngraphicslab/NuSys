@@ -429,20 +429,15 @@ namespace NuSysApp
 
         #region oldModelIntermediate
 
-        public SessionController WorkSpaceModel
-        {
-            get { return SessionController.Instance; }
-        }
-
         private async Task HandleMessage(Message props)
             {
                 if (props.ContainsKey("id"))
                 {
                     string id = props["id"];//get id from dictionary
                     _sendablesBeingUpdated.TryAdd(id, true);
-                    if (WorkSpaceModel.Children.ContainsKey(id))
+                    if (SessionController.Instance.IdToSendables.ContainsKey(id))
                     {
-                        Sendable n = WorkSpaceModel.Children[id];//if the id exists, get the sendable
+                        Sendable n = SessionController.Instance.IdToSendables[id];//if the id exists, get the sendable
 
                         await UITask.Run(async () => { await n.UnPack(props); });//update the sendable with the dictionary info
                     }
@@ -452,7 +447,7 @@ namespace NuSysApp
                         if (!_deletedIDs.ContainsKey(id))
                         {
                             await HandleCreateNewSendable(id, props); //create a new sendable
-                            if (WorkSpaceModel.Children.ContainsKey(id))
+                            if (SessionController.Instance.IdToSendables.ContainsKey(id))
                             {
                                 await HandleMessage(props);
                             }
@@ -524,7 +519,7 @@ namespace NuSysApp
                     }
                     await UITask.Run(async () =>
                     {
-                        await WorkSpaceModel.CreateNewPin(id, x, y);
+                        await SessionController.Instance.CreateNewPin(id, x, y);
                     });
                 }
             }
@@ -551,9 +546,9 @@ namespace NuSysApp
                     return;
                 }
 
-                if (WorkSpaceModel.Children.ContainsKey(id1) && (WorkSpaceModel.Children.ContainsKey(id2)))
+                if (SessionController.Instance.IdToSendables.ContainsKey(id1) && (SessionController.Instance.IdToSendables.ContainsKey(id2)))
                 {
-                    await UITask.Run(async () => { WorkSpaceModel.CreateLink((AtomModel)WorkSpaceModel.Children[id1], (AtomModel)WorkSpaceModel.Children[id2], id); });
+                    await UITask.Run(async () => { SessionController.Instance.CreateLink((AtomModel)SessionController.Instance.IdToSendables[id1], (AtomModel)SessionController.Instance.IdToSendables[id2], id); });
 
                 }
             }
@@ -627,7 +622,7 @@ namespace NuSysApp
                         break;
                     }
                 }
-                await UITask.Run(async () => { await WorkSpaceModel.CreateNewNode(props["id"], type, x, y, data); });
+                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y, data); });
                 if (props.ContainsKey("data"))
                 {
                     string s;
@@ -647,7 +642,7 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-                await UITask.Run(async () => { await WorkSpaceModel.CreateEmptyGroup(id, x, y); });
+                await UITask.Run(async () => { await SessionController.Instance.CreateEmptyGroup(id, x, y); });
             }
 
             private async Task HandleCreateNewGroup(string id, Message props)
@@ -656,10 +651,10 @@ namespace NuSysApp
                 NodeModel node2 = null;
                 double x = 0;
                 double y = 0;
-                if (props.ContainsKey("id1") && props.ContainsKey("id2") && WorkSpaceModel.Children.ContainsKey(props["id1"]) && WorkSpaceModel.Children.ContainsKey(props["id2"]))
+                if (props.ContainsKey("id1") && props.ContainsKey("id2") && SessionController.Instance.IdToSendables.ContainsKey(props["id1"]) && SessionController.Instance.IdToSendables.ContainsKey(props["id2"]))
                 {
-                    node1 = (NodeModel)WorkSpaceModel.Children[props["id1"]];
-                    node2 = (NodeModel)WorkSpaceModel.Children[props["id2"]];
+                    node1 = (NodeModel)SessionController.Instance.IdToSendables[props["id1"]];
+                    node2 = (NodeModel)SessionController.Instance.IdToSendables[props["id2"]];
                 }
                 if (props.ContainsKey("x"))
                 {
@@ -669,7 +664,7 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-                await UITask.Run(async () => { await WorkSpaceModel.CreateGroup(id, node1, node2, x, y); });
+                await UITask.Run(async () => { await SessionController.Instance.CreateGroup(id, node1, node2, x, y); });
             }
             private async Task HandleCreateNewInk(string id, Message props)
             {
@@ -751,9 +746,9 @@ namespace NuSysApp
             private async Task RemoveSendable(string id)
             {
                 await UITask.Run(async () => {
-                    if (WorkSpaceModel.Children.ContainsKey(id))
+                    if (SessionController.Instance.IdToSendables.ContainsKey(id))
                     {
-                        WorkSpaceModel.RemoveSendable(id);
+                        SessionController.Instance.RemoveSendable(id);
                     }
                     _deletedIDs.TryAdd(id, true);
                 });
@@ -761,7 +756,7 @@ namespace NuSysApp
 
             public bool HasSendableID(string id)
             {
-                return WorkSpaceModel.Children.ContainsKey(id);
+                return SessionController.Instance.IdToSendables.ContainsKey(id);
             }
             private async Task SetAtomLock(string id, string ip)
             {
@@ -770,7 +765,7 @@ namespace NuSysApp
                     Debug.WriteLine("got lock update from unknown node");
                     return;
                 }
-                await WorkSpaceModel.Locks.Set(id, ip);
+                await SessionController.Instance.Locks.Set(id, ip);
             }
 
             private byte[] ParseToByteArray(string s)
@@ -797,7 +792,7 @@ namespace NuSysApp
                 LinkedList<Sendable> list = new LinkedList<Sendable>();
                 Dictionary<string, Sendable> set = new Dictionary<string, Sendable>();
 
-                foreach (KeyValuePair<string, Sendable> kvp in WorkSpaceModel.Children)
+                foreach (KeyValuePair<string, Sendable> kvp in SessionController.Instance.IdToSendables)
                 {
                     set.Add(kvp.Key, kvp.Value);
                 }
@@ -812,7 +807,7 @@ namespace NuSysApp
                         set.Remove(s.ID);
                     }
                 }
-                if (WorkSpaceModel.Children.Count > 0)
+                if (SessionController.Instance.IdToSendables.Count > 0)
                 {
                     string ret = "";
                     while (list.Count > 0)
@@ -841,7 +836,7 @@ namespace NuSysApp
             public async Task ReturnAllLocks()
             {
                 List<string> locks = new List<string>();
-                locks.AddRange(WorkSpaceModel.Locks.LocalLocks);
+                locks.AddRange(SessionController.Instance.Locks.LocalLocks);
                 while (locks.Count > 0)
                 {
                     string l = locks.First();
@@ -856,10 +851,10 @@ namespace NuSysApp
             }
             public bool HasLock(string id)
             {
-                if (!WorkSpaceModel.Children.ContainsKey(id)) return false;
-                var sendable = WorkSpaceModel.Children[id];
+                if (!SessionController.Instance.IdToSendables.ContainsKey(id)) return false;
+                var sendable = SessionController.Instance.IdToSendables[id];
                 bool isLine = sendable is InqLineModel || sendable is PinModel; // TODO there should be no special casing for inks
-                return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
+                return isLine || (SessionController.Instance.Locks.ContainsID(id) && SessionController.Instance.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
             }
 
             public async Task CheckLocks(List<string> ids)
@@ -867,7 +862,7 @@ namespace NuSysApp
                 Debug.WriteLine("Checking locks");
                 HashSet<string> locksNeeded = LocksNeeded(ids);
                 List<string> locksToReturn = new List<string>();
-                foreach (string lockID in WorkSpaceModel.Locks.LocalLocks)
+                foreach (string lockID in SessionController.Instance.Locks.LocalLocks)
                 {
                     if (!locksNeeded.Contains(lockID))
                     {
@@ -884,14 +879,14 @@ namespace NuSysApp
 
             private void RemoveIPFromLocks(string ip)
             {
-                if (WorkSpaceModel.Locks.ContainsHolder(ip))
+                if (SessionController.Instance.Locks.ContainsHolder(ip))
                 {
-                    foreach (KeyValuePair<string, string> kvp in WorkSpaceModel.Locks)
+                    foreach (KeyValuePair<string, string> kvp in SessionController.Instance.Locks)
                     {
                         if (kvp.Value == ip)
                         {
                             SetAtomLock(kvp.Key, "");
-                            if (!WorkSpaceModel.Locks.ContainsHolder(ip))
+                            if (!SessionController.Instance.Locks.ContainsHolder(ip))
                             {
                                 return;
                             }
@@ -902,7 +897,7 @@ namespace NuSysApp
         
             private async Task ForceSetLocks(string message)
             {
-                WorkSpaceModel.Locks.Clear();
+                SessionController.Instance.Locks.Clear();
                 foreach (KeyValuePair<string, string> kvp in StringToDict(message))
                 {
                     await SetAtomLock(kvp.Key, kvp.Value);
@@ -911,13 +906,13 @@ namespace NuSysApp
 
             public string GetAllLocksToSend()
             {
-                return DictToString(WorkSpaceModel.Locks);
+                return DictToString(SessionController.Instance.Locks);
             }
             public async Task<Dictionary<string, string>> GetNodeState(string id)
             {
                 if (HasSendableID(id))
                 {
-                    return await WorkSpaceModel.Children[id].Pack();
+                    return await SessionController.Instance.IdToSendables[id].Pack();
                 }
                 else
                 {

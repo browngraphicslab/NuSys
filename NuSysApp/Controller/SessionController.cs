@@ -16,14 +16,15 @@ namespace NuSysApp
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public delegate void CreatePinEventHandler(object source, CreatePinEventArgs e);
         public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
-        public event DeleteEventHandler OnDeletion;
-        public event CreateEventHandler OnCreation;
-        public event CreatePinEventHandler OnPinCreation;
+        public event DeleteEventHandler NodeDeleted;
+        public event CreateEventHandler NodeCreated;
+        public event CreatePinEventHandler PinCreated;
         public event CreateGroupEventHandler OnGroupCreation;
             
         private LockDictionary _locks;
         public Dictionary<string, Sendable> IdToSendables { set; get; }
 
+        public WorkspaceViewModel ActiveWorkspace { get; set; }
 
         public LockDictionary Locks
         {
@@ -86,7 +87,7 @@ namespace NuSysApp
             pinModel.Y = y;
 
             IdToSendables.Add(id, pinModel);
-            OnPinCreation?.Invoke(IdToSendables[id], new CreatePinEventArgs("Created", pinModel));
+            PinCreated?.Invoke(IdToSendables[id], new CreatePinEventArgs("Created", pinModel));
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
@@ -120,15 +121,15 @@ namespace NuSysApp
             node.NodeType = type;
             IdToSendables.Add(id, node);
 
-
-            OnCreation?.Invoke(IdToSendables[id], new CreateEventArgs("Created", node));
+            //TODO: re-add
+            NodeCreated?.Invoke(IdToSendables[id], new CreateEventArgs(node));
         }
 
         public async Task RemoveSendable(string id)
         {
             if (IdToSendables.ContainsKey(id))
             {
-                IdToSendables[id].Delete();
+                //NodeDeleted?.Invoke(this, new DeleteEventArgs("node deleted", IdToSendables[id)));
                 IdToSendables.Remove(id);
             }
             else

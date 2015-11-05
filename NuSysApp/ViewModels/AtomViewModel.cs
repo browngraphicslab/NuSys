@@ -36,7 +36,7 @@ namespace NuSysApp
         private void LinkedHappend(object source, LinkedEventArgs e)
         {
             //TODO: Re-add
-           // WorkSpaceViewModel.PrepareLink(e.ID, this, e.Link);
+            SessionController.Instance.ActiveWorkspace.PrepareLink(e.ID, this, e.Link);
         }
 
         private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
@@ -62,9 +62,8 @@ namespace NuSysApp
         {
             this.IsSelected = !this.IsSelected;
 
-            // TODO:: Re-add
-            //if (IsSelected)
-            //    WorkSpaceViewModel.SetSelection(this);
+            if (IsSelected)
+                SessionController.Instance.ActiveWorkspace.SetSelection(this);
         }
   
         /// <summary>
@@ -240,7 +239,7 @@ namespace NuSysApp
                 if (_isMultiSelected)
                 {
                     // TODO: re-add
-                    //WorkSpaceViewModel.MoveMultiSelection(this, value - _anchorX, 0);
+                    SessionController.Instance.ActiveWorkspace.MoveMultiSelection(this, value - _anchorX, 0);
                 }
                 _anchorX = value;
 
@@ -264,7 +263,7 @@ namespace NuSysApp
                 if (_isMultiSelected)
                 {
                     // TODO: Re-add
-                    //WorkSpaceViewModel.MoveMultiSelection(this, 0, value - _anchorY);
+                    SessionController.Instance.ActiveWorkspace.MoveMultiSelection(this, 0, value - _anchorY);
                 }
 
                 _anchorY = value;

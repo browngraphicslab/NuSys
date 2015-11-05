@@ -10,15 +10,12 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-            // TODO: delegate to workspaceview
-//            _view.InqCanvas.IsEnabled = true;
+            _view.InqCanvas.IsEnabled = true;
         }
 
         public override async Task Deactivate()
         {
-            // TODO: delegate to workspaceview
-
-//            _view.InqCanvas.IsEnabled = false;
+            _view.InqCanvas.IsEnabled = false;
         }
     }
 }

@@ -53,22 +53,22 @@ namespace NuSysApp
 
         private async Task UpdateAtomLock(string id, string lockHolder)
         {
-            if (_workSpaceModel.Children.ContainsKey(id))
+            if (_workSpaceModel.IdToSendables.ContainsKey(id))
             {
                 await UITask.Run(() => {
-                    if (_workSpaceModel.Children.ContainsKey(id))
+                    if (_workSpaceModel.IdToSendables.ContainsKey(id))
                     {
                         if (lockHolder == "")
                         {
-                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Maybe;
+                            _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.Maybe;
                         }
                         else if (lockHolder == NetworkConnector.Instance.LocalIP)
                         {
-                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.Yes;
+                            _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.Yes;
                         }
                         else
                         {
-                            _workSpaceModel.Children[id].CanEdit = AtomModel.EditStatus.No;
+                            _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.No;
                         }
                     }
                 });
@@ -79,7 +79,7 @@ namespace NuSysApp
         {
             _dict.Clear();
             _locals.Clear();
-            foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.Children)
+            foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IdToSendables)
             {
                 kvp.Value.CanEdit = AtomModel.EditStatus.Maybe;
             }

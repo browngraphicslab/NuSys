@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public class MainViewModel : AtomViewModel
     {
-        public MainViewModel(MainModel model) : base(model, null)
+        public MainViewModel(MainModel model) : base(model)
         {
             Model = model;
         }

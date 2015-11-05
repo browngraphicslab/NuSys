@@ -49,7 +49,6 @@ namespace NuSysApp
             }
         } //Network locks
 
-        public abstract void Delete();
         public Dictionary<string,Sendable> Children { set; get; }
         public virtual async Task<string> Stringify()
         {

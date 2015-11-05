@@ -108,7 +108,7 @@ namespace NuSysApp
                 var idDict = new Dictionary<string, Sendable>();
                 foreach (string id in idList)
                 {
-                    var tempNode = (NodeModel)NetworkConnector.Instance.WorkSpaceModel.IdToSendables[id];
+                    var tempNode = (NodeModel)SessionController.Instance.IdToSendables[id];
                     idDict.Add(id, tempNode);
                 }
                 _idDict = idDict;

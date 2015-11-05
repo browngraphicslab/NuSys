@@ -21,13 +21,13 @@ namespace NuSysApp
 
         #region Events and Handlers
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
-        public event DeleteEventHandler OnDeletion;
+        public event DeleteEventHandler Deleted;
 
         public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
-        public event LocationUpdateEventHandler OnLocationUpdate;   
+        public event LocationUpdateEventHandler PositionChanged;   
 
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
-        public event WidthHeightUpdateEventHandler OnWidthHeightUpdate;
+        public event WidthHeightUpdateEventHandler SizeChanged;
 
         public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
 
@@ -37,11 +37,6 @@ namespace NuSysApp
         public NodeModel(string id) : base(id)
         {
             InqCanvas = new InqCanvasModel(id);
-        }
-
-        public override void Delete()
-        {
-            OnDeletion?.Invoke(this, new DeleteEventArgs("Deleted", this));
         }
 
         public void MoveToGroup(GroupNodeModel group)
@@ -69,7 +64,7 @@ namespace NuSysApp
                 _x = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
+                    PositionChanged?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
                 else
                 {
@@ -93,7 +88,7 @@ namespace NuSysApp
                 _y = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
+                    PositionChanged?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
                 else
                 {
@@ -117,7 +112,7 @@ namespace NuSysApp
                 _width = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
+                    SizeChanged?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
                 else
                 {
@@ -143,7 +138,7 @@ namespace NuSysApp
 
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnWidthHeightUpdate?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
+                    SizeChanged?.Invoke(this, new WidthHeightUpdateEventArgs("Changed width", Width, Height));
                 }
                 else
                 {
@@ -211,9 +206,9 @@ namespace NuSysApp
                 {
                     this.MoveToGroup(null);
                 }
-                else if (NetworkConnector.Instance.WorkSpaceModel.IdToSendables.ContainsKey(props["parentGroup"]))
+                else if (SessionController.Instance.IdToSendables.ContainsKey(props["parentGroup"]))
                 {
-                    this.MoveToGroup((GroupNodeModel)NetworkConnector.Instance.WorkSpaceModel.IdToSendables[props["parentGroup"]]);
+                    this.MoveToGroup((GroupNodeModel)SessionController.Instance.IdToSendables[props["parentGroup"]]);
                 }
             }
            
