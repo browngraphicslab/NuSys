@@ -8,28 +8,30 @@ namespace NuSysApp
 {
     public class GroupModel : NodeModel
     {
-        public delegate void GroupChildChangeHandler(object source, AtomModel node);
+         public delegate void NodeChangeHandler(object source, Sendable node);
 
-        public event GroupChildChangeHandler ChildAdded;
-        public event GroupChildChangeHandler ChildRemoved;
+        public event NodeChangeHandler linkAdded;
+        public event NodeChangeHandler ChildAdded;
+        public event NodeChangeHandler NodeRemoved;
 
         private InqCanvasModel _inqModel;
-        private readonly List<AtomModel> _children = new List<AtomModel>();
+        private readonly List<Sendable> _children = new List<Sendable>();
 
         public GroupModel(string id) : base(id)
         {
         }
 
-        public void AddChild(AtomModel atomModel)
+
+        public void AddChild(Sendable nodeModel)
         {
-            _children.Add(atomModel);
-            ChildAdded?.Invoke(this, atomModel);
+            _children.Add(nodeModel);
+            ChildAdded?.Invoke(this, nodeModel);
         }
 
-        public void RemoveChild(AtomModel atomModel)
+        public void RemoveNode(NodeModel nodeModel)
         {
-            _children.Remove(atomModel);
-            ChildRemoved?.Invoke(this, atomModel);
+            _children.Remove(nodeModel);
+            NodeRemoved?.Invoke(this, nodeModel);
         }
 
         public InqCanvasModel InqModel

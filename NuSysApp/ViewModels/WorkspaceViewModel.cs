@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
 using System;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 
@@ -32,13 +33,9 @@ namespace NuSysApp
             MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
-            SetUpTransforms();
-            SetUpHandlers();
-        }
 
-        #region Helper Methods
-        private void SetUpTransforms()
-        {
+            model.ChildAdded += OnChildAdded;
+            
             var c = new CompositeTransform
             {
                 TranslateX = (-1) * (Constants.MaxCanvasSize),
@@ -46,34 +43,18 @@ namespace NuSysApp
             };
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
-
         }
-
-        private void SetUpHandlers()
+        
+        public async void OnChildAdded(object source, Sendable nodeModel)
         {
-            SessionController.Instance.NodeCreated += OnNodeCreated;
-            SessionController.Instance.NodeDeleted += OnNodeDeleted;
-            SessionController.Instance.PinCreated += OnPinCreated;
-        }
-
-        #endregion Helper Methods
-
-        public void OnPinCreated(object source, CreatePinEventArgs e)
-        {
-            var vm = new PinViewModel(e.CreatedPin, this);
-            AtomViewList.Add(vm.View);
-        }
-
-        public async void OnNodeCreated(object source, CreateEventArgs e)
-        {
-            var view = _nodeViewFactory.CreateFromModel(e.CreatedNode);
-            ((NodeViewModel)view.DataContext).Init(view);
+            var view = _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
             AtomViewList.Add(view);
         }
-
-        public void OnNodeDeleted(object source, DeleteEventArgs e)
+        
+        public void OnChildDeleted(object source, Sendable sendable)
         {
-           // AtomViewList.Remove()
+            //   var view = _nodeViewFactory.CreateFromSendable()
+            //  AtomViewList.Remove()
         }
 
         #region Node Interaction
@@ -230,55 +211,9 @@ namespace NuSysApp
         }
 
 
-        /// <summary>
-        /// Creates a link between two nodes. 
-        /// </summary>
-        /// <param name="atomVM1"></param>
-        /// <param name="atomVM2"></param>
-        private void CreateNewLink(string id, AtomViewModel atomVm1, AtomViewModel atomVm2, LinkModel link)
-        {
-            var vm1 = atomVm1 as NodeViewModel;
-            if (vm1 != null && ((NodeViewModel)vm1).IsAnnotation)
-            {
-                return;
-            }
-            var vm2 = atomVm2 as NodeViewModel;
-            if (vm2 != null && ((NodeViewModel)vm2).IsAnnotation)
-            {
-                return;
-            }
-            if (atomVm1 == atomVm2)
-            {
-                return;
-            }
-            if (atomVm1 == atomVm2) return;
-            var vm = new LinkViewModel(link, atomVm1, atomVm2);//TODO fix this
-
-            //TODO: asdfasdf
-           // SessionController.Instance.Id.Add(id, vm);
-
-            /*
-            if (vm1?.ParentGroup != null || vm2?.ParentGroup != null)
-            {
-                vm.IsVisible = false;
-            }
-            */
-
-
-
-            AtomViewList.Add(vm.View);
-            atomVm1.AddLink(vm);
-            atomVm2.AddLink(vm);
-        }
-
         #endregion Node Interaction
-        #region Save/Load
-       
 
-        #endregion Save/Load
         #region Event Handlers
-
-
 
         private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
         {
@@ -287,21 +222,6 @@ namespace NuSysApp
         }
 
         #endregion Event Handlers
-        #region Event Helpers
-        public void PrepareLink(string id, AtomViewModel atomVm, LinkModel link)
-        {
-            if (_preparedAtomVm == null)
-            {
-                _preparedAtomVm = atomVm;
-                return;
-            }
-            else if (atomVm != _preparedAtomVm)
-            {
-                CreateNewLink(id, _preparedAtomVm, atomVm, link);
-            }
-            _preparedAtomVm = null;
-        }
-        #endregion Event Helpers
         #region Public Members
 
       

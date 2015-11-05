@@ -22,7 +22,7 @@ namespace NuSysApp
 
         public PinModel (string id) : base(id)
         {
-            this.Transform = new MatrixTransform();
+           
             ID = id;
             this.Text = "NusysLand";
             _dict = new DebouncingDictionary(this);
@@ -94,21 +94,7 @@ namespace NuSysApp
                 }
             }
         }
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-
-                RaisePropertyChanged("Model_Transform");
-            }
-        }
-
+        
         public async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string,string> props = new Dictionary<string, string>();

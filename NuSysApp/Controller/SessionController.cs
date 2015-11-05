@@ -10,17 +10,7 @@ namespace NuSysApp
     {
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
-
-        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
-        public delegate void CreateEventHandler(object source, CreateEventArgs e);
-        public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
-        public delegate void CreatePinEventHandler(object source, CreatePinEventArgs e);
-        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
-        public event DeleteEventHandler NodeDeleted;
-        public event CreateEventHandler NodeCreated;
-        public event CreatePinEventHandler PinCreated;
-        public event CreateGroupEventHandler OnGroupCreation;
-            
+    
         private LockDictionary _locks;
         public Dictionary<string, Sendable> IdToSendables { set; get; }
 
@@ -41,9 +31,8 @@ namespace NuSysApp
         public void CreateLink(AtomModel atom1, AtomModel atom2, string id)
         {
             var link = new LinkModel(atom1, atom2, id);
-            atom1.AddToLink(link);
-            atom2.AddToLink(link);
             IdToSendables.Add(id, link);
+            ActiveWorkspace.Model.AddChild(link);
         }
 
         public async Task CreateGroup(string id, NodeModel node1, NodeModel node2, double xCooordinate, double yCoordinate)
@@ -54,10 +43,11 @@ namespace NuSysApp
                 Y = yCoordinate,
                 NodeType = NodeType.Group
             };
-            OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+
             node1.MoveToGroup(group);
             node2.MoveToGroup(group);
             IdToSendables.Add(id, group);
+           // OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
         }
 
         public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate)
@@ -69,7 +59,7 @@ namespace NuSysApp
                 NodeType = NodeType.Group
             };
             IdToSendables.Add(id, group);
-            OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+      //      OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
 
         }
 
@@ -87,7 +77,9 @@ namespace NuSysApp
             pinModel.Y = y;
 
             IdToSendables.Add(id, pinModel);
-            PinCreated?.Invoke(IdToSendables[id], new CreatePinEventArgs("Created", pinModel));
+
+            ActiveWorkspace.Model.AddChild(pinModel);
+
         }
 
         public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
@@ -120,9 +112,8 @@ namespace NuSysApp
             node.Y = yCoordinate;
             node.NodeType = type;
             IdToSendables.Add(id, node);
-
-            //TODO: re-add
-            NodeCreated?.Invoke(IdToSendables[id], new CreateEventArgs(node));
+            
+            ActiveWorkspace.Model.AddChild(node);
         }
 
         public async Task RemoveSendable(string id)

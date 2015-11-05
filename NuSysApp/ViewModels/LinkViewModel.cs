@@ -37,7 +37,6 @@ namespace NuSysApp
             this.AnchorX = (int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2));
             this.AnchorY = (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
             this.Anchor = new Point(this.AnchorX, this.AnchorY);
-            this.View = new BezierLinkView(this);  
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));
             ((LinkModel)this.Model).OnDeletion += DeletionHappend;
         }

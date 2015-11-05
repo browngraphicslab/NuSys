@@ -11,8 +11,6 @@ namespace NuSysApp
     {
         
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
-        public event LinkedEventHandler OnLinked;
-
         protected Dictionary<string, string> Metadata = new Dictionary<string, string>();
 
         private readonly DebouncingDictionary _debounceDict;
@@ -24,11 +22,6 @@ namespace NuSysApp
             ID = id;
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
-        }
-
-        public void AddToLink(LinkModel link)
-        {
-            OnLinked?.Invoke(this, new LinkedEventArgs("Linked", link));
         }
 
         //takes in string converts to SolidColorBrush

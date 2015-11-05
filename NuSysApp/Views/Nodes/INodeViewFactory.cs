@@ -9,6 +9,6 @@ namespace NuSysApp
 {
     public interface INodeViewFactory
     {
-        UserControl CreateFromModel(NodeModel model);
+        UserControl CreateFromSendable(Sendable model, List<UserControl> atomLists );
     }
 }

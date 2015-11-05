@@ -18,8 +18,8 @@ namespace NuSysApp
         {
             var pinvm = this.DataContext as PinViewModel;
             var pinModel = (PinModel) pinvm.Model;
-            
-            var vm = pinvm.Workspace;
+
+            var vm = SessionController.Instance.ActiveWorkspace;
 
             var c = new CompositeTransform
             {
@@ -35,15 +35,15 @@ namespace NuSysApp
         private void textBox_GotFocus(object sender, RoutedEventArgs e)
         {
             var pinvm = this.DataContext as PinViewModel;
-            var vm = pinvm.Workspace;
-            SessionController.Instance.PinCreated -= vm.OnPinCreated;
+          //  var vm = pinvm.Workspace;
+         //   SessionController.Instance.PinCreated -= vm.OnPinCreated;
         }
 
         private void textBox_LostFocus(object sender, RoutedEventArgs e)
         {
             var pinvm = this.DataContext as PinViewModel;
-            var vm = pinvm.Workspace;
-            SessionController.Instance.PinCreated += vm.OnPinCreated;
+         //   var vm = pinvm.Workspace;
+         //   SessionController.Instance.PinCreated += vm.OnPinCreated;
         }
     }
 }

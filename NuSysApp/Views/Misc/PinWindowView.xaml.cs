@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -27,10 +28,10 @@ namespace NuSysApp
         public PinWindowView()
         {
             this.InitializeComponent();
-          //  Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));           
+            //  Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));           
+     
         }
-
-
+        
         private void TextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var pinvm = ((TextBlock)sender).DataContext as PinViewModel;
@@ -65,6 +66,7 @@ namespace NuSysApp
             var pinModel = (PinModel)pinvm.Model;
             NetworkConnector.Instance.RequestDeleteSendable(pinModel.ID);
             e.Handled = true;
+
             /*
             var pinvm = ((Button)sender).DataContext as PinViewModel;
             var pinModel = (PinModel) pinvm.Model;
@@ -72,7 +74,8 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)this.DataContext;
 
             vm.AtomViewList.Remove(pinvm.View);
-            vm.PinViewModelList.Remove(pinvm);*/
+            vm.PinViewModelList.Remove(pinvm);
+            */
         }
 
         public void setFloatingMenu(FloatingMenuView floatingMenu)
@@ -88,14 +91,14 @@ namespace NuSysApp
         private void PinWindow_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
-            SessionController.Instance.PinCreated -= vm.OnPinCreated;
+        //    SessionController.Instance.PinCreated -= vm.OnPinCreated;
             e.Handled = true;
         }
 
         private void PinWindow_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
-            SessionController.Instance.PinCreated += vm.OnPinCreated;
+     //       SessionController.Instance.PinCreated += vm.OnPinCreated;
             e.Handled = true;
         }
 
