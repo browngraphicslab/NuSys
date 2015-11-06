@@ -10,11 +10,23 @@ namespace NuSysApp
     {
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
-    
+        private WorkspaceViewModel _activeWorkspace;
+
+        public delegate void WorkspaceChangedHandler(object source, WorkspaceViewModel workspace);
+        public event WorkspaceChangedHandler WorkspaceChanged;
+
         private LockDictionary _locks;
         public Dictionary<string, Sendable> IdToSendables { set; get; }
 
-        public WorkspaceViewModel ActiveWorkspace { get; set; }
+        public WorkspaceViewModel ActiveWorkspace
+        {
+            get { return _activeWorkspace; }
+            set
+            {
+                _activeWorkspace = value;
+                WorkspaceChanged?.Invoke(this, _activeWorkspace);
+            }
+        }
 
         public LockDictionary Locks
         {

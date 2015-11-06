@@ -8,8 +8,7 @@ namespace NuSysApp
 {
     public class GroupModel : NodeModel
     {
-         public delegate void NodeChangeHandler(object source, Sendable node);
-
+        public delegate void NodeChangeHandler(object source, Sendable node);
         public event NodeChangeHandler linkAdded;
         public event NodeChangeHandler ChildAdded;
         public event NodeChangeHandler NodeRemoved;

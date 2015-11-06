@@ -1,112 +1,37 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class PinViewModel : BaseINPC
+    public class PinWindowViewModel
     {
-        private MatrixTransform _transform;
-        private UserControl _view;
-        private BaseINPC _model;
-        private string _text = string.Empty;
-        
-        public PinViewModel(PinModel model) : base()
+        public ObservableCollection<PinModel> Pins { get; set; }
+
+        public PinWindowViewModel()
         {
-            Model = model;
-            Transform = new MatrixTransform();   
-            View = new PinView(this);
-            this.Model.PropertyChanged += (s, e) => { Update(e); };
-            Text = "<Enter Pin Name>";
+            Pins = new ObservableCollection<PinModel>();
 
-            var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
-            transMat.OffsetX = model.X;
-            transMat.OffsetY = model.Y;
-            Transform = new MatrixTransform
+            SessionController.Instance.WorkspaceChanged += delegate(object source, WorkspaceViewModel workspace)
             {
-                Matrix = transMat
-            };
 
-            model.OnLocationUpdate += OnLocationUpdate;
-        }
+                workspace.AtomViewList.CollectionChanged +=
+                    delegate(object sender, NotifyCollectionChangedEventArgs args)
+                    {
 
-        private void OnLocationUpdate(object source, LocationUpdateEventArgs args)
-        {
-            var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
-            transMat.OffsetX = args.X;
-            transMat.OffsetY = args.Y;
-            Transform = new MatrixTransform
-            {
-                Matrix = transMat
+                        foreach (var newItem in args.NewItems.OfType<PinView>())
+                        {
+                            Pins.Add((PinModel)((PinViewModel)newItem.DataContext).Model);
+                        }
+                    };
+
+              
             };
         }
-
-        private void Update(PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "Model_Text":
-                    this.Text = ((PinModel)Model).Text;
-                    break;
-            }
-        }
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-
-                RaisePropertyChanged("Transform");
-            }
-        }
-
-        public UserControl View
-        {
-            get { return _view; }
-            set
-            {
-                if (_view == value)
-                {
-                    return;
-                }
-                _view = value;
-
-                RaisePropertyChanged("View");
-            }
-        }
-        public string Text
-        {
-            get { return _text; }
-            set
-            {
-                if (_text == value)
-                {
-                    return;
-                }
-                _text = value;
-                ((PinModel)Model).Text = value;
-                RaisePropertyChanged("Text");
-            }
-        }
-
-        public BaseINPC Model
-        {
-            get { return _model; }
-            set
-            {
-                if (_model == value)
-                {
-                    return;
-                }
-                _model = value;
-                RaisePropertyChanged("Model");
-            }
-        }        
+ 
     }
 }

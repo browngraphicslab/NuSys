@@ -28,8 +28,6 @@ namespace NuSysApp
         public PinWindowView()
         {
             this.InitializeComponent();
-            //  Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));           
-     
         }
         
         private void TextBlock_Tapped(object sender, TappedRoutedEventArgs e)
@@ -62,20 +60,12 @@ namespace NuSysApp
 
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var pinvm = ((Button)sender).DataContext as PinViewModel;
-            var pinModel = (PinModel)pinvm.Model;
+            var pinModel = (PinModel)((Button) sender).DataContext;
+            var pinWindowViewModel = (PinWindowViewModel) DataContext;
+            pinWindowViewModel.Pins.Remove(pinModel);
+            
             NetworkConnector.Instance.RequestDeleteSendable(pinModel.ID);
             e.Handled = true;
-
-            /*
-            var pinvm = ((Button)sender).DataContext as PinViewModel;
-            var pinModel = (PinModel) pinvm.Model;
-
-            var vm = (WorkspaceViewModel)this.DataContext;
-
-            vm.AtomViewList.Remove(pinvm.View);
-            vm.PinViewModelList.Remove(pinvm);
-            */
         }
 
         public void setFloatingMenu(FloatingMenuView floatingMenu)
@@ -88,29 +78,9 @@ namespace NuSysApp
             _floatingMenu.CloseAllSubMenus();
         }
 
-        private void PinWindow_PointerEntered(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
-        //    SessionController.Instance.PinCreated -= vm.OnPinCreated;
-            e.Handled = true;
-        }
-
-        private void PinWindow_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = _floatingMenu.SessionView.DataContext as WorkspaceViewModel;
-     //       SessionController.Instance.PinCreated += vm.OnPinCreated;
-            e.Handled = true;
-        }
 
         private void PinWindow_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            //var transMat = ((MatrixTransform) this.RenderTransform).Matrix;
-            //transMat.OffsetX += e.Delta.Translation.X;
-            //transMat.OffsetY += e.Delta.Translation.Y;
-            //var transform = new MatrixTransform();
-            //transform.Matrix = transMat;
-            //this.RenderTransform = transform;
-            //e.Handled = true;
             CompositeTransform current = (CompositeTransform)(this.RenderTransform);
             CompositeTransform c = new CompositeTransform
             {

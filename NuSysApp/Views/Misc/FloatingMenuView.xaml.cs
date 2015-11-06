@@ -130,6 +130,9 @@ namespace NuSysApp
                 _activeButton = btnSelectNode;
                 SetActive(Options.SelectNode);
             };     
+
+            pinWindow.DataContext = new PinWindowViewModel();
+            
         }
 
 

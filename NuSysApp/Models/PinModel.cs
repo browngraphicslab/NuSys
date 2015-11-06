@@ -21,8 +21,7 @@ namespace NuSysApp
         private DebouncingDictionary _dict;
 
         public PinModel (string id) : base(id)
-        {
-           
+        {  
             ID = id;
             this.Text = "NusysLand";
             _dict = new DebouncingDictionary(this);
