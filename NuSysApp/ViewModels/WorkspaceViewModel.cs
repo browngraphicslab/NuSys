@@ -303,6 +303,7 @@ namespace NuSysApp
                 var v = this.Model.Children[s] as TextNodeModel;
                 if (v != null)
                 {
+                    Debug.Assert(linesToPromote.Count > 0);
                     foreach (var model in linesToPromote)
                     {
                         UITask.Run(async () =>
@@ -575,7 +576,7 @@ namespace NuSysApp
             PositionNode(vm, x, y);
         }
 
-        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
+        private void PartialLineAdditionHandler(object source, AddLineEventArgs e)
         {
             LastPartialLineModel = e.AddedLineModel;
             RaisePropertyChanged("PartialLineAdded");

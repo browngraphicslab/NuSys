@@ -174,6 +174,7 @@ namespace NuSysApp
             else
             {
                 var selectedLines = new List<InqLineModel>();
+                Point topLeft = new Point(r.X, r.Y);
                 foreach (InqLineModel model in _view.InqCanvas.ViewModel.Model.Lines)
                 {
                     InqLineModel newModel = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
@@ -183,7 +184,7 @@ namespace NuSysApp
                     foreach (var point in model.Points)
                     {
                         //we need to adjust the point so that it is in the correct place on the node's canvas
-                        newModel.AddPoint(new Point(point.X - _canvasStartPoint.X, point.Y - _canvasStartPoint.Y));
+                        newModel.AddPoint(new Point(point.X - topLeft.X, point.Y - topLeft.Y));
                         if (!isContained && r.Contains(point))
                         {
                             isContained = true;

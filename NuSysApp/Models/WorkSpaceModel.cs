@@ -24,7 +24,7 @@ namespace NuSysApp
         public delegate void CreateEventHandler(object source, CreateEventArgs e);
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public delegate void CreatePinEventHandler(object source, CreatePinEventArgs e);
-        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
+        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         public event DeleteEventHandler OnDeletion;
         public event CreateEventHandler OnCreation;
         public event CreatePinEventHandler OnPinCreation;
@@ -97,7 +97,7 @@ namespace NuSysApp
 
         public void AddGlobalInq(InqLineModel lineView)
         {
-            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
+            //OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", lineView));
             this._inqModel.FinalizeLine(lineView);
         }
 
