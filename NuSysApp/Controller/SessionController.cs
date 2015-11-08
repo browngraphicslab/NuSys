@@ -49,7 +49,7 @@ namespace NuSysApp
 
         public async Task CreateGroup(string id, NodeModel node1, NodeModel node2, double xCooordinate, double yCoordinate)
         {
-            var group = new GroupNodeModel(id)
+            var group = new GroupModel(id)
             {
                 X = xCooordinate,
                 Y = yCoordinate,
@@ -62,16 +62,19 @@ namespace NuSysApp
            // OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
         }
 
-        public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate)
+        public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate, double width, double height)
         {
             var group = new GroupNodeModel(id)
             {
                 X = xCooordinate,
                 Y = yCoordinate,
+                Width =  width,
+                Height = height,
                 NodeType = NodeType.Group
             };
             IdToSendables.Add(id, group);
-      //      OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+            ActiveWorkspace.Model.AddChild(group);
+            //      OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
 
         }
 

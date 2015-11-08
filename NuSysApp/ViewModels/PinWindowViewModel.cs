@@ -22,6 +22,8 @@ namespace NuSysApp
                 workspace.AtomViewList.CollectionChanged +=
                     delegate(object sender, NotifyCollectionChangedEventArgs args)
                     {
+                        if (args.NewItems == null)
+                            return;
 
                         foreach (var newItem in args.NewItems.OfType<PinView>())
                         {

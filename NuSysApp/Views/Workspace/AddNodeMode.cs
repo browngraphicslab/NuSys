@@ -56,7 +56,6 @@ namespace NuSysApp
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (_isDragging) {
-                Debug.WriteLine("bluuuu");
                 var translation = e.Cumulative.Translation;
                 if (translation.X > 0)
                     _tempNode.Width = translation.X;

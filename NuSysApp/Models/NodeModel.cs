@@ -16,7 +16,6 @@ namespace NuSysApp
         private double _y;
         private double _width;
         private double _height;
-        private GroupNodeModel _group;
         #endregion Private Members
 
         #region Events and Handlers
@@ -39,11 +38,12 @@ namespace NuSysApp
             InqCanvas = new InqCanvasModel(id);
         }
 
-        public void MoveToGroup(GroupNodeModel group)
+        public void MoveToGroup(GroupModel group)
         {
             //this.ParentGroup = group;
             Metadata["group"] = group.ID;
-            group?.Add(this);//only add if group isn't null
+            group?.AddChild(this);//only add if group isn't null
+            OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
         }
 
         public InqCanvasModel InqCanvas { get;}
@@ -208,7 +208,8 @@ namespace NuSysApp
                 }
                 else if (SessionController.Instance.IdToSendables.ContainsKey(props["parentGroup"]))
                 {
-                    this.MoveToGroup((GroupNodeModel)SessionController.Instance.IdToSendables[props["parentGroup"]]);
+                    // TODO: re-add
+                    //this.MoveToGroup((GroupModel)SessionController.Instance.IdToSendables[props["parentGroup"]]);
                 }
             }
            

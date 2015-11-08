@@ -13,16 +13,26 @@ namespace NuSysApp
         {
             UserControl view = null;
 
+            if (model is GroupModel)
+            {
+                var groupVm = new GroupViewModel((GroupModel) model);
+                var groupView = new GroupView(groupVm);
+                groupVm.Init(groupView);
+                groupVm.Width = 400;
+                groupVm.Height = 400;
+                return groupView;
+            }
+           
             if (model is NodeModel)
                 return CreateFromNodeType((NodeModel)model);
             if (model is LinkModel)
                 return CreateLinkView((LinkModel) model, AtomViewList);
+
             if (model is PinModel)
             {
                 var vm = new PinViewModel((PinModel)model);
                 return vm.View;
-            }
-                
+            }   
 
             return null;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -7,72 +8,35 @@ namespace NuSysApp
 {
     public class GroupViewModel: NodeViewModel
     {
+        public ObservableCollection<UserControl> AtomViewList { get; }
+
+        private INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
 
         private double _margin;
-        private CompositeTransform _localTransform;
-        public ObservableCollection<LinkViewModel> _linkViewModelList;
+       // private CompositeTransform _localTransform;
 
-        public GroupViewModel(GroupNodeModel model): base(model)
+        public GroupViewModel(GroupModel model): base(model)
         {
-            NodeViewModelList = new ObservableCollection<NodeViewModel>();
-            _linkViewModelList = new ObservableCollection<LinkViewModel>();
             AtomViewList = new ObservableCollection<UserControl>();
-            this.Transform = new MatrixTransform();
-            this.Width = Constants.DefaultNodeSize;   //width set in /MISC/Constants.cs
-            this.Height = Constants.DefaultNodeSize; //height set in /MISC/Constants.cs
-//            this.IsSelected = false;
-//            this.IsEditing = false;
-//            this.IsEditingInk = false;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            this.View = new GroupView();
+           
             this.NodeType = NodeType.Group;
             _margin = 75;
-            this.LocalTransform = new CompositeTransform();
+
+            model.ChildAdded += OnChildAdded;
             model.OnAddToGroup += AddNode;
+        }
+
+        public async void OnChildAdded(object source, Sendable nodeModel)
+        {
+            var view = _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
+            AtomViewList.Add(view);
         }
 
         public void AddNode(object source, AddToGroupEventArgs e)
         {
-           
-
-            if (!(e.Node is GroupViewModel)) {
-           //     toAdd.Width = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
-           //     toAdd.Height = Constants.DefaultNodeSize + 20;//TODO CHANGE THIS
-            }
-            /*
-            if (toAdd.ParentGroup == null) //node is currently in workspace
-            {
-                WorkSpaceViewModel.AtomViewList.Remove(toAdd.View);
-                WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
-            }
-            else
-            {
-                toAdd.ParentGroup.AtomViewList.Remove(toAdd.View);
-                WorkSpaceViewModel.NodeViewModelList.Remove(toAdd);
-            }
-            
-
-            toAdd.Transform = new MatrixTransform();
-            AtomViewList.Add(toAdd.View);
-            NodeViewModelList.Add(toAdd);
-            
-            foreach (var link in toAdd.LinkList)
-            {
-                link.SetVisibility(false);
-                if (link.Annotation != null)
-                {
-                    link.Annotation.IsVisible = false;
-                }
-            }
-           // (View as GroupView).ArrangeNodesInGrid();
-            //TODO Handle links
-    */
         }
-
-        public ObservableCollection<UserControl> AtomViewList { get; set; }
-
-        public ObservableCollection<NodeViewModel> NodeViewModelList { get; set; }
-         
+        
         public override void Resize(double dx, double dy)
         {
             // TODO: re-add
@@ -106,7 +70,7 @@ namespace NuSysApp
         }
 
         public void RemoveNode(NodeViewModel toRemove)
-        {
+        {/*
             foreach (var link in toRemove.LinkList)
             {
                 link.IsVisible = true;
@@ -135,21 +99,10 @@ namespace NuSysApp
                     link.Atom2.UpdateAnchor();
                 }
                 lastNode.UpdateAnchor();
-            }               
+            }     
+            */          
         }
 
-        public CompositeTransform LocalTransform
-        {
-            get { return _localTransform; }
-            set
-            {
-                if (_localTransform == value)
-                {
-                    return;
-                }
-                _localTransform = value;
-                RaisePropertyChanged("LocalTransform");
-            }
-        }
+        
     }
 }

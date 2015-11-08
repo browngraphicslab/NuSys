@@ -33,6 +33,13 @@ namespace NuSysApp
             AtomType = Constants.Node;
             ((NodeModel) Model).PositionChanged += LocationUpdateHandler;
             ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
+
+            model.OnAddToGroup += OnOnAddToGroup;
+        }
+
+        private void OnOnAddToGroup(object source, AddToGroupEventArgs addToGroupEventArgs)
+        {
+
         }
 
         public void Init(UserControl view)
@@ -40,6 +47,8 @@ namespace NuSysApp
             View = view;
             var nodeModel = (NodeModel)Model;
             SetPosition(nodeModel.X, nodeModel.Y);
+            Width = nodeModel.Width;
+            Height = nodeModel.Height;
         }
         
                

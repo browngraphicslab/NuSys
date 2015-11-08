@@ -634,6 +634,8 @@ namespace NuSysApp
             {
                 double x = 0;
                 double y = 0;
+                double w = 0;
+                double h = 0;
                 if (props.ContainsKey("x"))
                 {
                     double.TryParse(props["x"], out x);
@@ -642,7 +644,15 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-                await UITask.Run(async () => { await SessionController.Instance.CreateEmptyGroup(id, x, y); });
+            if (props.ContainsKey("width"))
+            {
+                double.TryParse(props["width"], out w);
+            }
+            if (props.ContainsKey("height"))
+            {
+                double.TryParse(props["height"], out h);
+            }
+            await UITask.Run(async () => { await SessionController.Instance.CreateEmptyGroup(id, x, y, w, h); });
             }
 
             private async Task HandleCreateNewGroup(string id, Message props)

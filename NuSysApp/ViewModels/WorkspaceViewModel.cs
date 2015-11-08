@@ -16,25 +16,25 @@ namespace NuSysApp
     /// <summary>
     /// Models the basic Workspace and maintains a list of all atoms. 
     /// </summary>
-    public class WorkspaceViewModel : AtomViewModel
+    public class WorkspaceViewModel : GroupViewModel
     {
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private AtomViewModel _preparedAtomVm;
-        private INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
+  
         #endregion Private Members
 
         public WorkspaceViewModel(WorkSpaceModel model) : base(model)
         {
             Model = model;
-            AtomViewList = new ObservableCollection<UserControl>();
+            
             GroupDict = new Dictionary<string, GroupViewModel>();
             MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
             myDB = new SQLiteDatabase("NuSysTest.sqlite");
 
-            model.ChildAdded += OnChildAdded;
+            
             
             var c = new CompositeTransform
             {
@@ -45,11 +45,7 @@ namespace NuSysApp
             FMTransform = new CompositeTransform();
         }
         
-        public async void OnChildAdded(object source, Sendable nodeModel)
-        {
-            var view = _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
-            AtomViewList.Add(view);
-        }
+ 
         
         public void OnChildDeleted(object source, Sendable sendable)
         {
@@ -169,45 +165,52 @@ namespace NuSysApp
             MultiSelectedAtomViewModels.Clear();
         }
         delegate void Del(string s);
+
         public async void GroupFromMultiSelection()
         {
             if (MultiSelectedAtomViewModels.Count < 2)
             {
                 return;
             }
-            if (!(MultiSelectedAtomViewModels[0] is NodeViewModel) || !(MultiSelectedAtomViewModels[1] is NodeViewModel))
+
+            var minX = double.PositiveInfinity;
+            var minY = double.PositiveInfinity;
+            var maxX = double.NegativeInfinity;
+            var maxY = double.NegativeInfinity;
+
+            foreach (var t in MultiSelectedAtomViewModels)
             {
-                return;
+                var nodeModel = (NodeModel)t.Model;
+                minX = nodeModel.X < minX ? nodeModel.X : minX;
+                minY = nodeModel.Y < minY ? nodeModel.Y : minY;
+                maxX = nodeModel.X + nodeModel.Width > maxX ? nodeModel.X + nodeModel.Width : maxX;
+                maxY = nodeModel.Y + nodeModel.Height > maxY ? nodeModel.Y + nodeModel.Height : maxY;
             }
-            var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
-            var node2 = (NodeModel) MultiSelectedAtomViewModels[1].Model;
+
+
             Del del = delegate (string s)
             {
-                Debug.WriteLine("gid = " + s);
-                Debug.WriteLine(MultiSelectedAtomViewModels.ToString());
-
                 var groupmodel = (GroupNodeModel)SessionController.Instance.IdToSendables[s];
-                for (int index = 0; index < MultiSelectedAtomViewModels.Count; index++)
+
+  
+                foreach (var t in MultiSelectedAtomViewModels)
                 {
-                    Debug.WriteLine(NetworkConnector.Instance.HasLock(s));
-                    Debug.WriteLine(MultiSelectedAtomViewModels.Count);
-                    var avm = MultiSelectedAtomViewModels[index];
-        //            if (avm is NodeViewModel)
-         //           {
-                        ((NodeModel)avm.Model).MoveToGroup(groupmodel);
-                    //Debug.WriteLine((avm.Model  as NodeModel).ParentGroup.ID);
-                    //Debug.WriteLine(((avm.Model  as NodeModel).ParentGroup as GroupNodeModel).NodeModelList.Count);
-         //           }
+                    var nodeModel = (NodeModel) t.Model;
+                    nodeModel.X -= minX;
+                    nodeModel.Y -= minY;
+                    AtomViewList.Remove(t.View);
+                    ((NodeModel)t.Model).MoveToGroup(groupmodel);
                 }
-            ClearMultiSelection();
+
+                ClearMultiSelection();
             };
-            
-            Action<string> a = new Action<string>(del);
-            await NetworkConnector.Instance.RequestMakeEmptyGroup(node1.X.ToString(), node2.Y.ToString(),null,null,a);
-            //            await NetworkConnector.Instance.RequestMakeGroup(node1.ID, node2.ID, node1.X.ToString(),node2.Y.ToString());
-            //            if (MultiSelectedAtomViewModels.Count > 1)
-            //            {
-//            }
+
+            var props = new Dictionary<string, string>();
+            props["width"] = (maxX - minX).ToString();
+            props["height"] = (maxY - minY).ToString();
+
+            var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
+            await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
         }
 
 
@@ -225,9 +228,6 @@ namespace NuSysApp
         #region Public Members
 
       
-
-        public ObservableCollection<UserControl> AtomViewList { get; }
-
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
         public List<AtomViewModel> MultiSelectedAtomViewModels { get; private set; }

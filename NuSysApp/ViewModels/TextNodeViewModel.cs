@@ -25,8 +25,8 @@ namespace NuSysApp
         public TextNodeViewModel(TextNodeModel model) : base(model)
         {           
             this.Transform = new MatrixTransform();
-            this.Width = Constants.DefaultNodeSize;
-            this.Height = Constants.DefaultNodeSize;
+            this.Width = model.Width;
+            this.Height = model.Height;
             this.NodeType = NodeType.Text;
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 89, 189, 197));
             

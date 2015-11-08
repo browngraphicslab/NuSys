@@ -32,13 +32,12 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" RenderTransform="{Binding LocalTransform}">
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas HorizontalAlignment="Left" Background="Red" x:Name="canvas"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-
             </ItemsControl>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
