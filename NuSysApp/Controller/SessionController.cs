@@ -111,7 +111,7 @@ namespace NuSysApp
                     break;
                 case NodeType.PDF:
                     node = new PdfNodeModel((byte[])data, id);
-                    await ((PdfNodeModel)node).SaveFile();
+                    //await ((PdfNodeModel)node).SaveFile();
                     break;
                 case NodeType.Audio:
                     node = new AudioNodeModel((byte[])data, id);

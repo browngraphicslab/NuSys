@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class FreeFormNodeViewFactory : INodeViewFactory
     {
-        public UserControl CreateFromSendable(Sendable model, List<UserControl> AtomViewList)
+        public async Task<UserControl> CreateFromSendable(Sendable model, List<UserControl> AtomViewList)
         {
             UserControl view = null;
 
@@ -24,7 +24,7 @@ namespace NuSysApp
             }
            
             if (model is NodeModel)
-                return CreateFromNodeType((NodeModel)model);
+                return await CreateFromNodeType((NodeModel)model);
             if (model is LinkModel)
                 return CreateLinkView((LinkModel) model, AtomViewList);
 
@@ -50,14 +50,16 @@ namespace NuSysApp
             return view;
         }
 
-        private UserControl CreateFromNodeType(NodeModel model)
+        private async Task<UserControl> CreateFromNodeType(NodeModel model)
         {
             UserControl view = null;
 
             switch (model.NodeType)
             {
                 case NodeType.Text:
-                    view = new TextNodeView(new TextNodeViewModel((TextNodeModel)model));
+                    var tvm = new TextNodeViewModel((TextNodeModel) model);
+                    view = new TextNodeView(tvm);
+                    await tvm.UpdateRtf();
                     break;
                 case NodeType.Image:
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));

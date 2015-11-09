@@ -318,6 +318,7 @@
     <Compile Include="Views\SessionView.xaml.cs">
       <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Workspace\DuplicateNodeMode.cs" />
     <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>
     </Compile>

@@ -19,14 +19,6 @@ namespace NuSysApp
             nodeTpl.ToggleInkMode();
         }
 
-        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = (ImageNodeViewModel)this.DataContext;
-            //TODO: re-add
-            //vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove   
-            e.Handled = true;
-        }
-
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (NodeViewModel)this.DataContext;

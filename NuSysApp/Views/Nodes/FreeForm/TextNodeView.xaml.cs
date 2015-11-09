@@ -36,6 +36,7 @@ namespace NuSysApp
 
             var model = (TextNodeModel)vm.Model;
 
+            mdTextBox.Text = model.Text;
             mdTextBox.TextChanging += delegate
             {
                 model.Text = mdTextBox.Text;

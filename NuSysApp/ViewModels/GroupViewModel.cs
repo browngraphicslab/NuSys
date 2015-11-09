@@ -29,7 +29,7 @@ namespace NuSysApp
 
         public async void OnChildAdded(object source, Sendable nodeModel)
         {
-            var view = _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
+            var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
             AtomViewList.Add(view);
         }
 

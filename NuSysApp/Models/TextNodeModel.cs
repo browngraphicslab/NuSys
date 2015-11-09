@@ -17,7 +17,7 @@ namespace NuSysApp
         public TextNodeModel(string data, string id): base(id)
         {
             ID = id;
-            Text = data;       
+                Text = data;       
         }
 
         public string Text
@@ -36,16 +36,16 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("text", value);
+                    this.DebounceDict.Add("data", value);
                 }
             } 
         }
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("text"))
+            if (props.ContainsKey("data"))
             {
-                Text = props["text"];
+                Text = props["data"];
             }
             base.UnPack(props);
         }
@@ -53,7 +53,7 @@ namespace NuSysApp
         public override async Task<Dictionary<string,string>> Pack()
         {
             Dictionary<string, string> dict = await base.Pack();
-            dict.Add("text", Text);
+            dict.Add("data", Text);
             dict.Add("nodeType", NodeType.Text.ToString());
             return dict;
         }

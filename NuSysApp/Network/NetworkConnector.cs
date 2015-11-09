@@ -577,7 +577,6 @@ namespace NuSysApp
                     switch (type)
                     {
                         case NodeType.Text:
-                            props.Add("text", d);
                             data = d;
                             break;
                         case NodeType.Image:
