@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -24,6 +25,7 @@ namespace NuSysApp
             _margin = 75;
 
             model.ChildAdded += OnChildAdded;
+            model.ChildRemoved += OnChildRemoved;
             model.OnAddToGroup += AddNode;
         }
 
@@ -31,6 +33,19 @@ namespace NuSysApp
         {
             var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
             AtomViewList.Add(view);
+        }
+
+        private void OnChildRemoved(object source, Sendable sendable)
+        {
+            if (sendable is InqLineModel)
+            {
+                var inqLineModel = (InqLineModel) sendable;
+                inqLineModel.Delete();
+                return;
+            }
+
+            var view = AtomViewList.Where((a => { var vm = (AtomViewModel)a.DataContext; return vm.Model == sendable; }));
+            AtomViewList.Remove(view.First());
         }
 
         public void AddNode(object source, AddToGroupEventArgs e)

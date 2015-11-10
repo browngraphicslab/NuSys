@@ -138,6 +138,8 @@ namespace NuSysApp
             if (IdToSendables.ContainsKey(id))
             {
                 //NodeDeleted?.Invoke(this, new DeleteEventArgs("node deleted", IdToSendables[id)));
+                
+                ActiveWorkspace.Model.RemoveChild(IdToSendables[id]);
                 IdToSendables.Remove(id);
             }
             else

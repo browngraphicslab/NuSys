@@ -49,6 +49,11 @@ namespace NuSysApp
             RaisePropertyChanged("Model.Points");
         }
 
+        public void Delete()
+        {
+            OnDeleteInqLine?.Invoke(this, new DeleteInqLineEventArgs(this));
+        }
+
         public async Task UnPack(Dictionary<string, string> props)
         {
             if (props.ContainsKey("data"))

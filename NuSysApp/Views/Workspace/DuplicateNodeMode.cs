@@ -61,11 +61,10 @@ namespace NuSysApp
 
         private async void OnWorkspacePressed(object sender, DoubleTappedRoutedEventArgs e)
         {
-            Debug.WriteLine("OnWorkspacePressed");
-            Debug.WriteLine(_selectedNode);
-            if (_selectedNode != null)
+            var doubleTappedNode = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (_selectedNode != null && _selectedNode != doubleTappedNode)
             {
-                
+                Debug.WriteLine("OnWorkspacePressed");
                 var vm = (WorkspaceViewModel)_view.DataContext;
                 var dict = await _selectedNode.Model.Pack();
 
@@ -98,7 +97,7 @@ namespace NuSysApp
         {
             Debug.WriteLine("OnAtomPressed");
             _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
-            Debug.WriteLine(_selectedNode);
+            //Debug.WriteLine(_selectedNode);
             e.Handled = true;
         }
     }

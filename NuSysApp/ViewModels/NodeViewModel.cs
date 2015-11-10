@@ -35,6 +35,7 @@ namespace NuSysApp
             ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
 
             model.OnAddToGroup += OnOnAddToGroup;
+       
         }
 
         private void OnOnAddToGroup(object source, AddToGroupEventArgs addToGroupEventArgs)

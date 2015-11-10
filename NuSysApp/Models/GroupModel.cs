@@ -11,7 +11,7 @@ namespace NuSysApp
         public delegate void NodeChangeHandler(object source, Sendable node);
         public event NodeChangeHandler linkAdded;
         public event NodeChangeHandler ChildAdded;
-        public event NodeChangeHandler NodeRemoved;
+        public event NodeChangeHandler ChildRemoved;
 
         private InqCanvasModel _inqModel;
         private readonly List<Sendable> _children = new List<Sendable>();
@@ -27,10 +27,10 @@ namespace NuSysApp
             ChildAdded?.Invoke(this, nodeModel);
         }
 
-        public void RemoveNode(NodeModel nodeModel)
+        public void RemoveChild(Sendable nodeModel)
         {
             _children.Remove(nodeModel);
-            NodeRemoved?.Invoke(this, nodeModel);
+            ChildRemoved?.Invoke(this, nodeModel);
         }
 
         public InqCanvasModel InqModel
