@@ -7,9 +7,9 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class AddPartialLineEventArgs : SuperEventArgs
+    public class AddLineEventArgs : SuperEventArgs
     {
-        public AddPartialLineEventArgs(string text, InqLineModel line):base(text)
+        public AddLineEventArgs(string text, InqLineModel line):base(text)
         {
             AddedLineModel = line;
         }

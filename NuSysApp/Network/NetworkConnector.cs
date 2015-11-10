@@ -76,7 +76,8 @@ namespace NuSysApp
                 if (subMessage.Length > 0)
                 {
                     Message props = new Message(subMessage);
-                    await HandleMessage(props); //handle each submessage
+                    //await HandleMessage(props); //handle each submessage
+                    await HandleMessage(props);
                     if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
                     {
                         await _clientHandler.SendMassTCPMessage(message);
@@ -195,14 +196,15 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task<string> RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
         {
-            ThreadPool.RunAsync(async delegate
+            string id = null;
+            await ThreadPool.RunAsync(async delegate
             {
                 if (x != "" && y != "" && nodeType != "")
                 {
                     Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
-                    string id = oldID == null ? _clientHandler.GetID() : oldID;
+                    id = oldID == null ? _clientHandler.GetID() : oldID;
                     props["x"] = x;
                     props["y"] = y;
                     props["nodeType"] = nodeType;
@@ -228,6 +230,7 @@ namespace NuSysApp
                     return;
                 }
             });
+            return id;
         }
 
         /*
@@ -677,17 +680,17 @@ namespace NuSysApp
             }
             private async Task HandleCreateNewInk(string id, Message props)
             {
-            /*
+            
                 if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"] == "WORKSPACE_ID"))
                 {
                     InqCanvasModel canvas = null;
                     if (props["canvasNodeID"] != "WORKSPACE_ID")
                     {
-                        await UITask.Run(async delegate { canvas = ((NodeModel)WorkSpaceModel.Children[props["canvasNodeID"]]).InqCanvas; });
+                        await UITask.Run(async delegate { canvas = ((NodeModel)SessionController.Instance.IdToSendables[props["canvasNodeID"]]).InqCanvas; });
                     }
                     else
                     {
-                        canvas = WorkSpaceModel.InqModel;
+                        canvas = SessionController.Instance.ActiveWorkspace.Model.InqModel;
                     }
                     if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                     {
@@ -723,7 +726,7 @@ namespace NuSysApp
                             {
                                 InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
                                 thickness = 2;
-                                if (props.ContainsKey("previousID") && WorkSpaceModel.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                                if (props.ContainsKey("previousID") && SessionController.Instance.ActiveWorkspace.Model.InqModel.PartialLines.ContainsKey(props["previousID"]))
                                 {
                                     canvas.OnFinalizedLine += async delegate
                                     {
@@ -740,7 +743,14 @@ namespace NuSysApp
                                 lineModel.Points = points;
                                 lineModel.Stroke = stroke;
                                 canvas.FinalizeLine(lineModel);
-                                WorkSpaceModel.Children.Add(id, lineModel);
+                                try
+                                {
+                                    SessionController.Instance.IdToSendables.Add(id, lineModel);
+                                }
+                                catch (System.ArgumentException argument)
+                                {
+                                    Debug.Write(argument.StackTrace);
+                                }
 
                             }
                         });
@@ -750,7 +760,7 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("Ink creation failed because no canvas ID was given or the ID wasn't valid");
                 }
-            */
+            
             }
             private async Task RemoveSendable(string id)
             {

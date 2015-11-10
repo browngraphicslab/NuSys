@@ -17,10 +17,12 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
+
     public class WorkSpaceModel : GroupModel
     {   
         public WorkSpaceModel(InqCanvasModel inqModel) : base("WORKSPACE_ID")
         {
+
         }
         
     }

@@ -36,6 +36,7 @@ namespace NuSysApp
         public InqCanvasModel InqModel
         {
             get { return this._inqModel; }
+            set { _inqModel = value; }
         }
 
         public override async Task<Dictionary<string, string>> Pack()

@@ -38,9 +38,10 @@ namespace NuSysApp
             };
 
             var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
-            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel);
+            var inqCanvasViewModel = new InqCanvasViewModel(xWorkspace.InqCanvas, inqCanvasModel);
             xWorkspace.InqCanvas.ViewModel = inqCanvasViewModel;
             var workspaceModel = new WorkSpaceModel(inqCanvasModel);
+            workspaceModel.InqModel = inqCanvasModel;
             var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
             xWorkspace.DataContext = workspaceViewModel;
 

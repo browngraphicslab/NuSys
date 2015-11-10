@@ -26,8 +26,19 @@ namespace NuSysApp
             // Initally, set mode to Inq drawing.
             DataContextChanged += delegate
             {
-                if (DataContext is InqCanvasViewModel)
-                    _mode = new DrawInqMode(this);
+
+                _mode = new DrawInqMode(this);
+
+                if (_viewModel == null)
+                    return;
+
+                _viewModel.Model.OnFinalizedLine += delegate(InqLineModel lineModel)
+                {
+                    var lineView = new InqLineView(new InqLineViewModel(lineModel));
+                    var points = lineModel.Points;
+                    this.Children.Add(lineView);
+                };
+
             };
         }
 
@@ -178,6 +189,10 @@ namespace NuSysApp
             {
                 case "PartialLineAdded":
                     Children.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
+                    break;
+                case "FinalLineAdded":
+                    var lineView = new InqLineView(new InqLineViewModel(vm.FinalLineModel));
+                    this.Children.Add(lineView);
                     break;
             }
         }

@@ -82,7 +82,9 @@ namespace NuSysApp
         {
             //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
             // TODO: readd line below
-            //this._inqModel.FinalizeLine(lineView);
+            var wvm = (WorkSpaceModel)Instance.ActiveWorkspace.Model;
+            var cm = (InqCanvasModel) wvm.InqModel;
+            cm.FinalizeLine(lineView);
         }
 
         public async Task CreateNewPin(string id, double x, double y)

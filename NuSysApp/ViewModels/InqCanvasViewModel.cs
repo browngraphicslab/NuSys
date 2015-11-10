@@ -12,11 +12,21 @@ namespace NuSysApp
     public class InqCanvasViewModel : BaseINPC
     {
         public InqCanvasModel Model { get; }
-        public Panel View { get; }
-        public InqCanvasViewModel(InqCanvasModel model)
+
+        public InqCanvasView View { get; }
+        public InqCanvasViewModel(InqCanvasView inqCanvasView, InqCanvasModel model)
         {
             Model = model;
-            Model.OnPartialLineAddition += PartialLineAdditionHandler;
+            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
+            this.Model.OnFinalizedLine += FinalLineAdditionHandler;
+            inqCanvasView.ViewModel = this;
+            View = inqCanvasView;
+
+            foreach (var inqLineModel in model.Lines)
+            {
+                var lineView = new InqLineView(new InqLineViewModel(inqLineModel));;
+                inqCanvasView.Children.Add(lineView);
+            }
         }
 
         public void AddTemporaryPoint(Point p)
@@ -24,12 +34,22 @@ namespace NuSysApp
             Model.AddTemporaryPoint(p);
         }
         public InqLineModel LastPartialLineModel { get; set; }
-        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
+        private void PartialLineAdditionHandler(object source, AddLineEventArgs e)
         {
             if (e.AddedLineModel != LastPartialLineModel)
             {
                 LastPartialLineModel = e.AddedLineModel;
                 RaisePropertyChanged("PartialLineAdded");
+            }
+        }
+
+        public InqLineModel FinalLineModel { get; set; }
+        private void FinalLineAdditionHandler(InqLineModel lineModel)
+        {
+            if (lineModel != FinalLineModel)
+            {
+                FinalLineModel = lineModel;
+                RaisePropertyChanged("FinalLineAdded");
             }
         }
         public void RemoveLine(InqLineView lineView)

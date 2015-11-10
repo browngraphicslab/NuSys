@@ -22,7 +22,7 @@ namespace NuSysApp
     /// <summary>
     /// This is the view for the entire workspace. It instantiates the WorkspaceViewModel. 
     /// </summary>
-    public sealed partial class WorkspaceView : UserControl
+    public sealed partial class WorkspaceView
     {
         private AbstractWorkspaceViewMode _mode;
 

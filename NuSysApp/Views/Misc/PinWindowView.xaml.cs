@@ -42,6 +42,7 @@ namespace NuSysApp
             scaleXAnimation.To = 1;
             scaleYAnimation.To = 1;
             canvasStoryboard.Completed += delegate(object o, object o1)
+
             {
                 var c = new CompositeTransform
                 {

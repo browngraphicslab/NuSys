@@ -9,6 +9,7 @@ using SQLite.Net.Async;
 using System;
 using System.Linq;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -126,12 +127,13 @@ namespace NuSysApp
             dict["height"] = nodeBounds.Height.ToString();
             AddInk add = delegate (string s)
             {
-                var v = this.Model.Children[s] as TextNodeModel;
+                var v = SessionController.Instance.IdToSendables[s] as TextNodeModel;
                 if (v != null)
                 {
+                    Debug.Assert(linesToPromote.Count > 0);
                     foreach (var model in linesToPromote)
                     {
-                        UITask.Run( async() =>
+                        UITask.Run(async () =>
                         {
                             //NetworkConnector.Instance.RequestLock(v.ID);
                             NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
@@ -143,8 +145,7 @@ namespace NuSysApp
             Action<string> a = new Action<string>(add);
             await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
         }
-
-
+           
         public void ClearMultiSelection()
         {
             NetworkConnector.Instance.ReturnAllLocks();
@@ -218,7 +219,7 @@ namespace NuSysApp
 
         #region Event Handlers
 
-        private void PartialLineAdditionHandler(object source, AddPartialLineEventArgs e)
+        private void PartialLineAdditionHandler(object source, AddLineEventArgs e)
         {
             LastPartialLineModel = e.AddedLineModel;
             RaisePropertyChanged("PartialLineAdded");

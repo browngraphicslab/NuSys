@@ -15,8 +15,11 @@ namespace NuSysApp
 {
     public class InqCanvasModel
     {
-        public delegate void AddPartialLineEventHandler(object source, AddPartialLineEventArgs e);
+        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         public event AddPartialLineEventHandler OnPartialLineAddition;
+
+       // public delegate void AddFinalLineEventHandler(object source, AddLineEventArgs e);
+        //public event AddPartialLineEventHandler OnFinalLineAddition;
 
         public event FinalizedLine OnFinalizedLine;
         public delegate void FinalizedLine(InqLineModel lineModel);
@@ -41,7 +44,7 @@ namespace NuSysApp
                         n.CollectionChanged += delegate (object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
                             InqLineView l = ((InqLineView)((object[])eventArgs.NewItems.SyncRoot)[0]);
-                            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", l));
+                            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Partial Lines", l));
                         };
                     }
                 }
@@ -85,7 +88,7 @@ namespace NuSysApp
         {
             this._lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
-            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", line));
+            //OnFinalLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", line));
             OnFinalizedLine?.Invoke( line );
         }
 
@@ -105,7 +108,7 @@ namespace NuSysApp
                 _partialLines.Add(temporaryID, new HashSet<InqLineModel>());
             }
             _partialLines[temporaryID].Add(lineModel);
-            OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Partial Lines", lineModel));
+            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Partial Lines", lineModel));
         }
 
         public void RemovePartialLines(string oldID)
