@@ -18,7 +18,9 @@ namespace NuSysApp
     /// </summary>
     public abstract class NodeViewModel : AtomViewModel
     {
-        #region Private Members      
+
+
+        public string Tags { get; set; }
 
         private bool _isEditing, _isEditingInk;
         private double _height, _width;
@@ -26,7 +28,7 @@ namespace NuSysApp
         private MatrixTransform _transform;
         private GroupViewModel _group;
 
-        #endregion Private Members
+
 
         protected NodeViewModel(NodeModel model) : base(model)
         {
@@ -34,8 +36,16 @@ namespace NuSysApp
             ((NodeModel) Model).PositionChanged += LocationUpdateHandler;
             ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
 
+            Tags = model.GetMetaData("tags");
             model.OnAddToGroup += OnOnAddToGroup;
+            model.MetadataChanged += OnMetadataChanged;
        
+        }
+
+        private void OnMetadataChanged(object source, string key)
+        {
+            Tags = Model.GetMetaData("tags");
+            RaisePropertyChanged("Tags");
         }
 
         private void OnOnAddToGroup(object source, AddToGroupEventArgs addToGroupEventArgs)

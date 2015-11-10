@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -27,6 +29,26 @@ namespace NuSysApp
                 var lineView = new InqLineView(new InqLineViewModel(inqLineModel));;
                 inqCanvasView.Children.Add(lineView);
             }
+            
+        }
+
+        public async Task<string> InkToText()
+        {
+            if (Model.Lines.Count == 0)
+                return string.Empty;
+
+            var im = new InkManager();
+
+            var b = new InkStrokeBuilder();
+
+            foreach (var inqLineModel in Model.Lines)
+            {
+                var stroke = b.CreateStroke(inqLineModel.Points);
+                im.AddStroke(stroke);
+            }
+
+            var result = await im.RecognizeAsync(InkRecognitionTarget.All);
+            return result[0].GetTextCandidates()[0];
         }
 
         public void AddTemporaryPoint(Point p)

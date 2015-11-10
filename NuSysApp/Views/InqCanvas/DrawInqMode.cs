@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -14,6 +15,7 @@ namespace NuSysApp
     {
         private InqLineModel _currentStroke;
         private InqLineView _currentInqLineView;
+        private InkManager _inkManager = new InkManager();
 
         public DrawInqMode(InqCanvasView view)
         {
@@ -28,6 +30,7 @@ namespace NuSysApp
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            _inkManager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
             _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
             _currentStroke.ParentID = inqCanvas.ViewModel.Model.ID;
             _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
@@ -43,6 +46,7 @@ namespace NuSysApp
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            _inkManager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
                 if (_currentStroke.Points.Count > 1)
@@ -57,6 +61,7 @@ namespace NuSysApp
 
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
             NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.ID, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
@@ -64,6 +69,9 @@ namespace NuSysApp
             {
                 inqCanvas.Children.Remove(_currentInqLineView);
             };
+
         }
+
+        
     }
 }

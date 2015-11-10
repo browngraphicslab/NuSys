@@ -9,7 +9,10 @@ namespace NuSysApp
 {
     public abstract class AtomModel : Sendable
     {
-        
+
+        public delegate void MetadataChangeEventHandler(object source, string key);
+        public event MetadataChangeEventHandler MetadataChanged;
+
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
         protected Dictionary<string, string> Metadata = new Dictionary<string, string>();
 
@@ -72,7 +75,9 @@ namespace NuSysApp
 
         public string GetMetaData(string key)
         {
-            return Metadata[key];
+            if (Metadata.ContainsKey(key))
+                return Metadata[key];
+            return "";
         }
 
         public void SetMetaData(string key, string value)
@@ -87,6 +92,8 @@ namespace NuSysApp
             {
                 this.DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
             }
+
+            MetadataChanged?.Invoke(this, key);
         }
 
         public DebouncingDictionary DebounceDict

@@ -26,6 +26,7 @@ namespace NuSysApp
         public Button btnDelete = null;
         public Path resizer = null;
         public Grid bg = null;
+        public TextBlock tags = null;
 
         public NodeTemplate()
         {
@@ -63,6 +64,10 @@ namespace NuSysApp
 
             resizer = (Path)GetTemplateChild("Resizer");
             resizer.ManipulationDelta += OnResizerManipulationDelta;
+
+            tags = (TextBlock)GetTemplateChild("Tags");
+            var t = new TranslateTransform {X = 0, Y = 25};
+            tags.RenderTransform = t;
 
             ManipulationMode = ManipulationModes.All;
             ManipulationDelta += OnManipulationDelta;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,7 +59,9 @@ namespace NuSysApp
             {
                 case NodeType.Text:
                     var tvm = new TextNodeViewModel((TextNodeModel) model);
+                    
                     view = new TextNodeView(tvm);
+                    
                     await tvm.UpdateRtf();
                     break;
                 case NodeType.Image:
@@ -75,8 +78,10 @@ namespace NuSysApp
             var tpl = view.FindName("nodeTpl") as NodeTemplate;
             if (tpl != null)
             {
-                tpl.OnTemplateReady += delegate {
-                    tpl.inkCanvas.ViewModel = new InqCanvasViewModel(tpl.inkCanvas,model.InqCanvas);
+                tpl.OnTemplateReady += async delegate {
+                    var inqVm = new InqCanvasViewModel(tpl.inkCanvas, model.InqCanvas);
+                        tpl.inkCanvas.ViewModel = inqVm;
+                    Debug.WriteLine(await inqVm.InkToText());
                 };
             }
 

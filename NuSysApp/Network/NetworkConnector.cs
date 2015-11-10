@@ -745,11 +745,20 @@ namespace NuSysApp
                                 canvas.FinalizeLine(lineModel);
                                 try
                                 {
-                                    SessionController.Instance.IdToSendables.Add(id, lineModel);
+                                    if (!SessionController.Instance.IdToSendables.ContainsKey(id))
+                                    {
+                                        SessionController.Instance.IdToSendables.Add(id, lineModel);
+                                    }
+                                    else
+                                    {
+                                        SessionController.Instance.IdToSendables.Remove(id);
+                                        SessionController.Instance.IdToSendables.Add(id, lineModel);
+                                    }
+                                    
                                 }
                                 catch (System.ArgumentException argument)
                                 {
-                                    Debug.Write(argument.StackTrace);
+                                    //Debug.Write(argument.StackTrace);
                                 }
 
                             }

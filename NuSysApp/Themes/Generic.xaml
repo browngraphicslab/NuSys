@@ -69,7 +69,7 @@
               RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
               RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" />
                         
-                        <Button x:Name="btnDelete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
+                        <Button x:Name="btnDelete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0"
                 Background="#00000000" IsHitTestVisible="False">
                             <!--<Button.Content>
                                 <Image Source="ms-appx:///Assets/icon_x2.png" />
@@ -78,6 +78,7 @@
                         <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
               Opacity=".5"  Canvas.ZIndex="20" ManipulationMode="All" />
+                        <TextBlock x:Name="Tags" VerticalAlignment="Bottom" Text="{Binding Tags}"></TextBlock>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
