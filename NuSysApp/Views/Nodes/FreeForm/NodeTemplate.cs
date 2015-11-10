@@ -105,6 +105,7 @@ namespace NuSysApp
             var vm = (NodeViewModel)this.DataContext;
             vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true;
+
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

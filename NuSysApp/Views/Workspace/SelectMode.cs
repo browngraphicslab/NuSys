@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -25,6 +30,7 @@ namespace NuSysApp
             _view.DoubleTapped -= OnDoubleTapped;
 
             _view.ManipulationMode = ManipulationModes.None;
+  
             var vm = _view.DataContext as WorkspaceViewModel;
             vm.ClearSelection();
         }
