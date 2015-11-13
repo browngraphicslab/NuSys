@@ -10,11 +10,13 @@ using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
-    public class DuplicateNodeMode : AbstractWorkspaceViewMode
+    public class GroupNodeMode : AbstractWorkspaceViewMode
     {
         private NodeViewModel _selectedNode;
+        private UserControl _selectedView;
+        private int _pointerCount = 0;
 
-        public DuplicateNodeMode(WorkspaceView view) : base(view) { }
+        public GroupNodeMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
         {
@@ -27,8 +29,6 @@ namespace NuSysApp
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
             }
-
-            _view.DoubleTapped += OnWorkspacePressed;
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -38,9 +38,7 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var item = (UserControl) newItem;
-            //     item.PointerPressed -= OnAtomPressed;
-            //     item.PointerReleased -= OnAtomReleased;
+               var item = (UserControl) newItem;
                item.PointerPressed += OnAtomPressed;
                item.PointerReleased += OnAtomReleased;
             }
@@ -55,18 +53,30 @@ namespace NuSysApp
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
             }
-            _view.DoubleTapped -= OnWorkspacePressed;
             wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
         }
 
-        private async void OnWorkspacePressed(object sender, DoubleTappedRoutedEventArgs e)
+        private async void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
-            var doubleTappedNode = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (_selectedNode != null && _selectedNode != doubleTappedNode)
+            Debug.WriteLine("OnAtomReleased 1");
+            _pointerCount--;
+
+        
+            var doubleTappedNodeVm = (NodeViewModel)((FrameworkElement)e.OriginalSource).DataContext;
+            if (_selectedNode != null && _pointerCount == 1 && doubleTappedNodeVm is NodeViewModel && _selectedNode != doubleTappedNodeVm)
             {
-                Debug.WriteLine("OnWorkspacePressed");
-                var vm = (WorkspaceViewModel)_view.DataContext;
-                var dict = await _selectedNode.Model.Pack();
+                var vm = (WorkspaceViewModel) _view.DataContext;
+                var dict = await doubleTappedNodeVm.Model.Pack();
+                var tappedPoint = e.GetCurrentPoint(_view).Position;
+                var nodeTpl = (NodeTemplate) _selectedView.FindName("nodeTpl") as NodeTemplate;
+                var inkCanvas = nodeTpl.inkCanvas;
+                var inkCanvasVm = inkCanvas.ViewModel;
+                var inkCaption = (await inkCanvasVm.InkToText());
+                Debug.WriteLine("--------------");
+                Debug.WriteLine(inkCaption);
+                 
+                var tags = doubleTappedNodeVm.Model.GetMetaData("tags");
+                doubleTappedNodeVm.Model.SetMetaData("tags", tags + " " + inkCaption);
 
                 var props = dict;
                 props.Remove("id");
@@ -76,27 +86,32 @@ namespace NuSysApp
                 props.Remove("y");
                 props.Remove("metadata");
 
-                var tappedPoint = e.GetPosition(null);
-                tappedPoint.X -= _selectedNode.Width/2;
-                tappedPoint.Y -= _selectedNode.Height/2;
+               
+                tappedPoint.X -= doubleTappedNodeVm.Width/2;
+                tappedPoint.Y -= doubleTappedNodeVm.Height/2;
                 var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
-                NetworkConnector.Instance.RequestMakeNode(p.X.ToString(),p.Y.ToString(), _selectedNode.NodeType.ToString(), null, null, props);
+                NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(),
+                    doubleTappedNodeVm.NodeType.ToString(), null, null, props);
+
             }
-
-            //_selectedNode = null;
-        }
-
-        private void OnAtomReleased(object sender, PointerRoutedEventArgs e)
-        {
-            Debug.WriteLine("OnAtomReleased");
-            _selectedNode = null;
-           // e.Handled = true;
+            else if (_pointerCount <= 0)
+            {
+                Debug.WriteLine("SETTING TO NULL");
+                _selectedNode = null;
+            }
+            
+            //e.Handled = true;
         }
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
             Debug.WriteLine("OnAtomPressed");
-            _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
+            _pointerCount++;
+            if (_selectedNode == null) { 
+                _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
+                _selectedView = (UserControl) sender;
+                
+            }
             //Debug.WriteLine(_selectedNode);
             //e.Handled = true;
         }
