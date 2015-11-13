@@ -12,6 +12,14 @@
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
         <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
+            <Border.Resources>
+                <Storyboard x:Name="canvasStoryboard">
+                    <DoubleAnimation x:Name="transXAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="inkBorder"/>
+                    <DoubleAnimation x:Name="transYAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="inkBorder"/>
+                    <DoubleAnimation x:Name="scaleXAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="inkBorder"/>
+                    <DoubleAnimation x:Name="scaleYAnimation" Duration = "0:0:0.2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="inkBorder"/>
+                </Storyboard>
+            </Border.Resources>
             <local:InqCanvasView x:Name="inqCanvas" Background="Transparent" IsEnabled="False" />
         </Border>
         <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All" >

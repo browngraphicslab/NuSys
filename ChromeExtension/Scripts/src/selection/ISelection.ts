@@ -4,6 +4,7 @@
     update(x: number, y: number):void;
     end(x: number, y: number): void;
     deselect(): void;
+    select():void;
     getBoundingRect(): Rectangle;
     analyzeContent():void;
     getContent():string;

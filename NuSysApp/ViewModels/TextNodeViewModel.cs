@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {

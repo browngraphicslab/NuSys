@@ -13,8 +13,7 @@ namespace NuSysApp
         public delegate void CreateGroupEventHandler(object source, CreateGroupEventArgs e);
         public event LinkedEventHandler OnLinked;
         public event CreateGroupEventHandler OnCreatedGroup;
-
-
+        
         private SolidColorBrush _color;
 
         protected AtomModel(string id) : base(id)

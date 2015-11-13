@@ -97,22 +97,63 @@
 </head>
 <body>
 
-    <div class="content">
-        <h1>Your Selections</h1>
+<div class="content">
+    <h1>Your Selections</h1>
 
-        <select id="filter">
-            <option value="chron">Chronological</option>
-            <option value="key">Key Word</option>
-            <option value="comment">Comment</option>
-        </select>
-        <button class="button" id='reset' type='button'>Remove All</button>
+    <select id="filter">
+        <option value="chron">Chronological</option>
+        <option value="key">Key Word</option>
+        <option value="comment">Comment</option>
+    </select>
+    <button class="button" id='reset' type='button'>Remove All</button>
 
-        <input id="searchInput" type="text" name="searchWord" value="search">
-        <input id="submit" type="submit" value="Submit">
+    <input id="searchInput" type="text" name="searchWord" value="search">
+    <input id="submit" type="submit" value="Submit">
 
-        <li id="container"></li>
-        <script type="text/javascript" src="InsertSelections.js"></script>
-    </div>
+    <ul id="container"></ul>
+</div>
+    <script type="text/template" class="template">
 
+        <h2>
+            <%- rc.listTitle %>
+        </h2>
+
+        <ul>
+            <% _.each( rc.listItems, function( listItem ){ %>
+
+            <li>
+
+                <%- listItem.name %>
+
+                <% if ( listItem.hasOlympicGold ){ %>
+                <em>*</em>
+                <% } %>
+
+            </li>
+
+            <% }); %>
+        </ul>
+
+
+        <% var showFootnote = _.any(
+        _.pluck( rc.listItems, "hasOlympicGold" )
+        ); %>
+
+
+        <% if ( showFootnote ){ %>
+
+        <p style="font-size: 12px ;">
+
+            <em>* Olympic gold medalist</em>
+
+        </p>
+
+        <% } %>
+
+    </script>
+
+
+<script type="text/javascript" src="underscore.js"></script>
+    <script type="text/javascript" src="InsertSelections.js"></script>
 </body>
 </html>

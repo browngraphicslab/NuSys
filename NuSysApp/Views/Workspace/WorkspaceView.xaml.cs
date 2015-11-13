@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
+using Windows.UI.Xaml.Media.Animation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -79,6 +80,28 @@ namespace NuSysApp
         {
             get { return mainCanvas; }
         }
+
+        public Storyboard PinAnimationStoryboard
+        {
+            get { return canvasStoryboard; }
+        }
+        public DoubleAnimation ScaleXAnimation
+        {
+            get { return scaleXAnimation; }
+        }
+        public DoubleAnimation ScaleYAnimation
+        {
+            get { return scaleYAnimation; }
+        }
+        public DoubleAnimation TranslateXAnimation
+        {
+            get { return transXAnimation; }
+        }
+        public DoubleAnimation TranslateYAnimation
+        {
+            get { return transYAnimation; }
+        }
+
 
         public void RemoveLoading()
         {

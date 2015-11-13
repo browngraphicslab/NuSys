@@ -5,8 +5,9 @@
 /// <reference path="../ink/brush/SelectionBrush.ts"/>
 /// <reference path="../util/Rectangle.ts"/>
 /// <reference path="../util/DomUtil.ts"/>
+/// <reference path="AbstractSelection.ts"/>
 
-class LineSelection implements ISelection {
+class LineSelection extends AbstractSelection {
     
     _brushStroke:BrushStroke;
     _inkCanvas:InkCanvas;
@@ -14,10 +15,19 @@ class LineSelection implements ISelection {
     _range:Range;
     _content:string;
 
-    constructor(inkCanvas:InkCanvas) {
+    constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
+        super("LineSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
+        console.log("making line selection");
 
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
     }
 
     start(x: number, y: number): void {
@@ -31,9 +41,11 @@ class LineSelection implements ISelection {
     end(x: number, y: number): void {
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
-
         this.analyzeContent();
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+
+        this.select();
+
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
         this._inkCanvas.update();
     }
 
@@ -63,8 +75,6 @@ class LineSelection implements ISelection {
 
     addWordTag(nodes): void {
 
-        console.log(nodes);
-
         $.each(nodes, (index, value) =>{
 
             if (value.nodeType == Node.TEXT_NODE) {
@@ -75,52 +85,40 @@ class LineSelection implements ISelection {
             }
         });
     }
+
     analyzeContent(): void {
+
+        console.log("analyzing content.");
 
         var stroke = this._brushStroke.stroke;
         var pStart = stroke.points[0];
         var pEnd = stroke.points[stroke.points.length - 1];
+       // var nStart = document.elementFromPoint(pStart.x, pStart.y);
+       // var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
 
-        var nStart = document.elementFromPoint(pStart.x, pStart.y);
-        var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
+        var startRange = document["caretRangeFromPoint"](pStart.x, pStart.y);
+        var endRange = document["caretRangeFromPoint"](pEnd.x, pEnd.y);
 
-        var commonParent = DomUtil.getCommonAncestor(nStart, nEnd);
+        console.log("----------------");
+        console.log(startRange);
+        console.log(endRange);
+        console.log(startRange.startContainer.nodeValue);
+        console.log(startRange.startContainer.nodeValue.substring(0, startRange.startOffset));
+        console.log(startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset));
+        console.log(startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length));
+        
+        this._content = startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset);
 
-        var nodes = $(commonParent).contents();
+        var newStart = document.createElement("span");
+        newStart.innerHTML = "<span>" + startRange.startContainer.nodeValue.substring(0, startRange.startOffset) + "</span>" + "<span style='background: yellow;'>" + startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset) + "</span>" + "<span>" + startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length) + "</span>";
+        startRange.startContainer.parentNode.replaceChild(newStart, startRange.startContainer);
 
-        if (nodes.length > 0) {
-            var original_content = $(commonParent).clone();
-
-            $.each(nodes, function () {
-
-                if (this.nodeType == Node.TEXT_NODE) {
-                    $(this).replaceWith($(this).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
-                }
-            });
-
-            nStart = document.elementFromPoint(pStart.x, pStart.y);
-            nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
-            this._range = new Range();
-            this._range.setStart(nStart, 0);
-            this._range.setEndAfter(nEnd);
-            this._clientRects = this._range.getClientRects();
-
-            var frag = this._range.cloneContents();
-            var result = "";
-            $.each(frag["children"], function () {
-                result += $(this)[0].outerHTML.replace(/<word>|<\/word>/g, " ");
-            });
-            result = result.replace(/\s\s+/g, ' ').trim();
-
-            this._content = result;
-
-            $(commonParent).replaceWith(original_content);
-        }
+            //$(commonParent).replaceWith(original_content);
+            console.log("done analyzing line selection.");
+        
     }
-
     
-
     getContent(): string {
-             return this._content;
-        }
+        return this._content;
+    }
 }

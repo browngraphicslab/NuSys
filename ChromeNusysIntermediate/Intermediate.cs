@@ -43,15 +43,17 @@ namespace ChromeNusysIntermediate
                     fileDir = fileDir.Remove(fileDir.Length - 7, 7);
                     fileDir += count.ToString() + ".nusys";
                     input = el.ToString();
-                    string imgSrc = "http:" +
-                                    Regex.Match(input, "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1]
-                                        .Value;
+                    string imgSrc = Regex.Match(input, "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                    if (imgSrc != "" && !imgSrc.Contains("http"))
+                    {
+                        imgSrc = "http://" + imgSrc;
+                    }
                     string pattern = @"<img[^>]+\>";
                     Regex rgx = new Regex(pattern);
                     // input = rgx.Replace(input, "---IMAGE---");
 
                     string imageRtf = string.Empty;
-                    if (!imgSrc.Equals("http:"))
+                    if (!imgSrc.Equals(""))
                     {
                         var imgPath = dir + "\\image.png";
                         using (WebClient webClient = new WebClient())

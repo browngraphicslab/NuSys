@@ -66,8 +66,7 @@
             </Button>
         </StackPanel>
         <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-        <Slider VerticalAlignment="Bottom" Width="350" Margin="0,0,0,10" Background="White" Foreground="White"></Slider>
-        <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" Visibility="Collapsed"/>        
+        <MediaElement Grid.Row="50" Grid.Column="0" x:Name="playbackElement"   Stretch="Fill" AudioCategory="Speech" />
 
     </Grid>
     

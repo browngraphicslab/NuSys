@@ -1,6 +1,12 @@
 ﻿/// <reference path="../ink/brush/MarqueeBrush.ts" />
 
-class MarqueeSelection implements ISelection {
+
+///find parent element p of word 
+///find word index compared to container
+///store/ find/ color 
+
+
+class MarqueeSelection extends AbstractSelection {
 
     _brushStroke: BrushStroke;
     _inkCanvas: InkCanvas;
@@ -17,13 +23,13 @@ class MarqueeSelection implements ISelection {
     _ct: number = 0;
     _content: string = "";
     _offsetY: number = 0;
+    _selectedElement: Array<any> = new Array<any>();
 
 
     constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
+        super("MarqueeSelection");
         this._inkCanvas = inkCanvas;
 
-
-        
         if (fromActiveStroke) {
 
             var stroke = inkCanvas._activeStroke.stroke;
@@ -44,8 +50,11 @@ class MarqueeSelection implements ISelection {
     start(x: number, y: number): void {
         this._inkCanvas.startDrawing(x, y, new MarqueeBrush(x, y));
         this._parentList = [];
+        this._offsetY = window.pageYOffset;
         this._startX = x;
         this._startY = y;
+        this._mouseX = x;
+        this._mouseY = y;
     }
 
     update(x: number, y: number): void {
@@ -57,9 +66,6 @@ class MarqueeSelection implements ISelection {
         this._marqueeY1 = this._startY;
         this._marqueeX2 = this._mouseX;
         this._marqueeY2 = this._mouseY;
-
-        var canvas = this._inkCanvas._canvas;
-        var ctx = this._inkCanvas._context;
 
         this._inkCanvas.update();
         this._inkCanvas.draw(x, y);
@@ -82,17 +88,20 @@ class MarqueeSelection implements ISelection {
         }
         
         //finds the common parent of all elements in selection range
-        console.log(el);
         if (el != null) {
             this.getNextElement(el);
         }
-        console.log(this._parentList);
         this._inkCanvas.endDrawing(x, y);
         this._brushStroke = this._inkCanvas._activeStroke;
 
-        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
+//        this._brushStroke.brush = new SelectionBrush(this.getBoundingRect());
         this._inkCanvas.update();
         this.analyzeContent();
+
+
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
+        console.log(this.selectedElements);
     }
 
     deselect(): void {
@@ -101,25 +110,19 @@ class MarqueeSelection implements ISelection {
 
     getNextElement(el: Element): void{
         //recursively adds elements in selection range to parentList. 
-        console.log(el.childNodes);
         if (this._selected!=el){return;} 
         if (this._ct==50){
             throw new Error("an exception! please add to edge case list!")
         }
         this._ct++;
         var rect = el.getBoundingClientRect();
-        console.log(rect);
         var nextX = this._mouseX- (rect.left + rect.width);
         var nextY = this._mouseY- (rect.top + rect.height);
         var newList = [];
-        console.log("============getNextElement=============");
-        console.log(el);
         if (el.nodeName == "HTML") {
-            console.log("HTML");
             return;
         }
         if (nextX > 0) {
-            console.log("========getnextX====");
             if (document.body.contains(this._inkCanvas._canvas)) {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
@@ -144,13 +147,10 @@ class MarqueeSelection implements ISelection {
             }
         }
         if (nextY > 0) {
-            console.log("========getnextY====");
             if (document.body.contains(this._inkCanvas._canvas)) {
                 document.body.removeChild(this._inkCanvas._canvas);
             }
             element = document.elementFromPoint(this._startX, this._mouseY-nextY + 1);
-            console.log("===================2");
-            console.log(element);
             var contains = false;
             for (var i=0; i<this._parentList.length; i++){
                 if (this.isDescendant(this._parentList[i],element) || this._parentList[i]==element){
@@ -160,11 +160,8 @@ class MarqueeSelection implements ISelection {
 
             if (contains){
                 this.drawPreviousMarquee();
-                console.log("=================2.5");
-                console.log(this._parentList);
                 return;
             }
-            console.log("===================3");
             for (var i=0; i<this._parentList.length; i++){
                 if (this.isDescendant(element, this._parentList[i])){
                 }
@@ -179,13 +176,11 @@ class MarqueeSelection implements ISelection {
             this._parentList = newList;
             this._parentList.push(element);
             this.drawPreviousMarquee();
-            console.log("===================4");
             this.getNextElement(element);
         }
     }
 
     isDescendant(parent: Element, child: Element): boolean {
-        console.log("isDescendant===========");
         var node = child.parentNode;
         while (node != null) {
             if (node == parent) {
@@ -208,30 +203,63 @@ class MarqueeSelection implements ISelection {
         return new Rectangle(this._marqueeX1, this._offsetY + this._marqueeY1, this._marqueeX2 - this._marqueeX1, this._marqueeY2 - this._marqueeY1);
     }
     
+    addToHighLights(el: Element, txtindx: Number, wordindx): void {
+        console.log("ADD TO HIGHLIGHTS====================");
+        console.info(el);
+        console.log(el.attributes);
+        var index = $(el.tagName).index(el);
+        console.log(index);
+        var obj = { type: "marquee", tagName: el.tagName, index: index };
+        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
+            console.log("-------------DIFFICULT--------------");
+            console.log(el.attributes);
+            var par = el.attributes[0]["ownerElement"].parentElement;
+            if (el.tagName == "WORD") {
+
+                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
+                par = par.parentElement;
+                obj["wordIndx"] = wordindx;
+                console.log(par);
+            }
+            var parIndex = $(par.tagName).index(par);
+            obj["parIndex"] = parIndex;
+            obj["txtnIndx"] = txtindx;
+            obj["par"] = par.tagName;
+           obj["val"] = el;
+            
+            console.log(el.attributes[0]["ownerElement"].parentElement);   
+        }
+        this.selectedElements.push(obj);
+    }
 
     analyzeContent(): void {
-        console.log(this._parentList.length);
-      //  console.log(this.commonAncestor(this._parentList[0], this._parentList[1]));
         if (this._parentList.length != 1) {                     //finds the common parent of all elements in _parentList
             for (var i = 1; i < this._parentList.length; i++) {
                 var currAn = this.commonAncestor(this._parentList[0], this._parentList[i]);
-                console.log(currAn);
                 this._parentList[0] = currAn;
             }
         }
-        console.log("===========A");
         var sel = this._parentList[0].cloneNode(true);
         var selX = $(this._parentList[0]).clone(true);
-        console.log("======================ANALYZECONTENT===============");
-        console.log(this._parentList);
-
+        
         this.rmChildNodes(sel, this._parentList[0]);
-
         var htmlString = sel.innerHTML.replace(/"/g, "'");
         if (sel.outerHTML == "") {
             this._content= sel.innerHTML;
         }
-        this._content =  sel.outerHTML;
+
+        $(sel).find("img")["andSelf"]().each((i, e: any) => {
+            console.log(e.src);
+            $(e).attr("src", e.src);
+            $(e).removeAttr("srcset");
+        });
+
+   
+
+
+        
+
+        this._content = sel.outerHTML;
     }
 
     commonAncestor(node1: Element, node2: Element) {
@@ -258,7 +286,6 @@ class MarqueeSelection implements ISelection {
             nodes.unshift(node);
         }
 
-        console.log(nodes);
         return nodes;
     }
 
@@ -296,7 +323,6 @@ class MarqueeSelection implements ISelection {
                 rectX["top"] + realHeight <= this._marqueeY2) {
                 this.setTextStyle(myEl, el);
 
-                console.log("!!!!!!!!!!!!!!! +bound");
                 return true;
             }
             return false;
@@ -309,17 +335,15 @@ class MarqueeSelection implements ISelection {
         var realNList = [];
         var indexList = [];
         //iterate through childNodes and add to list(removed).
-        console.log("============rmChildNodes===============");
-        console.log(el);
         for (var i = 0; i < el.childNodes.length; i++) {
-            console.log(el.childNodes[i]);
             if (!this.intersectWith(el.childNodes[i], trueEl.childNodes[i])) {
                 removed.push(el.childNodes[i]);
                 }
             else {
                 realNList.push(trueEl.childNodes[i]);
                 indexList.push(i);
-                console.log("INTERSECT");
+        //        console.log("PAAAAAASSSSSED!!");
+         //       console.log(trueEl.childNodes[i]);
             }
         }
 
@@ -329,16 +353,43 @@ class MarqueeSelection implements ISelection {
         }
 
         for (var i = 0; i < el.childNodes.length; i++) {
+           //console.log("====================!!!!" + startIndex);
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
+                //    var startIndex = trueEl.childNodes.indexOf(trueEl.childNodes[i]);
+                    
                     var index = indexList[i];
-
-                    $(trueEl.childNodes[indexList[i]]).replaceWith("<span>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</span>");
-
-
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<words>" + $(trueEl.childNodes[indexList[i]]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[indexList[i]].childNodes.length; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j], trueEl.childNodes[index].childNodes[j])) {
+                            //   console.log((trueEl.childNodes[index].childNodes[j]));
+                            // console.log("YELLOW!!!!!!!!!!!!");
+                            if (trueEl.childNodes[index].childNodes[j].style) {
+                                trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                                console.log(trueEl.childNodes[index]);
+                                this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                            }
+
+                            var foundElement = $(trueEl.childNodes[index]).find("img");
+                                console.log("FOUND IIIMMAAAAGGGEE!");
+                                if (foundElement.length > 0) {
+                                console.log("FOUND IMG");
+                                console.log(foundElement);
+                                var label = $("<span class='wow'>Selected</span>");
+                                label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                                $("body").append(label);
+                                label.css("top", $(foundElement).offset().top + "px");
+                                label.css("left", $(foundElement).offset().left + "px");
+                            }
+
+                       
+
+                            //else {
+                            //   var wrap = document.createElement('span');
+                            //   wrap.appendChild(trueEl.childNodes[index].childNodes[j]);
+                            //    wrap.style.backgroundColor = "yellow";
+                            //}
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     result += " ";
@@ -352,7 +403,42 @@ class MarqueeSelection implements ISelection {
                 else {
                     this.rmChildNodes(el.childNodes[i], realNList[i]);
                 }
+            }   
+            else {
+                console.log("BOUNDEDDDD=====");
+                console.log(trueEl.childNodes[indexList[i]]);
+                var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+
+           
+                var foundElement = $(trueEl.childNodes[indexList[i]]).find("img");
+                console.log("FOUND IIIMMAAAAGGGEE!");
+                if (foundElement.length > 0) {
+                    console.log("FOUND IMG");
+                    console.log(foundElement);
+                    var label = $("<span class='wow'>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding:"3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", ($(foundElement).offset().top-5) + "px");
+                    label.css("left", ($(foundElement).offset().left-5) + "px");
+                }
+
+                if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
+                    console.log("-----------TEXT?-------");
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
+                }
+                //$(realNList[i]).css("background-color", "yellow"); 
+                trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                console.log(startIndex);
+                this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], 0);
+                 
+                //if (trueEl.childNodes[index].childNodes[j]) {
+                //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                //}
+
+               // realNList[i].style.backgroundColor = "yellow";
             }
+            
+
         }
     }
 
@@ -363,7 +449,7 @@ class MarqueeSelection implements ISelection {
         el.style.font = elStyle.font;
     }
 
-    getRealHeightWidth(rectsList): Array<number> {
+        getRealHeightWidth(rectsList): Array<number> {
         //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
         var maxH = Number.NEGATIVE_INFINITY;
         var minH = Number.POSITIVE_INFINITY;
@@ -376,7 +462,6 @@ class MarqueeSelection implements ISelection {
             }
             if (elem["top"]  < minH) {
                 minH = elem["top"];
-                console.log(elem);
             }
             if (elem["left"] < minW) {
                 minW = elem["left"];
@@ -418,7 +503,6 @@ class MarqueeSelection implements ISelection {
 
         }
         else if (el.nodeName != "#comment") { 
-            console.log(el.nodeName);
             var rangeY = document.createRange();
             rangeY.selectNodeContents(el);
             var realDim = this.getRealHeightWidth(rangeY.getClientRects());
@@ -432,16 +516,12 @@ class MarqueeSelection implements ISelection {
             ay1 = el.getBoundingClientRect()["top"];
             ay2 = el.getBoundingClientRect()["top"] + realHeight;
         }
-        console.log(ax1 + "!!" + ax2 + "!!" + ay1 + "!!" + ay2);
-        console.log(bx2 + "!!" + bx1 + "!!" + by2 + "!!" + by1);
-
+        
         if (ax1 < bx2 && bx1 < ax2 && ay1 < by2) {
-            console.log(by1 < ay2);
             return by1 < ay2;
         }
         else {
-            console.log(false);
-            return false;
+            return false
         }
     }
 

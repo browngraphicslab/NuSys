@@ -1,36 +1,26 @@
-﻿class StrokeClassifier {
+﻿class GestireClassifier {
 
-    static getStrokeType(stroke) {
+    static getGestureType(stroke):GestureType {
 
         var p0 = stroke.points[0];
         var p1 = stroke.points[stroke.points.length - 1];
         var metrics = stroke.getStrokeMetrics();
 
         if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
-            return StrokeType.Null;
-        }
-        if (metrics.error > 50) {
-            return StrokeType.Scribble;
+            return GestureType.Null;
         }
 
-        //else {
-        //    return StrokeType.MultiLine;
-   
+        //if (metrics.error > 50) {
+        //    return GestureType.Scribble;
         //}
-        
-
-        
         if (Math.abs(p1.y - p0.y) < 20) {
-            return StrokeType.Line;
+            return GestureType.Horizontal;
         }
         if (Math.abs(p1.x - p0.x) < 20) {
-            return StrokeType.Bracket;
+            return GestureType.Vertical;
         }
         if (Math.abs(p1.x - p0.x) > 50 && Math.abs(p1.y - p0.y) > 20) {
-            return StrokeType.Marquee;
+            return GestureType.Diagonal;
         }
-
-
-
     }
 }

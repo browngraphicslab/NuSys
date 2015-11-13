@@ -38,6 +38,11 @@ namespace NuSysApp
 
         private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            if (!(e.OriginalSource is WorkspaceView))
+            {
+                e.Handled = true;
+                return;
+            }
             _tempNode.Width = 1;
             _tempNode.Height = 1;
             _startPos = new Point(e.Position.X, e.Position.Y);
