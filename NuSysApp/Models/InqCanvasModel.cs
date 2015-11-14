@@ -86,7 +86,7 @@ namespace NuSysApp
 
         public void FinalizeLine(InqLineModel line)
         {
-            this._lines.Add(line);
+            _lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             //OnFinalLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", line));
             OnFinalizedLine?.Invoke( line );

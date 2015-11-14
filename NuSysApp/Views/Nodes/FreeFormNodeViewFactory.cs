@@ -14,6 +14,9 @@ namespace NuSysApp
         {
             UserControl view = null;
 
+            if (model is NodeModel)
+                return await CreateFromNodeType((NodeModel)model);
+
             if (model is GroupModel)
             {
                 var groupVm = new GroupViewModel((GroupModel) model);
@@ -23,9 +26,6 @@ namespace NuSysApp
                 groupVm.Height = 400;
                 return groupView;
             }
-           
-            if (model is NodeModel)
-                return await CreateFromNodeType((NodeModel)model);
             if (model is LinkModel)
                 return CreateLinkView((LinkModel) model, AtomViewList);
 
@@ -59,10 +59,11 @@ namespace NuSysApp
             {
                 case NodeType.Text:
                     var tvm = new TextNodeViewModel((TextNodeModel) model);
-                    
                     view = new TextNodeView(tvm);
-                    
                     await tvm.UpdateRtf();
+                    break;
+                case NodeType.GroupTag:
+                    view = new GroupTagNodeView(new GroupTagNodeViewModel((GroupModel)model));
                     break;
                 case NodeType.Image:
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));

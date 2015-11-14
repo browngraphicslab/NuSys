@@ -318,6 +318,24 @@ namespace NuSysApp
             await _clientHandler.SendMessageToHost(message);
         }
 
+        public async Task RequestNewGroupTag(string x, string y, string title, Dictionary<string, string> properties = null, Action<string> callback = null)
+        {
+
+            var props = properties == null ? new Dictionary<string, string>() : properties;
+            string id = _clientHandler.GetID();
+            props["x"] = x;
+            props["y"] = y;
+            props["id"] = id;
+            props["type"] = "grouptag";
+            props["title"] = title;
+            if (callback != null)
+            {
+                AddCreationCallback(id, callback);
+            }
+            string message = MakeSubMessageFromDict(props);
+            await _clientHandler.SendMessageToHost(message);
+        }
+
         /*
         * PUBLIC general method to create Linq
         */
@@ -490,6 +508,10 @@ namespace NuSysApp
                 else if (props.ContainsKey("type") && props["type"] == "emptygroup")
                 {
                     await HandleCreateNewEmptyGroup(id, props);
+                }
+                else if (props.ContainsKey("type") && props["type"] == "grouptag")
+                {
+                    await HandleCreateNewGroupTag(id, props);
                 }
                 else if (props.ContainsKey("type") && props["type"] == "node")
                 {
@@ -678,7 +700,38 @@ namespace NuSysApp
                 }
                 await UITask.Run(async () => { await SessionController.Instance.CreateGroup(id, node1, node2, x, y); });
             }
-            private async Task HandleCreateNewInk(string id, Message props)
+
+        private async Task HandleCreateNewGroupTag(string id, Message props)
+        {
+            double x = 0;
+            double y = 0;
+            double w = 0;
+            double h = 0;
+            string title = string.Empty;
+            if (props.ContainsKey("x"))
+            {
+                double.TryParse(props["x"], out x);
+            }
+            if (props.ContainsKey("y"))
+            {
+                double.TryParse(props["y"], out y);
+            }
+            if (props.ContainsKey("width"))
+            {
+                double.TryParse(props["width"], out w);
+            }
+            if (props.ContainsKey("height"))
+            {
+                double.TryParse(props["height"], out h);
+            }
+            if (props.ContainsKey("title"))
+            {
+                title = props["title"];
+            }
+            await UITask.Run(async () => { await SessionController.Instance.CreateGroupTag(id, x, y, w, h, title); });
+        }
+
+        private async Task HandleCreateNewInk(string id, Message props)
             {
             
                 if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"] == "WORKSPACE_ID"))

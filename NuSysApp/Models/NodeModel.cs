@@ -147,7 +147,10 @@ namespace NuSysApp
             }
         }
 
-        public NodeType NodeType { get; set; }
+        public string Title { get; set; }
+
+        public NodeType NodeType { get;
+            set; }
 
         //private GroupNodeModel _parentGroup;
 

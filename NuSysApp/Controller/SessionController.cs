@@ -78,6 +78,21 @@ namespace NuSysApp
 
         }
 
+        public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
+        {
+            var group = new GroupModel(id)
+            {
+                X = xCooordinate,
+                Y = yCoordinate,
+                Width = width,
+                Height = height,
+                NodeType = NodeType.GroupTag,
+                Title = title
+            };
+            IdToSendables.Add(id, group);
+            ActiveWorkspace.Model.AddChild(group);
+        }
+
         public void AddGlobalInq(InqLineModel lineView)
         {
             //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
@@ -120,6 +135,9 @@ namespace NuSysApp
                     break;
                 case NodeType.Video:
                     node = new VideoNodeModel((byte[])data, id);
+                    break;
+                case NodeType.GroupTag:
+                    node = new GroupModel(id);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");

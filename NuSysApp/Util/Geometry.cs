@@ -1,4 +1,5 @@
 ﻿using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
@@ -130,6 +131,22 @@ namespace NuSysApp
                 X = ((NodeModel)(nodeVm.Model)).X,
                 Y = ((NodeModel)(nodeVm.Model)).Y
             };
+        }
+
+        public static Rect PointCollecionToBoundingRect(PointCollection pc)
+        {
+            var minX = double.MaxValue;
+            var minY = double.MaxValue;
+            var maxX = double.MinValue;
+            var maxY = double.MinValue;
+            foreach (var point in pc)
+            {
+                minX = point.X < minX ? point.X : minX;
+                minY = point.Y < minY ? point.Y : minY;
+                maxX = point.X > maxX ? point.X : maxX;
+                maxY = point.Y > maxY ? point.Y : maxY;
+            }
+            return new Rect(minX,minY,maxX-minX,maxY-minY);
         }
     }
     

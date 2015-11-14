@@ -64,7 +64,8 @@ namespace NuSysApp
                         }
                         else if (lockHolder == NetworkConnector.Instance.LocalIP)
                         {
-                            _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.Yes;
+                            var b = _workSpaceModel.IdToSendables[id];
+                            b.CanEdit = AtomModel.EditStatus.Yes;
                         }
                         else
                         {
