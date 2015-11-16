@@ -9,23 +9,25 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    Width="{Binding Width}"
-    Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
 >
-
-
-    <local:NodeTemplate x:Name="nodeTpl" Background="LightGray" >
+    <local:NodeTemplate x:Name="nodeTpl">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Grid>
-                <Border BorderBrush="{x:Null}" Height="50">
-                    <TextBlock x:Name="Title" FontSize="40" Text="{Binding Title}" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
+            <Grid Margin="50,50,50,50">
+                <Border x:Name="TitleBorder" BorderBrush="{x:Null}">
+                    <TextBlock x:Name="Title" FontSize="60" Text="{Binding Title}" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 </Border>
-                
+                <ItemsControl x:Name="IC" ItemsSource="{Binding AtomViewList}" >
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas HorizontalAlignment="Left" Background="Red" x:Name="canvas"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>

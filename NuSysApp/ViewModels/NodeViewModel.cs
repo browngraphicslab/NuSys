@@ -25,11 +25,8 @@ namespace NuSysApp
         private bool _isEditing, _isEditingInk;
         private double _height, _width;
         private AtomViewModel _clippedParent;
-        private MatrixTransform _transform;
         private GroupViewModel _group;
-
-
-
+        
         protected NodeViewModel(NodeModel model) : base(model)
         {
             AtomType = Constants.Node;
@@ -37,7 +34,7 @@ namespace NuSysApp
             ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
 
             Tags = model.GetMetaData("tags");
-            model.OnAddToGroup += OnOnAddToGroup;
+            model.AddedToGroup += OnAddedToGroup;
             model.MetadataChanged += OnMetadataChanged;
        
         }
@@ -48,9 +45,8 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
         }
 
-        private void OnOnAddToGroup(object source, AddToGroupEventArgs addToGroupEventArgs)
+        private void OnAddedToGroup(object source, AddToGroupEventArgs addToGroupEventArgs)
         {
-
         }
 
         public void Init(UserControl view)
@@ -244,19 +240,7 @@ namespace NuSysApp
             set { Model.ID = value; }
         }
 
-        public MatrixTransform Transform
-        {
-            get { return _transform; }
-            set
-            {
-                if (_transform == value)
-                {
-                    return;
-                }
-                _transform = value;
-                RaisePropertyChanged("Transform");
-            }
-        }
+
 
         public virtual double Width
         {

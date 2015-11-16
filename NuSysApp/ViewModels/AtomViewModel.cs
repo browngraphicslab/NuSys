@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -211,7 +212,7 @@ namespace NuSysApp
                     return;
                 }
                 _transform = value;
-
+             
                 RaisePropertyChanged("Transform");
             }
         }

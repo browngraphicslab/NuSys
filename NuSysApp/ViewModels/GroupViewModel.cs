@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -11,7 +13,7 @@ namespace NuSysApp
     {
         public ObservableCollection<UserControl> AtomViewList { get; }
 
-        private INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
+        protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
 
         private double _margin;
        // private CompositeTransform _localTransform;
@@ -19,20 +21,19 @@ namespace NuSysApp
         public GroupViewModel(GroupModel model): base(model)
         {
             AtomViewList = new ObservableCollection<UserControl>();
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
            
-            this.NodeType = NodeType.Group;
+            NodeType = NodeType.Group;
             _margin = 75;
 
             model.ChildAdded += OnChildAdded;
             model.ChildRemoved += OnChildRemoved;
-            model.OnAddToGroup += AddNode;
         }
 
-        public async void OnChildAdded(object source, Sendable nodeModel)
+        public virtual async void OnChildAdded(object source, Sendable nodeModel)
         {
             var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
-            AtomViewList.Add(view);
+            AtomViewList.Add(view);  
         }
 
         private void OnChildRemoved(object source, Sendable sendable)
@@ -48,9 +49,6 @@ namespace NuSysApp
             AtomViewList.Remove(view.First());
         }
 
-        public void AddNode(object source, AddToGroupEventArgs e)
-        {
-        }
         
         public override void Resize(double dx, double dy)
         {

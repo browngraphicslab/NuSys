@@ -57,7 +57,6 @@ namespace NuSysApp
                 return string.Empty;
 
             var im = new InkManager();
-
             var b = new InkStrokeBuilder();
 
             foreach (var inqLineModel in inqLineModels)
@@ -145,8 +144,6 @@ namespace NuSysApp
             
             var title = await InkToText(encompassedLines);
             var dict = new Dictionary<string, string>();
-            dict["width"] = outerRect.Width.ToString();
-            dict["height"] = outerRect.Height.ToString();
             dict["title"] = title;
             Action<string> addCallback = delegate (string s)
             {

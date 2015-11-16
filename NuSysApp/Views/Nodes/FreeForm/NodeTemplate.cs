@@ -109,7 +109,7 @@ namespace NuSysApp
         {
             var vm = (NodeViewModel)this.DataContext;
             vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
-            e.Handled = true;
+           // e.Handled = true;
 
         }
 

@@ -41,7 +41,7 @@ namespace NuSysApp
                 Goto(model.CurrentPageNumber);
             };
 
-            model.OnAddToGroup += delegate(object source, AddToGroupEventArgs args)
+            model.AddedToGroup += delegate(object source, AddToGroupEventArgs args)
             {
                 Goto(model.CurrentPageNumber);
             };

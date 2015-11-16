@@ -14,7 +14,7 @@ namespace NuSysApp
         private Timer _timer;
         private Sendable _atom;
         private bool _sendNextTCP = false;
-        private int _milliSecondDebounce = 30;
+        private int _milliSecondDebounce = 15;
 
         public DebouncingDictionary(Sendable atom)
         {

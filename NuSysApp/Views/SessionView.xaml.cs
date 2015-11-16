@@ -41,6 +41,7 @@ namespace NuSysApp
             var inqCanvasViewModel = new InqCanvasViewModel(xWorkspace.InqCanvas, inqCanvasModel);
             xWorkspace.InqCanvas.ViewModel = inqCanvasViewModel;
             var workspaceModel = new WorkSpaceModel(inqCanvasModel);
+            SessionController.Instance.IdToSendables["WORKSPACE_ID"] = workspaceModel;
             workspaceModel.InqModel = inqCanvasModel;
             var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
             xWorkspace.DataContext = workspaceViewModel;

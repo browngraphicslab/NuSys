@@ -30,20 +30,28 @@ namespace NuSysApp
 
         public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
 
-        public event AddToGroupEventHandler OnAddToGroup;
+        public event AddToGroupEventHandler AddedToGroup;
         #endregion Events and Handlers
 
         public NodeModel(string id) : base(id)
         {
             InqCanvas = new InqCanvasModel(id);
+            if (SessionController.Instance.ActiveWorkspace != null)
+            {
+                Metadata["group"] = SessionController.Instance.ActiveWorkspace.ID;
+            }
         }
 
         public void MoveToGroup(GroupModel group)
         {
             //this.ParentGroup = group;
+            var oldGroupId = Metadata["group"];
             Metadata["group"] = group.ID;
             group?.AddChild(this);//only add if group isn't null
-            OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
+            AddedToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
+
+            var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as GroupModel;
+            currentGroup.RemoveChild(this);
         }
 
         public InqCanvasModel InqCanvas { get;}
@@ -69,7 +77,9 @@ namespace NuSysApp
                 else
                 {
                     this.DebounceDict.Add("x", _x.ToString());
+                    PositionChanged?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
+
             }
         }
 
@@ -93,7 +103,9 @@ namespace NuSysApp
                 else
                 {
                     this.DebounceDict.Add("y", _y.ToString());
+                    PositionChanged?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
+
             }
         }
 
