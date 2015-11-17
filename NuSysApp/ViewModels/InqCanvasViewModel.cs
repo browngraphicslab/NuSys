@@ -163,7 +163,8 @@ namespace NuSysApp
                     }
                 }
             };
-            await NetworkConnector.Instance.RequestNewGroupTag(outerRect.X.ToString(), outerRect.Y.ToString(), title, dict, addCallback);
+            var tagNodePos = new Point(outerRect.X + outerRect.Width/6, outerRect.Y + outerRect.Height/6);
+            await NetworkConnector.Instance.RequestNewGroupTag(tagNodePos.X.ToString(), tagNodePos.Y.ToString(), title, dict, addCallback);
             return true;
         }
 

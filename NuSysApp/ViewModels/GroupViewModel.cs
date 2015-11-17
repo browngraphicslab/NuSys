@@ -46,7 +46,8 @@ namespace NuSysApp
             }
 
             var view = AtomViewList.Where((a => { var vm = (AtomViewModel)a.DataContext; return vm.Model == sendable; }));
-            AtomViewList.Remove(view.First());
+            if (view.Count() > 0)
+                AtomViewList.Remove(view.First());
         }
 
         

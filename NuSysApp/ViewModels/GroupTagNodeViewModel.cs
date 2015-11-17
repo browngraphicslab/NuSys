@@ -27,16 +27,16 @@ namespace NuSysApp
             var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
             AtomViewList.Add(view);
             view.IsHitTestVisible = false;
-           // ArrangeChildren();
         }
-
-
-
 
         public string Title
         {
             get { return ((NodeModel)Model).Title; }
-            set { ((NodeModel) Model).Title = value; }
+            set
+            {
+                ((NodeModel) Model).Title = value;
+                RaisePropertyChanged("Title");
+            }
            
         }
     }

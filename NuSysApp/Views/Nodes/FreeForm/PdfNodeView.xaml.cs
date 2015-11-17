@@ -15,8 +15,10 @@ namespace NuSysApp
             this.DataContext = vm;
             this.Loaded += delegate(object sender, RoutedEventArgs e)
             {
-                nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-                nodeTpl.inkCanvas.ReRenderLines();
+                if (nodeTpl.inkCanvas != null) { 
+                    nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+                    nodeTpl.inkCanvas.ReRenderLines();
+                }
             };
         }
 
