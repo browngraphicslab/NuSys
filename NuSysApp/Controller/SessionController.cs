@@ -16,7 +16,7 @@ namespace NuSysApp
         public event WorkspaceChangedHandler WorkspaceChanged;
 
         private LockDictionary _locks;
-        public Dictionary<string, Sendable> IdToSendables { set; get; }
+        public ObservableDictionary<string, Sendable> IdToSendables { set; get; }
 
         public WorkspaceViewModel ActiveWorkspace
         {
@@ -37,7 +37,7 @@ namespace NuSysApp
         public SessionController()
         {
             _locks = new LockDictionary(this);
-            IdToSendables = new Dictionary<string, Sendable>();
+            IdToSendables = new ObservableDictionary<string, Sendable>();
         }
 
         public void CreateLink(AtomModel atom1, AtomModel atom2, string id)

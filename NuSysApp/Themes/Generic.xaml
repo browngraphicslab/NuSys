@@ -78,7 +78,7 @@
                         <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
               Opacity=".5"  Canvas.ZIndex="20" ManipulationMode="All" />
-                        <TextBlock x:Name="Tags" VerticalAlignment="Bottom" Text="{Binding Tags}"></TextBlock>
+                        <TextBlock x:Name="Tags" VerticalAlignment="Bottom" FontSize="18" Text="{Binding Tags}"></TextBlock>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -16,7 +16,6 @@ namespace NuSysApp
         private UserControl _selectedView;
         private GroupTagNodeView _hoveredGroup;
         private List<NodeViewModel> _pressedItems = new List<NodeViewModel>(); 
-    
 
         public GroupNodeMode(WorkspaceView view) : base(view) { }
 
@@ -53,6 +52,7 @@ namespace NuSysApp
             foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is GroupTagNodeViewModel))
             {
                 userControl.DoubleTapped -= OnGroupTagDoubleTapped;
+                Canvas.SetZIndex(userControl, 100);
             }
         }
 
@@ -69,10 +69,12 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-               if (((FrameworkElement)newItem).DataContext is GroupTagNodeViewModel)
+               if (((FrameworkElement)newItem).DataContext is GroupTagNodeViewModel) {
+                    Canvas.SetZIndex((UserControl)newItem, 100);
                     continue;
+                }
 
-               var item = (UserControl) newItem;
+                var item = (UserControl) newItem;
                item.PointerPressed += OnAtomPressed;
                item.PointerReleased += OnAtomReleased;
             }
@@ -82,25 +84,33 @@ namespace NuSysApp
         private async void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
             var releasedNode = ((FrameworkElement)e.OriginalSource).DataContext as NodeViewModel;
-
+            Debug.WriteLine(" ==== released ====");
+            Debug.WriteLine(releasedNode);
+            Debug.WriteLine(_pressedItems.Count);
             if (releasedNode == null)
                 return;
 
             if (_pressedItems.Count == 2)
+            {
                 BuildGroup(_pressedItems[0], _pressedItems[1], true);
-            else if(_pressedItems.Count == 1)
+                _pressedItems.Remove(_pressedItems[1]);
+            }
+            else if (_pressedItems.Count == 1)
             {
                 var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.GetCurrentPoint(_view).Position, _view);
                 var result = hits.Where(uiElem => uiElem is GroupTagNodeView);
 
                 if (result?.Count() > 0)
                 {
-                    BuildGroup(_pressedItems[0], ((FrameworkElement)result.First()).DataContext as NodeViewModel);
+                    BuildGroup(_pressedItems[0], ((FrameworkElement) result.First()).DataContext as NodeViewModel);
+
                     _hoveredGroup = null;
                 }
-            }
+                _pressedItems.Remove(_pressedItems[0]);
+            } else { 
 
-            _pressedItems.Remove(releasedNode);
+                Debug.WriteLine("didn't removed anything!!!");
+            }
         }
 
         private async void BuildGroup(NodeViewModel node0, NodeViewModel node1, bool keepOriginal = false)
@@ -124,7 +134,7 @@ namespace NuSysApp
             }
 
             var inkCaption = groupTagNode.Title;
-            var tags = groupTagNode.Model.GetMetaData("tags");
+            var tags = nodeToTag.Model.GetMetaData("tags");
             nodeToTag.Model.SetMetaData("tags", tags + " " + inkCaption);
 
             if (!keepOriginal) { 
@@ -137,7 +147,8 @@ namespace NuSysApp
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
                         newNodeModel.MoveToGroup((GroupModel)groupTagNode.Model);
-                        nodeToTag.Model.SetMetaData("tags", groupTagNode.Model.GetMetaData("tags") + " " + inkCaption);
+                        var prevTags = nodeToTag.Model.GetMetaData("tags");
+                        newNodeModel.SetMetaData("tags",  prevTags +" " + inkCaption);
                         Debug.WriteLine("node created");
                     });
                 });
@@ -157,15 +168,19 @@ namespace NuSysApp
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
-            Debug.WriteLine("OnAtomPressed");
-      
-           
+
+            
             var pressedNode = ((FrameworkElement)e.OriginalSource).DataContext as NodeViewModel;
-            Debug.WriteLine(pressedNode);
+           
             if (pressedNode == null)
                 return;
+
             
+            if (!(pressedNode is GroupTagNodeViewModel))
+                Canvas.SetZIndex((FrameworkElement)sender, 0);
+
             _pressedItems.Add(pressedNode);
+            Debug.WriteLine("PPRRREEESSSSSSEEEEEDDDD");
             //Debug.WriteLine(_selectedNode);
             //e.Handled = true;
         }

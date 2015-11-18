@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -20,6 +21,37 @@ namespace NuSysApp
         public GroupTagNodeViewModel(GroupModel model) : base(model)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
+            
+        }
+
+        private async Task UpdateGroup()
+        {
+            var searchResults = SessionController.Instance.IdToSendables.Values.Where(m =>
+            {
+                var mm = m as AtomModel;
+                if (mm == null)
+                    return false;
+                return mm.GetMetaData("tags").ToLower().Contains(((GroupModel)Model).Title.ToLower());
+            });
+
+            if (searchResults == null)
+                return;
+
+            foreach (var searchResult in searchResults.ToList())
+            {
+                var view = await _nodeViewFactory.CreateFromSendable(searchResult, AtomViewList.ToList());
+                AtomViewList.Add(view);
+                view.IsHitTestVisible = false;
+            }
+
+            RaisePropertyChanged("DONE_LOADING");
+        }
+
+        public override async void Init(UserControl v)
+        {
+            base.Init(v);
+            UpdateGroup();
+
         }
 
         public override async void OnChildAdded(object source, Sendable nodeModel)

@@ -49,13 +49,15 @@ namespace NuSysApp
         {
         }
 
-        public void Init(UserControl view)
+        public virtual async void Init(UserControl view)
         {
             View = view;
             var nodeModel = (NodeModel)Model;
             SetPosition(nodeModel.X, nodeModel.Y);
             Width = nodeModel.Width;
             Height = nodeModel.Height;
+            Tags = Model.GetMetaData("tags");
+            RaisePropertyChanged("tags");
         }
         
                

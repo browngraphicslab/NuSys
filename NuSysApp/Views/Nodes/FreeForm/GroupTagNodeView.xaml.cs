@@ -31,6 +31,14 @@ namespace NuSysApp
                 Num.Text = vm.AtomViewList.Count.ToString();
                 Canvas.SetLeft(NumBorder, Title.ActualWidth-10);
             };
+
+            vm.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args)
+            {
+                if (args.PropertyName == "DONE_LOADING")
+                {
+                    //ShowChildren();
+                }
+            };
            
      
             vm.AtomViewList.CollectionChanged +=
@@ -46,13 +54,13 @@ namespace NuSysApp
                         if (e.NewItems != null)
                         {
                             var child = (UserControl)e.NewItems[0];
-                            AnimateChild(child, TitleBorder.ActualWidth/2, TitleBorder.ActualHeight/2, 0, 0, 1, 6, true);
+                            AnimateChild(child, TitleBorder.ActualWidth/2, TitleBorder.ActualHeight/2, 0, 0, 1 + (new Random().Next() % 10), 10, true);
                             
                         }
                     }
                 };
 
-            nodeTpl.OnTemplateReady += delegate { nodeTpl.resizer.Visibility = Visibility.Collapsed; };
+            nodeTpl.OnTemplateReady += delegate { nodeTpl.resizer.Visibility = Visibility.Collapsed; nodeTpl.tags.Visibility = Visibility.Collapsed; };
 
             PointerEntered += delegate
             {
@@ -105,8 +113,8 @@ namespace NuSysApp
                 child.Visibility = Visibility.Visible;
                 var x = 0.0;
                 var y = 0.0;
-                var scaleX = 0.0;
-                var scaleY = 0.0;
+                var scaleX = 1.0;
+                var scaleY = 1.0;
                 if (child.RenderTransform is CompositeTransform)
                 {
                     if (!fromCenter)

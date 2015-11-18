@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
@@ -47,6 +48,14 @@ namespace NuSysApp
             };
 
           
+        }
+
+        public override void Init(UserControl view)
+        {
+            base.Init(view);
+
+            if (((PdfNodeModel)Model).RenderedPages != null)
+                Goto(0);
         }
 
         public void FlipRight()

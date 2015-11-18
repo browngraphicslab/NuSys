@@ -105,15 +105,16 @@ namespace NuSysApp
         public override async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string, string> dict = await base.Pack();
-            dict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
+            var s = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata);
+            dict.Add("metadata", s);
             return dict;
         }
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("metadata"))
+            if (props.ContainsKey("meta"))
             {
-                Metadata = (Dictionary<string,string>)Newtonsoft.Json.JsonConvert.DeserializeObject(props["metadata"]);
+                Metadata.Add("tags", props["meta"]);
             }
             base.UnPack(props);
         }

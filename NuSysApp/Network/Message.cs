@@ -12,15 +12,15 @@ namespace NuSysApp
         private Dictionary<string, string> _dict;
         private Dictionary<string, Message> _children;
 
-        public Message(string message)
+        public Message()
         {
             _dict = new Dictionary<string, string>();
             _children = new Dictionary<string, Message>();
-            Init(message);
+            //Init(message);
         }
 
-        private async Task Init(string m)
-        {
+        public async Task Init(string m)
+        {           
             Dictionary<string, string> message = JsonConvert.DeserializeObject<Dictionary<string, string>>(m);
             foreach (KeyValuePair<string, string> kvp in message)
             {
@@ -33,7 +33,9 @@ namespace NuSysApp
                     Dictionary<string, string> children = await JsonConvert.DeserializeObjectAsync<Dictionary<string, string>>(kvp.Value);
                     foreach (KeyValuePair<string,string> child in children)
                     {
-                        _children.Add(child.Key,new Message(child.Value));
+                        var msg = new Message();
+                        await msg.Init(child.Value);
+                        _children.Add(child.Key, msg);
                     }
                 }
             }

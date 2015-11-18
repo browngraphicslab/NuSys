@@ -57,6 +57,8 @@ namespace NuSysApp
                 return string.Empty;
 
             var im = new InkManager();
+            
+
             var b = new InkStrokeBuilder();
 
             foreach (var inqLineModel in inqLineModels)
@@ -160,6 +162,7 @@ namespace NuSysApp
                             NetworkConnector.Instance.RequestFinalizeGlobalInk(model.ID, v.InqCanvas.ID, model.GetString());
                             //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
                         });
+                        
                     }
                 }
             };

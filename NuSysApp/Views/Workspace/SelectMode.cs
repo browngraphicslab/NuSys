@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -17,7 +18,7 @@ namespace NuSysApp
         public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
-            _view.DoubleTapped += OnDoubleTapped;
+           _view.DoubleTapped += OnDoubleTapped;
             _view.PointerPressed += OnPointerPressed;
 
             _view.ManipulationMode = ManipulationModes.All;
@@ -37,7 +38,7 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
+           
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc is WorkspaceViewModel) { 
                 var vm = (WorkspaceViewModel)_view.DataContext;
@@ -61,7 +62,7 @@ namespace NuSysApp
             {
                 var vm = (NodeViewModel)dc;
                 vm.ToggleSelection();
-                e.Handled = true;
+                //e.Handled = true;
             }   
         }
     }
