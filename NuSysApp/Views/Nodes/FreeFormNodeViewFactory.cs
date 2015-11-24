@@ -86,7 +86,7 @@ namespace NuSysApp
                 };
             }
 
-            ((NodeViewModel)view.DataContext).Init(view);
+            await ((NodeViewModel)view.DataContext).Init(view);
             return view;
         }
     }

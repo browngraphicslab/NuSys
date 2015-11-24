@@ -19,10 +19,13 @@ namespace NuSysApp
         public InqCanvasViewModel(InqCanvasView inqCanvasView, InqCanvasModel model)
         {
             Model = model;
-            this.Model.OnPartialLineAddition += PartialLineAdditionHandler;
-            this.Model.OnFinalizedLine += FinalLineAdditionHandler;
+            Model.OnPartialLineAddition += PartialLineAdditionHandler;
+            Model.OnFinalizedLine += FinalLineAdditionHandler;
             inqCanvasView.ViewModel = this;
             View = inqCanvasView;
+
+            if (model.Lines == null)
+                return;
 
             foreach (var inqLineModel in model.Lines)
             {
@@ -34,7 +37,7 @@ namespace NuSysApp
 
         public async Task<string> InkToText()
         {
-            if (Model.Lines.Count == 0)
+            if (Model.Lines == null || Model.Lines.Count == 0)
                 return string.Empty;
 
             var im = new InkManager();

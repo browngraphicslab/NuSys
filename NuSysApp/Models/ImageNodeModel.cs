@@ -74,10 +74,7 @@ namespace NuSysApp
 
         public byte[] ByteArray { get; set; }
 
-        public override string GetContentSource()
-        {
-            return FilePath;
-        }
+
 
         public async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
         {

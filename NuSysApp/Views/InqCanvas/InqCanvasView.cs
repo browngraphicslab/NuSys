@@ -145,12 +145,16 @@ namespace NuSysApp
 
         public void ReRenderLines()
         {
-            this.Children.Clear();
-            var lines = this.ViewModel.Model.Lines;
+            Children.Clear();
+
+            var lines = ViewModel.Model.Lines;
+            if (lines == null)
+                return;
+
             foreach (InqLineModel line in lines)
             {
                 var inqView = new InqLineView(new InqLineViewModel(line), line.StrokeThickness, line.Stroke);
-                this.Children.Add(inqView);
+                Children.Add(inqView);
             }
         }
 

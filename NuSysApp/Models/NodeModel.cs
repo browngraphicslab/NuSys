@@ -1,38 +1,13 @@
-
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
-
 
 namespace NuSysApp
 {
     [DataContract]
     public class NodeModel : AtomModel
     {
-        #region Private Members
-        private double _x;
-        private double _y;
-        private double _width;
-        private double _height;
-        #endregion Private Members
-
-        #region Events and Handlers
-        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
-        public event DeleteEventHandler Deleted;
-
-        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
-        public event LocationUpdateEventHandler PositionChanged;   
-
-        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
-        public event WidthHeightUpdateEventHandler SizeChanged;
-
-        public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
-
-        public event AddToGroupEventHandler AddedToGroup;
-        #endregion Events and Handlers
-
         public NodeModel(string id) : base(id)
         {
             InqCanvas = new InqCanvasModel(id);
@@ -42,27 +17,12 @@ namespace NuSysApp
             }
         }
 
-        public void MoveToGroup(GroupModel group)
-        {
-            //this.ParentGroup = group;
-            var oldGroupId = Metadata["group"];
-            Metadata["group"] = group.ID;
-            group?.AddChild(this);//only add if group isn't null
-            AddedToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
-
-            var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as GroupModel;
-            currentGroup.RemoveChild(this);
-        }
-
-        public InqCanvasModel InqCanvas { get;}
+        public InqCanvasModel InqCanvas { get; }
         public ContentModel Content { set; get; }
 
         public double X
         {
-            get
-            {
-                return _x;
-            }
+            get { return _x; }
             set
             {
                 if (_x == value)
@@ -76,19 +36,15 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("x", _x.ToString());
+                    DebounceDict.Add("x", _x.ToString());
                     PositionChanged?.Invoke(this, new LocationUpdateEventArgs("Changed X-coordinate", X, Y));
                 }
-
             }
         }
 
         public double Y
         {
-            get
-            {
-                return _y;
-            }
+            get { return _y; }
             set
             {
                 if (_y == value)
@@ -102,19 +58,15 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("y", _y.ToString());
+                    DebounceDict.Add("y", _y.ToString());
                     PositionChanged?.Invoke(this, new LocationUpdateEventArgs("Changed Y-coordinate", X, Y));
                 }
-
             }
         }
 
         public virtual double Width
         {
-            get
-            {
-                return _width;
-            }
+            get { return _width; }
             set
             {
                 if (_width == value)
@@ -128,18 +80,14 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("width", _width.ToString());
+                    DebounceDict.Add("width", _width.ToString());
                 }
-
             }
         }
 
         public virtual double Height
         {
-            get
-            {
-                return _height;
-            }
+            get { return _height; }
             set
             {
                 if (_height == value)
@@ -154,72 +102,54 @@ namespace NuSysApp
                 }
                 else
                 {
-                    this.DebounceDict.Add("height", _height.ToString());
+                    DebounceDict.Add("height", _height.ToString());
                 }
             }
         }
 
         public string Title { get; set; }
 
-        public NodeType NodeType { get;
-            set; }
-
-        //private GroupNodeModel _parentGroup;
-
-            /*
-        public GroupNodeModel ParentGroup
-        {
-            get
-            {
-                return _parentGroup;
-            }
-            set
-            {
-                _parentGroup = value;
-                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
-                {
-                    OnAddToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", _parentGroup, this));
-                }
-                else
-                {
-                    this.DebounceDict.Add("parentGroup", _parentGroup != null ? _parentGroup.ID : "null");
-                    this.DebounceDict.MakeNextMessageTCP();
-                }
-            }
-        }*/
+        public NodeType NodeType { get; set; }
 
         public bool IsAnnotation { get; set; }
 
         public AtomModel ClippedParent { get; set; }
 
-        public virtual string GetContentSource()
+        public void MoveToGroup(GroupModel group)
         {
-            return null;
+            //this.ParentGroup = group;
+            var oldGroupId = Metadata["group"];
+            Metadata["group"] = group.ID;
+            group?.AddChild(this); //only add if group isn't null
+            AddedToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
+
+            var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as GroupModel;
+            currentGroup.RemoveChild(this);
         }
 
         public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("x"))
             {
-                X = Double.Parse(props["x"]);
+                X = double.Parse(props["x"]);
             }
             if (props.ContainsKey("y"))
             {
-                Y = Double.Parse(props["y"]);
+                Y = double.Parse(props["y"]);
             }
             if (props.ContainsKey("width"))
             {
-                Width = Double.Parse(props["width"]);
+                Width = double.Parse(props["width"]);
             }
             if (props.ContainsKey("height"))
             {
-                Height = Double.Parse(props["height"]);
+                Height = double.Parse(props["height"]);
             }
             if (props.ContainsKey("parentGroup"))
             {
                 if (props["parentGroup"] == "null")
                 {
-                    this.MoveToGroup(null);
+                    MoveToGroup(null);
                 }
                 else if (SessionController.Instance.IdToSendables.ContainsKey(props["parentGroup"]))
                 {
@@ -227,27 +157,29 @@ namespace NuSysApp
                     //this.MoveToGroup((GroupModel)SessionController.Instance.IdToSendables[props["parentGroup"]]);
                 }
             }
-           
-            base.UnPack(props);
+
+            await base.UnPack(props);
         }
 
         public override async Task<Dictionary<string, string>> Pack()
         {
-            Dictionary<string, string> dict = await base.Pack();
-            dict.Add("x",X.ToString());
+            var dict = await base.Pack();
+            dict.Add("x", X.ToString());
             dict.Add("y", Y.ToString());
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
             dict.Add("type", "node");
             return dict;
         }
+
         public virtual XmlElement WriteXML(XmlDocument doc)
         {
-            XmlElement node = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
+            var node = doc.CreateElement(string.Empty, "Node", string.Empty);
+                //TODO: Change how we determine node type for name
 
             //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
+            var basicXml = getBasicXML(doc);
+            foreach (var attr in basicXml)
             {
                 node.SetAttributeNode(attr);
             }
@@ -256,22 +188,21 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Writes the XML of the attributes that all nodes have
+        ///     Writes the XML of the attributes that all nodes have
         /// </summary>
         /// <param name="doc">Main xmlDocument</param>
         /// <returns></returns>
-
         public List<XmlAttribute> getBasicXML(XmlDocument doc)
         {
-            List<XmlAttribute> basicXml = new List<XmlAttribute>();
+            var basicXml = new List<XmlAttribute>();
 
             //create xml attribute nodes
-            XmlAttribute type = doc.CreateAttribute("nodeType");
+            var type = doc.CreateAttribute("nodeType");
             type.Value = NodeType.ToString();
             basicXml.Add(type);
 
-            XmlAttribute id = doc.CreateAttribute("id");
-            id.Value = ID.ToString();
+            var id = doc.CreateAttribute("id");
+            id.Value = ID;
             basicXml.Add(id);
 
             /*
@@ -283,34 +214,61 @@ namespace NuSysApp
             }
             */
 
-            XmlAttribute x = doc.CreateAttribute("x");
+            var x = doc.CreateAttribute("x");
             x.Value = X.ToString();
             basicXml.Add(x);
 
-            XmlAttribute y = doc.CreateAttribute("y");
+            var y = doc.CreateAttribute("y");
             y.Value = Y.ToString();
             basicXml.Add(y);
 
 
-            XmlAttribute height = doc.CreateAttribute("height");
+            var height = doc.CreateAttribute("height");
             height.Value = Height.ToString();
             basicXml.Add(height);
 
-            XmlAttribute width = doc.CreateAttribute("width");
+            var width = doc.CreateAttribute("width");
             width.Value = Width.ToString();
             basicXml.Add(width);
 
             // if the node is an annotation, add information to the xml about the link it is attached to
-            if (this.IsAnnotation)
+            if (IsAnnotation)
             {
-                XmlAttribute clippedParent = doc.CreateAttribute("ClippedParent");
-                clippedParent.Value = ClippedParent.ID.ToString();
+                var clippedParent = doc.CreateAttribute("ClippedParent");
+                clippedParent.Value = ClippedParent.ID;
                 basicXml.Add(clippedParent);
             }
 
             return basicXml;
         }
+
+        #region Private Members
+
+        private double _x;
+        private double _y;
+        private double _width;
+        private double _height;
+
+        #endregion Private Members
+
+        #region Events and Handlers
+
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+
+        public event DeleteEventHandler Deleted;
+
+        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
+
+        public event LocationUpdateEventHandler PositionChanged;
+
+        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
+
+        public event WidthHeightUpdateEventHandler SizeChanged;
+
+        public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
+
+        public event AddToGroupEventHandler AddedToGroup;
+
+        #endregion Events and Handlers
     }
 }
-
-

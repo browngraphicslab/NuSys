@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using MuPDFWinRT;
 
 namespace NuSysApp
 {
@@ -14,135 +18,153 @@ namespace NuSysApp
     {
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
+        private Document _document;
+        private int CurrentPageNumber = 0;
+
         public PdfNodeViewModel(PdfNodeModel model) : base(model)
         {
-            this.IsSelected = false;
-            this.IsEditing = false;
-            this.IsEditingInk = false;
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            this.NodeType = NodeType.PDF;
-            this.CurrentPageNumber = model.CurrentPageNumber;
-            this.RenderedLines = InqPages[0];
-           // this.View = new PdfNodeView(this);
- 
-            var C = new CompositeTransform {
-                ScaleX = 1,
-                ScaleY = 1
-            };
-            this.InkScale = C;
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            NodeType = NodeType.PDF;
 
-
-            model.OnPageChange += delegate
+            model.UnPacked += async delegate(object source)
             {
-                Goto(model.CurrentPageNumber);
+                InitPdfViewer();
             };
-
-            model.OnPdfImagesCreated += delegate
-            {
-                Goto(model.CurrentPageNumber);
-            };
-
-            model.AddedToGroup += delegate(object source, AddToGroupEventArgs args)
-            {
-                Goto(model.CurrentPageNumber);
-            };
-
-          
         }
 
-        public override void Init(UserControl view)
+        private async void InitPdfViewer()
         {
-            base.Init(view);
+            CurrentPageNumber = ((PdfNodeModel)Model).CurrentPageNumber;
+            var ms = new MemoryStream(((PdfNodeModel)Model).Content.Data);
+            using (IInputStream inputStreamAt = ms.AsInputStream())
+            using (var dataReader = new DataReader(inputStreamAt))
+            {
+                uint u = await dataReader.LoadAsync((uint)((PdfNodeModel)Model).Content.Data.Length);
+                IBuffer readBuffer = dataReader.ReadBuffer(u);
+                _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+            }
 
-            if (((PdfNodeModel)Model).RenderedPages != null)
-                Goto(0);
+            Width = Width;
+
+            await Goto(CurrentPageNumber);
         }
 
-        public void FlipRight()
+        public override async Task Init(UserControl view)
+        {
+            await base.Init(view);
+            if (Model.IsUnpacked)
+                InitPdfViewer();
+        }
+
+        public async void FlipRight()
         {
             Goto(CurrentPageNumber + 1);
         }
 
-        public void FlipLeft()
+        public async void FlipLeft()
         {
-            Goto(CurrentPageNumber-1);
+            Goto(CurrentPageNumber - 1);
         }
 
-        public void Goto(uint pageNumber)
+        public async Task Goto(int pageNumber)
         {
             if (pageNumber == -1) return;
-            if (pageNumber >= (PageCount)) return;
+            if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
-            RenderedBitmapImage = RenderedPages[(int)CurrentPageNumber];
-            RenderedLines = InqPages[(int)CurrentPageNumber]; 
-            RaisePropertyChanged("RenderedBitmapImage");
+            await RenderPage(pageNumber);
+            ((PdfNodeModel) Model).CurrentPageNumber = CurrentPageNumber;
         }
 
-        public override void Resize(double dx, double dy)
+        private async Task RenderPage(int pageNumber)
         {
-       
-            double newDx, newDy;
-            if (dx > dy)
-            {
-                newDx = dy * RenderedBitmapImage.PixelWidth / RenderedBitmapImage.PixelHeight;
-                newDy = dy;
-            }
-            else
-            {
-                newDx = dx;
-                newDy = dx * RenderedBitmapImage.PixelHeight / RenderedBitmapImage.PixelWidth;
-            }
-            if (newDx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX || newDy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY)
-            {
-                return;
-            }
-            CompositeTransform ct = this.InkScale;
-            ct.ScaleX *= (Width + newDx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX) / Width;
-            ct.ScaleY *= (Height + newDy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY) / Height;
-            base.Resize(newDx, newDy);
+            var pageSize = _document.GetPageSize(pageNumber);
+            var width = pageSize.X;
+            var height = pageSize.Y;
+            var image = new WriteableBitmap(width, height);
+            IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+            buf.Length = image.PixelBuffer.Length;
             
+            await Task.Run(() =>
+            {
+                _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
+            });
+
+            var s = buf.AsStream();
+            await s.CopyToAsync(image.PixelBuffer.AsStream());
+            image.Invalidate();
+            ImageSource = image;
+            RaisePropertyChanged("ImageSource");
+
         }
 
-        public BitmapImage RenderedBitmapImage
+        public override double Width
+        {
+            get { return base.Width; }
+            set
+            {
+                if (_document == null)
+                {
+                    base.Width = value;
+                    return;
+                }
+
+                var pageSize = _document.GetPageSize(CurrentPageNumber);
+                if (pageSize.X > pageSize.Y)
+                {
+                    var r = pageSize.Y / (double)pageSize.X;
+                    base.Width = value;
+                    base.Height = base.Width * r;
+                }
+                else
+                {
+                    var r = pageSize.X / (double)pageSize.Y;
+                    base.Width = base.Height * r;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Height of this atom
+        /// </summary>
+        public override double Height
+        {
+            get { return base.Height; }
+            set
+            {
+                if (_document == null)
+                {
+                    base.Height = value;
+                    return;
+                }
+
+                var pageSize = _document.GetPageSize(CurrentPageNumber);
+
+                if (pageSize.X > pageSize.Y)
+                {
+                    var r = pageSize.Y / (double)pageSize.X;
+                    base.Height = base.Width * r;
+
+                }
+                else
+                {
+                    var r = pageSize.X / (double)pageSize.Y;
+                    base.Height = value;
+                    base.Width = base.Height * r;
+                }
+            }
+        }
+
+
+        public WriteableBitmap ImageSource
         {
             get; set;
         }
 
         public HashSet<InqLineModel> RenderedLines { get; set; }
 
-        public List<BitmapImage> RenderedPages
-        {
-            get { return ((PdfNodeModel)Model).RenderedPages; }
-            set
-            {
-                ((PdfNodeModel)Model).RenderedPages = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
-        }
-
         public List<HashSet<InqLineModel>> InqPages
         {
-            get { return ((PdfNodeModel) Model).InqLines; }
-        }
-
-        public uint CurrentPageNumber
-        {
-            get { return ((PdfNodeModel)Model).CurrentPageNumber; }
-            set
-            {
-                ((PdfNodeModel)Model).CurrentPageNumber = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
-        }
-
-        public uint PageCount
-        {
-            get { return ((PdfNodeModel)Model).PageCount; }
-            set
-            {
-                ((PdfNodeModel)Model).PageCount = value;
-                RaisePropertyChanged("PdfNodeModel");
-            }
+            get { return null; }
         }
 
         public CompositeTransform InkScale

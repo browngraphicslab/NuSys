@@ -17,7 +17,7 @@ namespace NuSysApp
         public TextNodeModel(string data, string id): base(id)
         {
             ID = id;
-                Text = data;       
+            Text = data;       
         }
 
         public string Text

@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Xml;
 using Windows.Foundation;
 using Windows.System.Power.Diagnostics;
@@ -18,8 +19,6 @@ namespace NuSysApp
     /// </summary>
     public abstract class NodeViewModel : AtomViewModel
     {
-
-
         public string Tags { get; set; }
 
         private bool _isEditing, _isEditingInk;
@@ -34,7 +33,6 @@ namespace NuSysApp
             ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
 
             Tags = model.GetMetaData("tags");
-            model.AddedToGroup += OnAddedToGroup;
             model.MetadataChanged += OnMetadataChanged;
        
         }
@@ -45,11 +43,7 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
         }
 
-        private void OnAddedToGroup(object source, AddToGroupEventArgs addToGroupEventArgs)
-        {
-        }
-
-        public virtual async void Init(UserControl view)
+        public virtual async Task Init(UserControl view)
         {
             View = view;
             var nodeModel = (NodeModel)Model;
@@ -137,10 +131,9 @@ namespace NuSysApp
         /// </summary>
         public override void UpdateAnchor()
         {
-            var nodeModel = (NodeModel) Model;
-            this.AnchorX = (int)(this.Transform.Matrix.OffsetX + this.Width / 2); //this is the midpoint
-            this.AnchorY = (int)(this.Transform.Matrix.OffsetY + this.Height / 2);
-            this.Anchor = new Point(this.AnchorX, this.AnchorY);
+            AnchorX = (int)(Transform.Matrix.OffsetX + Width / 2); //this is the midpoint
+            AnchorY = (int)(Transform.Matrix.OffsetY + Height / 2);
+            Anchor = new Point(AnchorX, AnchorY);
         }
 
         /// <summary>
@@ -152,20 +145,20 @@ namespace NuSysApp
         {   
             double changeX = dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
             double changeY = dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
-            if (this.Width > Constants.MinNodeSizeX || changeX > 0)
+            if (Width > Constants.MinNodeSizeX || changeX > 0)
             {
-                this.Width += changeX;
+                Width += changeX;
             }
-            if (this.Height > Constants.MinNodeSizeY || changeY > 0)
+            if (Height > Constants.MinNodeSizeY || changeY > 0)
             {
-                this.Height += changeY;
+                Height += changeY;
             }
-            this.UpdateAnchor();
+            UpdateAnchor();
         }
 
         public void CreateAnnotation()
         {
-            if (this.LinkList.Count > 0) return;
+            if (LinkList.Count > 0) return;
 
             //TODO: re-add
             /*
@@ -180,15 +173,15 @@ namespace NuSysApp
 
         private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
         {
-            this.SetPosition(((NodeModel)Model).X, ((NodeModel)Model).Y);
-            this.UpdateAnchor();
+            SetPosition(((NodeModel)Model).X, ((NodeModel)Model).Y);
+            UpdateAnchor();
         }
 
         private void WidthHeightChangedHandler(object source, WidthHeightUpdateEventArgs e)
         {
-            this.Width = ((NodeModel)this.Model).Width;
-            this.Height = ((NodeModel)this.Model).Height;
-            this.UpdateAnchor();
+            Width = ((NodeModel)Model).Width;
+            Height = ((NodeModel)Model).Height;
+            UpdateAnchor();
         }
         #endregion Event Handlers
 
@@ -211,8 +204,8 @@ namespace NuSysApp
                     _clippedParent = value;
                     _clippedParent.PropertyChanged += parent_PropertyChanged;
                     parent_PropertyChanged(null, null);
-                    this.Width = Constants.DefaultAnnotationSize * 2;
-                    this.Height = Constants.DefaultAnnotationSize;
+                    Width = Constants.DefaultAnnotationSize * 2;
+                    Height = Constants.DefaultAnnotationSize;
                 }
                 else
                 {
@@ -223,9 +216,9 @@ namespace NuSysApp
 
         private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
-            transMat.OffsetX = ClippedParent.AnchorX - this.Width / 2;
-            transMat.OffsetY = ClippedParent.AnchorY - this.Height / 2;
+            var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
+            transMat.OffsetX = ClippedParent.AnchorX - Width / 2;
+            transMat.OffsetY = ClippedParent.AnchorY - Height / 2;
             Transform = new MatrixTransform();
             this.Transform.Matrix = transMat;
         }

@@ -477,6 +477,12 @@
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj">
+      <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
+      <Name>MuPDFWinRT</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

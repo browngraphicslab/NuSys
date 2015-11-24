@@ -18,6 +18,17 @@ namespace NuSysApp
         private EditStatus _editStatus;
         public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
         public event CanEditChangedEventHandler OnCanEditChanged;
+
+        public delegate void UnPackedEventHandler(object source);
+        public event UnPackedEventHandler UnPacked;
+
+        private bool _isUnpacked = false;
+
+        public bool IsUnpacked
+        {
+            get { return _isUnpacked; }
+        }
+
         public Sendable(string id) : base()
         {
             ID = id;
@@ -30,7 +41,12 @@ namespace NuSysApp
             dict.Add("id", ID);
             return dict;
         }
-        public async virtual Task UnPack(Message props) { }
+
+        public async virtual Task UnPack(Message props)
+        {
+            _isUnpacked = true;
+            UnPacked?.Invoke(this);
+        }
         public string ID { get;}
         public EditStatus CanEdit
         {

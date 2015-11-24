@@ -47,9 +47,9 @@ namespace NuSysApp
             RaisePropertyChanged("DONE_LOADING");
         }
 
-        public override async void Init(UserControl v)
+        public override async Task Init(UserControl v)
         {
-            base.Init(v);
+            await base.Init(v);
             UpdateGroup();
 
         }
