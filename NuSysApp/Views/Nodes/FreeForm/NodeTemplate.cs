@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -81,6 +82,7 @@ namespace NuSysApp
             base.OnApplyTemplate();
 
             OnTemplateReady?.Invoke();
+
         }
 
         public void ToggleInkMode()
