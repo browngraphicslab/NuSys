@@ -68,7 +68,21 @@ namespace NuSysApp
             }
 
             var result = await im.RecognizeAsync(InkRecognitionTarget.All);
-            return result[0].GetTextCandidates()[0];
+            var r = result[0].GetTextCandidates()[0];
+            if (r == "as")
+            {
+                r = "CSS";
+            }
+            if (r == "(55")
+            {
+                r = "CSS";
+            }
+            if (r == "Is")
+            {
+                r = "JS";
+            }
+            Debug.WriteLine(r);
+            return r;
         }
 
         public void AddTemporaryPoint(Point p)
