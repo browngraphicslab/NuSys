@@ -25,8 +25,17 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
+
+   
+
     public sealed partial class TextNodeView : UserControl
     {
+
+        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(double), typeof(TextNodeView), new PropertyMetadata(0.0,
+      OnXPropertyChanged));
+        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(double), typeof(TextNodeView), new PropertyMetadata(0.0,
+      OnYPropertyChanged));
+
         private List<Image> _images = new List<Image>();
 
         public TextNodeView(TextNodeViewModel vm)
@@ -126,6 +135,18 @@ namespace NuSysApp
             Storyboard.SetTarget(animX, this);
             Storyboard.SetTargetProperty(animX, "Opacity");
             animX.Begin();
+        }
+
+        private static void OnXPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
+        {
+            var d = (TextNodeView) dd;
+            ((NodeModel)((NodeViewModel)d.DataContext).Model).X = (double)e.NewValue;
+        }
+
+        private static void OnYPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
+        {
+            var d = (TextNodeView)dd;
+            ((NodeModel)((NodeViewModel)d.DataContext).Model).Y = (double)e.NewValue;
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
@@ -422,6 +443,26 @@ namespace NuSysApp
                 vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 173, 216, 230));
             }
             colorin.Begin();
+        }
+
+        public double X
+        {
+            get { return (double)GetValue(XProperty); }
+            set
+            {
+                SetValue(XProperty, value);
+                ((NodeModel)((NodeViewModel)DataContext).Model).X = value;
+            }
+        }
+
+        public double Y
+        {
+            get { return (double)GetValue(YProperty); }
+            set
+            {
+                SetValue(YProperty, value);
+                ((NodeModel)((NodeViewModel)DataContext).Model).Y = value;
+            }
         }
     }
 }

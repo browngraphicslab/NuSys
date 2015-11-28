@@ -33,7 +33,7 @@ namespace NuSysApp
         {
             ID = id;
             _editStatus = EditStatus.Maybe;
-            Children = new Dictionary<string, Sendable>();
+            Children = new ObservableDictionary<string, Sendable>();
         }
         public async virtual Task<Dictionary<string, string>> Pack()
         {
@@ -65,7 +65,7 @@ namespace NuSysApp
             }
         } //Network locks
 
-        public Dictionary<string,Sendable> Children { set; get; }
+        public ObservableDictionary<string,Sendable> Children { set; get; }
         public virtual async Task<string> Stringify()
         {
             Dictionary<string, string> props = await Pack();

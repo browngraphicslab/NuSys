@@ -24,7 +24,6 @@ namespace NuSysApp
         #endregion Private Members
         public TextNodeViewModel(TextNodeModel model) : base(model)
         {           
-            this.Transform = new MatrixTransform();
             this.Width = model.Width;
             this.Height = model.Height;
             this.NodeType = NodeType.Text;

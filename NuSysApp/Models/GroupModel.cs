@@ -14,7 +14,7 @@ namespace NuSysApp
         public event NodeChangeHandler ChildRemoved;
 
         private InqCanvasModel _inqModel;
-        private readonly List<Sendable> _children = new List<Sendable>();
+      //  private readonly List<Sendable> _children = new List<Sendable>();
 
         public GroupModel(string id) : base(id)
         {
@@ -23,13 +23,13 @@ namespace NuSysApp
 
         public void AddChild(Sendable nodeModel)
         {
-            _children.Add(nodeModel);
+            Children.Add(nodeModel.ID, nodeModel);
             ChildAdded?.Invoke(this, nodeModel);
         }
 
         public void RemoveChild(Sendable nodeModel)
         {
-            _children.Remove(nodeModel);
+            Children.Remove(nodeModel.ID);
             ChildRemoved?.Invoke(this, nodeModel);
         }
 
@@ -67,7 +67,7 @@ namespace NuSysApp
                     var tempNode = (NodeModel)SessionController.Instance.IdToSendables[id];
                     idDict.Add(id, tempNode);
                 }
-                Children = idDict;
+                Children = new ObservableDictionary<string, Sendable>(idDict);
             }
         }//TODO add in pack functions
     }

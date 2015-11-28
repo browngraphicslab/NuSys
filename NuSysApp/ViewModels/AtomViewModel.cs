@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -20,7 +19,7 @@ namespace NuSysApp
         private bool _isSelected = false;
         private bool _isMultiSelected = false;
         private UserControl _view;
-        private MatrixTransform _transform;
+        private CompositeTransform _transform = new CompositeTransform();
         public bool _isVisible;
 
         #endregion Private Members
@@ -202,7 +201,7 @@ namespace NuSysApp
             set { Model.ID = value; }
         }
 
-        public MatrixTransform Transform
+        public CompositeTransform Transform
         {
             get { return _transform; }
             set

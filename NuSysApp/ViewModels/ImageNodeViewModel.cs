@@ -17,7 +17,7 @@ namespace NuSysApp
         {
             this.NodeType = NodeType.Image; //Also sets model value
             this.View = new ImageNodeView(this);
-            this.Transform = new MatrixTransform();
+            this.Transform = new CompositeTransform();
             this.IsSelected = false;
             this.IsEditing = false;
             this.IsEditingInk = false;

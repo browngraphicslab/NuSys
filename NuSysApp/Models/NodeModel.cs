@@ -115,16 +115,18 @@ namespace NuSysApp
 
         public AtomModel ClippedParent { get; set; }
 
-        public void MoveToGroup(GroupModel group)
+        public void MoveToGroup(GroupModel group, bool keepInOld = false)
         {
             //this.ParentGroup = group;
             var oldGroupId = Metadata["group"];
             Metadata["group"] = group.ID;
             group?.AddChild(this); //only add if group isn't null
-            AddedToGroup?.Invoke(this, new AddToGroupEventArgs("added to group", group, this));
 
-            var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as GroupModel;
-            currentGroup.RemoveChild(this);
+            if (!keepInOld)
+            {
+                var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as GroupModel;
+                currentGroup.RemoveChild(this);
+            }
         }
 
         public override async Task UnPack(Message props)
@@ -264,10 +266,6 @@ namespace NuSysApp
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
 
         public event WidthHeightUpdateEventHandler SizeChanged;
-
-        public delegate void AddToGroupEventHandler(object source, AddToGroupEventArgs e);
-
-        public event AddToGroupEventHandler AddedToGroup;
 
         #endregion Events and Handlers
     }

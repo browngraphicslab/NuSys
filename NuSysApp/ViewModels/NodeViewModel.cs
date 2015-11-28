@@ -42,7 +42,7 @@ namespace NuSysApp
             Tags = Model.GetMetaData("tags");
             RaisePropertyChanged("Tags");
         }
-
+        
         public virtual async Task Init(UserControl view)
         {
             View = view;
@@ -72,15 +72,14 @@ namespace NuSysApp
             if (IsAnnotation) { return; }
             if (!this.IsEditing)
             {
-                var transMat = ((MatrixTransform)this.View.RenderTransform).Matrix;
-                
-                transMat.OffsetX += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-                transMat.OffsetY += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+             //   var transMat = ((CompositeTransform)this.View.RenderTransform);
+             //   transMat.TranslateX += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+             //   transMat.TranslateY += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
                         
-                Transform = new MatrixTransform();
-                this.Transform.Matrix = transMat;
-                ((NodeModel)Model).X = transMat.OffsetX;
-                ((NodeModel)Model).Y = transMat.OffsetY;
+             //   Transform = transMat;
+                ((NodeModel)Model).X +=  dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+                ((NodeModel)Model).Y +=  dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+                //Debug.WriteLine("translating...");
                 this.UpdateAnchor();
 
                 foreach (var link in LinkList)
@@ -97,15 +96,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public void SetPosition(double x, double y)
+        public virtual void SetPosition(double x, double y)
         {
-            var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
-            transMat.OffsetX = x;
-            transMat.OffsetY = y;
-            this.Transform = new MatrixTransform
-            {
-                Matrix = transMat
-            };
+            var transMat = ((CompositeTransform)View.RenderTransform);
+            transMat.TranslateX = x;
+            transMat.TranslateY = y;
+            this.Transform = transMat;
             foreach (var link in LinkList)
             {
                 link.UpdateAnchor();
@@ -131,8 +127,8 @@ namespace NuSysApp
         /// </summary>
         public override void UpdateAnchor()
         {
-            AnchorX = (int)(Transform.Matrix.OffsetX + Width / 2); //this is the midpoint
-            AnchorY = (int)(Transform.Matrix.OffsetY + Height / 2);
+            AnchorX = (int)(Transform.TranslateX + Width / 2); //this is the midpoint
+            AnchorY = (int)(Transform.TranslateY + Height / 2);
             Anchor = new Point(AnchorX, AnchorY);
         }
 
@@ -194,35 +190,6 @@ namespace NuSysApp
 
         #region Public Properties
 
-        public AtomViewModel ClippedParent//TODO move to link
-        {
-            get { return _clippedParent; }
-            set
-            {
-                if (_clippedParent == null)
-                {
-                    _clippedParent = value;
-                    _clippedParent.PropertyChanged += parent_PropertyChanged;
-                    parent_PropertyChanged(null, null);
-                    Width = Constants.DefaultAnnotationSize * 2;
-                    Height = Constants.DefaultAnnotationSize;
-                }
-                else
-                {
-                    _clippedParent = value;
-                }
-            }
-        }
-
-        private void parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
-            transMat.OffsetX = ClippedParent.AnchorX - Width / 2;
-            transMat.OffsetY = ClippedParent.AnchorY - Height / 2;
-            Transform = new MatrixTransform();
-            this.Transform.Matrix = transMat;
-        }
-
         public bool IsAnnotation
         {
             get { return ((NodeModel)Model).IsAnnotation; }
@@ -234,9 +201,7 @@ namespace NuSysApp
             get { return Model.ID; }
             set { Model.ID = value; }
         }
-
-
-
+        
         public virtual double Width
         {
             get { return _width; }

@@ -80,8 +80,8 @@ namespace NuSysApp
         {
             var lines = new Line[4];
             var nodeModel = (NodeModel) node.Model;
-            var x = nodeModel.X + node.Transform.Matrix.OffsetX;
-            var y = nodeModel.Y + node.Transform.Matrix.OffsetY;
+            var x = nodeModel.X + node.Transform.TranslateX;
+            var y = nodeModel.Y + node.Transform.TranslateY;
 
             //AB line  
             lines[0] = new Line

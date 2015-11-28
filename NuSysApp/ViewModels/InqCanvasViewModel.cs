@@ -129,7 +129,7 @@ namespace NuSysApp
                 var innerRect = Geometry.PointCollecionToBoundingRect(otherLine.Points);
                 var innerRect2 = new Rect(innerRect.X,innerRect.Y, innerRect.Width, innerRect.Height);
                 innerRect.Intersect(outerRect);
-                if (Math.Abs(innerRect2.Width-innerRect.Width) < 50 && Math.Abs(innerRect2.Height - innerRect.Height) < 50)
+                if (Math.Abs(innerRect2.Width-innerRect.Width) < 70 && Math.Abs(innerRect2.Height - innerRect.Height) < 70)
                 {
 
                     idsToDelete.Add(otherLine.ID);

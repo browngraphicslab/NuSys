@@ -10,7 +10,6 @@ namespace NuSysApp
     {
         #region Private Members
         
-        public event AddToGroupEventHandler OnAddToGroup;
         #endregion Events and Handlers
 
         public GroupNodeModel(string id): base(id)
@@ -37,7 +36,5 @@ namespace NuSysApp
             }
             return groupNode;
         }
-
-        
     }
 }

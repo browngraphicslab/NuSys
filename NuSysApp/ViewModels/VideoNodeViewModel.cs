@@ -12,7 +12,7 @@ namespace NuSysApp
         public VideoNodeViewModel(VideoNodeModel model) : base(model)
         {
             this.View = new VideoNodeView(this);
-            this.Transform = new MatrixTransform();
+            this.Transform = new CompositeTransform();
          //   this.Width = 400;
          //   this.Height = 150;
             this.IsSelected = false;

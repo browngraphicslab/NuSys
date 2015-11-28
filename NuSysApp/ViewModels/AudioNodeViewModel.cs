@@ -15,7 +15,7 @@ namespace NuSysApp
                 await model.SendNetworkUpdate();
             };
             this.View = new AudioNodeView(this);
-            this.Transform = new MatrixTransform();
+            this.Transform = new CompositeTransform();
             this.Width = 400;
             this.Height = 150;
             this.IsSelected = false;

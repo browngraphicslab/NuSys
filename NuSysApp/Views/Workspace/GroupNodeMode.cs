@@ -115,7 +115,6 @@ namespace NuSysApp
 
         private async void BuildGroup(NodeViewModel node0, NodeViewModel node1, bool keepOriginal = false)
         {
- 
             if (node1 == null)
                 return;
             
@@ -146,12 +145,14 @@ namespace NuSysApp
                     UITask.Run(() =>
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
-                        newNodeModel.MoveToGroup((GroupModel)groupTagNode.Model);
+                        newNodeModel.MoveToGroup((GroupModel)groupTagNode.Model, true);
                         var prevTags = nodeToTag.Model.GetMetaData("tags");
                         newNodeModel.SetMetaData("tags",  prevTags +" " + inkCaption);
                         Debug.WriteLine("node created");
                     });
                 });
+
+                var groupTagNodeModel = (GroupModel) groupTagNode.Model;
 
                 var dict = await nodeToTag.Model.Pack();
                 var props = dict;
@@ -161,15 +162,13 @@ namespace NuSysApp
                 props.Remove("x");
                 props.Remove("y");
                 props.Remove("metadata");
-                NetworkConnector.Instance.RequestMakeNode("0", "0", nodeToTag.NodeType.ToString(), null, null, props, callback);
+                NetworkConnector.Instance.RequestMakeNode(groupTagNodeModel.X.ToString(), groupTagNodeModel.Y.ToString(), nodeToTag.NodeType.ToString(), null, null, props, callback);
             }
             //e.Handled = true;
         }
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
-        {
-
-            
+        {   
             var pressedNode = ((FrameworkElement)e.OriginalSource).DataContext as NodeViewModel;
            
             if (pressedNode == null)

@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -20,8 +10,51 @@ namespace NuSysApp
     {
         public GroupTagNodeViewModel(GroupModel model) : base(model)
         {
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
+        }
+
+        public string Title
+        {
+            get { return ((NodeModel) Model).Title; }
+            set
+            {
+                ((NodeModel) Model).Title = value;
+                RaisePropertyChanged("Title");
+            }
+        }
+
+        public string NumChildren
+        {
+            get
+            {
+                return ((GroupModel) Model).Children.Keys.Count.ToString();
+            }
+            set { RaisePropertyChanged("NumChildren");}
+        }
+
+
+        public override void Translate(double dx, double dy)
+        {
+            base.Translate(dx, dy);
+            foreach (var sendable in GetChildren())
+            {
+                var nodeVm = (NodeViewModel)sendable;
+                nodeVm.Translate(dx, dy);
+            }
+        }
+
+        private List<NodeViewModel> GetChildren()
+        {
+            var groupNodeModel = (GroupModel)Model;
+
+            var children = new List<NodeViewModel>();
+            foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)
+            {
+                var atomId = ((AtomViewModel)atomView.DataContext).ID;
+                if (groupNodeModel.Children.ContainsKey(atomId))
+                    children.Add((NodeViewModel)atomView.DataContext);
+            }
+            return children;
         }
 
         private async Task UpdateGroup()
@@ -31,7 +64,7 @@ namespace NuSysApp
                 var mm = m as AtomModel;
                 if (mm == null)
                     return false;
-                return mm.GetMetaData("tags").ToLower().Contains(((GroupModel)Model).Title.ToLower());
+                return mm.GetMetaData("tags").ToLower().Contains(((GroupModel) Model).Title.ToLower());
             });
 
             if (searchResults == null)
@@ -51,25 +84,12 @@ namespace NuSysApp
         {
             await base.Init(v);
             UpdateGroup();
-
         }
 
         public override async void OnChildAdded(object source, Sendable nodeModel)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
-            AtomViewList.Add(view);
-            view.IsHitTestVisible = false;
-        }
-
-        public string Title
-        {
-            get { return ((NodeModel)Model).Title; }
-            set
-            {
-                ((NodeModel) Model).Title = value;
-                RaisePropertyChanged("Title");
-            }
-           
+            // Do nothing.
+            RaisePropertyChanged("NumChildren");
         }
     }
 }
