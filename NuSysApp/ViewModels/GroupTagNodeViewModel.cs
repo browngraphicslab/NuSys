@@ -23,6 +23,15 @@ namespace NuSysApp
             }
         }
 
+        public bool IsTemporary
+        {
+            get { return ((GroupModel)Model).IsTemporary; }
+            set
+            {
+                ((GroupModel)Model).IsTemporary = value;
+            }
+        }
+
         public string NumChildren
         {
             get

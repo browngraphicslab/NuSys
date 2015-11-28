@@ -84,9 +84,7 @@ namespace NuSysApp
         private async void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
             var releasedNode = ((FrameworkElement)e.OriginalSource).DataContext as NodeViewModel;
-            Debug.WriteLine(" ==== released ====");
-            Debug.WriteLine(releasedNode);
-            Debug.WriteLine(_pressedItems.Count);
+
             if (releasedNode == null)
                 return;
 

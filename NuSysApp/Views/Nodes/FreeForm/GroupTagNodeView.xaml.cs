@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -15,9 +12,8 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
-    public sealed partial class GroupTagNodeView : UserControl
+    public sealed partial class GroupTagNodeView : AnimatableUserControl
     {
-        private Point _prevPos = new Point();
         private bool _isOpen;
 
         public GroupTagNodeView(GroupTagNodeViewModel vm)
@@ -25,16 +21,32 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
             IsDoubleTapEnabled = true;
+            RenderTransformOrigin = new Point(0.5,0.5);
+            vm.Alpha = 0;
+            var groupNodeModel = (GroupModel)vm.Model;
+            Loaded += delegate
+            {
+                Canvas.SetLeft(NumBorder, Title.ActualWidth - 10);
+              //  Anim.FromTo(this, "ScaleX", 0, 1, 300, new QuinticEase() {EasingMode = EasingMode.EaseIn});
+              //  Anim.FromTo(this, "ScaleY", 0, 1, 300, new QuinticEase() { EasingMode = EasingMode.EaseIn });
+                Anim.FromTo(this, "Alpha", 0, 1, 300, new QuinticEase() { EasingMode = EasingMode.EaseIn });
+            };
             
-            Loaded += delegate(object sender, RoutedEventArgs args)
-            {  
-                Canvas.SetLeft(NumBorder, Title.ActualWidth-10);
+            groupNodeModel.ModeChanged += delegate
+            {
+                var t = groupNodeModel.IsTemporary ? 0.3 : 1;
+                Anim.FromTo(this, "Alpha", 0, t, 500);
             };
 
-            var groupNodeModel = (GroupModel)vm.Model;
             groupNodeModel.Children.CollectionChanged += OnChildrenChanged;
-          //  groupNodeModel.PositionChanged += OnPositionChanged;
-            nodeTpl.OnTemplateReady += delegate { nodeTpl.resizer.Visibility = Visibility.Collapsed; nodeTpl.tags.Visibility = Visibility.Collapsed; };
+
+  
+
+            nodeTpl.OnTemplateReady += delegate
+            {
+                nodeTpl.resizer.Visibility = Visibility.Collapsed;
+                nodeTpl.tags.Visibility = Visibility.Collapsed;
+            };
 
             PointerEntered += delegate
             {
@@ -47,12 +59,11 @@ namespace NuSysApp
                 Title.Foreground = new SolidColorBrush(Colors.Black);
                 TitleBorder.Background = new SolidColorBrush(Colors.Transparent);
             };
-            
         }
 
         private void OnChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var groupNodeModel = (GroupModel)((GroupViewModel)DataContext).Model;
+            var groupNodeModel = (GroupModel) ((GroupViewModel) DataContext).Model;
             groupNodeModel.Children.CollectionChanged += OnChildrenChanged;
 
             if (_isOpen)
@@ -72,8 +83,7 @@ namespace NuSysApp
         {
             if (!_isOpen)
             {
-                var model = (GroupModel)((GroupViewModel)DataContext).Model;
-                _prevPos = new Point(model.X, model.Y);
+                var model = (GroupModel) ((GroupViewModel) DataContext).Model;
                 ShowChildren();
             }
             else
@@ -88,13 +98,14 @@ namespace NuSysApp
         {
             var children = GetChildren();
             var vm = (GroupTagNodeViewModel) DataContext;
-            var groupNodeModel = (GroupModel)vm.Model;
+            var groupNodeModel = (GroupModel) vm.Model;
             var numChildren = children.Count;
             for (var i = 0; i < numChildren; i++)
             {
                 var child = children[i];
                 child.Visibility = Visibility.Visible;
-                AnimateChild(child, groupNodeModel.X + TitleBorder.ActualWidth / 2, groupNodeModel.Y + TitleBorder.ActualHeight/2, 0, 0, i, numChildren, true);
+                AnimateChild(child, groupNodeModel.X + TitleBorder.ActualWidth/2,
+                    groupNodeModel.Y + TitleBorder.ActualHeight/2, 0, 0, i, numChildren, true);
             }
         }
 
@@ -102,7 +113,7 @@ namespace NuSysApp
         {
             var children = GetChildren();
             var numChildren = children.Count;
-            
+
             var currentWidth = 0.0;
             for (var i = 0; i < numChildren; i++)
             {
@@ -124,8 +135,6 @@ namespace NuSysApp
                 }
                 AnimateChild(child, x, y, scaleX, scaleY, i, numChildren);
             }
-
-
         }
 
         private List<UserControl> GetChildren()
@@ -144,10 +153,11 @@ namespace NuSysApp
         }
 
 
-        private void AnimateChild(UserControl child, double tx, double ty, double sx, double sy, int index, int numChildren, bool useBy = false)
+        private void AnimateChild(UserControl child, double tx, double ty, double sx, double sy, int index,
+            int numChildren, bool useBy = false)
         {
             var vm = (GroupTagNodeViewModel) DataContext;
-            var groupNodeModel = (GroupModel)vm.Model;
+            var groupNodeModel = (GroupModel) vm.Model;
 
             var targetSize = 80;
             var largerSide = child.Width > child.Height ? child.Height : child.Width;
@@ -156,7 +166,7 @@ namespace NuSysApp
 
             var duration = 400;
 
-            var childModel = (NodeModel)((NodeViewModel) DataContext).Model;
+            var childModel = (NodeModel) ((NodeViewModel) DataContext).Model;
             var animX = new Storyboard();
             var animXAnim = new DoubleAnimation();
             animXAnim.EnableDependentAnimation = true;
@@ -165,10 +175,14 @@ namespace NuSysApp
             if (useBy)
             {
                 animXAnim.To = tx;
-                animXAnim.From = groupNodeModel.X + Title.ActualWidth / 2.0 + Math.Sin(index * Math.PI * 2.0 / numChildren) * (Title.ActualWidth + 80) - targetSize / 2.0;
-            } else { 
+                animXAnim.From = groupNodeModel.X + Title.ActualWidth/2.0 +
+                                 Math.Sin(index*Math.PI*2.0/numChildren)*(Title.ActualWidth + 80) - targetSize/2.0;
+            }
+            else
+            {
                 animXAnim.From = tx;
-                animXAnim.To = groupNodeModel.X + Title.ActualWidth/2.0 + Math.Sin(index*Math.PI*2.0/numChildren)*(Title.ActualWidth + 80) - targetSize/2.0;
+                animXAnim.To = groupNodeModel.X + Title.ActualWidth/2.0 +
+                               Math.Sin(index*Math.PI*2.0/numChildren)*(Title.ActualWidth + 80) - targetSize/2.0;
             }
             animX.Children.Add(animXAnim);
             Storyboard.SetTargetProperty(animXAnim, "X");
@@ -183,21 +197,24 @@ namespace NuSysApp
             if (useBy)
             {
                 animYAnim.To = ty;
-                animYAnim.From = groupNodeModel.Y + Title.ActualHeight / 2.0 + Math.Cos(index * Math.PI * 2.0 / numChildren) * (Title.ActualHeight + 80) - targetSize / 2.0;
+                animYAnim.From = groupNodeModel.Y + Title.ActualHeight/2.0 +
+                                 Math.Cos(index*Math.PI*2.0/numChildren)*(Title.ActualHeight + 80) - targetSize/2.0;
             }
             else
             {
                 animYAnim.From = ty;
-                animYAnim.To = groupNodeModel.Y + Title.ActualHeight/2.0 + Math.Cos(index*Math.PI*2.0/numChildren)*(Title.ActualHeight + 80) - targetSize/2.0;
+                animYAnim.To = groupNodeModel.Y + Title.ActualHeight/2.0 +
+                               Math.Cos(index*Math.PI*2.0/numChildren)*(Title.ActualHeight + 80) - targetSize/2.0;
             }
             animY.Children.Add(animYAnim);
             Storyboard.SetTargetProperty(animYAnim, "Y");
             Storyboard.SetTarget(animYAnim, child);
             animY.Begin();
 
-            /*
+
             var animScaleY = new Storyboard();
             var animScaleYAnim = new DoubleAnimation();
+            animScaleYAnim.EnableDependentAnimation = true;
             animScaleYAnim.EasingFunction = new QuinticEase();
             animScaleYAnim.Duration = TimeSpan.FromMilliseconds(duration);
             if (useBy)
@@ -212,11 +229,12 @@ namespace NuSysApp
             }
             animScaleY.Children.Add(animScaleYAnim);
             Storyboard.SetTargetProperty(animScaleY, "ScaleY");
-            Storyboard.SetTarget(animScaleY, child.RenderTransform);
+            Storyboard.SetTarget(animScaleY, child);
             animScaleY.Begin();
 
             var animScaleX = new Storyboard();
             var animScaleXAnim = new DoubleAnimation();
+            animScaleXAnim.EnableDependentAnimation = true;
             animScaleXAnim.EasingFunction = new QuinticEase();
             animScaleXAnim.Duration = TimeSpan.FromMilliseconds(duration);
             if (useBy)
@@ -231,11 +249,8 @@ namespace NuSysApp
             }
             animScaleX.Children.Add(animScaleXAnim);
             Storyboard.SetTargetProperty(animScaleX, "ScaleX");
-            Storyboard.SetTarget(animScaleX, child.RenderTransform);
+            Storyboard.SetTarget(animScaleX, child);
             animScaleX.Begin();
-
-    */
         }
-
     }
 }

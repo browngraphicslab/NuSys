@@ -61,7 +61,7 @@ namespace NuSysApp
             {
                 case Options.SelectNode:
                     await
-                        SetViewMode(new MultiMode(this, new DuplicateNodeMode(this), new GroupNodeMode(this), new PanZoomMode(this), new SelectMode(this),
+                        SetViewMode(new MultiMode(this, new IntersectGroupNodeMode(this), new DuplicateNodeMode(this), new GroupNodeMode(this), new PanZoomMode(this), new SelectMode(this),
                             new FloatingMenuMode(this)));
                     break;
                 case Options.SelectMarquee:

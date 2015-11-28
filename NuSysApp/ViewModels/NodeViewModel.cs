@@ -1,86 +1,99 @@
-﻿
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Foundation;
-using Windows.System.Power.Diagnostics;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
     /// <summary>
-    /// 
-    /// NodeViewModel class
-    /// 
-    /// Parameters: takes in the workspace
+    ///     NodeViewModel class
+    ///     Parameters: takes in the workspace
     /// </summary>
     public abstract class NodeViewModel : AtomViewModel
     {
-        public string Tags { get; set; }
-
-        private bool _isEditing, _isEditingInk;
-        private double _height, _width;
         private AtomViewModel _clippedParent;
         private GroupViewModel _group;
-        
+        private double _height, _width, _alpha;
+
+        private bool _isEditing, _isEditingInk;
+
         protected NodeViewModel(NodeModel model) : base(model)
         {
             AtomType = Constants.Node;
-            ((NodeModel) Model).PositionChanged += LocationUpdateHandler;
-            ((NodeModel) Model).SizeChanged += WidthHeightChangedHandler;
+            model.PositionChanged += OnPositionChanged;
+            model.SizeChanged += OnSizeChanged;
+            model.ScaleChanged += OnScaleChanged;
+            model.AlphaChanged += OnAlphaChanged;
 
+            Alpha = model.Alpha;
             Tags = model.GetMetaData("tags");
             model.MetadataChanged += OnMetadataChanged;
-       
         }
+
+        private void OnAlphaChanged(object source)
+        {
+            Alpha = ((NodeModel) Model).Alpha;
+        }
+
+        public string Tags { get; set; }
 
         private void OnMetadataChanged(object source, string key)
         {
             Tags = Model.GetMetaData("tags");
             RaisePropertyChanged("Tags");
         }
-        
+
         public virtual async Task Init(UserControl view)
         {
             View = view;
-            var nodeModel = (NodeModel)Model;
+            var nodeModel = (NodeModel) Model;
             SetPosition(nodeModel.X, nodeModel.Y);
             Width = nodeModel.Width;
             Height = nodeModel.Height;
             Tags = Model.GetMetaData("tags");
             RaisePropertyChanged("tags");
         }
-        
-               
+
+        #region XML methods
+
+        public XmlElement WriteXML(XmlDocument doc)
+        {
+            return ((NodeModel) Model).WriteXML(doc);
+        }
+
+        #endregion XML methods
+
         #region Node Manipulations
 
         public override void Remove()
         {
             //WorkSpaceViewModel.DeleteNode(this);
-            if (this.IsSelected)
+            if (IsSelected)
             {
                 //TODO: re-add
                 SessionController.Instance.ActiveWorkspace.ClearSelection();
-            } 
+            }
         }
 
         public virtual void Translate(double dx, double dy)
         {
-            if (IsAnnotation) { return; }
-            if (!this.IsEditing)
+            if (IsAnnotation)
             {
-             //   var transMat = ((CompositeTransform)this.View.RenderTransform);
-             //   transMat.TranslateX += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-             //   transMat.TranslateY += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
-                        
-             //   Transform = transMat;
-                ((NodeModel)Model).X +=  dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-                ((NodeModel)Model).Y +=  dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+                return;
+            }
+            if (!IsEditing)
+            {
+                //   var transMat = ((CompositeTransform)this.View.RenderTransform);
+                //   transMat.TranslateX += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+                //   transMat.TranslateY += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+
+                //   Transform = transMat;
+                ((NodeModel) Model).X += dx/SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+                ((NodeModel) Model).Y += dy/SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
                 //Debug.WriteLine("translating...");
-                this.UpdateAnchor();
+                UpdateAnchor();
 
                 foreach (var link in LinkList)
                 {
@@ -90,57 +103,58 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Behaves like Translate(dx, dy) but sets the position to absolute coordinates instead.
-        /// Currently used to visually update location coordinates from the network.
-        /// //TODO does not yet take into account scale
+        ///     Behaves like Translate(dx, dy) but sets the position to absolute coordinates instead.
+        ///     Currently used to visually update location coordinates from the network.
+        ///     //TODO does not yet take into account scale
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         public virtual void SetPosition(double x, double y)
         {
-            var transMat = ((CompositeTransform)View.RenderTransform);
+            var transMat = ((CompositeTransform) View.RenderTransform);
             transMat.TranslateX = x;
             transMat.TranslateY = y;
-            this.Transform = transMat;
+            Transform = transMat;
             foreach (var link in LinkList)
             {
                 link.UpdateAnchor();
             }
-            this.UpdateAnchor();
+            UpdateAnchor();
             RaisePropertyChanged("Transform");
         }
 
         /// <summary>
-        /// toggles editing ability of nodes.
+        ///     toggles editing ability of nodes.
         /// </summary>
         public void ToggleEditing()
         {
-            this.IsEditing = !this.IsEditing;
+            IsEditing = !IsEditing;
         }
+
         public void ToggleEditingInk()
         {
-            this.IsEditingInk = !this.IsEditingInk;
+            IsEditingInk = !IsEditingInk;
         }
 
         /// <summary>
-        /// Updates the anchor points (central points) of the node when it is transformed. Also updates the attached links.
+        ///     Updates the anchor points (central points) of the node when it is transformed. Also updates the attached links.
         /// </summary>
         public override void UpdateAnchor()
         {
-            AnchorX = (int)(Transform.TranslateX + Width / 2); //this is the midpoint
-            AnchorY = (int)(Transform.TranslateY + Height / 2);
+            AnchorX = (int) (Transform.TranslateX + Width/2); //this is the midpoint
+            AnchorY = (int) (Transform.TranslateY + Height/2);
             Anchor = new Point(AnchorX, AnchorY);
         }
 
         /// <summary>
-        /// Resizes the node. Eventually this should use a scale transformation instead.
+        ///     Resizes the node. Eventually this should use a scale transformation instead.
         /// </summary>
         /// <param name="dx"></param>
         /// <param name="dy"></param>
         public virtual void Resize(double dx, double dy)
-        {   
-            double changeX = dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-            double changeY = dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+        {
+            var changeX = dx/SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
+            var changeY = dy/SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
             if (Width > Constants.MinNodeSizeX || changeX > 0)
             {
                 Width += changeX;
@@ -163,37 +177,40 @@ namespace NuSysApp
                 ((NodeModel)this.Model).IsAnnotation = true;
             }*/
         }
+
         #endregion Node Manipulations
 
         #region Event Handlers
 
-        private void LocationUpdateHandler(object source, LocationUpdateEventArgs e)
+        private void OnPositionChanged(object source, LocationUpdateEventArgs e)
         {
-            SetPosition(((NodeModel)Model).X, ((NodeModel)Model).Y);
+            SetPosition(((NodeModel) Model).X, ((NodeModel) Model).Y);
             UpdateAnchor();
         }
 
-        private void WidthHeightChangedHandler(object source, WidthHeightUpdateEventArgs e)
+        private void OnSizeChanged(object source, WidthHeightUpdateEventArgs e)
         {
-            Width = ((NodeModel)Model).Width;
-            Height = ((NodeModel)Model).Height;
+            Width = ((NodeModel) Model).Width;
+            Height = ((NodeModel) Model).Height;
             UpdateAnchor();
         }
+
+        private void OnScaleChanged(object source)
+        {
+            var model = (NodeModel) Model;
+            Transform.ScaleX = model.ScaleX;
+            Transform.ScaleY = model.ScaleY;
+            RaisePropertyChanged("Transform");
+        }
+
         #endregion Event Handlers
-
-        #region XML methods
-        public XmlElement WriteXML(XmlDocument doc)
-        {
-            return ((NodeModel)Model).WriteXML(doc);
-        }
-        #endregion XML methods
 
         #region Public Properties
 
         public bool IsAnnotation
         {
-            get { return ((NodeModel)Model).IsAnnotation; }
-            set { ((NodeModel)Model).IsAnnotation = value; }
+            get { return ((NodeModel) Model).IsAnnotation; }
+            set { ((NodeModel) Model).IsAnnotation = value; }
         }
 
         public string id
@@ -201,7 +218,7 @@ namespace NuSysApp
             get { return Model.ID; }
             set { Model.ID = value; }
         }
-        
+
         public virtual double Width
         {
             get { return _width; }
@@ -212,14 +229,14 @@ namespace NuSysApp
                     return;
                 }
                 _width = value;
-                ((NodeModel)Model).Width = value;
-         
+                ((NodeModel) Model).Width = value;
+
                 RaisePropertyChanged("Width");
             }
         }
 
         /// <summary>
-        /// Height of this atom
+        ///     Height of this atom
         /// </summary>
         public virtual double Height
         {
@@ -231,8 +248,18 @@ namespace NuSysApp
                     return;
                 }
                 _height = value;
-                ((NodeModel)Model).Height = value;
+                ((NodeModel) Model).Height = value;
                 RaisePropertyChanged("Height");
+            }
+        }
+
+        public double Alpha
+        {
+            get { return _alpha; }
+            set
+            {
+                _alpha = value;
+                RaisePropertyChanged("Alpha");
             }
         }
 
@@ -249,6 +276,7 @@ namespace NuSysApp
                 RaisePropertyChanged("IsEditing");
             }
         }
+
         public bool IsEditingInk
         {
             get { return _isEditingInk; }
@@ -265,13 +293,10 @@ namespace NuSysApp
 
         public NodeType NodeType
         {
-            get { return ((NodeModel)this.Model).NodeType; }
-            set
-            {
-                ((NodeModel)this.Model).NodeType = value;
-            }
+            get { return ((NodeModel) Model).NodeType; }
+            set { ((NodeModel) Model).NodeType = value; }
         }
-        
+
         #endregion Public Properties
     }
 }

@@ -107,6 +107,72 @@ namespace NuSysApp
             }
         }
 
+        public virtual double ScaleX
+        {
+            get { return _scaleX; }
+            set
+            {
+                if (_scaleX == value)
+                {
+                    return;
+                }
+                _scaleX = value;
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                {
+                    ScaleChanged?.Invoke(this);
+                }
+                else
+                {
+                    DebounceDict.Add("scaleX", _scaleX.ToString());
+                    ScaleChanged?.Invoke(this);
+                }
+            }
+        }
+
+        public virtual double ScaleY
+        {
+            get { return _scaleY; }
+            set
+            {
+                if (_scaleY == value)
+                {
+                    return;
+                }
+                _scaleY = value;
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                {
+                    ScaleChanged?.Invoke(this);
+                }
+                else
+                {
+                    DebounceDict.Add("scaleY", _scaleY.ToString());
+                    ScaleChanged?.Invoke(this);
+                }
+            }
+        }
+
+        public virtual double Alpha
+        {
+            get { return _alpha; }
+            set
+            {
+                if (_alpha == value)
+                {
+                    return;
+                }
+                _alpha = value;
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                {
+                    AlphaChanged?.Invoke(this);
+                }
+                else
+                {
+                    DebounceDict.Add("alpha", _alpha.ToString());
+                    AlphaChanged?.Invoke(this);
+                }
+            }
+        }
+
         public string Title { get; set; }
 
         public NodeType NodeType { get; set; }
@@ -147,6 +213,18 @@ namespace NuSysApp
             {
                 Height = double.Parse(props["height"]);
             }
+            if (props.ContainsKey("alpha"))
+            {
+                Alpha = double.Parse(props["alpha"]);
+            }
+            if (props.ContainsKey("scaleX"))
+            {
+                ScaleX = double.Parse(props["scaleX"]);
+            }
+            if (props.ContainsKey("scaleY"))
+            {
+                ScaleY = double.Parse(props["scaleY"]);
+            }
             if (props.ContainsKey("parentGroup"))
             {
                 if (props["parentGroup"] == "null")
@@ -170,6 +248,9 @@ namespace NuSysApp
             dict.Add("y", Y.ToString());
             dict.Add("width", Width.ToString());
             dict.Add("height", Height.ToString());
+            dict.Add("alpha", Alpha.ToString());
+            dict.Add("scaleX", ScaleX.ToString());
+            dict.Add("scaleY", ScaleY.ToString());
             dict.Add("type", "node");
             return dict;
         }
@@ -248,6 +329,9 @@ namespace NuSysApp
 
         private double _x;
         private double _y;
+        private double _alpha = 1;
+        private double _scaleX = 1;
+        private double _scaleY = 1;
         private double _width;
         private double _height;
 
@@ -266,6 +350,14 @@ namespace NuSysApp
         public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
 
         public event WidthHeightUpdateEventHandler SizeChanged;
+
+        public delegate void ScaleChangedEventHandler(object source);
+
+        public delegate void AlphaChangedEventHandler(object source);
+
+        public event ScaleChangedEventHandler ScaleChanged;
+
+        public event AlphaChangedEventHandler AlphaChanged;
 
         #endregion Events and Handlers
     }

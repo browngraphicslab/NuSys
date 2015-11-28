@@ -156,6 +156,8 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\PinWindowViewModel.cs" />
     <Compile Include="ViewModels\VideoNodeViewModel.cs" />
+    <Compile Include="Views\Effects\Anim.cs" />
+    <Compile Include="Views\Effects\AnimatableUserControl.cs" />
     <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
@@ -322,6 +324,7 @@
     <Compile Include="Views\SessionView.xaml.cs">
       <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Workspace\IntersectGroupNodeMode.cs" />
     <Compile Include="Views\Workspace\GroupNodeMode.cs" />
     <Compile Include="Views\Workspace\DuplicateNodeMode.cs" />
     <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
@@ -483,6 +486,7 @@
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
