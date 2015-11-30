@@ -8,6 +8,7 @@ namespace NuSysApp
         private bool _isTemporary;
 
         public delegate void NodeChangeHandler(object source, Sendable node);
+        public delegate Task NodeChangeHandler2(object source, Sendable node);
 
         public GroupModel(string id) : base(id)
         {
@@ -26,15 +27,15 @@ namespace NuSysApp
         public InqCanvasModel InqModel { get; set; }
 
         public event NodeChangeHandler linkAdded;
-        public event NodeChangeHandler ChildAdded;
+        public event NodeChangeHandler2 ChildAdded;
         public event NodeChangeHandler ChildRemoved;
         public event NodeChangeHandler ModeChanged;
 
 
-        public void AddChild(Sendable nodeModel)
+        public async Task AddChild(Sendable nodeModel)
         {
             Children.Add(nodeModel.ID, nodeModel);
-            ChildAdded?.Invoke(this, nodeModel);
+            await ChildAdded?.Invoke(this, nodeModel);
         }
 
         public void RemoveChild(Sendable nodeModel)

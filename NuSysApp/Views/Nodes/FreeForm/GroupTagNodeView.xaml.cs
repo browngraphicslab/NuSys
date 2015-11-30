@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -27,9 +30,7 @@ namespace NuSysApp
             Loaded += delegate
             {
                 Canvas.SetLeft(NumBorder, Title.ActualWidth - 10);
-              //  Anim.FromTo(this, "ScaleX", 0, 1, 300, new QuinticEase() {EasingMode = EasingMode.EaseIn});
-              //  Anim.FromTo(this, "ScaleY", 0, 1, 300, new QuinticEase() { EasingMode = EasingMode.EaseIn });
-                Anim.FromTo(this, "Alpha", 0, 1, 300, new QuinticEase() { EasingMode = EasingMode.EaseIn });
+                Anim.FromTo(this, "Alpha", 0, 1, 350, new QuinticEase() { EasingMode = EasingMode.EaseIn });
             };
             
             groupNodeModel.ModeChanged += delegate
@@ -37,10 +38,14 @@ namespace NuSysApp
                 var t = groupNodeModel.IsTemporary ? 0.3 : 1;
                 Anim.FromTo(this, "Alpha", 0, t, 500);
             };
+            
+            vm.ChildAdded += delegate(object source, AnimatableUserControl node)
+            {
+                Debug.WriteLine("VIEW = CHILD ADDED");
+                OnChildrenChanged(node);
+            };
 
-            groupNodeModel.Children.CollectionChanged += OnChildrenChanged;
-
-  
+      
 
             nodeTpl.OnTemplateReady += delegate
             {
@@ -61,21 +66,42 @@ namespace NuSysApp
             };
         }
 
-        private void OnChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public void ChildAdded(AnimatableUserControl child)
+        {
+        
+        }
+
+
+        private void OnChildrenChanged(AnimatableUserControl child)
         {
             var groupNodeModel = (GroupModel) ((GroupViewModel) DataContext).Model;
-            groupNodeModel.Children.CollectionChanged += OnChildrenChanged;
+            var childVm = (NodeViewModel)child.DataContext;
+            if (!((NodeModel)childVm.Model).GetMetaData("tags").Contains(groupNodeModel.Title))
+                return;
 
             if (_isOpen)
             {
+                var numChildren = groupNodeModel.Children.Count;
+                var i = numChildren - 1;
+                var tx = groupNodeModel.X + Title.ActualWidth / 2.0 + Math.Sin(i * Math.PI * 2.0 / numChildren) * (Title.ActualWidth + 80) - 80 / 2.0;
+                var ty = groupNodeModel.Y + Title.ActualHeight / 2.0 + Math.Cos(i * Math.PI * 2.0 / numChildren) * (Title.ActualHeight + 80) - 80 / 2.0;
+
+         
+                Anim.To(child, "X", tx, 350, new QuinticEase());
+                Anim.To(child, "Y", ty, 350, new QuinticEase());
+                Anim.To(child, "ScaleX", 0, 350, new QuinticEase());
+                Anim.To(child, "ScaleY", 0, 350, new QuinticEase());
+
                 ShowChildren();
             }
             else
             {
-                if (e.NewItems == null) return;
-                var child = (UserControl) e.NewItems[0];
-                AnimateChild(child, groupNodeModel.X + TitleBorder.ActualWidth/2,
-                    groupNodeModel.Y + TitleBorder.ActualHeight/2, 0, 0, 1 + (new Random().Next()%10), 10, true);
+          
+               Anim.To(child, "X", groupNodeModel.X + TitleBorder.ActualWidth / 2, 350, new QuinticEase());
+               Anim.To(child, "Y", groupNodeModel.Y + TitleBorder.ActualHeight / 2, 350, new QuinticEase());
+               Anim.To(child, "ScaleX", 0, 350, new QuinticEase());
+               Anim.To(child, "ScaleY", 0, 350, new QuinticEase());
+               
             }
         }
 
@@ -104,13 +130,19 @@ namespace NuSysApp
             {
                 var child = children[i];
                 child.Visibility = Visibility.Visible;
-                AnimateChild(child, groupNodeModel.X + TitleBorder.ActualWidth/2,
-                    groupNodeModel.Y + TitleBorder.ActualHeight/2, 0, 0, i, numChildren, true);
+                Anim.To(child, "X", groupNodeModel.X + TitleBorder.ActualWidth / 2, 400, new QuinticEase());
+                Anim.To(child, "Y", groupNodeModel.Y + TitleBorder.ActualHeight / 2, 400, new QuinticEase());
+                Anim.To(child, "ScaleX", 0, 400, new QuinticEase());
+                Anim.To(child, "ScaleY", 0, 400, new QuinticEase());
             }
         }
 
         private void ShowChildren(bool fromCenter = false)
         {
+            var vm = (GroupTagNodeViewModel)DataContext;
+            var groupNodeModel = (GroupModel)vm.Model;
+            var targetSize = 80;
+            
             var children = GetChildren();
             var numChildren = children.Count;
 
@@ -119,138 +151,34 @@ namespace NuSysApp
             {
                 var child = children[i];
                 child.Visibility = Visibility.Visible;
-                var x = 0.0;
-                var y = 0.0;
-                var scaleX = 1.0;
-                var scaleY = 1.0;
-                if (child.RenderTransform is CompositeTransform)
-                {
-                    if (!fromCenter)
-                    {
-                        x = ((CompositeTransform) child.RenderTransform).TranslateX;
-                        y = ((CompositeTransform) child.RenderTransform).TranslateY;
-                    }
-                    scaleX = ((CompositeTransform) child.RenderTransform).ScaleX;
-                    scaleY = ((CompositeTransform) child.RenderTransform).ScaleY;
-                }
-                AnimateChild(child, x, y, scaleX, scaleY, i, numChildren);
+    
+                var largerSide = child.Width > child.Height ? child.Height : child.Width;
+                var scaleRatio = targetSize / largerSide;
+
+                var tx = groupNodeModel.X + Title.ActualWidth / 2.0 + Math.Sin(i * Math.PI * 2.0 / numChildren) * (Title.ActualWidth + 80) - targetSize / 2.0;
+                var ty = groupNodeModel.Y + Title.ActualHeight / 2.0 + Math.Cos(i * Math.PI * 2.0 / numChildren) * (Title.ActualHeight + 80) - targetSize / 2.0;
+                
+                Anim.To(child, "X", tx, 400, new QuinticEase());
+                Anim.To(child, "Y", ty, 400, new QuinticEase());
+                Anim.To(child, "ScaleX", scaleRatio, 400, new QuinticEase());
+                Anim.To(child, "ScaleY", scaleRatio, 400, new QuinticEase());
+       
             }
         }
 
-        private List<UserControl> GetChildren()
+        private List<AnimatableUserControl> GetChildren()
         {
             var vm = (GroupTagNodeViewModel) DataContext;
             var groupNodeModel = (GroupModel) vm.Model;
 
-            var children = new List<UserControl>();
+            var children = new List<AnimatableUserControl>();
             foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)
             {
                 var atomId = ((AtomViewModel) atomView.DataContext).ID;
                 if (groupNodeModel.Children.ContainsKey(atomId))
-                    children.Add(atomView);
+                    children.Add((AnimatableUserControl)atomView);
             }
             return children;
-        }
-
-
-        private void AnimateChild(UserControl child, double tx, double ty, double sx, double sy, int index,
-            int numChildren, bool useBy = false)
-        {
-            var vm = (GroupTagNodeViewModel) DataContext;
-            var groupNodeModel = (GroupModel) vm.Model;
-
-            var targetSize = 80;
-            var largerSide = child.Width > child.Height ? child.Height : child.Width;
-            var scaleRatio = targetSize/largerSide;
-
-
-            var duration = 400;
-
-            var childModel = (NodeModel) ((NodeViewModel) DataContext).Model;
-            var animX = new Storyboard();
-            var animXAnim = new DoubleAnimation();
-            animXAnim.EnableDependentAnimation = true;
-            animXAnim.Duration = TimeSpan.FromMilliseconds(duration);
-            animXAnim.EasingFunction = new QuinticEase();
-            if (useBy)
-            {
-                animXAnim.To = tx;
-                animXAnim.From = groupNodeModel.X + Title.ActualWidth/2.0 +
-                                 Math.Sin(index*Math.PI*2.0/numChildren)*(Title.ActualWidth + 80) - targetSize/2.0;
-            }
-            else
-            {
-                animXAnim.From = tx;
-                animXAnim.To = groupNodeModel.X + Title.ActualWidth/2.0 +
-                               Math.Sin(index*Math.PI*2.0/numChildren)*(Title.ActualWidth + 80) - targetSize/2.0;
-            }
-            animX.Children.Add(animXAnim);
-            Storyboard.SetTargetProperty(animXAnim, "X");
-            Storyboard.SetTarget(animXAnim, child);
-            animX.Begin();
-
-            var animY = new Storyboard();
-            var animYAnim = new DoubleAnimation();
-            animYAnim.EnableDependentAnimation = true;
-            animYAnim.EasingFunction = new QuinticEase();
-            animYAnim.Duration = TimeSpan.FromMilliseconds(duration);
-            if (useBy)
-            {
-                animYAnim.To = ty;
-                animYAnim.From = groupNodeModel.Y + Title.ActualHeight/2.0 +
-                                 Math.Cos(index*Math.PI*2.0/numChildren)*(Title.ActualHeight + 80) - targetSize/2.0;
-            }
-            else
-            {
-                animYAnim.From = ty;
-                animYAnim.To = groupNodeModel.Y + Title.ActualHeight/2.0 +
-                               Math.Cos(index*Math.PI*2.0/numChildren)*(Title.ActualHeight + 80) - targetSize/2.0;
-            }
-            animY.Children.Add(animYAnim);
-            Storyboard.SetTargetProperty(animYAnim, "Y");
-            Storyboard.SetTarget(animYAnim, child);
-            animY.Begin();
-
-
-            var animScaleY = new Storyboard();
-            var animScaleYAnim = new DoubleAnimation();
-            animScaleYAnim.EnableDependentAnimation = true;
-            animScaleYAnim.EasingFunction = new QuinticEase();
-            animScaleYAnim.Duration = TimeSpan.FromMilliseconds(duration);
-            if (useBy)
-            {
-                animScaleYAnim.To = sy;
-                animScaleYAnim.From = scaleRatio;
-            }
-            else
-            {
-                animScaleYAnim.From = sy;
-                animScaleYAnim.To = scaleRatio;
-            }
-            animScaleY.Children.Add(animScaleYAnim);
-            Storyboard.SetTargetProperty(animScaleY, "ScaleY");
-            Storyboard.SetTarget(animScaleY, child);
-            animScaleY.Begin();
-
-            var animScaleX = new Storyboard();
-            var animScaleXAnim = new DoubleAnimation();
-            animScaleXAnim.EnableDependentAnimation = true;
-            animScaleXAnim.EasingFunction = new QuinticEase();
-            animScaleXAnim.Duration = TimeSpan.FromMilliseconds(duration);
-            if (useBy)
-            {
-                animScaleXAnim.To = sx;
-                animScaleXAnim.From = scaleRatio;
-            }
-            else
-            {
-                animScaleXAnim.From = sx;
-                animScaleXAnim.To = scaleRatio;
-            }
-            animScaleX.Children.Add(animScaleXAnim);
-            Storyboard.SetTargetProperty(animScaleX, "ScaleX");
-            Storyboard.SetTarget(animScaleX, child);
-            animScaleX.Begin();
         }
     }
 }

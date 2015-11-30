@@ -14,6 +14,8 @@ namespace NuSysApp
         public ObservableCollection<UserControl> AtomViewList { get; }
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
+        public delegate Task ChildAddedHandler(object source, AnimatableUserControl node);
+        public event ChildAddedHandler ChildAdded;
 
         private double _margin;
        // private CompositeTransform _localTransform;
@@ -30,10 +32,11 @@ namespace NuSysApp
             model.ChildRemoved += OnChildRemoved;
         }
 
-        public virtual async void OnChildAdded(object source, Sendable nodeModel)
+        public virtual async Task OnChildAdded(object source, Sendable nodeModel)
         {
             var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
-            AtomViewList.Add(view);  
+            AtomViewList.Add(view);
+            ChildAdded?.Invoke(this, (AnimatableUserControl)view);
         }
 
         private void OnChildRemoved(object source, Sendable sendable)

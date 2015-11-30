@@ -90,7 +90,37 @@ namespace NuSysApp
                 Title = title
             };
             IdToSendables.Add(id, group);
-            ActiveWorkspace.Model.AddChild(group);
+
+            var searchResults = SessionController.Instance.IdToSendables.Values.Where(m =>
+            {
+                var mm = m as AtomModel;
+                if (mm == null || mm == group)
+                    return false;
+                return mm.GetMetaData("tags").ToLower().Contains((group).Title.ToLower());
+            });
+
+            foreach (var searchResult in searchResults.ToList())
+            {
+                var callback = new Action<string>((s) =>
+                {
+                    UITask.Run(() =>
+                    {
+                        var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
+                        newNodeModel.MoveToGroup(group);
+                    });
+                });
+
+                var dict = await searchResult.Pack();
+                var props = dict;
+                props.Remove("id");
+                props.Remove("type");
+                props.Remove("nodeType");
+                props.Remove("x");
+                props.Remove("y");
+                NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
+            }
+
+            //   ActiveWorkspace.Model.AddChild(group);
         }
 
         public void AddGlobalInq(InqLineModel lineView)
@@ -148,7 +178,6 @@ namespace NuSysApp
             node.NodeType = type;
             IdToSendables.Add(id, node);
             
-            ActiveWorkspace.Model.AddChild(node);
         }
 
         public async Task RemoveSendable(string id)

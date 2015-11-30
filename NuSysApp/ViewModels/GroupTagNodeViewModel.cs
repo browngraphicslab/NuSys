@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -8,6 +10,10 @@ namespace NuSysApp
 {
     public class GroupTagNodeViewModel : GroupViewModel
     {
+
+        public delegate void ChildAddedHandler(object source, AnimatableUserControl node);
+        public event ChildAddedHandler ChildAdded;
+
         public GroupTagNodeViewModel(GroupModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
@@ -65,40 +71,17 @@ namespace NuSysApp
             }
             return children;
         }
-
-        private async Task UpdateGroup()
-        {
-            var searchResults = SessionController.Instance.IdToSendables.Values.Where(m =>
-            {
-                var mm = m as AtomModel;
-                if (mm == null)
-                    return false;
-                return mm.GetMetaData("tags").ToLower().Contains(((GroupModel) Model).Title.ToLower());
-            });
-
-            if (searchResults == null)
-                return;
-
-            foreach (var searchResult in searchResults.ToList())
-            {
-                var view = await _nodeViewFactory.CreateFromSendable(searchResult, AtomViewList.ToList());
-                AtomViewList.Add(view);
-                view.IsHitTestVisible = false;
-            }
-
-            RaisePropertyChanged("DONE_LOADING");
-        }
-
-        public override async Task Init(UserControl v)
-        {
-            await base.Init(v);
-            UpdateGroup();
-        }
-
-        public override async void OnChildAdded(object source, Sendable nodeModel)
+        
+        public override async Task OnChildAdded(object source, Sendable nodeModel)
         {
             // Do nothing.
-            RaisePropertyChanged("NumChildren");
+            Debug.WriteLine("VIEWMODEL = CHILD ADDED");
+            var child = (AnimatableUserControl)SessionController.Instance.ActiveWorkspace.AtomViewList.Where( atom => ((AtomViewModel)atom.DataContext).Model == nodeModel).ElementAt(0);
+            var x = (NodeTemplate)child.FindName("nodeTpl");
+           // x.tags.Visibility = Visibility.Collapsed;
+            ChildAdded?.Invoke(this, (AnimatableUserControl)child);
+            //var v = (GroupTagNodeView) View;
+           // v.ChildAdded(child);
         }
     }
 }

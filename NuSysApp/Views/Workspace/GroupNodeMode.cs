@@ -132,11 +132,15 @@ namespace NuSysApp
 
             var inkCaption = groupTagNode.Title;
             var tags = nodeToTag.Model.GetMetaData("tags");
-            nodeToTag.Model.SetMetaData("tags", tags + " " + inkCaption);
 
-            if (!keepOriginal) { 
-                var nodeModel = (NodeModel)nodeToTag.Model;
-                nodeModel.MoveToGroup((GroupModel)groupTagNode.Model);
+            if (tags.Contains(inkCaption))
+                return;
+
+            nodeToTag.Model.SetMetaData("tags", tags + " " + inkCaption);
+            var nodeToTagModel = (NodeModel)nodeToTag.Model;
+            if (!keepOriginal) {
+
+                nodeToTagModel.MoveToGroup((GroupModel)groupTagNode.Model);
             } else { 
                 var callback = new Action<string>((s) =>
                 {
@@ -144,13 +148,8 @@ namespace NuSysApp
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
                         newNodeModel.MoveToGroup((GroupModel)groupTagNode.Model, true);
-                        var prevTags = nodeToTag.Model.GetMetaData("tags");
-                        newNodeModel.SetMetaData("tags",  prevTags +" " + inkCaption);
-                        Debug.WriteLine("node created");
                     });
                 });
-
-                var groupTagNodeModel = (GroupModel) groupTagNode.Model;
 
                 var dict = await nodeToTag.Model.Pack();
                 var props = dict;
@@ -159,8 +158,8 @@ namespace NuSysApp
                 props.Remove("nodeType");
                 props.Remove("x");
                 props.Remove("y");
-                props.Remove("metadata");
-                NetworkConnector.Instance.RequestMakeNode(groupTagNodeModel.X.ToString(), groupTagNodeModel.Y.ToString(), nodeToTag.NodeType.ToString(), null, null, props, callback);
+              //  props.Remove("metadata");
+                NetworkConnector.Instance.RequestMakeNode(nodeToTagModel.X.ToString(), nodeToTagModel.Y.ToString(), nodeToTag.NodeType.ToString(), null, null, props, callback);
             }
             //e.Handled = true;
         }

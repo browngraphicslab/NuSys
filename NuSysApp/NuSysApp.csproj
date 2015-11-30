@@ -320,7 +320,7 @@
     <Compile Include="Views\Nodes\FreeForm\GroupTagNodeView.xaml.cs">
       <DependentUpon>GroupTagNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\INodeViewFactory.cs" />
+    <Compile Include="Views\Workspace\INodeViewFactory.cs" />
     <Compile Include="Views\SessionView.xaml.cs">
       <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>

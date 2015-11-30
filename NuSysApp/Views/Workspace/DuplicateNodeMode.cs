@@ -74,8 +74,8 @@ namespace NuSysApp
                 props.Remove("nodeType");
                 props.Remove("x");
                 props.Remove("y");
-                props.Remove("metadata");
-                props.Add("meta", _selectedNode.Model.GetMetaData("tags"));
+               // props.Remove("metadata");
+               // props.Add("meta", _selectedNode.Model.GetMetaData("tags"));
 
                 var tappedPoint = e.GetPosition(null);
                 tappedPoint.X -= _selectedNode.Width/2;

@@ -408,7 +408,7 @@ namespace NuSysApp.Network
                 senderIP = _localIP;
             }
             var hash = senderIP.Replace(@".", "") + "#";
-            var now = DateTime.UtcNow.Ticks.ToString();
+            var now = DateTime.UtcNow.Ticks + (new Random().Next(0, 1000000000));
             return hash + now;
         }
         /*

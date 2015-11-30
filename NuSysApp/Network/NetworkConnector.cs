@@ -207,6 +207,7 @@ namespace NuSysApp
                 {
                     Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
                     id = oldID == null ? _clientHandler.GetID() : oldID;
+                    Debug.WriteLine("========== " + id + "============");
                     props["x"] = x;
                     props["y"] = y;
                     props["nodeType"] = nodeType;
@@ -452,7 +453,7 @@ namespace NuSysApp
 
         #region oldModelIntermediate
 
-        private async Task HandleMessage(Message props)
+        private async Task HandleMessage(Message props, bool justCreated = false)
             {
                 if (props.ContainsKey("id"))
                 {
@@ -462,7 +463,12 @@ namespace NuSysApp
                     {
                         Sendable n = SessionController.Instance.IdToSendables[id];//if the id exists, get the sendable
 
-                        await UITask.Run(async () => { await n.UnPack(props); });//update the sendable with the dictionary info
+                        await UITask.Run(async () =>
+                        {
+                            await n.UnPack(props);
+                            if (justCreated && n is NodeModel)
+                                await SessionController.Instance.ActiveWorkspace.Model.AddChild(n);
+                        });//update the sendable with the dictionary info
                     }
                     else//if the sendable doesn't yet exist
                     {
@@ -472,7 +478,7 @@ namespace NuSysApp
                             await HandleCreateNewSendable(id, props); //create a new sendable
                             if (SessionController.Instance.IdToSendables.ContainsKey(id))
                             {
-                                await HandleMessage(props);
+                                await HandleMessage(props, true);
                             }
                             if (_creationCallbacks.ContainsKey(id))
                             //check if a callback is waiting for that sendable to be created

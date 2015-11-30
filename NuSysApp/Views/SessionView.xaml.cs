@@ -14,6 +14,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Animation;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -31,7 +32,7 @@ namespace NuSysApp
         public SessionView()
         {
             this.InitializeComponent();
-     
+
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
                 Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };

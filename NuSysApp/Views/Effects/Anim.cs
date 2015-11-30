@@ -57,6 +57,7 @@ namespace NuSysApp
                     break;
                 default:
                     throw new Exception("Unsupported proptery");
+
             }
 
             easing = easing ?? new QuadraticEase();
@@ -76,7 +77,5 @@ namespace NuSysApp
             Storyboard.SetTarget(anim, target);
             storyboard.Begin();
         }
-
-
     }
 }

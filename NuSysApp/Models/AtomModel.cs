@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using Newtonsoft.Json.Converters;
 
 namespace NuSysApp
 {
@@ -83,14 +84,16 @@ namespace NuSysApp
         public void SetMetaData(string key, string value)
         {
             Metadata[key] = value;
+            var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\\\\\"", "'");
             if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
             {
                 Debug.WriteLine("Senable is currently being updated");
-                this.DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
+                
+                DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
             }
             else
             {
-                this.DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata));
+                DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
             }
 
             MetadataChanged?.Invoke(this, key);
@@ -105,20 +108,20 @@ namespace NuSysApp
         public override async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string, string> dict = await base.Pack();
-            var s = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata);
-            dict.Add("metadata", s);
+            var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">");
+
+            //var s = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata);
+            dict.Add("metadata", metadatastring);
             return dict;
         }
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("meta"))
+            if (props.ContainsKey("metadata"))
             {
-                Metadata.Add("tags", props["meta"]);
+                Metadata = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>( props["metadata"].Replace("'", "\"").Replace("<", "{").Replace(">", "}"));
             }
-            base.UnPack(props);
-
-
+            await base.UnPack(props);
         }
     } 
 }
