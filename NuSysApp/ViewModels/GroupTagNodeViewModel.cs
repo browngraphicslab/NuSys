@@ -80,6 +80,7 @@ namespace NuSysApp
             var x = (NodeTemplate)child.FindName("nodeTpl");
            // x.tags.Visibility = Visibility.Collapsed;
             ChildAdded?.Invoke(this, (AnimatableUserControl)child);
+            RaisePropertyChanged("NumChildren");
             //var v = (GroupTagNodeView) View;
            // v.ChildAdded(child);
         }

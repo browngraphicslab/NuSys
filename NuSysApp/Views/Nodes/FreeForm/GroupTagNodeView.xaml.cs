@@ -66,12 +66,6 @@ namespace NuSysApp
             };
         }
 
-        public void ChildAdded(AnimatableUserControl child)
-        {
-        
-        }
-
-
         private void OnChildrenChanged(AnimatableUserControl child)
         {
             var groupNodeModel = (GroupModel) ((GroupViewModel) DataContext).Model;

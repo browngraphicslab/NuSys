@@ -137,6 +137,7 @@ namespace NuSysApp
                 return;
 
             nodeToTag.Model.SetMetaData("tags", tags + " " + inkCaption);
+            
             var nodeToTagModel = (NodeModel)nodeToTag.Model;
             if (!keepOriginal) {
 
@@ -147,6 +148,7 @@ namespace NuSysApp
                     UITask.Run(() =>
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
+                        newNodeModel.SetMetaData("visualCopyOf", nodeToTag.ID);
                         newNodeModel.MoveToGroup((GroupModel)groupTagNode.Model, true);
                     });
                 });

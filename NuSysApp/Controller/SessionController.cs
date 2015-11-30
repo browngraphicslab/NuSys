@@ -96,7 +96,7 @@ namespace NuSysApp
                 var mm = m as AtomModel;
                 if (mm == null || mm == group)
                     return false;
-                return mm.GetMetaData("tags").ToLower().Contains((group).Title.ToLower());
+                return mm.GetMetaData("visualCopyOf") == "" && mm.GetMetaData("tags").ToLower().Contains((group).Title.ToLower());
             });
 
             foreach (var searchResult in searchResults.ToList())
@@ -106,7 +106,8 @@ namespace NuSysApp
                     UITask.Run(() =>
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
-                        newNodeModel.MoveToGroup(group);
+                        newNodeModel.SetMetaData("visualCopyOf", searchResult.ID);
+                        newNodeModel.MoveToGroup(group, true);
                     });
                 });
 
