@@ -225,7 +225,7 @@ namespace NuSysApp
             {
                 ScaleY = double.Parse(props["scaleY"]);
             }
-            if (props.ContainsKey("parentGroup"))
+            if (props.ContainsKey("group"))
             {
                 if (props["parentGroup"] == "null")
                 {
@@ -239,6 +239,7 @@ namespace NuSysApp
             }
 
             await base.UnPack(props);
+
         }
 
         public override async Task<Dictionary<string, string>> Pack()

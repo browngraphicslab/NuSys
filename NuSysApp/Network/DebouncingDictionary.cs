@@ -18,12 +18,14 @@ namespace NuSysApp
 
         public DebouncingDictionary(Sendable atom)
         {
+            _timer = new Timer(SendMessage, null, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, string>();
             _atom = atom;
-
         }
+
         public DebouncingDictionary(AtomModel atom, int milliSecondDebounce)
         {
+            _timer = new Timer(SendMessage, null, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, string>();
             _atom = atom;
             _milliSecondDebounce = _milliSecondDebounce;

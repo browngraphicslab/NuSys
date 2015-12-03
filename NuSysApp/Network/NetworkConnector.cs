@@ -189,7 +189,8 @@ namespace NuSysApp
                 }
                 else
                 {
-                    throw new NoIDException();
+                    //TODO: is sometimes thrown!
+                    //throw new NoIDException();
                     return;
                 }
             });
@@ -215,7 +216,8 @@ namespace NuSysApp
                     props["id"] = id;
                     if (data != null && data != "null" && data != "")
                     {
-                        props.Add("data", data);
+                        if (!props.ContainsKey("data"))
+                            props.Add("data", data);
                     }
 
                     if (callback != null)

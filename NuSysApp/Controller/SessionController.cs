@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
@@ -38,6 +39,18 @@ namespace NuSysApp
         {
             _locks = new LockDictionary(this);
             IdToSendables = new ObservableDictionary<string, Sendable>();
+        }
+
+        public UserControl GetUserControlById(string id)
+        {
+            var model = IdToSendables[id];
+            foreach (var userControl in ActiveWorkspace.AtomViewList)
+            {
+                var vm = (AtomViewModel) userControl.DataContext;
+                if (vm.Model == model)
+                    return userControl;
+            }
+            return null;
         }
 
         public void CreateLink(AtomModel atom1, AtomModel atom2, string id)
@@ -177,8 +190,10 @@ namespace NuSysApp
             node.X = xCoordinate;
             node.Y = yCoordinate;
             node.NodeType = type;
-            IdToSendables.Add(id, node);
-            
+
+            // TODO: bullshit fix
+            if (!IdToSendables.ContainsKey(id))
+                IdToSendables.Add(id, node);
         }
 
         public async Task RemoveSendable(string id)

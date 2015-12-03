@@ -52,7 +52,7 @@ namespace NuSysApp
                 NetworkConnector.Instance.CheckLocks(locks);
                 NetworkConnector.Instance.RequestLock(vm.ID);
             }
-            e.Handled = true;
+          //  e.Handled = true;
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

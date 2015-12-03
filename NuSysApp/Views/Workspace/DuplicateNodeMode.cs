@@ -18,7 +18,7 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-            _view.IsDoubleTapEnabled = true;
+            _view.IsRightTapEnabled = true;
             WorkspaceViewModel wvm = (WorkspaceViewModel) _view.DataContext;
 
             wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -28,7 +28,9 @@ namespace NuSysApp
                 userControl.PointerReleased += OnAtomReleased;
             }
 
-            _view.DoubleTapped += OnWorkspacePressed;
+            //_view.DoubleTapped += OnWorkspacePressed;
+            _view.RightTapped += OnWorkspacePressed;
+            //_view.RightTapped += delegate() {  };
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -55,11 +57,11 @@ namespace NuSysApp
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
             }
-            _view.DoubleTapped -= OnWorkspacePressed;
+            _view.RightTapped -= OnWorkspacePressed;
             wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
         }
 
-        private async void OnWorkspacePressed(object sender, DoubleTappedRoutedEventArgs e)
+        private async void OnWorkspacePressed(object sender, RightTappedRoutedEventArgs e)
         {
             var doubleTappedNode = ((FrameworkElement)e.OriginalSource).DataContext;
             if (_selectedNode != null && _selectedNode != doubleTappedNode)
@@ -78,9 +80,10 @@ namespace NuSysApp
                // props.Add("meta", _selectedNode.Model.GetMetaData("tags"));
 
                 var tappedPoint = e.GetPosition(null);
-                tappedPoint.X -= _selectedNode.Width/2;
-                tappedPoint.Y -= _selectedNode.Height/2;
+
                 var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
+                p.X -= _selectedNode.Width / 2;
+                p.Y -= _selectedNode.Height / 2;
                 NetworkConnector.Instance.RequestMakeNode(p.X.ToString(),p.Y.ToString(), _selectedNode.NodeType.ToString(), null, null, props);
             }
 

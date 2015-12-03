@@ -47,12 +47,6 @@ namespace NuSysApp
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-#if DEBUG
-            if (Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
 
             await SetupDirectories();
 

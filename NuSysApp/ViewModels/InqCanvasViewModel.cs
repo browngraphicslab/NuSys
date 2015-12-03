@@ -122,6 +122,9 @@ namespace NuSysApp
             
             var outerRect = Geometry.PointCollecionToBoundingRect(line.Points);
 
+            if (outerRect.Width*outerRect.Height < 100*100)
+                return false;
+
             var idsToDelete = new List<string>();
             var encompassedLines = new List<InqLineModel>();
             foreach (var otherLine in Model.Lines.Where(l => l != line))
@@ -150,7 +153,7 @@ namespace NuSysApp
 
             var first = line.Points.First();
             var last = line.Points.Last();
-            if (encompassedLines.Count == 0 || (Math.Abs(first.X -last.X) > 25 && Math.Abs(first.Y - last.Y) > 25) )
+            if (encompassedLines.Count == 0 || (Math.Abs(first.X -last.X) > 40 && Math.Abs(first.Y - last.Y) > 40) )
             {
                 return false;
             }
@@ -160,7 +163,8 @@ namespace NuSysApp
             {
                 NetworkConnector.Instance.RequestDeleteSendable(idToDelete);
             }
-            
+
+
             var title = await InkToText(encompassedLines);
             var dict = new Dictionary<string, string>();
             dict["title"] = title;

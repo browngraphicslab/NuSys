@@ -34,7 +34,8 @@ namespace NuSysApp
 
         public async Task AddChild(Sendable nodeModel)
         {
-            Children.Add(nodeModel.ID, nodeModel);
+            if (!Children.ContainsKey(nodeModel.ID))
+                Children.Add(nodeModel.ID, nodeModel);
             await ChildAdded?.Invoke(this, nodeModel);
         }
 

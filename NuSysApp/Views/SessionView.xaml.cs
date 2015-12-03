@@ -13,6 +13,8 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
 
@@ -54,6 +56,61 @@ namespace NuSysApp
             _cortanaInitialized = false;
             xFloatingMenu.SessionView = this;
             xFloatingMenu.ModeChange += xWorkspace.SwitchMode;
+
+            Loaded += async delegate(object sender, RoutedEventArgs args)
+            {
+
+                var callback = new Action<string>(s =>
+                {
+             //       var nodeModel = (NodeModel) SessionController.Instance.IdToSendables[s];
+                //    nodeModel.MoveToGroup(workspaceModel);
+                });
+
+                var props = new Dictionary<string,string>();
+                props.Add("width","350");
+                props.Add("height","200");
+
+                NetworkConnector.Instance.RequestNewGroupTag("100300", "100100", "Lorem", null);
+                NetworkConnector.Instance.RequestNewGroupTag("100500", "100100", "Ipsum", null);
+
+                var pdf0 = await KnownFolders.PicturesLibrary.GetFileAsync("html.pdf");
+                var pdf1 = await KnownFolders.PicturesLibrary.GetFileAsync("css.pdf");
+
+                var pdfs = new StorageFile[] { pdf0, pdf1 };
+
+                var i = 0;
+                foreach (var storageFile in pdfs)
+                {
+                    // I LOVE EMILY
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+
+                        var data = Convert.ToBase64String(fileBytes);
+                        NetworkConnector.Instance.RequestMakeNode((100100 + (i * 300)).ToString(), "100300", NodeType.PDF.ToString(), data, null, new Dictionary<string, string>(props));
+                    }
+                }
+
+      
+
+               
+                /*
+                NetworkConnector.Instance.RequestMakeNode("100100", "100300", NodeType.Text.ToString(), "bla", null, props);
+                NetworkConnector.Instance.RequestMakeNode("100300", "100300", NodeType.Text.ToString(), "bla", null, props);
+                NetworkConnector.Instance.RequestMakeNode("100500", "100300", NodeType.Text.ToString(), "bla", null, props);
+                NetworkConnector.Instance.RequestMakeNode("100700", "100300", NodeType.Text.ToString(), "bla", null, props);
+                NetworkConnector.Instance.RequestMakeNode("100900", "100300", NodeType.Text.ToString(), "bla", null, props);
+                */
+
+
+
+            };
         }
 
         

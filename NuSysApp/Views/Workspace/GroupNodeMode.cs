@@ -138,10 +138,22 @@ namespace NuSysApp
 
             nodeToTag.Model.SetMetaData("tags", tags + " " + inkCaption);
             
+            // tag all visual copies
+
+            foreach (var userControl in SessionController.Instance.ActiveWorkspace.AtomViewList)
+            {
+                var vm = (AtomViewModel) userControl.DataContext;
+                var model = vm.Model;
+                if (model.GetMetaData("visualCopyOf") == nodeToTag.ID)
+                {
+                    model.SetMetaData("tags", tags + " " + inkCaption);
+                }
+            }
+
             var nodeToTagModel = (NodeModel)nodeToTag.Model;
             if (!keepOriginal) {
 
-                nodeToTagModel.MoveToGroup((GroupModel)groupTagNode.Model);
+                nodeToTagModel.MoveToGroup((GroupModel)groupTagNode.Model, true);
             } else { 
                 var callback = new Action<string>((s) =>
                 {
@@ -178,9 +190,6 @@ namespace NuSysApp
                 Canvas.SetZIndex((FrameworkElement)sender, 0);
 
             _pressedItems.Add(pressedNode);
-            Debug.WriteLine("PPRRREEESSSSSSEEEEEDDDD");
-            //Debug.WriteLine(_selectedNode);
-            //e.Handled = true;
         }
     }
 }

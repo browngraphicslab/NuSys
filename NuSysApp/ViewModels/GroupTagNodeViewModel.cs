@@ -17,7 +17,10 @@ namespace NuSysApp
         public GroupTagNodeViewModel(GroupModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
+            EnableChildMove = true;
         }
+
+        public bool EnableChildMove { get; set; }
 
         public string Title
         {
@@ -38,19 +41,13 @@ namespace NuSysApp
             }
         }
 
-        public string NumChildren
-        {
-            get
-            {
-                return ((GroupModel) Model).Children.Keys.Count.ToString();
-            }
-            set { RaisePropertyChanged("NumChildren");}
-        }
-
-
         public override void Translate(double dx, double dy)
         {
             base.Translate(dx, dy);
+
+            if (!EnableChildMove)
+                return;
+
             foreach (var sendable in GetChildren())
             {
                 var nodeVm = (NodeViewModel)sendable;

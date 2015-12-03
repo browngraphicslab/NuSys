@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -18,6 +19,14 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             //waitingroomanimation.Begin();
+
+            
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+            Application.Current.UnhandledException += delegate(object sender, UnhandledExceptionEventArgs args)
+            {
+              //  throw new Exception(args.Message);
+            };
+
             ellipse.Begin();
         }
 
