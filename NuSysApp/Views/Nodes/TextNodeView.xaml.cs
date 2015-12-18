@@ -19,6 +19,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.Media.SpeechSynthesis;
+using Windows.Media.SpeechRecognition;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -27,6 +29,8 @@ namespace NuSysApp
     public sealed partial class TextNodeView : UserControl
     {
         private List<Image> _images = new List<Image>();
+        private SpeechRecognizer _recognizer;
+        private bool _isRecording;
 
         public TextNodeView(TextNodeViewModel vm)
         {
@@ -35,6 +39,7 @@ namespace NuSysApp
             this.DataContext = vm;
 
             var model = (TextNodeModel)vm.Model;
+            initializeRecog();
 
             mdTextBox.TextChanging += delegate
             {
@@ -115,44 +120,80 @@ namespace NuSysApp
             };
         }
 
+        private async void initializeRecog()
+        {
+            _recognizer = new SpeechRecognizer();
+            // Compile the dictation grammar that is loaded by default. = ""; 
+            await _recognizer.CompileConstraintsAsync();
+        }
+
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
-            var oldColor = this.RecordVoice.Background;
-            Color c = new Color();
-            c.A = 255;
-            c.R = 199;
-            c.G = 84;
-            c.B = 82;
-            this.RecordVoice.Background = new SolidColorBrush(c);
-            await TranscribeVoice();
-            this.RecordVoice.Background = oldColor;
+            if(!_isRecording)
+            {
+                var oldColor = this.RecordVoice.Background;
+                Color c = new Color();
+                c.A = 255;
+                c.R = 199;
+                c.G = 84;
+                c.B = 82;
+                this.RecordVoice.Background = new SolidColorBrush(c);
+                await TranscribeVoice();
+                this.RecordVoice.Background = oldColor;
+            } else
+            {
+                var vm = this.DataContext as TextNodeViewModel;
+                this.RecordVoice.Background = vm.Color;
+            }
+        }
+
+        private async void stopTranscribing(object o, RoutedEventArgs e)
+        {
+            _recognizer.StopRecognitionAsync();
+            _isRecording = false;
+            this.RecordVoice.Click -= stopTranscribing;
         }
 
         private async Task TranscribeVoice()
         {
-            // Create an instance of SpeechRecognizer. 
-            var speechRecognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
-            //speechRecognizer.
-            //speechRecognizer.UIOptions.ShowConfirmation = false;
-            //speechRecognizer.UIOptions.IsReadBackEnabled = false;
-            //speechRecognizer.UIOptions.AudiblePrompt = "";
-            // Compile the dictation grammar that is loaded by default. = ""; 
-            await speechRecognizer.CompileConstraintsAsync();
             string spokenString = "";
+            // Create an instance of SpeechRecognizer. 
             // Start recognition. 
+
             try
             {
-                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await speechRecognizer.RecognizeAsync();
+                this.RecordVoice.Click += stopTranscribing;
+                _isRecording = true;
+                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await _recognizer.RecognizeAsync();
+                _isRecording = false;
+                this.RecordVoice.Click -= stopTranscribing;
                 // If successful, display the recognition result. 
                 if (speechRecognitionResult.Status == Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
                 {
                     spokenString = speechRecognitionResult.Text;
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
+                const int privacyPolicyHResult = unchecked((int)0x80045509);
+                const int networkNotAvailable = unchecked((int)0x80045504);
+
+                if (ex.HResult == privacyPolicyHResult)
+                {
+                    // User has not accepted the speech privacy policy
+                    string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+                    messageDialog.ShowAsync();
+
+                }
+                else if (ex.HResult == networkNotAvailable)
+                {
+                    string error = "In order to use dictation features, NuSys requires an internet connection";
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+                    messageDialog.ShowAsync();
+                }
             }
-            speechRecognizer.Dispose();
+            //_recognizer.Dispose();
             this.mdTextBox.Text = spokenString;
             var vm = (TextNodeViewModel)this.DataContext;
             vm.UpdateRtf();
