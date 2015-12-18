@@ -194,9 +194,12 @@ namespace NuSysApp
                 }
             }
             //_recognizer.Dispose();
-            this.mdTextBox.Text = spokenString;
-            var vm = (TextNodeViewModel)this.DataContext;
-            vm.UpdateRtf();
+            if (!spokenString.Equals(""))
+            {
+                this.mdTextBox.Text += spokenString + ". ";
+                var vm = (TextNodeViewModel)this.DataContext;
+                vm.UpdateRtf();
+            }
         }
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
