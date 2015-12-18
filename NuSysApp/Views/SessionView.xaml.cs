@@ -81,7 +81,6 @@ namespace NuSysApp
                 var i = 0;
                 foreach (var storageFile in pdfs)
                 {
-                    // I LOVE EMILY
                     byte[] fileBytes = null;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {

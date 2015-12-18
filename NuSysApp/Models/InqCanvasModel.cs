@@ -24,14 +24,13 @@ namespace NuSysApp
         public event FinalizedLine OnFinalizedLine;
         public delegate void FinalizedLine(InqLineModel lineModel);
 
-        private HashSet<InqLineModel> _lines;
+        private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
 
 
         public InqCanvasModel(string id)
         {
             ID = id;
-            _lines = new HashSet<InqLineModel>();
             _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
             /*
             _partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
@@ -52,8 +51,11 @@ namespace NuSysApp
 
         }
         public HashSet<InqLineModel> Lines {
-            get { return _lines; } 
-            set { _lines = value; }
+            get { return _lines; }
+            set
+            {
+                _lines = value;
+            }
         }
         public string ID { get; }
         public void Delete()

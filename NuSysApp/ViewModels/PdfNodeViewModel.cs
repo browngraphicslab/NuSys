@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -26,6 +27,7 @@ namespace NuSysApp
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             NodeType = NodeType.PDF;
+            RenderedLines = new HashSet<InqLineModel>();
 
             model.UnPacked += async delegate(object source)
             {
@@ -85,8 +87,20 @@ namespace NuSysApp
             IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
             buf.Length = image.PixelBuffer.Length;
             
+
+
+            //_document.SearchText(pageNumber).
             await Task.Run(() =>
             {
+                var x = _document.SearchText(pageNumber, "Modern");
+                foreach (var o in _document.GetOutline())
+                {
+                    Debug.WriteLine(o);
+                }
+                foreach (var rectF in x)
+                {
+                    Debug.WriteLine(rectF);                   
+                }
                 _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
             });
 
