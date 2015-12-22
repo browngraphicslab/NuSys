@@ -163,7 +163,7 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
-    <Compile Include="Models\GroupModel.cs" />
+    <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />

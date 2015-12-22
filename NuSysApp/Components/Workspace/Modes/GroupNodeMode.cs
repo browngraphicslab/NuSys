@@ -153,7 +153,7 @@ namespace NuSysApp
             var nodeToTagModel = (NodeModel)nodeToTag.Model;
             if (!keepOriginal) {
 
-                nodeToTagModel.MoveToGroup((GroupModel)groupTagNode.Model, true);
+                nodeToTagModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
             } else { 
                 var callback = new Action<string>((s) =>
                 {
@@ -161,7 +161,7 @@ namespace NuSysApp
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
                         newNodeModel.SetMetaData("visualCopyOf", nodeToTag.Id);
-                        newNodeModel.MoveToGroup((GroupModel)groupTagNode.Model, true);
+                        newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });
                 });
 

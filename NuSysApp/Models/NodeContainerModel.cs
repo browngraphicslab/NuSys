@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class GroupModel : NodeModel
+    public class NodeContainerModel : NodeModel
     {
         private bool _isTemporary;
 
@@ -13,7 +13,7 @@ namespace NuSysApp
 
         public ObservableDictionary<string, Sendable> Children { set; get; }
 
-        public GroupModel(string id) : base(id)
+        public NodeContainerModel(string id) : base(id)
         {
             Children = new ObservableDictionary<string, Sendable>();
         }

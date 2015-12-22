@@ -54,7 +54,7 @@ namespace NuSysApp
                     await tvm.UpdateRtf();
                     break;
                 case NodeType.GroupTag:
-                    view = new LabelNodeView(new LabelNodeViewModel((GroupModel)model));
+                    view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
                     break;
                 case NodeType.Image:
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));

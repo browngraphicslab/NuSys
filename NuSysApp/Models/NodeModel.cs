@@ -57,7 +57,7 @@ namespace NuSysApp
             set
             {
                 _x = value;
-                PositionChanged?.Invoke(this, new PositionChangeEventArgs("Changed X-coordinate", X, Y));
+                PositionChanged?.Invoke(this, new PositionChangeEventArgs(X, Y));
             }
         }
 
@@ -67,7 +67,7 @@ namespace NuSysApp
             set
             {
                 _y = value;
-                PositionChanged?.Invoke(this, new PositionChangeEventArgs("Changed Y-coordinate", X, Y));
+                PositionChanged?.Invoke(this, new PositionChangeEventArgs(X, Y));
             }
         }
 
@@ -122,16 +122,16 @@ namespace NuSysApp
         }
 
 
-        public void MoveToGroup(GroupModel group, bool keepInOld = false)
+        public void MoveToGroup(NodeContainerModel nodeContainer, bool keepInOld = false)
         {
-            //this.ParentGroup = group;
-            var oldGroupId = (string)Metadata["group"];
-            Metadata["group"] = group.Id;
-            group?.AddChild(this); //only add if group isn't null
+            //this.ParentGroup = nodeContainer;
+            var oldGroupId = (string)Metadata["nodeContainer"];
+            Metadata["nodeContainer"] = nodeContainer.Id;
+            nodeContainer?.AddChild(this); //only add if nodeContainer isn't null
 
             if (!keepInOld)
             {
-                var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as GroupModel;
+                var currentGroup = SessionController.Instance.IdToSendables[oldGroupId] as NodeContainerModel;
                 currentGroup.RemoveChild(this);
             }
         }

@@ -39,8 +39,8 @@ namespace NuSysApp
                 var props = new Dictionary<string, string>();
                 props["isTemporary"] = "True";
 
-                var children0 = ((GroupModel)vm.Model).Children.Values.ToList();
-                var children1 = ((GroupModel)otherVm.Model).Children.Values.ToList();
+                var children0 = ((NodeContainerModel)vm.Model).Children.Values.ToList();
+                var children1 = ((NodeContainerModel)otherVm.Model).Children.Values.ToList();
                 var intersection = new List<NodeModel>();
                 foreach (var child0 in children0)
                 {
@@ -64,7 +64,7 @@ namespace NuSysApp
                 {
                     UITask.Run(() =>
                     {
-                        var newGroupTagModel = (GroupModel)SessionController.Instance.IdToSendables[s];
+                        var newGroupTagModel = (NodeContainerModel)SessionController.Instance.IdToSendables[s];
                         _generatedLabel = (LabelNodeView)SessionController.Instance.GetUserControlById(s);
                         _generatedLabel.Loaded += delegate(object sender, RoutedEventArgs args)
                         {

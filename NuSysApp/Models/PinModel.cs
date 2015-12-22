@@ -39,7 +39,7 @@ namespace NuSysApp
                 _x = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs("pin X change", X, Y));
+                    OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs(X, Y));
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace NuSysApp
                 _y = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs("pin Y change", X, Y));
+                    OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs(X, Y));
                 }
                 else
                 {

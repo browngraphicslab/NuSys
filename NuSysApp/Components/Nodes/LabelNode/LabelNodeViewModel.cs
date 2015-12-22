@@ -14,7 +14,7 @@ namespace NuSysApp
         public delegate void ChildAddedHandler(object source, AnimatableNodeView node);
         public event ChildAddedHandler ChildAdded;
 
-        public LabelNodeViewModel(GroupModel model) : base(model)
+        public LabelNodeViewModel(NodeContainerModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             EnableChildMove = true;
@@ -22,16 +22,16 @@ namespace NuSysApp
 
         public bool IsTemporary
         {
-            get { return ((GroupModel)Model).IsTemporary; }
+            get { return ((NodeContainerModel)Model).IsTemporary; }
             set
             {
-                ((GroupModel)Model).IsTemporary = value;
+                ((NodeContainerModel)Model).IsTemporary = value;
             }
         }
 
         private List<NodeViewModel> GetChildren()
         {
-            var groupNodeModel = (GroupModel)Model;
+            var groupNodeModel = (NodeContainerModel)Model;
 
             var children = new List<NodeViewModel>();
             foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)

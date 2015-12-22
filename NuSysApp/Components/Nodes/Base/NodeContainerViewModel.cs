@@ -20,7 +20,7 @@ namespace NuSysApp
         public bool EnableChildMove { get; set; }
         
 
-        public NodeContainerViewModel(GroupModel model): base(model)
+        public NodeContainerViewModel(NodeContainerModel model): base(model)
         {
             AtomViewList = new ObservableCollection<UserControl>();
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));

@@ -64,7 +64,7 @@ namespace NuSysApp
 
         public async Task CreateGroup(string id, NodeModel node1, NodeModel node2, double xCooordinate, double yCoordinate)
         {
-            var group = new GroupModel(id)
+            var group = new NodeContainerModel(id)
             {
                 X = xCooordinate,
                 Y = yCoordinate,
@@ -79,7 +79,7 @@ namespace NuSysApp
 
         public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
         {
-            var group = new GroupModel(id)
+            var group = new NodeContainerModel(id)
             {
                 X = xCooordinate,
                 Y = yCoordinate,
@@ -167,7 +167,7 @@ namespace NuSysApp
                     node = new VideoNodeModel((byte[])data, id);
                     break;
                 case NodeType.GroupTag:
-                    node = new GroupModel(id);
+                    node = new NodeContainerModel(id);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");

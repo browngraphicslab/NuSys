@@ -5,7 +5,7 @@ namespace NuSysApp
     public class PositionChangeEventArgs: System.EventArgs
     {
         
-        public PositionChangeEventArgs(string text, double x, double y)
+        public PositionChangeEventArgs(double x, double y)
         {
             X = x;
             Y = y;

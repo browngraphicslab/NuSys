@@ -26,7 +26,7 @@ namespace NuSysApp
             IsDoubleTapEnabled = true;
             RenderTransformOrigin = new Point(0.5,0.5);
             vm.Alpha = 0;
-            var groupNodeModel = (GroupModel)vm.Model;
+            var groupNodeModel = (NodeContainerModel)vm.Model;
             Loaded += delegate
             {
                 Canvas.SetLeft(NumBorder, Title.ActualWidth - 10);
@@ -68,7 +68,7 @@ namespace NuSysApp
 
         private void OnChildrenChanged(AnimatableNodeView child)
         {
-            var groupNodeModel = (GroupModel) ((NodeContainerViewModel) DataContext).Model;
+            var groupNodeModel = (NodeContainerModel) ((NodeContainerViewModel) DataContext).Model;
             var childVm = (NodeViewModel)child.DataContext;
             if (!((NodeModel)childVm.Model).GetMetaData("tags").ToString().Contains(groupNodeModel.Title))
                 return;
@@ -111,7 +111,7 @@ namespace NuSysApp
         {
             if (!_isOpen)
             {
-                var model = (GroupModel) ((NodeContainerViewModel) DataContext).Model;
+                var model = (NodeContainerModel) ((NodeContainerViewModel) DataContext).Model;
                 ShowChildren();
             }
             else
@@ -126,7 +126,7 @@ namespace NuSysApp
         {
             var children = GetChildren();
             var vm = (LabelNodeViewModel) DataContext;
-            var groupNodeModel = (GroupModel) vm.Model;
+            var groupNodeModel = (NodeContainerModel) vm.Model;
             var numChildren = children.Count;
             for (var i = 0; i < numChildren; i++)
             {
@@ -142,7 +142,7 @@ namespace NuSysApp
         public void UnIntersect()
         {
             var vm = (LabelNodeViewModel)DataContext;
-            var groupNodeModel = (GroupModel)vm.Model;
+            var groupNodeModel = (NodeContainerModel)vm.Model;
 
             foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)
             {
@@ -155,7 +155,7 @@ namespace NuSysApp
         public void ShowChildren(bool fromCenter = false)
         {
             var vm = (LabelNodeViewModel)DataContext;
-            var groupNodeModel = (GroupModel)vm.Model;
+            var groupNodeModel = (NodeContainerModel)vm.Model;
             var targetSize = 80;
             
             var children = GetChildren();
@@ -189,7 +189,7 @@ namespace NuSysApp
         public Point GetCenter()
         {
             var vm = (LabelNodeViewModel)DataContext;
-            var groupNodeModel = (GroupModel)vm.Model;
+            var groupNodeModel = (NodeContainerModel)vm.Model;
             return new Point(groupNodeModel.X + TitleBorder.ActualWidth/2.0, groupNodeModel.Y + TitleBorder.ActualHeight / 2.0);
         }
 
@@ -206,7 +206,7 @@ namespace NuSysApp
         private List<AnimatableNodeView> GetChildren()
         {
             var vm = (LabelNodeViewModel) DataContext;
-            var groupNodeModel = (GroupModel) vm.Model;
+            var groupNodeModel = (NodeContainerModel) vm.Model;
 
             var children = new List<AnimatableNodeView>();
             foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)
