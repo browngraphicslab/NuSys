@@ -17,7 +17,8 @@ namespace NuSysApp
         private StorageFile _audioFile;
         public AudioNodeModel(byte[] byteArray, string id) : base(id)
         {
-            Content = new ContentModel(byteArray, id);
+            NodeType = NodeType.Audio;
+            Content = new NodeContentModel(byteArray, id);
             ByteArray = byteArray;
             MakeAudio(byteArray);
             //FileName = "nusysAudioCapture" + DateTime.Now + ".mp3";
@@ -85,7 +86,7 @@ namespace NuSysApp
         public async Task SendNetworkUpdate()
         {
             byte[] bytes = await ConvertAudioToByte(AudioFile);
-            if (!NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+            if (!NetworkConnector.Instance.IsSendableBeingUpdated(Id))
             {
                 Debug.WriteLine("add to debounce dict called");
                 DebounceDict.MakeNextMessageTCP();
@@ -95,7 +96,7 @@ namespace NuSysApp
         }
         public async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
         {
-            var recordStorageFile = await _rootFolder.CreateFileAsync(ID + ".mp3", CreationCollisionOption.GenerateUniqueName);
+            var recordStorageFile = await _rootFolder.CreateFileAsync(Id + ".mp3", CreationCollisionOption.GenerateUniqueName);
             await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
             return recordStorageFile;
         }

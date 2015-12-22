@@ -10,12 +10,11 @@ namespace NuSysApp
 {
     public abstract class AtomModel : Sendable
     {
-
         public delegate void MetadataChangeEventHandler(object source, string key);
         public event MetadataChangeEventHandler MetadataChanged;
 
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
-        protected Dictionary<string, string> Metadata = new Dictionary<string, string>();
+        protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
         private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
@@ -23,26 +22,10 @@ namespace NuSysApp
 
         protected AtomModel(string id) : base(id)
         {
-            ID = id;
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
         }
-
-        //takes in string converts to SolidColorBrush
-        private SolidColorBrush StringToColor(string colorString)
-        {
-            string aVal = colorString.Substring(0, 2);
-            string rVal = colorString.Substring(3, 5);
-            string gVal = colorString.Substring(6, 8);
-            string bVal = colorString.Substring(9, 11);
-
-            Color color = Windows.UI.Color.FromArgb(Byte.Parse(aVal),Byte.Parse(rVal),Byte.Parse(gVal),Byte.Parse(bVal));
-
-            SolidColorBrush colorBrush = new SolidColorBrush(color);
-
-            return colorBrush;
-        }
-
+        
         //takes in SolidColorBrush converts to string
         private string ColorToString(SolidColorBrush brush)
         {
@@ -55,26 +38,17 @@ namespace NuSysApp
             return colorString;
         }
 
+        // TODO: Move color to higher level type
+
         public SolidColorBrush Color {
             get { return _color; }
             set
             {
-                if (value != null && _color != value)
-                {
-                    _color = value;
-                    if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
-                    {
-                        //TODO raise property changed
-                    }
-                    else
-                    {
-                        this.DebounceDict.Add("color", ColorToString(value));
-                    }
-                }
+                _color = value;
             }
         }
 
-        public string GetMetaData(string key)
+        public object GetMetaData(string key)
         {
             if (Metadata.ContainsKey(key))
                 return Metadata[key];
@@ -84,18 +58,7 @@ namespace NuSysApp
         public void SetMetaData(string key, string value)
         {
             Metadata[key] = value;
-            var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\\\\\"", "'");
-            if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
-            {
-                Debug.WriteLine("Senable is currently being updated");
-                
-                DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
-            }
-            else
-            {
-                DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
-            }
-
+            //DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
             MetadataChanged?.Invoke(this, key);
         }
 
@@ -103,14 +66,11 @@ namespace NuSysApp
         {
             get { return _debounceDict; }
         }
-        public string ID { get; set; }
 
         public override async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string, string> dict = await base.Pack();
             var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">");
-
-            //var s = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata);
             dict.Add("metadata", metadatastring);
             return dict;
         }
@@ -119,7 +79,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("metadata"))
             {
-                Metadata = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>( props["metadata"].Replace("'", "\"").Replace("<", "{").Replace(">", "}"));
+                Metadata = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,object>>( props["metadata"].Replace("'", "\"").Replace("<", "{").Replace(">", "}"));
             }
             await base.UnPack(props);
         }

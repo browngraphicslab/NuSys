@@ -67,43 +67,7 @@ namespace NuSysApp
 
                 switch (AtomType)
                 {
-                    case "Group":
-                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal, async () =>
-                            {
-                                x = node.Attributes.GetNamedItem("x").Value;
-                                y = node.Attributes.GetNamedItem("y").Value;
-
-                                List<string> NodeIdList = new List<string>();
-
-                                /* have to split this into two because we need the first for-loop method to be 
-                                   executed right away and not wait until the node creation is finished */
-                                foreach (XmlNode child in node.ChildNodes)
-                                {
-                                    string nodeId = child.Attributes.GetNamedItem("id").Value;
-                                    _createdNodeList.Add(nodeId);
-                                    NodeIdList.Add(nodeId);
-                                }
-                                foreach (XmlNode child in node.ChildNodes)
-                                {
-                                    await this.CreateNodeFromXml(vm, child);
-                                }
-
-                                // create the group
-                                await NetworkConnector.Instance.RequestMakeGroup(NodeIdList[0], NodeIdList[1], x, y, ID);
-
-                                // append more nodes into the group if it contains more than two nodes
-                                if (NodeIdList.Count > 2)
-                                {
-                                    GroupNodeModel group = vm.Model.Children[ID] as GroupNodeModel;
-                                    for (int i = 2; i < NodeIdList.Count; i++)
-                                    {
-                                        NodeModel currNode = vm.Model.Children[NodeIdList[i]] as NodeModel;
-                                        currNode.MoveToGroup(group);
-                                    }
-                                }
-                            });
-                        break;
+                   
                     case "Node":
                         _createdNodeList.Add(ID);
                         await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
@@ -161,7 +125,7 @@ namespace NuSysApp
             string ID = node.Attributes.GetNamedItem("id").Value;
 
             // look up the content of the current atom in the database
-            var query = vm.myDB.DBConnection.Table<ContentModel>().Where(v => v.assocAtomID == ID);
+            var query = vm.myDB.DBConnection.Table<NodeContentModel>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
 
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -202,7 +166,7 @@ namespace NuSysApp
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
             // look up the content of the current atom in the database
-            var query = vm.myDB.DBConnection.Table<ContentModel>().Where(v => v.assocAtomID == ID);
+            var query = vm.myDB.DBConnection.Table<NodeContentModel>().Where(v => v.assocAtomID == ID);
             var res = await query.FirstOrDefaultAsync();
 
             byte[] byteData = null;
@@ -293,10 +257,10 @@ namespace NuSysApp
         {
             foreach (string id in _createdNodeList)
             {
-                if (vm.Model.Children.ContainsKey(id))
-                {
-                    copy.Remove(id);
-                }
+             //   if (vm.Model.Children.ContainsKey(id))
+             //   {
+             //       copy.Remove(id);
+             //   }
             }
         }
     }

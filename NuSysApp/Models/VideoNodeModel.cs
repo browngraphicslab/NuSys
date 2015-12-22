@@ -42,7 +42,6 @@ namespace NuSysApp
             if (props.ContainsKey("video"))
             {
                 ByteArray = Convert.FromBase64String(props["video"]);
-                //make video out of Array
             }
             base.UnPack(props);
         } 

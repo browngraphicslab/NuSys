@@ -2,25 +2,20 @@
 
 namespace NuSysApp
 {
-    public class DeleteEventArgs : SuperEventArgs
+    public class DeleteEventArgs : System.EventArgs
     {
-    
-        private NodeModel _node;
-        private LinkModel _link;
-
-        public DeleteEventArgs(string text, NodeModel node):base(text)
+        public DeleteEventArgs(NodeModel node)
         {
-      
-            _node = node;
+            DeletedNode = node;
         }
 
-        public DeleteEventArgs(string text, LinkModel link) : base(text)
+        public DeleteEventArgs(LinkModel link)
         {
-            _link = link;
+            DeletedLink = link;
         }
 
-        public NodeModel DeletedNode => _node;
+        public NodeModel DeletedNode { get; }
 
-        public LinkModel DeletedLink => _link;
+        public LinkModel DeletedLink { get; }
     }
 }

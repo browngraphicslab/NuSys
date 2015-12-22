@@ -16,7 +16,8 @@ namespace NuSysApp
 
         public TextNodeModel(string data, string id): base(id)
         {
-            ID = id;
+            NodeType = NodeType.Text;
+            Id = id;
             Text = data;       
         }
 
@@ -28,11 +29,11 @@ namespace NuSysApp
                 _text = value;
 
                 byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);
-                Content = new ContentModel(newTextBytes, ID); //Update Content
+                Content = new NodeContentModel(newTextBytes, Id); //Update Content
 
-                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                if (NetworkConnector.Instance.IsSendableBeingUpdated(Id))
                 {
-                    OnTextChanged?.Invoke(this, new TextChangedEventArgs("Text changed", Text));
+                    OnTextChanged?.Invoke(this, new TextChangedEventArgs(Text));
                 }
                 else
                 {
@@ -56,23 +57,6 @@ namespace NuSysApp
             dict.Add("data", Text);
             dict.Add("nodeType", NodeType.Text.ToString());
             return dict;
-        }
-
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
-            Content = new ContentModel(newTextBytes, ID); //Update Content
-            
-            //XmlElement 
-            XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc); //TODO Make his polymorphic
-            foreach(XmlAttribute attr in basicXml)
-            {
-                textNode.SetAttributeNode(attr);
-            }
-            return textNode;       
         }
     }
 }

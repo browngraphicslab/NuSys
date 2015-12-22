@@ -10,8 +10,9 @@ namespace NuSysApp
 
         public PdfNodeModel(byte[] bytes, string id) : base(id)
         {
+            NodeType = NodeType.PDF;
             ByteArray = bytes;
-            Content = new ContentModel(ByteArray, id);
+            Content = new NodeContentModel(ByteArray, id);
         }
 
         public int CurrentPageNumber { get; set; }

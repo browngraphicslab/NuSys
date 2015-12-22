@@ -110,7 +110,7 @@ namespace NuSysApp
                 _partialLines.Add(temporaryID, new HashSet<InqLineModel>());
             }
             _partialLines[temporaryID].Add(lineModel);
-            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Partial Lines", lineModel));
+            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs(lineModel));
         }
 
         public void RemovePartialLines(string oldID)

@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public class PinModel : Sendable
     {
-        public delegate void LocationUpdateEventHandler(object source, LocationUpdateEventArgs e);
+        public delegate void LocationUpdateEventHandler(object source, PositionChangeEventArgs e);
         public event LocationUpdateEventHandler OnLocationUpdate;
 
         public delegate void DeleteEventHandler(object source);
@@ -39,7 +39,7 @@ namespace NuSysApp
                 _x = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("pin X change", X, Y));
+                    OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs("pin X change", X, Y));
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace NuSysApp
                 _y = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    OnLocationUpdate?.Invoke(this, new LocationUpdateEventArgs("pin Y change", X, Y));
+                    OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs("pin Y change", X, Y));
                 }
                 else
                 {

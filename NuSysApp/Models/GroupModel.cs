@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace NuSysApp
@@ -10,8 +11,11 @@ namespace NuSysApp
         public delegate void NodeChangeHandler(object source, Sendable node);
         public delegate Task NodeChangeHandler2(object source, Sendable node);
 
+        public ObservableDictionary<string, Sendable> Children { set; get; }
+
         public GroupModel(string id) : base(id)
         {
+            Children = new ObservableDictionary<string, Sendable>();
         }
 
         public bool IsTemporary
@@ -28,20 +32,20 @@ namespace NuSysApp
 
         public event NodeChangeHandler linkAdded;
         public event NodeChangeHandler2 ChildAdded;
-        public event NodeChangeHandler ChildRemoved;
+        public event NodeChangeHandler2 ChildRemoved;
         public event NodeChangeHandler ModeChanged;
 
 
         public async Task AddChild(Sendable nodeModel)
         {
-            if (!Children.ContainsKey(nodeModel.ID))
-                Children.Add(nodeModel.ID, nodeModel);
+            if (!Children.ContainsKey(nodeModel.Id))
+                Children.Add(nodeModel.Id, nodeModel);
             await ChildAdded?.Invoke(this, nodeModel);
         }
 
         public void RemoveChild(Sendable nodeModel)
         {
-            Children.Remove(nodeModel.ID);
+            Children.Remove(nodeModel.Id);
             ChildRemoved?.Invoke(this, nodeModel);
         }
 

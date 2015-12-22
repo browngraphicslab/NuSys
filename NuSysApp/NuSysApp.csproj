@@ -134,56 +134,74 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\FullScreenViewer\DetailNodeViewFactory.cs" />
+    <Compile Include="Components\FullScreenViewer\FullScreenViewerView.xaml.cs">
+      <DependentUpon>FullScreenViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\FullScreenViewer\FullScreenViewerViewModel.cs" />
+    <Compile Include="Components\FullScreenViewer\Views\PdfDetailView.xaml.cs">
+      <DependentUpon>PdfDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\FullScreenViewer\Views\ImageFullScreenView.xaml.cs">
+      <DependentUpon>ImageFullScreenView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Links\BezierLinkView.xaml.cs">
+      <DependentUpon>BezierLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Links\LineLinkView.xaml.cs">
+      <DependentUpon>LineLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\LabelNode\LabelNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\ImageNode\ImageNodeView.xaml.cs">
+      <DependentUpon>ImageNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\ImageNode\ImageNodeViewModel.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Database\Serializer.cs" />
+    <Compile Include="Effects\Anim.cs" />
+    <Compile Include="Effects\AnimatableUserControl.cs" />
+    <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
-    <Compile Include="EventArgs\CreatePinEventArgs.cs" />
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
-    <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\ID.cs" />
-    <Compile Include="Network\Message.cs" />
+    <Compile Include="Database\Network\ClientHandler.cs" />
+    <Compile Include="Database\Network\ID.cs" />
+    <Compile Include="Database\Network\Message.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="Util\EventUtil.cs" />
+    <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\UITask.cs" />
-    <Compile Include="ViewModels\GroupTagNodeViewModel.cs" />
-    <Compile Include="ViewModels\InqCanvasViewModel.cs" />
-    <Compile Include="ViewModels\InqLineViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\PinWindowViewModel.cs" />
-    <Compile Include="ViewModels\VideoNodeViewModel.cs" />
-    <Compile Include="Views\Effects\Anim.cs" />
-    <Compile Include="Views\Effects\AnimatableUserControl.cs" />
-    <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
+    <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
+    <Compile Include="Components\InqCanvas\InqLineViewModel.cs" />
+    <Compile Include="Components\Misc\PinWindowViewModel.cs" />
+    <Compile Include="Components\Nodes\VideoNode\VideoNodeViewModel.cs" />
+    <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InqCanvas\InqLineView.xaml.cs">
+    <Compile Include="Components\InqCanvas\InqLineView.xaml.cs">
       <DependentUpon>InqLineView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Views\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Views\InqCanvas\HighlightInqMode.cs" />
-    <Compile Include="Views\InqCanvas\IInqMode.cs" />
-    <Compile Include="Components\TextBoxExtended.cs" />
-    <Compile Include="Components\TwoFingerScrollViewer.cs" />
+    <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Components\InqCanvas\HighlightInqMode.cs" />
+    <Compile Include="Components\InqCanvas\IInqMode.cs" />
+    <Compile Include="Util\TextBoxExtended.cs" />
+    <Compile Include="Util\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="EventArgs\AddLineEventArgs.cs" />
-    <Compile Include="EventArgs\AddToGroupEventArgs.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
-    <Compile Include="EventArgs\CreateEventArgs.cs" />
-    <Compile Include="EventArgs\CreateGroupEventArgs.cs" />
     <Compile Include="EventArgs\DeleteEventArgs.cs" />
     <Compile Include="EventArgs\LinkedEventArgs.cs" />
-    <Compile Include="EventArgs\LocationUpdateEventArgs.cs" />
-    <Compile Include="EventArgs\SuperEventArgs.cs" />
+    <Compile Include="EventArgs\PositionChangeEventArgs.cs" />
     <Compile Include="EventArgs\TextChangedEventArgs.cs" />
     <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
     <Compile Include="Lib\MarkdownDeep\Abbreviation.cs" />
@@ -241,7 +259,7 @@
     <Compile Include="Util\FileManager.cs" />
     <Compile Include="Util\FolderWatcher.cs" />
     <Compile Include="Util\Geometry.cs" />
-    <Compile Include="Views\InqCanvas\InqCanvasView.cs" />
+    <Compile Include="Components\InqCanvas\InqCanvasView.cs" />
     <Compile Include="Util\NodeType.cs" />
     <Compile Include="Util\NuSysStorages.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
@@ -250,9 +268,7 @@
     <Compile Include="Util\StorageUtil.cs" />
     <Compile Include="Models\AtomModel.cs" />
     <Compile Include="Models\AudioNodeModel.cs" />
-    <Compile Include="Models\ContentModel.cs" />
-    <Compile Include="Models\FloatingMenuModel.cs" />
-    <Compile Include="Models\GroupNodeModel.cs" />
+    <Compile Include="Models\NodeContentModel.cs" />
     <Compile Include="Models\ImageNodeModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\NodeModel.cs" />
@@ -260,100 +276,82 @@
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNodeModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
-    <Compile Include="Network\DebouncingDictionary.cs" />
-    <Compile Include="Network\ModelIntermediate.cs" />
-    <Compile Include="Network\NetworkConnector.cs" />
+    <Compile Include="Database\Network\DebouncingDictionary.cs" />
+    <Compile Include="Database\Network\ModelIntermediate.cs" />
+    <Compile Include="Database\Network\NetworkConnector.cs" />
     <Compile Include="Database\SQLiteDatabase.cs" />
     <Compile Include="Database\XmlFileHelper.cs" />
-    <Compile Include="Network\Sendable.cs" />
+    <Compile Include="Database\Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\AtomViewModel.cs" />
-    <Compile Include="ViewModels\AudioNodeViewModel.cs" />
-    <Compile Include="ViewModels\FloatingMenuViewModel.cs" />
-    <Compile Include="ViewModels\MinimapViewModel.cs" />
-    <Compile Include="ViewModels\PinViewModel.cs" />
-    <Compile Include="Views\Misc\BucketWindowView.xaml.cs">
+    <Compile Include="Components\Nodes\Base\AtomViewModel.cs" />
+    <Compile Include="Components\Nodes\AudioNode\AudioNodeViewModel.cs" />
+    <Compile Include="Components\Misc\PinViewModel.cs" />
+    <Compile Include="Components\Misc\BucketWindowView.xaml.cs">
       <DependentUpon>BucketWindowView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\MinimapView.xaml.cs">
-      <DependentUpon>MinimapView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Misc\PinView.xaml.cs">
+    <Compile Include="Components\Misc\PinView.xaml.cs">
       <DependentUpon>PinView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\MultiSelectMenuView.xaml.cs">
+    <Compile Include="Components\Misc\MultiSelectMenuView.xaml.cs">
       <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\UserWindowView.xaml.cs">
+    <Compile Include="Components\Misc\UserWindowView.xaml.cs">
       <DependentUpon>UserWindowView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\FreeForm\AudioNodeView.xaml.cs">
+    <Compile Include="Components\Nodes\AudioNode\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\FreeForm\GroupView.xaml.cs">
-      <DependentUpon>GroupView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\ImageNodeViewModel.cs" />
-    <Compile Include="ViewModels\LinkViewModel.cs" />
-    <Compile Include="ViewModels\NodeViewModel.cs" />
-    <Compile Include="ViewModels\PdfNodeViewModel.cs" />
-    <Compile Include="ViewModels\TextNodeViewModel.cs" />
-    <Compile Include="ViewModels\WorkspaceViewModel.cs" />
-    <Compile Include="Views\Links\BezierLinkView.xaml.cs">
-      <DependentUpon>BezierLinkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\GroupViewModel.cs" />
-    <Compile Include="Views\Nodes\FreeForm\ImageNodeView.xaml.cs">
-      <DependentUpon>ImageNodeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Links\LineLinkView.xaml.cs">
-      <DependentUpon>LineLinkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Nodes\FreeForm\NodeTemplate.cs" />
-    <Compile Include="Views\Nodes\FreeForm\PdfNodeView.xaml.cs">
+    <Compile Include="Components\Links\LinkViewModel.cs" />
+    <Compile Include="Components\Nodes\Base\NodeViewModel.cs" />
+    <Compile Include="Components\Nodes\PdfNode\PdfNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\TextNode\TextNodeViewModel.cs" />
+    <Compile Include="Components\Workspace\WorkspaceViewModel.cs" />
+    <Compile Include="Components\Nodes\Base\NodeContainerViewModel.cs" />
+    <Compile Include="Components\Nodes\NodeTemplate.cs" />
+    <Compile Include="Components\Nodes\PdfNode\PdfNodeView.xaml.cs">
       <DependentUpon>PdfNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\FreeForm\PseudoNode.xaml.cs">
+    <Compile Include="Components\Nodes\PseudoNode.xaml.cs">
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\FreeFormNodeViewFactory.cs" />
-    <Compile Include="Views\Nodes\FreeForm\GroupTagNodeView.xaml.cs">
-      <DependentUpon>GroupTagNodeView.xaml</DependentUpon>
+    <Compile Include="Components\Nodes\FreeFormNodeViewFactory.cs" />
+    <Compile Include="Components\Nodes\LabelNode\LabelNodeView.xaml.cs">
+      <DependentUpon>LabelNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\INodeViewFactory.cs" />
-    <Compile Include="Views\SessionView.xaml.cs">
+    <Compile Include="Components\Workspace\INodeViewFactory.cs" />
+    <Compile Include="Components\SessionView.xaml.cs">
       <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\IntersectGroupNodeMode.cs" />
-    <Compile Include="Views\Workspace\GroupNodeMode.cs" />
-    <Compile Include="Views\Workspace\DuplicateNodeMode.cs" />
-    <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
+    <Compile Include="Components\Workspace\Modes\IntersectGroupNodeMode.cs" />
+    <Compile Include="Components\Workspace\Modes\GroupNodeMode.cs" />
+    <Compile Include="Components\Workspace\Modes\DuplicateNodeMode.cs" />
+    <Compile Include="Components\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\FreeForm\TextNodeView.xaml.cs">
+    <Compile Include="Components\Nodes\TextNode\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\FreeForm\VideoNodeView.xaml.cs">
+    <Compile Include="Components\Nodes\VideoNode\VideoNodeView.xaml.cs">
       <DependentUpon>VideoNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\AddNodeMode.cs" />
-    <Compile Include="Views\Workspace\CortanaMode.cs" />
-    <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
-    <Compile Include="Views\Misc\FloatingMenuView.xaml.cs">
+    <Compile Include="Components\Workspace\Modes\AddNodeMode.cs" />
+    <Compile Include="Components\Workspace\Modes\CortanaMode.cs" />
+    <Compile Include="Components\Workspace\Modes\FloatingMenuMode.cs" />
+    <Compile Include="Components\Misc\FloatingMenuView.xaml.cs">
       <DependentUpon>FloatingMenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\GlobalInkMode.cs" />
-    <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
-    <Compile Include="Views\Workspace\MultiMode.cs" />
-    <Compile Include="Views\Workspace\MultiSelectMode.cs" />
-    <Compile Include="Views\Workspace\PanZoomMode.cs" />
-    <Compile Include="Views\Workspace\PinMode.cs" />
-    <Compile Include="Views\Misc\PinWindowView.xaml.cs">
+    <Compile Include="Components\Workspace\Modes\GlobalInkMode.cs" />
+    <Compile Include="Components\Workspace\Modes\AbstractWorkspaceViewMode.cs" />
+    <Compile Include="Components\Workspace\Modes\MultiMode.cs" />
+    <Compile Include="Components\Workspace\Modes\MultiSelectMode.cs" />
+    <Compile Include="Components\Workspace\Modes\PanZoomMode.cs" />
+    <Compile Include="Components\Workspace\Modes\PinMode.cs" />
+    <Compile Include="Components\Misc\PinWindowView.xaml.cs">
       <DependentUpon>PinWindowView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\PromoteInkMode.cs" />
-    <Compile Include="Views\Workspace\SelectMode.cs" />
-    <Compile Include="Views\WaitingRoomView.xaml.cs">
+    <Compile Include="Components\Workspace\Modes\PromoteInkMode.cs" />
+    <Compile Include="Components\Workspace\Modes\SelectMode.cs" />
+    <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -378,11 +376,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\Misc\FloatingMenuButtonView.xaml">
+    <Page Include="Components\FullScreenViewer\FullScreenViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InqCanvas\InqLineView.xaml">
+    <Page Include="Components\FullScreenViewer\Views\PdfDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\FullScreenViewer\Views\ImageFullScreenView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Links\BezierLinkView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Links\LineLinkView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Nodes\ImageNode\ImageNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\FloatingMenuButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\InqCanvas\InqLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -394,83 +416,63 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\BucketWindowView.xaml">
+    <Page Include="Components\Misc\BucketWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\MinimapView.xaml">
+    <Page Include="Components\Misc\PinView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\PinView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Misc\MultiSelectMenuView.xaml">
+    <Page Include="Components\Misc\MultiSelectMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\UserWindowView.xaml">
+    <Page Include="Components\Misc\UserWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Nodes\FreeForm\AudioNodeView.xaml">
+    <Page Include="Components\Nodes\AudioNode\AudioNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Nodes\FreeForm\GroupView.xaml">
+    <Page Include="Components\Nodes\PdfNode\PdfNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Links\BezierLinkView.xaml">
+    <Page Include="Components\Nodes\PseudoNode.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\FreeForm\ImageNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Links\LineLinkView.xaml">
+    <Page Include="Components\Nodes\LabelNode\LabelNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\FreeForm\PdfNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Nodes\FreeForm\PseudoNode.xaml">
+    <Page Include="Components\SessionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\FreeForm\GroupTagNodeView.xaml">
+    <Page Include="Components\Workspace\WorkspaceView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\SessionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Workspace\WorkspaceView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Nodes\FreeForm\TextNodeView.xaml">
+    <Page Include="Components\Nodes\TextNode\TextNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\FloatingMenuView.xaml">
+    <Page Include="Components\Misc\FloatingMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\PinWindowView.xaml">
+    <Page Include="Components\Misc\PinWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Nodes\FreeForm\VideoNodeView.xaml">
+    <Page Include="Components\Nodes\VideoNode\VideoNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WaitingRoomView.xaml">
+    <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

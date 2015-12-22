@@ -65,7 +65,7 @@ namespace NuSysApp
         public override async Task<Dictionary<string, string>> Pack()
         {
             Dictionary<string, string> props = new Dictionary<string, string>();
-            props.Add("id", ID);
+            props.Add("id", Id);
             props.Add("canvasNodeID", ParentID);
             props.Add("data", GetString());
             props.Add("type", "ink");

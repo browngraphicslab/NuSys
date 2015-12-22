@@ -13,9 +13,9 @@ namespace NuSysApp
     {
         public ImageNodeModel(byte[] byteArray, string id) : base(id)
         {
-            ByteArray = byteArray;
+            NodeType = NodeType.Image;
             MakeImage(byteArray); // Todo: don't call async methods from a ctor
-            Content = new ContentModel(byteArray, id);
+            Content = new NodeContentModel(byteArray, id);
         }
 
         private async Task MakeImage(byte[] bytes)
@@ -72,10 +72,6 @@ namespace NuSysApp
 
         public string FilePath { get; set; }
 
-        public byte[] ByteArray { get; set; }
-
-
-
         public async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
         {
             var bitmapImage = new BitmapImage();
@@ -88,43 +84,23 @@ namespace NuSysApp
             return bitmapImage;
         }
 
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            //Main XmlElement 
-            XmlElement imageNode = doc.CreateElement(string.Empty, "Node", string.Empty);
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                imageNode.SetAttributeNode(attr);
-            }
-
-            //Source for image
-            XmlAttribute source = doc.CreateAttribute("Source");
-            source.Value = this.FilePath;
-            imageNode.SetAttributeNode(source);
-
-            return imageNode;
-        }
-
+       
         public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("data"))
             {
-                ByteArray = Convert.FromBase64String(props["data"]); //Converts to Byte Array
+                Content.Data = Convert.FromBase64String(props["data"]); //Converts to Byte Array
 
                 var stream = new InMemoryRandomAccessStream();
                 var image = new BitmapImage();
-                await stream.WriteAsync(ByteArray.AsBuffer());
+                await stream.WriteAsync(Content.Data.AsBuffer());
                 stream.Seek(0);
                 image.SetSource(stream);
                 Image = image;
             }
-            if (props.ContainsKey("filepath"))
-            {
-                FilePath = props["filepath"];
-            }
+
+            FilePath = props.GetString("filepath", FilePath);
+
            await base.UnPack(props);
         }
 
@@ -132,7 +108,7 @@ namespace NuSysApp
         {
             Dictionary<string, string> props = await base.Pack();
             props.Add("filepath",FilePath);
-            props.Add("data", Convert.ToBase64String(ByteArray));
+            props.Add("data", Convert.ToBase64String(Content.Data));
             props.Add("nodeType",NodeType.Image.ToString());
             return props;
         }

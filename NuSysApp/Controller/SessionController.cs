@@ -19,6 +19,8 @@ namespace NuSysApp
         private LockDictionary _locks;
         public ObservableDictionary<string, Sendable> IdToSendables { set; get; }
 
+        public SessionView SessionView { get; set; }
+
         public WorkspaceViewModel ActiveWorkspace
         {
             get { return _activeWorkspace; }
@@ -75,22 +77,6 @@ namespace NuSysApp
            // OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
         }
 
-        public async Task CreateEmptyGroup(string id, double xCooordinate, double yCoordinate, double width, double height)
-        {
-            var group = new GroupNodeModel(id)
-            {
-                X = xCooordinate,
-                Y = yCoordinate,
-                Width =  width,
-                Height = height,
-                NodeType = NodeType.Group
-            };
-            IdToSendables.Add(id, group);
-            ActiveWorkspace.Model.AddChild(group);
-            //      OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
-
-        }
-
         public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
         {
             var group = new GroupModel(id)
@@ -109,7 +95,7 @@ namespace NuSysApp
                 var mm = m as AtomModel;
                 if (mm == null || mm == group)
                     return false;
-                return mm.GetMetaData("visualCopyOf") == "" && mm.GetMetaData("tags").ToLower().Contains((group).Title.ToLower());
+                return mm.GetMetaData("visualCopyOf") == "" && ((string)mm.GetMetaData("tags")).ToLower().Contains((group).Title.ToLower());
             });
 
             foreach (var searchResult in searchResults.ToList())
@@ -119,7 +105,7 @@ namespace NuSysApp
                     UITask.Run(() =>
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
-                        newNodeModel.SetMetaData("visualCopyOf", searchResult.ID);
+                        newNodeModel.SetMetaData("visualCopyOf", searchResult.Id);
                         newNodeModel.MoveToGroup(group, true);
                     });
                 });
