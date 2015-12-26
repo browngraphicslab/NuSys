@@ -13,7 +13,6 @@ namespace NuSysApp
 {
     public class InqLineModel : Sendable
     {
-
         private PointCollection _points;
 
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
