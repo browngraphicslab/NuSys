@@ -19,7 +19,7 @@ namespace NuSysApp
             SessionController.Instance.WorkspaceChanged += delegate(object source, WorkspaceViewModel workspace)
             {
 
-                workspace.AtomViewList.CollectionChanged +=
+                workspace.Children.CollectionChanged +=
                     delegate(object sender, NotifyCollectionChangedEventArgs args)
                     {
                         if (args.NewItems == null)

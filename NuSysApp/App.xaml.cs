@@ -84,6 +84,7 @@ namespace NuSysApp
         private static async Task<bool> SetupDirectories()
         {
             NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
 
             NuSysStorages.NuSysTempFolder =

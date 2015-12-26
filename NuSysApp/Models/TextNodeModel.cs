@@ -55,7 +55,6 @@ namespace NuSysApp
         {
             Dictionary<string, string> dict = await base.Pack();
             dict.Add("data", Text);
-            dict.Add("nodeType", NodeType.Text.ToString());
             return dict;
         }
     }

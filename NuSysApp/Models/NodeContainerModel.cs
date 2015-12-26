@@ -11,11 +11,11 @@ namespace NuSysApp
         public delegate void NodeChangeHandler(object source, Sendable node);
         public delegate Task NodeChangeHandler2(object source, Sendable node);
 
-        public ObservableDictionary<string, Sendable> Children { set; get; }
+        //public ObservableDictionary<string, Sendable> Children { set; get; }
 
         public NodeContainerModel(string id) : base(id)
         {
-            Children = new ObservableDictionary<string, Sendable>();
+         //   Children = new ObservableDictionary<string, Sendable>();
         }
 
         public bool IsTemporary
@@ -38,35 +38,22 @@ namespace NuSysApp
 
         public async Task AddChild(Sendable nodeModel)
         {
-            if (!Children.ContainsKey(nodeModel.Id))
-                Children.Add(nodeModel.Id, nodeModel);
+            // TODO: wait for all
             await ChildAdded?.Invoke(this, nodeModel);
         }
 
-        public void RemoveChild(Sendable nodeModel)
+        public async Task RemoveChild(Sendable nodeModel)
         {
-            Children.Remove(nodeModel.Id);
-            ChildRemoved?.Invoke(this, nodeModel);
+            // TODO: wait for all
+            await ChildRemoved?.Invoke(this, nodeModel);
         }
 
         public override async Task<Dictionary<string, string>> Pack()
         {
             var dict = await base.Pack();
-            dict["nodeType"] = NodeType.Group.ToString();
             dict["isTemporary"] = IsTemporary.ToString();
-            var idList = "";
-            foreach (var s in Children.Keys)
-            {
-                idList += s + ",";
-            }
-            if (idList.Length > 0)
-            {
-                idList.Substring(0, idList.Length - 1);
-            }
-            dict.Add("idList", idList);
-
             return dict;
-        } //TODO add in pack functions
+        }
 
         public override async Task UnPack(Message props)
         {
@@ -87,7 +74,6 @@ namespace NuSysApp
                     var tempNode = (NodeModel) SessionController.Instance.IdToSendables[id];
                     idDict.Add(id, tempNode);
                 }
-                Children = new ObservableDictionary<string, Sendable>(idDict);
             }
         } //TODO add in pack functions
     }

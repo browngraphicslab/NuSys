@@ -39,8 +39,18 @@ namespace NuSysApp
                 var props = new Dictionary<string, string>();
                 props["isTemporary"] = "True";
 
-                var children0 = ((NodeContainerModel)vm.Model).Children.Values.ToList();
-                var children1 = ((NodeContainerModel)otherVm.Model).Children.Values.ToList();
+                var children0 = vm.Children.Values.Select(s =>
+                {
+                    var v = (NodeViewModel)s.DataContext;
+                    return v.Model;
+                });
+                //var children0 = ((NodeContainerModel)vm.Model).Children.Values.ToList();
+                //var children1 = ((NodeContainerModel)otherVm.Model).Children.Values.ToList();
+                var children1 = otherVm.Children.Values.Select(s =>
+                {
+                    var v = (NodeViewModel)s.DataContext;
+                    return v.Model;
+                });
                 var intersection = new List<NodeModel>();
                 foreach (var child0 in children0)
                 {
@@ -71,7 +81,7 @@ namespace NuSysApp
                             newGroupTagModel.X -= _generatedLabel.GetTagSize().Width/2.0;
                             var intersectionNodes = new List<AnimatableNodeView>();
 
-                            foreach (var control in SessionController.Instance.ActiveWorkspace.AtomViewList)
+                            foreach (var control in SessionController.Instance.ActiveWorkspace.Children.Values)
                             {
                                 foreach (var nodeModel in intersection)
                                 {
@@ -135,8 +145,8 @@ namespace NuSysApp
         public override async Task Activate()
         {
             var wvm = (WorkspaceViewModel) _view.DataContext;
-            wvm.AtomViewList.CollectionChanged += OnWorkspaceChildrenChanged;
-            foreach (var userControl in wvm.AtomViewList.Where(s => s is LabelNodeView))
+            wvm.Children.CollectionChanged += OnWorkspaceChildrenChanged;
+            foreach (var userControl in wvm.Children.Values.Where(s => s is LabelNodeView))
             {
                 userControl.PointerEntered += OnAtomPressed;
                 userControl.PointerMoved += OnPointerMoved;
@@ -147,8 +157,8 @@ namespace NuSysApp
         public override async Task Deactivate()
         {
             var wvm = (WorkspaceViewModel) _view.DataContext;
-            wvm.AtomViewList.CollectionChanged -= OnWorkspaceChildrenChanged;
-            foreach (var userControl in wvm.AtomViewList.Where(s => s is LabelNodeView))
+            wvm.Children.CollectionChanged -= OnWorkspaceChildrenChanged;
+            foreach (var userControl in wvm.Children.Values.Where(s => s is LabelNodeView))
             {
                 userControl.PointerEntered -= OnAtomPressed;
                 userControl.PointerMoved -= OnPointerMoved;
@@ -166,8 +176,9 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                if (!(((FrameworkElement) newItem) is LabelNodeView)) continue;
-                var item = (UserControl) newItem;
+                var kv = (KeyValuePair<string, UserControl>) newItem;
+                if (!(((FrameworkElement) kv.Value) is LabelNodeView)) continue;
+                var item = kv.Value;
                 item.PointerPressed += OnAtomPressed;
                 item.PointerMoved += OnPointerMoved;
                 item.PointerReleased += OnAtomReleased;
@@ -248,7 +259,7 @@ namespace NuSysApp
         {
             _initialGroupNode = (LabelNodeView)sender;
             var wvm = (WorkspaceViewModel) _view.DataContext;
-            _searchList = wvm.AtomViewList.Where(s => s is LabelNodeView).ToList();
+            _searchList = wvm.Children.Values.Where(s => s is LabelNodeView).ToList();
         }
     }
 }

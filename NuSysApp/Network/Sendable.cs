@@ -53,6 +53,7 @@ namespace NuSysApp
         public virtual async Task UnPack(Message props)
         {
             IsUnpacked = true;
+            
             UnPacked?.Invoke(this);
         }
 

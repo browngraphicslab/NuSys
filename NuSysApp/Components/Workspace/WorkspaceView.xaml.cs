@@ -98,12 +98,10 @@ namespace NuSysApp
                     //                    InqCanvas.SetHighlighting(true);
                     break;
                 case Options.MiscSave:
-                    var vm1 = (WorkspaceViewModel) this.DataContext;
-                    //vm1.SaveWorkspace();
+                    SessionController.Instance.SaveWorkspace();
                     break;
                 case Options.MiscLoad:
-                    var vm2 = (WorkspaceViewModel) this.DataContext;
-                    //await vm2.LoadWorkspace();
+                    SessionController.Instance.LoadWorkspace();
                     break;
                 case Options.MiscPin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));

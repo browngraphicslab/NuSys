@@ -24,7 +24,6 @@ namespace NuSysApp
         public override async Task<Dictionary<string, string>> Pack()
         {
             var props = await base.Pack();
-            props.Add("nodeType", NodeType.PDF.ToString());
             props.Add("page", CurrentPageNumber.ToString());
             props.Add("data", Convert.ToBase64String(ByteArray));
             return props;

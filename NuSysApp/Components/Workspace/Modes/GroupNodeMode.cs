@@ -24,14 +24,14 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = true;
             WorkspaceViewModel wvm = (WorkspaceViewModel) _view.DataContext;
 
-            wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is NodeViewModel))
+            wvm.Children.CollectionChanged += AtomViewListOnCollectionChanged;
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
             {
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
             }
 
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is LabelNodeViewModel))
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is LabelNodeViewModel))
             {
                 userControl.DoubleTapped += OnGroupTagDoubleTapped;
             }
@@ -42,14 +42,14 @@ namespace NuSysApp
         {
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is NodeViewModel))
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
             }
-            wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
+            wvm.Children.CollectionChanged -= AtomViewListOnCollectionChanged;
 
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is LabelNodeViewModel))
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is LabelNodeViewModel))
             {
                 userControl.DoubleTapped -= OnGroupTagDoubleTapped;
                 Canvas.SetZIndex(userControl, 100);
@@ -69,12 +69,15 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-               if (((FrameworkElement)newItem).DataContext is LabelNodeViewModel) {
-                    Canvas.SetZIndex((UserControl)newItem, 100);
+                var kv = (KeyValuePair<string, UserControl>)newItem;
+
+
+                if (((FrameworkElement)kv.Value).DataContext is LabelNodeViewModel) {
+                    Canvas.SetZIndex((UserControl)kv.Value, 100);
                     continue;
                 }
 
-                var item = (UserControl) newItem;
+                var item = (UserControl)kv.Value;
                item.PointerPressed += OnAtomPressed;
                item.PointerReleased += OnAtomReleased;
             }
@@ -131,29 +134,33 @@ namespace NuSysApp
             }
 
             var inkCaption = groupTagNode.Title;
-            var tags = nodeToTag.Model.GetMetaData("tags").ToString();
+            var tags = (List<string>) nodeToTag.Model.GetMetaData("tags");
 
             if (tags.Contains(inkCaption))
                 return;
 
-            nodeToTag.Model.SetMetaData("tags", tags + " " + inkCaption);
+            tags.Add(inkCaption);
+
+            nodeToTag.Model.SetMetaData("tags", tags);
             
             // tag all visual copies
 
-            foreach (var userControl in SessionController.Instance.ActiveWorkspace.AtomViewList)
+            foreach (var userControl in SessionController.Instance.ActiveWorkspace.Children.Values)
             {
                 var vm = (AtomViewModel) userControl.DataContext;
                 var model = vm.Model;
                 if (model.GetMetaData("visualCopyOf") == nodeToTag.Id)
                 {
-                    model.SetMetaData("tags", tags + " " + inkCaption);
+                    var t = (List<string>)nodeToTag.Model.GetMetaData("tags");
+                    t.Add(inkCaption);
+                    model.SetMetaData("tags", tags);
                 }
             }
 
             var nodeToTagModel = (NodeModel)nodeToTag.Model;
             if (!keepOriginal) {
 
-                nodeToTagModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
+              //  nodeToTagModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
             } else { 
                 var callback = new Action<string>((s) =>
                 {
@@ -161,12 +168,13 @@ namespace NuSysApp
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
                         newNodeModel.SetMetaData("visualCopyOf", nodeToTag.Id);
-                        newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
+                        //newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });
                 });
 
                 var dict = await nodeToTag.Model.Pack();
                 var props = dict;
+                props["creator"] = groupTagNode.Id;
                 props.Remove("id");
                 props.Remove("type");
                 props.Remove("nodeType");

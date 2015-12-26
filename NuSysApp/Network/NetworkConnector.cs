@@ -214,6 +214,9 @@ namespace NuSysApp
                     props["nodeType"] = nodeType;
                     props["type"] = "node";
                     props["id"] = id;
+                    if (!props.ContainsKey("creator"))
+                        props["creator"] = "WORKSPACE_ID";
+
                     if (data != null && data != "null" && data != "")
                     {
                         if (!props.ContainsKey("data"))
@@ -454,7 +457,13 @@ namespace NuSysApp
                         {
                             await n.UnPack(props);
                             if (justCreated && n is NodeModel)
-                                await SessionController.Instance.ActiveWorkspace.Model.AddChild(n);
+                            {
+                                var creator = (n as NodeModel).Creator;
+                                if (creator != null)
+                                    await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(n);
+                                else
+                                    await SessionController.Instance.ActiveWorkspace.Model.AddChild(n);
+                            }
                         });//update the sendable with the dictionary info
                     }
                     else//if the sendable doesn't yet exist
@@ -790,7 +799,6 @@ namespace NuSysApp
                 {
                     Debug.WriteLine("Ink creation failed because no canvas ID was given or the ID wasn't valid");
                 }
-            
             }
             private async Task RemoveSendable(string id)
             {

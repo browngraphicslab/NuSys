@@ -21,8 +21,8 @@ namespace NuSysApp
             _view.IsRightTapEnabled = true;
             WorkspaceViewModel wvm = (WorkspaceViewModel) _view.DataContext;
 
-            wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is NodeViewModel))
+            wvm.Children.CollectionChanged += AtomViewListOnCollectionChanged;
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
             {
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
@@ -40,7 +40,8 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var item = (UserControl) newItem;
+                var kv = (KeyValuePair<string, UserControl>) newItem;
+                var item = (UserControl)kv.Value;
             //     item.PointerPressed -= OnAtomPressed;
             //     item.PointerReleased -= OnAtomReleased;
                item.PointerPressed += OnAtomPressed;
@@ -52,13 +53,13 @@ namespace NuSysApp
         public override async Task Deactivate()
         {
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
-            foreach (var userControl in wvm.AtomViewList.Where( s => s.DataContext is NodeViewModel))
+            foreach (var userControl in wvm.Children.Values.Where( s => s.DataContext is NodeViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
             }
             _view.RightTapped -= OnWorkspacePressed;
-            wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
+            wvm.Children.CollectionChanged -= AtomViewListOnCollectionChanged;
         }
 
         private async void OnWorkspacePressed(object sender, RightTappedRoutedEventArgs e)

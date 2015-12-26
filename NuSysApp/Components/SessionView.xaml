@@ -11,7 +11,7 @@
 
 
     <Grid x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
-        <local:WorkspaceView x:Name="xWorkspace"></local:WorkspaceView>
+  
         <local:FloatingMenuView x:Name="xFloatingMenu" />
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
     </Grid>

@@ -17,6 +17,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
+using NuSysApp.Components;
 
 namespace NuSysApp
 {
@@ -28,6 +29,7 @@ namespace NuSysApp
         private int _penSize = Constants.InitialPenSize;
         private bool _cortanaInitialized;
         private CortanaMode _cortanaModeInstance;
+        private WorkspaceView _activeWorkspace;
 
         #endregion Private Members
 
@@ -40,27 +42,22 @@ namespace NuSysApp
                 Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
             };
 
-            var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
-            var inqCanvasViewModel = new InqCanvasViewModel(xWorkspace.InqCanvas, inqCanvasModel);
-            xWorkspace.InqCanvas.ViewModel = inqCanvasViewModel;
-            var workspaceModel = new WorkSpaceModel(inqCanvasModel);
-            SessionController.Instance.IdToSendables["WORKSPACE_ID"] = workspaceModel;
-            workspaceModel.InqModel = inqCanvasModel;
-            var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
-            xWorkspace.DataContext = workspaceViewModel;
 
-            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
-            SessionController.Instance.SessionView = this;
-            xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
 
-          //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
-
-            _cortanaInitialized = false;
-            xFloatingMenu.SessionView = this;
-            xFloatingMenu.ModeChange += xWorkspace.SwitchMode;
+           
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
+                await LoadEmptyWorkspace();
+
+                SessionController.Instance.SessionView = this;
+                xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+
+                //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
+
+                _cortanaInitialized = false;
+                xFloatingMenu.SessionView = this;
+
 
                 var callback = new Action<string>(s =>
                 {
@@ -112,20 +109,71 @@ namespace NuSysApp
                     var data = Convert.ToBase64String(f);
                     NetworkConnector.Instance.RequestMakeNode((100500).ToString(), "100200", NodeType.Image.ToString(), data, null, new Dictionary<string, string>(props));
                 }
-
-
-
-                /*
-                NetworkConnector.Instance.RequestMakeNode("100100", "100300", NodeType.Text.ToString(), "bla", null, props);
-                NetworkConnector.Instance.RequestMakeNode("100300", "100300", NodeType.Text.ToString(), "bla", null, props);
-                NetworkConnector.Instance.RequestMakeNode("100500", "100300", NodeType.Text.ToString(), "bla", null, props);
-                NetworkConnector.Instance.RequestMakeNode("100700", "100300", NodeType.Text.ToString(), "bla", null, props);
-                NetworkConnector.Instance.RequestMakeNode("100900", "100300", NodeType.Text.ToString(), "bla", null, props);
-                */
-
-
-
             };
+        }
+
+        public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )
+        {
+            await LoadEmptyWorkspace();
+            var atomCreator = new AtomCreator();
+
+            var createdModel = new List<AtomModel>();
+            foreach (var dict in nodeStrings)
+            {
+                var msg = new Message();
+                await msg.Init(dict);
+                var id = msg.GetString("id", "noId");
+                await atomCreator.HandleCreateNewSendable(id, msg);
+                var model = SessionController.Instance.IdToSendables[id] as AtomModel;
+                await model.UnPack(msg);
+                createdModel.Add(model);
+            }
+
+            foreach (var model in createdModel)
+            {
+                if (!(model is WorkSpaceModel) && !(model is InqCanvasModel) && model.Creator != null)
+                {
+                    var container = (NodeContainerModel) SessionController.Instance.IdToSendables[model.Creator];
+                    container.AddChild(model);
+                }
+            }
+        }
+
+
+        public async Task LoadEmptyWorkspace()
+        {
+            SessionController.Instance.IdToSendables.Clear();
+
+           
+
+            if (_activeWorkspace != null)
+            {
+                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
+                var wsvm = (WorkspaceViewModel)_activeWorkspace.DataContext;
+                wsvm.Dispose();
+                mainCanvas.Children.Remove(_activeWorkspace);
+                _activeWorkspace = null;
+            }
+
+             _activeWorkspace = new WorkspaceView();
+            mainCanvas.Children.Insert(0, _activeWorkspace);
+
+            var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
+            var inqCanvasViewModel = new InqCanvasViewModel(_activeWorkspace.InqCanvas, inqCanvasModel);
+            _activeWorkspace.InqCanvas.ViewModel = inqCanvasViewModel;
+            var workspaceModel = new WorkSpaceModel(inqCanvasModel);
+            SessionController.Instance.IdToSendables["WORKSPACE_ID"] = workspaceModel;
+            workspaceModel.InqModel = inqCanvasModel;
+            var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
+            _activeWorkspace.DataContext = workspaceViewModel;
+
+            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
+            SessionController.Instance.SessionView = this;
+            xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+
+            //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
+
+            xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
         }
 
         public void ShowFullScreen(NodeModel model)

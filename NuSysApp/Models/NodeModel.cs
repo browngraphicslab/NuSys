@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
@@ -145,6 +146,11 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
+            Title = props.GetString("title", "");
+            if (props.ContainsKey("nodeType")) { 
+                string t = props["nodeType"];
+                NodeType = (NodeType)Enum.Parse(typeof(NodeType), t);
+            }
             await base.UnPack(props);
         }
 
@@ -158,6 +164,8 @@ namespace NuSysApp
             dict.Add("alpha", Alpha.ToString());
             dict.Add("scaleX", ScaleX.ToString());
             dict.Add("scaleY", ScaleY.ToString());
+            dict.Add("nodeType", NodeType.ToString());
+            dict.Add("title", Title);
             dict.Add("type", "node");
             return dict;
         }

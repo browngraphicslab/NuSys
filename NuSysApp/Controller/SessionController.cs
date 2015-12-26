@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
@@ -46,7 +48,7 @@ namespace NuSysApp
         public UserControl GetUserControlById(string id)
         {
             var model = IdToSendables[id];
-            foreach (var userControl in ActiveWorkspace.AtomViewList)
+            foreach (var userControl in ActiveWorkspace.Children.Values)
             {
                 var vm = (AtomViewModel) userControl.DataContext;
                 if (vm.Model == model)
@@ -95,7 +97,9 @@ namespace NuSysApp
                 var mm = m as AtomModel;
                 if (mm == null || mm == group)
                     return false;
-                return mm.GetMetaData("visualCopyOf") == "" && ((string)mm.GetMetaData("tags")).ToLower().Contains((group).Title.ToLower());
+                var tags = (List<string>) mm.GetMetaData("tags");
+                
+                return mm.GetMetaData("visualCopyOf") == "" && tags.Contains(group.Title);
             });
 
             foreach (var searchResult in searchResults.ToList())
@@ -169,10 +173,16 @@ namespace NuSysApp
                 case NodeType.GroupTag:
                     node = new NodeContainerModel(id);
                     break;
+                case NodeType.Group:
+                    node = null;
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
                     return;
             }
+            if (node == null)
+                return;
+
             node.X = xCoordinate;
             node.Y = yCoordinate;
             node.NodeType = type;
@@ -196,7 +206,24 @@ namespace NuSysApp
                 throw new InvalidOperationException("Sendable no longer exists");
             }
         }
-        
+
+
+        public async Task SaveWorkspace()
+        {
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
+            var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
+            var lines = await Task.WhenAll(lineTasks);
+            FileIO.WriteLinesAsync(file, lines);
+        }
+
+        public async Task LoadWorkspace()
+        {
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
+            var lines = await FileIO.ReadLinesAsync(file);
+;           SessionView.LoadWorksapce(lines);
+        }
+
+
         public static SessionController Instance
         {
             get

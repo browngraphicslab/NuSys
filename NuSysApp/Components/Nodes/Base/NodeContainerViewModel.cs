@@ -12,20 +12,30 @@ namespace NuSysApp
 {
     public class NodeContainerViewModel: NodeViewModel
     {
-        public ObservableCollection<UserControl> AtomViewList { get; }
+        public ObservableDictionary<string, UserControl> Children { get; }
+
+        public ObservableCollection<UserControl> AtomViewList { get; set; } 
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
         public delegate Task ChildAddedHandler(object source, AnimatableNodeView node);
         public event ChildAddedHandler ChildAdded;
         public bool EnableChildMove { get; set; }
-        
-
+       
         public NodeContainerViewModel(NodeContainerModel model): base(model)
         {
-            AtomViewList = new ObservableCollection<UserControl>();
+            Children = new ObservableDictionary<string, UserControl>();
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             model.ChildAdded += OnChildAdded;
             model.ChildRemoved += OnChildRemoved;
+            AtomViewList = new ObservableCollection<UserControl>();
+        }
+
+        public override void Dispose()
+        {
+            var model = (NodeContainerModel)Model;
+            model.ChildAdded += OnChildAdded;
+            model.ChildRemoved += OnChildRemoved;
+            base.Dispose();
         }
 
         public override void Translate(double dx, double dy)
@@ -35,7 +45,7 @@ namespace NuSysApp
             if (!EnableChildMove)
                 return;
 
-            foreach (var sendable in AtomViewList)
+            foreach (var sendable in Children.Values)
             {
                 var nodeVm = (NodeViewModel)sendable.DataContext;
                 nodeVm.Translate(dx, dy);
@@ -44,12 +54,13 @@ namespace NuSysApp
 
         protected virtual async Task OnChildAdded(object source, Sendable nodeModel)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(nodeModel, AtomViewList.ToList());
+            var view = await _nodeViewFactory.CreateFromSendable(nodeModel, Children.Values.ToList());
+            Children.Add(nodeModel.Id, view);
             AtomViewList.Add(view);
             ChildAdded?.Invoke(this, (AnimatableNodeView)view);
         }
 
-        protected  virtual async Task OnChildRemoved(object source, Sendable sendable)
+        protected virtual async Task OnChildRemoved(object source, Sendable sendable)
         {
             if (sendable is InqLineModel)
             {
@@ -58,9 +69,9 @@ namespace NuSysApp
                 return;
             }
 
-            var view = AtomViewList.Where((a => { var vm = (AtomViewModel)a.DataContext; return vm.Model == sendable; }));
-            if (view.Count() > 0)
-                AtomViewList.Remove(view.First());
+            //var view = AtomViewList.Values.Where((a => { var vm = (AtomViewModel)a.DataContext; return vm.Model == sendable; }));
+           // if (view.Count() > 0)
+           //     AtomViewList.Remove(view.First());
         }
     }
 }

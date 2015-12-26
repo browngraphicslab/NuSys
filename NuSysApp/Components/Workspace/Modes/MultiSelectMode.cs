@@ -147,8 +147,8 @@ namespace NuSysApp
                 return;
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
 
-            var atoms = vm.AtomViewList;
-            foreach (var atom in atoms)
+
+            foreach (var atom in vm.Children.Values)
             {
                 var atomPoint = atom.TransformToVisual(_view.InqCanvas).TransformPoint(new Point(0, 0));
                 var atomRect = new Rect(atomPoint.X, atomPoint.Y, atom.Width, atom.Height);

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace NuSysApp
 {
@@ -18,12 +20,16 @@ namespace NuSysApp
 
         private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
-        
+        public string Creator { get; set; }
+
 
         protected AtomModel(string id) : base(id)
         {
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
+
+            SetMetaData("tags", new List<string> {"none"});
+            //GetMetaData(tags)
         }
         
         //takes in SolidColorBrush converts to string
@@ -55,7 +61,7 @@ namespace NuSysApp
             return "";
         }
 
-        public void SetMetaData(string key, string value)
+        public void SetMetaData(string key, object value)
         {
             Metadata[key] = value;
             //DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
@@ -72,6 +78,7 @@ namespace NuSysApp
             Dictionary<string, string> dict = await base.Pack();
             var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">");
             dict.Add("metadata", metadatastring);
+            dict.Add("creator", Creator);
             return dict;
         }
 
@@ -80,7 +87,18 @@ namespace NuSysApp
             if (props.ContainsKey("metadata"))
             {
                 Metadata = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,object>>( props["metadata"].Replace("'", "\"").Replace("<", "{").Replace(">", "}"));
+                foreach (var key in Metadata.Keys.ToList())
+                {
+                    var t = Metadata[key].GetType();
+                    if (Metadata[key] is JArray)
+                    {
+                        Metadata[key] = ((JArray)Metadata[key]).ToObject<List<string>>();
+                    }
+                }
             }
+
+            Creator = props.GetString("creator", "WORKSPACE_ID");
+
             await base.UnPack(props);
         }
     } 

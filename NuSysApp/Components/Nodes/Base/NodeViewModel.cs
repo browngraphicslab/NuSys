@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Foundation;
@@ -9,7 +10,7 @@ namespace NuSysApp
 {
     public abstract class NodeViewModel : AtomViewModel
     {
-        private double _height, _width, _alpha;
+        private double _x, _y, _height, _width, _alpha;
         private bool _isEditing, _isEditingInk;
 
         public string Tags { get; set; }
@@ -28,10 +29,12 @@ namespace NuSysApp
             Transform.ScaleY = model.ScaleY;
             Width = model.Width;
             Height = model.Height;
-
             Alpha = model.Alpha;
-            Tags = (string)model.GetMetaData("tags");
+            X = model.X;
+            Y = model.Y;
 
+            Title = model.Title;
+            Tags = string.Join(",", model.GetMetaData("tags") as List<string>);
         }
 
         private void OnAlphaChanged(object source)
@@ -41,8 +44,19 @@ namespace NuSysApp
 
         private void OnMetadataChanged(object source, string key)
         {
-            Tags = (string)Model.GetMetaData("tags");
+            Tags = string.Join(",", Model.GetMetaData("tags") as List<string>);
             RaisePropertyChanged("Tags");
+        }
+
+        public override void Dispose()
+        {
+            var model = (NodeModel) Model;
+            model.PositionChanged -= OnPositionChanged;
+            model.SizeChanged -= OnSizeChanged;
+            model.ScaleChanged -= OnScaleChanged;
+            model.AlphaChanged -= OnAlphaChanged;
+            model.MetadataChanged -= OnMetadataChanged;
+            base.Dispose();
         }
 
         #region Node Manipulations
@@ -151,6 +165,28 @@ namespace NuSysApp
             {
                 ((NodeModel)Model).Title = value;
                 RaisePropertyChanged("Title");
+            }
+        }
+
+        public virtual double X
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                ((NodeModel)Model).X= value;
+                RaisePropertyChanged("X");
+            }
+        }
+
+        public virtual double Y
+        {
+            get { return _y; }
+            set
+            {
+                _y = value;
+                ((NodeModel)Model).Y = value;
+                RaisePropertyChanged("Y");
             }
         }
 

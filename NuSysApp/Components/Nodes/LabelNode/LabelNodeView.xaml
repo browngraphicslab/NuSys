@@ -32,14 +32,6 @@
                         <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="White" FontSize="20" FontWeight="Bold" Text="0" />
                     </Border>
                 </Canvas>
-                
-                <ItemsControl x:Name="IC" ItemsSource="{Binding AtomViewList}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas HorizontalAlignment="Left" Background="Red" x:Name="canvas" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
             </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>

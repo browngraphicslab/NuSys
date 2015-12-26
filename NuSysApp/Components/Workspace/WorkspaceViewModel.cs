@@ -33,25 +33,17 @@ namespace NuSysApp
             GroupDict = new Dictionary<string, NodeContainerViewModel>();
             MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
-            myDB = new SQLiteDatabase("NuSysTest.sqlite");
             
             var c = new CompositeTransform
             {
                 TranslateX = (-1) * (Constants.MaxCanvasSize),
                 TranslateY = (-1) * (Constants.MaxCanvasSize)
             };
+
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
-        
- 
-        
-        public void OnChildDeleted(object source, Sendable sendable)
-        {
-            //   var view = _nodeViewFactory.CreateFromSendable()
-            //  AtomViewList.Remove()
-        }
-
+     
         #region Node Interaction
 
         /// <summary>

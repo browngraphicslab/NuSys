@@ -133,6 +133,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\AtomCreator.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\FullScreenViewer\DetailNodeViewFactory.cs" />
     <Compile Include="Components\FullScreenViewer\FullScreenViewerView.xaml.cs">
@@ -165,12 +166,11 @@
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
     <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
-    <Compile Include="Database\Network\ClientHandler.cs" />
-    <Compile Include="Database\Network\ID.cs" />
-    <Compile Include="Database\Network\Message.cs" />
+    <Compile Include="Network\ClientHandler.cs" />
+    <Compile Include="Network\ID.cs" />
+    <Compile Include="Network\Message.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
@@ -276,12 +276,12 @@
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Models\TextNodeModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
-    <Compile Include="Database\Network\DebouncingDictionary.cs" />
-    <Compile Include="Database\Network\ModelIntermediate.cs" />
-    <Compile Include="Database\Network\NetworkConnector.cs" />
+    <Compile Include="Network\DebouncingDictionary.cs" />
+    <Compile Include="Network\ModelIntermediate.cs" />
+    <Compile Include="Network\NetworkConnector.cs" />
     <Compile Include="Database\SQLiteDatabase.cs" />
     <Compile Include="Database\XmlFileHelper.cs" />
-    <Compile Include="Database\Network\Sendable.cs" />
+    <Compile Include="Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\Nodes\Base\AtomViewModel.cs" />
     <Compile Include="Components\Nodes\AudioNode\AudioNodeViewModel.cs" />

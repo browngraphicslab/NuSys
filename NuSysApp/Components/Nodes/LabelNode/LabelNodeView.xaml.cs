@@ -39,13 +39,13 @@ namespace NuSysApp
                 Anim.FromTo(this, "Alpha", 0, t, 500);
             };
             
-            vm.ChildAdded += delegate(object source, AnimatableNodeView node)
+            vm.ChildAdded +=  async delegate (object source, AnimatableNodeView node)
             {
                 Debug.WriteLine("VIEW = CHILD ADDED");
                 OnChildrenChanged(node);
             };
 
-      
+
 
             nodeTpl.OnTemplateReady += delegate
             {
@@ -68,9 +68,11 @@ namespace NuSysApp
 
         private void OnChildrenChanged(AnimatableNodeView child)
         {
-            var groupNodeModel = (NodeContainerModel) ((NodeContainerViewModel) DataContext).Model;
-            var childVm = (NodeViewModel)child.DataContext;
-            if (!((NodeModel)childVm.Model).GetMetaData("tags").ToString().Contains(groupNodeModel.Title))
+            var groupNodeModel = (NodeContainerViewModel) DataContext;
+            Num.Text = groupNodeModel.AtomViewList.Count.ToString();
+            var childVm = (NodeViewModel)child.DataContext;;
+            var tags = (List<string>)((NodeModel)childVm.Model).GetMetaData("tags");
+            if (!(tags.Contains(groupNodeModel.Title)))
                 return;
 
             if (_isOpen)
@@ -104,7 +106,7 @@ namespace NuSysApp
                
             }
 
-            Num.Text = GetChildren().Count.ToString();
+
         }
 
         public void ToggleExpand()
@@ -142,12 +144,16 @@ namespace NuSysApp
         public void UnIntersect()
         {
             var vm = (LabelNodeViewModel)DataContext;
-            var groupNodeModel = (NodeContainerModel)vm.Model;
 
-            foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)
+            foreach (var atomView in SessionController.Instance.ActiveWorkspace.Children.Values)
             {
                 var atomId = ((AtomViewModel)atomView.DataContext).Id;
-                if (groupNodeModel.Children.ContainsKey(atomId) && atomView.Tag == "intersected")
+                var l = vm.Children.Values.Where((s =>
+                {
+                    var v = (AtomViewModel) s.DataContext;
+                    return v.Id == atomId;
+                }));
+                if (l.Any() && atomView.Tag == "intersected")
                     atomView.Tag = null;
             }
         }
@@ -206,13 +212,17 @@ namespace NuSysApp
         private List<AnimatableNodeView> GetChildren()
         {
             var vm = (LabelNodeViewModel) DataContext;
-            var groupNodeModel = (NodeContainerModel) vm.Model;
 
             var children = new List<AnimatableNodeView>();
-            foreach (var atomView in SessionController.Instance.ActiveWorkspace.AtomViewList)
+            foreach (var atomView in SessionController.Instance.ActiveWorkspace.Children.Values)
             {
                 var atomId = ((AtomViewModel) atomView.DataContext).Id;
-                if (groupNodeModel.Children.ContainsKey(atomId) && atomView.Tag != "intersected")
+                var l = vm.Children.Values.Where((s =>
+                {
+                    var v = (AtomViewModel)s.DataContext;
+                    return v.Id == atomId;
+                }));
+                if (l.Any() && atomView.Tag != "intersected")
                     children.Add((AnimatableNodeView)atomView);
             }
             return children;

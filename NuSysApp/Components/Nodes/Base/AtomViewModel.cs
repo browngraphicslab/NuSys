@@ -44,6 +44,11 @@ namespace NuSysApp
                 link.SetVisibility(visible);
             }
         }
+
+        public virtual void Dispose()
+        {
+            Model.OnCanEditChanged -= CanEditChangedHandler;
+        }
         
         public void ToggleSelection()
         {

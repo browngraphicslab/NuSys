@@ -10,5 +10,6 @@ namespace NuSysApp
         public static StorageFolder WordTransferFolder;
         public static StorageFolder PowerPointTransferFolder;
         public static StorageFolder Media;
+        public static StorageFolder SaveFolder;
     }
 }
