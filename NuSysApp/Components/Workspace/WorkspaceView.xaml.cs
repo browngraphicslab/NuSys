@@ -61,14 +61,14 @@ namespace NuSysApp
             {
                 case Options.SelectNode:
                     await
-                        SetViewMode(new MultiMode(this, new IntersectGroupNodeMode(this), new DuplicateNodeMode(this), new GroupNodeMode(this), new PanZoomMode(this), new SelectMode(this),
+                        SetViewMode(new MultiMode(this, new NodeManipulationMode(this), new IntersectGroupNodeMode(this), new DuplicateNodeMode(this), new GroupNodeMode(this), new PanZoomMode(this), new SelectMode(this),
                             new FloatingMenuMode(this)));
                     break;
                 case Options.SelectMarquee:
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.PenGlobalInk:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this)));
                     // TODO: delegate to workspaceview
                     //InqCanvas.SetErasing(false);
                     break;

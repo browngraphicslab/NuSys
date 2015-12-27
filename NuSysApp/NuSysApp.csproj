@@ -157,6 +157,7 @@
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\ImageNode\ImageNodeViewModel.cs" />
+    <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Database\Serializer.cs" />

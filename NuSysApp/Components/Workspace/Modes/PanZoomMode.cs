@@ -80,7 +80,7 @@ namespace NuSysApp
         {
            
             e.Container = _view;
-            e.Handled = true;
+          //  e.Handled = true;
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -151,7 +151,7 @@ namespace NuSysApp
 
             vm.CompositeTransform = compositeTransform;
 
-            e.Handled = true;
+           // e.Handled = true;
         }  
     }
 }

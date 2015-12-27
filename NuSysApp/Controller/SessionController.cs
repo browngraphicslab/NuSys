@@ -23,6 +23,7 @@ namespace NuSysApp
 
         public SessionView SessionView { get; set; }
 
+
         public WorkspaceViewModel ActiveWorkspace
         {
             get { return _activeWorkspace; }

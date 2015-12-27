@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using Windows.Devices.Input;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -70,10 +71,10 @@ namespace NuSysApp
             var t = new TranslateTransform {X = 0, Y = 25};
             tags.RenderTransform = t;
 
-            ManipulationMode = ManipulationModes.All;
-            ManipulationDelta += OnManipulationDelta;
+           // ManipulationMode = ManipulationModes.All;
+            //ManipulationDelta += OnManipulationDelta;
 
-            ManipulationCompleted += OnManipulationCompleted;
+            //ManipulationCompleted += OnManipulationCompleted;
 
             var vm = (NodeViewModel)this.DataContext;
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
@@ -87,15 +88,6 @@ namespace NuSysApp
 
         public void ToggleInkMode()
         {
-            if (ManipulationMode == ManipulationModes.All)
-            {
-                ManipulationMode = ManipulationModes.None;
-            }
-            else
-            {
-                ManipulationMode = ManipulationModes.All;
-            }
-
             var vm = (NodeViewModel)this.DataContext;
             vm.ToggleEditingInk();
             inkCanvas.IsEnabled = vm.IsEditingInk;
@@ -109,6 +101,9 @@ namespace NuSysApp
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (SessionController.Instance.SessionView.IsPenMode)
+                return;
+
             var vm = (NodeViewModel)this.DataContext;
             vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
            // e.Handled = true;
@@ -117,9 +112,12 @@ namespace NuSysApp
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (SessionController.Instance.SessionView.IsPenMode)
+                return;
+
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
-            e.Handled = true; 
+           // e.Handled = true; 
 
         }
 
@@ -133,7 +131,7 @@ namespace NuSysApp
                 vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
             }
             */
-            e.Handled = true;
+            //e.Handled = true;
         }
 
         private void Node_MultiSelectionChanged(object sender, PropertyChangedEventArgs e)

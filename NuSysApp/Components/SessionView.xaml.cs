@@ -15,6 +15,7 @@ using Windows.UI.Core;
 using System.Diagnostics;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
 using NuSysApp.Components;
@@ -30,6 +31,9 @@ namespace NuSysApp
         private bool _cortanaInitialized;
         private CortanaMode _cortanaModeInstance;
         private WorkspaceView _activeWorkspace;
+        private Options _prevOptions = Options.SelectNode;
+
+        public bool IsPenMode { get; private set; }
 
         #endregion Private Members
 
@@ -37,14 +41,14 @@ namespace NuSysApp
         {
             this.InitializeComponent();
 
+            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
+            CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
                 Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
             };
-
-
-
-           
+            
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
@@ -110,6 +114,27 @@ namespace NuSysApp
                     NetworkConnector.Instance.RequestMakeNode((100500).ToString(), "100200", NodeType.Image.ToString(), data, null, new Dictionary<string, string>(props));
                 }
             };
+        }
+
+        private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
+            {
+                xFloatingMenu.SetActive(Options.PenGlobalInk);
+                _prevOptions = Options.PenGlobalInk;
+                IsPenMode = true;
+            }
+
+        }
+
+        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Shift)
+            {
+                xFloatingMenu.SetActive(Options.SelectNode);
+                _prevOptions = Options.SelectNode;
+                IsPenMode = false;
+            }
         }
 
         public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )

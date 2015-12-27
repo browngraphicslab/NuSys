@@ -229,21 +229,21 @@ namespace NuSysApp
                 CollapseImage.Visibility = Visibility.Collapsed;
                 ExpandImage.Visibility = Visibility.Visible;
             }
-            e.Handled = true;
+           // e.Handled = true;
         }
 
         private void OnBtnTapped(object sender, TappedRoutedEventArgs e)
         {
             var btn = (FloatingMenuButtonView)sender;
             SetActive(btn, _buttons[btn], false);
-            e.Handled = true;
+            //e.Handled = true;
         }
 
         private void OnBtnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             var btn = (FloatingMenuButtonView)sender;
             SetActive(btn, _buttons[btn], true);
-            e.Handled = true;
+           // e.Handled = true;
         }    
 
         public SessionView SessionView

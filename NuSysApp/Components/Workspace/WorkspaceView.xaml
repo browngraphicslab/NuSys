@@ -10,24 +10,17 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Canvas x:Name="xWrapper">
-        <Border Name="inkBorder" RenderTransform="{Binding CompositeTransform}" Background="Transparent"  Height="1000000" Width="1000000" BorderBrush="Black">
-            <local:InqCanvasView x:Name="xInqCanvas" Background="Transparent" IsEnabled="False" />
-        </Border>
-        <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ManipulationMode="All" >
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="0*" />
-            </Grid.RowDefinitions>
-            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas RenderTransform="{Binding CompositeTransform}" HorizontalAlignment="Left" Background="Beige" x:Name="canvas">
-                        </Canvas>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Grid>
+    <Canvas x:Name="xWrapper" RenderTransform="{Binding CompositeTransform}">
+    
+        <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas  HorizontalAlignment="Left" Background="Transparent" Width="1000000" Height="1000000" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <local:InqCanvasView x:Name="xInqCanvas" Background="Transparent" IsEnabled="False" Width="1000000" Height="1000000"  />
         <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
     </Canvas>
 </UserControl>

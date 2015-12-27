@@ -93,14 +93,14 @@ namespace NuSysApp
 
         private void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
-            Debug.WriteLine("OnAtomReleased");
+          //  Debug.WriteLine("OnAtomReleased");
             _selectedNode = null;
            // e.Handled = true;
         }
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
-            Debug.WriteLine("OnAtomPressed");
+            //Debug.WriteLine("OnAtomPressed");
             _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
             //Debug.WriteLine(_selectedNode);
             //e.Handled = true;

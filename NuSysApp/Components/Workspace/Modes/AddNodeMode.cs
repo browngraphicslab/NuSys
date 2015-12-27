@@ -40,7 +40,7 @@ namespace NuSysApp
         {
             if (!(e.OriginalSource is WorkspaceView))
             {
-                e.Handled = true;
+             //   e.Handled = true;
                 return;
             }
             _tempNode.Width = 1;
@@ -50,7 +50,7 @@ namespace NuSysApp
             Canvas.SetTop(_tempNode, _startPos.Y);
             _view.Wrapper.Children.Add(_tempNode);         
             _isDragging = true;
-            e.Handled = true;
+         //   e.Handled = true;
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -62,14 +62,14 @@ namespace NuSysApp
                 if (translation.Y > 0)
                     _tempNode.Height = translation.Y;
             }
-            e.Handled = true;
+        //    e.Handled = true;
         }
 
         private void OnManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {
             e.TranslationBehavior.DesiredDeceleration = 20.0 * 96.0 / (100000.0);
 
-            e.Handled =  true;
+       //     e.Handled =  true;
         } 
         
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -82,7 +82,7 @@ namespace NuSysApp
                 await AddNode(_view, _startPos, new Size(r.Width, r.Height), _nodeType);
             }
             _isDragging = false;
-            e.Handled = true;
+         //   e.Handled = true;
         }
 
         public override async Task Deactivate()

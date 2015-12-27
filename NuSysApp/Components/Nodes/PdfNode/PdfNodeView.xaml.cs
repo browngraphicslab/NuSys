@@ -25,10 +25,10 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs e)
             {
-                if (nodeTpl.inkCanvas != null) { 
-                    nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-                    nodeTpl.inkCanvas.ReRenderLines();
-                }
+            //    if (nodeTpl.inkCanvas != null) { 
+            //        nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            //        nodeTpl.inkCanvas.ReRenderLines();
+            //    }
 
                 var animX = new Storyboard();
                 var animXAnim = new DoubleAnimation();
@@ -47,7 +47,7 @@ namespace NuSysApp
 
         private void OnEditInk(object sender, RoutedEventArgs e)
         {
-            nodeTpl.ToggleInkMode();
+          //  nodeTpl.ToggleInkMode();
 
         }
 
@@ -56,8 +56,8 @@ namespace NuSysApp
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.FlipLeft();
 
-            nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            nodeTpl.inkCanvas.ReRenderLines();
+           // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+//nodeTpl.inkCanvas.ReRenderLines();
 
         }
 
@@ -66,8 +66,8 @@ namespace NuSysApp
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.FlipRight();
 
-            nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            nodeTpl.inkCanvas.ReRenderLines();
+         //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+       //     nodeTpl.inkCanvas.ReRenderLines();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
@@ -76,15 +76,7 @@ namespace NuSysApp
             vm.Remove();
         }
 
-        /// <summary>
-        /// Catches the double-tap event so that the floating menus can't be lost.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
+  
     }
 
 

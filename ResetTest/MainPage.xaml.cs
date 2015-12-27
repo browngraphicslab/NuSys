@@ -31,17 +31,18 @@ namespace ResetTest
         {
             this.InitializeComponent();
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
-            {
-                var n = new Networker();
-                await Task.Run( async () =>
-                {
-                    var result = await n.foo("id");
-                    Debug.WriteLine("got result:");
-                    Debug.WriteLine(result);
-                });
-            };
+    
             Debug.WriteLine("Main done.");
+        }
+
+        private void UIElement_OnPointerPressed1(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine(1);
+        }
+
+        private void UIElement_OnPointerPressed2(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine(2);
         }
     }
 
