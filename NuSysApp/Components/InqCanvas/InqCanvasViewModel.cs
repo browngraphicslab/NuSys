@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -15,14 +16,16 @@ namespace NuSysApp
     {
         public InqCanvasModel Model { get; }
 
-        public InqCanvasView View { get; }
-        public InqCanvasViewModel(InqCanvasView inqCanvasView, InqCanvasModel model)
+        public ObservableCollection<InqLineView> Lines { get; set; }  
+
+        public InqCanvasViewModel(InqCanvasModel model)
         {
             Model = model;
-            Model.OnPartialLineAddition += PartialLineAdditionHandler;
-            Model.OnFinalizedLine += FinalLineAdditionHandler;
-            inqCanvasView.ViewModel = this;
-            View = inqCanvasView;
+            Model.PartialLineAdded += OnPartialLineAdded;
+            Model.LineFinalized += OnLineFinalized;
+            Model.LineRemoved += OnLineRemoved;
+
+            Lines = new ObservableCollection<InqLineView>();
 
             if (model.Lines == null)
                 return;
@@ -30,9 +33,16 @@ namespace NuSysApp
             foreach (var inqLineModel in model.Lines)
             {
                 var lineView = new InqLineView(new InqLineViewModel(inqLineModel));;
-                inqCanvasView.Children.Add(lineView);
+                Lines.Add(lineView);
             }
-            
+        }
+
+        private void OnLineRemoved(InqLineModel lineModel)
+        {
+            var ls = Lines.Where(l => (l.DataContext as InqLineViewModel).Model == lineModel);
+            if (!ls.Any())
+                return;
+            Lines.Remove(ls.First());
         }
 
         public async Task<string> InkToText()
@@ -93,7 +103,7 @@ namespace NuSysApp
             Model.AddTemporaryPoint(p);
         }
         public InqLineModel LastPartialLineModel { get; set; }
-        private void PartialLineAdditionHandler(object source, AddLineEventArgs e)
+        private void OnPartialLineAdded(object source, AddLineEventArgs e)
         {
             if (e.AddedLineModel != LastPartialLineModel)
             {
@@ -103,7 +113,7 @@ namespace NuSysApp
         }
 
         public InqLineModel FinalLineModel { get; set; }
-        private async void FinalLineAdditionHandler(InqLineModel lineModel)
+        private async void OnLineFinalized(InqLineModel lineModel)
         {
     
             if (lineModel != FinalLineModel)

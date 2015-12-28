@@ -26,33 +26,34 @@ namespace NuSysApp
             LinkList = new ObservableCollection<LinkViewModel>();
             IsVisible = true;
             Model = model;
-            Model.OnCanEditChanged += CanEditChangedHandler;
+            Model.CanEditChange += OnCanEditChange;
+            Model.MetadataChange += OnMetadataChange;
         }
 
-        private void CanEditChangedHandler(object source, CanEditChangedEventArg e)
+        private void OnMetadataChange(object source, string key)
+        {
+            if (key == "linksTo")
+            {
+                Debug.WriteLine("linkTo");
+            }
+        }
+
+        private void OnCanEditChange(object source, CanEditChangedEventArg e)
         {
             CanEdit = Model.CanEdit;
         }
 
         #region Atom Manipulations
 
-        public void SetVisibility(bool visible)
-        {
-            IsVisible = visible;
-            foreach (var link in LinkList)
-            {
-                link.SetVisibility(visible);
-            }
-        }
-
         public virtual void Dispose()
         {
-            Model.OnCanEditChanged -= CanEditChangedHandler;
+            Model.CanEditChange -= OnCanEditChange;
+            Model.MetadataChange -= OnMetadataChange;
         }
         
         public void ToggleSelection()
         {
-            IsSelected = !IsSelected;
+            SetSelected(!IsSelected);
 
             if (IsSelected)
                 SessionController.Instance.ActiveWorkspace.SetSelection(this);
@@ -61,6 +62,7 @@ namespace NuSysApp
         public void AddLink(LinkViewModel linkVm)
         {
             LinkList.Add(linkVm);
+            UpdateAnchor();
         }
 
         public abstract void Remove();
@@ -85,38 +87,25 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
-                Color color = this.Color.Color;
-                if (_canEdit == AtomModel.EditStatus.No)
-                {
-                    color.A = 50;
-                    Color = new SolidColorBrush(color);
-                }
-                else if (_canEdit == AtomModel.EditStatus.Yes)
-                {
-                    color.A = 255;
-                    Color = new SolidColorBrush(color);
-                }
-                else
-                {
-                    color.A = 175;
-                    Color = new SolidColorBrush(color);
-                }
+                
             }
         }
        
         public bool IsSelected
         {
             get { return _isSelected; }
-            set
-            {
-                if (_isSelected == value)
-                {
-                    return;
-                }
 
-                _isSelected = value;
-                RaisePropertyChanged("IsSelected");
+        }
+
+        public virtual void SetSelected(bool val)
+        {
+            if (_isSelected == val)
+            {
+                return;
             }
+
+            _isSelected = val;
+            RaisePropertyChanged("IsSelected");
         }
 
         public bool IsMultiSelected

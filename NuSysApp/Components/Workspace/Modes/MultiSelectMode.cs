@@ -118,14 +118,17 @@ namespace NuSysApp
             _isMouseDown = false;
             _view.InqCanvas.ReleasePointerCaptures();
             SelectContainedComponents();
-            _view.InqCanvas.Children.Remove(_currentRect);
+            // TODO: add again
+           // _view.InqCanvas.Children.Remove(_currentRect);
         }
 
         private void UpdateVisableRect()
         {
             if (_currentRect != null)
             {
-                _view.InqCanvas.Children.Remove(_currentRect);
+                // TODO: add again
+               
+                //_view.InqCanvas.Children.Remove(_currentRect);
             }
             _currentRect = new Rectangle();
             var vm = (WorkspaceViewModel)_view.DataContext;
@@ -134,7 +137,9 @@ namespace NuSysApp
             _currentRect.Height = transRect.Height;
             _currentRect.Stroke = new SolidColorBrush(Colors.Black);
             var startP = vm.CompositeTransform.Inverse.TransformPoint(_startPoint);
-            _view.InqCanvas.Children.Add(_currentRect);
+
+            // TODO: add again
+           // _view.InqCanvas.Children.Add(_currentRect);
             Canvas.SetTop(_currentRect, transRect.Y);
             Canvas.SetLeft(_currentRect, transRect.X);
         }

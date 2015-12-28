@@ -20,9 +20,8 @@ namespace NuSysApp
 
     public class WorkSpaceModel : NodeContainerModel
     {   
-        public WorkSpaceModel(InqCanvasModel inqModel) : base("WORKSPACE_ID")
+        public WorkSpaceModel() : base("WORKSPACE_ID")
         {
-
         }
         
     }

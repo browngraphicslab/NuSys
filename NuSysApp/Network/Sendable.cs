@@ -11,7 +11,7 @@ namespace NuSysApp
 
         public delegate void UnPackedEventHandler(object source);
         
-        public event CanEditChangedEventHandler OnCanEditChanged;
+        public event CanEditChangedEventHandler CanEditChange;
         public event UnPackedEventHandler UnPacked;
 
         public enum EditStatus { Yes, No, Maybe }
@@ -39,7 +39,7 @@ namespace NuSysApp
                     return;
                 }
                 _editStatus = value;
-                OnCanEditChanged?.Invoke(this, new CanEditChangedEventArg(CanEdit));
+                CanEditChange?.Invoke(this, new CanEditChangedEventArg(CanEdit));
             }
         }
 

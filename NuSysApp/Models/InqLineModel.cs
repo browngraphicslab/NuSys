@@ -51,6 +51,7 @@ namespace NuSysApp
         public void Delete()
         {
             OnDeleteInqLine?.Invoke(this, new DeleteInqLineEventArgs(this));
+            SessionController.Instance.IdToSendables.Remove(Id);
         }
 
         public async Task UnPack(Dictionary<string, string> props)

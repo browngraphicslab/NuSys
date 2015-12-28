@@ -39,7 +39,7 @@ namespace NuSysApp
             //TODO: add data binding for thickness and color
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
             _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
-            inqCanvas.Children.Add(_currentInqLineView);
+            inqCanvas.ViewModel.Lines.Add(_currentInqLineView);
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
         }
@@ -65,9 +65,9 @@ namespace NuSysApp
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
             NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
-            (((InqCanvasViewModel) inqCanvas.DataContext).Model).OnFinalizedLine += delegate
+            (((InqCanvasViewModel) inqCanvas.DataContext).Model).LineFinalized += delegate
             {
-                inqCanvas.Children.Remove(_currentInqLineView);
+                inqCanvas.ViewModel.Lines.Remove(_currentInqLineView);
             };
 
         }

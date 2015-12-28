@@ -20,7 +20,7 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <local:InqCanvasView x:Name="xInqCanvas" Background="Transparent" IsEnabled="False" Width="1000000" Height="1000000"  />
+       <!-- <local:InqCanvasView x:Name="xInqCanvas" Background="Transparent" IsEnabled="False" Width="1000000" Height="1000000"  /> -->
         <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
     </Canvas>
 </UserControl>

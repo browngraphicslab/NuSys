@@ -14,18 +14,15 @@ namespace NuSysApp
     {
         public BezierLinkView(LinkViewModel vm)
         {
-            this.InitializeComponent();
-            this.ManipulationMode = ManipulationModes.All;
-            this.DataContext = vm;
-            //Universal apps does not support multiple databinding, so this is a workarround. 
-            vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
-            vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(atom_PropertyChanged);
-            this.UpdateControlPoints();
+            InitializeComponent();
+            ManipulationMode = ManipulationModes.All;
+            DataContext = vm;
+
+            vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
+            vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
+            UpdateControlPoints();
 
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
-
-            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
-
         }
 
         /// <summary>
@@ -33,7 +30,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void atom_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnAtomPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             this.UpdateControlPoints();
         }
@@ -56,25 +53,6 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
-
-            Canvas.SetLeft(SubMenu, vm.Anchor.X - 100);
-            Canvas.SetTop(SubMenu, vm.Anchor.Y - 100);
-
-            //if(atom2.AtomType == Constants.Node)
-            //{
-            //    if((anchor2.Y >= curve.Point3.Y && anchor2.Y >= pathfigure.StartPoint.Y) || (anchor2.Y<=curve.Point3.Y && anchor2.Y <= pathfigure.StartPoint.Y))
-            //    {
-            //        curve.Point2 = new Point(anchor1.X - distanceX / 2, curve.Point3.Y);
-            //    }
-            //}
-
-            //if (atom1.AtomType == Constants.Node)
-            //{
-            //    if ((anchor1.Y >= curve.Point3.Y && anchor1.Y >= pathfigure.StartPoint.Y) || (anchor1.Y <= curve.Point3.Y && anchor1.Y <= pathfigure.StartPoint.Y))
-            //    {
-            //        curve.Point1 = new Point(anchor2.X + distanceX / 2, pathfigure.StartPoint.Y);
-            //    }
-            //}
         }
 
         private void UpdateEndPoints()
@@ -82,25 +60,8 @@ namespace NuSysApp
             var vm = (LinkViewModel)this.DataContext;
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
-
-            //if (atom1.AtomType == Constants.Node)
-            //{
-            //    pathfigure.StartPoint = this.findIntersection((NodeViewModel)atom1, curve.Point3);
-            //}
-            //else //atom is a link - this link anchors to atom1's anchor point
-            //{
-                pathfigure.StartPoint = atom1.Anchor;
-            //}
-            //if (atom2.AtomType == Constants.Node)
-            //{
-            //    curve.Point3 = this.findIntersection((NodeViewModel)atom2, pathfigure.StartPoint);
-            //}
-            //else //atom2 is a link - this link anchors to atom2's anchor (midpoint)
-            //
-                curve.Point3 = atom2.Anchor;
-            //}
-
-
+            pathfigure.StartPoint = atom1.Anchor;
+            curve.Point3 = atom2.Anchor;
         }
 
         ///<summary>CalcY returns the y coord of the intersection between two lines 
@@ -189,9 +150,9 @@ namespace NuSysApp
 
         private void BezierLinkView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            var vm = (LinkViewModel) this.DataContext;
-            vm.ToggleSelection();
-            e.Handled = true;
+          //  var vm = (LinkViewModel) this.DataContext;
+          //  vm.ToggleSelection();
+          //  e.Handled = true;
         }
 
         /// <summary>
@@ -201,62 +162,14 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void BezierLinkView_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            e.Handled = true; 
+           // e.Handled = true; 
         }
 
-        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
-        {
-
-            if (e.PropertyName.Equals("IsSelected"))
-            {
-                var vm = (LinkViewModel) this.DataContext;
-
-                if (vm.IsSelected)
-                {
-                    slideout.Begin();
-                    BezierLink.Opacity = 1;
-                }
-                else
-                {
-                    slidein.Begin();
-                    BezierLink.Opacity = .5;
-                }
-            }
-        }
-
+      
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             var vm = (LinkViewModel)this.DataContext;
             vm.Remove();
-        }
-
-        private void Color_Click(object sender, RoutedEventArgs e)
-        {
-            if (Colors.Opacity == 0)
-            {
-                colorout.Begin();
-            }
-            else
-            {
-                colorin.Begin();
-            }          
-        }
-
-        private void Change_Color(object sender, RoutedEventArgs e)
-        {
-            var vm = (LinkViewModel) this.DataContext;
-            Button colorButton = sender as Button;
-            if (colorButton.Name == "Red") //TODO: DO NOT SWITCH ON A STRING - PLS FIX
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255,255,152,149));
-            } else if (colorButton.Name == "Green")
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 190, 240, 142));
-            } else if (colorButton.Name == "Gray")
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 189, 204, 212));
-            }
-            colorin.Begin();
         }
     }
 }

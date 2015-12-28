@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Xml;
-using Windows.Foundation;
-using Windows.UI;
+using System.Diagnostics;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    /// <summary>
-    /// link view model class
-    /// 
-    /// parameters: Atom1 and Atom2 are the two atoms that the link connects, 
-    /// and workspace is main workspace.
-    /// 
-    /// </summary>
     public class LinkViewModel : AtomViewModel
     {
         #region Private Members
@@ -22,23 +12,31 @@ namespace NuSysApp
         private AtomViewModel _atom1, _atom2;
         #endregion Private members
 
-        public LinkViewModel(LinkModel model, AtomViewModel atom1,
-            AtomViewModel atom2) : base(model)
+        public LinkViewModel(LinkModel model, AtomViewModel atom1, AtomViewModel atom2) : base(model)
         {
-            this.Atom1 = atom1;
-            this.Atom2 = atom2;
-            this.Atom1.UpdateAnchor();
-            this.Atom2.UpdateAnchor();
-            this.IsVisible = true;
+            Atom1 = atom1;
+            Atom2 = atom2;
+            var line = LineRepresentation;
+            Anchor = new Point2d((int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2)), (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2)));
+            Atom1.AddLink(this);
+            Atom2.AddLink(this);
+   
+            
+            model.OnDeletion += DeletionHappend;
+            
 
-            var line = this.LineRepresentation;
-
-            this.Anchor.X = (int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2));
-            this.Anchor.Y = (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2));
-           // this.Anchor = new Point(this.Anchor.X, this.Anchor.Y);
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));
-            ((LinkModel)this.Model).OnDeletion += DeletionHappend;
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));
         }
+
+
+
+        public override void Dispose()
+        {
+            var model = (LinkModel) Model;
+            model.OnDeletion -= DeletionHappend;
+            base.Dispose();
+        }
+
         private void DeletionHappend(object source, DeleteEventArgs e)
         {
             //TODO: re-add
@@ -49,7 +47,7 @@ namespace NuSysApp
         public override void Remove()
         {
             NetworkConnector.Instance.RequestDeleteSendable(Id);
-            if (this.IsSelected)
+            if (IsSelected)
             {
                 //TODO: re-add
                 SessionController.Instance.ActiveWorkspace.ClearSelection();
@@ -75,10 +73,6 @@ namespace NuSysApp
             get { return _atom1; }
             set
             {
-                if (_atom1 == value)
-                {
-                    return;
-                }
                 _atom1 = value;
                 RaisePropertyChanged("Atom1");
             }
@@ -89,10 +83,6 @@ namespace NuSysApp
             get { return _atom2;}
             set
             {
-                if (_atom2 == value)
-                {
-                    return;
-                }
                 _atom2 = value;
                 RaisePropertyChanged("Atom2");
             }
@@ -108,9 +98,9 @@ namespace NuSysApp
             var line = this.LineRepresentation;
             var dx = (line.X2 - line.X1)/2;
             var dy = (line.Y2 - line.Y1)/2;
-            this.Anchor.X = (int)(line.X1 + dx);
-            this.Anchor.Y = (int)(line.Y1 + dy);
-            //this.Anchor = new Point(this.Anchor.X, this.Anchor.Y);
+            Anchor.X = (int)(line.X1 + dx);
+            Anchor.Y = (int)(line.Y1 + dy);
+            Anchor = new Point2d(this.Anchor.X, this.Anchor.Y);
 
             foreach (var link in LinkList)
             {
@@ -118,19 +108,11 @@ namespace NuSysApp
             }
         }
 
-        public bool IsVisible 
+        public override void SetSelected(bool val)
         {
-            get { return _isVisible; }
-            set
-            {
-                if (_isVisible == value)
-                {
-                    return;
-                }
-                _isVisible = value;
-                RaisePropertyChanged("IsVisible");
-            }
+            _isSelected = val;
+            Color = val ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF,0xFF,0xAA,0x2D)) : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            RaisePropertyChanged("Color");
         }
-
     }
 }

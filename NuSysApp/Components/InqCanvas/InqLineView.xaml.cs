@@ -31,8 +31,8 @@ namespace NuSysApp
 
         public InqLineView(InqLineViewModel vm)
         {
-            this.InitializeComponent();
-            this.CanEdit = AtomModel.EditStatus.Maybe;
+            InitializeComponent();
+            CanEdit = AtomModel.EditStatus.Maybe;
             this.DataContext = vm;
             VisibleLine.Stroke = vm.Model.Stroke;
             vm.PropertyChanged += Update;
@@ -52,7 +52,7 @@ namespace NuSysApp
 
         public void Delete()
         {
-            (this.Parent as InqCanvasView).Children.Remove(this);
+            (this.Parent as InqCanvasView).ViewModel.Lines.Remove(this);
         }
 
 
@@ -125,10 +125,10 @@ namespace NuSysApp
         private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
 
-            var inqCanvas = this.Parent as InqCanvasView;
-            if (inqCanvas.Mode is EraseInqMode && inqCanvas.IsPressed)
+            var inqCanvas = Parent as InqCanvasView;
+            if (inqCanvas?.Mode is EraseInqMode && inqCanvas.IsPressed)
             {
-                NetworkConnector.Instance.RequestDeleteSendable((this.DataContext as InqLineViewModel).Model.Id);
+                NetworkConnector.Instance.RequestDeleteSendable((DataContext as InqLineViewModel).Model.Id);
             }
         }
 
@@ -138,13 +138,10 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "ToDelete":
-                    if (this.Parent != null)
-                    {
-                        (this.Parent as InqCanvasView).Children.Remove(this);
-                    }
+                    (Parent as InqCanvasView)?.ViewModel.Lines.Remove(this);
                     break;
                 case "Parent":
-                    (vm as InqLineViewModel).SetParentID((this.Parent as InqCanvasView).ViewModel.Model.ID);
+                    vm.SetParentID((Parent as InqCanvasView).ViewModel.Model.ID);
                     break;
             }
         }

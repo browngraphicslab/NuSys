@@ -64,10 +64,10 @@
 
                         <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
 
-                        <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
+                        <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
               RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
               RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
-              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" />
+              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" /> -->
                         
                         <Button x:Name="btnDelete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0"
                 Background="#00000000" IsHitTestVisible="False">

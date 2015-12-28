@@ -1,4 +1,5 @@
-﻿using Windows.Foundation;
+﻿using System;
+using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
@@ -148,6 +149,40 @@ namespace NuSysApp
             }
             return new Rect(minX,minY,maxX-minX,maxY-minY);
         }
+
+        public static Rect InqToBoudingRect(InqLineModel inqM)
+        {
+            var points = inqM.Points;
+            var rect = new Rect()
+            {
+                Height = 0,
+                Width = 0,
+                X = Double.MaxValue,
+                Y = Double.MaxValue
+            };
+            foreach (Point p in points)
+            {
+                if (p.X < rect.X)
+                {
+                    rect.Width = rect.Width + rect.X - p.X;
+                    rect.X = p.X;
+                }
+                if (p.X - rect.X > rect.Width)
+                {
+                    rect.Width = p.X - rect.X;
+                }
+                if (p.Y < rect.Y)
+                {
+                    rect.Height = rect.Height + rect.Y - p.Y;
+                    rect.Y = p.Y;
+                }
+                if (p.Y - rect.Y > rect.Height)
+                {
+                    rect.Height = p.Y - rect.Y;
+                }
+            }
+
+            return rect;
+        }
     }
-    
 }

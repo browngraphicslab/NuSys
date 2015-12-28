@@ -14,9 +14,7 @@ namespace NuSysApp
             this.Transform = new CompositeTransform();
          //   this.Width = 400;
          //   this.Height = 150;
-            this.IsSelected = false;
-            this.IsEditing = false;
-            this.IsEditingInk = false;
+
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 

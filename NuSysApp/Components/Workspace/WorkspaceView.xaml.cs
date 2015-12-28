@@ -25,10 +25,35 @@ namespace NuSysApp
     public sealed partial class WorkspaceView
     {
         private AbstractWorkspaceViewMode _mode;
+        private InqCanvasView _inqCanvas;
 
-        public WorkspaceView()
+        public WorkspaceView(WorkspaceViewModel vm)
         {
             this.InitializeComponent();
+            var wsModel = vm.Model;
+
+            
+            var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
+            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel);
+            _inqCanvas = new InqCanvasView(inqCanvasViewModel);
+            _inqCanvas.Width = 1000000;
+            _inqCanvas.Height = 1000000;
+            xWrapper.Children.Add(_inqCanvas);
+            wsModel.InqCanvas = inqCanvasModel;
+
+            wsModel.InqCanvas.LineFinalized += delegate (InqLineModel model)
+            {
+                var gestureType = GestureRecognizer.testGesture(model);
+                switch (gestureType)
+                {
+                    case GestureRecognizer.GestureType.None:
+                        break;
+                    case GestureRecognizer.GestureType.Scribble:
+                        vm.CheckForInkNodeIntersection(model);
+                        model.Delete();
+                        break;
+                }
+            };
         }
 
         public MultiSelectMenuView MultiMenu
@@ -44,7 +69,7 @@ namespace NuSysApp
 
         public InqCanvasView InqCanvas
         {
-            get { return xInqCanvas; }
+            get { return _inqCanvas; }
         }
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
@@ -68,7 +93,7 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.PenGlobalInk:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this)));
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));
                     // TODO: delegate to workspaceview
                     //InqCanvas.SetErasing(false);
                     break;

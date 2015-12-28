@@ -43,8 +43,42 @@ namespace NuSysApp
             CompositeTransform = c;
             FMTransform = new CompositeTransform();
         }
-     
+
         #region Node Interaction
+
+        public void CheckForInkNodeIntersection(InqLineModel inq)
+        {
+            var nodes = new List<NodeViewModel>();
+            foreach (var node2 in AtomViewList.Where(a => a.DataContext is NodeViewModel))
+            {
+                var rect1 = Geometry.InqToBoudingRect(inq);
+                var rect2 = Geometry.NodeToBoudingRect(node2.DataContext as NodeViewModel);
+                rect1.Intersect(rect2);//stores intersection rectangle in rect1
+                if (!rect1.IsEmpty)
+                {
+                    nodes.Add(node2.DataContext as NodeViewModel);
+                }
+            }
+            removeNodes(nodes);
+        }
+
+        private void removeNodes(List<NodeViewModel> nodes)
+        {
+            foreach (NodeViewModel node in nodes)
+            {
+                DeleteNode(node);
+            }
+        }
+
+
+        public void DeleteNode(NodeViewModel node)
+        {
+            Debug.WriteLine("deleting node");
+            var uc = AtomViewList.Where(a => a.DataContext == node).First();
+            AtomViewList.Remove(uc);
+
+        }
+
 
         /// <summary>
         /// Sets the passed in Atom as selected. If there atlready is a selected Atom, the old \
@@ -66,8 +100,8 @@ namespace NuSysApp
                 return;
             }
            // NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
-            selected.IsSelected = false;
-            SelectedAtomViewModel.IsSelected = false;
+            selected.SetSelected(false);
+            SelectedAtomViewModel.SetSelected(false);
             SelectedAtomViewModel = null;
             ClearSelection();
         }
@@ -103,7 +137,7 @@ namespace NuSysApp
         {
             NetworkConnector.Instance.ReturnAllLocks();
             if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.IsSelected = false;
+            SelectedAtomViewModel.SetSelected(false);
             SelectedAtomViewModel = null;
         }
 

@@ -62,7 +62,7 @@ namespace NuSysApp
                 _cortanaInitialized = false;
                 xFloatingMenu.SessionView = this;
 
-
+                /*
                 var callback = new Action<string>(s =>
                 {
              //       var nodeModel = (NodeModel) SessionController.Instance.IdToSendables[s];
@@ -113,7 +113,9 @@ namespace NuSysApp
                     var data = Convert.ToBase64String(f);
                     NetworkConnector.Instance.RequestMakeNode((100500).ToString(), "100200", NodeType.Image.ToString(), data, null, new Dictionary<string, string>(props));
                 }
+                */
             };
+            
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -161,7 +163,7 @@ namespace NuSysApp
                 if (!(model is WorkSpaceModel) && !(model is InqCanvasModel) && model.Creator != null)
                 {
                     var container = (NodeContainerModel) SessionController.Instance.IdToSendables[model.Creator];
-                    container.AddChild(model);
+                    await container.AddChild(model);
                 }
             }
         }
@@ -170,9 +172,7 @@ namespace NuSysApp
         public async Task LoadEmptyWorkspace()
         {
             SessionController.Instance.IdToSendables.Clear();
-
-           
-
+            
             if (_activeWorkspace != null)
             {
                 xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
@@ -181,17 +181,13 @@ namespace NuSysApp
                 mainCanvas.Children.Remove(_activeWorkspace);
                 _activeWorkspace = null;
             }
-
-             _activeWorkspace = new WorkspaceView();
-            mainCanvas.Children.Insert(0, _activeWorkspace);
-
-            var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
-            var inqCanvasViewModel = new InqCanvasViewModel(_activeWorkspace.InqCanvas, inqCanvasModel);
-            _activeWorkspace.InqCanvas.ViewModel = inqCanvasViewModel;
-            var workspaceModel = new WorkSpaceModel(inqCanvasModel);
+            
+            var workspaceModel = new WorkSpaceModel();
             SessionController.Instance.IdToSendables["WORKSPACE_ID"] = workspaceModel;
-            workspaceModel.InqModel = inqCanvasModel;
             var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
+ 
+            _activeWorkspace = new WorkspaceView(workspaceViewModel);
+            mainCanvas.Children.Insert(0, _activeWorkspace);
             _activeWorkspace.DataContext = workspaceViewModel;
 
             SessionController.Instance.ActiveWorkspace = workspaceViewModel;

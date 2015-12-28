@@ -21,7 +21,7 @@ namespace NuSysApp
             model.SizeChanged += OnSizeChanged;
             model.ScaleChanged += OnScaleChanged;
             model.AlphaChanged += OnAlphaChanged;
-            model.MetadataChanged += OnMetadataChanged;
+            model.MetadataChange += OnMetadataChange;
 
             Transform.TranslateX = model.X;
             Transform.TranslateY = model.Y;
@@ -42,7 +42,7 @@ namespace NuSysApp
             Alpha = ((NodeModel) Model).Alpha;
         }
 
-        private void OnMetadataChanged(object source, string key)
+        private void OnMetadataChange(object source, string key)
         {
             Tags = string.Join(",", Model.GetMetaData("tags") as List<string>);
             RaisePropertyChanged("Tags");
@@ -55,7 +55,7 @@ namespace NuSysApp
             model.SizeChanged -= OnSizeChanged;
             model.ScaleChanged -= OnScaleChanged;
             model.AlphaChanged -= OnAlphaChanged;
-            model.MetadataChanged -= OnMetadataChanged;
+            model.MetadataChange -= OnMetadataChange;
             base.Dispose();
         }
 

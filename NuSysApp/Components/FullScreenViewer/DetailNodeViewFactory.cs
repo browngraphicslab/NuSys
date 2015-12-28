@@ -63,7 +63,7 @@ namespace NuSysApp
             if (tpl != null)
             {
                 tpl.OnTemplateReady += async delegate {
-                    var inqVm = new InqCanvasViewModel(tpl.inkCanvas, model.InqCanvas);
+                    var inqVm = new InqCanvasViewModel(model.InqCanvas);
                         tpl.inkCanvas.ViewModel = inqVm;
                 };
             }

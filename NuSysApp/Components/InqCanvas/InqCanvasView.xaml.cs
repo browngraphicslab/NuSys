@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.UI;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Navigation;
+
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
-
-    public class InqCanvasView : Canvas
+    public sealed partial class InqCanvasView : UserControl
     {
         private bool _isEnabled;
         private uint _pointerId = uint.MaxValue;
@@ -25,30 +30,32 @@ namespace NuSysApp
         private PointerEventHandler _pointerMovedHandler;
         private PointerEventHandler _pointerReleasedHandler;
 
-        public InqCanvasView()
+        public InqCanvasView(InqCanvasViewModel vm)
         {
+            this.InitializeComponent();
+            _viewModel = vm;
+            DataContext = vm;
 
             _pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
             _pointerMovedHandler = new PointerEventHandler(OnPointerMoved);
             _pointerReleasedHandler = new PointerEventHandler(OnPointerReleased);
 
+            IsEnabled = false;
             // Initally, set mode to Inq drawing.
-            DataContextChanged += delegate
+
+            _mode = new DrawInqMode(this);
+
+            if (_viewModel == null)
+                return;
+
+            _viewModel.Model.LineFinalized += delegate (InqLineModel lineModel)
             {
-
-                _mode = new DrawInqMode(this);
-
-                if (_viewModel == null)
-                    return;
-
-                _viewModel.Model.OnFinalizedLine += delegate(InqLineModel lineModel)
-                {
-                    var lineView = new InqLineView(new InqLineViewModel(lineModel));
-                    var points = lineModel.Points;
-                    this.Children.Add(lineView);
-                };
-
+                var lineView = new InqLineView(new InqLineViewModel(lineModel));
+                var points = lineModel.Points;
+                ViewModel.Lines.Add(lineView);
             };
+
+            
         }
 
         public InqCanvasViewModel ViewModel
@@ -64,10 +71,8 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            Debug.WriteLine("asdffffffffffffffffffffffffffffff");
             if (_pointerId != uint.MaxValue)
             {
-              //  e.Handled = true;
                 return;
             }
 
@@ -76,39 +81,32 @@ namespace NuSysApp
             {
                 CapturePointer(e.Pointer);
             }
-            //PointerMoved += OnPointerMoved;
-            //PointerReleased += OnPointerReleased;
+
             AddHandler(PointerMovedEvent, _pointerMovedHandler, true);
             AddHandler(PointerReleasedEvent, _pointerReleasedHandler, true);
             IsPressed = true;
             _mode.OnPointerPressed(this, e);
-          //  e.Handled = true;
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerId != _pointerId)
             {
-                e.Handled = true;
                 return;
             }
 
             _mode.OnPointerMoved(this, e);
-            
-          //  e.Handled = true;
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerId != _pointerId)
             {
-              //  e.Handled = true;
                 return;
             }
-            //PointerMoved -= OnPointerMoved;
-            RemoveHandler(PointerMovedEvent,_pointerMovedHandler);
-            RemoveHandler(PointerReleasedEvent,_pointerReleasedHandler);
-           // PointerReleased -= OnPointerReleased;
+
+            RemoveHandler(PointerMovedEvent, _pointerMovedHandler);
+            RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
             _pointerId = uint.MaxValue;
             if (this.PointerCaptures != null && this.PointerCaptures.Count != 0)
             {
@@ -118,10 +116,8 @@ namespace NuSysApp
 
             _mode.OnPointerReleased(this, e);
 
-
-         //   e.Handled = true;
         }
-        
+
         /// <summary>
         /// Turns erasing on or off
         /// </summary>
@@ -158,7 +154,7 @@ namespace NuSysApp
 
         public void ReRenderLines()
         {
-            Children.Clear();
+            ViewModel.Lines.Clear();
 
             var lines = ViewModel.Model.Lines;
             if (lines == null)
@@ -167,11 +163,12 @@ namespace NuSysApp
             foreach (InqLineModel line in lines)
             {
                 var inqView = new InqLineView(new InqLineViewModel(line), line.StrokeThickness, line.Stroke);
-                Children.Add(inqView);
+                ViewModel.Lines.Add(inqView);
             }
         }
 
-        public bool IsEnabled {
+        public bool IsEnabled
+        {
             get
             {
                 return _isEnabled;
@@ -179,25 +176,19 @@ namespace NuSysApp
             set
             {
 
-                if (value ==true)
+                if (value)
                 {
-                    //PointerPressed += OnPointerPressed;
                     AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
 
-                } else
+                }
+                else
                 {
-                    //PointerPressed -= OnPointerPressed;
-                    //PointerMoved -= OnPointerMoved;
-                    //PointerReleased -= OnPointerReleased;
                     RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
                     RemoveHandler(PointerMovedEvent, _pointerMovedHandler);
-                    RemoveHandler(PointerReleasedEvent,_pointerReleasedHandler);
+                    RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
                 }
                 _isEnabled = value;
-
                 IsHitTestVisible = value;
-
-                Debug.WriteLine("IsEnabled: " + _isEnabled);
             }
         }
 
@@ -211,11 +202,11 @@ namespace NuSysApp
             switch (e.PropertyName)
             {
                 case "PartialLineAdded":
-                    Children.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
+                    ViewModel.Lines.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
                     break;
                 case "FinalLineAdded":
                     var lineView = new InqLineView(new InqLineViewModel(vm.FinalLineModel));
-                    this.Children.Add(lineView);
+                    ViewModel.Lines.Add(lineView);
                     break;
             }
         }

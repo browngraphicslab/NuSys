@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NuSysApp
@@ -28,7 +29,7 @@ namespace NuSysApp
             }
         }
 
-        public InqCanvasModel InqModel { get; set; }
+        //public InqCanvasModel InqModel { get; set; }
 
         public event NodeChangeHandler linkAdded;
         public event NodeChangeHandler2 ChildAdded;
@@ -39,7 +40,14 @@ namespace NuSysApp
         public async Task AddChild(Sendable nodeModel)
         {
             // TODO: wait for all
-            await ChildAdded?.Invoke(this, nodeModel);
+            //await ChildAdded?.Invoke(this, nodeModel);
+
+            var handler = ChildAdded;
+            if (handler != null)
+            {
+                var tasks = handler.GetInvocationList().Cast<NodeChangeHandler2>().Select(s => s(this, nodeModel));
+                await Task.WhenAll(tasks);
+            }
         }
 
         public async Task RemoveChild(Sendable nodeModel)

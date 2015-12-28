@@ -51,7 +51,7 @@ namespace NuSysApp
                 case NodeType.Text:
                     var tvm = new TextNodeViewModel((TextNodeModel) model);
                     view = new TextNodeView(tvm);
-                    await tvm.UpdateRtf();
+                     await tvm.UpdateRtf();
                     break;
                 case NodeType.GroupTag:
                     view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
@@ -71,8 +71,10 @@ namespace NuSysApp
             if (tpl != null)
             {
                 tpl.OnTemplateReady += async delegate {
-                    var inqVm = new InqCanvasViewModel(tpl.inkCanvas, model.InqCanvas);
+                    var inqVm = new InqCanvasViewModel(model.InqCanvas);
+                    if (tpl.inkCanvas != null) { 
                         tpl.inkCanvas.ViewModel = inqVm;
+                    }
                 };
             }
 

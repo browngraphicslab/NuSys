@@ -62,7 +62,6 @@ namespace NuSysApp
         {
             var link = new LinkModel(atom1, atom2, id);
             IdToSendables.Add(id, link);
-            ActiveWorkspace.Model.AddChild(link);
         }
 
         public async Task CreateGroup(string id, NodeModel node1, NodeModel node2, double xCooordinate, double yCoordinate)
@@ -130,10 +129,10 @@ namespace NuSysApp
 
         public void AddGlobalInq(InqLineModel lineView)
         {
-            //OnPartialLineAddition?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
+            //PartialLineAdded?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
             // TODO: readd line below
             var wvm = (WorkSpaceModel)Instance.ActiveWorkspace.Model;
-            var cm = (InqCanvasModel) wvm.InqModel;
+            var cm = (InqCanvasModel) wvm.InqCanvas;
             cm.FinalizeLine(lineView);
         }
 

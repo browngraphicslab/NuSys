@@ -16,13 +16,16 @@ namespace NuSysApp
     public class InqCanvasModel
     {
         public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
-        public event AddPartialLineEventHandler OnPartialLineAddition;
+        public event AddPartialLineEventHandler PartialLineAdded;
 
        // public delegate void AddFinalLineEventHandler(object source, AddLineEventArgs e);
         //public event AddPartialLineEventHandler OnFinalLineAddition;
 
-        public event FinalizedLine OnFinalizedLine;
-        public delegate void FinalizedLine(InqLineModel lineModel);
+        public event LineHandler LineFinalized;
+        public event LineHandler LineRemoved;
+        public delegate void LineHandler(InqLineModel lineModel);
+        
+
 
         private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
@@ -43,7 +46,7 @@ namespace NuSysApp
                         n.CollectionChanged += delegate (object o, NotifyCollectionChangedEventArgs eventArgs)
                         {
                             InqLineView l = ((InqLineView)((object[])eventArgs.NewItems.SyncRoot)[0]);
-                            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs("Added Partial Lines", l));
+                            PartialLineAdded?.Invoke(this, new AddLineEventArgs("Added Partial Lines", l));
                         };
                     }
                 }
@@ -91,13 +94,15 @@ namespace NuSysApp
             _lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             //OnFinalLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", line));
-            OnFinalizedLine?.Invoke( line );
+            LineFinalized?.Invoke( line );
         }
 
         private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)
         {
-            this._lines.Remove(deleteInqLineEventArgs.LineModelToDelete);
+            _lines.Remove(deleteInqLineEventArgs.LineModelToDelete);
+            LineRemoved?.Invoke(deleteInqLineEventArgs.LineModelToDelete);
         }
+
         public Dictionary<string, HashSet<InqLineModel>> PartialLines
         {
             get { return _partialLines; }
@@ -110,7 +115,7 @@ namespace NuSysApp
                 _partialLines.Add(temporaryID, new HashSet<InqLineModel>());
             }
             _partialLines[temporaryID].Add(lineModel);
-            OnPartialLineAddition?.Invoke(this, new AddLineEventArgs(lineModel));
+            PartialLineAdded?.Invoke(this, new AddLineEventArgs(lineModel));
         }
 
         public void RemovePartialLines(string oldID)

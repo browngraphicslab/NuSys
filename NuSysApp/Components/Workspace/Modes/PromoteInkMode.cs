@@ -18,7 +18,7 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-            var strokes = _view.InqCanvas.Children;
+            var strokes = _view.InqCanvas.ViewModel.Lines;
             foreach (var stroke in strokes)
             {
                 if (stroke is InqLineView)
@@ -30,8 +30,8 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
-            var strokes = _view.InqCanvas.Children;
-            foreach(var stroke in strokes)
+            var strokes = _view.InqCanvas.ViewModel.Lines;
+            foreach (var stroke in strokes)
             {
                 if (stroke is InqLineView)
                 {
@@ -42,7 +42,7 @@ namespace NuSysApp
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            _view.InqCanvas.Children.Remove(sender as InqLineView);
+            _view.InqCanvas.ViewModel.Lines.Remove(sender as InqLineView);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
             InqLineView[] linesView = {sender as InqLineView};

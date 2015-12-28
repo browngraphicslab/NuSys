@@ -234,7 +234,7 @@ namespace NuSysApp.Components
                 }
                 else
                 {
-                    canvas = SessionController.Instance.ActiveWorkspace.Model.InqModel;
+                    canvas = SessionController.Instance.ActiveWorkspace.Model.InqCanvas;
                 }
                 if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                 {
@@ -270,9 +270,9 @@ namespace NuSysApp.Components
                         {
                             InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
                             thickness = 2;
-                            if (props.ContainsKey("previousID") && SessionController.Instance.ActiveWorkspace.Model.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                            if (props.ContainsKey("previousID") && SessionController.Instance.ActiveWorkspace.Model.InqCanvas.PartialLines.ContainsKey(props["previousID"]))
                             {
-                                canvas.OnFinalizedLine += async delegate
+                                canvas.LineFinalized += async delegate
                                 {
                                     await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
                                 };

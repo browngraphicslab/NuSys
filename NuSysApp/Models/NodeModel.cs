@@ -40,7 +40,7 @@ namespace NuSysApp
 
         public event AlphaChangedEventHandler AlphaChanged;
 
-        public InqCanvasModel InqCanvas { get; }
+        public InqCanvasModel InqCanvas { get; set; }
         public NodeContentModel Content { set; get; }
 
         public NodeModel(string id) : base(id)

@@ -57,7 +57,15 @@ namespace NuSysApp
             var view = await _nodeViewFactory.CreateFromSendable(nodeModel, Children.Values.ToList());
             Children.Add(nodeModel.Id, view);
             AtomViewList.Add(view);
-            ChildAdded?.Invoke(this, (AnimatableNodeView)view);
+
+            var handler = ChildAdded;
+            if (handler != null)
+            {
+                var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (AnimatableNodeView)view));
+                await Task.WhenAll(tasks);
+            }
+
+        //ChildAdded?.Invoke(this, (AnimatableNodeView)view);
         }
 
         protected virtual async Task OnChildRemoved(object source, Sendable sendable)

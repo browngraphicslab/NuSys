@@ -15,12 +15,15 @@ namespace NuSysApp
     {
         public SelectMode(WorkspaceView view) : base(view) { }
 
+        private AtomViewModel _selectedAtomVm;
+        private bool _singleTap;
+
         public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
            _view.DoubleTapped += OnDoubleTapped;
             _view.PointerPressed += OnPointerPressed;
-
+            _view.PointerReleased += OnPointerReleased;
             _view.ManipulationMode = ManipulationModes.All;
         }
 
@@ -29,6 +32,7 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = false;
             _view.PointerPressed -= OnPointerPressed;
             _view.DoubleTapped -= OnDoubleTapped;
+            _view.PointerReleased -= OnPointerReleased;
 
             _view.ManipulationMode = ManipulationModes.None;
   
@@ -36,27 +40,52 @@ namespace NuSysApp
             vm.ClearSelection();
         }
 
-        private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-           
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc is WorkspaceViewModel) { 
-                var vm = (WorkspaceViewModel)_view.DataContext;
+
+            if (_selectedAtomVm != null && _selectedAtomVm != dc)
+                _selectedAtomVm.SetSelected(false);
+
+            _singleTap = false;
+            await Task.Delay(100);
+            if (!_singleTap)
+                return;
+
+
+
+            
+            if (dc is WorkspaceViewModel)
+            {
+                var vm = (WorkspaceViewModel) _view.DataContext;
                 vm.ClearSelection();
             }
             else if (dc is NodeViewModel)
             {
-                var vm = (NodeViewModel)dc;
+                var vm = (NodeViewModel) dc;
+                _selectedAtomVm = vm;
+                vm.SetSelected(true);
                 List<string> locks = new List<string>();
                 locks.Add(vm.Id);
                 NetworkConnector.Instance.CheckLocks(locks);
                 NetworkConnector.Instance.RequestLock(vm.Id);
             }
-          //  e.Handled = true;
+            else if (dc is LinkViewModel)
+            {
+                var vm = (LinkViewModel)dc;
+                vm.SetSelected(true);
+                _selectedAtomVm = vm;
+            }
+        }
+
+        private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            _singleTap = true;
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+          
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc is NodeViewModel)
             {

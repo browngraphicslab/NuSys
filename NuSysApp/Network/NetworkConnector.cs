@@ -456,9 +456,9 @@ namespace NuSysApp
                         await UITask.Run(async () =>
                         {
                             await n.UnPack(props);
-                            if (justCreated && n is NodeModel)
+                            if (justCreated && n is AtomModel)
                             {
-                                var creator = (n as NodeModel).Creator;
+                                var creator = (n as AtomModel).Creator;
                                 if (creator != null)
                                     await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(n);
                                 else
@@ -720,7 +720,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        canvas = SessionController.Instance.ActiveWorkspace.Model.InqModel;
+                        canvas = SessionController.Instance.ActiveWorkspace.Model.InqCanvas;
                     }
                     if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                     {
@@ -756,9 +756,9 @@ namespace NuSysApp
                             {
                                 InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
                                 thickness = 2;
-                                if (props.ContainsKey("previousID") && SessionController.Instance.ActiveWorkspace.Model.InqModel.PartialLines.ContainsKey(props["previousID"]))
+                                if (props.ContainsKey("previousID") && SessionController.Instance.ActiveWorkspace.Model.InqCanvas.PartialLines.ContainsKey(props["previousID"]))
                                 {
-                                    canvas.OnFinalizedLine += async delegate
+                                    canvas.LineFinalized += async delegate
                                     {
                                         await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
                                     };
@@ -769,10 +769,9 @@ namespace NuSysApp
                                 {
                                     lineModel.ParentID = props["canvasNodeID"];
                                 }
-                                var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
                                 lineModel.Points = points;
                                 lineModel.Stroke = stroke;
-                                canvas.FinalizeLine(lineModel);
+
                                 try
                                 {
                                     if (!SessionController.Instance.IdToSendables.ContainsKey(id))
@@ -784,12 +783,15 @@ namespace NuSysApp
                                         SessionController.Instance.IdToSendables.Remove(id);
                                         SessionController.Instance.IdToSendables.Add(id, lineModel);
                                     }
-                                    
+
                                 }
                                 catch (System.ArgumentException argument)
                                 {
                                     //Debug.Write(argument.StackTrace);
                                 }
+
+                                canvas.FinalizeLine(lineModel);
+                         
 
                             }
                         });

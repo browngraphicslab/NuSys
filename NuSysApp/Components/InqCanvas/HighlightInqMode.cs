@@ -23,7 +23,7 @@ namespace NuSysApp
             _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);
             _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
             _currentInqLineView.Stroke = _currentStroke.Stroke;
-            inqCanvas.Children.Add(_currentInqLineView);
+            inqCanvas.ViewModel.Lines.Add(_currentInqLineView);
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -43,9 +43,9 @@ namespace NuSysApp
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
-            (((InqCanvasViewModel)inqCanvas.DataContext).Model).OnFinalizedLine += delegate
+            (((InqCanvasViewModel)inqCanvas.DataContext).Model).LineFinalized += delegate
             {
-                inqCanvas.Children.Remove(_currentInqLineView);
+                inqCanvas.ViewModel.Lines.Remove(_currentInqLineView);
             };
         }
     }

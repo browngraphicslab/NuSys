@@ -70,6 +70,8 @@ namespace NuSysApp
             tags = (TextBlock)GetTemplateChild("Tags");
             var t = new TranslateTransform {X = 0, Y = 25};
             tags.RenderTransform = t;
+            
+         
 
            // ManipulationMode = ManipulationModes.All;
             //ManipulationDelta += OnManipulationDelta;
@@ -77,7 +79,6 @@ namespace NuSysApp
             //ManipulationCompleted += OnManipulationCompleted;
 
             var vm = (NodeViewModel)this.DataContext;
-            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
             vm.PropertyChanged += new PropertyChangedEventHandler(Node_MultiSelectionChanged);
 
             base.OnApplyTemplate();
@@ -115,9 +116,11 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
 
+            
+
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
-           // e.Handled = true; 
+            e.Handled = true; 
 
         }
 
@@ -140,49 +143,6 @@ namespace NuSysApp
             {
             }
             
-        }
-
-        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e) 
-
-        {     
-            var slidein = (Storyboard)GetTemplateChild("slidein");
-            var slideout = (Storyboard)GetTemplateChild("slideout");
-
-            if (e.PropertyName.Equals("IsSelected"))
-            {
-                var vm = (NodeViewModel)this.DataContext;
-
-                if (vm.IsSelected)
-                {
-                    slideout.Begin();
-                }
-                else
-                {
-                    slidein.Begin();
-                    if (vm.IsEditingInk == true)
-                    {
-                        vm.ToggleEditingInk();
-                        inkCanvas.IsEnabled = vm.IsEditingInk;
-                    if (ManipulationMode == ManipulationModes.All)
-                    {
-                        ManipulationMode = ManipulationModes.None;
-                    }
-                    else
-                    {
-                        ManipulationMode = ManipulationModes.All;
-                    }
-                    }
-                }
-                if (vm.GetType() == typeof (TextNodeViewModel))
-                {
-
-                    if (vm.IsEditing == true)
-                    {
-                        vm.ToggleEditing();
-                        vm.IsEditing = false;
-                    }
-                }
-            }
         }
     }
 }
