@@ -14,7 +14,7 @@ namespace NuSysApp
         public PdfNodeView(PdfNodeViewModel vm)
         {
             InitializeComponent();
-            
+          //  IsDoubleTapEnabled = true;
 
             DataContextChanged += async delegate(FrameworkElement sender, DataContextChangedEventArgs args)
             {
@@ -51,23 +51,25 @@ namespace NuSysApp
 
         }
 
-        private void OnPageLeftClick(object sender, RoutedEventArgs e)
+        private void OnPageLeftClick(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.FlipLeft();
+            e.Handled = true;
 
-           // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
 //nodeTpl.inkCanvas.ReRenderLines();
 
         }
 
-        private void OnPageRightClick(object sender, RoutedEventArgs e)
+        private void OnPageRightClick(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             vm.FlipRight();
+            e.Handled = true;
 
-         //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-       //     nodeTpl.inkCanvas.ReRenderLines();
+            //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            //     nodeTpl.inkCanvas.ReRenderLines();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
@@ -76,7 +78,11 @@ namespace NuSysApp
             vm.Remove();
         }
 
-  
+
+        private void PageRight_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 
 

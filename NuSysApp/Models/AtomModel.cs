@@ -29,7 +29,6 @@ namespace NuSysApp
             CanEdit = EditStatus.Maybe;
 
             SetMetaData("tags", new List<string> {"none"});
-            //GetMetaData(tags)
         }
         
         //takes in SolidColorBrush converts to string

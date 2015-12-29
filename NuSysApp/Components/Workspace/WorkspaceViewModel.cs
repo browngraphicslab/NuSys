@@ -26,18 +26,20 @@ namespace NuSysApp
   
         #endregion Private Members
 
-        public WorkspaceViewModel(WorkSpaceModel model) : base(model)
+        public WorkspaceViewModel(WorkspaceModel model) : base(model)
         {
-            Model = model;
-            
             GroupDict = new Dictionary<string, NodeContainerViewModel>();
             MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
             
             var c = new CompositeTransform
             {
-                TranslateX = (-1) * (Constants.MaxCanvasSize),
-                TranslateY = (-1) * (Constants.MaxCanvasSize)
+                TranslateX = model.LocationX,
+                TranslateY = model.LocationY,
+                CenterX = model.CenterX,
+                CenterY = model.CenterY,
+                ScaleX = model.Zoom,
+                ScaleY = model.Zoom
             };
 
             CompositeTransform = c;
@@ -258,10 +260,6 @@ namespace NuSysApp
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
         public List<AtomViewModel> MultiSelectedAtomViewModels { get; private set; }
-
-        public SQLiteDatabase myDB { get; set; }
-
-        public WorkSpaceModel Model { get; set; }
         
         public CompositeTransform CompositeTransform
         {

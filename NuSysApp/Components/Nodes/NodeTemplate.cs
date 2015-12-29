@@ -115,9 +115,7 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
-
             
-
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true; 

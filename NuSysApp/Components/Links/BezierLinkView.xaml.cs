@@ -15,14 +15,44 @@ namespace NuSysApp
         public BezierLinkView(LinkViewModel vm)
         {
             InitializeComponent();
-            ManipulationMode = ManipulationModes.All;
             DataContext = vm;
+
+            vm.PropertyChanged += OnPropertyChanged;
 
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
-            UpdateControlPoints();
+            
+
+            Annotation.SizeChanged += delegate(object sender, SizeChangedEventArgs args)
+            {
+                Rect.Width = args.NewSize.Width;
+                Rect.Height = args.NewSize.Height;
+            };
 
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
+
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                UpdateControlPoints();
+                AnnotationContainer.Visibility = vm.AnnotationText == "" ? Visibility.Collapsed : Visibility.Visible;
+            };
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName == "AnnotationText")
+            {
+                AnnotationContainer.Visibility = (sender as LinkViewModel).AnnotationText == ""
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
+
+            var vm = (LinkViewModel)DataContext;
+
+            if (propertyChangedEventArgs.PropertyName == "IsSelected" && vm.AnnotationText == "")
+            {
+                AnnotationContainer.Visibility = vm.IsSelected ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         /// <summary>
@@ -53,6 +83,9 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
+
+            Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX/2 - Rect.ActualWidth/2);
+            Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY/2 - Rect.ActualHeight*1.5);
         }
 
         private void UpdateEndPoints()

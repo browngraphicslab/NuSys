@@ -30,7 +30,7 @@ namespace NuSysApp
         public WorkspaceView(WorkspaceViewModel vm)
         {
             this.InitializeComponent();
-            var wsModel = vm.Model;
+            var wsModel = (WorkspaceModel)vm.Model;
 
             
             var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");

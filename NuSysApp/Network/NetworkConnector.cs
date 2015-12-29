@@ -462,7 +462,7 @@ namespace NuSysApp
                                 if (creator != null)
                                     await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(n);
                                 else
-                                    await SessionController.Instance.ActiveWorkspace.Model.AddChild(n);
+                                    await (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).AddChild(n);
                             }
                         });//update the sendable with the dictionary info
                     }
@@ -720,7 +720,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        canvas = SessionController.Instance.ActiveWorkspace.Model.InqCanvas;
+                        canvas = (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).InqCanvas;
                     }
                     if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                     {
@@ -756,7 +756,7 @@ namespace NuSysApp
                             {
                                 InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
                                 thickness = 2;
-                                if (props.ContainsKey("previousID") && SessionController.Instance.ActiveWorkspace.Model.InqCanvas.PartialLines.ContainsKey(props["previousID"]))
+                                if (props.ContainsKey("previousID") && (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).InqCanvas.PartialLines.ContainsKey(props["previousID"]))
                                 {
                                     canvas.LineFinalized += async delegate
                                     {

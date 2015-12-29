@@ -16,7 +16,7 @@ namespace NuSysApp
         public SelectMode(WorkspaceView view) : base(view) { }
 
         private AtomViewModel _selectedAtomVm;
-        private bool _singleTap;
+        private bool _released;
 
         public override async Task Activate()
         {
@@ -42,23 +42,26 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-
-            if (_selectedAtomVm != null && _selectedAtomVm != dc)
-                _selectedAtomVm.SetSelected(false);
-
-            _singleTap = false;
+            _released = false;
             await Task.Delay(100);
-            if (!_singleTap)
+            if (!_released)
                 return;
 
+            _selectedAtomVm?.SetSelected(false);
+
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            if (dc == _selectedAtomVm)
+            {
+                _selectedAtomVm = null;
+                return;
+            }
 
 
-            
             if (dc is WorkspaceViewModel)
             {
                 var vm = (WorkspaceViewModel) _view.DataContext;
                 vm.ClearSelection();
+                _selectedAtomVm = null;
             }
             else if (dc is NodeViewModel)
             {
@@ -80,14 +83,14 @@ namespace NuSysApp
 
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            _singleTap = true;
+            _released = true;
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
           
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc is NodeViewModel)
+            if (dc is NodeViewModel && !(dc is WorkspaceViewModel) )
             {
                 var vm = (NodeViewModel)dc;
                 SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);

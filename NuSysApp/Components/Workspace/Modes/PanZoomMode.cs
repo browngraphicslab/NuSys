@@ -74,6 +74,13 @@ namespace NuSysApp
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
             vm.CompositeTransform = compositeTransform;
+
+            var model = (WorkspaceModel)vm.Model;
+            model.LocationX = compositeTransform.TranslateX;
+            model.LocationY = compositeTransform.TranslateY;
+            model.CenterX = compositeTransform.CenterX;
+            model.CenterY = compositeTransform.CenterY;
+            model.Zoom = compositeTransform.ScaleX;
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
@@ -151,7 +158,13 @@ namespace NuSysApp
 
             vm.CompositeTransform = compositeTransform;
 
-           // e.Handled = true;
+            var model = (WorkspaceModel)vm.Model;
+            model.LocationX = compositeTransform.TranslateX;
+            model.LocationY = compositeTransform.TranslateY;
+            model.CenterX = compositeTransform.CenterX;
+            model.CenterY = compositeTransform.CenterY;
+            model.Zoom = compositeTransform.ScaleX;
+            // e.Handled = true;
         }  
     }
 }

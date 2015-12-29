@@ -141,7 +141,10 @@ namespace NuSysApp
 
         public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )
         {
-            await LoadEmptyWorkspace();
+            //await LoadEmptyWorkspace();
+            SessionController.Instance.Locks.Clear();
+            SessionController.Instance.IdToSendables.Clear();
+
             var atomCreator = new AtomCreator();
 
             var createdModel = new List<AtomModel>();
@@ -152,15 +155,19 @@ namespace NuSysApp
                 var id = msg.GetString("id", "noId");
                 await atomCreator.HandleCreateNewSendable(id, msg);
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;
-                if (model != null) { 
                 await model.UnPack(msg);
-                createdModel.Add(model);
+                if (model is WorkspaceModel)
+                {
+                    var wsModel = SessionController.Instance.IdToSendables[id] as AtomModel;
+                    await OpenWorkspace((WorkspaceModel) wsModel);
                 }
+               
+                createdModel.Add(model);
             }
 
             foreach (var model in createdModel)
             {
-                if (!(model is WorkSpaceModel) && !(model is InqCanvasModel) && model.Creator != null)
+                if (!(model is WorkspaceModel) && !(model is InqCanvasModel) && model.Creator != null)
                 {
                     var container = (NodeContainerModel) SessionController.Instance.IdToSendables[model.Creator];
                     await container.AddChild(model);
@@ -182,21 +189,37 @@ namespace NuSysApp
                 _activeWorkspace = null;
             }
             
-            var workspaceModel = new WorkSpaceModel();
-            SessionController.Instance.IdToSendables["WORKSPACE_ID"] = workspaceModel;
-            var workspaceViewModel = new WorkspaceViewModel(workspaceModel);
- 
-            _activeWorkspace = new WorkspaceView(workspaceViewModel);
-            mainCanvas.Children.Insert(0, _activeWorkspace);
-            _activeWorkspace.DataContext = workspaceViewModel;
-
-            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
-            SessionController.Instance.SessionView = this;
+            var workspaceModel = new WorkspaceModel("WORKSPACE_ID");
+            OpenWorkspace(workspaceModel);
+            
             xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
 
             //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
+            
+        }
 
+        public async Task OpenWorkspace(WorkspaceModel model)
+        {
+            if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
+                mainCanvas.Children.Remove(_activeWorkspace);
+
+            if (_activeWorkspace != null)
+                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
+
+            SessionController.Instance.IdToSendables["WORKSPACE_ID"] = model;
+            var workspaceViewModel = new WorkspaceViewModel(model);
+
+            _activeWorkspace = new WorkspaceView(workspaceViewModel);
+            mainCanvas.Children.Insert(0, _activeWorkspace);
+      
+            _activeWorkspace.DataContext = workspaceViewModel;
             xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
+
+            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
+            SessionController.Instance.SessionView = this;
+
+
+
         }
 
         public void ShowFullScreen(NodeModel model)
@@ -221,6 +244,11 @@ namespace NuSysApp
             props["width"] = "400";
             props["height"] = "300";
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);
+        }
+
+        public FloatingMenuView FloatingMenu
+        {
+            get { return xFloatingMenu; }
         }
     }
 }

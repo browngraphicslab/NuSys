@@ -33,15 +33,18 @@ namespace NuSysApp
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            var newItems = notifyCollectionChangedEventArgs.NewItems as IEnumerable<FrameworkElement>;
+            var newItems = notifyCollectionChangedEventArgs.NewItems;
             if (newItems == null)
                 return;
 
-            var newNodes = newItems.Where(u => u.DataContext is NodeViewModel);
-            foreach (var userControl in newNodes)
+            var newNodes = newItems;
+            foreach (var n in newNodes)
             {
-                userControl.ManipulationMode = ManipulationModes.All;
-                userControl.ManipulationDelta += OnManipulationDelta;
+                var userControl = (UserControl) n;
+                if (userControl.DataContext is NodeViewModel) { 
+                    userControl.ManipulationMode = ManipulationModes.All;
+                    userControl.ManipulationDelta += OnManipulationDelta;
+                }
             }
         }
 
@@ -61,8 +64,6 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
-
-           
 
             var s = (UserControl) sender;
             var vm = s.DataContext as NodeViewModel;

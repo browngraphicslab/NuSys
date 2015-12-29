@@ -131,7 +131,7 @@ namespace NuSysApp
         {
             //PartialLineAdded?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));
             // TODO: readd line below
-            var wvm = (WorkSpaceModel)Instance.ActiveWorkspace.Model;
+            var wvm = (WorkspaceModel)Instance.ActiveWorkspace.Model;
             var cm = (InqCanvasModel) wvm.InqCanvas;
             cm.FinalizeLine(lineView);
         }
@@ -144,7 +144,7 @@ namespace NuSysApp
 
             IdToSendables.Add(id, pinModel);
 
-            ActiveWorkspace.Model.AddChild(pinModel);
+            (ActiveWorkspace.Model as WorkspaceModel).AddChild(pinModel);
 
         }
 
@@ -173,6 +173,9 @@ namespace NuSysApp
                 case NodeType.GroupTag:
                     node = new NodeContainerModel(id);
                     break;
+                case NodeType.Workspace:
+                    node = new WorkspaceModel("WORKSPACE_ID");
+                    break;
                 case NodeType.Group:
                     node = null;
                     break;
@@ -198,7 +201,7 @@ namespace NuSysApp
             {
                 //NodeDeleted?.Invoke(this, new DeleteEventArgs("node deleted", IdToSendables[id)));
                 
-                ActiveWorkspace.Model.RemoveChild(IdToSendables[id]);
+                (ActiveWorkspace.Model as WorkspaceModel).RemoveChild(IdToSendables[id]);
                 IdToSendables.Remove(id);
             }
             else
@@ -222,6 +225,8 @@ namespace NuSysApp
             var lines = await FileIO.ReadLinesAsync(file);
 ;           SessionView.LoadWorksapce(lines);
         }
+
+      
 
 
         public static SessionController Instance

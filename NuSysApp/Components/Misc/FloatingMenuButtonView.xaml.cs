@@ -21,6 +21,7 @@ namespace NuSysApp
     {
         public static readonly DependencyProperty WindowProperty = DependencyProperty.RegisterAttached("Window", typeof(UserControl), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty IconProperty = DependencyProperty.RegisterAttached("Icon", typeof(string), typeof(FloatingMenuButtonView), null);
+        public static readonly DependencyProperty CaptionProperty = DependencyProperty.RegisterAttached("Caption", typeof(string), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty ParentButtonProperty = DependencyProperty.RegisterAttached("ParentButton", typeof(FloatingMenuButtonView), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty IsModeProperty = DependencyProperty.RegisterAttached("IsMode", typeof(bool), typeof(FloatingMenuButtonView), null);
 
@@ -50,6 +51,16 @@ namespace NuSysApp
             set {
                 SetValue(IconProperty, value);
                 icon.Source = new BitmapImage(new Uri(value)); ;
+            }
+        }
+
+        public string Caption
+        {
+            get { return (string)GetValue(CaptionProperty); }
+            set
+            {
+                SetValue(CaptionProperty, value);
+                btnCaption.Text = value; ;
             }
         }
 

@@ -8,20 +8,19 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     xmlns:converters="using:NuSysApp"
-    ManipulationMode="All"
     DoubleTapped="BezierLinkView_OnDoubleTapped"
     PointerPressed="BezierLinkView_OnPointerPressed"
 >
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="bConverter"/>
     </UserControl.Resources>
-    <Grid Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+  
         <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".5" CompositeMode="MinBlend">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
                         <PathFigureCollection>
-
                             <!--this startpoint should be bound to node centerpoint-->
 
                             <PathFigure x:Name="pathfigure">
@@ -41,5 +40,9 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-    </Grid>
+        <Grid x:Name="AnnotationContainer">
+            <Rectangle x:Name="Rect" Fill="Transparent" StrokeThickness="2" Stroke="#D2F3FF" StrokeDashArray="4,4" RadiusX="5" RadiusY="5" Width="260" />
+            <TextBox x:Name="Annotation" IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding AnnotationText, Mode=TwoWay}" Width="260" MaxHeight="80" FontSize="18" BorderBrush="Transparent" TextAlignment="Center" VerticalAlignment="Center"></TextBox>
+        </Grid>
+    </Canvas>
 </UserControl>

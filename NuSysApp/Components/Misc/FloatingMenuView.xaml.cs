@@ -67,12 +67,12 @@ namespace NuSysApp
             _buttons = new BiDictionary<FloatingMenuButtonView, Options>();
             _buttons[btnSelect] = Options.MainSelect;
             _buttons[btnSelectNode] = Options.SelectNode;
-            _buttons[btnMarqueeSelect] = Options.SelectMarquee;
+            //_buttons[btnMarqueeSelect] = Options.SelectMarquee;
 
             _buttons[btnPen] = Options.MainPen;
             _buttons[btnGlobalInk] = Options.PenGlobalInk;
             _buttons[btnInkErase] = Options.PenErase;
-            _buttons[btnHighlight] = Options.PenHighlight;    
+          //  _buttons[btnHighlight] = Options.PenHighlight;    
 
             _buttons[btnAdd] = Options.MainAdd;
             _buttons[btnNewNode] = Options.AddTextNode;
@@ -144,6 +144,14 @@ namespace NuSysApp
         public void SetActive(Options option, bool isFixed = false)
         {
             SetActive(_buttons.GetKeyByValue(option), option, isFixed);
+        }
+
+        public void Reset()
+        {
+            btnAdd.Icon = btnNewNode.Icon;
+            btnSelect.Icon = btnSelectNode.Icon;
+            btnMisc.Icon = btnExport.Icon;
+            SetActive(Options.SelectNode);
         }
 
         public void SetActive(FloatingMenuButtonView btnToActivate, Options option, bool isFixed = false)

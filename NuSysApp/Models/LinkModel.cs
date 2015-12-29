@@ -10,6 +10,7 @@ namespace NuSysApp
     {
         public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
         public event DeleteEventHandler OnDeletion;
+
         public LinkModel(AtomModel inAtom, AtomModel outAtom, string id) : base(id)
         {
             InAtomID = inAtom.Id;
@@ -17,6 +18,7 @@ namespace NuSysApp
             Id = id;
             Atom1 = inAtom;
             Atom2 = outAtom;
+            
         }
 
         public string InAtomID { get; set; }
@@ -27,7 +29,9 @@ namespace NuSysApp
         {
             InAtomID = props.GetString("id1", InAtomID);
             OutAtomID = props.GetString("id2", InAtomID);
+      
             base.UnPack(props);
+          //  SetMetaData("annotation", "No Annotation");
         }
 
         public override async Task<Dictionary<string, string>> Pack()
@@ -38,8 +42,6 @@ namespace NuSysApp
             dict.Add("type","linq");
             return dict;
         }
-
-        public NodeModel Annotation { get; set; }
 
         public AtomModel Atom1 { get; private set; }
 

@@ -105,40 +105,38 @@
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
             <local:FloatingMenuButtonView x:Name="btnSelect" Icon="ms-appx:///Assets/icon_mainmenu_select.png" />
-            <local:FloatingMenuButtonView x:Name="btnPen" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" />
             <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" />
             <local:FloatingMenuButtonView x:Name="btnMisc" Icon="ms-appx:///Assets/icon_mainmenu_additional.png" />
         </StackPanel>
 
-        <StackPanel Name="SubMenuSelect" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel Name="SubMenuSelect" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnSelectNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" />
-            <local:FloatingMenuButtonView x:Name="btnMarqueeSelect" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_multiselect.png" ParentButton="{Binding ElementName=btnSelect}"  />
+            <local:FloatingMenuButtonView x:Name="btnSelectNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Select / Move"  />
+            <local:FloatingMenuButtonView x:Name="btnPen" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Ink" />
         </StackPanel>
 
-        <StackPanel x:Name="SubMenuPen" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,120,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuPen"  VerticalAlignment="Top" Margin="0,40,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnGlobalInk" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnPen}" />
-            <local:FloatingMenuButtonView x:Name="btnInkErase" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" />
-            <local:FloatingMenuButtonView x:Name="btnHighlight" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_highlight.png" ParentButton="{Binding ElementName=btnPen}" />
+            <local:FloatingMenuButtonView x:Name="btnGlobalInk" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnPen}" Caption="Ink" />
+            <local:FloatingMenuButtonView x:Name="btnInkErase" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" Caption="Erase" />
         </StackPanel>
         
-        <StackPanel x:Name="SubMenuNodes" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,220,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuNodes" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" />
-            <local:FloatingMenuButtonView x:Name="btnNewMedia" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_media.png" ParentButton="{Binding ElementName=btnAdd}" />
+            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption="New Text Node" />
+            <local:FloatingMenuButtonView x:Name="btnNewMedia" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_media.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Import Media" />
             <local:FloatingMenuButtonView x:Name="btnNewAudioCapture" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnBucket" Icon="ms-appx:///Assets/icon_mainmenu_bucket.png" Window="{Binding ElementName=bucketWindow}" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnVideo" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />
         </StackPanel>
         
-        <StackPanel x:Name="SubMenuAdditional" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,320,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuAdditional" VerticalAlignment="Top" Margin="0,220,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>

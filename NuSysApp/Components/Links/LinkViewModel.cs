@@ -10,7 +10,19 @@ namespace NuSysApp
         #region Private Members
 
         private AtomViewModel _atom1, _atom2;
+        private string _annotationText;
         #endregion Private members
+
+
+        public string AnnotationText
+        {
+            get { return _annotationText; }
+            set
+            {
+                _annotationText = value;
+                Model.SetMetaData("annotation", _annotationText);
+            }
+        }
 
         public LinkViewModel(LinkModel model, AtomViewModel atom1, AtomViewModel atom2) : base(model)
         {
@@ -20,15 +32,12 @@ namespace NuSysApp
             Anchor = new Point2d((int)(line.X2 + (Math.Abs(line.X2 - line.X1) / 2)), (int)(line.Y1 + (Math.Abs(line.Y2 - line.Y1) / 2)));
             Atom1.AddLink(this);
             Atom2.AddLink(this);
-   
-            
+
+            AnnotationText = (string)model.GetMetaData("annotation");
             model.OnDeletion += DeletionHappend;
-            
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));
         }
-
-
 
         public override void Dispose()
         {
@@ -67,7 +76,7 @@ namespace NuSysApp
         #endregion Link Manipulation Methods
 
         #region Public Properties
-        public NodeViewModel Annotation { get; set; }
+
         public AtomViewModel Atom1
         {
             get { return _atom1; }
@@ -113,6 +122,7 @@ namespace NuSysApp
             _isSelected = val;
             Color = val ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF,0xFF,0xAA,0x2D)) : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             RaisePropertyChanged("Color");
+            RaisePropertyChanged("IsSelected");
         }
     }
 }

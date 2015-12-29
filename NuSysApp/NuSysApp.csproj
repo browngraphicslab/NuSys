@@ -160,11 +160,13 @@
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\ImageNode\ImageNodeViewModel.cs" />
+    <Compile Include="Components\ContextMenuView.xaml.cs">
+      <DependentUpon>ContextMenuView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Workspace\Modes\LinkMode.cs" />
     <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
-    <Compile Include="Database\Serializer.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
@@ -285,8 +287,6 @@
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
-    <Compile Include="Database\SQLiteDatabase.cs" />
-    <Compile Include="Database\XmlFileHelper.cs" />
     <Compile Include="Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\Nodes\Base\AtomViewModel.cs" />
@@ -419,6 +419,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Cortana\CortanaPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ContextMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

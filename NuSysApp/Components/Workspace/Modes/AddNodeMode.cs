@@ -183,10 +183,9 @@ namespace NuSysApp
             vm.ClearMultiSelection();
 
             if (!_isFixed) { 
-            await view.SetViewMode(new MultiMode(view, new PromoteInkMode(view), new PanZoomMode(view), new SelectMode(view),
-                new FloatingMenuMode(view)));
+            
                 // TODO: re-add
-                //view.FloatingMenu.SetActive(Options.SelectNode);
+                SessionController.Instance.SessionView.FloatingMenu.Reset();
             }           
         }
     }
