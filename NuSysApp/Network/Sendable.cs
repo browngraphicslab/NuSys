@@ -74,8 +74,9 @@ namespace NuSysApp
             }
             props["children"] = JsonConvert.SerializeObject(childs);
             */
-            
-            return JsonConvert.SerializeObject(props);
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+            return JsonConvert.SerializeObject(props, settings);
         }
     }
 }

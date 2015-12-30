@@ -24,8 +24,8 @@ namespace NuSysApp
         #endregion Private Members
         public TextNodeViewModel(TextNodeModel model) : base(model)
         {           
-            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(100, 89, 189, 197));
-            ((TextNodeModel) Model).OnTextChanged += TextChangedHandler;
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
+            ((TextNodeModel) Model).TextChanged += TextChangedHandler;
         }
 
         public async Task UpdateRtf()       

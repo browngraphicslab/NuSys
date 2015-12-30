@@ -27,6 +27,7 @@ namespace NuSysApp
             AddTextNode,
             AddInkNode,
             AddMedia,
+            AddWeb,
             AddAudioCapture,
             AddBucket,
             AddVideo,
@@ -78,6 +79,7 @@ namespace NuSysApp
             _buttons[btnNewNode] = Options.AddTextNode;
             _buttons[btnNewMedia] = Options.AddMedia;
             _buttons[btnNewAudioCapture] = Options.AddAudioCapture;
+            _buttons[btnNewWebNode] = Options.AddWeb;
             _buttons[btnBucket] = Options.AddBucket;
             _buttons[btnVideo] = Options.AddVideo;
 

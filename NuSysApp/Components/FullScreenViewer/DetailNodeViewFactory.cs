@@ -48,7 +48,7 @@ namespace NuSysApp
             {
                 case NodeType.Text:
                     var tvm = new TextNodeViewModel((TextNodeModel) model);
-                    view = new TextNodeView(tvm);
+                    view = new TextDetailView(tvm);
                     await tvm.UpdateRtf();
                     break;
                 case NodeType.Image:

@@ -81,20 +81,14 @@ namespace NuSysApp
 
             UpdateAnchor();
 
-            foreach (var link in LinkList)
-            {
-                link.UpdateAnchor();
-            }
+        
         }
 
         public virtual void SetPosition(double x, double y)
         {
             Transform.TranslateX = x;
             Transform.TranslateY = y;
-            foreach (var link in LinkList)
-            {
-                link.UpdateAnchor();
-            }
+
             UpdateAnchor();
             RaisePropertyChanged("Transform");
         }
@@ -112,6 +106,11 @@ namespace NuSysApp
         public override void UpdateAnchor()
         {
             Anchor = new Point2d(Transform.TranslateX + Width / 2, Transform.TranslateY + Height / 2);
+            foreach (var link in LinkList)
+            {
+                link.UpdateAnchor();
+            }
+
         }
 
         public virtual void Resize(double dx, double dy)

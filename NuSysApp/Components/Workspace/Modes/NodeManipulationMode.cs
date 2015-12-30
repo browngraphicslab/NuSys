@@ -15,6 +15,7 @@ namespace NuSysApp
 {
     public class NodeManipulationMode : AbstractWorkspaceViewMode
     {
+        private int _zIndexCounter = 10000;
         private bool _isPinAnimating;
 
         public NodeManipulationMode(WorkspaceView view) : base(view) { }
@@ -25,10 +26,18 @@ namespace NuSysApp
             foreach (var userControl in vm.AtomViewList)
             {
                 userControl.ManipulationMode = ManipulationModes.All;
+                userControl.ManipulationStarting += ManipulationStarting;
                 userControl.ManipulationDelta += OnManipulationDelta;
             }
 
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
+        }
+
+        private void ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
+        {
+            var userControl = (UserControl)sender;
+            if (userControl.DataContext is NodeViewModel)
+                Canvas.SetZIndex(userControl, _zIndexCounter++);
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -66,6 +75,7 @@ namespace NuSysApp
                 return;
 
             var s = (UserControl) sender;
+
             var vm = s.DataContext as NodeViewModel;
             vm?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
         }

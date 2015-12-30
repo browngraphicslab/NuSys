@@ -15,18 +15,13 @@ namespace NuSysApp
 {
     public class InqCanvasModel
     {
-        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
+ 
         public event AddPartialLineEventHandler PartialLineAdded;
-
-       // public delegate void AddFinalLineEventHandler(object source, AddLineEventArgs e);
-        //public event AddPartialLineEventHandler OnFinalLineAddition;
-
         public event LineHandler LineFinalized;
         public event LineHandler LineRemoved;
         public delegate void LineHandler(InqLineModel lineModel);
+        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         
-
-
         private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
 

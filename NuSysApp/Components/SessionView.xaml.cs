@@ -120,7 +120,7 @@ namespace NuSysApp
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
         {
-            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
+            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
             {
                 xFloatingMenu.SetActive(Options.PenGlobalInk);
                 _prevOptions = Options.PenGlobalInk;
@@ -131,7 +131,7 @@ namespace NuSysApp
 
         private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
-            if (args.VirtualKey == VirtualKey.Shift)
+            if (args.VirtualKey == VirtualKey.Shift && xFullScreenViewer.Opacity < 0.1)
             {
                 xFloatingMenu.SetActive(Options.SelectNode);
                 _prevOptions = Options.SelectNode;
@@ -155,6 +155,10 @@ namespace NuSysApp
                 var id = msg.GetString("id", "noId");
                 await atomCreator.HandleCreateNewSendable(id, msg);
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;
+                if (model == null)
+                    continue;
+
+                createdModel.Add(model);
                 await model.UnPack(msg);
                 if (model is WorkspaceModel)
                 {
@@ -162,7 +166,7 @@ namespace NuSysApp
                     await OpenWorkspace((WorkspaceModel) wsModel);
                 }
                
-                createdModel.Add(model);
+                
             }
 
             foreach (var model in createdModel)
@@ -249,6 +253,11 @@ namespace NuSysApp
         public FloatingMenuView FloatingMenu
         {
             get { return xFloatingMenu; }
+        }
+
+        public Canvas MainCanvas
+        {
+            get { return mainCanvas; }
         }
     }
 }

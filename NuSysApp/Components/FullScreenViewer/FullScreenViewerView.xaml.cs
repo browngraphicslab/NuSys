@@ -24,7 +24,12 @@ namespace NuSysApp
         {
             InitializeComponent();
 
-            this.Opacity = 0;
+            Opacity = 0;
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+
+            };
+
 
 
           DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -38,13 +43,15 @@ namespace NuSysApp
 
             IsHitTestVisible = false;
             PointerReleased += OnPointerReleased;
-
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
             Anim.To(this, "Alpha", 0, 400);
             IsHitTestVisible = false;
+            var vm = (FullScreenViewerViewModel)DataContext;
+            var textview = (vm.View as TextDetailView);
+            textview?.Dispose();
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -52,12 +59,9 @@ namespace NuSysApp
             if (propertyChangedEventArgs.PropertyName == "View")
             {
                 Anim.To(this, "Alpha", 1, 400, null, (a,i) => { IsHitTestVisible = true; });
+                Width = SessionController.Instance.SessionView.ActualWidth;
+                Height = SessionController.Instance.SessionView.ActualHeight;
             }
-        }
-
-        private void OnShown(object o)
-        {
-            
         }
     }
 }

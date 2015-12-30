@@ -162,7 +162,6 @@ namespace NuSysApp
                     break;
                 case NodeType.PDF:
                     node = new PdfNodeModel((byte[])data, id);
-                    //await ((PdfNodeModel)node).SaveFile();
                     break;
                 case NodeType.Audio:
                     node = new AudioNodeModel((byte[])data, id);
@@ -172,6 +171,9 @@ namespace NuSysApp
                     break;
                 case NodeType.GroupTag:
                     node = new NodeContainerModel(id);
+                    break;
+                case NodeType.Web:
+                    node = new WebNodeModel(id);
                     break;
                 case NodeType.Workspace:
                     node = new WorkspaceModel("WORKSPACE_ID");

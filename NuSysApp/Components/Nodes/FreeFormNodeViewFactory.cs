@@ -68,6 +68,9 @@ namespace NuSysApp
                 case NodeType.Workspace:
                     view = new WorkspaceView(new WorkspaceViewModel((WorkspaceModel)model));
                     break;
+                case NodeType.Web:
+                    view = new WebNodeView(new WebNodeViewModel((WebNodeModel)model));
+                    break;
             }
 
             var tpl = view.FindName("nodeTpl") as NodeTemplate;

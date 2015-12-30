@@ -13,130 +13,7 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
     <UserControl.Resources>
-        <Style TargetType="local:TextBoxExtended">
-            <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
-            <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}" />
-            <Setter Property="Foreground" Value="{ThemeResource TextBoxForegroundThemeBrush}" />
-            <Setter Property="Background" Value="{ThemeResource TextBoxBackgroundThemeBrush}" />
-            <Setter Property="SelectionHighlightColor" Value="{ThemeResource TextSelectionHighlightColorThemeBrush}" />
-            <Setter Property="BorderBrush" Value="{ThemeResource TextBoxBorderThemeBrush}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}" />
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Padding" Value="{ThemeResource TextControlThemePadding}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="local:TextBoxExtended">
-                        <Grid>
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Disabled">
-                                    </VisualState>
-                                    <VisualState x:Name="Normal">
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="BackgroundElement"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     Duration="0"
-                                                     To="{ThemeResource TextControlBackgroundThemeOpacity}" />
-                                            <DoubleAnimation Storyboard.TargetName="BorderElement"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     Duration="0"
-                                                     To="{ThemeResource TextControlBorderThemeOpacity}" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="PointerOver">
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="BackgroundElement"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     Duration="0"
-                                                     To="{ThemeResource TextControlPointerOverBackgroundThemeOpacity}" />
-                                            <DoubleAnimation Storyboard.TargetName="BorderElement"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     Duration="0"
-                                                     To="{ThemeResource TextControlPointerOverBorderThemeOpacity}" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Focused" />
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border x:Name="BackgroundElement"
-                            Grid.Row="1"
-                            Background="{TemplateBinding Background}"
-                            Margin="{TemplateBinding BorderThickness}"
-                            Grid.ColumnSpan="2"
-                            Grid.RowSpan="2"/>
-                            <Border x:Name="BorderElement"
-                            Grid.Row="1"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Grid.ColumnSpan="2"
-                            Grid.RowSpan="1"/>
-                            <ContentPresenter x:Name="HeaderContentPresenter"
-                                      Grid.Row="0"
-                                      Foreground="{ThemeResource TextBoxForegroundHeaderThemeBrush}"
-                                      Margin="0,4,0,4"
-                                      Grid.ColumnSpan="2"
-                                      Content="{TemplateBinding Header}"
-                                      ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                      FontWeight="Semilight" />
-                            <ScrollViewer x:Name="ContentElement"
-                                  Grid.Row="1"
-                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-                                  IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-                                  Margin="{TemplateBinding BorderThickness}"
-                                  Padding="{TemplateBinding Padding}"
-                                  IsTabStop="False"
-                                  ZoomMode="Disabled" 
-                                  AutomationProperties.AccessibilityView="Raw"/>
-                            <ContentControl x:Name="PlaceholderTextContentPresenter"
-                                  Grid.Row="1"
-                                  Foreground="{ThemeResource TextBoxPlaceholderTextThemeBrush}"
-                                  Margin="{TemplateBinding BorderThickness}"
-                                  Padding="{TemplateBinding Padding}"
-                                  IsTabStop="False"
-                                  Grid.ColumnSpan="2"
-                                  Content="{TemplateBinding PlaceholderText}" 
-                                  IsHitTestVisible="False"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Storyboard x:Key="colorout" x:Name="colorout">
-            <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Colors" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="Colors">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>True</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="colorin" x:Name="colorin">
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Colors" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="Colors">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>False</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
+        
     </UserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="White">
         <local:NodeTemplate.SubMenu>
@@ -153,29 +30,24 @@
                 <Button x:Name="RecordVoice" Click="OnRecordClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_audionode_record.png" Height="30" Width="30" Stretch="Uniform"></Image>
                 </Button>
-                <Button x:Name="Color" Click="Color_Click" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
+                <Button x:Name="Color"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
                 <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
                         VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Opacity="0" IsHitTestVisible="False">
                     <StackPanel.RenderTransform>
                         <CompositeTransform />
                     </StackPanel.RenderTransform> 
-                    <Button x:Name="Green" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#98C071"></Button>
-                    <Button x:Name="Red" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#C75452"></Button>
-                    <Button x:Name="Blue" Click="Change_Color"  Style="{StaticResource NodeSubMenuItem}" Background="#62BDC5"></Button>
-                    <Button x:Name="Parchment" Click="Change_Color" Style="{StaticResource NodeSubMenuItem}" Background="#eed5b7"></Button>
+                    <Button x:Name="Green"  Style="{StaticResource NodeSubMenuItem}" Background="#98C071"></Button>
+                    <Button x:Name="Red" Style="{StaticResource NodeSubMenuItem}" Background="#C75452"></Button>
+                    <Button x:Name="Blue"   Style="{StaticResource NodeSubMenuItem}" Background="#62BDC5"></Button>
+                    <Button x:Name="Parchment"  Style="{StaticResource NodeSubMenuItem}" Background="#eed5b7"></Button>
                 </StackPanel>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <local:TwoFingerScrollViewer x:Name="scroller" Width="{Binding Width}" Height="{Binding Height}">
-                <Canvas x:Name="grid" Width="{Binding Width}" Background="Transparent" VerticalAlignment="Top" Margin="30,30,30,30">
-                    <TextBox x:Name="mdTextBox" Height="Auto" Width="{Binding Width,Converter={StaticResource subtractConverter}, ConverterParameter=60}" MinHeight="{Binding Height, Converter={StaticResource subtractConverter}, ConverterParameter=60}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity="1" Foreground="Black" TextWrapping="Wrap" BorderThickness="0" FontSize="14" FontFamily="Courier New" IsEnabled="true"
-                         Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Text="{Binding Model.Text}" Visibility="Collapsed" />
-                    <local:TextBoxExtended x:Name="rtfTextBox" Width="{Binding Width,Converter={StaticResource subtractConverter}, ConverterParameter=60}" MinHeight="{Binding Height, Converter={StaticResource subtractConverter}, ConverterParameter=60}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Opacity=".8" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True" Rtf="{Binding RtfText}" Visibility="Visible" IsEnabled="False" />
-                    <Canvas x:Name="imgPlaceholderContainer" Background="Transparent"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed" />
-                </Canvas>
-            </local:TwoFingerScrollViewer>
+            <Grid Width="{Binding Width}" Height="{Binding Height}">
+                    <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
+                                Background="White" BorderBrush="Transparent" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" />
+            </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableNodeView>

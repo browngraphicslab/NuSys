@@ -20,8 +20,9 @@ namespace NuSysApp
         }
 
         public async Task Init(string m)
-        {           
-            Dictionary<string, string> message = JsonConvert.DeserializeObject<Dictionary<string, string>>(m);
+        {
+            var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
+            Dictionary<string, string> message = JsonConvert.DeserializeObject<Dictionary<string, string>>(m, settings);
             foreach (KeyValuePair<string, string> kvp in message)
             {
                 if (kvp.Key != "children")
@@ -30,7 +31,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    Dictionary<string, string> children = await JsonConvert.DeserializeObjectAsync<Dictionary<string, string>>(kvp.Value);
+                    Dictionary<string, string> children = await JsonConvert.DeserializeObjectAsync<Dictionary<string, string>>(kvp.Value, settings);
                     foreach (KeyValuePair<string,string> child in children)
                     {
                         var msg = new Message();

@@ -48,7 +48,7 @@ namespace NuSysApp
             _startPos = new Point(e.Position.X, e.Position.Y);
             Canvas.SetLeft(_tempNode, _startPos.X);
             Canvas.SetTop(_tempNode, _startPos.Y);
-            _view.Wrapper.Children.Add(_tempNode);         
+            SessionController.Instance.SessionView.MainCanvas.Children.Add(_tempNode);         
             _isDragging = true;
          //   e.Handled = true;
         }
@@ -75,7 +75,7 @@ namespace NuSysApp
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (_isDragging) { 
-                _view.Wrapper.Children.Remove(_tempNode);
+                SessionController.Instance.SessionView.MainCanvas.Children.Remove(_tempNode);
 
                 var wvm = (WorkspaceViewModel) _view.DataContext;
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));

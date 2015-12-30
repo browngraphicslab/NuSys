@@ -17,7 +17,7 @@ namespace NuSysApp
     public class TextBoxExtended : RichEditBox
     {
 
-        public static readonly DependencyProperty RtfProperty = DependencyProperty.RegisterAttached("Rtf", typeof(string), typeof(TextBoxExtended), new PropertyMetadata(null, RtfTextPropertyChanged));
+        //public static readonly DependencyProperty RtfProperty = DependencyProperty.RegisterAttached("Rtf", typeof(string), typeof(TextBoxExtended), new PropertyMetadata(null, RtfTextPropertyChanged));
 
 
         public TextBoxExtended()
@@ -37,17 +37,20 @@ namespace NuSysApp
             return rect.Height;
         }
 
-        public string Rtf
+        public string GetRtfText()
         {
-            get { return (string)GetValue(RtfProperty); }
-            set {  SetValue(RtfProperty, value); }
+            string str;
+            Document.GetText(TextGetOptions.FormatRtf, out str);
+            return str;
         }
 
-        private static void RtfTextPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        public void SetRtfText(string text)
         {
-            var rtb = dependencyObject as TextBoxExtended;
-            rtb.Document.SetText(TextSetOptions.FormatRtf, rtb.Rtf);
-            rtb.Document.ApplyDisplayUpdates();
+
+            Document.SetText(TextSetOptions.FormatRtf, text);
+            Document.ApplyDisplayUpdates();
         }
+
+       
     }     
 }

@@ -10,6 +10,8 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.ApplicationInsights;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -37,7 +39,8 @@ namespace NuSysApp
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 
-            string imgSrc = Regex.Match("asdfasdfasd", "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1].Value;
+
+
         }
 
         /// <summary>

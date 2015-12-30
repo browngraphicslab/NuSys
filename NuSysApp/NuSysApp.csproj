@@ -146,6 +146,9 @@
     <Compile Include="Components\FullScreenViewer\Views\ImageFullScreenView.xaml.cs">
       <DependentUpon>ImageFullScreenView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\FullScreenViewer\Views\TextDetailView.xaml.cs">
+      <DependentUpon>TextDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
     </Compile>
@@ -155,6 +158,10 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Nodes\WebNode\WebNodeView.xaml.cs">
+      <DependentUpon>WebNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\WebNode\WebNodeViewModel.cs" />
     <Compile Include="Components\Nodes\LabelNode\LabelNodeViewModel.cs" />
     <Compile Include="Components\Nodes\ImageNode\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
@@ -171,6 +178,7 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
+    <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
@@ -375,6 +383,7 @@
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\iframe.html" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -394,6 +403,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\FullScreenViewer\Views\TextDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\InqCanvas\InqCanvasView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -403,6 +416,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Links\LineLinkView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Nodes\WebNode\WebNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

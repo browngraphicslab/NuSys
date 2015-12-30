@@ -41,6 +41,11 @@ namespace NuSysApp
             xWrapper.Children.Add(_inqCanvas);
             wsModel.InqCanvas = inqCanvasModel;
 
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                SwitchMode(Options.SelectNode, false);
+            };
+
             wsModel.InqCanvas.LineFinalized += delegate (InqLineModel model)
             {
                 var gestureType = GestureRecognizer.testGesture(model);
@@ -99,18 +104,19 @@ namespace NuSysApp
                     break;
                 case Options.AddTextNode:
                     await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Text, isFixed),
-                            new FloatingMenuMode(this)));
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Text, isFixed), new FloatingMenuMode(this)));
+                    break;
+                case Options.AddWeb:
+                    await
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Web, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddAudioCapture:
                     await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Audio, isFixed),
-                            new FloatingMenuMode(this)));
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Audio, isFixed),new FloatingMenuMode(this)));
                     break;
                 case Options.AddMedia:
                     await
-                        SetViewMode(new MultiMode(this, new SelectMode(this),
-                            new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
+                        SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.PenErase:
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
@@ -124,9 +130,11 @@ namespace NuSysApp
                     break;
                 case Options.MiscSave:
                     SessionController.Instance.SaveWorkspace();
+                    SessionController.Instance.SessionView.FloatingMenu.Reset();
                     break;
                 case Options.MiscLoad:
                     SessionController.Instance.LoadWorkspace();
+                    SessionController.Instance.SessionView.FloatingMenu.Reset();
                     break;
                 case Options.MiscPin:
                     await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));

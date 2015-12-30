@@ -9,9 +9,8 @@
     mc:Ignorable="d"  
     >
 
-
-    <Grid x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
+    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
         <local:FloatingMenuView x:Name="xFloatingMenu" />
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
-    </Grid>
+    </Canvas>
 </Page>

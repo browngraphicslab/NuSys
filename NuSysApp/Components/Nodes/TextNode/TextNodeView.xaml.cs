@@ -37,45 +37,15 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
-            DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
-            {
-                Debug.WriteLine("");
-            };
-
             var model = (TextNodeModel)vm.Model;
-
-            mdTextBox.Text = model.Text;
-            mdTextBox.TextChanging += delegate
+            rtfTextBox.SetRtfText(model.Text);
+            model.TextChanged += delegate(object source, TextChangedEventArgs args)
             {
-                model.Text = mdTextBox.Text;
-                AdjustScrollHeight();
+                rtfTextBox.SetRtfText(args.Text);
             };
+
             
-
-            mdTextBox.SizeChanged += delegate
-            {
-                RearrangeImagePlaceHolders();
-                AdjustScrollHeight();
-            };
-
-            rtfTextBox.SizeChanged += delegate
-            {
-                RearrangeImagePlaceHolders();
-                AdjustScrollHeight();
-            };
-
-            rtfTextBox.TextChanging += delegate
-            {
-                RearrangeImagePlaceHolders();
-                AdjustScrollHeight();
-            };
-
-            rtfTextBox.TextChanged += delegate
-            {
-                RearrangeImagePlaceHolders();
-                AdjustScrollHeight();
-            };
-
+            /*
             grid.IsDoubleTapEnabled = true;
             grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
             {
@@ -94,48 +64,10 @@ namespace NuSysApp
                 Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
                 e.Handled = true;
             };
-
-            vm.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
-            {
-                try
-                {
-                    if (e.PropertyName == "RtfText")
-                    {
-                        imgPlaceholderContainer.Children.Clear();
-                        _images.Clear();
-
-                        foreach (var vmImg in vm.InlineImages)
-                        {
-                            var imageOverlay = new Image();
-                            imageOverlay.Tapped += delegate { Debug.WriteLine("click."); };
-                            imageOverlay.Source = vmImg;
-                            imageOverlay.Width = vmImg.PixelWidth;
-                            imageOverlay.Height = vmImg.PixelHeight;
-                            _images.Add(imageOverlay);
-                            imgPlaceholderContainer.Children.Add(imageOverlay);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Exception caught");
-                }
-            };
-
-            var animX = new Storyboard();
-            var animXAnim = new DoubleAnimation();
-            animXAnim.Duration = TimeSpan.FromMilliseconds(300);
-            animXAnim.EasingFunction = new ExponentialEase();
-            animXAnim.From = 0.0;
-            animXAnim.To = 1.0;
-            animX.Children.Add(animXAnim);
-            Storyboard.SetTarget(animX, this);
-            Storyboard.SetTargetProperty(animX, "Opacity");
-            animX.Begin();
+            */
         }
 
-
-
+        
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel) DataContext;
@@ -176,7 +108,7 @@ namespace NuSysApp
             {
             }
             speechRecognizer.Dispose();
-            this.mdTextBox.Text = spokenString;
+            //this.mdTextBox.Text = spokenString;
             var vm = (TextNodeViewModel)this.DataContext;
             vm.UpdateRtf();
         }
@@ -198,21 +130,7 @@ namespace NuSysApp
                 RearrangeImagePlaceHolders();
             }
 
-            if (mdTextBox.Visibility == Visibility.Visible)
-            {
-                mdTextBox.Visibility = Visibility.Collapsed;
-                rtfTextBox.Visibility = Visibility.Visible;
-                imgPlaceholderContainer.Visibility = Visibility.Visible;
-                rtfTextBox.Document.ApplyDisplayUpdates();
-            }
-            else
-            {
-                mdTextBox.Visibility = Visibility.Visible;
-                rtfTextBox.Visibility = Visibility.Collapsed;
-                imgPlaceholderContainer.Visibility = Visibility.Collapsed;
-                mdTextBox.Focus(FocusState.Keyboard);
-            }
-            
+           
             AdjustScrollHeight();        
         }
 
@@ -259,6 +177,7 @@ namespace NuSysApp
 
         private void AdjustScrollHeight()
         {
+            /*
             TextNodeViewModel vm = (TextNodeViewModel)DataContext;
 
             if (!vm.IsEditing)
@@ -269,6 +188,7 @@ namespace NuSysApp
             {
                 grid.Height = mdTextBox.ActualHeight;
             }
+            */
         }
 
         private int GetNthIndex(string s, char t, int n)
@@ -395,40 +315,6 @@ namespace NuSysApp
         private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             e.Handled = true;            
-        }
-
-        private void Color_Click(object sender, RoutedEventArgs e)
-        {
-            if (Colors.Opacity == 0)
-            {
-                colorout.Begin();
-            }
-            else
-            {
-                colorin.Begin();
-            }
-        }
-
-        private void Change_Color(object sender, RoutedEventArgs e)
-        {
-            var vm = (NodeViewModel)this.DataContext;
-            Button colorButton = sender as Button;
-            if (colorButton.Name == "Red")
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 152, 149));
-            }
-            else if (colorButton.Name == "Green")
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 190, 240, 142));
-            }
-            else if (colorButton.Name == "Parchment")
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Colors.BlanchedAlmond);
-            } else if (colorButton.Name == "Blue")
-            {
-                vm.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 173, 216, 230));
-            }
-            colorin.Begin();
-        }
+        }  
     }
 }

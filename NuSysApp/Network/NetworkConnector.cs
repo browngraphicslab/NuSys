@@ -644,7 +644,17 @@ namespace NuSysApp
                                 Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
                             }
                         break;
-                    }
+                    case NodeType.Web:
+                        try
+                        {
+                            data = ParseToByteArray(d);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
+                        }
+                        break;
+                }
                 }
                 await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y, data); });
                 if (props.ContainsKey("data"))

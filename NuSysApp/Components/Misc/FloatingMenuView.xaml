@@ -131,6 +131,7 @@
             </StackPanel.RenderTransform>
             <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption="New Text Node" />
             <local:FloatingMenuButtonView x:Name="btnNewMedia" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_media.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Import Media" />
+            <local:FloatingMenuButtonView x:Name="btnNewWebNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="New Web Node" />
             <local:FloatingMenuButtonView x:Name="btnNewAudioCapture" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnBucket" Icon="ms-appx:///Assets/icon_mainmenu_bucket.png" Window="{Binding ElementName=bucketWindow}" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnVideo" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />

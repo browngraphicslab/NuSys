@@ -27,10 +27,7 @@ namespace NuSysApp
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
             }
-
-            //_view.DoubleTapped += OnWorkspacePressed;
             _view.RightTapped += OnWorkspacePressed;
-            //_view.RightTapped += delegate() {  };
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -42,10 +39,10 @@ namespace NuSysApp
             {
                 var kv = (KeyValuePair<string, UserControl>) newItem;
                 var item = (UserControl)kv.Value;
-            //     item.PointerPressed -= OnAtomPressed;
-            //     item.PointerReleased -= OnAtomReleased;
-               item.PointerPressed += OnAtomPressed;
-               item.PointerReleased += OnAtomReleased;
+                if (item.DataContext is NodeViewModel) { 
+                   item.PointerPressed += OnAtomPressed;
+                   item.PointerReleased += OnAtomReleased;
+                }
             }
         }
         
@@ -67,7 +64,6 @@ namespace NuSysApp
             var doubleTappedNode = ((FrameworkElement)e.OriginalSource).DataContext;
             if (_selectedNode != null && _selectedNode != doubleTappedNode)
             {
-                Debug.WriteLine("OnWorkspacePressed");
                 var vm = (WorkspaceViewModel)_view.DataContext;
                 var dict = await _selectedNode.Model.Pack();
 
@@ -77,8 +73,6 @@ namespace NuSysApp
                 props.Remove("nodeType");
                 props.Remove("x");
                 props.Remove("y");
-               // props.Remove("metadata");
-               // props.Add("meta", _selectedNode.Model.GetMetaData("tags"));
 
                 var tappedPoint = e.GetPosition(null);
 
@@ -88,22 +82,16 @@ namespace NuSysApp
                 NetworkConnector.Instance.RequestMakeNode(p.X.ToString(),p.Y.ToString(), _selectedNode.NodeType.ToString(), null, null, props);
             }
 
-            //_selectedNode = null;
         }
 
         private void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
-          //  Debug.WriteLine("OnAtomReleased");
             _selectedNode = null;
-           // e.Handled = true;
         }
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
-            //Debug.WriteLine("OnAtomPressed");
             _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
-            //Debug.WriteLine(_selectedNode);
-            //e.Handled = true;
         }
     }
 }
