@@ -55,11 +55,6 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// Gets called every time either one of the atoms that this link binds to has changed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void OnAtomPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             this.UpdateControlPoints();
@@ -90,119 +85,11 @@ namespace NuSysApp
 
         private void UpdateEndPoints()
         {
-            var vm = (LinkViewModel)this.DataContext;
+            var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
             pathfigure.StartPoint = atom1.Anchor;
             curve.Point3 = atom2.Anchor;
-        }
-
-        ///<summary>CalcY returns the y coord of the intersection between two lines 
-        /// Use for finding the intersection between a line and the right/left edges of a square
-        /// </summary>
-        private double calcY(double xVal, double x0, double y0, double x1, double y1)
-        {
-            if (x0 == x1) //vertical line
-            {
-                return y0;
-            }
-            return y0 + (xVal - x0) * (y1 - y0) / (x1 - x0);
-        }
-
-        ///<summary> calcX returns the x coord of the intersection between two lines
-        /// Use for finding the intersection between a line and the top/bottom edges of a square
-        /// </summary
-        private double calcX(double yVal, double x0, double y0, double x1, double y1)
-        {
-            return x0 + (yVal - y0) * (x1 - x0) / (y1 - y0);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="atom"> Atom whose edge the link will bind to</param>
-        /// <param name="endpoint">The other endpoint of the bezier curve</param>
-        /// <returns></returns>
-        private Point findIntersection(NodeViewModel node, Point endpoint)
-        {
-            //Coords of rectangle
-            double topY = node.Anchor.Y + (.5 * node.Height);
-            double bottomY = node.Anchor.Y - (.5 * node.Height);
-            double leftX = node.Anchor.X - (.5 * node.Width);
-            double rightX = node.Anchor.X + (.5 * node.Width);
-
-            //anchor coords of atom
-            double x0 = node.Anchor.X;
-            double y0 = node.Anchor.Y;
-
-            //other endpoint
-            double x1 = endpoint.X;
-            double y1 = endpoint.Y;
-
-            //intersection values of line with rectangle
-            double topXIntersect = calcX(topY, x0, y0, x1, y1);
-            double bottomXIntersect = calcX(bottomY, x0, y0, x1, y1);
-            double leftYIntersect = calcY(leftX, x0, y0, x1, y1);
-            double rightYIntersect = calcY(rightX, x0, y0, x1, y1);
-
-            Point newEndPt = new Point();
-
-
-            if (topXIntersect <= rightX && topXIntersect >= leftX && ((topY >= y1 && topY <= y0) || (topY <= y1 && topY >= y0) || (topY >= y1 && topY >= y0))) //intersects with top of square
-            {
-                newEndPt= new Point(topXIntersect, topY);
-            }
-
-            if (bottomXIntersect <= rightX && bottomXIntersect >= leftX && ((bottomY >= y1 && bottomY <= y0) || (bottomY <= y1 && bottomY >= y0) || (bottomY <= y1 && bottomY <= y0))) //intersects with bottom of square
-            {
-                if(this.calcDistance(newEndPt, endpoint) > this.calcDistance(new Point(bottomXIntersect, bottomY), endpoint))
-                {
-                    newEndPt = new Point(bottomXIntersect, bottomY);
-                }
-            }
-
-            if (rightYIntersect <= topY && rightYIntersect >= bottomY && ((rightX >= x1 && rightX <= x0) || (rightX <= x1 && rightX >= x0) || (rightX >= x1 && rightX >= x0)))  //intersects with right of square
-            {
-                newEndPt = new Point(rightX, rightYIntersect);
-            }
-
-            if (leftYIntersect <= topY && leftYIntersect >= bottomY && ((leftX >= x1 && leftX <= x0) || (leftX <= x1 && leftX >= x0) || (leftX <= x1 && leftX <= x0))) //intersects with left of square
-            {
-                if (this.calcDistance(newEndPt, endpoint) > this.calcDistance(new Point(leftX, leftYIntersect), endpoint))
-                {
-                    newEndPt = new Point(leftX, leftYIntersect);
-                }
-            }
-
-            return newEndPt;
-        }
-
-        private double calcDistance(Point pt1, Point pt2)
-        {
-            return Math.Sqrt(Math.Pow(pt1.X - pt2.X, 2) + Math.Pow(pt1.Y - pt2.Y, 2));
-        }
-
-        private void BezierLinkView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-          //  var vm = (LinkViewModel) this.DataContext;
-          //  vm.ToggleSelection();
-          //  e.Handled = true;
-        }
-
-        /// <summary>
-        /// This handler makes sure that double tap events don't get interpreted as single tap events first.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BezierLinkView_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-           // e.Handled = true; 
-        }
-
-      
-        private void Delete_Click(object sender, RoutedEventArgs e)
-        {
-            var vm = (LinkViewModel)this.DataContext;
-            vm.Remove();
         }
     }
 }

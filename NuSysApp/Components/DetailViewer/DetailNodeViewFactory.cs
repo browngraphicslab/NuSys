@@ -57,6 +57,9 @@ namespace NuSysApp
                 case NodeType.PDF:
                     view = new PdfDetailView(new PdfNodeViewModel((PdfNodeModel)model));
                     break;
+                case NodeType.Web:
+                    view = new WebDetailView(new WebNodeViewModel((WebNodeModel)model));
+                    break;
             }
 
             var tpl = view.FindName("nodeTpl") as NodeTemplate;

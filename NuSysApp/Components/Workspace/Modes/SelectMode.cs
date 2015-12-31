@@ -15,7 +15,7 @@ namespace NuSysApp
     {
         public SelectMode(WorkspaceView view) : base(view) { }
 
-        private AtomViewModel _selectedAtomVm;
+        private static AtomViewModel _selectedAtomVm;
         private bool _released;
 
         public override async Task Activate()

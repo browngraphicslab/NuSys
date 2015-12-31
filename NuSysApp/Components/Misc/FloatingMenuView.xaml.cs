@@ -70,7 +70,7 @@ namespace NuSysApp
             _buttons[btnSelectNode] = Options.SelectNode;
             //_buttons[btnMarqueeSelect] = Options.SelectMarquee;
 
-            _buttons[btnPen] = Options.MainPen;
+            _buttons[btnPen] = Options.PenGlobalInk;
             _buttons[btnGlobalInk] = Options.PenGlobalInk;
             _buttons[btnInkErase] = Options.PenErase;
           //  _buttons[btnHighlight] = Options.PenHighlight;    
@@ -97,8 +97,8 @@ namespace NuSysApp
             _storyboards = new Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>>();
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSelect"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSelect"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 0), new Tuple<Storyboard, string>(slidein, "SubMenuPen"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
+           // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 0), new Tuple<Storyboard, string>(slidein, "SubMenuPen"));
+           // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));

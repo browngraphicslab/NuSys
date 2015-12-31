@@ -30,11 +30,11 @@
                     </RectangleGeometry>
                 </Canvas.Clip>
 
-                <WebView x:Name="xWebView" Width="1024" Height="14257"  Margin="3,37,3,3">
-               
-                </WebView>
+                <ScrollViewer IsHitTestVisible="False">
+                    <WebView x:Name="xWebView" Width="1024" Height="14257"  Margin="0,37,0,0" />
+                </ScrollViewer>
                 <Border Background="#99000000" Width="{Binding Width}">
-                    <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyDown="OnKeyDown" Height="37" Foreground="White" FontSize="18"></TextBox>
+                    <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
                 </Border>
             </Canvas>
         </local:NodeTemplate.Inner>

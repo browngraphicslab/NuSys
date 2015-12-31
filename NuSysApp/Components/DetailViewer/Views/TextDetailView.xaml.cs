@@ -58,9 +58,12 @@ namespace NuSysApp
 
         private async Task InitializeRecog()
         {
-            _recognizer = new SpeechRecognizer();
-            // Compile the dictation grammar that is loaded by default. = ""; 
-            await _recognizer.CompileConstraintsAsync();
+            await Task.Run( async () =>
+            {
+                _recognizer = new SpeechRecognizer();
+                // Compile the dictation grammar that is loaded by default. = ""; 
+                await _recognizer.CompileConstraintsAsync();
+            });
         }
 
 

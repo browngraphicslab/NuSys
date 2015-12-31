@@ -12,15 +12,37 @@ namespace NuSysApp
 {
     public abstract class AtomModel : Sendable
     {
-        public delegate void MetadataChangeEventHandler(object source, string key);
-        public event MetadataChangeEventHandler MetadataChange;
-
-        public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
-        protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
+        private double _x;
+        private double _y;
+        private double _alpha = 1;
+        private double _scaleX = 1;
+        private double _scaleY = 1;
+        private double _width;
+        private double _height;
+        private string _title;
 
         private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
-        public string Creator { get; set; }
+
+        protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
+
+        public delegate void MetadataChangeEventHandler(object source, string key);
+        public event MetadataChangeEventHandler MetadataChange;
+        public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
+        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+        public event DeleteEventHandler Deleted;
+        public delegate void LocationUpdateEventHandler(object source, PositionChangeEventArgs e);
+        public event LocationUpdateEventHandler PositionChanged;
+        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
+        public event WidthHeightUpdateEventHandler SizeChanged;
+        public delegate void ScaleChangedEventHandler(object source);
+        public delegate void AlphaChangedEventHandler(object source);
+        public event ScaleChangedEventHandler ScaleChanged;
+        public event AlphaChangedEventHandler AlphaChanged;
+        public delegate void TitleChangedHandler(object source, string title);
+        public event TitleChangedHandler TitleChanged;
+
+
 
 
         protected AtomModel(string id) : base(id)
@@ -78,6 +100,14 @@ namespace NuSysApp
             var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">");
             dict.Add("metadata", metadatastring);
             dict.Add("creator", Creator);
+            dict.Add("x", X.ToString());
+            dict.Add("y", Y.ToString());
+            dict.Add("width", Width.ToString());
+            dict.Add("height", Height.ToString());
+            dict.Add("alpha", Alpha.ToString());
+            dict.Add("scaleX", ScaleX.ToString());
+            dict.Add("scaleY", ScaleY.ToString());
+            dict.Add("title", Title);
             return dict;
         }
 
@@ -96,9 +126,97 @@ namespace NuSysApp
                 }
             }
 
+            X = props.GetDouble("x", X);
+            Y = props.GetDouble("y", Y);
+            Width = props.GetDouble("width", Width);
+            Height = props.GetDouble("height", Height);
+            Alpha = props.GetDouble("alpha", Alpha);
+            ScaleX = props.GetDouble("scaleX", ScaleX);
+            ScaleY = props.GetDouble("scaleY", ScaleY);
             Creator = props.GetString("creator", "WORKSPACE_ID");
-
+            Title = props.GetString("title", "");
             await base.UnPack(props);
+        }
+
+        public string Creator { get; set; }
+        public double X
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                PositionChanged?.Invoke(this, new PositionChangeEventArgs(X, Y));
+            }
+        }
+
+        public double Y
+        {
+            get { return _y; }
+            set
+            {
+                _y = value;
+                PositionChanged?.Invoke(this, new PositionChangeEventArgs(X, Y));
+            }
+        }
+
+        public virtual double Width
+        {
+            get { return _width; }
+            set
+            {
+                _width = value;
+                SizeChanged?.Invoke(this, new WidthHeightUpdateEventArgs(Width, Height));
+            }
+        }
+
+        public virtual double Height
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                SizeChanged?.Invoke(this, new WidthHeightUpdateEventArgs(Width, Height));
+            }
+        }
+
+        public virtual double ScaleX
+        {
+            get { return _scaleX; }
+            set
+            {
+                _scaleX = value;
+                ScaleChanged?.Invoke(this);
+            }
+        }
+
+        public virtual double ScaleY
+        {
+            get { return _scaleY; }
+            set
+            {
+                _scaleY = value;
+                ScaleChanged?.Invoke(this);
+            }
+        }
+
+        public virtual double Alpha
+        {
+            get { return _alpha; }
+            set
+            {
+                _alpha = value;
+                AlphaChanged?.Invoke(this);
+            }
+        }
+
+        public virtual string Title
+        {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                TitleChanged?.Invoke(this, _title);
+            }
         }
     } 
 }

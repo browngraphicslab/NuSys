@@ -24,7 +24,7 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Image Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>
+            <Image Source="{Binding Model.Image}" Stretch="Uniform"/>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableNodeView>

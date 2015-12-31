@@ -135,18 +135,24 @@
     </Compile>
     <Compile Include="Components\AtomCreator.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
-    <Compile Include="Components\FullScreenViewer\DetailNodeViewFactory.cs" />
-    <Compile Include="Components\FullScreenViewer\FullScreenViewerView.xaml.cs">
+    <Compile Include="Components\DetailViewer\DetailNodeViewFactory.cs" />
+    <Compile Include="Components\DetailViewer\FullScreenViewerView.xaml.cs">
       <DependentUpon>FullScreenViewerView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\FullScreenViewer\FullScreenViewerViewModel.cs" />
-    <Compile Include="Components\FullScreenViewer\Views\PdfDetailView.xaml.cs">
+    <Compile Include="Components\DetailViewer\FullScreenViewerViewModel.cs" />
+    <Compile Include="Components\DetailViewer\Views\LinkDetailView.xaml.cs">
+      <DependentUpon>LinkDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DetailViewer\Views\WebDetailView.xaml.cs">
+      <DependentUpon>WebDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DetailViewer\Views\PdfDetailView.xaml.cs">
       <DependentUpon>PdfDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\FullScreenViewer\Views\ImageFullScreenView.xaml.cs">
+    <Compile Include="Components\DetailViewer\Views\ImageFullScreenView.xaml.cs">
       <DependentUpon>ImageFullScreenView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\FullScreenViewer\Views\TextDetailView.xaml.cs">
+    <Compile Include="Components\DetailViewer\Views\TextDetailView.xaml.cs">
       <DependentUpon>TextDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
@@ -391,19 +397,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Components\FullScreenViewer\FullScreenViewerView.xaml">
+    <Page Include="Components\DetailViewer\FullScreenViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\FullScreenViewer\Views\PdfDetailView.xaml">
+    <Page Include="Components\DetailViewer\Views\LinkDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\FullScreenViewer\Views\ImageFullScreenView.xaml">
+    <Page Include="Components\DetailViewer\Views\WebDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\DetailViewer\Views\PdfDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\DetailViewer\Views\ImageFullScreenView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\FullScreenViewer\Views\TextDetailView.xaml">
+    <Page Include="Components\DetailViewer\Views\TextDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

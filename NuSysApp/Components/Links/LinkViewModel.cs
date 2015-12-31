@@ -102,6 +102,23 @@ namespace NuSysApp
 
         #endregion Public Properties
 
+        public override void SetPosition(double x, double y)
+        {
+            // Position is set through connecting atoms.
+        }
+
+        protected override void OnPositionChanged(object source, PositionChangeEventArgs e)
+        {
+            // Position is set through connecting atoms.
+        }
+
+        public override void Translate(double dx, double dy)
+        {
+            Atom1.Translate(dx,dy);
+            Atom2.Translate(dx,dy);
+        }
+
+
         public override void UpdateAnchor()
         {
             var line = this.LineRepresentation;

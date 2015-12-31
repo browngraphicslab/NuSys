@@ -29,6 +29,9 @@ namespace NuSysApp
         public Path resizer = null;
         public Grid bg = null;
         public TextBlock tags = null;
+        public Grid titleContainer = null;
+        public TextBox title = null;
+        public Border highlight = null;
 
         public NodeTemplate()
         {
@@ -57,6 +60,7 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
+            var vm = (NodeViewModel)this.DataContext;
             inkCanvas = (InqCanvasView)GetTemplateChild("inkCanvas");
            
             bg = (Grid)GetTemplateChild("bg");
@@ -67,20 +71,34 @@ namespace NuSysApp
             resizer = (Path)GetTemplateChild("Resizer");
             resizer.ManipulationDelta += OnResizerManipulationDelta;
 
+            highlight = (Border)GetTemplateChild("xHighlight");
+
             tags = (TextBlock)GetTemplateChild("Tags");
             var t = new TranslateTransform {X = 0, Y = 25};
             tags.RenderTransform = t;
+
+            title = (TextBox)GetTemplateChild("xTitle");
+            title.TextChanged += delegate(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
+            {
+                titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
+                highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+                highlight.Height = vm.Height + title.ActualHeight - 5;
+            };
+            titleContainer = (Grid) GetTemplateChild("xTitleContainer");
+            //titleContainer.Opacity = 0;
             
-         
 
-           // ManipulationMode = ManipulationModes.All;
-            //ManipulationDelta += OnManipulationDelta;
+            title.Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+                highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+                highlight.Height = vm.Height + title.ActualHeight - 5;
+            };
+     
 
-            //ManipulationCompleted += OnManipulationCompleted;
-
-            var vm = (NodeViewModel)this.DataContext;
-            vm.PropertyChanged += new PropertyChangedEventHandler(Node_MultiSelectionChanged);
-
+            
+            vm.PropertyChanged += OnPropertyChanged;
+            
             base.OnApplyTemplate();
 
             OnTemplateReady?.Invoke();
@@ -100,16 +118,6 @@ namespace NuSysApp
             NetworkConnector.Instance.RequestDeleteSendable(model.Id);
         }
 
-        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
-
-            var vm = (NodeViewModel)this.DataContext;
-            vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
-           // e.Handled = true;
-
-        }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -122,25 +130,13 @@ namespace NuSysApp
 
         }
 
-        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //TODO: re-add
-            /*
             var vm = (NodeViewModel)this.DataContext;
-            if (vm.WorkSpaceViewModel != null) { 
-                vm.CreateAnnotation();
-                vm.WorkSpaceViewModel.CheckForNodeNodeIntersection(vm); //TODO Eventually need to remove 
-            }
-            */
-            //e.Handled = true;
-        }
-
-        private void Node_MultiSelectionChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("IsMultiSelected"))
+            if (e.PropertyName == "Height")
             {
+                highlight.Height = vm.Height + title.ActualHeight - 5;
             }
-            
         }
     }
 }

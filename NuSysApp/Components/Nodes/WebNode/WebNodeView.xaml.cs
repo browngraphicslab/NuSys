@@ -18,17 +18,17 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
             xUrlBox.ManipulationMode = ManipulationModes.All;
-            
-            
+            xWebView.RenderTransform = new CompositeTransform
+            {
+                ScaleX = vm.Zoom,
+                ScaleY = vm.Zoom
+            };
+
             (vm.Model as WebNodeModel).UrlChanged += OnUrlChanged;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                xWebView.RenderTransform = new CompositeTransform
-                {
-                    ScaleX = vm.Zoom,
-                    ScaleY = vm.Zoom
-                };
+              
 
                 (vm.Model as WebNodeModel).Url = "http://www.google.com";
 
@@ -50,7 +50,6 @@ namespace NuSysApp
             var c = xWebView.RenderTransform as CompositeTransform;
             c.ScaleX = vm.Zoom;
             c.ScaleY = vm.Zoom;
-
         }
 
         private void OnUrlChanged(object source, string url)
@@ -58,7 +57,7 @@ namespace NuSysApp
             xWebView.Navigate(new Uri(url));
         }
 
-        private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+        private void OnKeyUp(object sender, KeyRoutedEventArgs e)
         {
           if (e.Key == VirtualKey.Enter)
             {

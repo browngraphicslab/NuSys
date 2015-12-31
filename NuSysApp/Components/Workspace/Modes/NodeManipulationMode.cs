@@ -50,7 +50,7 @@ namespace NuSysApp
             foreach (var n in newNodes)
             {
                 var userControl = (UserControl) n;
-                if (userControl.DataContext is NodeViewModel) { 
+                if (userControl.DataContext is AtomViewModel) { 
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
                 }
@@ -76,7 +76,7 @@ namespace NuSysApp
 
             var s = (UserControl) sender;
 
-            var vm = s.DataContext as NodeViewModel;
+            var vm = s.DataContext as AtomViewModel;
             vm?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
         }
     }

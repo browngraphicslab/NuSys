@@ -46,9 +46,9 @@ namespace NuSysApp
                 _document = Document.Create(readBuffer, DocumentType.PDF, 140);
             }
 
-            Width = Width;
-
+            
             await Goto(CurrentPageNumber);
+            SetSize(Width, Height);
         }
 
         public async void FlipRight()
@@ -93,64 +93,23 @@ namespace NuSysApp
 
         }
 
-        public override double Width
-        {
-            get { return base.Width; }
-            set
-            {
-                if (_document == null)
-                {
-                    base.Width = value;
-                    return;
-                }
 
-                var pageSize = _document.GetPageSize(CurrentPageNumber);
-                if (pageSize.X > pageSize.Y)
-                {
-                    var r = pageSize.Y / (double)pageSize.X;
-                    base.Width = value;
-                    base.Height = base.Width * r;
-                }
-                else
-                {
-                    var r = pageSize.X / (double)pageSize.Y;
-                    base.Width = base.Height * r;
-                }
+        public override void SetSize(double width, double height)
+        {
+  
+            if (ImageSource.PixelWidth > ImageSource.PixelHeight)
+            {
+                var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+                base.SetSize(width, width * r);
+            }
+            else
+            {
+                var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
+                base.SetSize(height * r, height);
             }
         }
 
-        /// <summary>
-        /// Height of this atom
-        /// </summary>
-        public override double Height
-        {
-            get { return base.Height; }
-            set
-            {
-                if (_document == null)
-                {
-                    base.Height = value;
-                    return;
-                }
-
-                var pageSize = _document.GetPageSize(CurrentPageNumber);
-
-                if (pageSize.X > pageSize.Y)
-                {
-                    var r = pageSize.Y / (double)pageSize.X;
-                    base.Height = base.Width * r;
-
-                }
-                else
-                {
-                    var r = pageSize.X / (double)pageSize.Y;
-                    base.Height = value;
-                    base.Width = base.Height * r;
-                }
-            }
-        }
-
-
+       
         public WriteableBitmap ImageSource
         {
             get; set;

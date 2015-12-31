@@ -8,8 +8,8 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Width="500" Height="500">
-        <StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Margin="5,5" Width="500" Height="500">
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Width="600" Height="750">
+        <StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Margin="5,5" Width="600" Height="750">
             <StackPanel Orientation="Horizontal">
                 <Button Tapped="OnRecordClick">Record</Button>
             </StackPanel>

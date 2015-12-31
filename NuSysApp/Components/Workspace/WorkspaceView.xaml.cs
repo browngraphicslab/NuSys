@@ -54,8 +54,8 @@ namespace NuSysApp
                     case GestureRecognizer.GestureType.None:
                         break;
                     case GestureRecognizer.GestureType.Scribble:
-                        vm.CheckForInkNodeIntersection(model);
-                        model.Delete();
+                        //vm.CheckForInkNodeIntersection(model);
+                        //model.Delete();
                         break;
                 }
             };

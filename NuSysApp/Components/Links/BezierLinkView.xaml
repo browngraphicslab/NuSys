@@ -8,8 +8,6 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     xmlns:converters="using:NuSysApp"
-    DoubleTapped="BezierLinkView_OnDoubleTapped"
-    PointerPressed="BezierLinkView_OnPointerPressed"
 >
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="bConverter"/>
