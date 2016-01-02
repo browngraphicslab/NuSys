@@ -32,7 +32,7 @@ namespace NuSysApp
         {
             _inkManager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
             _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
-            _currentStroke.ParentID = inqCanvas.ViewModel.Model.ID;
+            _currentStroke.InqCanvasId = inqCanvas.ViewModel.Model.Id;
             _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
             _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
 
@@ -41,17 +41,17 @@ namespace NuSysApp
             _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
             inqCanvas.ViewModel.Lines.Add(_currentInqLineView);
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
+            _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             _inkManager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
+            _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
                 if (_currentStroke.Points.Count > 1)
                 {
-                    NetworkConnector.Instance.RequestSendPartialLine(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID,
+                    NetworkConnector.Instance.RequestSendPartialLine(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id,
                         _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
                         _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
@@ -63,8 +63,8 @@ namespace NuSysApp
         {
             _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.AddPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
-            NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.ID, _currentStroke.GetString());
+            _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
+            NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id, _currentStroke.GetString());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).LineFinalized += delegate
             {
                 inqCanvas.ViewModel.Lines.Remove(_currentInqLineView);

@@ -34,9 +34,9 @@ namespace NuSysApp
           //  SetMetaData("annotation", "No Annotation");
         }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
-            Dictionary<string, string> dict = await base.Pack();
+            var dict = await base.Pack();
             dict.Add("id1",InAtomID);
             dict.Add("id2", OutAtomID);
             dict.Add("type","linq");

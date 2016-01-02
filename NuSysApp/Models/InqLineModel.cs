@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,39 +14,19 @@ namespace NuSysApp
 {
     public class InqLineModel : Sendable
     {
-        private PointCollection _points;
+        private ObservableCollection<Point2d> _points; 
 
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
         public event DeleteInqLineEventHandler OnDeleteInqLine;
 
-        public PointCollection Points
-        {
-            get { return _points; }
-            set
-            {
-                _points = value;
-                RaisePropertyChanged("Model.Points");
-            }
-        }
-
-        public double StrokeThickness { get; set; }
-        public string ParentID { get; set; }
-        public SolidColorBrush Stroke { get; set; }
         public InqLineModel(string id) : base(id)
         {
-            _points = new PointCollection();
+            _points = new ObservableCollection<Point2d>();
         }
-
-        public InqLineModel(string id, PointCollection points) : base(id)
-        {
-            _points = points;
-        }
-
-        public void AddPoint(Point p)
+        
+        public void AddPoint(Point2d p)
         {
             Points.Add(p);
-
-            RaisePropertyChanged("Model.Points");
         }
 
         public void Delete()
@@ -58,36 +39,50 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                SetLine(props["data"], props["id"]);
+                //TODO: Re-add
+                //SetLine(props["data"], props["id"]);
             }
         }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
-            Dictionary<string, string> props = new Dictionary<string, string>();
+            var props = new Dictionary<string, object>();
             props.Add("id", Id);
-            props.Add("canvasNodeID", ParentID);
+            props.Add("canvasNodeID", InqCanvasId);
             props.Add("data", GetString());
             props.Add("type", "ink");
             props.Add("inkType", "full");
             return props;
         }
 
+        public ObservableCollection<Point2d> Points
+        {
+            get { return _points; }
+            set
+            {
+                _points = value;
+            }
+        }
+
         private void SetLine(string data, string id)
         {
-            PointCollection points;
+            ObservableCollection<Point2d> points;
             double thickness;
             SolidColorBrush stroke;
             ParseToLineData(data, out points, out thickness, out stroke);
-            Points = points;
+            //Points = points;
             StrokeThickness = thickness;
             Stroke = stroke;
             var view = new InqLineView(new InqLineViewModel(this), StrokeThickness, Stroke);
         }
 
-        public static void ParseToLineData(string s, out PointCollection pc, out double thickness, out SolidColorBrush stroke)
+        public double StrokeThickness { get; set; }
+        public string InqCanvasId { get; set; }
+        public SolidColorBrush Stroke { get; set; }
+
+        public static void ParseToLineData(string s, out ObservableCollection<Point2d> pc, out double thickness, out SolidColorBrush stroke)
         {
-            pc = new PointCollection();
+            pc = new ObservableCollection<Point2d>();
             thickness = 1;
             stroke = new SolidColorBrush(Colors.Black);
             string[] parts = s.Split(new string[] { "><" }, StringSplitOptions.RemoveEmptyEntries);
@@ -107,7 +102,7 @@ namespace NuSysApp
                             if (p.Length > 0)
                             {
                                 string[] coords = p.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                                Point parsedPoint = new Point(double.Parse(coords[0]), double.Parse(coords[1]));
+                                var parsedPoint = new Point2d(double.Parse(coords[0]), double.Parse(coords[1]));
                                 pc.Add(parsedPoint);
                             }
                         }
@@ -148,6 +143,16 @@ namespace NuSysApp
                 plines += "' stroke='" + Stroke.Color.ToString() + "'>";
             }
             return plines;
+        }
+
+        public PointCollection ToPointCollection()
+        {
+            var pc = new PointCollection();
+            foreach (var p in _points)
+            {
+                pc.Add(new Point(p.X,p.Y));   
+            }
+            return pc;
         }
 
 

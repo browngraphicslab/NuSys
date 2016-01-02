@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
@@ -41,9 +42,7 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public delegate void TitleChangedHandler(object source, string title);
         public event TitleChangedHandler TitleChanged;
-
-
-
+        
 
         protected AtomModel(string id) : base(id)
         {
@@ -53,18 +52,6 @@ namespace NuSysApp
             SetMetaData("tags", new List<string> {"none"});
         }
         
-        //takes in SolidColorBrush converts to string
-        private string ColorToString(SolidColorBrush brush)
-        {
-            Color color = brush.Color;
-            var aVal = color.A;
-            var rVal = color.R;
-            var gVal = color.G;
-            var bVal = color.B;
-            string colorString = aVal.ToString() + rVal.ToString() + gVal.ToString() + bVal.ToString();
-            return colorString;
-        }
-
         // TODO: Move color to higher level type
 
         public SolidColorBrush Color {
@@ -85,7 +72,6 @@ namespace NuSysApp
         public void SetMetaData(string key, object value)
         {
             Metadata[key] = value;
-            //DebounceDict.Add("metadata", Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">"));
             MetadataChange?.Invoke(this, key);
         }
 
@@ -94,37 +80,29 @@ namespace NuSysApp
             get { return _debounceDict; }
         }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
-            Dictionary<string, string> dict = await base.Pack();
-            var metadatastring = Newtonsoft.Json.JsonConvert.SerializeObject(Metadata).Replace("\"", "'").Replace("{", "<").Replace("}", ">");
-            dict.Add("metadata", metadatastring);
+            var dict = await base.Pack();
+            dict.Add("metadata", Metadata);
             dict.Add("creator", Creator);
-            dict.Add("x", X.ToString());
-            dict.Add("y", Y.ToString());
-            dict.Add("width", Width.ToString());
-            dict.Add("height", Height.ToString());
-            dict.Add("alpha", Alpha.ToString());
-            dict.Add("scaleX", ScaleX.ToString());
-            dict.Add("scaleY", ScaleY.ToString());
+            dict.Add("x", X);
+            dict.Add("y", Y);
+            dict.Add("width", Width);
+            dict.Add("height", Height);
+            dict.Add("alpha", Alpha);
+            dict.Add("scaleX", ScaleX);
+            dict.Add("scaleY", ScaleY);
             dict.Add("title", Title);
             return dict;
         }
 
         public override async Task UnPack(Message props)
-        {
-            if (props.ContainsKey("metadata"))
-            {
-                Metadata = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,object>>( props["metadata"].Replace("'", "\"").Replace("<", "{").Replace(">", "}"));
-                foreach (var key in Metadata.Keys.ToList())
-                {
-                    var t = Metadata[key].GetType();
-                    if (Metadata[key] is JArray)
-                    {
-                        Metadata[key] = ((JArray)Metadata[key]).ToObject<List<string>>();
-                    }
-                }
-            }
+        {     
+            Metadata = props.GetDict<string, object>("metadata");
+            if (Metadata.ContainsKey("tags"))
+                Metadata["tags"] = JsonConvert.DeserializeObject<List<string>>(Metadata["tags"].ToString());
+            else
+                Metadata["tags"] = new List<string>();
 
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);

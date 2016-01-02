@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -110,62 +111,9 @@ namespace NuSysApp.Components
             {
                 double.TryParse(props["y"], out y);
             }
-            if (props.ContainsKey("data") && props.ContainsKey("nodeType"))
-            {
-                string d = props["data"];
-                switch (type)
-                {
-                    case NodeType.Text:
-                        data = d;
-                        break;
-                    case NodeType.Image:
-                        try
-                        {
-                            data = ParseToByteArray(d);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                        }
-                        break;
-                    case NodeType.PDF:
-                        try
-                        {
-                            data = ParseToByteArray(d);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                        }
-                        break;
-                    case NodeType.Audio:
-                        try
-                        {
-                            data = ParseToByteArray(d);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                        }
-                        break;
-                    case NodeType.Video:
-                        try
-                        {
-                            data = ParseToByteArray(d);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                        }
-                        break;
-                }
-            }
-            await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y, data); });
-            if (props.ContainsKey("data"))
-            {
-                string s;
-                props.Remove("data");
-            }
+            
+            await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y); });
+
         }
 
 
@@ -238,15 +186,15 @@ namespace NuSysApp.Components
                 }
                 if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                 {
-                    Point one;
-                    Point two;
+                    Point2d one;
+                    Point2d two;
                     ParseToLineSegment(props, out one, out two);
 
                     await UITask.Run(() =>
                     {
                         var lineModel = new InqLineModel(props["canvasNodeID"]);
                         var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
-                        PointCollection pc = new PointCollection();
+                        var pc = new ObservableCollection<Point2d>();
                         pc.Add(one);
                         pc.Add(two);
                         lineModel.Points = pc;
@@ -262,7 +210,7 @@ namespace NuSysApp.Components
                 {
                     await UITask.Run(async delegate {
 
-                        PointCollection points;
+                        ObservableCollection<Point2d> points;
                         double thickness;
                         SolidColorBrush stroke;
 
@@ -281,7 +229,7 @@ namespace NuSysApp.Components
                             var lineModel = new InqLineModel(id);
                             if (props.ContainsKey("canvasNodeID"))
                             {
-                                lineModel.ParentID = props["canvasNodeID"];
+                                lineModel.InqCanvasId = props["canvasNodeID"];
                             }
                             var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
                             lineModel.Points = points;
@@ -320,10 +268,10 @@ namespace NuSysApp.Components
             return Convert.FromBase64String(s);
         }
 
-        private void ParseToLineSegment(Message props, out Point one, out Point two)
+        private void ParseToLineSegment(Message props, out Point2d one, out Point2d two)
         {
-            one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
-            two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
+            one = new Point2d(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
+            two = new Point2d(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
         }
 
     }

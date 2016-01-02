@@ -67,8 +67,8 @@ namespace NuSysApp
         public const double ButtonDeactivatedOpacity = 0.5;
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg" };
-        public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf", ".pptx", ".docx" };
-        public static IEnumerable<string> VideoFileTypes   = new List<string> { ".mp4"};//TODO add more types
+        public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
+        public static IEnumerable<string> VideoFileTypes   = new List<string> { };//TODO add more types
         public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes));
 
         #region Cortana

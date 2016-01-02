@@ -148,7 +148,7 @@ namespace NuSysApp
 
         public async void PromoteInk(Rect nodeBounds, List<InqLineModel> linesToPromote)
         {
-            var dict = new Dictionary<string, string>();
+            var dict = new Dictionary<string, object>();
             dict["width"] = nodeBounds.Width.ToString();
             dict["height"] = nodeBounds.Height.ToString();
             AddInk add = delegate (string s)
@@ -162,7 +162,7 @@ namespace NuSysApp
                         UITask.Run(async () =>
                         {
                             //NetworkConnector.Instance.RequestLock(v.ID);
-                            NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.ID, model.GetString());
+                            NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.Id, model.GetString());
                             //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
                         });
                     }

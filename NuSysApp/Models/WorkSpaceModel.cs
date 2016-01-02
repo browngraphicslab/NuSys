@@ -36,14 +36,14 @@ namespace NuSysApp
             CenterY = -Constants.MaxCanvasSize;
         }
 
-        public async override Task<Dictionary<string, string>> Pack()
+        public async override Task<Dictionary<string, object>> Pack()
         {
             var pack = await base.Pack();
-            pack.Add("zoom", Zoom.ToString());
-            pack.Add("locationX", LocationX.ToString());
-            pack.Add("locationY", LocationY.ToString());
-            pack.Add("centerX", CenterX.ToString());
-            pack.Add("centerY", CenterY.ToString());
+            pack.Add("zoom", Zoom);
+            pack.Add("locationX", LocationX);
+            pack.Add("locationY", LocationY);
+            pack.Add("centerX", CenterX);
+            pack.Add("centerY", CenterY);
             return pack;
         }
 

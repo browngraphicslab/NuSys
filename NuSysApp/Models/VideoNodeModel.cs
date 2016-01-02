@@ -11,9 +11,9 @@ namespace NuSysApp
     {
         private byte[] _byteArray;
         private InMemoryRandomAccessStream _recording;
-        public VideoNodeModel(byte[] byteArray, string id) : base(id)
+        public VideoNodeModel(string id) : base(id)
         {
-            ByteArray = byteArray;
+            //ByteArray = byteArray;
             Recording = new InMemoryRandomAccessStream();
         }
         public InMemoryRandomAccessStream Recording
@@ -26,9 +26,9 @@ namespace NuSysApp
             get {return _byteArray;}
             set {_byteArray = value;}
         }
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
-            Dictionary<string, string> props = await base.Pack();
+            var props = await base.Pack();
             if (ByteArray != null)
             {
                 props.Add("video", Convert.ToBase64String(ByteArray));

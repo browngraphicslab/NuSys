@@ -244,7 +244,7 @@ namespace NuSysApp
             var pos = e.GetPosition(this);
             var vm = (WorkspaceViewModel)this.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
-            var props = new Dictionary<string, string>();
+            var props = new Dictionary<string, object>();
             props["width"] = "400";
             props["height"] = "300";
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);

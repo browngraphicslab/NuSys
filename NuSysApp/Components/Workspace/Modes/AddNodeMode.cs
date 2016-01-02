@@ -175,7 +175,9 @@ namespace NuSysApp
                     data = Convert.ToBase64String(fileBytes);
                 }
             }
-            var dict = new Dictionary<string, string>();
+
+            var contentId = SessionController.Instance.ContentController.Add(data.ToString());
+            var dict = new Dictionary<string, object>();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString(), null, dict);

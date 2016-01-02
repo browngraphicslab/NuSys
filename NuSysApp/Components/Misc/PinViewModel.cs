@@ -9,7 +9,7 @@ namespace NuSysApp
     {
         private MatrixTransform _transform;
         private UserControl _view;
-        private BaseINPC _model;
+        private PinModel _model;
         private string _text = string.Empty;
         
         public PinViewModel(PinModel model) : base()
@@ -17,7 +17,7 @@ namespace NuSysApp
             Model = model;
             Transform = new MatrixTransform();   
             View = new PinView(this);
-            this.Model.PropertyChanged += (s, e) => { Update(e); };
+          //  this.Model.PropertyChanged += (s, e) => { Update(e); };
             Text = "<Enter Pin Name>";
 
             var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
@@ -95,7 +95,7 @@ namespace NuSysApp
             }
         }
 
-        public BaseINPC Model
+        public PinModel Model
         {
             get { return _model; }
             set

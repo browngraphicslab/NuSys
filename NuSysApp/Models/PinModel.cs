@@ -85,7 +85,8 @@ namespace NuSysApp
                 _text = value;
                 if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
                 {
-                    RaisePropertyChanged("Model_Text");
+                    //  TODO: Re-add
+                    //RaisePropertyChanged("Model_Text");
                 }
                 else
                 {

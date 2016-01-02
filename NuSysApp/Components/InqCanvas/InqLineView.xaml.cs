@@ -141,7 +141,7 @@ namespace NuSysApp
                     (Parent as InqCanvasView)?.ViewModel.Lines.Remove(this);
                     break;
                 case "Parent":
-                    vm.SetParentID((Parent as InqCanvasView).ViewModel.Model.ID);
+                    vm.SetParentID((Parent as InqCanvasView).ViewModel.Model.Id);
                     break;
             }
         }

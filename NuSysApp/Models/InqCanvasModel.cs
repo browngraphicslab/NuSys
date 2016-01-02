@@ -13,7 +13,7 @@ using NuSysApp.EventArgs;
 
 namespace NuSysApp
 {
-    public class InqCanvasModel
+    public class InqCanvasModel : Sendable
     {
  
         public event AddPartialLineEventHandler PartialLineAdded;
@@ -26,39 +26,17 @@ namespace NuSysApp
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
 
 
-        public InqCanvasModel(string id)
+        public InqCanvasModel(string id) : base(id)
         {
-            ID = id;
             _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
-            /*
-            _partialLines = new ObservableDictionary<string, ObservableCollection<InqLineView>>();
-            _partialLines.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs args)
-            {
-                if (args.Action == NotifyCollectionChangedAction.Add)
-                {
-                    foreach (ObservableCollection<InqLineView> n in _partialLines.Values)
-                    {
-                        n.CollectionChanged += delegate (object o, NotifyCollectionChangedEventArgs eventArgs)
-                        {
-                            InqLineView l = ((InqLineView)((object[])eventArgs.NewItems.SyncRoot)[0]);
-                            PartialLineAdded?.Invoke(this, new AddLineEventArgs("Added Partial Lines", l));
-                        };
-                    }
-                }
-            };*/
-
         }
+
         public HashSet<InqLineModel> Lines {
             get { return _lines; }
             set
             {
                 _lines = value;
             }
-        }
-        public string ID { get; }
-        public void Delete()
-        {
-            
         }
 
         public string StringLines
@@ -79,16 +57,10 @@ namespace NuSysApp
             return plines;
         }
 
-        public void AddTemporaryPoint(Point p)
-        {
-            
-        }
-
         public void FinalizeLine(InqLineModel line)
         {
             _lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
-            //OnFinalLineAddition?.Invoke(this, new AddLineEventArgs("Added Lines", line));
             LineFinalized?.Invoke( line );
         }
 
@@ -125,6 +97,5 @@ namespace NuSysApp
                 _partialLines.Remove(oldID);
             }
         }
-        public AtomModel.EditStatus CanEdit { get; set; }
     }
 }

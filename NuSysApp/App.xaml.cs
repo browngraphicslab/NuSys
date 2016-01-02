@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -38,9 +39,6 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-
-
-
         }
 
         /// <summary>

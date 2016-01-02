@@ -19,9 +19,12 @@ namespace NuSysApp
         public event WorkspaceChangedHandler WorkspaceChanged;
 
         private LockDictionary _locks;
+
+        private ContentController _contentController = new ContentController();
         public ObservableDictionary<string, Sendable> IdToSendables { set; get; }
 
         public SessionView SessionView { get; set; }
+        public ContentController ContentController { get { return _contentController; } }
 
 
         public WorkspaceViewModel ActiveWorkspace
@@ -73,8 +76,8 @@ namespace NuSysApp
                 NodeType = NodeType.Group
             };
 
-            node1.MoveToGroup(group);
-            node2.MoveToGroup(group);
+           // node1.MoveToGroup(group);
+//node2.MoveToGroup(group);
             IdToSendables.Add(id, group);
            // OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
         }
@@ -110,7 +113,7 @@ namespace NuSysApp
                     {
                         var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
                         newNodeModel.SetMetaData("visualCopyOf", searchResult.Id);
-                        newNodeModel.MoveToGroup(group, true);
+                     //   newNodeModel.MoveToGroup(group, true);
                     });
                 });
 
@@ -148,26 +151,26 @@ namespace NuSysApp
 
         }
 
-        public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate, object data = null)
+        public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate)
         {
             NodeModel node;
             NodeViewModel nodeViewModel;
             switch (type)
             {
                 case NodeType.Text:
-                    node = new TextNodeModel((string)data ?? "", id);
+                    node = new TextNodeModel(id);
                     break;
                 case NodeType.Image:
-                    node = new ImageNodeModel((byte[])data, id);
+                    node = new ImageNodeModel(id);
                     break;
                 case NodeType.PDF:
-                    node = new PdfNodeModel((byte[])data, id);
+                    node = new PdfNodeModel(id);
                     break;
                 case NodeType.Audio:
-                    node = new AudioNodeModel((byte[])data, id);
+                    node = new AudioNodeModel(id);
                     break;
                 case NodeType.Video:
-                    node = new VideoNodeModel((byte[])data, id);
+                    node = new VideoNodeModel(id);
                     break;
                 case NodeType.GroupTag:
                     node = new NodeContainerModel(id);
@@ -215,6 +218,8 @@ namespace NuSysApp
 
         public async Task SaveWorkspace()
         {
+            await _contentController.Save();
+
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);

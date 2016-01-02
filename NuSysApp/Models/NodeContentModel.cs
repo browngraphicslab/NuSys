@@ -5,16 +5,14 @@ namespace NuSysApp
     public class NodeContentModel
     {
         public NodeContentModel() { }
-        public NodeContentModel(byte[] data, string id)
+        public NodeContentModel(string data, string id)
         {
             Data = data;
-            assocAtomID = id;
+            Id = id;
         }
 
-        [Column("Data")]
-        public byte[] Data { get; set; }
+        public string Data { get; set; }
+        public string Id { get; set; }
 
-        [Column("assocAtomID")]
-        public string assocAtomID { get; set; }
     }
 }

@@ -15,12 +15,12 @@ namespace NuSysApp
     {
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
         private StorageFile _audioFile;
-        public AudioNodeModel(byte[] byteArray, string id) : base(id)
+        public AudioNodeModel(string id) : base(id)
         {
             NodeType = NodeType.Audio;
-            Content = new NodeContentModel(byteArray, id);
-            ByteArray = byteArray;
-            MakeAudio(byteArray);
+          //  Content = new NodeContentModel(byteArray, id);
+          //  ByteArray = byteArray;
+          //  MakeAudio(byteArray);
             //FileName = "nusysAudioCapture" + DateTime.Now + ".mp3";
         }
 
@@ -43,9 +43,9 @@ namespace NuSysApp
         }
         public string FileName { get; set; }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
-            Dictionary<string, string> props = await base.Pack();
+            var props = await base.Pack();
             if (ByteArray != null)
             {
                 props.Add("audio", Convert.ToBase64String(ByteArray));

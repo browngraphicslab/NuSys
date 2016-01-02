@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class DebouncingDictionary
     {
-        private ConcurrentDictionary<string, string> _dict;
+        private ConcurrentDictionary<string, object> _dict;
         private bool _timing = false;
         private Timer _timer;
         private Sendable _atom;
@@ -19,14 +19,14 @@ namespace NuSysApp
         public DebouncingDictionary(Sendable atom)
         {
             _timer = new Timer(SendMessage, null, Timeout.Infinite, Timeout.Infinite);
-            _dict = new ConcurrentDictionary<string, string>();
+            _dict = new ConcurrentDictionary<string, object>();
             _atom = atom;
         }
 
         public DebouncingDictionary(AtomModel atom, int milliSecondDebounce)
         {
             _timer = new Timer(SendMessage, null, Timeout.Infinite, Timeout.Infinite);
-            _dict = new ConcurrentDictionary<string, string>();
+            _dict = new ConcurrentDictionary<string, object>();
             _atom = atom;
             _milliSecondDebounce = _milliSecondDebounce;
         }
@@ -69,11 +69,11 @@ namespace NuSysApp
                     if (_sendNextTCP)
                     {
                         _sendNextTCP = false;
-                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, string>(_dict), NetworkConnector.PacketType.TCP);
+                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict), NetworkConnector.PacketType.TCP);
                     }
                     else
                     {
-                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, string>(_dict));
+                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict));
                     }
                 }
             }

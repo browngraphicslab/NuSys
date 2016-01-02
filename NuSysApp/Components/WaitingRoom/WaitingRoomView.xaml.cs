@@ -21,11 +21,8 @@ namespace NuSysApp
             //waitingroomanimation.Begin();
 
             
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
-            Application.Current.UnhandledException += delegate(object sender, UnhandledExceptionEventArgs args)
-            {
-              //  throw new Exception(args.Message);
-            };
+            //ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+           
 
             ellipse.Begin();
         }

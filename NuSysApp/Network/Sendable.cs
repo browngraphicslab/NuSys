@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace NuSysApp
 {
     // TODO: remove BASEINPC
-    public abstract class Sendable : BaseINPC
+    public abstract class Sendable
     {
         public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
 
@@ -42,10 +42,10 @@ namespace NuSysApp
                 CanEditChange?.Invoke(this, new CanEditChangedEventArg(CanEdit));
             }
         }
-
-        public virtual async Task<Dictionary<string, string>> Pack()
+        
+        public virtual async Task<Dictionary<string, object>> Pack()
         {
-            var dict = new Dictionary<string, string>();
+            var dict = new Dictionary<string, object>();
             dict.Add("id", Id);
             return dict;
         }

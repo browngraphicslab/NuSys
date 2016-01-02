@@ -11,16 +11,9 @@ namespace NuSysApp
 {
     public class ImageNodeModel : NodeModel
     {
-        public ImageNodeModel(byte[] byteArray, string id) : base(id)
+        public ImageNodeModel(string id) : base(id)
         {
             NodeType = NodeType.Image;
-            MakeImage(byteArray); // Todo: don't call async methods from a ctor
-            Content = new NodeContentModel(byteArray, id);
-        }
-
-        private async Task MakeImage(byte[] bytes)
-        {
-            Image = await ByteArrayToBitmapImage(bytes);
         }
 
         public override double Width
@@ -89,14 +82,13 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                Content.Data = Convert.FromBase64String(props["data"]); //Converts to Byte Array
 
-                var stream = new InMemoryRandomAccessStream();
-                var image = new BitmapImage();
-                await stream.WriteAsync(Content.Data.AsBuffer());
-                stream.Seek(0);
-                image.SetSource(stream);
-                Image = image;
+                var data = Convert.FromBase64String(props["data"]); //Converts to Byte Array
+            //    MakeImage(byteArray); // Todo: don't call async methods from a ctor
+            // Content = new NodeContentModel(byteArray, id);
+
+
+                Image = await ByteArrayToBitmapImage(data);
             }
 
             FilePath = props.GetString("filepath", FilePath);
@@ -104,10 +96,10 @@ namespace NuSysApp
            await base.UnPack(props);
         }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
-            Dictionary<string, string> props = await base.Pack();
-            props.Add("filepath",FilePath);
+            var props = await base.Pack();
+            props.Add("filepath", FilePath);
             props.Add("data", Convert.ToBase64String(Content.Data));
             return props;
         }

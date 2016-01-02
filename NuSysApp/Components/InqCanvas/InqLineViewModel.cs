@@ -21,7 +21,7 @@ namespace NuSysApp
 
         public void SetParentID(string id)
         {
-            Model.ParentID = id;
+            Model.InqCanvasId = id;
         }
 
         private void Model_OnDeleteInqLine(object source, EventArgs.DeleteInqLineEventArgs e)

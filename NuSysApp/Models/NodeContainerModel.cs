@@ -56,7 +56,7 @@ namespace NuSysApp
             await ChildRemoved?.Invoke(this, nodeModel);
         }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
             var dict = await base.Pack();
             dict["isTemporary"] = IsTemporary.ToString();

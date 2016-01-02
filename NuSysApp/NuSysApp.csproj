@@ -18,10 +18,12 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>81B6B30B934A1D53478C22381925FDE21CF7F329</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>E6E6AEC6810EF5224658C2CB0B3EA8E642FC2935</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\phili_n4ua7ts\Desktop\</AppxPackageDir>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxPackageDir>C:\Users\Philipp\Desktop\deploy\</AppxPackageDir>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxBundle>Always</AppxBundle>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -98,6 +100,13 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\logos\150x150.png" />
+    <Content Include="Assets\logos\310x150.png" />
+    <Content Include="Assets\logos\310x310.png" />
+    <Content Include="Assets\logos\44x44.png" />
+    <Content Include="Assets\logos\71x71.png" />
+    <Content Include="Assets\icon.scale-125.png" />
+    <Content Include="Assets\icon.scale-150.png" />
     <Content Include="Assets\icon_audionode_fast_forward.png" />
     <Content Include="Assets\icon_mainmenu_collapse.png" />
     <Content Include="Assets\icon_mainmenu_eraser.png" />
@@ -123,6 +132,14 @@
     <Content Include="Assets\icon_audionode_rewind.png" />
     <Content Include="Assets\icon_audionode_stop.png" />
     <Content Include="Assets\icon_users.png" />
+    <Content Include="Assets\logos\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\logos\SplashScreen.scale-100.png" />
+    <Content Include="Assets\logos\SplashScreen.scale-200.png" />
+    <Content Include="Assets\logos\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\logos\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\logos\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\logos\StoreLogo.png" />
+    <Content Include="Assets\logos\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -178,6 +195,7 @@
     </Compile>
     <Compile Include="Components\Workspace\Modes\LinkMode.cs" />
     <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
+    <Compile Include="Controller\ContentController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Effects\Anim.cs" />
@@ -381,13 +399,13 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\icon.png" />
     <Content Include="Assets\icon_node_ink.png" />
     <Content Include="Assets\icon_pdf_left.png" />
     <Content Include="Assets\icon_pdf_right.png" />
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
     <Content Include="Properties\Default.rd.xml" />
@@ -533,7 +551,12 @@
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\WindowsBase.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

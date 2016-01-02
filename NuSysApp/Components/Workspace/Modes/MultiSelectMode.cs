@@ -189,7 +189,7 @@ namespace NuSysApp
                     foreach (var point in model.Points)
                     {
                         //we need to adjust the point so that it is in the correct place on the node's canvas
-                        newModel.AddPoint(new Point(point.X - topLeft.X, point.Y - topLeft.Y));
+                        newModel.AddPoint(new Point2d(point.X - topLeft.X, point.Y - topLeft.Y));
                         if (!isContained && r.Contains(point))
                         {
                             isContained = true;

@@ -12,9 +12,7 @@ namespace NuSysApp
     public class WebNodeModel : NodeModel
     {
         private string _url = string.Empty;
-
-
-
+        
         public delegate void UrlChangedHandler(object source, string url);
         public event UrlChangedHandler UrlChanged;
 
@@ -29,7 +27,7 @@ namespace NuSysApp
             await base.UnPack(props);
         }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public override async Task<Dictionary<string, object>> Pack()
         {
             var props = await base.Pack();
             props.Add("url", Url);

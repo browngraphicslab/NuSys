@@ -9,12 +9,12 @@ namespace NuSysApp
 {
     public class Message
     {
-        private Dictionary<string, string> _dict;
+        private Dictionary<string, object> _dict;
         private Dictionary<string, Message> _children;
 
         public Message()
         {
-            _dict = new Dictionary<string, string>();
+            _dict = new Dictionary<string, object>();
             _children = new Dictionary<string, Message>();
             //Init(message);
         }
@@ -22,8 +22,8 @@ namespace NuSysApp
         public async Task Init(string m)
         {
             var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
-            Dictionary<string, string> message = JsonConvert.DeserializeObject<Dictionary<string, string>>(m, settings);
-            foreach (KeyValuePair<string, string> kvp in message)
+            var message = JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings);
+            foreach (KeyValuePair<string, object> kvp in message)
             {
                 if (kvp.Key != "children")
                 {
@@ -31,11 +31,11 @@ namespace NuSysApp
                 }
                 else
                 {
-                    Dictionary<string, string> children = await JsonConvert.DeserializeObjectAsync<Dictionary<string, string>>(kvp.Value, settings);
-                    foreach (KeyValuePair<string,string> child in children)
+                    var children = await JsonConvert.DeserializeObjectAsync<Dictionary<string, object>>(kvp.Value.ToString(), settings);
+                    foreach (var child in children)
                     {
                         var msg = new Message();
-                        await msg.Init(child.Value);
+                        await msg.Init(child.Value.ToString());
                         _children.Add(child.Key, msg);
                     }
                 }
@@ -69,9 +69,9 @@ namespace NuSysApp
             {
                 throw new Exception("Cannot get children as string.  Call Children()");
             }
-            if (_dict.ContainsKey(key))
+            if (_dict.ContainsKey(key) && _dict[key] != null)
             {
-                return _dict[key];
+                return _dict[key].ToString();
             }
             return null;
         }
@@ -81,9 +81,24 @@ namespace NuSysApp
             return ContainsKey(key) ? double.Parse(Get(key)) : defaultValue;
         }
 
+        public int GetInt(string key, int defaultValue)
+        {
+            return ContainsKey(key) ? int.Parse(Get(key)) : defaultValue;
+        }
+
         public string GetString(string key, string defaultValue)
         {
             return ContainsKey(key) ? Get(key) : defaultValue;
+        }
+
+        public byte[] GetByteArray(string key)
+        {
+            return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;
+        }
+
+        public Dictionary<T, K> GetDict<T, K>(string key)
+        {
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<Dictionary<T, K>>(Get(key)) : new Dictionary<T, K>();
         }
 
         public Dictionary<string, Message> Children()

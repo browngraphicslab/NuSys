@@ -14,12 +14,9 @@ namespace NuSysApp
         public delegate void TextChangedEventHandler(object source, TextChangedEventArgs e);
         public event TextChangedEventHandler TextChanged;
 
-        public TextNodeModel(string text, string id): base(id)
+        public TextNodeModel(string id): base(id)
         {
             NodeType = NodeType.Text;
-            Id = id;
-            Content = new NodeContentModel(System.Text.Encoding.UTF8.GetBytes(text), Id);
-            _text = text;
         }
 
         public string Text
@@ -35,11 +32,13 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {
-            //Text = props.GetString("data", "");
+            var text = props.GetString("data", "");
+            Content = new NodeContentModel(System.Text.Encoding.UTF8.GetBytes(text), Id);
+            _text = text;
             base.UnPack(props);
         }
 
-        public override async Task<Dictionary<string,string>> Pack()
+        public override async Task<Dictionary<string,object>> Pack()
         {
             var dict = await base.Pack();
             // TODO: Fix this fix

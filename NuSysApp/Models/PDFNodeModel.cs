@@ -6,22 +6,19 @@ namespace NuSysApp
 {
     public class PdfNodeModel : NodeModel
     {
-        public delegate void PdfImagesCreatedHandler();
-
-        public PdfNodeModel(byte[] bytes, string id) : base(id)
-        {
-            NodeType = NodeType.PDF;
-            ByteArray = bytes;
-            Content = new NodeContentModel(ByteArray, id);
-        }
-
         public int CurrentPageNumber { get; set; }
-
-        public byte[] ByteArray { get; }
+        public byte[] ByteArray { get; set; }
         public event PdfImagesCreatedHandler OnPdfImagesCreated;
         public event PdfImagesCreatedHandler OnPageChange;
+        public delegate void PdfImagesCreatedHandler();
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public PdfNodeModel(string id) : base(id)
+        {
+            NodeType = NodeType.PDF;
+
+        }
+        
+        public override async Task<Dictionary<string, object>> Pack()
         {
             var props = await base.Pack();
             props.Add("page", CurrentPageNumber.ToString());
@@ -31,14 +28,11 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("page"))
-            {
-                CurrentPageNumber = int.Parse(props["page"]);
-            }
+            CurrentPageNumber = props.GetInt("page", 0);
+            ByteArray = props.GetByteArray("data");
+            Content = new NodeContentModel(ByteArray, Id);
             await base.UnPack(props);
 
         }
-
-
     }
 }

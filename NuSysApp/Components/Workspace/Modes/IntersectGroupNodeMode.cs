@@ -36,7 +36,7 @@ namespace NuSysApp
                 var n1 = vm.Title;
                 var otherVm = (LabelNodeViewModel)_intersectedGroupNode.DataContext;
                 var n2 = otherVm.Title;
-                var props = new Dictionary<string, string>();
+                var props = new Dictionary<string, object>();
                 props["isTemporary"] = "True";
 
                 var children0 = vm.Children.Values.Select(s =>

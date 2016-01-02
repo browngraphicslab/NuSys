@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -143,7 +144,7 @@ namespace NuSysApp
         /*
         * makes a message from a dictionary of properties.  dict must have an ID
         */
-        public string MakeSubMessageFromDict(Dictionary<string, string> dict)
+        public string MakeSubMessageFromDict(Dictionary<string, object> dict)
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(dict);
         }
@@ -166,13 +167,13 @@ namespace NuSysApp
         /*
         * PUBLIC general method to update everyone from an Atom update.  sends mass udp packet
         */
-        public async Task QuickUpdateAtom(Dictionary<string, string> properties, PacketType packetType = PacketType.UDP)
+        public async Task QuickUpdateAtom(Dictionary<string, object> properties, PacketType packetType = PacketType.UDP)
         {
             ThreadPool.RunAsync(async delegate
             {
                 if (properties.ContainsKey("id"))
                 {
-                    if (HasSendableID(properties["id"]))
+                    if (HasSendableID(properties["id"].ToString()))
                     {
                         string message = MakeSubMessageFromDict(properties);
                         await _clientHandler.SendMassMessage(message, packetType);
@@ -183,7 +184,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        throw new InvalidIDException(properties["id"]);
+                        throw new InvalidIDException(properties["id"].ToString());
                         return;
                     }
                 }
@@ -199,14 +200,14 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task<string> RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task<string> RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
         {
             string id = null;
             await ThreadPool.RunAsync(async delegate
             {
                 if (x != "" && y != "" && nodeType != "")
                 {
-                    Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                    var props = properties == null ? new Dictionary<string, object>() : properties;
                     id = oldID == null ? _clientHandler.GetID() : oldID;
                     Debug.WriteLine("========== " + id + "============");
                     props["x"] = x;
@@ -244,10 +245,10 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Pin
         */
-        public async Task RequestMakePin(string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task RequestMakePin(string x, string y, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
         {
  
-            var props = properties == null ? new Dictionary<string, string>() : properties;
+            var props = properties == null ? new Dictionary<string, object>() : properties;
             string id = oldID == null ? _clientHandler.GetID() : oldID;
             props["x"] = x;
             props["y"] = y;
@@ -265,7 +266,7 @@ namespace NuSysApp
         * PUBLIC general method to create Group
         * TODO factor this into one method with RequestMakeEmptyGroup that takes in a list os ID's to place in that group
         */
-        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
         {
             if (id1 != "" && id2 != "")
             {
@@ -273,7 +274,7 @@ namespace NuSysApp
                 {
                     if (HasSendableID(id2))
                     {
-                        Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                        var props = properties == null ? new Dictionary<string, object>() : properties;
                         string id = oldID == null ? _clientHandler.GetID() : oldID;
                         props["id1"] = id1;
                         props["id2"] = id2;
@@ -311,10 +312,10 @@ namespace NuSysApp
        */
 
 
-        public async Task RequestNewGroupTag(string x, string y, string title, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task RequestNewGroupTag(string x, string y, string title, Dictionary<string, object> properties = null, Action<string> callback = null)
         {
 
-            var props = properties == null ? new Dictionary<string, string>() : properties;
+            var props = properties == null ? new Dictionary<string, object>() : properties;
             string id = _clientHandler.GetID();
             props["x"] = x;
             props["y"] = y;
@@ -332,7 +333,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Linq
         */
-        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Dictionary<string, string> properties = null, Action<string> callback = null)
+        public async Task RequestMakeLinq(string id1, string id2, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
         {
             if (id1 == id2)
             {
@@ -340,7 +341,7 @@ namespace NuSysApp
             }
             if (id1 != "" && id2 != "" && HasSendableID(id1) && HasSendableID(id2))
             {
-                Dictionary<string, string> props = properties == null ? new Dictionary<string, string>() : properties;
+                var props = properties == null ? new Dictionary<string, object>() : properties;
                 string id = oldID == null ? _clientHandler.GetID() : oldID;
                 props["id1"] = id1;
                 props["id2"] = id2;
@@ -371,7 +372,7 @@ namespace NuSysApp
         {
             ThreadPool.RunAsync(async delegate
             {
-                Dictionary<string, string> props = new Dictionary<string, string>
+                var props = new Dictionary<string, object>
             {
                 {"x1", x1},
                 {"x2", x2},
@@ -392,7 +393,7 @@ namespace NuSysApp
         {
             ThreadPool.RunAsync(async delegate
             {
-                Dictionary<string, string> props = new Dictionary<string, string>
+                var props = new Dictionary<string, object>
             {
                 {"type", "ink"},
                 {"inkType", "full"},
@@ -596,72 +597,9 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-                if (props.ContainsKey("data") && props.ContainsKey("nodeType"))
-                {
-                    string d = props["data"];
-                    switch (type)
-                    {
-                        case NodeType.Text:
-                            data = d;
-                            break;
-                        case NodeType.Image:
-                            try
-                            {
-                                data = ParseToByteArray(d);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                            }
-                            break;
-                        case NodeType.PDF:
-                            try
-                            {
-                                data = ParseToByteArray(d);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                            }
-                            break;
-                        case NodeType.Audio:
-                            try
-                            {
-                                data = ParseToByteArray(d);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                            }
-                            break;
-                    case NodeType.Video:
-                            try
-                            {
-                                data = ParseToByteArray(d);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                            }
-                        break;
-                    case NodeType.Web:
-                        try
-                        {
-                            data = ParseToByteArray(d);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine("Node Creation ERROR: Data could not be parsed into a byte array");
-                        }
-                        break;
-                }
-                }
-                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y, data); });
-                if (props.ContainsKey("data"))
-                {
-                    string s;
-                    props.Remove("data");
-                }
+
+                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y); });
+    
             }
 
             
@@ -734,15 +672,15 @@ namespace NuSysApp
                     }
                     if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                     {
-                        Point one;
-                        Point two;
+                        Point2d one;
+                        Point2d two;
                         ParseToLineSegment(props, out one, out two);
 
                         await UITask.Run(() =>
                         {
                             var lineModel = new InqLineModel(props["canvasNodeID"]);
                             var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
-                            PointCollection pc = new PointCollection();
+                            var pc = new ObservableCollection<Point2d>();
                             pc.Add(one);
                             pc.Add(two);
                             lineModel.Points = pc;
@@ -758,7 +696,7 @@ namespace NuSysApp
                     {
                         await UITask.Run(async delegate {
 
-                            PointCollection points;
+                            ObservableCollection<Point2d> points;
                             double thickness;
                             SolidColorBrush stroke;
 
@@ -777,7 +715,7 @@ namespace NuSysApp
                                 var lineModel = new InqLineModel(id);
                                 if (props.ContainsKey("canvasNodeID"))
                                 {
-                                    lineModel.ParentID = props["canvasNodeID"];
+                                    lineModel.InqCanvasId = props["canvasNodeID"];
                                 }
                                 lineModel.Points = points;
                                 lineModel.Stroke = stroke;
@@ -977,7 +915,7 @@ namespace NuSysApp
             {
                 return DictToString(SessionController.Instance.Locks);
             }
-            public async Task<Dictionary<string, string>> GetNodeState(string id)
+            public async Task<Dictionary<string, object>> GetNodeState(string id)
             {
                 if (HasSendableID(id))
                 {
@@ -985,7 +923,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    return new Dictionary<string, string>();
+                    return new Dictionary<string, object>();
                 }
             }
 
@@ -1015,10 +953,10 @@ namespace NuSysApp
                 return dict;
             }
 
-            private void ParseToLineSegment(Message props, out Point one, out Point two)
+            private void ParseToLineSegment(Message props, out Point2d one, out Point2d two)
             {
-                one = new Point(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
-                two = new Point(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
+                one = new Point2d(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
+                two = new Point2d(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
             }
 
     #endregion oldModelIntermediate
