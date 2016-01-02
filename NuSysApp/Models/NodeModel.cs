@@ -12,7 +12,8 @@ namespace NuSysApp
         public NodeType NodeType { get; set; }
 
         public InqCanvasModel InqCanvas { get; set; }
-        public NodeContentModel Content { set; get; }
+        //public NodeContentModel Content { set; get; }
+        public string ContentId { set; get; }
 
         public NodeModel(string id) : base(id)
         {
@@ -29,6 +30,7 @@ namespace NuSysApp
                 string t = props["nodeType"];
                 NodeType = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
+            ContentId = props.GetString("contentId", null);
             await base.UnPack(props);
         }
 
@@ -37,6 +39,7 @@ namespace NuSysApp
             var dict = await base.Pack();
             dict.Add("nodeType", NodeType.ToString());
             dict.Add("type", "node");
+            dict.Add("contentId", ContentId);
             return dict;
         }
     }

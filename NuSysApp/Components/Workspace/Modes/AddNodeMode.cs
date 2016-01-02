@@ -176,11 +176,13 @@ namespace NuSysApp
                 }
             }
 
-            var contentId = SessionController.Instance.ContentController.Add(data.ToString());
+
+
+            var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
             var dict = new Dictionary<string, object>();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
-            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), data == null ? null : data.ToString(), null, dict);
+            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
             vm.ClearSelection();
             vm.ClearMultiSelection();
 

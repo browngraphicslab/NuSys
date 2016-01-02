@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -17,6 +19,21 @@ namespace NuSysApp
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             InkScale = new CompositeTransform { ScaleX = 1, ScaleY = 1 };
+        }
+
+        public void Init()
+        {
+            var Image = ((ImageNodeModel) Model).Image;
+            if (Image.PixelWidth > Image.PixelHeight)
+            {
+                var r = Image.PixelHeight / (double)Image.PixelWidth;
+                SetSize(Width, base.Width*r);
+            }
+            else
+            {
+                var r = Image.PixelWidth / (double)Image.PixelHeight;
+                SetSize(base.Height*r, Width);
+            }
         }
 
         public override void Resize(double dx, double dy)

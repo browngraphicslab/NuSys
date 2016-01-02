@@ -25,25 +25,20 @@ namespace NuSysApp
             set
             {
                 _text = value;
-                Content.Data = System.Text.Encoding.UTF8.GetBytes(_text);
+                SessionController.Instance.ContentController.Get(ContentId).Data = _text;
                 TextChanged?.Invoke(this, new TextChangedEventArgs(_text));
             } 
         }
 
         public override async Task UnPack(Message props)
         {
-            var text = props.GetString("data", "");
-            Content = new NodeContentModel(System.Text.Encoding.UTF8.GetBytes(text), Id);
-            _text = text;
             base.UnPack(props);
+            _text = SessionController.Instance.ContentController.Get(ContentId).Data;
         }
 
         public override async Task<Dictionary<string,object>> Pack()
         {
             var dict = await base.Pack();
-            // TODO: Fix this fix
-            if (Text.Length > 2)
-                dict.Add("data", Text.Substring(0,Text.Length-2));
             return dict;
         }
     }

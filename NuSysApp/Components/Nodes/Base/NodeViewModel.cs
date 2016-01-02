@@ -78,6 +78,11 @@ namespace NuSysApp
             get { return ((NodeModel) Model).NodeType; }
         }
 
+        public string ContentId
+        {
+            get { return ((NodeModel)Model).ContentId; }
+        }
+
         #endregion Public Properties
     }
 }

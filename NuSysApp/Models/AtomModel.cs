@@ -20,7 +20,7 @@ namespace NuSysApp
         private double _scaleY = 1;
         private double _width;
         private double _height;
-        private string _title;
+        private string _title = string.Empty;
 
         private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
@@ -111,7 +111,7 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creator = props.GetString("creator", "WORKSPACE_ID");
+            Creator = props.GetString("creator", "no_id");
             Title = props.GetString("title", "");
             await base.UnPack(props);
         }

@@ -27,21 +27,18 @@ namespace NuSysApp
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             RenderedLines = new HashSet<InqLineModel>();
-
-            model.UnPacked += async delegate(object source)
-            {
-                InitPdfViewer();
-            };
         }
 
         public async Task InitPdfViewer()
         {
+            var data = SessionController.Instance.ContentController.Get(ContentId).Data;
+            var dataBytes = Convert.FromBase64String(data);
             CurrentPageNumber = ((PdfNodeModel)Model).CurrentPageNumber;
-            var ms = new MemoryStream(((PdfNodeModel)Model).Content.Data);
+            var ms = new MemoryStream(dataBytes);
             using (IInputStream inputStreamAt = ms.AsInputStream())
             using (var dataReader = new DataReader(inputStreamAt))
             {
-                uint u = await dataReader.LoadAsync((uint)((PdfNodeModel)Model).Content.Data.Length);
+                uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
                 IBuffer readBuffer = dataReader.ReadBuffer(u);
                 _document = Document.Create(readBuffer, DocumentType.PDF, 140);
             }

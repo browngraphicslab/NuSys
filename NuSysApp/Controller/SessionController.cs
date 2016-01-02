@@ -179,7 +179,7 @@ namespace NuSysApp
                     node = new WebNodeModel(id);
                     break;
                 case NodeType.Workspace:
-                    node = new WorkspaceModel("WORKSPACE_ID");
+                    node = new WorkspaceModel(id);
                     break;
                 case NodeType.Group:
                     node = null;
@@ -228,12 +228,19 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
+            await _contentController.Load();
+
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
 ;           SessionView.LoadWorksapce(lines);
         }
 
-      
+        public string GenerateId()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
+
 
 
         public static SessionController Instance

@@ -14,6 +14,11 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
+
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                vm.Init();
+            };
         }
 
         private void OnEditInk(object sender, RoutedEventArgs e)

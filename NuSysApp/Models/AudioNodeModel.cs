@@ -26,8 +26,8 @@ namespace NuSysApp
 
         public byte[] ByteArray
         {
-            get {return Content.Data;}
-            set {Content.Data = value;}
+            get { return null; }
+            set {}
         }
 
         public StorageFile AudioFile {

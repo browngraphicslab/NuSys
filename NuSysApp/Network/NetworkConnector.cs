@@ -200,7 +200,7 @@ namespace NuSysApp
         /*
         * PUBLIC general method to create Node
         */
-        public async Task<string> RequestMakeNode(string x, string y, string nodeType, string data = null, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
+        public async Task<string> RequestMakeNode(string x, string y, string nodeType, string contentId = null, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
         {
             string id = null;
             await ThreadPool.RunAsync(async delegate
@@ -216,13 +216,9 @@ namespace NuSysApp
                     props["type"] = "node";
                     props["id"] = id;
                     if (!props.ContainsKey("creator"))
-                        props["creator"] = "WORKSPACE_ID";
+                        props["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
-                    if (data != null && data != "null" && data != "")
-                    {
-                        if (!props.ContainsKey("data"))
-                            props.Add("data", data);
-                    }
+                    props["contentId"] = contentId;
 
                     if (callback != null)
                     {

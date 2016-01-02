@@ -15,9 +15,15 @@ namespace NuSysApp
 
         private Dictionary<string, NodeContentModel> _contents = new Dictionary<string, NodeContentModel>();
 
+
+        public NodeContentModel Get(string id)
+        {
+            return _contents.ContainsKey(id) ? _contents[id] : null;
+        }
+
         public string Add( string contentData )
         {
-            var id = Guid.NewGuid().ToString("N");
+            var id = SessionController.Instance.GenerateId();
             var n = new NodeContentModel(contentData, id);
             _contents.Add(id, n );
             return id;
@@ -27,7 +33,7 @@ namespace NuSysApp
         {
             _contents.Clear();
             
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
 ;
             foreach (var line in lines)

@@ -177,6 +177,9 @@ namespace NuSysApp
                     await container.AddChild(model);
                 }
             }
+
+
+    
         }
 
 
@@ -193,7 +196,8 @@ namespace NuSysApp
                 _activeWorkspace = null;
             }
             
-            var workspaceModel = new WorkspaceModel("WORKSPACE_ID");
+            var workspaceModel = new WorkspaceModel( SessionController.Instance.GenerateId() );
+            SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
             OpenWorkspace(workspaceModel);
             
             xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
@@ -210,7 +214,6 @@ namespace NuSysApp
             if (_activeWorkspace != null)
                 xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
 
-            SessionController.Instance.IdToSendables["WORKSPACE_ID"] = model;
             var workspaceViewModel = new WorkspaceViewModel(model);
 
             _activeWorkspace = new WorkspaceView(workspaceViewModel);
@@ -222,9 +225,21 @@ namespace NuSysApp
             SessionController.Instance.ActiveWorkspace = workspaceViewModel;
             SessionController.Instance.SessionView = this;
 
+            if (model.Title != null)
+                xWorkspaceTitle.Text = model.Title;
 
-
+            xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            xWorkspaceTitle.TextChanging += delegate
+            {
+                
+                model.Title = xWorkspaceTitle.Text;
+                Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 20);
+            };
+            Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 20);
+            
         }
+
+  
 
         public void ShowFullScreen(NodeModel model)
         {
