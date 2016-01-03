@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
+using Newtonsoft.Json;
 using NuSysApp.EventArgs;
 
 namespace NuSysApp
@@ -19,6 +20,7 @@ namespace NuSysApp
         public event AddPartialLineEventHandler PartialLineAdded;
         public event LineHandler LineFinalized;
         public event LineHandler LineRemoved;
+        public event LineHandler LineAdded;
         public delegate void LineHandler(InqLineModel lineModel);
         public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         
@@ -31,30 +33,15 @@ namespace NuSysApp
             _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
         }
 
+        public void AddLine(InqLineModel line)
+        {
+            _lines.Add(line);
+            LineAdded?.Invoke(line);
+        }
+
         public HashSet<InqLineModel> Lines {
             get { return _lines; }
-            set
-            {
-                _lines = value;
-            }
-        }
-
-        public string StringLines
-        {
-            get { return InqlinesToString(); }
-        }
-
-        private string InqlinesToString()
-        {
-            string plines = "";
-            foreach (InqLineModel pl in _lines)
-            {
-                if (pl.Points.Count > 0)
-                {
-                    plines += pl.GetString();
-                }
-            }
-            return plines;
+         
         }
 
         public void FinalizeLine(InqLineModel line)
@@ -96,6 +83,13 @@ namespace NuSysApp
                 }
                 _partialLines.Remove(oldID);
             }
+        }
+
+        public override async Task<Dictionary<string, object>> Pack()
+        {
+            var dict =  await base.Pack();
+            dict["lines"] = JsonConvert.SerializeObject(Lines.ToArray());
+            return dict;
         }
     }
 }

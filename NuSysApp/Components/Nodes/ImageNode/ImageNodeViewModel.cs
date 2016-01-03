@@ -13,12 +13,12 @@ namespace NuSysApp
 {
     public class ImageNodeViewModel : NodeViewModel
     {
-        private CompositeTransform _inkScale;
+        
 
         public ImageNodeViewModel(ImageNodeModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            InkScale = new CompositeTransform { ScaleX = 1, ScaleY = 1 };
+
         }
 
         public void Init()
@@ -53,22 +53,11 @@ namespace NuSysApp
             {
                 return;
             }
-            CompositeTransform ct = InkScale;
-            ct.ScaleX *= (Width + newDx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX) / Width;
-            ct.ScaleY *= (Height + newDy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY) / Height;
-            InkScale = ct;
+  
 
             base.Resize(newDx, newDy);
         }
 
-        public CompositeTransform InkScale
-        {
-            get { return _inkScale; }
-            set
-            {
-                _inkScale = value;
-                RaisePropertyChanged("InkScale");
-            }
-        }
+
     }
 }

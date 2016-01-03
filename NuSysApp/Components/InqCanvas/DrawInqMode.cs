@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
@@ -13,12 +14,14 @@ namespace NuSysApp
 {
     public class DrawInqMode : IInqMode
     {
-        private InqLineModel _currentStroke;
-        private InqLineView _currentInqLineView;
+        private InqCanvasView _view;
+        private InqLineModel _inqLineModel;
+        private InqLineView _inqLineView;
         private InkManager _inkManager = new InkManager();
 
         public DrawInqMode(InqCanvasView view)
         {
+            _view = view;
             // This adds the final line to the canvas, after the host send it to this client
             //(((InqCanvasViewModel)view.DataContext).Model).OnFinalizedLine += delegate(InqLineModel lineModel)
             //{
@@ -31,31 +34,34 @@ namespace NuSysApp
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             _inkManager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
-            _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
-            _currentStroke.InqCanvasId = inqCanvas.ViewModel.Model.Id;
-            _currentStroke.Stroke = new SolidColorBrush(Colors.Black);
-            _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
+            _inqLineModel = new InqLineModel(SessionController.Instance.GenerateId());
+            _inqLineModel.InqCanvasId = inqCanvas.ViewModel.Model.Id;
+            _inqLineModel.Stroke = new SolidColorBrush(Colors.Black);
+            _inqLineModel.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
+
 
             //TODO: add data binding for thickness and color
-            _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
-            _currentInqLineView.StrokeThickness = _currentStroke.StrokeThickness;
-            inqCanvas.ViewModel.Lines.Add(_currentInqLineView);
+            _inqLineView = new InqLineView(new InqLineViewModel(_inqLineModel, new Size(_view.Width, _view.Height)));
+            _inqLineView.StrokeThickness = _inqLineModel.StrokeThickness;
+
+            inqCanvas.ViewModel.Lines.Add(_inqLineView);
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
+            _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y/ _view.Height));
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            
             _inkManager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
-                if (_currentStroke.Points.Count > 1)
+            _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
+                if (_inqLineModel.Points.Count > 1)
                 {
-                    NetworkConnector.Instance.RequestSendPartialLine(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id,
-                        _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
-                        _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
-                        _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
-                        _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString());
+                    NetworkConnector.Instance.RequestSendPartialLine(_inqLineModel.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id,
+                        _inqLineModel.Points[_inqLineModel.Points.Count - 2].X.ToString(),
+                        _inqLineModel.Points[_inqLineModel.Points.Count - 2].Y.ToString(),
+                        _inqLineModel.Points[_inqLineModel.Points.Count - 1].X.ToString(),
+                        _inqLineModel.Points[_inqLineModel.Points.Count - 1].Y.ToString());
                 }
         }
 
@@ -63,11 +69,11 @@ namespace NuSysApp
         {
             _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
-            NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id, _currentStroke.GetString());
+            _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
+            NetworkConnector.Instance.RequestFinalizeGlobalInk(_inqLineModel.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id, _inqLineModel.GetString());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).LineFinalized += delegate
             {
-                inqCanvas.ViewModel.Lines.Remove(_currentInqLineView);
+                inqCanvas.ViewModel.Lines.Remove(_inqLineView);
             };
 
         }

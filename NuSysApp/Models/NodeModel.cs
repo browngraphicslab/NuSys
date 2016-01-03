@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
@@ -12,7 +14,7 @@ namespace NuSysApp
         public NodeType NodeType { get; set; }
 
         public InqCanvasModel InqCanvas { get; set; }
-        //public NodeContentModel Content { set; get; }
+
         public string ContentId { set; get; }
 
         public NodeModel(string id) : base(id)
@@ -30,7 +32,19 @@ namespace NuSysApp
                 string t = props["nodeType"];
                 NodeType = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
+
             ContentId = props.GetString("contentId", null);
+
+            var lines = props.GetNestedList<Point2d>("inqLines");
+            if (lines != null) { 
+                foreach (var line in lines)
+                {
+                    InqCanvas.AddLine(new InqLineModel(SessionController.Instance.GenerateId())
+                    {
+                        Points = new ObservableCollection<Point2d>(line)
+                    });
+                }
+            }
             await base.UnPack(props);
         }
 
@@ -40,6 +54,14 @@ namespace NuSysApp
             dict.Add("nodeType", NodeType.ToString());
             dict.Add("type", "node");
             dict.Add("contentId", ContentId);
+
+            var lines = new List<List<Point2d>>();
+            foreach (var inqLineModel in InqCanvas.Lines)
+            {
+                lines.Add(inqLineModel.Points.ToList());
+            }
+
+            dict.Add("inqLines", lines);
             return dict;
         }
     }

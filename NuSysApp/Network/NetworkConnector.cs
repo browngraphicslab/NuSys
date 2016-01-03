@@ -343,6 +343,7 @@ namespace NuSysApp
                 props["id2"] = id2;
                 props["type"] = "link";
                 props["id"] = id;
+                props["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
                 if (callback != null)
                 {
@@ -652,20 +653,12 @@ namespace NuSysApp
             await UITask.Run(async () => { await SessionController.Instance.CreateGroupTag(id, x, y, w, h, title); });
         }
 
-        private async Task HandleCreateNewInk(string id, Message props)
-            {
+        private async Task HandleCreateNewInk(string id, Message props) {
             
-                if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"]) || props["canvasNodeID"] == "WORKSPACE_ID"))
+                if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"])))
                 {
-                    InqCanvasModel canvas = null;
-                    if (props["canvasNodeID"] != "WORKSPACE_ID")
-                    {
-                        await UITask.Run(async delegate { canvas = ((NodeModel)SessionController.Instance.IdToSendables[props["canvasNodeID"]]).InqCanvas; });
-                    }
-                    else
-                    {
-                        canvas = (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).InqCanvas;
-                    }
+                    var canvas = (InqCanvasModel) (SessionController.Instance.IdToSendables[props["canvasNodeID"]] as NodeModel).InqCanvas;
+
                     if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                     {
                         Point2d one;
@@ -675,7 +668,7 @@ namespace NuSysApp
                         await UITask.Run(() =>
                         {
                             var lineModel = new InqLineModel(props["canvasNodeID"]);
-                            var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
+                          //  var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
                             var pc = new ObservableCollection<Point2d>();
                             pc.Add(one);
                             pc.Add(two);
@@ -704,7 +697,10 @@ namespace NuSysApp
                                 {
                                     canvas.LineFinalized += async delegate
                                     {
-                                        await UITask.Run(() => { canvas.RemovePartialLines(props["previousID"]); });
+                                        await UITask.Run(() =>
+                                        {
+                                            canvas.RemovePartialLines(props["previousID"]);
+                                        });
                                     };
                                 }
 
@@ -716,23 +712,6 @@ namespace NuSysApp
                                 lineModel.Points = points;
                                 lineModel.Stroke = stroke;
 
-                                try
-                                {
-                                    if (!SessionController.Instance.IdToSendables.ContainsKey(id))
-                                    {
-                                        SessionController.Instance.IdToSendables.Add(id, lineModel);
-                                    }
-                                    else
-                                    {
-                                        SessionController.Instance.IdToSendables.Remove(id);
-                                        SessionController.Instance.IdToSendables.Add(id, lineModel);
-                                    }
-
-                                }
-                                catch (System.ArgumentException argument)
-                                {
-                                    //Debug.Write(argument.StackTrace);
-                                }
 
                                 canvas.FinalizeLine(lineModel);
                          

@@ -47,11 +47,13 @@ namespace NuSysApp
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
-            Anim.To(this, "Alpha", 0, 400);
-            IsHitTestVisible = false;
-            var vm = (FullScreenViewerViewModel)DataContext;
-            var textview = (vm.View as TextDetailView);
-            textview?.Dispose();
+            if ((pointerRoutedEventArgs.OriginalSource as FrameworkElement).DataContext is FullScreenViewerViewModel) { 
+                Anim.To(this, "Alpha", 0, 400);
+                IsHitTestVisible = false;
+                var vm = (FullScreenViewerViewModel)DataContext;
+                var textview = (vm.View as TextDetailView);
+                textview?.Dispose();
+            }
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

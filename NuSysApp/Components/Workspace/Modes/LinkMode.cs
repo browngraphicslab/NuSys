@@ -55,7 +55,7 @@ namespace NuSysApp {
            // var linkView = new BezierLinkView(linkVm);
            // (_view.DataContext as WorkspaceViewModel).AtomViewList.Add(linkView);
 
-            lineModel.Delete();
+                lineModel.Delete();
             
         }
     }

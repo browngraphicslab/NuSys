@@ -12,9 +12,11 @@ namespace NuSysApp
     public abstract class NodeViewModel : AtomViewModel
     {
         private bool _isEditing, _isEditingInk;
-        
+        private CompositeTransform _inkScale;
+
         protected NodeViewModel(NodeModel model) : base(model)
         {
+            InkScale = new CompositeTransform { ScaleX = 1, ScaleY = 1 };
         }
         
         #region Node Manipulations
@@ -27,7 +29,16 @@ namespace NuSysApp
                 SessionController.Instance.ActiveWorkspace.ClearSelection();
             }
         }
-        
+
+        public override void Resize(double dx, double dy)
+        {
+            CompositeTransform ct = InkScale;
+            ct.ScaleX *= (Width + dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX) / Width;
+            ct.ScaleY *= (Height + dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY) / Height;
+            InkScale = ct;
+            base.Resize(dx, dy);
+        }
+
         public void ToggleEditing()
         {
             IsEditing = !IsEditing;
@@ -81,6 +92,16 @@ namespace NuSysApp
         public string ContentId
         {
             get { return ((NodeModel)Model).ContentId; }
+        }
+
+        public CompositeTransform InkScale
+        {
+            get { return _inkScale; }
+            set
+            {
+                _inkScale = value;
+                RaisePropertyChanged("InkScale");
+            }
         }
 
         #endregion Public Properties

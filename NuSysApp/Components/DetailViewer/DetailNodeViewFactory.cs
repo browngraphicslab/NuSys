@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
@@ -66,8 +67,8 @@ namespace NuSysApp
             if (tpl != null)
             {
                 tpl.OnTemplateReady += async delegate {
-                    var inqVm = new InqCanvasViewModel(model.InqCanvas);
-                        tpl.inkCanvas.ViewModel = inqVm;
+                    var inqVm = new InqCanvasViewModel(model.InqCanvas, new Size(model.Width, model.Height));
+                        //tpl.inkCanvas.ViewModel = inqVm;
                 };
             }
 

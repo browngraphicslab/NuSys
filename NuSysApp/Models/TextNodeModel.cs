@@ -10,7 +10,7 @@ namespace NuSysApp
 {
     public class TextNodeModel : NodeModel
     {
-        private string _text;
+        private string _text = string.Empty;
         public delegate void TextChangedEventHandler(object source, TextChangedEventArgs e);
         public event TextChangedEventHandler TextChanged;
 
@@ -33,7 +33,8 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             base.UnPack(props);
-            _text = SessionController.Instance.ContentController.Get(ContentId).Data;
+            if (ContentId != null)
+                _text = SessionController.Instance.ContentController.Get(ContentId).Data;
         }
 
         public override async Task<Dictionary<string,object>> Pack()

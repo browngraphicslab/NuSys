@@ -101,6 +101,11 @@ namespace NuSysApp
             return ContainsKey(key) ? JsonConvert.DeserializeObject<Dictionary<T, K>>(Get(key)) : new Dictionary<T, K>();
         }
 
+        public List<List<T>> GetNestedList<T>(string key)
+        {
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<List<T>>>(Get(key)) : null;
+        } 
+
         public Dictionary<string, Message> Children()
         {
             return _children;

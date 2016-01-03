@@ -120,6 +120,9 @@ namespace NuSysApp
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
         {
+            if (FocusManager.GetFocusedElement() is TextBox)
+                return;
+
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
             {
                 xFloatingMenu.SetActive(Options.PenGlobalInk);
@@ -131,6 +134,9 @@ namespace NuSysApp
 
         private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
+            if (FocusManager.GetFocusedElement() is TextBox)
+                return;
+
             if (args.VirtualKey == VirtualKey.Shift && xFullScreenViewer.Opacity < 0.1)
             {
                 xFloatingMenu.SetActive(Options.SelectNode);
@@ -177,9 +183,6 @@ namespace NuSysApp
                     await container.AddChild(model);
                 }
             }
-
-
-    
         }
 
 

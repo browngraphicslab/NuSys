@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -129,15 +130,16 @@ namespace NuSysApp
             }
             if (Height > Constants.MinNodeSizeY || changeY > 0)
             {
-                SetSize(changeX, Height + changeY);
+                SetSize(Width, Height + changeY);
             }
-            UpdateAnchor();
+
         }
 
         public virtual void SetSize(double width, double height)
         {
             Width = width;
             Height = height;
+            UpdateAnchor();
         }
 
         public void ToggleSelection()

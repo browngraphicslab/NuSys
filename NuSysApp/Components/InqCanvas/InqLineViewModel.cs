@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,22 +12,35 @@ namespace NuSysApp
 {
     public class InqLineViewModel : BaseINPC
     {
+        public PointCollection Points { get; set; }
+
         public InqLineModel Model { get; }
 
-        public InqLineViewModel(InqLineModel model)
+        private Size _canvasSize;
+
+        public InqLineViewModel(InqLineModel model, Size canvasSize)
         {
+            _canvasSize = canvasSize;
             Model = model;
-            Model.OnDeleteInqLine += Model_OnDeleteInqLine;
+            Model.Points.CollectionChanged += PointsOnCollectionChanged;
+
+            Points = new PointCollection();
+            var unNormalizedPoints = model.Points.Select(p => new Point(p.X * _canvasSize.Width, p.Y * _canvasSize.Height));
+            foreach (var p in unNormalizedPoints)
+            {
+                Points.Add(p);
+            }
         }
 
-        public void SetParentID(string id)
+        private void PointsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            Model.InqCanvasId = id;
-        }
+            if (notifyCollectionChangedEventArgs.NewItems == null)
+                return;
 
-        private void Model_OnDeleteInqLine(object source, EventArgs.DeleteInqLineEventArgs e)
-        {
-            RaisePropertyChanged("ToDelete");
+            var p = (Point2d) notifyCollectionChangedEventArgs.NewItems[0];
+            Points.Add(new Point(p.X * _canvasSize.Width, p.Y * _canvasSize.Height));
+            RaisePropertyChanged("Points");
         }
+        
     }
 }

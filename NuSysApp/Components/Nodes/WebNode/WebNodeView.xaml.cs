@@ -29,8 +29,8 @@ namespace NuSysApp
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
               
-
-                (vm.Model as WebNodeModel).Url = "http://www.google.com";
+                var model = (vm.Model as WebNodeModel);
+                model.Url = model.Url == "" ? "http://www.google.com" : model.Url;
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
@@ -55,6 +55,8 @@ namespace NuSysApp
         private void OnUrlChanged(object source, string url)
         {
             xWebView.Navigate(new Uri(url));
+            var vm = (WebNodeViewModel)DataContext;
+           
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -63,6 +65,7 @@ namespace NuSysApp
             {
                 var vm = (WebNodeViewModel)DataContext;
                 (vm.Model as WebNodeModel).Url = xUrlBox.Text;
+
             }
         }
     }

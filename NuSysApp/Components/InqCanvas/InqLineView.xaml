@@ -10,6 +10,6 @@
     d:DesignWidth="400">
 
     <Grid>
-        <Polyline Name="VisibleLine" Stroke="Black" Opacity="1" StrokeThickness="2" PointerEntered="OnPointerEntered" Points="{Binding Model.Points}"/>
+        <Polyline Name="VisibleLine" Stroke="Black" Opacity="1" StrokeThickness="2" PointerEntered="OnPointerEntered" Points="{Binding Points}"/>
     </Grid>
 </UserControl>

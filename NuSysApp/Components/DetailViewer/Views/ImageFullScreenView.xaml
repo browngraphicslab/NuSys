@@ -9,7 +9,10 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White">
-        <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>
-    </Border>
+    <StackPanel>
+        <Button Click="ButtonBase_OnClick">Ink</Button>
+        <Grid x:Name="xWrapper">
+            <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

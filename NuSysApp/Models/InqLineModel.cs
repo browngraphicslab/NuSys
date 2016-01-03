@@ -22,6 +22,8 @@ namespace NuSysApp
         public InqLineModel(string id) : base(id)
         {
             _points = new ObservableCollection<Point2d>();
+            Stroke = new SolidColorBrush(Colors.Black);
+            StrokeThickness = 2;
         }
         
         public void AddPoint(Point2d p)
@@ -73,7 +75,7 @@ namespace NuSysApp
             //Points = points;
             StrokeThickness = thickness;
             Stroke = stroke;
-            var view = new InqLineView(new InqLineViewModel(this), StrokeThickness, Stroke);
+           // var view = new InqLineView(new InqLineViewModel(this), StrokeThickness, Stroke);
         }
 
         public double StrokeThickness { get; set; }

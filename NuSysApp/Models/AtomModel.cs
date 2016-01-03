@@ -111,7 +111,7 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creator = props.GetString("creator", "no_id");
+            Creator = props.GetString("creator", null);
             Title = props.GetString("title", "");
             await base.UnPack(props);
         }

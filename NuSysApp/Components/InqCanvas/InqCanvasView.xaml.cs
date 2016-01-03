@@ -48,25 +48,12 @@ namespace NuSysApp
             if (_viewModel == null)
                 return;
 
-            _viewModel.Model.LineFinalized += delegate (InqLineModel lineModel)
-            {
-                var lineView = new InqLineView(new InqLineViewModel(lineModel));
-                var points = lineModel.Points;
-                ViewModel.Lines.Add(lineView);
-            };
-
-            
+ 
         }
 
-        public InqCanvasViewModel ViewModel
+        public InqCanvasViewModel ViewModel 
         {
-            set
-            {
-                DataContext = value;
-                value.PropertyChanged += Update;
-                _viewModel = value;
-            }
-            get { return _viewModel; }
+            get { return (InqCanvasViewModel) DataContext; }
         }
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -162,7 +149,7 @@ namespace NuSysApp
 
             foreach (InqLineModel line in lines)
             {
-                var inqView = new InqLineView(new InqLineViewModel(line), line.StrokeThickness, line.Stroke);
+                var inqView = new InqLineView(new InqLineViewModel(line, new Size(Width, Height)), line.StrokeThickness, line.Stroke);
                 ViewModel.Lines.Add(inqView);
             }
         }
@@ -195,20 +182,6 @@ namespace NuSysApp
         public IInqMode Mode
         {
             get { return _mode; }
-        }
-        private void Update(object sender, PropertyChangedEventArgs e)
-        {
-            var vm = (InqCanvasViewModel)sender;
-            switch (e.PropertyName)
-            {
-                case "PartialLineAdded":
-                    ViewModel.Lines.Add(new InqLineView(new InqLineViewModel(vm.LastPartialLineModel)));
-                    break;
-                case "FinalLineAdded":
-                    var lineView = new InqLineView(new InqLineViewModel(vm.FinalLineModel));
-                    ViewModel.Lines.Add(lineView);
-                    break;
-            }
         }
     }
 }

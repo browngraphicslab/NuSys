@@ -173,10 +173,10 @@ namespace NuSysApp.Components
         private async Task HandleCreateNewInk(string id, Message props)
         {
 
-            if (props.ContainsKey("canvasNodeID") && props["canvasNodeID"] == "WORKSPACE_ID")
+            if (props.ContainsKey("canvasNodeID") && props["canvasNodeID"] == SessionController.Instance.ActiveWorkspace.Id)
             {
                 InqCanvasModel canvas = null;
-                if (props["canvasNodeID"] != "WORKSPACE_ID")
+                if (props["canvasNodeID"] != SessionController.Instance.ActiveWorkspace.Id)
                 {
                     await UITask.Run(async delegate { canvas = ((NodeModel)SessionController.Instance.IdToSendables[props["canvasNodeID"]]).InqCanvas; });
                 }
@@ -193,7 +193,7 @@ namespace NuSysApp.Components
                     await UITask.Run(() =>
                     {
                         var lineModel = new InqLineModel(props["canvasNodeID"]);
-                        var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
+                      //  var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
                         var pc = new ObservableCollection<Point2d>();
                         pc.Add(one);
                         pc.Add(two);
@@ -231,7 +231,7 @@ namespace NuSysApp.Components
                             {
                                 lineModel.InqCanvasId = props["canvasNodeID"];
                             }
-                            var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
+                          //  var line = new InqLineView(new InqLineViewModel(lineModel), thickness, stroke);
                             lineModel.Points = points;
                             lineModel.Stroke = stroke;
                             canvas.FinalizeLine(lineModel);

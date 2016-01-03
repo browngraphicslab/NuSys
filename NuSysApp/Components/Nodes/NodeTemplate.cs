@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Windows.Devices.Input;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -61,10 +62,17 @@ namespace NuSysApp
         protected override void OnApplyTemplate()
         {
             var vm = (NodeViewModel)this.DataContext;
-            inkCanvas = (InqCanvasView)GetTemplateChild("inkCanvas");
-           
-            bg = (Grid)GetTemplateChild("bg");
             
+            bg = (Grid)GetTemplateChild("bg");
+
+            inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
+            bg.Children.Add(inkCanvas);
+            inkCanvas.IsEnabled = true;
+            inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
+            inkCanvas.Width = bg.Width;
+            inkCanvas.Height = bg.Height;
+            //inkCanvas.Clip = new RectangleGeometry {Rect = new Rect{X = 0, Y = 0, Width = bg.Width, Height = bg.Height}};
+            inkCanvas.RenderTransform = vm.InkScale;
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
 

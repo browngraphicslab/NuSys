@@ -33,20 +33,17 @@ namespace NuSysApp
         {
             InitializeComponent();
             CanEdit = AtomModel.EditStatus.Maybe;
-            this.DataContext = vm;
+            DataContext = vm;
             VisibleLine.Stroke = vm.Model.Stroke;
-            vm.PropertyChanged += Update;
         }
 
         public InqLineView(InqLineViewModel vm, double thickness, Brush stroke)
         {
             this.InitializeComponent();
-            this.DataContext = vm;
+            DataContext = vm;
 
-            this.CanEdit = AtomModel.EditStatus.Maybe;
             VisibleLine.Stroke = stroke;
             VisibleLine.StrokeThickness = thickness;
-            vm.PropertyChanged += Update;
         }
 
 
@@ -131,21 +128,6 @@ namespace NuSysApp
                 NetworkConnector.Instance.RequestDeleteSendable((DataContext as InqLineViewModel).Model.Id);
             }
         }
-
-        private void Update(object sender, PropertyChangedEventArgs e)
-        {
-            var vm = (InqLineViewModel)sender;
-            switch (e.PropertyName)
-            {
-                case "ToDelete":
-                    (Parent as InqCanvasView)?.ViewModel.Lines.Remove(this);
-                    break;
-                case "Parent":
-                    vm.SetParentID((Parent as InqCanvasView).ViewModel.Model.Id);
-                    break;
-            }
-        }
-
     }
 }
 

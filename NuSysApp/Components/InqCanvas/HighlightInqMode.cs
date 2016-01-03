@@ -11,13 +11,15 @@ namespace NuSysApp
     {
         private InqLineModel _currentStroke;
         private InqLineView _currentInqLineView;
+        private InqCanvasView _view;
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            _view = inqCanvas;
             //inqCanvas.Manager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
             _currentStroke = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
             _currentStroke.InqCanvasId = inqCanvas.ViewModel.Model.Id;
-            _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke));
+            _currentInqLineView = new InqLineView(new InqLineViewModel(_currentStroke, new Size(_view.Width, _view.Height)));
             //TODO: add data binding for thickness and color
             _currentStroke.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
             _currentStroke.Stroke = new SolidColorBrush(Colors.Yellow);

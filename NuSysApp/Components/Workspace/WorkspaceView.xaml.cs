@@ -32,14 +32,15 @@ namespace NuSysApp
             this.InitializeComponent();
             var wsModel = (WorkspaceModel)vm.Model;
 
-            
-            var inqCanvasModel = new InqCanvasModel("WORKSPACE_ID");
-            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel);
+
+            var inqCanvasModel = wsModel.InqCanvas;
+            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(1000000, 1000000));
+            //SessionController.Instance.IdToSendables[inqCanvasModel.Id] = inqCanvasModel;
             _inqCanvas = new InqCanvasView(inqCanvasViewModel);
             _inqCanvas.Width = 1000000;
             _inqCanvas.Height = 1000000;
             xWrapper.Children.Add(_inqCanvas);
-            wsModel.InqCanvas = inqCanvasModel;
+            //wsModel.InqCanvas = inqCanvasModel;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
