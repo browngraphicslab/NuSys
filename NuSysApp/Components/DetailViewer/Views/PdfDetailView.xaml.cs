@@ -53,6 +53,8 @@ namespace NuSysApp
                 _inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
                 xWrapper.Children.Insert(1, _inqCanvasView);
                 _inqCanvasView.IsEnabled = true;
+                _inqCanvasView.HorizontalAlignment = HorizontalAlignment.Left;
+                _inqCanvasView.VerticalAlignment = VerticalAlignment.Top;
                 _inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
                 _inqCanvasView.Width = xImg.Width;
                 _inqCanvasView.Height = xImg.Height;

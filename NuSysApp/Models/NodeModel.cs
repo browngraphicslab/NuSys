@@ -34,10 +34,7 @@ namespace NuSysApp
             }
 
             ContentId = props.GetString("contentId", null);
-
             InqCanvas.UnPack(props);
-
-          
             await base.UnPack(props);
         }
 

@@ -47,8 +47,6 @@ namespace NuSysApp
 
             if (_viewModel == null)
                 return;
-
- 
         }
 
         public InqCanvasViewModel ViewModel 

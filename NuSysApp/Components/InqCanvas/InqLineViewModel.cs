@@ -19,6 +19,21 @@ namespace NuSysApp
 
         private Size _canvasSize;
 
+        public Size CanvasSize
+        {
+            set
+            {
+                _canvasSize = value;
+                Points.Clear();
+                
+                var unNormalizedPoints = (Model as InqLineModel).Points.Select(p => new Point(p.X * _canvasSize.Width, p.Y * _canvasSize.Height));
+                foreach (var p in unNormalizedPoints)
+                {
+                    Points.Add(p);
+                }
+            }
+        }
+
         public InqLineViewModel(InqLineModel model, Size canvasSize)
         {
             _canvasSize = canvasSize;

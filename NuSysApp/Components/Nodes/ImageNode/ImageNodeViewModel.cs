@@ -23,41 +23,24 @@ namespace NuSysApp
 
         public void Init()
         {
+            SetSize(Width, Height);
+            InkScale = new CompositeTransform();
+        }
+
+        public override void SetSize(double width, double height)
+        {
+
             var Image = ((ImageNodeModel) Model).Image;
             if (Image.PixelWidth > Image.PixelHeight)
             {
                 var r = Image.PixelHeight / (double)Image.PixelWidth;
-                SetSize(Width, base.Width*r);
+                base.SetSize(width, width * r);
             }
             else
             {
                 var r = Image.PixelWidth / (double)Image.PixelHeight;
-                SetSize(base.Height*r, Width);
+                base.SetSize(height * r, height);
             }
         }
-
-        public override void Resize(double dx, double dy)
-        {
-            double newDx, newDy;
-            if (dx > dy)
-            {
-                newDx = dy * ((ImageNodeModel)Model).Image.PixelWidth / ((ImageNodeModel)Model).Image.PixelHeight;
-                newDy = dy;
-            }
-            else
-            {
-                newDx = dx;
-                newDy = dx * ((ImageNodeModel)Model).Image.PixelHeight / ((ImageNodeModel)Model).Image.PixelWidth;
-            }
-            if ((newDx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX + Width <= Constants.MinNodeSizeX && dx < 1) || (newDy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY + Height <= Constants.MinNodeSizeY && dy < 1))
-            {
-                return;
-            }
-  
-
-            base.Resize(newDx, newDy);
-        }
-
-
     }
 }

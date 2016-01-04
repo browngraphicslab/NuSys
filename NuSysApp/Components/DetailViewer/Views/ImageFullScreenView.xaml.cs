@@ -45,10 +45,7 @@ namespace NuSysApp
                 _inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
                 _inqCanvasView.Width = xImg.Width;
                 _inqCanvasView.Height = xImg.Height;
-                _inqCanvasView.Clip = new RectangleGeometry
-                {
-                    Rect = new Rect {X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height}
-                };
+         
 
             };
         }

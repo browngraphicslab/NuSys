@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -18,6 +19,7 @@ namespace NuSysApp
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 vm.Init();
+                nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
             };
         }
 

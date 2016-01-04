@@ -24,7 +24,7 @@ namespace NuSysApp
 
         private int _page;
 
-        public int Page
+       public int Page
         {
             get { return _page; }
             set
@@ -102,7 +102,15 @@ namespace NuSysApp
 
         public Size CanvasSize {
             get { return _canvasSize; }
-            set { _canvasSize = value; }
+            set
+            {
+                _canvasSize = value;
+
+                foreach (var inqLineView in _lines)
+                {
+                    (inqLineView.DataContext as InqLineViewModel).CanvasSize = _canvasSize;
+                }
+            }
         }
     }
 }

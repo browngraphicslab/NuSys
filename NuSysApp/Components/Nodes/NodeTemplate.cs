@@ -65,14 +65,18 @@ namespace NuSysApp
             
             bg = (Grid)GetTemplateChild("bg");
 
+
             inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
-            bg.Children.Add(inkCanvas);
-            inkCanvas.IsEnabled = true;
+            (GetTemplateChild("xContainer") as Canvas).Children.Add(inkCanvas);
+ 
+            inkCanvas.IsEnabled = false;
             inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
-            inkCanvas.Width = bg.Width;
-            inkCanvas.Height = bg.Height;
-            //inkCanvas.Clip = new RectangleGeometry {Rect = new Rect{X = 0, Y = 0, Width = bg.Width, Height = bg.Height}};
+            inkCanvas.Width = vm.Width;
+            inkCanvas.Height = vm.Height;
             inkCanvas.RenderTransform = vm.InkScale;
+
+            //inkCanvas.Clip = new RectangleGeometry {Rect = new Rect{X = 0, Y = 0, Width = bg.Width, Height = bg.Height}};
+           // inkCanvas.RenderTransform = vm.InkScale;
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
 
@@ -92,9 +96,7 @@ namespace NuSysApp
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
-            titleContainer = (Grid) GetTemplateChild("xTitleContainer");
-            //titleContainer.Opacity = 0;
-            
+            titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
             title.Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -102,15 +104,10 @@ namespace NuSysApp
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
-     
-
             
             vm.PropertyChanged += OnPropertyChanged;
-            
             base.OnApplyTemplate();
-
             OnTemplateReady?.Invoke();
-
         }
 
         public void ToggleInkMode()
@@ -135,7 +132,6 @@ namespace NuSysApp
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true; 
-
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -145,6 +141,7 @@ namespace NuSysApp
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             }
+            inkCanvas.RenderTransform = vm.InkScale;
         }
     }
 }

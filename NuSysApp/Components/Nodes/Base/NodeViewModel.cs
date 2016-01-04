@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Foundation;
@@ -30,13 +31,16 @@ namespace NuSysApp
             }
         }
 
-        public override void Resize(double dx, double dy)
+        public override void SetSize(double width, double height)
         {
-            CompositeTransform ct = InkScale;
-            ct.ScaleX *= (Width + dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX) / Width;
-            ct.ScaleY *= (Height + dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY) / Height;
-            InkScale = ct;
-            base.Resize(dx, dy);
+            var dx = width/Width -1;
+            var dy = height/Height -1;
+   
+            CompositeTransform t = InkScale;
+            t.ScaleX += dx;
+            t.ScaleY += dy;
+            InkScale = t;
+            base.SetSize(width, height);
         }
 
         public void ToggleEditing()
