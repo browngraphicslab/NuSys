@@ -10,12 +10,13 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     x:Name="Parent">
-
-    <ItemsControl ItemsSource="{Binding Lines}">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <Canvas HorizontalAlignment="Left" Background="Transparent" Width="{Binding ElementName=Parent, Path=Width}" Height="{Binding ElementName=Parent, Path=Height}"/>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-    </ItemsControl>
+    <Canvas x:Name="xContainer">
+        <ItemsControl ItemsSource="{Binding Lines}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas HorizontalAlignment="Left" Background="#55990000" Width="{Binding ElementName=Parent, Path=Width}" Height="{Binding ElementName=Parent, Path=Height}"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Canvas>
 </UserControl>
