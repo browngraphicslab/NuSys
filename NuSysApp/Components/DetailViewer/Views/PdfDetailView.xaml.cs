@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -20,6 +21,8 @@ namespace NuSysApp
 {
     public sealed partial class PdfDetailView : UserControl
     {
+        private InqCanvasView _inqCanvasView;
+
         public PdfDetailView(PdfNodeViewModel vm)
         {
             InitializeComponent();
@@ -40,35 +43,48 @@ namespace NuSysApp
                     xImg.Height = vm.Height / ratio;
                     xBorder.Width = xImg.Width + 5;
                     xBorder.Height = xImg.Height + 5;
+                    
                 };
 
-               
 
                 await vm.InitPdfViewer();
 
-                
 
-    
+                _inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
+                xWrapper.Children.Insert(1, _inqCanvasView);
+                _inqCanvasView.IsEnabled = true;
+                _inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
+                _inqCanvasView.Width = xImg.Width;
+                _inqCanvasView.Height = xImg.Height;
+
+                (_inqCanvasView.DataContext as InqCanvasViewModel).CanvasSize = new Size(xImg.Width, xImg.Height);
+
+                _inqCanvasView.Clip = new RectangleGeometry
+                {
+                    Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
+                };
+
             };
         }
 
-        private void OnPageLeftClick(object sender, RoutedEventArgs e)
+        private async void OnPageLeftClick(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
-            vm.FlipLeft();
-
-          //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-          //  nodeTpl.inkCanvas.ReRenderLines();
+            await vm.FlipLeft();
+            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            //  nodeTpl.inkCanvas.ReRenderLines();
 
         }
 
-        private void OnPageRightClick(object sender, RoutedEventArgs e)
+        private async void OnPageRightClick(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
-            vm.FlipRight();
-
-         //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-         //   nodeTpl.inkCanvas.ReRenderLines();
+            await vm.FlipRight();
+            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+           // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
+            //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
+            //   nodeTpl.inkCanvas.ReRenderLines();
         }
         
     }

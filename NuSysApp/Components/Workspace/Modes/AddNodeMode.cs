@@ -67,7 +67,7 @@ namespace NuSysApp
 
         private void OnManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
         {
-            e.TranslationBehavior.DesiredDeceleration = 20.0 * 96.0 / (100000.0);
+            e.TranslationBehavior.DesiredDeceleration = 20.0 * 96.0 / Constants.MaxCanvasSize;
 
        //     e.Handled =  true;
         } 

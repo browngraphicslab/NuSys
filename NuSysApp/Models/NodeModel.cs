@@ -35,16 +35,9 @@ namespace NuSysApp
 
             ContentId = props.GetString("contentId", null);
 
-            var lines = props.GetNestedList<Point2d>("inqLines");
-            if (lines != null) { 
-                foreach (var line in lines)
-                {
-                    InqCanvas.AddLine(new InqLineModel(SessionController.Instance.GenerateId())
-                    {
-                        Points = new ObservableCollection<Point2d>(line)
-                    });
-                }
-            }
+            InqCanvas.UnPack(props);
+
+          
             await base.UnPack(props);
         }
 
@@ -55,10 +48,10 @@ namespace NuSysApp
             dict.Add("type", "node");
             dict.Add("contentId", ContentId);
 
-            var lines = new List<List<Point2d>>();
+            var lines = new List<Dictionary<string,object>>();
             foreach (var inqLineModel in InqCanvas.Lines)
             {
-                lines.Add(inqLineModel.Points.ToList());
+                lines.Add(await inqLineModel.Pack());
             }
 
             dict.Add("inqLines", lines);

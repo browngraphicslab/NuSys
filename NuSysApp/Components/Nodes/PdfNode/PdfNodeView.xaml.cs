@@ -16,32 +16,13 @@ namespace NuSysApp
             InitializeComponent();
           //  IsDoubleTapEnabled = true;
 
-            DataContextChanged += async delegate(FrameworkElement sender, DataContextChangedEventArgs args)
+            Loaded += async delegate
             {
                 await vm.InitPdfViewer();
             };
 
             DataContext = vm;
-
-            Loaded += async delegate(object sender, RoutedEventArgs e)
-            {
-            //    if (nodeTpl.inkCanvas != null) { 
-            //        nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //        nodeTpl.inkCanvas.ReRenderLines();
-            //    }
-
-                var animX = new Storyboard();
-                var animXAnim = new DoubleAnimation();
-                animXAnim.Duration = TimeSpan.FromMilliseconds(300);
-                animXAnim.EasingFunction = new ExponentialEase();
-                animXAnim.From = 0.0;
-                animXAnim.To = 1.0;
-                animX.Children.Add(animXAnim);
-                Storyboard.SetTarget(animX, this);
-                Storyboard.SetTargetProperty(animX, "Opacity");
-                animX.Begin();
-            };
-
+            
         }
 
 
@@ -51,10 +32,11 @@ namespace NuSysApp
 
         }
 
-        private void OnPageLeftClick(object sender, TappedRoutedEventArgs e)
+        private async void OnPageLeftClick(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
-            vm.FlipLeft();
+            await vm.FlipLeft();
+            (nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
             // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
@@ -62,10 +44,11 @@ namespace NuSysApp
 
         }
 
-        private void OnPageRightClick(object sender, TappedRoutedEventArgs e)
+        private async void OnPageRightClick(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
-            vm.FlipRight();
+            await vm.FlipRight();
+            (nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;

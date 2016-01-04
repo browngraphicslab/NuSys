@@ -42,7 +42,7 @@ namespace NuSysApp
 
         private async void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            _view.InqCanvas.ViewModel.Lines.Remove(sender as InqLineView);
+            _view.InqCanvas.ViewModel.RemoveLine(sender as InqLineView);
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
             InqLineView[] linesView = {sender as InqLineView};

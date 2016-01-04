@@ -16,18 +16,39 @@ namespace NuSysApp
     {
         public InqCanvasModel Model { get; }
 
+        private List<InqLineView> _lines = new List<InqLineView>();
+
         public ObservableCollection<InqLineView> Lines { get; set; }
 
         private Size _canvasSize;
+
+        private int _page;
+
+        public int Page
+        {
+            get { return _page; }
+            set
+            {
+                _page = value;
+                Lines.Clear();
+                
+                foreach (var line in _lines.ToList())
+                {
+                  if ((line.DataContext as InqLineViewModel).Page == value)
+                    Lines.Add(line);
+                }
+            }
+        }
 
         public InqCanvasViewModel(InqCanvasModel model, Size canvasSize)
         {
             _canvasSize = canvasSize;
             Model = model;
-         //   Model.PartialLineAdded += OnPartialLineAdded;
             Model.LineFinalized += OnLineFinalized;
             Model.LineRemoved += OnLineRemoved;
             Model.LineAdded += OnLineAdded;
+            Model.PageChanged +=OnPageChanged;
+            _page = model.Page;
             
             Lines = new ObservableCollection<InqLineView>();
 
@@ -37,31 +58,51 @@ namespace NuSysApp
             foreach (var inqLineModel in model.Lines)
             {
                 var lineView = new InqLineView(new InqLineViewModel(inqLineModel, _canvasSize));;
-                Lines.Add(lineView);
+                AddLine(lineView);
             }
+        }
+
+        private void OnPageChanged(int page)
+        {
+            Page = page;
         }
 
         private void OnLineAdded(InqLineModel lineModel)
         {
-            Lines.Add(new InqLineView(new InqLineViewModel(lineModel, _canvasSize)));
+            AddLine(new InqLineView(new InqLineViewModel(lineModel, _canvasSize)));
         }
 
         private void OnLineRemoved(InqLineModel lineModel)
         {
-            var ls = Lines.Where(l => (l.DataContext as InqLineViewModel).Model == lineModel);
+            var ls = _lines.Where(l => (l.DataContext as InqLineViewModel).Model == lineModel);
             if (!ls.Any())
                 return;
-            Lines.Remove(ls.First());
+            RemoveLine(ls.First());
         }
         
         private async void OnLineFinalized(InqLineModel lineModel)
         {
             var lineView = new InqLineView(new InqLineViewModel(lineModel, _canvasSize));
-            Lines.Add(lineView);
-
-      
+            AddLine(lineView);
             RaisePropertyChanged("FinalLineAdded");
         }
-        
+
+        public void RemoveLine(InqLineView line)
+        {
+            _lines.Remove(line);
+            Lines.Remove(line);
+        }
+
+        public void AddLine(InqLineView line)
+        {
+            _lines.Add(line);
+            if ((line.DataContext as InqLineViewModel).Page == Page)
+                Lines.Add(line);
+        }
+
+        public Size CanvasSize {
+            get { return _canvasSize; }
+            set { _canvasSize = value; }
+        }
     }
 }

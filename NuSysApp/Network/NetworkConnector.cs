@@ -68,6 +68,17 @@ namespace NuSysApp
 
         private async void MessageRecieved(string ip, string message, PacketType packetType)
         {
+
+            Message props = new Message();
+            await props.Init(message);
+            //await HandleMessage(props); //handle each submessage
+            await HandleMessage(props);
+            if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
+            {
+                await _clientHandler.SendMassTCPMessage(message);
+            }
+
+            /*
             var matches = Regex.Match(message, "(?:({[^}]+}) *)*");
             string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
 
@@ -76,16 +87,9 @@ namespace NuSysApp
             {
                 if (subMessage.Length > 0)
                 {
-                    Message props = new Message();
-                    await props.Init(subMessage);
-                    //await HandleMessage(props); //handle each submessage
-                    await HandleMessage(props);
-                    if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
-                    {
-                        await _clientHandler.SendMassTCPMessage(message);
-                    }
+               
                 }
-            }
+            }*/
         }
 
         /*
@@ -386,20 +390,13 @@ namespace NuSysApp
             });
         }
 
-        public async Task RequestFinalizeGlobalInk(string previousID, string canvasNodeID,string data)
+        public async Task RequestFinalizeGlobalInk(Dictionary<string, object> props)
         {
             ThreadPool.RunAsync(async delegate
             {
-                var props = new Dictionary<string, object>
-            {
-                {"type", "ink"},
-                {"inkType", "full"},
-                {"canvasNodeID", canvasNodeID},
-                {"id", _clientHandler.GetID()},
-                {"data", data},
-                {"previousID", previousID}
-            };
+      
                 string m = MakeSubMessageFromDict(props);
+                
 
                 await _clientHandler.SendMessageToHost(m);
             });
@@ -578,25 +575,13 @@ namespace NuSysApp
             private async Task HandleCreateNewNode(string id, Message props)
             {
                 NodeType type = NodeType.Text;
-                double x = 0;
-                double y = 0;
-                object data = null;
                 if (props.ContainsKey("nodeType"))
                 {
                     string t = props["nodeType"];
                     type = (NodeType)Enum.Parse(typeof(NodeType), t);
                 }
-                if (props.ContainsKey("x"))
-                {
-                    double.TryParse(props["x"], out x);
-                }
-                if (props.ContainsKey("y"))
-                {
-                    double.TryParse(props["y"], out y);
-                }
 
-                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type, x, y); });
-    
+                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type); });
             }
 
             
@@ -685,38 +670,12 @@ namespace NuSysApp
                     {
                         await UITask.Run(async delegate {
 
-                            ObservableCollection<Point2d> points;
-                            double thickness;
-                            SolidColorBrush stroke;
-
-                            if (props.ContainsKey("data"))
-                            {
-                                InqLineModel.ParseToLineData(props["data"], out points, out thickness, out stroke);
-                                thickness = 2;
-                                if (props.ContainsKey("previousID") && (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).InqCanvas.PartialLines.ContainsKey(props["previousID"]))
-                                {
-                                    canvas.LineFinalized += async delegate
-                                    {
-                                        await UITask.Run(() =>
-                                        {
-                                            canvas.RemovePartialLines(props["previousID"]);
-                                        });
-                                    };
-                                }
-
-                                var lineModel = new InqLineModel(id);
-                                if (props.ContainsKey("canvasNodeID"))
-                                {
-                                    lineModel.InqCanvasId = props["canvasNodeID"];
-                                }
-                                lineModel.Points = points;
-                                lineModel.Stroke = stroke;
-
-
-                                canvas.FinalizeLine(lineModel);
+                            var lineModel = new InqLineModel(id);
+                            await lineModel.UnPack(props);
+                            canvas.FinalizeLine(lineModel);
                          
 
-                            }
+                            
                         });
                     }
                 }

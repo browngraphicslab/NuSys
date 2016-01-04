@@ -41,17 +41,20 @@ namespace NuSysApp
 
 
             //TODO: add data binding for thickness and color
-            _inqLineView = new InqLineView(new InqLineViewModel(_inqLineModel, new Size(_view.Width, _view.Height)));
+            var inqLineVm = new InqLineViewModel(_inqLineModel, new Size(_view.Width, _view.Height));
+            _inqLineModel.Page = _view.ViewModel.Page;
+            _inqLineView = new InqLineView(inqLineVm);
+            
             _inqLineView.StrokeThickness = _inqLineModel.StrokeThickness;
+            
 
-            inqCanvas.ViewModel.Lines.Add(_inqLineView);
+            inqCanvas.ViewModel.AddLine(_inqLineView);
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y/ _view.Height));
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
-        {
-            
+        {   
             _inkManager.ProcessPointerUpdate(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
@@ -65,19 +68,16 @@ namespace NuSysApp
                 }
         }
 
-        public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
+        public async void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
-            NetworkConnector.Instance.RequestFinalizeGlobalInk(_inqLineModel.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id, _inqLineModel.GetString());
+            NetworkConnector.Instance.RequestFinalizeGlobalInk(await _inqLineModel.Pack());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).LineFinalized += delegate
             {
-                inqCanvas.ViewModel.Lines.Remove(_inqLineView);
+                inqCanvas.ViewModel.RemoveLine(_inqLineView);
             };
-
         }
-
-        
     }
 }

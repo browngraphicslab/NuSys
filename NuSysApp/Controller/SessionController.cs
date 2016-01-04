@@ -151,7 +151,7 @@ namespace NuSysApp
 
         }
 
-        public async Task CreateNewNode(string id, NodeType type, double xCoordinate, double yCoordinate)
+        public async Task CreateNewNode(string id, NodeType type)
         {
             NodeModel node;
             NodeViewModel nodeViewModel;
@@ -190,10 +190,6 @@ namespace NuSysApp
             }
             if (node == null)
                 return;
-
-            node.X = xCoordinate;
-            node.Y = yCoordinate;
-            node.NodeType = type;
 
             // TODO: bullshit fix
             if (!IdToSendables.ContainsKey(id))

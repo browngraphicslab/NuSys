@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace NuSysApp
 {
     public class PdfNodeModel : NodeModel
     {
-        public int CurrentPageNumber { get; set; }
+        private int _currentPageNumber;
+
+        public int CurrentPageNumber {
+            get { return _currentPageNumber; }
+            set
+            {
+                _currentPageNumber = value;
+                PageChange?.Invoke(value);
+            }
+        }
 
         public event PdfImagesCreatedHandler OnPdfImagesCreated;
-        public event PdfImagesCreatedHandler OnPageChange;
+        public event PageChangeHandler PageChange;
         public delegate void PdfImagesCreatedHandler();
+        public delegate void PageChangeHandler(int page);
 
         public PdfNodeModel(string id) : base(id)
         {

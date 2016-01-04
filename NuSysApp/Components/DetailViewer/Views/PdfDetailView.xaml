@@ -10,7 +10,7 @@
     d:DesignWidth="400"
 >
     <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White">
-        <Grid>
+        <Grid x:Name="xWrapper">
             <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform"/>
             <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
                 <Button.Content>

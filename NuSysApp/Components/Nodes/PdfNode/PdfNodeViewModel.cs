@@ -21,19 +21,26 @@ namespace NuSysApp
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
         private Document _document;
-        private int CurrentPageNumber = 0;
+        public int CurrentPageNumber { get;  private set; }
 
         public PdfNodeViewModel(PdfNodeModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            RenderedLines = new HashSet<InqLineModel>();
+            model.PageChange += OnPageChange;
+            CurrentPageNumber = model.CurrentPageNumber;
+        }
+
+        private async void OnPageChange(int page)
+        {
+            CurrentPageNumber = page;
+            await RenderPage(page);
+
         }
 
         public async Task InitPdfViewer()
         {
             var data = SessionController.Instance.ContentController.Get(ContentId).Data;
             var dataBytes = Convert.FromBase64String(data);
-            CurrentPageNumber = ((PdfNodeModel)Model).CurrentPageNumber;
             var ms = new MemoryStream(dataBytes);
             using (IInputStream inputStreamAt = ms.AsInputStream())
             using (var dataReader = new DataReader(inputStreamAt))
@@ -48,14 +55,14 @@ namespace NuSysApp
             SetSize(Width, Height);
         }
 
-        public async void FlipRight()
+        public async Task FlipRight()
         {
-            Goto(CurrentPageNumber + 1);
+            await Goto(CurrentPageNumber + 1);
         }
 
-        public async void FlipLeft()
+        public async Task FlipLeft()
         {
-            Goto(CurrentPageNumber - 1);
+            await Goto(CurrentPageNumber - 1);
         }
 
         public async Task Goto(int pageNumber)
@@ -63,8 +70,8 @@ namespace NuSysApp
             if (pageNumber == -1) return;
             if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
-            await RenderPage(pageNumber);
-            ((PdfNodeModel) Model).CurrentPageNumber = CurrentPageNumber;
+            ((PdfNodeModel)Model).CurrentPageNumber = CurrentPageNumber;
+            
         }
 
         private async Task RenderPage(int pageNumber)
@@ -76,10 +83,6 @@ namespace NuSysApp
             IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
             buf.Length = image.PixelBuffer.Length;
             
-
-
-            //_document.SearchText(pageNumber).
-            
             _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
             
             var s = buf.AsStream();
@@ -87,7 +90,6 @@ namespace NuSysApp
             image.Invalidate();
             ImageSource = image;
             RaisePropertyChanged("ImageSource");
-
         }
 
 
@@ -112,12 +114,6 @@ namespace NuSysApp
             get; set;
         }
 
-        public HashSet<InqLineModel> RenderedLines { get; set; }
-
-        public List<HashSet<InqLineModel>> InqPages
-        {
-            get { return null; }
-        }
 
         public CompositeTransform InkScale
         {

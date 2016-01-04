@@ -21,12 +21,22 @@ namespace NuSysApp
         public event LineHandler LineFinalized;
         public event LineHandler LineRemoved;
         public event LineHandler LineAdded;
+        public event PageChangeHandler PageChanged;
+        public delegate void PageChangeHandler(int page);
         public delegate void LineHandler(InqLineModel lineModel);
         public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         
         private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
+        private int _page;
 
+        public int Page {
+            get { return _page; }
+            set
+            {
+                _page = value;
+                PageChanged?.Invoke(_page);
+            } }
 
         public InqCanvasModel(string id) : base(id)
         {
@@ -46,6 +56,7 @@ namespace NuSysApp
 
         public void FinalizeLine(InqLineModel line)
         {
+            line.Page = Page;
             _lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             LineFinalized?.Invoke( line );
@@ -88,8 +99,23 @@ namespace NuSysApp
         public override async Task<Dictionary<string, object>> Pack()
         {
             var dict =  await base.Pack();
+            dict["page"] = Page;
             dict["lines"] = JsonConvert.SerializeObject(Lines.ToArray());
             return dict;
+        }
+
+        public override Task UnPack(Message props)
+        {
+            var lines = props.GetList<InqLineModel>("inqLines");
+            if (lines != null)
+            {
+                foreach (var line in lines)
+                {
+                    AddLine(line);
+                }
+            }
+            Page = props.GetInt("page", 0);
+            return base.UnPack(props);
         }
     }
 }

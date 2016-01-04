@@ -15,6 +15,7 @@ namespace NuSysApp
         public PointCollection Points { get; set; }
 
         public InqLineModel Model { get; }
+        public int Page  { get { return Model.Page; } set { Model.Page = value; } }
 
         private Size _canvasSize;
 

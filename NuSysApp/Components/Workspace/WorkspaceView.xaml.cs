@@ -34,11 +34,11 @@ namespace NuSysApp
 
 
             var inqCanvasModel = wsModel.InqCanvas;
-            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(1000000, 1000000));
+            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
             //SessionController.Instance.IdToSendables[inqCanvasModel.Id] = inqCanvasModel;
             _inqCanvas = new InqCanvasView(inqCanvasViewModel);
-            _inqCanvas.Width = 1000000;
-            _inqCanvas.Height = 1000000;
+            _inqCanvas.Width = Constants.MaxCanvasSize;
+            _inqCanvas.Height = Constants.MaxCanvasSize;
             xWrapper.Children.Add(_inqCanvas);
             //wsModel.InqCanvas = inqCanvasModel;
 

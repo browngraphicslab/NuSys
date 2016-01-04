@@ -150,7 +150,7 @@ namespace NuSysApp
             foreach (InqLineModel line in lines)
             {
                 var inqView = new InqLineView(new InqLineViewModel(line, new Size(Width, Height)), line.StrokeThickness, line.Stroke);
-                ViewModel.Lines.Add(inqView);
+                ViewModel.AddLine(inqView);
             }
         }
 

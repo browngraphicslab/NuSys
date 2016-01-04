@@ -30,10 +30,10 @@ namespace NuSysApp
         {
             NodeType = NodeType.Workspace;
             Zoom = 1;
-            LocationX = -Constants.MaxCanvasSize;
-            LocationY= -Constants.MaxCanvasSize;
-            CenterX = -Constants.MaxCanvasSize;
-            CenterY = -Constants.MaxCanvasSize;
+            LocationX = -Constants.MaxCanvasSize/2.0;
+            LocationY= -Constants.MaxCanvasSize/ 2.0;
+            CenterX = -Constants.MaxCanvasSize/ 2.0;
+            CenterY = -Constants.MaxCanvasSize/ 2.0;
         }
 
         public async override Task<Dictionary<string, object>> Pack()
@@ -50,10 +50,10 @@ namespace NuSysApp
         public async override Task UnPack(Message props)
         {
             Zoom =  props.GetDouble("zoom", 1);
-            LocationX = props.GetDouble("locationX", -100000);
-            LocationY = props.GetDouble("locationY", -100000);
-            CenterX = props.GetDouble("centerX", -100000);
-            CenterY = props.GetDouble("centerY", -100000);
+            LocationX = props.GetDouble("locationX", -Constants.MaxCanvasSize/2);
+            LocationY = props.GetDouble("locationY", -Constants.MaxCanvasSize/2);
+            CenterX = props.GetDouble("centerX", -Constants.MaxCanvasSize/2);
+            CenterY = props.GetDouble("centerY", -Constants.MaxCanvasSize/2);
             await base.UnPack(props);
         }
 
