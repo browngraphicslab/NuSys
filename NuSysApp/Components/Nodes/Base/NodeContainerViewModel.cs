@@ -28,6 +28,11 @@ namespace NuSysApp
             model.ChildAdded += OnChildAdded;
             model.ChildRemoved += OnChildRemoved;
             AtomViewList = new ObservableCollection<UserControl>();
+
+            foreach (var sendable in SessionController.Instance.IdToSendables.Values.Where( s => (s as AtomModel).Creator == model.Id))
+            {
+                model.AddChild(sendable);
+            }
         }
 
         public override void Dispose()
@@ -64,8 +69,6 @@ namespace NuSysApp
                 var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (AnimatableNodeView)view));
                 await Task.WhenAll(tasks);
             }
-
-        //ChildAdded?.Invoke(this, (AnimatableNodeView)view);
         }
 
         protected virtual async Task OnChildRemoved(object source, Sendable sendable)

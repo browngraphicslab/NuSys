@@ -258,6 +258,7 @@ namespace NuSysApp
         
         private async void OnDrop(object sender, DragEventArgs e)
         {
+            /*
             string text = await e.Data.GetView().GetTextAsync();
             var pos = e.GetPosition(this);
             var vm = (WorkspaceViewModel)this.DataContext;
@@ -266,7 +267,8 @@ namespace NuSysApp
             props["width"] = "400";
             props["height"] = "300";
             await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);
-        }
+        */   
+    }
 
         public FloatingMenuView FloatingMenu
         {

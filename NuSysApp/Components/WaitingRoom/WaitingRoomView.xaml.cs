@@ -21,7 +21,7 @@ namespace NuSysApp
             //waitingroomanimation.Begin();
 
             
-            //ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
            
 
             ellipse.Begin();

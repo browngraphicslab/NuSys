@@ -270,10 +270,7 @@ namespace NuSysApp
         {
             if (id1 != "" && id2 != "")
             {
-                if (HasSendableID(id1))
-                {
-                    if (HasSendableID(id2))
-                    {
+
                         var props = properties == null ? new Dictionary<string, object>() : properties;
                         string id = oldID == null ? _clientHandler.GetID() : oldID;
                         props["id1"] = id1;
@@ -289,16 +286,7 @@ namespace NuSysApp
                         string message = MakeSubMessageFromDict(props);
                         await _clientHandler.SendMessageToHost(message);
                     }
-                    else
-                    {
-                        throw new InvalidIDException(id2);
-                    }
-                }
-                else
-                {
-                    throw new InvalidIDException(id1);
-                }
-            }
+          
             else
             {
                 throw new InvalidCreationArgumentsException();

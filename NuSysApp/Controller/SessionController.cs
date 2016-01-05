@@ -76,10 +76,18 @@ namespace NuSysApp
                 NodeType = NodeType.Group
             };
 
+            node1.Creator = group.Id;
+            node2.Creator = group.Id;
+
+            group.AddChild(node1);
+            group.AddChild(node2);
+
+            
+
            // node1.MoveToGroup(group);
 //node2.MoveToGroup(group);
             IdToSendables.Add(id, group);
-           // OnGroupCreation?.Invoke(this, new CreateGroupEventArgs("Created new group", group));
+
         }
 
         public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)

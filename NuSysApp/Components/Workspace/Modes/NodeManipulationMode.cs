@@ -18,26 +18,37 @@ namespace NuSysApp
         private int _zIndexCounter = 10000;
         private bool _isPinAnimating;
 
+        public List<UserControl> ActiveNodes { get; private set; }
+
         public NodeManipulationMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
         {
+            ActiveNodes = new List<UserControl>();
             var vm = (WorkspaceViewModel)_view.DataContext;
             foreach (var userControl in vm.AtomViewList)
             {
                 userControl.ManipulationMode = ManipulationModes.All;
-                userControl.ManipulationStarting += ManipulationStarting;
+                userControl.ManipulationStarted += ManipulationStarting;
                 userControl.ManipulationDelta += OnManipulationDelta;
+                userControl.ManipulationCompleted += OnManipulationCompleted;
             }
 
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
         }
 
-        private void ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
+        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
+        {
+            ActiveNodes.Remove((UserControl) sender);
+        }
+
+        private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
             var userControl = (UserControl)sender;
             if (userControl.DataContext is NodeViewModel)
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
+            
+            ActiveNodes.Add((UserControl)sender);
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -53,7 +64,8 @@ namespace NuSysApp
                 if (userControl.DataContext is AtomViewModel) { 
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
-                    userControl.ManipulationStarting += ManipulationStarting;
+                    userControl.ManipulationStarted += ManipulationStarting;
+                    userControl.ManipulationCompleted += OnManipulationCompleted;
                 }
             }
         }
@@ -65,7 +77,8 @@ namespace NuSysApp
             {
                 userControl.ManipulationMode = ManipulationModes.All;
                 userControl.ManipulationDelta -= OnManipulationDelta;
-                userControl.ManipulationStarting -= ManipulationStarting;
+                userControl.ManipulationStarted -= ManipulationStarting;
+                userControl.ManipulationCompleted -= OnManipulationCompleted;
             }
 
             vm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
@@ -75,6 +88,8 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
+
+           // Debug.WriteLine("delta");
 
             var s = (UserControl) sender;
 

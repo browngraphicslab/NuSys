@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 
+
 namespace NuSysApp
 {
     public class FreeFormNodeViewFactory : INodeViewFactory
@@ -53,6 +54,9 @@ namespace NuSysApp
                     var tvm = new TextNodeViewModel((TextNodeModel) model);
                     view = new TextNodeView(tvm);
                      await tvm.UpdateRtf();
+                    break;
+                case NodeType.Group:
+                    view = new GroupNodeView(new GroupNodeViewModel((NodeContainerModel)model));
                     break;
                 case NodeType.GroupTag:
                     view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
