@@ -13,7 +13,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
-                    <Canvas x:Name="xContainer">
+                    <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                         
                         <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                             <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#99000000" BorderBrush="#99000000" BorderThickness="2" Width="{Binding Width}"  />
@@ -61,7 +61,7 @@
                    Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
                         </Canvas>
                     
-                    </Canvas>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

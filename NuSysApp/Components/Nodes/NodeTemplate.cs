@@ -67,16 +67,10 @@ namespace NuSysApp
             
             inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
         
-            (GetTemplateChild("xContainer") as Canvas).Children.Add(inkCanvas);
+            (GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
  
             inkCanvas.IsEnabled = false;
             inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
-            inkCanvas.Width = vm.Width;
-            inkCanvas.Height = vm.Height;
-          //  inkCanvas.RenderTransform = vm.InkScale;
-
-            //inkCanvas.Clip = new RectangleGeometry {Rect = new Rect{X = 0, Y = 0, Width = bg.Width, Height = bg.Height}};
-           // inkCanvas.RenderTransform = vm.InkScale;
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
 
@@ -107,7 +101,6 @@ namespace NuSysApp
 
             vm.Model.SizeChanged += delegate(object source, WidthHeightUpdateEventArgs args)
             {
-               // Debug.WriteLine("size changed");
                 inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
             };
             
@@ -137,8 +130,8 @@ namespace NuSysApp
             
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
-            inkCanvas.Width = vm.Width;
-            inkCanvas.Height = vm.Height;
+         //   inkCanvas.Width = vm.Width;
+         //   inkCanvas.Height = vm.Height;
             e.Handled = true; 
         }
 

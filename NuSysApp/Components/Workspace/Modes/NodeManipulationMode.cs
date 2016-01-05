@@ -53,6 +53,7 @@ namespace NuSysApp
                 if (userControl.DataContext is AtomViewModel) { 
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
+                    userControl.ManipulationStarting += ManipulationStarting;
                 }
             }
         }
@@ -64,6 +65,7 @@ namespace NuSysApp
             {
                 userControl.ManipulationMode = ManipulationModes.All;
                 userControl.ManipulationDelta -= OnManipulationDelta;
+                userControl.ManipulationStarting -= ManipulationStarting;
             }
 
             vm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
