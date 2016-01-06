@@ -65,6 +65,5 @@ namespace NuSysApp
                 Height = SessionController.Instance.SessionView.ActualHeight;
             }
         }
-
     }
 }
