@@ -201,6 +201,26 @@ namespace NuSysApp
             });
         }
 
+
+        public async Task<string> RequestDuplicateNode(Dictionary<string, object> packed, Action<string> callback = null)
+        {
+            var id = _clientHandler.GetID();
+            packed["id"] = id;
+            if (callback != null)
+            {
+                AddCreationCallback(id, callback);
+            }
+
+            packed["type"] = "duplicate";
+
+
+            string message = MakeSubMessageFromDict(packed);
+
+            await _clientHandler.SendMessageToHost(message);
+
+            return id;
+        }
+
         /*
         * PUBLIC general method to create Node
         */
@@ -484,6 +504,11 @@ namespace NuSysApp
             }
             private async Task HandleCreateNewSendable(string id, Message props)
             {
+                if (props.ContainsKey("type") && props["type"] == "duplicate")
+                {
+                    await HandleCreateDuplicate(id, props);
+                }
+
                 if (props.ContainsKey("type") && props["type"] == "ink")
                 {
                     await HandleCreateNewInk(id, props);
@@ -560,7 +585,37 @@ namespace NuSysApp
 
                 }
             }
-            private async Task HandleCreateNewNode(string id, Message props)
+
+        private async Task HandleCreateDuplicate(string id, Message props)
+        {
+            NodeType type = NodeType.Text;
+            if (props.ContainsKey("nodeType"))
+            {
+                string t = props["nodeType"];
+                type = (NodeType)Enum.Parse(typeof(NodeType), t);
+            }
+
+            if (type == NodeType.Group) { 
+
+                var childList = props.GetList<string>("groupChildren");
+                foreach (var childId in childList)
+                {
+
+                    var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
+                    var groups = (List<string>)childModel.GetMetaData("groups");
+                    groups.Add(id);
+                }
+            }
+
+
+            await UITask.Run(async () =>
+            {
+                await SessionController.Instance.CreateNewNode(id, type);
+        
+            });
+        }
+
+        private async Task HandleCreateNewNode(string id, Message props)
             {
                 NodeType type = NodeType.Text;
                 if (props.ContainsKey("nodeType"))

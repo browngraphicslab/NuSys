@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageNodeView : AnimatableNodeView
+    public sealed partial class ImageNodeView : AnimatableUserControl
     {
         public ImageNodeView(ImageNodeViewModel vm)
         {

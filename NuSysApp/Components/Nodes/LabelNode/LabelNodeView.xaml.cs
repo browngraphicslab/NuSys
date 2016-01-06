@@ -39,7 +39,7 @@ namespace NuSysApp
                 Anim.FromTo(this, "Alpha", 0, t, 500);
             };
             
-            vm.ChildAdded +=  async delegate (object source, AnimatableNodeView node)
+            vm.ChildAdded +=  async delegate (object source, AnimatableUserControl node)
             {
                 Debug.WriteLine("VIEW = CHILD ADDED");
                 OnChildrenChanged(node);
@@ -66,7 +66,7 @@ namespace NuSysApp
             };
         }
 
-        private void OnChildrenChanged(AnimatableNodeView child)
+        private void OnChildrenChanged(AnimatableUserControl child)
         {
             var groupNodeModel = (NodeContainerViewModel) DataContext;
             Num.Text = groupNodeModel.AtomViewList.Count.ToString();

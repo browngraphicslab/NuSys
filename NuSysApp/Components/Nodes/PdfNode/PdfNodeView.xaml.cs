@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableNodeView
+    public sealed partial class PdfNodeView : AnimatableUserControl
     {
         public PdfNodeView(PdfNodeViewModel vm)
         {

@@ -50,6 +50,7 @@ namespace NuSysApp
             CanEdit = EditStatus.Maybe;
 
             SetMetaData("tags", new List<string> {"none"});
+            SetMetaData("groups", new List<string>());
         }
         
         // TODO: Move color to higher level type
@@ -103,6 +104,11 @@ namespace NuSysApp
                 Metadata["tags"] = JsonConvert.DeserializeObject<List<string>>(Metadata["tags"].ToString());
             else
                 Metadata["tags"] = new List<string>();
+
+            if (Metadata.ContainsKey("groups"))
+                Metadata["groups"] = JsonConvert.DeserializeObject<List<string>>(Metadata["groups"].ToString());
+            else
+                Metadata["groups"] = new List<string>();
 
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
