@@ -58,7 +58,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("audio"))
             {
-                ByteArray = Convert.FromBase64String(props["audio"]);
+                ByteArray = Convert.FromBase64String(props.GetString("audio"));
                 MakeAudio(ByteArray);
             }
             base.UnPack(props);

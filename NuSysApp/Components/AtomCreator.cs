@@ -47,8 +47,8 @@ namespace NuSysApp.Components
             {
                 try
                 {
-                    x = double.Parse(props["x"]);
-                    y = double.Parse(props["y"]);
+                    x = double.Parse(props.GetString("x"));
+                    y = double.Parse(props.GetString("y"));
                 }
                 catch (Exception e)
                 {
@@ -66,7 +66,7 @@ namespace NuSysApp.Components
             string id2 = "null";
             if (props.ContainsKey("id1"))
             {
-                id1 = props["id1"];
+                id1 = props.GetString("id1");
             }
             else
             {
@@ -75,7 +75,7 @@ namespace NuSysApp.Components
             }
             if (props.ContainsKey("id2"))
             {
-                id2 = props["id2"];
+                id2 = props.GetString("id2");
             }
             else
             {
@@ -97,19 +97,19 @@ namespace NuSysApp.Components
             object data = null;
             if (props.ContainsKey("nodeType"))
             {
-                string t = props["nodeType"];
+                string t = props.GetString("nodeType");
                 type = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
             if (props.ContainsKey("x"))
             {
-                double.TryParse(props["x"], out x);
+                double.TryParse(props.GetString("x"), out x);
             }
             if (props.ContainsKey("y"))
             {
-                double.TryParse(props["y"], out y);
+                double.TryParse(props.GetString("y"), out y);
             }
             
-            await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type); });
+            await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props.GetString("id"), type); });
 
         }
 
@@ -121,18 +121,18 @@ namespace NuSysApp.Components
             NodeModel node2 = null;
             double x = 0;
             double y = 0;
-            if (props.ContainsKey("id1") && props.ContainsKey("id2") && SessionController.Instance.IdToSendables.ContainsKey(props["id1"]) && SessionController.Instance.IdToSendables.ContainsKey(props["id2"]))
+            if (props.ContainsKey("id1") && props.ContainsKey("id2") && SessionController.Instance.IdToSendables.ContainsKey(props.GetString("id1")) && SessionController.Instance.IdToSendables.ContainsKey(props.GetString("id2")))
             {
-                node1 = (NodeModel)SessionController.Instance.IdToSendables[props["id1"]];
-                node2 = (NodeModel)SessionController.Instance.IdToSendables[props["id2"]];
+                node1 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
+                node2 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
             }
             if (props.ContainsKey("x"))
             {
-                double.TryParse(props["x"], out x);
+                double.TryParse(props.GetString("x"), out x);
             }
             if (props.ContainsKey("y"))
             {
-                double.TryParse(props["y"], out y);
+                double.TryParse(props.GetString("y"), out y);
             }
             await UITask.Run(async () => { await SessionController.Instance.CreateGroup(id, node1, node2, x, y); });
         }
@@ -146,23 +146,23 @@ namespace NuSysApp.Components
             string title = string.Empty;
             if (props.ContainsKey("x"))
             {
-                double.TryParse(props["x"], out x);
+                double.TryParse(props.GetString("x"), out x);
             }
             if (props.ContainsKey("y"))
             {
-                double.TryParse(props["y"], out y);
+                double.TryParse(props.GetString("y"), out y);
             }
             if (props.ContainsKey("width"))
             {
-                double.TryParse(props["width"], out w);
+                double.TryParse(props.GetString("width"), out w);
             }
             if (props.ContainsKey("height"))
             {
-                double.TryParse(props["height"], out h);
+                double.TryParse(props.GetString("height"), out h);
             }
             if (props.ContainsKey("title"))
             {
-                title = props["title"];
+                title = props.GetString("title");
             }
             await UITask.Run(async () => { await SessionController.Instance.CreateGroupTag(id, x, y, w, h, title); });
         }

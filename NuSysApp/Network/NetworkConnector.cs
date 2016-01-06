@@ -69,11 +69,10 @@ namespace NuSysApp
         private async void MessageRecieved(string ip, string message, PacketType packetType)
         {
 
-            Message props = new Message();
-            await props.Init(message);
+            Message props = new Message(message);
             //await HandleMessage(props); //handle each submessage
             await HandleMessage(props);
-            if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
+            if ((HasSendableID(props.GetString("id")) || (props.ContainsKey("nodeType") && props["nodeType"] == NodeType.PDF.ToString())) && packetType == PacketType.TCP && _clientHandler.IsHost())
             {
                 await _clientHandler.SendMassTCPMessage(message);
             }
@@ -121,12 +120,11 @@ namespace NuSysApp
             }
 
             //Dictionary<string, string> props = ParseOutProperties(message);
-            Message props = new Message();
-            await props.Init(message);
+            Message props = new Message(message);
             if (props.ContainsKey("id"))
             {
                 await HandleMessage(props);
-                if ((HasSendableID(props["id"]) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _clientHandler.IsHost())
+                if ((HasSendableID(props.GetString("id")) || (props.ContainsKey("nodeType") && props["nodeType"]==NodeType.PDF.ToString()))&& packetType == PacketType.TCP && _clientHandler.IsHost())
                 {
                     await _clientHandler.SendMassTCPMessage(message);
                 }
@@ -450,7 +448,7 @@ namespace NuSysApp
             {
                 if (props.ContainsKey("id"))
                 {
-                    string id = props["id"];//get id from dictionary
+                    string id = props.GetString("id");//get id from dictionary
                     _sendablesBeingUpdated.TryAdd(id, true);
                     if (SessionController.Instance.IdToSendables.ContainsKey(id))
                     {
@@ -543,8 +541,8 @@ namespace NuSysApp
                 {
                     try
                     {
-                        x = double.Parse(props["x"]);
-                        y = double.Parse(props["y"]);
+                        x = double.Parse(props.GetString("x"));
+                        y = double.Parse(props.GetString("y"));
                     }
                     catch (Exception e)
                     {
@@ -562,7 +560,7 @@ namespace NuSysApp
                 string id2 = "null";
                 if (props.ContainsKey("id1"))
                 {
-                    id1 = props["id1"];
+                    id1 = props.GetString("id1");
                 }
                 else
                 {
@@ -571,7 +569,7 @@ namespace NuSysApp
                 }
                 if (props.ContainsKey("id2"))
                 {
-                    id2 = props["id2"];
+                    id2 = props.GetString("id2");
                 }
                 else
                 {
@@ -591,7 +589,7 @@ namespace NuSysApp
             NodeType type = NodeType.Text;
             if (props.ContainsKey("nodeType"))
             {
-                string t = props["nodeType"];
+                string t = props.GetString("nodeType");
                 type = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
 
@@ -620,11 +618,11 @@ namespace NuSysApp
                 NodeType type = NodeType.Text;
                 if (props.ContainsKey("nodeType"))
                 {
-                    string t = props["nodeType"];
+                    string t = props.GetString("nodeType");
                     type = (NodeType)Enum.Parse(typeof(NodeType), t);
                 }
 
-                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props["id"], type); });
+                await UITask.Run(async () => { await SessionController.Instance.CreateNewNode(props.GetString("id"), type); });
             }
 
             
@@ -635,18 +633,18 @@ namespace NuSysApp
                 NodeModel node2 = null;
                 double x = 0;
                 double y = 0;
-                if (props.ContainsKey("id1") && props.ContainsKey("id2") && SessionController.Instance.IdToSendables.ContainsKey(props["id1"]) && SessionController.Instance.IdToSendables.ContainsKey(props["id2"]))
+                if (props.ContainsKey("id1") && props.ContainsKey("id2") && SessionController.Instance.IdToSendables.ContainsKey(props.GetString("id1")) && SessionController.Instance.IdToSendables.ContainsKey(props.GetString("id2")))
                 {
-                    node1 = (NodeModel)SessionController.Instance.IdToSendables[props["id1"]];
-                    node2 = (NodeModel)SessionController.Instance.IdToSendables[props["id2"]];
+                    node1 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
+                    node2 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
                 }
                 if (props.ContainsKey("x"))
                 {
-                    double.TryParse(props["x"], out x);
+                    double.TryParse(props.GetString("x"), out x);
                 }
                 if (props.ContainsKey("y"))
                 {
-                    double.TryParse(props["y"], out y);
+                    double.TryParse(props.GetString("y"), out y);
                 }
                 await UITask.Run(async () => { await SessionController.Instance.CreateGroup(id, node1, node2, x, y); });
             }
@@ -660,32 +658,32 @@ namespace NuSysApp
             string title = string.Empty;
             if (props.ContainsKey("x"))
             {
-                double.TryParse(props["x"], out x);
+                double.TryParse(props.GetString("x"), out x);
             }
             if (props.ContainsKey("y"))
             {
-                double.TryParse(props["y"], out y);
+                double.TryParse(props.GetString("y"), out y);
             }
             if (props.ContainsKey("width"))
             {
-                double.TryParse(props["width"], out w);
+                double.TryParse(props.GetString("width"), out w);
             }
             if (props.ContainsKey("height"))
             {
-                double.TryParse(props["height"], out h);
+                double.TryParse(props.GetString("height"), out h);
             }
             if (props.ContainsKey("title"))
             {
-                title = props["title"];
+                title = props.GetString("title");
             }
             await UITask.Run(async () => { await SessionController.Instance.CreateGroupTag(id, x, y, w, h, title); });
         }
 
         private async Task HandleCreateNewInk(string id, Message props) {
             
-                if (props.ContainsKey("canvasNodeID") && (HasSendableID(props["canvasNodeID"])))
+                if (props.ContainsKey("canvasNodeID") && (HasSendableID(props.GetString("canvasNodeID"))))
                 {
-                    var canvas = (InqCanvasModel) (SessionController.Instance.IdToSendables[props["canvasNodeID"]] as NodeModel).InqCanvas;
+                    var canvas = (InqCanvasModel) (SessionController.Instance.IdToSendables[props.GetString("canvasNodeID")] as NodeModel).InqCanvas;
 
                     if (props.ContainsKey("inkType") && props["inkType"] == "partial")
                     {
@@ -695,7 +693,7 @@ namespace NuSysApp
 
                         await UITask.Run(() =>
                         {
-                            var lineModel = new InqLineModel(props["canvasNodeID"]);
+                            var lineModel = new InqLineModel(props.GetString("canvasNodeID"));
                           //  var line = new InqLineView(new InqLineViewModel(lineModel), 2, new SolidColorBrush(Colors.Black));
                             var pc = new ObservableCollection<Point2d>();
                             pc.Add(one);
@@ -932,8 +930,8 @@ namespace NuSysApp
 
             private void ParseToLineSegment(Message props, out Point2d one, out Point2d two)
             {
-                one = new Point2d(Double.Parse(props["x1"]), Double.Parse(props["y1"]));
-                two = new Point2d(Double.Parse(props["x2"]), Double.Parse(props["y2"]));
+                one = new Point2d(Double.Parse(props.GetString("x1")), Double.Parse(props.GetString("y1")));
+                two = new Point2d(Double.Parse(props.GetString("x2")), Double.Parse(props.GetString("y2")));
             }
 
     #endregion oldModelIntermediate

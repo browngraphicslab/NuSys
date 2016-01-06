@@ -156,8 +156,7 @@ namespace NuSysApp
             var createdModel = new List<AtomModel>();
             foreach (var dict in nodeStrings)
             {
-                var msg = new Message();
-                await msg.Init(dict);
+                var msg = new Message(dict);
                 var id = msg.GetString("id", "noId");
                 await atomCreator.HandleCreateNewSendable(id, msg);
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;

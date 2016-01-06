@@ -160,7 +160,7 @@ namespace NuSysApp
 
         }
 
-        public async Task CreateNewNode(string id, NodeType type)
+        public async Task<NodeModel> CreateNewNode(string id, NodeType type)
         {
             NodeModel node;
             NodeViewModel nodeViewModel;
@@ -195,14 +195,15 @@ namespace NuSysApp
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
-                    return;
+                    return null;
             }
             if (node == null)
-                return;
+                return null;
 
             // TODO: bullshit fix
             if (!IdToSendables.ContainsKey(id))
                 IdToSendables.Add(id, node);
+            return node;
         }
 
         public async Task RemoveSendable(string id)
