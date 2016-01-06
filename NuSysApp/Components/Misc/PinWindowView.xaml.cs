@@ -65,7 +65,7 @@ namespace NuSysApp
             var pinWindowViewModel = (PinWindowViewModel) DataContext;
             pinWindowViewModel.Pins.Remove(pinModel);
             
-            NetworkConnector.Instance.RequestDeleteSendable(pinModel.ID);
+            ////NetworkConnector.Instance.RequestDeleteSendable(pinModel.ID);
             e.Handled = true;
         }
 

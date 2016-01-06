@@ -34,18 +34,19 @@ namespace NuSysApp
             _currentStroke.AddPoint(new Point2d(currentPoint.Position.X, currentPoint.Position.Y));
             if (_currentStroke.Points.Count > 1)
             {
+                /*
                 NetworkConnector.Instance.RequestSendPartialLine(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id,
                     _currentStroke.Points[_currentStroke.Points.Count - 2].X.ToString(),
                     _currentStroke.Points[_currentStroke.Points.Count - 2].Y.ToString(),
                     _currentStroke.Points[_currentStroke.Points.Count - 1].X.ToString(),
-                    _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString(),"yellow");
+                    _currentStroke.Points[_currentStroke.Points.Count - 1].Y.ToString(),"yellow");*/
             }
         }
 
         public void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             /*
-            NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id, _currentStroke.GetString());
+            //NetworkConnector.Instance.RequestFinalizeGlobalInk(_currentStroke.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id, _currentStroke.GetString());
             (((InqCanvasViewModel)inqCanvas.DataContext).Model).LineFinalized += delegate
             {
                 inqCanvas.ViewModel.Lines.Remove(_currentInqLineView);

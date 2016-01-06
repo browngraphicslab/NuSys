@@ -133,7 +133,7 @@ namespace NuSysApp
                 props.Remove("nodeType");
                 props.Remove("x");
                 props.Remove("y");
-                NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
+                //NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
             }
 
             //   ActiveWorkspace.Model.AddChild(group);

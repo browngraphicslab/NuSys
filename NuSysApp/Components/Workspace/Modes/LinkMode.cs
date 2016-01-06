@@ -61,7 +61,7 @@ namespace NuSysApp {
 
            // var linkVm = new LinkViewModel(new LinkModel(startVm.Model, endVm.Model, "LINK_ID"), startVm, endVm);
 
-            NetworkConnector.Instance.RequestMakeLinq(startVm.Id, endVm.Id, null, null, null);
+            //NetworkConnector.Instance.RequestMakeLinq(startVm.Id, endVm.Id, null, null, null);
           //  startVm.AddLink(linkVm);
           //  endVm.AddLink(linkVm);
            // var linkView = new BezierLinkView(linkVm);

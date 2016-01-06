@@ -181,7 +181,7 @@ namespace NuSysApp
                 props.Remove("x");
                 props.Remove("y");
               //  props.Remove("metadata");
-                NetworkConnector.Instance.RequestMakeNode(nodeToTagModel.X.ToString(), nodeToTagModel.Y.ToString(), nodeToTag.NodeType.ToString(), null, null, props, callback);
+                //NetworkConnector.Instance.RequestMakeNode(nodeToTagModel.X.ToString(), nodeToTagModel.Y.ToString(), nodeToTag.NodeType.ToString(), null, null, props, callback);
             }
             //e.Handled = true;
         }

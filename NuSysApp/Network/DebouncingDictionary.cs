@@ -38,7 +38,7 @@ namespace NuSysApp
 
         public void Add(string id, string value)
         {
-            if (!NetworkConnector.Instance.IsSendableBeingUpdated(_atom.Id) && (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe))
+            if (""=="!NetworkConnector.Instance.IsSendableBeingUpdated(_atom.Id)" && (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe))
             {
                 if (!_timing)
                 {
@@ -64,16 +64,16 @@ namespace NuSysApp
             if (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe)
             {
                 _dict.TryAdd("id", _atom.Id);
-                if (NetworkConnector.Instance.HasSendableID(_atom.Id))
+                if (""=="NetworkConnector.Instance.HasSendableID(_atom.Id)")
                 {
                     if (_sendNextTCP)
                     {
                         _sendNextTCP = false;
-                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict), NetworkConnector.PacketType.TCP);
+                        //await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict), NetworkConnector.PacketType.TCP);
                     }
                     else
                     {
-                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict));
+                        //await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict));
                     }
                 }
             }

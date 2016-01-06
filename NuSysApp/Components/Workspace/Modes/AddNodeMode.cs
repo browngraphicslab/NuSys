@@ -182,7 +182,7 @@ namespace NuSysApp
             var dict = new Dictionary<string, object>();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
-            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
+            //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
             vm.ClearSelection();
             vm.ClearMultiSelection();
 

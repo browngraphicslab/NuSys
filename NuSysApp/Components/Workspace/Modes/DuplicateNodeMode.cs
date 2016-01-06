@@ -90,8 +90,8 @@ namespace NuSysApp
                 }
                
       
-                //  NetworkConnector.Instance.RequestMakeNode(, _selectedNode.NodeType.ToString(), props["contentId"]?.ToString(), null, props);
-                NetworkConnector.Instance.RequestDuplicateNode(props);
+                //  //NetworkConnector.Instance.RequestMakeNode(, _selectedNode.NodeType.ToString(), props["contentId"]?.ToString(), null, props);
+                //NetworkConnector.Instance.RequestDuplicateNode(props);
 
             }
 

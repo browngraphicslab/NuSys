@@ -32,7 +32,7 @@ namespace NuSysApp
         }
         public async Task Set(string k, string v)
         {
-            if (v == NetworkConnector.Instance.LocalIP)
+            if (v == "//NetworkConnector.Instance.LocalIP")//I'm so clever
             {
                 _locals.Add(k);
             }
@@ -62,7 +62,7 @@ namespace NuSysApp
                         {
                             _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.Maybe;
                         }
-                        else if (lockHolder == NetworkConnector.Instance.LocalIP)
+                        else if (lockHolder == "//NetworkConnector.Instance.LocalIP")
                         {
                             var b = _workSpaceModel.IdToSendables[id];
                             b.CanEdit = AtomModel.EditStatus.Yes;
