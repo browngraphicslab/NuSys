@@ -1,6 +1,7 @@
 ﻿using Windows.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,8 @@ namespace NuSysApp
     {
         private SpeechRecognizer _recognizer;
         private bool _isRecording;
+        private ObservableCollection<String> sizes = new ObservableCollection<String>();
+        private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
 
         public TextDetailView(TextNodeViewModel vm)
         {
@@ -54,6 +57,17 @@ namespace NuSysApp
             {
                 await InitializeRecog();
             };
+
+            sizes.Add("8");
+            sizes.Add("12");
+            sizes.Add("16");
+            sizes.Add("20");
+            sizes.Add("24");
+
+            fonts.Add(new FontFamily("Arial"));
+            fonts.Add(new FontFamily("Courier New"));
+            fonts.Add(new FontFamily("Times New Roman"));
+            fonts.Add(new FontFamily("Verdana"));
         }
 
         private async Task InitializeRecog()
@@ -187,6 +201,32 @@ namespace NuSysApp
                 {
                     format.Underline = UnderlineType.None;
                 }
+                selectedText.CharacterFormat = format;
+            }
+        }
+
+        private void SizeChanged(object sender, RoutedEventArgs e)
+        {
+            ITextSelection selectedText = rtfTextBox.Document.Selection;
+            if (selectedText != null)
+            {
+                if (SizeBox.SelectedItem != null)
+                {
+                    float size = (float)Convert.ToDouble(SizeBox.SelectedItem);
+                    ITextCharacterFormat format = selectedText.CharacterFormat;
+                    format.Size = size;
+                    selectedText.CharacterFormat = format;
+                }
+                
+            }
+        }
+
+        private void FontChanged(object sender, RoutedEventArgs e)
+        {
+            ITextSelection selectedText = rtfTextBox.Document.Selection;
+            if (selectedText != null)
+            {
+
             }
         }
 
