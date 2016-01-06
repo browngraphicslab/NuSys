@@ -26,7 +26,7 @@ using Windows.UI.Xaml.Media.Animation;
 namespace NuSysApp
 {
     
-    public sealed partial class TextNodeView : AnimatableNodeView
+    public sealed partial class TextNodeView : AnimatableUserControl
     {
 
         private List<Image> _images = new List<Image>();

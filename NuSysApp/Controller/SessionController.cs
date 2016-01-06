@@ -75,19 +75,20 @@ namespace NuSysApp
                 Y = yCoordinate,
                 NodeType = NodeType.Group
             };
+            IdToSendables.Add(id, group);
 
             node1.Creator = group.Id;
+            var prevGroups1 = (List<string>)node1.GetMetaData("groups");
+            prevGroups1.Add(group.Id);
+            node1.SetMetaData("groups", prevGroups1);
+
             node2.Creator = group.Id;
+            var prevGroups2 = (List<string>)node2.GetMetaData("groups");
+            prevGroups2.Add(group.Id);
+            node2.SetMetaData("groups", prevGroups2);
 
             group.AddChild(node1);
             group.AddChild(node2);
-
-            
-
-           // node1.MoveToGroup(group);
-//node2.MoveToGroup(group);
-            IdToSendables.Add(id, group);
-
         }
 
         public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
@@ -190,7 +191,7 @@ namespace NuSysApp
                     node = new WorkspaceModel(id);
                     break;
                 case NodeType.Group:
-                    node = null;
+                    node = new NodeContainerModel(id);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");

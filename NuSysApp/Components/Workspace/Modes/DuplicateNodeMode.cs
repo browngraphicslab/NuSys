@@ -65,21 +65,34 @@ namespace NuSysApp
             if (_selectedNode != null && _selectedNode != doubleTappedNode)
             {
                 var vm = (WorkspaceViewModel)_view.DataContext;
+
+                var tappedPoint = e.GetPosition(null);
+                var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
+                p.X -= _selectedNode.Width / 2;
+                p.Y -= _selectedNode.Height / 2;
                 var dict = await _selectedNode.Model.Pack();
 
                 var props = dict;
                 props.Remove("id");
                 props.Remove("type");
-                props.Remove("nodeType");
-                props.Remove("x");
-                props.Remove("y");
+                props["x"] = p.X.ToString();
+                props["y"] = p.Y.ToString();
 
-                var tappedPoint = e.GetPosition(null);
+                if (_selectedNode is NodeContainerViewModel)
+                {
+                    var children = new List<string>();;
+                    foreach (var child in (_selectedNode as NodeContainerViewModel).Children.Values)
+                    {
+                        children.Add((child.DataContext as AtomViewModel).Id);
+                    }
+                    props["groupChildren"] = children;
 
-                var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
-                p.X -= _selectedNode.Width / 2;
-                p.Y -= _selectedNode.Height / 2;
-                NetworkConnector.Instance.RequestMakeNode(p.X.ToString(),p.Y.ToString(), _selectedNode.NodeType.ToString(), null, null, props);
+                }
+               
+      
+                //  NetworkConnector.Instance.RequestMakeNode(, _selectedNode.NodeType.ToString(), props["contentId"]?.ToString(), null, props);
+                NetworkConnector.Instance.RequestDuplicateNode(props);
+
             }
 
         }

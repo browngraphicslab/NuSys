@@ -17,7 +17,7 @@ namespace NuSysApp
         public ObservableCollection<UserControl> AtomViewList { get; set; } 
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
-        public delegate Task ChildAddedHandler(object source, AnimatableNodeView node);
+        public delegate Task ChildAddedHandler(object source, AnimatableUserControl node);
         public event ChildAddedHandler ChildAdded;
         public bool EnableChildMove { get; set; }
        
@@ -29,9 +29,15 @@ namespace NuSysApp
             model.ChildRemoved += OnChildRemoved;
             AtomViewList = new ObservableCollection<UserControl>();
 
-            foreach (var sendable in SessionController.Instance.IdToSendables.Values.Where( s => (s as AtomModel).Creator == model.Id))
+
+        }
+
+        public async Task Init()
+        {
+            var model = Model as NodeContainerModel;
+            foreach (var sendable in SessionController.Instance.IdToSendables.Values.Where(s => (s as AtomModel).Creator == model.Id))
             {
-                model.AddChild(sendable);
+                await model.AddChild(sendable);
             }
         }
 
@@ -66,7 +72,7 @@ namespace NuSysApp
             var handler = ChildAdded;
             if (handler != null)
             {
-                var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (AnimatableNodeView)view));
+                var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (AnimatableUserControl)view));
                 await Task.WhenAll(tasks);
             }
         }

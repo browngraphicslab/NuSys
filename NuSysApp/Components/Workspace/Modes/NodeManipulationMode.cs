@@ -15,7 +15,7 @@ namespace NuSysApp
 {
     public class NodeManipulationMode : AbstractWorkspaceViewMode
     {
-        private int _zIndexCounter = 10000;
+        private static int _zIndexCounter = 10000;
         private bool _isPinAnimating;
 
         public List<UserControl> ActiveNodes { get; private set; }
