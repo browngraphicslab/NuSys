@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     <Grid x:Name="xContainer" Background="#AA000000">
-
+        
         <ContentPresenter Content="{Binding View}" Margin="5,5,5,5"></ContentPresenter>
             
     </Grid>

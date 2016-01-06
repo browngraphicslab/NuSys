@@ -150,44 +150,5 @@ namespace NuSysApp
             _isRecording = false;
            // this.RecordVoice.Click -= stopTranscribing;
         }
-
-        private void BoldButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                format.Bold = FormatEffect.Toggle;
-                selectedText.CharacterFormat = format;
-            }
-        }
-
-        private void ItalicButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                format.Italic = FormatEffect.Toggle;
-                selectedText.CharacterFormat = format;
-            }
-        }
-
-        private void UnderlineButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                if (format.Underline == UnderlineType.None)
-                {
-                    format.Underline = UnderlineType.Single;
-                }
-                else
-                {
-                    format.Underline = UnderlineType.None;
-                }
-            }
-        }
     }
 }
