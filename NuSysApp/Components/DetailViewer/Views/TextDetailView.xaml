@@ -12,6 +12,9 @@
         <StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Margin="5,5" Width="600" Height="750">
             <StackPanel Orientation="Horizontal">
                 <Button Tapped="OnRecordClick">Record</Button>
+                <Button Name="BoldButton" Width="30"  Content="B" Background="IndianRed" Click="BoldButton_OnClick"></Button>
+                <Button Name="ItalicButton" Width="30"  Content="I" Background="IndianRed" Click="ItalicButton_OnClick"></Button>
+                <Button Name="UnderlineButton" Width="30"  Content="U" Background="IndianRed" Click="UnderlineButton_OnClick"></Button>
             </StackPanel>
             <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
                                      BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
