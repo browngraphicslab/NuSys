@@ -231,6 +231,7 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <None Include="WordAddIn_1_TemporaryKey.pfx" />
     <None Include="WordAddIn_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -257,10 +258,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WordAddIn_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WordAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>8F38420271434CA93E48D583A07E583D5AE88C88</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>990354376ED7F2229C57D9561406503C9D0163B5</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
