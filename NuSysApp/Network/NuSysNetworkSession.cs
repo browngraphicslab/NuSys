@@ -265,9 +265,9 @@ namespace NuSysApp
             }
         }
 
-        public void SetHost(string _ip)
+        public void SetHost(string ip)
         {
-            _hostIP = _ip;
+            _hostIP = ip;
             Debug.WriteLine("Machine "+ip+" made to be host");
         }
     }
