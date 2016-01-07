@@ -17,7 +17,7 @@ namespace NuSysApp
             session.AddIP(_ip);
             if (senderIP != null)
             {
-                var request = new SetHostSystemRequest(senderIP);
+                var request = new SetHostSystemRequest(nusysSession.HostIP);
                 var list = new List<string>();
                 list.Add(senderIP);
                 await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, list);

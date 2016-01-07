@@ -16,6 +16,11 @@ namespace NuSysApp
     public class NuSysNetworkSession
     {
         #region Public Members
+
+        public string HostIP
+        {
+            get { return _hostIP; }
+        }
         #endregion Public Members
         #region Private Members
         private string LocalIP
@@ -26,7 +31,7 @@ namespace NuSysApp
         {
             get { return _networkSession.LocalIP == _hostIP; }
         }
-
+        
         private HashSet<string> NetworkMembers
         {
             get { return _networkSession.NetworkMembers; }
