@@ -5,7 +5,7 @@ namespace NuSysApp
     public class RemoveClientSystemRequest : SystemRequest
     {
         private string _ip;
-        public RemoveClientSystemRequest(string ip) : base(SystemRequestType.AddClient)
+        public RemoveClientSystemRequest(string ip) : base(SystemRequestType.RemoveClient)
         {
             _message["ip"] = ip;
         }

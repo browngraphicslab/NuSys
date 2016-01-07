@@ -5,7 +5,7 @@ namespace NuSysApp
     public class SetHostSystemRequest : SystemRequest
     {
         private string _ip;
-        public SetHostSystemRequest(string ip) : base(SystemRequestType.AddClient)
+        public SetHostSystemRequest(string ip) : base(SystemRequestType.SetHost)
         {
             _message["ip"] = ip;
         }
