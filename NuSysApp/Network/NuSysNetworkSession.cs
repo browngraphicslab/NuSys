@@ -64,11 +64,15 @@ namespace NuSysApp
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await client.GetAsync(urlParameters);
             };
-            _networkSession.OnMessageRecieved += async (m,p,s) => { await ProcessIncomingRequest(m,p,s); };
+            _networkSession.OnMessageRecieved += MessageRecieved;
             _networkSession.OnClientDrop += async ip =>
             {
                 await ExecuteRequest(new RemoveClientSystemRequest(ip));
             };
+        }
+        private void MessageRecieved(Message message, NetworkClient.PacketType type, string ip)
+        {
+            ProcessIncomingRequest(message, type, ip);
         }
         #region Requests
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)

@@ -65,7 +65,11 @@ namespace NuSysApp
 
         private void PingEvent(object state){OnPing?.Invoke();}
         private void TCPDrop(string ip) { OnClientDrop?.Invoke(ip); }
-        private void MessageRecieved(string ip, Message message, NetworkClient.PacketType packetType){OnMessageRecieved?.Invoke(message, packetType,ip);   }
+
+        private void MessageRecieved(string ip, Message message, NetworkClient.PacketType packetType)
+        {
+            OnMessageRecieved?.Invoke(message, packetType,ip);
+        }
 
         public async Task SendRequestMessage(Message message, ICollection<string> ips, NetworkClient.PacketType packetType)
         {
