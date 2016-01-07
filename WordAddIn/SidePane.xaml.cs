@@ -12,7 +12,8 @@ using System.Drawing;
 using Microsoft.Office.Interop.Word;
 using System.Drawing.Imaging;
 using System.Windows.Interop;
-
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace WordAddIn
 {
@@ -24,29 +25,86 @@ namespace WordAddIn
 
         private static string mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
 
-        public ObservableCollection<SelectionItem> Selections { get; set; }
+		//collection of all selection objects
+        public ObservableCollection<SelectionItem> UnexportedSelections { get; set; }
+        public ObservableCollection<SelectionItem> ExportedSelections { get; set; }
 
+        //collection of all checked selections
+        //only unexported selections can be selected
+        public List<SelectionItem> CheckedSelections { get; set;}
+		
         public SidePane()
         {
             InitializeComponent();
             ic.DataContext = this;
+            ic2.DataContext = this;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Selections.Clear();
+            //OnDelete();
+            UnexportedSelections.Clear();
+			//RefreshSelectionViews();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+			//OnExport();
             Send();
+			//RefreshSelectionViews();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             OnSelectionAdded();
+			//RefreshSelectionViews();
         }
 
+		private void RefreshSelectionViews(){
+			//UnexportedSelections.Refresh();
+			//ExportedSelections.Refresh();
+		}
+		
+		//add checked selection to a list of checked selections
+		private void OnCheckSelection(){
+			//CheckedSelections.Add();
+		}
+		
+		//delete all checked selections
+		private void OnDelete(){
+			foreach (var selection in CheckedSelections){
+				selection.Comment.Delete();
+                //may be a reference problem...?
+                UnexportedSelections.Remove(selection);
+			}
+		}
+		
+		//exports to NuSys all checked selections
+		private void OnExport(){
+		
+			var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
+            var fileDir = dir + "\\selection";
+            int count = 0;
+            foreach (var result in CheckedSelections)
+            {
+                var f = fileDir + count + ".nusys";
+                File.WriteAllText(f, result.Content);
+                File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
+                File.Move(f, f);
+				
+				result.IsExported = true;
+                //set comment text "Exported To NuSys" 
+                var temp = result.Comment.Reference;
+
+                UnexportedSelections.Remove(result);
+                ExportedSelections.Add(result);
+                count++;
+            }
+
+            File.WriteAllText(dir + "\\update.nusys", "update");
+		}
+		
+		//add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
             var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
@@ -77,7 +135,8 @@ namespace WordAddIn
                     int n = 2;
                     string[] lines = result.Split(Environment.NewLine.ToCharArray()).Skip(n).ToArray();
                     result = string.Join(Environment.NewLine, lines);
-                    Selections.Add(new SelectionItem { Content = result, Comment = c, Range = selection.Range, DOcument = doc });
+                    var ns = new SelectionItem { Content = result, Comment = c, Range = selection.Range, DOcument = doc };
+                    UnexportedSelections.Add(ns);
                 }
                 else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
                 {
@@ -105,7 +164,7 @@ namespace WordAddIn
                     result = imgFileName;
                     thumbnail = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
                     thumbnail.Save(mediaDir + "\\" + imgFileName, ImageFormat.Png);
-                    Selections.Add(new SelectionItem { Comment = c, Range = selection.Range, DOcument = doc });
+                    UnexportedSelections.Add(new SelectionItem { Comment = c, Range = selection.Range, DOcument = doc });
                 }
                 
                  
@@ -160,15 +219,25 @@ namespace WordAddIn
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
             var fileDir = dir + "\\selection";
             int count = 0;
-            foreach (var result in Selections)
+            foreach (var result in UnexportedSelections)
             {
                 var f = fileDir + count + ".nusys";
                 File.WriteAllText(f, result.Content);
                 File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
                 File.Move(f, f);
+				 
+				result.IsExported = true;
+                result.Comment.Delete();
+
+                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(result.Range, "Exported to NuSys");
+                c.Author = "NuSys";
+                result.Comment = c;
+                ExportedSelections.Add(result);
+
                 count++;
             }
 
+            UnexportedSelections.Clear();
             File.WriteAllText(dir + "\\update.nusys", "update");
         }
 

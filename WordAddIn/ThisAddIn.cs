@@ -18,15 +18,19 @@ namespace WordAddIn
     {
         private CustomTaskPane _pane;
         private SidePane _sidePane;
-        public ObservableCollection<SelectionItem> Selections { get; set; }
+        private String _customPropKeyUnexp = "NuSys UnexportedSelections";
+        private String _customPropKeyExp = "NuSys ExportedSelections";
+		
+        public ObservableCollection<SelectionItem> UnexportedSelections { get; set; }
+        public ObservableCollection<SelectionItem> ExportedSelections { get; set; }
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            Selections = new ObservableCollection<SelectionItem>();
-
             var standardUC = new UserControl();
             _sidePane = new SidePane();
-            _sidePane.Selections = Selections;
+            LoadSelectionData();
+            _sidePane.UnexportedSelections = UnexportedSelections;
+            _sidePane.ExportedSelections = ExportedSelections;
             var wpfHost = new ElementHost { Child = _sidePane };
             wpfHost.Dock = DockStyle.Fill;
             standardUC.Controls.Add(wpfHost);
@@ -39,8 +43,54 @@ namespace WordAddIn
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
+			Microsoft.Office.Core.DocumentProperties properties;
+			properties = (Microsoft.Office.Core.DocumentProperties) Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
+
+            foreach (Office.DocumentProperty prop in properties)
+			{
+                if (prop.Name == _customPropKeyUnexp)
+                {
+                    properties[_customPropKeyUnexp].Delete();
+                }
+                else if (prop.Name == _customPropKeyExp)
+                {
+                    properties[_customPropKeyExp].Delete();
+                }
+            }
+
+			properties.Add(
+                _customPropKeyUnexp, 
+				true,
+                null,
+                null,
+				UnexportedSelections);
+
+            properties.Add(
+                _customPropKeyExp,
+                true,
+                null,
+                null,
+                ExportedSelections);
         }
 
+		private void LoadSelectionData(){
+			Microsoft.Office.Core.DocumentProperties properties;
+			//properties = (Microsoft.Office.Core.DocumentProperties) Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
+
+            UnexportedSelections = new ObservableCollection<SelectionItem>();
+            ExportedSelections = new ObservableCollection<SelectionItem>();
+
+            /*foreach (Office.DocumentProperty prop in properties)
+			{
+				if (prop.Name == _customPropKeyUnexp)
+				{
+                    UnexportedSelections = (ObservableCollection<SelectionItem>)prop.Value;
+				}else if (prop.Name == _customPropKeyExp) {
+                    ExportedSelections = (ObservableCollection<SelectionItem>)prop.Value;
+                }
+			}*/   
+		}
+		
         #region VSTO generated code
 
         /// <summary>

@@ -21,17 +21,21 @@ namespace WordAddIn
     public partial class SelectionItem : UserControl
     {
         private string _content;
+		private Boolean _isExported;
         private Comment _comment;
         private Document _slide;
         private int _slideNumber;
         private ScaleTransform _renderTransform;
         private ImageSource _thumbnail;
         private Range _range;
-
+		
         public SelectionItem()
         {
             InitializeComponent();
+			
             _renderTransform = new ScaleTransform(1, 1);
+			_isExported = false;
+			
             DataContext = this;
         }
 
@@ -62,6 +66,12 @@ namespace WordAddIn
             }
         }
 
+		public Boolean IsExported
+		{
+			get { return _isExported; }
+			set { _isExported = value; }
+		}
+		
         public ImageSource Thumbnail
         {
             get { return _thumbnail; }
