@@ -39,6 +39,7 @@ namespace NuSysApp
               
               var vm = (FullScreenViewerViewModel)DataContext;
               vm.PropertyChanged += OnPropertyChanged;
+              Tags.ItemsSource = vm.Tags;
           };
 
             IsHitTestVisible = false;
@@ -64,6 +65,8 @@ namespace NuSysApp
                 Width = SessionController.Instance.SessionView.ActualWidth;
                 Height = SessionController.Instance.SessionView.ActualHeight;
             }
+            var vm = (FullScreenViewerViewModel) DataContext;
+            Tags.ItemsSource = vm.Tags;
         }
     }
 }
