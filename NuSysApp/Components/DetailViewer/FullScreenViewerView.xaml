@@ -11,9 +11,12 @@
     <Grid x:Name="xContainer" Background="#AA000000">
         
         <ContentPresenter Content="{Binding View}" Margin="5,5,5,5"></ContentPresenter>
-        <StackPanel x:Name="TagContainer" Margin="5,5,5,5"  Width="100" HorizontalAlignment="Right">
-            <TextBlock Padding="5,5,5,5"  Text="Tags" Width="100" Foreground="White" FontSize="20.0"  TextAlignment="Right"></TextBlock>
-            <!--<TextBox x:Name="Tags" Padding="5,5,5,5" Text="{Binding Tags}" Width="100" TextAlignment="Right" Foreground="White" FontSize="12.0" FontStyle="Italic"  Background="Transparent" BorderThickness="0" TextWrapping="Wrap"></TextBox>-->
+        <StackPanel x:Name="TagContainer" Margin="5,5,5,5" Width="200"  HorizontalAlignment="Right">
+            <TextBlock Padding="5,5,5,5"  Text="Tags" Foreground="White" FontSize="20.0"  TextAlignment="Right"></TextBlock>
+            <StackPanel Height="35" HorizontalAlignment="Right" Orientation="Horizontal">
+                <TextBox Width="165"></TextBox>
+                <Button Height="35" Width="35"  Content="+" Foreground="White"  Background="DarkGray"></Button>
+            </StackPanel>
             <ItemsControl x:Name="Tags" Margin="5,5,5,5"></ItemsControl>
         </StackPanel>
             

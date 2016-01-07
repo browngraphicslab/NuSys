@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -41,8 +43,10 @@ namespace NuSysApp
                 {
                     TextBlock tagBlock = new TextBlock();
                     tagBlock.Text = tag;
-                    tagBlock.Height = 50;
-                    tagBlock.Width = 50;
+                    tagBlock.Height = 20;
+                    tagBlock.TextWrapping = TextWrapping.Wrap;
+                    tagBlock.TextAlignment = TextAlignment.Right;
+                    tagBlock.FontStyle = FontStyle.Italic;
                     tagBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
                     Tags.Add(tagBlock);
                 }
