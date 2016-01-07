@@ -59,28 +59,7 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\WordTransfer";
-            var fileDir = dir + "\\selection.nusys";
-            var s = Globals.ThisAddIn.Application.Selection.FormattedText;
-            s.Copy();
-
-            System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
-            if (null != data)
-            {
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Rtf))
-                {
-                    s.Comments.Add(s, "This region has been added to NuSys");
-                    string text = (string)data.GetData(System.Windows.Forms.DataFormats.Rtf);
-                    File.WriteAllText(fileDir, text);
-                    System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
-                    File.Move(fileDir, fileDir);
-                }
-            }
-        }
-
-        public Bitmap GetImage(Office.IRibbonControl control)
-        {
-            return Properties.Resources.icon; // resource Bitmap
+            Globals.ThisAddIn.BuildSidebar();
         }
 
         #endregion

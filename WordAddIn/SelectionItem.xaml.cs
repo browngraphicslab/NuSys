@@ -23,7 +23,7 @@ namespace WordAddIn
         private string _content;
 		private Boolean _isExported;
         private Comment _comment;
-        private Document _slide;
+        //private Document _slide;
         private int _slideNumber;
         private ScaleTransform _renderTransform;
         private ImageSource _thumbnail;
@@ -32,10 +32,7 @@ namespace WordAddIn
         public SelectionItem()
         {
             InitializeComponent();
-			
-            _renderTransform = new ScaleTransform(1, 1);
-			_isExported = false;
-			
+            _renderTransform = new ScaleTransform(1, 1);			
             DataContext = this;
         }
 
@@ -100,11 +97,11 @@ namespace WordAddIn
             set { _comment = value; }
         }
 
-        public Document DOcument
+        /*public Document Document
         {
             get { return _slide; }
             set { _slide = value; }
-        }
+        }*/
         public int SlideNumber
         {
             get { return _slideNumber; }
