@@ -62,6 +62,8 @@ namespace NuSysApp
                 _cortanaInitialized = false;
                 xFloatingMenu.SessionView = this;
 
+                await SessionController.Instance.NuSysNetworkSession.Init();
+
                 /*
                 var callback = new Action<string>(s =>
                 {

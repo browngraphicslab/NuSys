@@ -42,10 +42,13 @@ namespace NuSysApp
             _networkSession = new NetworkSession(await GetNetworkIPs());
             await _networkSession.Init();
 
-            if (NetworkMembers.Count == 0)
+            if (NetworkMembers.Count <= 1)
             {
                 _hostIP = LocalIP; //just makes this machine the host
-                NetworkMembers.Add(LocalIP);
+                if (NetworkMembers.Count == 0)
+                {
+                    NetworkMembers.Add(LocalIP);
+                }
             }
             else
             {
@@ -60,7 +63,7 @@ namespace NuSysApp
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await client.GetAsync(urlParameters);
             };
-            _networkSession.OnMessageRecieved += async (m,p) => { await ProcessIncomingRequest(m,p); };
+            _networkSession.OnMessageRecieved += async (m,p,s) => { await ProcessIncomingRequest(m,p,s); };
             _networkSession.OnClientDrop += async ip =>
             {
                 await ExecuteRequest(new RemoveClientSystemRequest(ip));
@@ -68,6 +71,17 @@ namespace NuSysApp
         }
         #region Requests
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
+        {
+            await InternalExecuteRequest(request, packetType);
+        }
+
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
+        {
+            await InternalExecuteRequest(request, packetType, recieverIPs);
+        }
+
+        private async Task InternalExecuteRequest(Request request, NetworkClient.PacketType packetType,
+            ICollection<string> recieverIPs = null)
         {
             await ThreadPool.RunAsync(async delegate
             {
@@ -81,24 +95,26 @@ namespace NuSysApp
 
                 if (request.GetRequestType() == Request.RequestType.SystemRequest)
                 {
-                    await SendSystemRequest(message);
+                    await SendSystemRequest(message, recieverIPs);
                 }
                 else
                 {
-                    await SendRequest(message, packetType);
+                    await SendRequest(message, packetType, recieverIPs);
                 }
                 mre.WaitOne();
             });
-            
+        }
+        private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
+        {
+            await _networkSession.SendRequestMessage(message, recieverIPs == null ? NetworkMembers : recieverIPs, NetworkClient.PacketType.TCP);
         }
 
-        public async Task SendSystemRequest(Message message)
+        private async Task SendRequest(Message message,NetworkClient.PacketType packetType, ICollection<string> recieverIPs = null)
         {
-            await _networkSession.SendRequestMessage(message, NetworkMembers, NetworkClient.PacketType.TCP);
-        }
-
-        public async Task SendRequest(Message message,NetworkClient.PacketType packetType)
-        {
+            if (recieverIPs != null)
+            {
+                await _networkSession.SendRequestMessage(message, recieverIPs, packetType);
+            }
             switch (packetType)
             {
                 case NetworkClient.PacketType.TCP:
@@ -111,7 +127,7 @@ namespace NuSysApp
             }
         }
 
-        public async Task ProcessIncomingRequest(Message message, NetworkClient.PacketType packetType)
+        private async Task ProcessIncomingRequest(Message message, NetworkClient.PacketType packetType, string ip = null)
         {
             Request request;
             Request.RequestType requestType;
@@ -136,7 +152,7 @@ namespace NuSysApp
                     request = new NewNodeRequest(message);
                     break;
                 case Request.RequestType.SystemRequest:
-                    await ProcessIncomingSystemRequest(message);
+                    await ProcessIncomingSystemRequest(message, ip);
                     return;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
@@ -165,7 +181,7 @@ namespace NuSysApp
                 }
             }
         }
-        private async Task ProcessIncomingSystemRequest(Message message)
+        private async Task ProcessIncomingSystemRequest(Message message, string ip)
         {
             SystemRequest request;
             SystemRequest.SystemRequestType requestType;
@@ -195,16 +211,16 @@ namespace NuSysApp
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }
-            await request.ExecuteSystemRequestFunction(this,_networkSession);
+            await request.ExecuteSystemRequestFunction(this,_networkSession, ip);
             await ResumeWaitingRequestThread(message);
 
         }
         #endregion Requests
-        private async Task SendMessageToHost(Message message, NetworkClient.PacketType packetType)
+        private async Task SendMessageToHost(Message message, NetworkClient.PacketType packetType, string ip = null)
         {
             if (IsHostMachine)
             {
-                await ProcessIncomingRequest(message, NetworkClient.PacketType.TCP);
+                await ProcessIncomingRequest(message, NetworkClient.PacketType.TCP,ip);
             }
             else
             {
@@ -225,7 +241,9 @@ namespace NuSysApp
             else
             {
                 const string URL = "http://aint.ch/nusys/clients.php";
-                var urlParameters = "?action=add&ip=" + LocalIP;
+                var urlParameters = "?action=add&ip=" + NetworkInformation.GetHostNames()
+                    .FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null)
+                    .RawName; 
 
                 var client = new HttpClient { BaseAddress = new Uri(URL) };
 

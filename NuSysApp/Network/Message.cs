@@ -23,6 +23,7 @@ namespace NuSysApp
 
         public Message(Dictionary<string, string> dict)
         {
+            _dict = new Dictionary<string, object>();
             foreach (var kvp in dict)
             {
                 _dict.Add(kvp.Key, kvp.Value);

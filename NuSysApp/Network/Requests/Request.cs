@@ -18,8 +18,9 @@ namespace NuSysApp
         }
         protected Message _message;
         private RequestType _requestType;
-        public Request(RequestType request)
+        public Request(RequestType request, Message message = null)
         {
+            _message = message;
             if (_message == null)
             {
                 _message = new Message();

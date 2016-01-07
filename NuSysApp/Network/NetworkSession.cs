@@ -39,7 +39,7 @@ namespace NuSysApp
         public delegate void ClientDroppedEventHandler(string ip);
         public event ClientDroppedEventHandler OnClientDrop;
 
-        public delegate void MessageRecievedEventHandler(Message message, NetworkClient.PacketType type);
+        public delegate void MessageRecievedEventHandler(Message message, NetworkClient.PacketType type,string ip);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
         #endregion Public Members
@@ -65,7 +65,7 @@ namespace NuSysApp
 
         private void PingEvent(object state){OnPing?.Invoke();}
         private void TCPDrop(string ip) { OnClientDrop?.Invoke(ip); }
-        private void MessageRecieved(string ip, Message message, NetworkClient.PacketType packetType){OnMessageRecieved?.Invoke(message, packetType);   }
+        private void MessageRecieved(string ip, Message message, NetworkClient.PacketType packetType){OnMessageRecieved?.Invoke(message, packetType,ip);   }
 
         public async Task SendRequestMessage(Message message, ICollection<string> ips, NetworkClient.PacketType packetType)
         {

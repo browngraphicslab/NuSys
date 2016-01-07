@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NuSysApp
 {
@@ -11,9 +12,16 @@ namespace NuSysApp
         }
 
         public AddClientSystemRequest(Message m) : base(m){}
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
             session.AddIP(_ip);
+            if (senderIP != null)
+            {
+                var request = new SetHostSystemRequest(senderIP);
+                var list = new List<string>();
+                list.Add(senderIP);
+                await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, list);
+            }
         }
     }
 }

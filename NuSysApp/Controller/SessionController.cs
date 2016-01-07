@@ -18,6 +18,11 @@ namespace NuSysApp
         public delegate void WorkspaceChangedHandler(object source, WorkspaceViewModel workspace);
         public event WorkspaceChangedHandler WorkspaceChanged;
 
+        public NuSysNetworkSession NuSysNetworkSession
+        {
+            get { return _nuSysNetworkSession; }
+        }
+
         private LockDictionary _locks;
 
         private ContentController _contentController = new ContentController();
@@ -26,7 +31,7 @@ namespace NuSysApp
         public SessionView SessionView { get; set; }
         public ContentController ContentController { get { return _contentController; } }
 
-
+        private NuSysNetworkSession _nuSysNetworkSession;
         public WorkspaceViewModel ActiveWorkspace
         {
             get { return _activeWorkspace; }
@@ -43,10 +48,11 @@ namespace NuSysApp
             set { _locks = value; }
         }
 
-        public SessionController()
+        private SessionController()
         {
             _locks = new LockDictionary(this);
             IdToSendables = new ObservableDictionary<string, Sendable>();
+            _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
         public UserControl GetUserControlById(string id)
