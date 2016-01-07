@@ -97,7 +97,15 @@ namespace NuSysApp
         }
         public async Task SendMessage(Message message, string ip, PacketType type)
         {
-            await SendMessage(message, ip, type);
+            switch (type)
+            {
+                case PacketType.TCP:
+                    await SendTCPMessage(message, ip);
+                    break;
+                case PacketType.UDP:
+                    await SendUDPMessage(message, ip);
+                    break;
+            }
         }
         public async Task SendMessage(Message message, ICollection<string> ips, PacketType type)
         {
