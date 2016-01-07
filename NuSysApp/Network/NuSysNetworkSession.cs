@@ -72,17 +72,6 @@ namespace NuSysApp
         #region Requests
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
-            await InternalExecuteRequest(request, packetType);
-        }
-
-        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
-        {
-            await InternalExecuteRequest(request, packetType, recieverIPs);
-        }
-
-        private async Task InternalExecuteRequest(Request request, NetworkClient.PacketType packetType,
-            ICollection<string> recieverIPs = null)
-        {
             await ThreadPool.RunAsync(async delegate
             {
                 ManualResetEvent mre = new ManualResetEvent(false);
@@ -95,15 +84,22 @@ namespace NuSysApp
 
                 if (request.GetRequestType() == Request.RequestType.SystemRequest)
                 {
-                    await SendSystemRequest(message, recieverIPs);
+                    await SendSystemRequest(message);
                 }
                 else
                 {
-                    await SendRequest(message, packetType, recieverIPs);
+                    await SendRequest(message, packetType);
                 }
-                mre.WaitOne();
+                if (_requestEventDictionary.ContainsKey(requestID))
+                    mre.WaitOne();
             });
         }
+
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
+        {
+            await request.CheckRequest();
+            await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
+        } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
         {
             await _networkSession.SendRequestMessage(message, recieverIPs == null ? NetworkMembers : recieverIPs, NetworkClient.PacketType.TCP);

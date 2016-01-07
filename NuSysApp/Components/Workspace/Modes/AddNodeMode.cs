@@ -185,7 +185,7 @@ namespace NuSysApp
             dict["nodetype"] = nodeType.ToString();
             dict["x"] = p.X;
             dict["y"] = p.Y;
-            dict["contentID"] = contentId;
+            dict["contentId"] = contentId;
             //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
             var request = new NewNodeRequest(dict);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
