@@ -52,6 +52,11 @@ namespace WordAddIn
         #region Ribbon Callbacks
         //Create callback methods here. For more information about adding callback methods, visit http://go.microsoft.com/fwlink/?LinkID=271226
 
+        public Bitmap GetImage(Office.IRibbonControl control)
+        {
+            return Properties.Resources.icon; // resource Bitmap
+        }
+
         public void Ribbon_Load(Office.IRibbonUI ribbonUI)
         {
             this.ribbon = ribbonUI;

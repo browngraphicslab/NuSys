@@ -8,11 +8,39 @@
              d:DesignHeight="300" d:DesignWidth="300"
              MouseLeftButtonUp="StackPanel_MouseLeftButtonUp">
     <Grid>
-        
+
         <StackPanel Orientation="Vertical" RenderTransform="{Binding RenderTransform}" Background="#e3e3e3" Margin="15,15,15,15">
             <StackPanel Orientation="Horizontal">
-                <Label FontSize="14 " FontFamily="Segoe UI Light">On slide</Label>
-                <Label FontSize="14 " FontFamily="Segoe UI Light" Content="{Binding SlideNumber}" />
+                <CheckBox x:Name="CheckBox" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <CheckBox.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform X="10"/>
+                        </TransformGroup>
+                    </CheckBox.RenderTransform>
+                </CheckBox>
+                <Label FontSize="14 " FontFamily="Segoe UI Light" Content="On slide" RenderTransformOrigin="0.5,0.5">
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform X="15"/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
+                <Label FontSize="14 " FontFamily="Segoe UI Light" Content="{Binding SlideNumber}" RenderTransformOrigin="0.5,0.5" >
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform X="15"/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
             </StackPanel>
             <RichTextBox x:Name="rtb" Width="280" MaxHeight="200" IsHitTestVisible="False" />
             <Image x:Name="img" Source="{Binding Thumbnail}" Width="Auto" MaxHeight="200" Stretch="Uniform"/>

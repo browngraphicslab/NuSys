@@ -29,6 +29,11 @@ namespace WordAddIn
 			
         }
 
+        public SidePane SidePane
+        {
+            get { return _sidePane;  }
+        }
+
         public void BuildSidebar()
         {
             var standardUC = new UserControl();

@@ -29,40 +29,45 @@ namespace WordAddIn
 
         public ObservableCollection<SelectionItem> ExportedSelections { get; set; }
 
-        public List<SelectionItem> CheckedSelections { get; set;}
-		
+        public ObservableCollection<SelectionItem> CheckedSelections { get; set;}
+
+        public Visibility IsUnexpVisible { get; set; }
+
+        
         public SidePane()
         {
             InitializeComponent();
             ic.DataContext = this;
             ic2.DataContext = this;
             LoadSelectionData();
+            IsUnexpVisible = Visibility.Visible;
+        }
+
+        private void UnexpOnClick(object sender, RoutedEventArgs e)
+        {
+            IsUnexpVisible = Visibility.Collapsed;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //OnDelete();
-            UnexportedSelections.Clear();
-			//RefreshSelectionViews();
+            OnDelete();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-			//OnExport();
-            Send();
-			//RefreshSelectionViews();
+			OnExport();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             OnSelectionAdded();
-			//RefreshSelectionViews();
         }
 
         private void LoadSelectionData()
         {
             UnexportedSelections = new ObservableCollection<SelectionItem>();
             ExportedSelections = new ObservableCollection<SelectionItem>();
+            CheckedSelections = new ObservableCollection<SelectionItem>();
 
             var comments = Globals.ThisAddIn.Application.ActiveDocument.Comments;
 
@@ -82,47 +87,66 @@ namespace WordAddIn
                 }
             }
         }
-
-        //add checked selection to a list of checked selections
-        private void OnCheckSelection(){
-			//CheckedSelections.Add();
-		}
 		
 		//delete all checked selections
 		private void OnDelete(){
 			foreach (var selection in CheckedSelections){
 				selection.Comment.Delete();
                 //may be a reference problem...?
-                UnexportedSelections.Remove(selection);
+
+                if (UnexportedSelections.Contains(selection))
+                {
+                    UnexportedSelections.Remove(selection);
+                }else if (ExportedSelections.Contains(selection))
+                {
+                    ExportedSelections.Remove(selection);
+                }
 			}
+
+            CheckedSelections.Clear();
 		}
 		
 		//exports to NuSys all checked selections
 		private void OnExport(){
-		
-			var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
             var fileDir = dir + "\\selection";
             int count = 0;
-            foreach (var result in CheckedSelections)
-            {
-                var f = fileDir + count + ".nusys";
-                File.WriteAllText(f, result.Content);
-                File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
-                File.Move(f, f);
-				
-				result.IsExported = true;
-                //set comment text "Exported To NuSys" 
-                var temp = result.Comment.Reference;
 
-                UnexportedSelections.Remove(result);
-                ExportedSelections.Add(result);
-                count++;
+            var temp_cs = new List<SelectionItem>();
+
+            foreach (var selection in CheckedSelections)
+            {
+                //var f = fileDir + count + ".nusys";
+                //File.WriteAllText(f, selection.Content);
+                //File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
+                //File.Move(f, f);
+
+                if (UnexportedSelections.Contains(selection))
+                {
+                    selection.IsExported = true;
+                    selection.Comment.Range.Text = "Exported to NuSys";
+                    
+                    UnexportedSelections.Remove(selection);
+                    ExportedSelections.Add(selection);
+
+                    count++;
+                }
+
+                //need a seperate list to iterate and delete/uncheck
+                temp_cs.Add(selection);
             }
 
-            File.WriteAllText(dir + "\\update.nusys", "update");
-		}
-		
-		//add the highlighted content to the sidebar as a selection
+            //need seperate for loop because unchecking triggers a removal in CheckedSelections
+            foreach (var cs in temp_cs)
+            {
+                //this also triggers a removal from CheckedSelections
+                cs.CheckBox.IsChecked = false;
+            }
+
+            //File.WriteAllText(dir + "\\update.nusys", "update");
+        }
+
+        //add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
             var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
@@ -229,30 +253,6 @@ namespace WordAddIn
                         BitmapSizeOptions.FromEmptyOptions());
                 }
             }
-        }
-
-
-        private void Send()
-        {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
-            var fileDir = dir + "\\selection";
-            int count = 0;
-            foreach (var result in UnexportedSelections)
-            {
-                //var f = fileDir + count + ".nusys";
-                //File.WriteAllText(f, result.Content);
-                //File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
-                //File.Move(f, f);
-				 
-				result.IsExported = true;
-                result.Comment.Range.Text = "Exported to NuSys";
-                ExportedSelections.Add(result);
-
-                count++;
-            }
-
-            UnexportedSelections.Clear();
-            //File.WriteAllText(dir + "\\update.nusys", "update");
         }
 
     }

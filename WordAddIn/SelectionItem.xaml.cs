@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Input;
 using Microsoft.Office.Interop.Word;
+using System.Collections.ObjectModel;
 
 namespace WordAddIn
 {
@@ -45,6 +46,24 @@ namespace WordAddIn
             selectionItem.Range.Select();
 
             // Globals.ThisAddIn.Application.ActiveWindow.View.GotoSlide(selectionItem.SlideNumber);
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ObservableCollection<SelectionItem> CheckedSelections = Globals.ThisAddIn.SidePane.CheckedSelections;
+            if (!CheckedSelections.Contains(this))
+            {
+                CheckedSelections.Add(this);
+            } 
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ObservableCollection<SelectionItem> CheckedSelections = Globals.ThisAddIn.SidePane.CheckedSelections;
+            if (CheckedSelections.Contains(this))
+            {
+                CheckedSelections.Remove(this);
+            }
         }
 
         public string Content
@@ -119,6 +138,7 @@ namespace WordAddIn
                 rtb.Selection.Load(reader, DataFormats.Rtf);
             }
         }
+
     }
 }
 
