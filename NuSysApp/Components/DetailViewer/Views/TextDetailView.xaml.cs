@@ -226,7 +226,13 @@ namespace NuSysApp
             ITextSelection selectedText = rtfTextBox.Document.Selection;
             if (selectedText != null)
             {
-
+                if (FontBox.SelectedItem != null)
+                {
+                    FontFamily font = (FontFamily)FontBox.SelectedItem;
+                    ITextCharacterFormat format = selectedText.CharacterFormat;
+                    format.Name = font.Source;
+                    selectedText.CharacterFormat = format;
+                }
             }
         }
 
