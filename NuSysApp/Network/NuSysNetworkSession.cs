@@ -45,6 +45,7 @@ namespace NuSysApp
             if (NetworkMembers.Count <= 1)
             {
                 _hostIP = LocalIP; //just makes this machine the host
+                Debug.WriteLine("This machine made to be host");
                 if (NetworkMembers.Count == 0)
                 {
                     NetworkMembers.Add(LocalIP);
@@ -267,6 +268,7 @@ namespace NuSysApp
         public void SetHost(string _ip)
         {
             _hostIP = _ip;
+            Debug.WriteLine("Machine "+ip+" made to be host");
         }
     }
     public class NoRequestTypeException : Exception

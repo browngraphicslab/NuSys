@@ -46,7 +46,7 @@ namespace NuSysApp
         #region Private Members
         private NetworkClient _networkClient;
         private Timer _pingTimer;
-        private int _pingFrequency;
+        private int _pingFrequency = 1000;
         private HashSet<string> _networkMembers; 
         #endregion Private Members
 

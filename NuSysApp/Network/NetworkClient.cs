@@ -194,7 +194,7 @@ namespace NuSysApp
                     Debug.WriteLine("Exception caught during TCP connection recieve FROM IP " + ip + " with error code: " + e.Message);
                     return;
                 }
-                //Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
+                Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
                 OnNewMessage?.Invoke(ip, new Message(message), PacketType.TCP);
             });
         }
@@ -218,7 +218,7 @@ namespace NuSysApp
                     OnUDPClientDrop?.Invoke(ip);
                     return;
                 }
-                //Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
+                Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
                 OnNewMessage?.Invoke(ip, new Message(message), PacketType.UDP);
             });
         }
