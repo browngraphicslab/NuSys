@@ -89,9 +89,9 @@ namespace NuSysApp
 
         public void AddIP(string ip)
         {
-            if (_networkMembers.Contains(ip))
+            if (!_networkMembers.Contains(ip))
                 _networkMembers.Add(ip);
-            Debug.WriteLine("added network member "+ip);
+            Debug.WriteLine("added network member "+ip+"  .");
         }
 
         public bool RemoveIP(string ip)

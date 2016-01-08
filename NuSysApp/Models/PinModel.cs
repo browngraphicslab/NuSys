@@ -24,7 +24,7 @@ namespace NuSysApp
         {  
             ID = id;
             this.Text = "NusysLand";
-            _dict = new DebouncingDictionary(this);
+            _dict = new DebouncingDictionary(this.ID);
         }
 
         public double X

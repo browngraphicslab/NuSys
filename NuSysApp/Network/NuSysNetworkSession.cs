@@ -83,26 +83,40 @@ namespace NuSysApp
         #region Requests
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
-            await ThreadPool.RunAsync(async delegate
-            {
-                ManualResetEvent mre = new ManualResetEvent(false);
-                string requestID = Guid.NewGuid().ToString("N");
-                _requestEventDictionary[requestID] = mre;
+            await ThreadPool.RunAsync(async delegate {
 
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
-                message["local_request_id"] = requestID;
-
-                if (request.GetRequestType() == Request.RequestType.SystemRequest)
+                if (packetType == NetworkClient.PacketType.TCP)
                 {
-                    await SendSystemRequest(message);
+                    ManualResetEvent mre = new ManualResetEvent(false);
+                    string requestID = Guid.NewGuid().ToString("N");
+                    _requestEventDictionary[requestID] = mre;
+
+                    message["local_request_id"] = requestID;
+
+                    if (request.GetRequestType() == Request.RequestType.SystemRequest)
+                    {
+                        await SendSystemRequest(message);
+                    }
+                    else
+                    {
+                        await SendRequest(message, packetType);
+                    }
+                    if (_requestEventDictionary.ContainsKey(requestID))
+                        mre.WaitOne();
                 }
                 else
                 {
-                    await SendRequest(message, packetType);
+                    if (request.GetRequestType() == Request.RequestType.SystemRequest)
+                    {
+                        await SendSystemRequest(message);
+                    }
+                    else
+                    {
+                        await SendRequest(message, packetType);
+                    }
                 }
-                if (_requestEventDictionary.ContainsKey(requestID))
-                    mre.WaitOne();
             });
         }
 
@@ -128,7 +142,6 @@ namespace NuSysApp
                     await SendMessageToHost(message, packetType);
                     break;
                 case NetworkClient.PacketType.UDP:
-                    await ProcessIncomingRequest(message,packetType);
                     await _networkSession.SendRequestMessage(message, NetworkMembers, packetType);
                     break;
             }
@@ -169,6 +182,9 @@ namespace NuSysApp
                 case Request.RequestType.NewGroupRequest:
                     request = new NewGroupRequest(message);
                     break;
+                case Request.RequestType.SendableUpdateRequest:
+                    request = new SendableUpdateRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
@@ -177,7 +193,8 @@ namespace NuSysApp
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
             });
-            await ResumeWaitingRequestThread(message);
+            if(packetType == NetworkClient.PacketType.TCP)
+                await ResumeWaitingRequestThread(message);
             if (IsHostMachine && packetType == NetworkClient.PacketType.TCP)
                 await _networkSession.SendRequestMessage(message, NetworkMembers, NetworkClient.PacketType.TCP);
         }

@@ -16,6 +16,7 @@ namespace NuSysApp
             NewNodeRequest,
             SystemRequest,
             NewLinkRequest,
+            SendableUpdateRequest,
             NewGroupRequest
         }
         protected Message _message;

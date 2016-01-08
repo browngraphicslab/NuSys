@@ -46,7 +46,7 @@ namespace NuSysApp
 
         protected AtomModel(string id) : base(id)
         {
-            _debounceDict = new DebouncingDictionary(this);
+            _debounceDict = new DebouncingDictionary(this.Id);
             CanEdit = EditStatus.Maybe;
 
             SetMetaData("tags", new List<string> {"none"});

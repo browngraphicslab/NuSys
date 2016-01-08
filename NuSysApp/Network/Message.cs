@@ -29,6 +29,10 @@ namespace NuSysApp
                 _dict.Add(kvp.Key, kvp.Value);
             }
         }
+        public Message(Dictionary<string, object> dict)
+        {
+            _dict = dict;
+        }
         public void Add(string key, object value)//TODO get rid of this
         {
             if (_dict.ContainsKey(key))
