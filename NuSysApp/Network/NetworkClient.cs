@@ -218,7 +218,7 @@ namespace NuSysApp
                     OnUDPClientDrop?.Invoke(ip);
                     return;
                 }
-                Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
+                //Debug.WriteLine("UDP packet recieve FROM IP " + ip + " with message: " + message);
                 OnNewMessage?.Invoke(ip, new Message(message), PacketType.UDP);
             });
         }

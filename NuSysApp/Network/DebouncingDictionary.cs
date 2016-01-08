@@ -73,7 +73,7 @@ namespace NuSysApp
             d["id"] = _id;
             var message = new Message(d);
             var request = new SendableUpdateRequest(message);
-            Debug.WriteLine("sending debounce dict for id"+ _id);
+            //Debug.WriteLine("sending debounce dict for id"+ _id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, packetType);
             _timing = false;
             _dict.Clear();
