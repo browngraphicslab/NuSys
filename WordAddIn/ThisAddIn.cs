@@ -42,8 +42,8 @@ namespace WordAddIn
             wpfHost.Dock = DockStyle.Fill;
             standardUC.Controls.Add(wpfHost);
             _pane = CustomTaskPanes.Add(standardUC, "NuSys");
-            _pane.Width = 430;
             _pane.Visible = false;
+            _pane.Width = 430;
             _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
             _pane.Visible = true;
         }

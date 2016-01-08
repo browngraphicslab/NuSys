@@ -33,7 +33,10 @@ namespace WordAddIn
 
         public Visibility IsUnexpVisible { get; set; }
 
-        
+        private string commentAuthor = "NuSys";
+
+        private string commentExported = "Exported to NuSys";
+
         public SidePane()
         {
             InitializeComponent();
@@ -70,21 +73,42 @@ namespace WordAddIn
             CheckedSelections = new ObservableCollection<SelectionItem>();
 
             var comments = Globals.ThisAddIn.Application.ActiveDocument.Comments;
+            Boolean first = true;
+            IDataObject prevData = null;
 
             foreach (var commentObj in comments)
-            {
+            {   
                 Comment comment = ((Comment)commentObj);
-                string commentTxt = comment.Range.Text;
 
-                if (commentTxt == null)
-                {
-                    var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = false };
-                    UnexportedSelections.Add(ns);
-                }else
-                {
-                    var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = true };
-                    ExportedSelections.Add(ns);
+                if (comment.Author == commentAuthor) {
+                    if (first)
+                    {
+                        prevData = Clipboard.GetDataObject();
+                        Clipboard.Clear();
+                        first = false;
+                    }
+
+                    string commentTxt = comment.Range.Text;
+
+                    comment.Scope.Select();
+                    comment.Scope.Copy();
+
+                    if (commentTxt == null)
+                    {
+                        var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = false };
+                        UnexportedSelections.Add(ns);
+                    } else
+                    {
+                        var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = true };
+                        ExportedSelections.Add(ns);
+                    }
                 }
+            }
+
+            if (prevData != null)
+            {
+                Clipboard.Clear();
+                Clipboard.SetDataObject(prevData);
             }
         }
 		
@@ -113,22 +137,24 @@ namespace WordAddIn
             int count = 0;
 
             var temp_cs = new List<SelectionItem>();
+            var hasNewSelection = false;
 
             foreach (var selection in CheckedSelections)
             {
-                //var f = fileDir + count + ".nusys";
-                //File.WriteAllText(f, selection.Content);
-                //File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
-                //File.Move(f, f);
-
                 if (UnexportedSelections.Contains(selection))
                 {
+                    var f = fileDir + count + ".nusys";
+                    //File.WriteAllText(f, selection.RtfContent);
+                    //File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
+                    //File.Move(f, f);
+
                     selection.IsExported = true;
-                    selection.Comment.Range.Text = "Exported to NuSys";
+                    selection.Comment.Range.Text = commentExported;
                     
                     UnexportedSelections.Remove(selection);
                     ExportedSelections.Add(selection);
 
+                    hasNewSelection = true;
                     count++;
                 }
 
@@ -136,14 +162,16 @@ namespace WordAddIn
                 temp_cs.Add(selection);
             }
 
+            if (hasNewSelection)
+            {
+                //File.WriteAllText(dir + "\\update.nusys", "update");
+            }
+
             //need seperate for loop because unchecking triggers a removal in CheckedSelections
             foreach (var cs in temp_cs)
             {
-                //this also triggers a removal from CheckedSelections
                 cs.CheckBox.IsChecked = false;
             }
-
-            //File.WriteAllText(dir + "\\update.nusys", "update");
         }
 
         //add the highlighted content to the sidebar as a selection
@@ -159,7 +187,7 @@ namespace WordAddIn
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
                 Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
-                c.Author = "NuSys";
+                c.Author = commentAuthor;
 
                 var ns = new SelectionItem { Comment = c, Range = selection.Range, IsExported = false };
                 UnexportedSelections.Add(ns);
@@ -182,29 +210,5 @@ namespace WordAddIn
             }
             return bitmap;
         }
-
-        private static BitmapSource CopyScreen()
-        {
-            var left = System.Windows.Forms.Screen.AllScreens.Min(screen => screen.Bounds.X);
-            var top = System.Windows.Forms.Screen.AllScreens.Min(screen => screen.Bounds.Y);
-            var right = System.Windows.Forms.Screen.AllScreens.Max(screen => screen.Bounds.X + screen.Bounds.Width);
-            var bottom = System.Windows.Forms.Screen.AllScreens.Max(screen => screen.Bounds.Y + screen.Bounds.Height);
-            var width = right - left;
-            var height = bottom - top;
-
-            using (var screenBmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-            {
-                using (var bmpGraphics = Graphics.FromImage(screenBmp))
-                {
-                    bmpGraphics.CopyFromScreen(left, top, 0, 0, new System.Drawing.Size(width, height));
-                    return Imaging.CreateBitmapSourceFromHBitmap(
-                        screenBmp.GetHbitmap(),
-                        IntPtr.Zero,
-                        Int32Rect.Empty,
-                        BitmapSizeOptions.FromEmptyOptions());
-                }
-            }
-        }
-
     }
 }

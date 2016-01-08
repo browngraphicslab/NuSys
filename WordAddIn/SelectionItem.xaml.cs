@@ -27,6 +27,7 @@ namespace WordAddIn
         private ScaleTransform _renderTransform;
         private Range _range;
         private string _text;
+        private string _rtfContent;
 		
         public SelectionItem()
         {
@@ -70,8 +71,18 @@ namespace WordAddIn
                 rtb.Document.ContentStart,
                 rtb.Document.ContentEnd
             );
-            StringBuilder tempText = new StringBuilder();
 
+            using (MemoryStream ms = new MemoryStream())
+            {
+                textRange.Save(ms, DataFormats.Rtf);
+                ms.Seek(0, SeekOrigin.Begin);
+                using (StreamReader sr = new StreamReader(ms))
+                {
+                    RtfContent = sr.ReadToEnd();
+                }
+            }
+
+            StringBuilder tempText = new StringBuilder();
             var lines = textRange.Text.Split(Environment.NewLine.ToCharArray()).ToArray();
             foreach (var line in lines)
             {
@@ -80,7 +91,6 @@ namespace WordAddIn
                     tempText.Append(" " +line);
                 }
             }
-
             Text = tempText.ToString();
 
             foreach (Block block in rtb.Document.Blocks)
@@ -127,6 +137,12 @@ namespace WordAddIn
         {
             get { return _text; }
             set { _text = value; }
+        }
+
+        public string RtfContent
+        {
+            get { return _rtfContent; }
+            set { _rtfContent = value; }
         }
 
         public Range Range
