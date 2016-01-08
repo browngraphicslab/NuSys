@@ -19,7 +19,7 @@ namespace NuSysApp
             ChildAdded += OnChildAddedToLabel;
         }
 
-        private async Task OnChildAddedToLabel(object source, AnimatableUserControl node)
+        private async Task OnChildAddedToLabel(object source, FrameworkElement node)
         {
             SessionController.Instance.ActiveWorkspace.AtomViewList.Add(node);
             RaisePropertyChanged("NumChildren");

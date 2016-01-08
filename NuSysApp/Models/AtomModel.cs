@@ -49,6 +49,8 @@ namespace NuSysApp
             _debounceDict = new DebouncingDictionary(this);
             CanEdit = EditStatus.Maybe;
 
+            Creators = new List<string>();
+
             SetMetaData("tags", new List<string> {"none"});
             SetMetaData("groups", new List<string>());
         }
@@ -67,7 +69,7 @@ namespace NuSysApp
         {
             if (Metadata.ContainsKey(key))
                 return Metadata[key];
-            return "";
+            return null;
         }
 
         public void SetMetaData(string key, object value)
@@ -85,7 +87,7 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict.Add("metadata", Metadata);
-            dict.Add("creator", Creator);
+            dict.Add("creators", Creators);
             dict.Add("x", X);
             dict.Add("y", Y);
             dict.Add("width", Width);
@@ -117,12 +119,12 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creator = props.GetString("creator", null);
+            Creators = props.GetList("creators", new List<string>());
             Title = props.GetString("title", "");
             await base.UnPack(props);
         }
 
-        public string Creator { get; set; }
+        public List<string> Creators { get; set; }
         public double X
         {
             get { return _x; }

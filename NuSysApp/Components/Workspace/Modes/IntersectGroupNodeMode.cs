@@ -17,7 +17,7 @@ namespace NuSysApp
         private LabelNodeView _intersectedGroupNode;
         private LabelNodeView _initialGroupNode;
         private bool _isIntersecting;
-        private List<UserControl> _searchList = new List<UserControl>();
+        private List<FrameworkElement> _searchList = new List<FrameworkElement>();
         private LabelNodeView _generatedLabel;
 
         private readonly DispatcherTimer _timer = new DispatcherTimer();

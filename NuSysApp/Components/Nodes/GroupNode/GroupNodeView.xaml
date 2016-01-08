@@ -14,16 +14,30 @@
     Width="{Binding Width}" Height="{Binding Height}">
 
     <Grid>
-        <Ellipse Stroke="Gray" StrokeThickness="20" Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="LightGray"></Ellipse>
-        <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas >
-                        
-                    </Canvas>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <Grid>
+            <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="Black"></Ellipse>
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" IsHitTestVisible="false">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Padding="42,42,42,42" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <Ellipse Stroke="LightSlateGray" StrokeThickness="20"  Width="{Binding Width}" Height="{Binding Height}"></Ellipse>
+            <Border CornerRadius="50"
+                            Width="28"
+                            Height="28"
+                            Background="DarkRed"
+                            x:Name="NumBorder"
+                            Canvas.Top="3">
+                <Border.RenderTransform>
+                    <TranslateTransform X="138" Y="-57"></TranslateTransform>
+                </Border.RenderTransform>
+                <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
+            </Border>
+        </Grid>
+        
+        <local:GroupNodeExpandedView x:Name="xExpandedView" Visibility="Collapsed"></local:GroupNodeExpandedView>
         
     </Grid>
 </local:AnimatableUserControl>

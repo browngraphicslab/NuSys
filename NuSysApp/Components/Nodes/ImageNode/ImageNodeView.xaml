@@ -24,7 +24,7 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Image Source="{Binding Model.Image}" Stretch="Uniform"/>
+            <Image x:Name="xImage" Source="{Binding Model.Image}" Stretch="Uniform"/>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableUserControl>

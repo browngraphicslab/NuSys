@@ -37,8 +37,8 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var kv = (KeyValuePair<string, UserControl>) newItem;
-                var item = (UserControl)kv.Value;
+                var kv = (KeyValuePair<string, FrameworkElement>) newItem;
+                var item = (FrameworkElement)kv.Value;
                 if (item.DataContext is NodeViewModel) { 
                    item.PointerPressed += OnAtomPressed;
                    item.PointerReleased += OnAtomReleased;
@@ -104,7 +104,7 @@ namespace NuSysApp
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
-            _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
+            _selectedNode = (NodeViewModel)((FrameworkElement)sender).DataContext;
         }
     }
 }

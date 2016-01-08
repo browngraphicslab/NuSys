@@ -96,9 +96,9 @@ namespace NuSysApp
             return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;
         }
 
-        public List<T> GetList<T>(string key)
+        public List<T> GetList<T>(string key, List<T> def = null)
         {
-            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key)) : null;
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key)) : def;
         }
 
         public Dictionary<T, K> GetDict<T, K>(string key)

@@ -181,6 +181,11 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
+    <Compile Include="Components\Nodes\NodeContentThumbViewFactory.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
+      <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeView.xaml.cs">
       <DependentUpon>GroupNodeView.xaml</DependentUpon>
     </Compile>
@@ -220,6 +225,7 @@
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\ImageUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\UITask.cs" />
@@ -456,6 +462,10 @@
     <Page Include="Components\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeView.xaml">
       <SubType>Designer</SubType>

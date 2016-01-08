@@ -20,6 +20,7 @@ namespace NuSysApp
         private DispatcherTimer _timer;
         private bool _isHovering;
         private NodeViewModel _hoveredNode;
+        private IThumbnailable _hoveredNodeView;
         private string _createdGroupId;
 
 
@@ -42,35 +43,61 @@ namespace NuSysApp
             }
         }
 
-        private void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
+        private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
 
             if (!_isHovering)
                 return;
-            Debug.WriteLine("Creating Group!");
 
             var p = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
                             manipulationCompletedRoutedEventArgs.Position);
-            p.X -= 100;
-            p.Y -= 100;
+            p.X -= 150;
+            p.Y -= 150;
 
             var props = new Dictionary<string, object>();
             props["width"] = 300;
             props["height"] = 300;
-            props["creator"] = SessionController.Instance.ActiveWorkspace.Id;
-        //    props["alpha"] = 0;
-          //  props["scaleX"] = 0;
-        //    props["scaleY"] = 0;
-            var id1 = (((UserControl)sender).DataContext as NodeViewModel).Id;
+
+
+
+            var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
+
+            SessionController.Instance.Thumbnails[id1] = await ((IThumbnailable) sender).ToThumbnail(210, 100);
+            SessionController.Instance.Thumbnails[id2] = await _hoveredNodeView.ToThumbnail(210, 100);
 
             var callback = new Action<string>(async (s) =>
             {
                 _createdGroupId = s;
-                var wvm = _view.DataContext as WorkspaceViewModel;
-                var groupView = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == s).First() as AnimatableUserControl;
-                groupView.RenderTransformOrigin = new Point(0.5, 0.5);      
 
+                var wvm = _view.DataContext as WorkspaceViewModel;
+                var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == s);
+
+                var node1 = SessionController.Instance.IdToSendables[id1];
+                var node2 = SessionController.Instance.IdToSendables[id2];
+
+                NodeContainerModel groupModel;
+                if (!found.Any())
+                {
+                    groupModel = (NodeContainerModel) node2;
+                    await groupModel.AddChild(node1);
+                    wvm.RemoveChild(node1.Id);
+                }
+                else
+                {
+                    groupModel = (NodeContainerModel) SessionController.Instance.IdToSendables[s];
+
+                    await groupModel.AddChild(node1);
+                    wvm.RemoveChild(node1.Id);
+                    await groupModel.AddChild(node2);
+                    wvm.RemoveChild(node2.Id);
+                }
+                
+                if (!found.Any())
+                    return;
+
+                var groupView = found.First() as AnimatableUserControl;
+                groupView.RenderTransformOrigin = new Point(0.5, 0.5);       
 
                 Anim.FromTo(groupView, "Alpha", 0, 1, 600, new BackEase());
                 Anim.FromTo(groupView, "ScaleY", 0, 1, 600, new BackEase());
@@ -87,6 +114,10 @@ namespace NuSysApp
             var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel));
             var draggedItem = (AnimatableUserControl) sender;
 
+            WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
+
+            
+
             if (result.Any())
             {
                 draggedItem.Opacity = 0.5;
@@ -101,7 +132,8 @@ namespace NuSysApp
                         _timer.Stop();
                         _isHovering = true;
                         _hoveredNode = (result.First() as FrameworkElement).DataContext as NodeViewModel;
-                        
+                        _hoveredNodeView = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode).First() as IThumbnailable;
+
                     };
                     _timer.Interval = TimeSpan.FromMilliseconds(700);
                     _timer.Start();

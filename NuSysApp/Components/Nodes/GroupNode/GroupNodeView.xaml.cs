@@ -22,7 +22,7 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public sealed partial class GroupNodeView : AnimatableUserControl
+    public sealed partial class GroupNodeView : AnimatableUserControl, IThumbnailable
     {
         public GroupNodeView( GroupNodeViewModel vm)
         {
@@ -31,10 +31,23 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                IC.Clip = new RectangleGeometry {Rect = new Rect(0, 0, vm.Width-100, vm.Height-100)};
+             //   IC.Clip = new RectangleGeometry {Rect = new Rect(0, 0, vm.Width, vm.Height)};
             };
+
+            Tapped += OnTapped;
            
         }
-        
+
+        private void OnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
+        {
+            xExpandedView.Visibility = Visibility.Visible;
+        }
+
+        public async Task<ImageSource> ToThumbnail(int width, int height)
+        {
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(this, width, height);
+            return r;
+        }
     }
 }

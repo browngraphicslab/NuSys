@@ -5,7 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -25,6 +29,8 @@ namespace NuSysApp
 
         public SessionView SessionView { get; set; }
         public ContentController ContentController { get { return _contentController; } }
+
+        public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>(); 
 
 
         public WorkspaceViewModel ActiveWorkspace
@@ -49,7 +55,7 @@ namespace NuSysApp
             IdToSendables = new ObservableDictionary<string, Sendable>();
         }
 
-        public UserControl GetUserControlById(string id)
+        public FrameworkElement GetUserControlById(string id)
         {
             var model = IdToSendables[id];
             foreach (var userControl in ActiveWorkspace.Children.Values)
@@ -77,18 +83,16 @@ namespace NuSysApp
             };
             IdToSendables.Add(id, group);
 
-            node1.Creator = group.Id;
+            node1.Creators.Add(group.Id);
             var prevGroups1 = (List<string>)node1.GetMetaData("groups");
             prevGroups1.Add(group.Id);
             node1.SetMetaData("groups", prevGroups1);
 
-            node2.Creator = group.Id;
+            
+            node2.Creators.Add(group.Id);
             var prevGroups2 = (List<string>)node2.GetMetaData("groups");
             prevGroups2.Add(group.Id);
             node2.SetMetaData("groups", prevGroups2);
-
-            group.AddChild(node1);
-            group.AddChild(node2);
         }
 
         public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
@@ -220,9 +224,39 @@ namespace NuSysApp
             }
         }
 
+        private async Task SaveThumbs()
+        {
+            var lines = new List<string>();
+            foreach (var id in Thumbnails.Keys)
+            {
+                var img = await ImageUtil.RenderTargetBitmapToByteArray(Thumbnails[id] as RenderTargetBitmap);
+                var dict = new KeyValuePair<string,byte[]>(id, img);
+                lines.Add(JsonConvert.SerializeObject(dict));
+            }
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_thumbs.nusys");
+            FileIO.WriteLinesAsync(file, lines);
+        }
+
+        private async Task LoadThumbs()
+        {
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_thumbs.nusys");
+            var lines = await FileIO.ReadLinesAsync(file);
+
+            foreach (var line in lines)
+            {
+                var dict = JsonConvert.DeserializeObject<KeyValuePair<string, byte[]>>(line);
+                var id = dict.Key;
+                var img = await ImageUtil.ByteArrayToBitmapImage(dict.Value);
+                Thumbnails[id] = img;
+            }
+           
+        }
+
 
         public async Task SaveWorkspace()
         {
+            await SaveThumbs();
+
             await _contentController.Save();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
@@ -233,6 +267,7 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
+            await LoadThumbs();
             await _contentController.Load();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");

@@ -139,6 +139,7 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
+
                     data = Convert.ToBase64String(fileBytes);
                 }
 
@@ -182,7 +183,13 @@ namespace NuSysApp
             var dict = new Dictionary<string, object>();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
-            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
+
+            var callback = new Action<string>(async (s) =>
+            {
+
+            });
+
+                await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict, callback);
             vm.ClearSelection();
             vm.ClearMultiSelection();
 

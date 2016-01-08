@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl
+    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
     {
         public PdfNodeView(PdfNodeViewModel vm)
         {
@@ -65,6 +68,13 @@ namespace NuSysApp
         private void PageRight_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             e.Handled = true;
+        }
+
+        public async Task<ImageSource> ToThumbnail(int width, int height)
+        {
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(xRenderedPdf, width, height);
+            return r;
         }
     }
 

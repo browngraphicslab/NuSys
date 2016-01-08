@@ -39,7 +39,7 @@ namespace NuSysApp
                 Anim.FromTo(this, "Alpha", 0, t, 500);
             };
             
-            vm.ChildAdded +=  async delegate (object source, AnimatableUserControl node)
+            vm.ChildAdded +=  async delegate (object source, FrameworkElement node)
             {
                 Debug.WriteLine("VIEW = CHILD ADDED");
                 OnChildrenChanged(node);
@@ -66,7 +66,7 @@ namespace NuSysApp
             };
         }
 
-        private void OnChildrenChanged(AnimatableUserControl child)
+        private void OnChildrenChanged(FrameworkElement child)
         {
             var groupNodeModel = (NodeContainerViewModel) DataContext;
             Num.Text = groupNodeModel.AtomViewList.Count.ToString();
@@ -89,20 +89,20 @@ namespace NuSysApp
                 var tx = GetCenter().X + sin * (GetTagSize().Width / 2 + child.ActualWidth * scaleRatio / 2 + 40);
                 var ty = GetCenter().Y + cos * (GetTagSize().Height / 2 + child.ActualHeight * scaleRatio / 2 + 30);
 
-                Anim.To(child, "X", tx, 700, new QuinticEase());
-                Anim.To(child, "Y", ty, 700, new QuinticEase());
-                Anim.To(child, "ScaleX", 0, 700, new QuinticEase());
-                Anim.To(child, "ScaleY", 0, 700, new QuinticEase());
+                Anim.To(child as AnimatableUserControl, "X", tx, 700, new QuinticEase());
+                Anim.To(child as AnimatableUserControl, "Y", ty, 700, new QuinticEase());
+                Anim.To(child as AnimatableUserControl, "ScaleX", 0, 700, new QuinticEase());
+                Anim.To(child as AnimatableUserControl, "ScaleY", 0, 700, new QuinticEase());
 
                 ShowChildren();
             }
             else
             {
           
-               Anim.To(child, "X", groupNodeModel.X + TitleBorder.ActualWidth / 2, 700, new QuinticEase());
-               Anim.To(child, "Y", groupNodeModel.Y + TitleBorder.ActualHeight / 2, 700, new QuinticEase());
-               Anim.To(child, "ScaleX", 0, 700, new QuinticEase());
-               Anim.To(child, "ScaleY", 0, 700, new QuinticEase());
+               Anim.To(child as AnimatableUserControl, "X", groupNodeModel.X + TitleBorder.ActualWidth / 2, 700, new QuinticEase());
+               Anim.To(child as AnimatableUserControl, "Y", groupNodeModel.Y + TitleBorder.ActualHeight / 2, 700, new QuinticEase());
+               Anim.To(child as AnimatableUserControl, "ScaleX", 0, 700, new QuinticEase());
+               Anim.To(child as AnimatableUserControl, "ScaleY", 0, 700, new QuinticEase());
                
             }
 

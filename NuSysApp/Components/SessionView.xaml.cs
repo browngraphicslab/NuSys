@@ -33,6 +33,9 @@ namespace NuSysApp
         private WorkspaceView _activeWorkspace;
         private Options _prevOptions = Options.SelectNode;
 
+        private static List<AtomModel> addedModels;
+        private static List<AtomModel> createdModels;
+
         public bool IsPenMode { get; private set; }
 
         #endregion Private Members
@@ -153,7 +156,7 @@ namespace NuSysApp
 
             var atomCreator = new AtomCreator();
 
-            var createdModel = new List<AtomModel>();
+            createdModels = new List<AtomModel>();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message();
@@ -164,7 +167,7 @@ namespace NuSysApp
                 if (model == null)
                     continue;
 
-                createdModel.Add(model);
+                createdModels.Add(model);
                 await model.UnPack(msg);
                 if (model is WorkspaceModel)
                 {
@@ -175,14 +178,41 @@ namespace NuSysApp
                 
             }
 
-            foreach (var model in createdModel)
+            addedModels = new List<AtomModel>();
+            foreach (var model in createdModels)
             {
-                if (!(model is WorkspaceModel) && !(model is InqCanvasModel) && model.Creator != null)
+                if (!(model is WorkspaceModel) && !(model is InqCanvasModel))
                 {
-                    var container = (NodeContainerModel) SessionController.Instance.IdToSendables[model.Creator];
-                    await container.AddChild(model);
+
+                    await CreateCreators(model);
+                   
                 }
             }
+        }
+
+        private async Task CreateCreators(AtomModel node)
+        {
+            Debug.WriteLine("CreateCreators");
+            Debug.WriteLine(node.Id);
+            foreach (var creator in node.Creators)
+            {
+                var creatorModel = (NodeContainerModel)SessionController.Instance.IdToSendables[creator];
+                if (!addedModels.Contains(creatorModel))
+                {
+                    await CreateCreators(creatorModel);
+                }
+                await creatorModel.AddChild(node);
+                addedModels.Add(node);
+                //  Debug.WriteLine(node.Id);
+            }
+            if (node.Creators.Count == 0 && !addedModels.Contains(node))
+            {
+                var container = (NodeContainerModel)SessionController.Instance.ActiveWorkspace.Model;
+                await container.AddChild(node);
+                addedModels.Add(node);
+                //  Debug.WriteLine(node.Id);
+            }
+
         }
 
 

@@ -239,8 +239,6 @@ namespace NuSysApp
                     props["nodeType"] = nodeType;
                     props["type"] = "node";
                     props["id"] = id;
-                    if (!props.ContainsKey("creator"))
-                        props["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
                     props["contentId"] = contentId;
 
@@ -461,9 +459,13 @@ namespace NuSysApp
                             await n.UnPack(props);
                             if (justCreated && n is AtomModel)
                             {
-                                var creator = (n as AtomModel).Creator;
-                                if (creator != null)
-                                    await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(n);
+                                var creators = (n as AtomModel).Creators;
+                                if (creators.Count > 0) {
+                                    foreach (var creator in creators)
+                                    {
+                                        await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(n);
+                                    }
+                                }
                                 else
                                     await (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).AddChild(n);
                             }
@@ -603,6 +605,7 @@ namespace NuSysApp
 
                     var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
                     var groups = (List<string>)childModel.GetMetaData("groups");
+                    childModel.Creators.Add(id);
                     groups.Add(id);
                 }
             }
@@ -648,7 +651,37 @@ namespace NuSysApp
                 {
                     double.TryParse(props["y"], out y);
                 }
-                await UITask.Run(async () => { await SessionController.Instance.CreateGroup(id, node1, node2, x, y); });
+
+                var workspaceId = SessionController.Instance.ActiveWorkspace.Id;
+            
+                await UITask.Run(async () =>
+                {
+                    if (node2 is NodeContainerModel)
+                    {
+                        node1.Creators.Add(node2.Id);
+                        var prevGroups1 = (List<string>)node1.GetMetaData("groups");
+                        prevGroups1.Add(node2.Id);
+                        node1.SetMetaData("groups", prevGroups1);
+                        await (node2 as NodeContainerModel).AddChild(node1);
+
+                        if (node1 is NodeContainerModel)
+                        {
+                            foreach (var sendable in SessionController.Instance.IdToSendables.Values)
+                            {
+                                var atom = (AtomModel) sendable;
+                                if (atom.Creators.Contains(node1.Id))
+                                {
+                                    await (node2 as NodeContainerModel).AddChild(atom);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        await SessionController.Instance.CreateGroup(id, node1, node2, x, y);
+                    }
+                   
+                });
             }
 
         private async Task HandleCreateNewGroupTag(string id, Message props)
