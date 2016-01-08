@@ -66,7 +66,7 @@ namespace NuSysApp
         private void PingEvent(object state){OnPing?.Invoke();}
         private void TCPDrop(string ip) { OnClientDrop?.Invoke(ip); }
 
-        private void MessageRecieved(string ip, Message message, NetworkClient.PacketType packetType)
+        private async void MessageRecieved(string ip, Message message, NetworkClient.PacketType packetType)
         {
             OnMessageRecieved?.Invoke(message, packetType,ip);
         }
@@ -91,6 +91,7 @@ namespace NuSysApp
         {
             if (_networkMembers.Contains(ip))
                 _networkMembers.Add(ip);
+            Debug.WriteLine("added network member "+ip);
         }
 
         public bool RemoveIP(string ip)

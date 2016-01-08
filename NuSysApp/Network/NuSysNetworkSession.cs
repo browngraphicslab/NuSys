@@ -58,7 +58,7 @@ namespace NuSysApp
             }
             else
             {
-                await ExecuteRequest(new AddClientSystemRequest(LocalIP));
+                await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));
             }
 
             _networkSession.OnPing += async () => {
@@ -69,15 +69,16 @@ namespace NuSysApp
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await client.GetAsync(urlParameters);
             };
-            _networkSession.OnMessageRecieved += MessageRecieved;
+            
+            _networkSession.OnMessageRecieved += async (message, type, ip) =>
+            {
+                await ProcessIncomingRequest(message, type, ip);
+            };
+            
             _networkSession.OnClientDrop += async ip =>
             {
-                await ExecuteRequest(new RemoveClientSystemRequest(ip));
+                await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
             };
-        }
-        private void MessageRecieved(Message message, NetworkClient.PacketType type, string ip)
-        {
-            ProcessIncomingRequest(message, type, ip);
         }
         #region Requests
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
@@ -174,7 +175,7 @@ namespace NuSysApp
 
             await UITask.Run(async () =>
             {
-                await request.ExecuteRequestFunction();
+                await request.ExecuteRequestFunction();//switches to UI thread
             });
             await ResumeWaitingRequestThread(message);
             if (IsHostMachine && packetType == NetworkClient.PacketType.TCP)
@@ -226,8 +227,6 @@ namespace NuSysApp
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }
             await request.ExecuteSystemRequestFunction(this,_networkSession, ip);
-            await ResumeWaitingRequestThread(message);
-
         }
         #endregion Requests
         private async Task SendMessageToHost(Message message, NetworkClient.PacketType packetType, string ip = null)
