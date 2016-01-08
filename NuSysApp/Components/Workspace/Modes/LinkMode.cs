@@ -60,7 +60,8 @@ namespace NuSysApp {
                 return;
 
            // var linkVm = new LinkViewModel(new LinkModel(startVm.Model, endVm.Model, "LINK_ID"), startVm, endVm);
-
+            var request = new NewLinkRequest(startVm.Id, endVm.Id);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             //NetworkConnector.Instance.RequestMakeLinq(startVm.Id, endVm.Id, null, null, null);
           //  startVm.AddLink(linkVm);
           //  endVm.AddLink(linkVm);

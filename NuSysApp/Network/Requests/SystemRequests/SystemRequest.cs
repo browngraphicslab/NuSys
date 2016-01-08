@@ -23,7 +23,7 @@ namespace NuSysApp
 
         public SystemRequest(Message m) : base(m){}
 
-        public override async Task CheckRequest()
+        public override async Task CheckOutgoingRequest()
         {
             _message["system_request_type"] = _systemRequestType.ToString();
         }

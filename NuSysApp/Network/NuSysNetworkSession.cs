@@ -88,7 +88,7 @@ namespace NuSysApp
                 string requestID = Guid.NewGuid().ToString("N");
                 _requestEventDictionary[requestID] = mre;
 
-                await request.CheckRequest();
+                await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
                 message["local_request_id"] = requestID;
 
@@ -107,7 +107,7 @@ namespace NuSysApp
 
         public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
         {
-            await request.CheckRequest();
+            await request.CheckOutgoingRequest();
             await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
         } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
@@ -149,6 +149,11 @@ namespace NuSysApp
             {
                 throw new InvalidRequestTypeException();
             }
+            if (requestType == Request.RequestType.SystemRequest)
+            {
+                await ProcessIncomingSystemRequest(message, ip);
+                return;
+            }
             switch (requestType)
             {
                 case Request.RequestType.DeleteSendableRequest:
@@ -157,9 +162,12 @@ namespace NuSysApp
                 case Request.RequestType.NewNodeRequest:
                     request = new NewNodeRequest(message);
                     break;
-                case Request.RequestType.SystemRequest:
-                    await ProcessIncomingSystemRequest(message, ip);
-                    return;
+                case Request.RequestType.NewLinkRequest:
+                    request = new NewLinkRequest(message);
+                    break;
+                case Request.RequestType.NewGroupRequest:
+                    request = new NewGroupRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }

@@ -7,13 +7,14 @@ namespace NuSysApp
 {
     public class NewNodeRequest : Request
     {
-        public NewNodeRequest(Message message) : base(Request.RequestType.NewNodeRequest, message)
-        {
-            _message["id"] = SessionController.Instance.GenerateId();
-        }
+        public NewNodeRequest(Message message) : base(Request.RequestType.NewNodeRequest, message){}
 
-        public override async Task CheckRequest()
+        public override async Task CheckOutgoingRequest()
         {
+            if (!_message.ContainsKey("id"))
+            {
+                _message["id"] = SessionController.Instance.GenerateId();
+            }
             if (!_message.ContainsKey("nodetype"))
             {
                 throw new NewNodeRequestException("New Node requests require messages with at least 'nodetype'");
@@ -25,7 +26,7 @@ namespace NuSysApp
             NodeModel node = await SessionController.Instance.CreateNewNode(_message.GetString("id"), (NodeType)Enum.Parse(typeof(NodeType),_message.GetString("nodetype")));
             SessionController.Instance.IdToSendables[_message.GetString("id")] = node;
             await node.UnPack(_message);
-            var creator = (node as AtomModel).Creator;
+            var creator = node.Creator;
             if (creator != null)
                 await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(node);
             else

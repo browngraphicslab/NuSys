@@ -219,6 +219,8 @@
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
+    <Compile Include="Network\Requests\NewGroupRequest.cs" />
+    <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\NewNodeRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />

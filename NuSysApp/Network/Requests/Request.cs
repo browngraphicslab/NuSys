@@ -14,7 +14,9 @@ namespace NuSysApp
         {
             DeleteSendableRequest,
             NewNodeRequest,
-            SystemRequest
+            SystemRequest,
+            NewLinkRequest,
+            NewGroupRequest
         }
         protected Message _message;
         private RequestType _requestType;
@@ -57,7 +59,7 @@ namespace NuSysApp
             return _requestType;
         }
 
-        public virtual async Task CheckRequest(){}//for anything you want to check right before execution
+        public virtual async Task CheckOutgoingRequest(){}//for anything you want to check right before execution
 
         public virtual async Task ExecuteRequestFunction(){}//the function to be executed per the request
 
