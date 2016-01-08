@@ -68,5 +68,17 @@ namespace NuSysApp
             var vm = (FullScreenViewerViewModel) DataContext;
             Tags.ItemsSource = vm.Tags;
         }
+
+        private void AddTagButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (FullScreenViewerViewModel)DataContext;
+            string newTag = NewTagBox.Text.Trim();
+            if (newTag != "")
+            {
+                vm.AddTag(newTag);
+                Tags.ItemsSource = vm.Tags;
+            }
+            NewTagBox.Text = "";
+        }
     }
 }

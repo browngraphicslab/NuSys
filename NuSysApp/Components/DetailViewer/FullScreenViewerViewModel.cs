@@ -41,17 +41,37 @@ namespace NuSysApp
                 List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
                 foreach (string tag in tags)
                 {
-                    TextBlock tagBlock = new TextBlock();
-                    tagBlock.Text = tag;
-                    tagBlock.Height = 20;
-                    tagBlock.TextWrapping = TextWrapping.Wrap;
-                    tagBlock.TextAlignment = TextAlignment.Right;
-                    tagBlock.FontStyle = FontStyle.Italic;
-                    tagBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    TextBlock tagBlock = this.MakeTagBlock(tag);
                     Tags.Add(tagBlock);
                 }
             }
+        }
 
+        public void AddTag(string tag)
+        {
+            //add to model
+            List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
+            tags.Add(tag);
+            _nodeModel.SetMetaData("tags", tags);
+
+            //this should be refactored later
+            TextBlock tagBlock = this.MakeTagBlock(tag);
+            Tags.Add(tagBlock);
+
+            RaisePropertyChanged("Tags");
+        }
+
+        //this is an ugly method, refactor later so not making a UI element in viewmodel
+        public TextBlock MakeTagBlock(string text)
+        {
+            TextBlock tagBlock = new TextBlock();
+            tagBlock.Text = text;
+            tagBlock.Height = 20;
+            tagBlock.TextWrapping = TextWrapping.Wrap;
+            tagBlock.TextAlignment = TextAlignment.Right;
+            tagBlock.FontStyle = FontStyle.Italic;
+            tagBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            return tagBlock;
         }
     }
 }
