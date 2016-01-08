@@ -63,8 +63,6 @@ namespace NuSysApp
         {
             SetPosition(Model.X, Model.Y);
             UpdateAnchor();
-            _debouncingDictionary?.Add("x",Model.X);
-            _debouncingDictionary?.Add("y", Model.Y);
         }
 
         protected virtual void OnSizeChanged(object source, WidthHeightUpdateEventArgs e)
@@ -72,8 +70,6 @@ namespace NuSysApp
             Width = Model.Width;
             Height = Model.Height;
             UpdateAnchor();
-            _debouncingDictionary?.Add("width", Width);
-            _debouncingDictionary?.Add("height", Height);
         }
 
         protected virtual void OnScaleChanged(object source)
@@ -115,6 +111,8 @@ namespace NuSysApp
             Model.X += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
             Model.Y += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
             UpdateAnchor();
+            _debouncingDictionary?.Add("x", Model.X);
+            _debouncingDictionary?.Add("y", Model.Y);
         }
 
         public virtual void SetPosition(double x, double y)
@@ -138,7 +136,8 @@ namespace NuSysApp
             {
                 SetSize(Width, Height + changeY);
             }
-
+            _debouncingDictionary?.Add("width", Width);
+            _debouncingDictionary?.Add("height", Height);
         }
 
         public virtual void SetSize(double width, double height)

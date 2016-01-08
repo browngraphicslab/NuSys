@@ -38,7 +38,6 @@ namespace NuSysApp
 
         public void Add(string id, object value)
         {
-            Debug.WriteLine("adding to debounce dict");
             if (!_timing)
             {
                 _timing = true;
@@ -74,7 +73,7 @@ namespace NuSysApp
             d["id"] = _id;
             var message = new Message(d);
             var request = new SendableUpdateRequest(message);
-            Debug.WriteLine("sending debounce dict");
+            Debug.WriteLine("sending debounce dict for id"+ _id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, packetType);
             _timing = false;
             _dict.Clear();
