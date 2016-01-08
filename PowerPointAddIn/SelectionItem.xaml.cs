@@ -20,7 +20,7 @@ namespace PowerPointAddIn
     /// </summary>
     public partial class SelectionItem : UserControl
     {
-        private string _content;
+        private String _content;
         private Comment _comment;
         private Slide _slide;
         private int _slideNumber;
@@ -43,7 +43,7 @@ namespace PowerPointAddIn
             Globals.ThisAddIn.Application.ActiveWindow.View.GotoSlide(selectionItem.SlideNumber);
         }
 
-        public string Content
+        public String Text
         {
             get { return _content; }
             set { _content = value; }

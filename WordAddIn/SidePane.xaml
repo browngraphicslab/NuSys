@@ -17,7 +17,7 @@
                 <Button Content="Clear" Click="Button_Click" Width="70" Height="50" FontSize="12" FontFamily="Segoe UI Semibold" Margin="5,5,5,5" />
             </StackPanel>
             <Label FontSize="16" FontFamily="Segoe UI Light"  MouseLeftButtonUp="UnexpOnClick">Your Selections: </Label>
-            <ItemsControl Name="ic" ItemsSource="{Binding UnexportedSelections}" FontSize="1221.333">
+            <ItemsControl Name="ic" ItemsSource="{Binding UnexportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel></StackPanel>
@@ -25,7 +25,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
             <Label FontSize="16" FontFamily="Segoe UI Light">Exported Selections:</Label>
-            <ItemsControl Name="ic2" ItemsSource="{Binding ExportedSelections}" FontSize="1221.333">
+            <ItemsControl Name="ic2" ItemsSource="{Binding ExportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel></StackPanel>

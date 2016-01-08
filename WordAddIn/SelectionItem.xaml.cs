@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Windows.Input;
 using Microsoft.Office.Interop.Word;
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 
 namespace WordAddIn
 {
@@ -21,19 +22,17 @@ namespace WordAddIn
     /// </summary>
     public partial class SelectionItem : UserControl
     {
-        private string _content;
 		private Boolean _isExported;
         private Comment _comment;
-        //private Document _slide;
-        private int _slideNumber;
         private ScaleTransform _renderTransform;
-        private ImageSource _thumbnail;
         private Range _range;
+        private string _text;
 		
         public SelectionItem()
         {
             InitializeComponent();
-            _renderTransform = new ScaleTransform(1, 1);			
+            _renderTransform = new ScaleTransform(1, 1);
+            parseRtf();			
             DataContext = this;
         }
 
@@ -44,8 +43,6 @@ namespace WordAddIn
 
             var selectionItem = (SelectionItem)sender;
             selectionItem.Range.Select();
-
-            // Globals.ThisAddIn.Application.ActiveWindow.View.GotoSlide(selectionItem.SlideNumber);
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -66,18 +63,56 @@ namespace WordAddIn
             }
         }
 
-        public string Content
+        public void parseRtf()
         {
-            get { return _content; }
-            set {
-                _content = value;
-                SetRtf(rtb, value);
-                img.Visibility = Visibility.Collapsed;
-                rtb.Visibility = Visibility.Visible;
+            rtb.Paste();
+            TextRange textRange = new TextRange(
+                rtb.Document.ContentStart,
+                rtb.Document.ContentEnd
+            );
+            StringBuilder tempText = new StringBuilder();
 
-                if (_content.IndexOf("goalw") > -1)
+            var lines = textRange.Text.Split(Environment.NewLine.ToCharArray()).ToArray();
+            foreach (var line in lines)
+            {
+                if (line!=String.Empty && line != " ")
                 {
-                    Debug.WriteLine(_content.Substring(_content.IndexOf("goalw"),10));
+                    tempText.Append(" " +line);
+                }
+            }
+
+            Text = tempText.ToString();
+
+            foreach (Block block in rtb.Document.Blocks)
+            {
+                if (block is System.Windows.Documents.Paragraph)
+                {
+                    System.Windows.Documents.Paragraph paragraph = (System.Windows.Documents.Paragraph)block;
+                    foreach (Inline inline in paragraph.Inlines)
+                    {
+                        if (inline is InlineUIContainer)
+                        {
+                            InlineUIContainer uiContainer = (InlineUIContainer)inline;
+                            if (uiContainer.Child is System.Windows.Controls.Image)
+                            {
+                                img.Source = ((System.Windows.Controls.Image)uiContainer.Child).Source;
+                                img.Visibility = Visibility.Visible;
+                                imgBorder.Visibility = Visibility.Visible;
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (block is BlockUIContainer)
+                {
+                    var container = (BlockUIContainer)block;
+                    if (container.Child is System.Windows.Controls.Image)
+                    {
+                        img.Source = ((System.Windows.Controls.Image)container.Child).Source;
+                        img.Visibility = Visibility.Visible;
+                        imgBorder.Visibility = Visibility.Visible;
+                        return;
+                    }
                 }
             }
         }
@@ -87,14 +122,11 @@ namespace WordAddIn
 			get { return _isExported; }
 			set { _isExported = value; }
 		}
-		
-        public ImageSource Thumbnail
+
+        public string Text
         {
-            get { return _thumbnail; }
-            set { _thumbnail = value;
-                img.Visibility = Visibility.Visible;
-                rtb.Visibility = Visibility.Collapsed;
-            }
+            get { return _text; }
+            set { _text = value; }
         }
 
         public Range Range
@@ -115,30 +147,6 @@ namespace WordAddIn
             get { return _comment; }
             set { _comment = value; }
         }
-
-        /*public Document Document
-        {
-            get { return _slide; }
-            set { _slide = value; }
-        }*/
-        public int SlideNumber
-        {
-            get { return _slideNumber; }
-            set { _slideNumber = value; }
-        }
-
-
-        public void SetRtf(RichTextBox rtb, string document)
-        {
-            var documentBytes = Encoding.UTF8.GetBytes(document);
-            using (var reader = new MemoryStream(documentBytes))
-            {
-                reader.Position = 0;
-                rtb.SelectAll();
-                rtb.Selection.Load(reader, DataFormats.Rtf);
-            }
-        }
-
     }
 }
 

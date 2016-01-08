@@ -149,73 +149,24 @@ namespace WordAddIn
         //add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
+            IDataObject prevData = Clipboard.GetDataObject();
+            Clipboard.Clear();
+
             var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
             selection.Select();
-            selection.Copy();          
-           
-            IDataObject data = Clipboard.GetDataObject();
-
-            if (null != data)
+            selection.Copy();
+            
+            if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
-                foreach (var f in data.GetFormats())
-                {
-                    Debug.WriteLine(f);
-                }
-
-                //var doc = Globals.ThisAddIn.Application.ActiveDocument;
-
-                string result = string.Empty;
-                var imgFileName = string.Format(@"{0}", Guid.NewGuid());
-                imgFileName = imgFileName + ".png"; 
-
                 Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
                 c.Author = "NuSys";
 
-                if (data.GetDataPresent(System.Windows.DataFormats.Html))
-                {
-                    result = (string)data.GetData(System.Windows.DataFormats.Html);
-                    int n = 2;
-                    string[] lines = result.Split(Environment.NewLine.ToCharArray()).Skip(n).ToArray();
-                    result = string.Join(Environment.NewLine, lines);
-                    var ns = new SelectionItem { Content = result, Comment = c, Range = selection.Range, IsExported = false };
-                    UnexportedSelections.Add(ns);
-                }
-                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    // result = imgFileName;
-                    // Bitmap bitmap = (Bitmap)(data.GetData(System.Windows.Forms.DataFormats.Bitmap, true));
-                    // bitmap.Save(mediaDir + "\\" + imgFileName, System.Drawing.Imaging.ImageFormat.Png);
-                    // System.IO.File.SetLastWriteTimeUtc(mediaDir + "\\" + imgFileName, DateTime.UtcNow);
-                }
-
-               /*     if (data.GetDataPresent(System.Windows.DataFormats.Rtf))
-                {
-                    result = (string)data.GetData(System.Windows.DataFormats.Rtf);
-                    Selections.Add(new SelectionItem { Content = result, Comment = c, Range = selection.Range, DOcument = doc });
-
-                }*/
-            
-
-
-                if (result == string.Empty)
-                    return;
-
-                Bitmap thumbnail = null;
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    result = imgFileName;
-                    thumbnail = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
-                    thumbnail.Save(mediaDir + "\\" + imgFileName, ImageFormat.Png);
-                    UnexportedSelections.Add(new SelectionItem { Comment = c, Range = selection.Range});
-                }
-                
-                 
-                // Create a comment                
-                //var posX = selection.ShapeRange.Left;
-                //var posY = selection.ShapeRange.Top;
-                //var currentSlide = (Document)Globals.ThisAddIn.Application.ActiveDocument;
-                //var c = currentSlide.Comments.Add(posX, posY, "NuSys", "NuSys", "This region was added to NuSys");
+                var ns = new SelectionItem { Comment = c, Range = selection.Range, IsExported = false };
+                UnexportedSelections.Add(ns);
             }
+
+            Clipboard.Clear();
+            Clipboard.SetDataObject(prevData);
         }
 
         public static Bitmap BitmapFromSource(BitmapSource bitmapsource)
