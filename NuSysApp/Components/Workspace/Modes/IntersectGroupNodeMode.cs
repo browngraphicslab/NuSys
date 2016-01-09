@@ -136,7 +136,7 @@ namespace NuSysApp
                 var avgX = (minX + (maxX-minX)/2.0);
                 var avgY = (initialTransform.TranslateY + intersectedTransform.TranslateY)/2.0;
 
-                NetworkConnector.Instance.RequestNewGroupTag(avgX.ToString(), (avgY + 450).ToString(), n1 + " ∩ " + n2, props, callback);
+                //NetworkConnector.Instance.RequestNewGroupTag(avgX.ToString(), (avgY + 450).ToString(), n1 + " ∩ " + n2, props, callback);
             };
         }
 

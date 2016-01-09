@@ -70,8 +70,8 @@ namespace NuSysApp
                 vm.SetSelected(true);
                 List<string> locks = new List<string>();
                 locks.Add(vm.Id);
-                NetworkConnector.Instance.CheckLocks(locks);
-                NetworkConnector.Instance.RequestLock(vm.Id);
+                //NetworkConnector.Instance.CheckLocks(locks);
+                //NetworkConnector.Instance.RequestLock(vm.Id);
             }
             else if (dc is LinkViewModel)
             {

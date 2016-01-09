@@ -46,7 +46,7 @@ namespace NuSysApp
 
         protected AtomModel(string id) : base(id)
         {
-            _debounceDict = new DebouncingDictionary(this);
+            _debounceDict = new DebouncingDictionary(this.Id);
             CanEdit = EditStatus.Maybe;
 
             Creators = new List<string>();

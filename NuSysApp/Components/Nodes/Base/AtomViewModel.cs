@@ -23,6 +23,7 @@ namespace NuSysApp
         protected bool _isSelected, _isMultiSelected, _isVisible;
         private UserControl _view;
         private CompositeTransform _transform = new CompositeTransform();
+        private DebouncingDictionary _debouncingDictionary;
         
         #endregion Private Members
 
@@ -51,6 +52,7 @@ namespace NuSysApp
             Title = model.Title;
             X = model.X;
             Y = model.Y;
+            _debouncingDictionary = new DebouncingDictionary(model.Id);
         }
 
         private void OnTitleChanged(object source, string title)
@@ -129,6 +131,8 @@ namespace NuSysApp
             Model.X += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
             Model.Y += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
             UpdateAnchor();
+            _debouncingDictionary?.Add("x", Model.X);
+            _debouncingDictionary?.Add("y", Model.Y);
         }
 
         public virtual void SetPosition(double x, double y)
@@ -152,7 +156,8 @@ namespace NuSysApp
             {
                 SetSize(Width, Height + changeY);
             }
-
+            _debouncingDictionary?.Add("width", Width);
+            _debouncingDictionary?.Add("height", Height);
         }
 
         public virtual void SetSize(double width, double height)

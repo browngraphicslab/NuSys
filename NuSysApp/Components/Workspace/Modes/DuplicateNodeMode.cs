@@ -90,6 +90,7 @@ namespace NuSysApp
 
                 }
 
+
                 var callback = new Action<string>(async (newId) =>
                 {
 
@@ -109,7 +110,7 @@ namespace NuSysApp
 
                 });
 
-                NetworkConnector.Instance.RequestDuplicateNode(props, callback);
+//                NetworkConnector.Instance.RequestDuplicateNode(props, callback);
             }
 
         }

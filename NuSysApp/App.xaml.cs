@@ -122,7 +122,7 @@ namespace NuSysApp
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            await NetworkConnector.Instance.Disconnect();
+            //await NetworkConnector.Instance.Disconnect();
 
             var deferral = e.SuspendingOperation.GetDeferral();            
             //TODO: Save application state and stop any background activity

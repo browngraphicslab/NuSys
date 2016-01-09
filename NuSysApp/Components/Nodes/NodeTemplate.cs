@@ -124,7 +124,7 @@ namespace NuSysApp
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
             var model = (NodeModel)((NodeViewModel) this.DataContext).Model;
-            NetworkConnector.Instance.RequestDeleteSendable(model.Id);
+            //NetworkConnector.Instance.RequestDeleteSendable(model.Id);
         }
 
 

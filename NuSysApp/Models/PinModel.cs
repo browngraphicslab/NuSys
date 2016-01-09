@@ -24,7 +24,7 @@ namespace NuSysApp
         {  
             ID = id;
             this.Text = "NusysLand";
-            _dict = new DebouncingDictionary(this);
+            _dict = new DebouncingDictionary(this.ID);
         }
 
         public double X
@@ -37,7 +37,7 @@ namespace NuSysApp
             {
                 if (_x == value) return;
                 _x = value;
-                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                if (""=="NetworkConnector.Instance.IsSendableBeingUpdated(ID)")
                 {
                     OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs(X, Y));
                 }
@@ -58,7 +58,7 @@ namespace NuSysApp
             {
                 if (_y == value) return;
                 _y = value;
-                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                if (""=="NetworkConnector.Instance.IsSendableBeingUpdated(ID)")
                 {
                     OnLocationUpdate?.Invoke(this, new PositionChangeEventArgs(X, Y));
                 }
@@ -83,7 +83,7 @@ namespace NuSysApp
                     return;
                 }
                 _text = value;
-                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
+                if (""=="NetworkConnector.Instance.IsSendableBeingUpdated(ID)")
                 {
                     //  TODO: Re-add
                     //RaisePropertyChanged("Model_Text");

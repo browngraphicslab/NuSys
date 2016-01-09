@@ -29,7 +29,7 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("nodeType")) { 
-                string t = props["nodeType"];
+                string t = props.GetString("nodeType");
                 NodeType = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
 

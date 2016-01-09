@@ -60,7 +60,7 @@ namespace NuSysApp
                 }
             }
             // TODO: Add to text node inqcanvas
-            //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
+            ////await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Ink.ToString(),plines);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace NuSysApp
         {
             base.UnPack(props);
             if (ContentId != null)
-                _text = SessionController.Instance.ContentController.Get(ContentId).Data;
+               _text = SessionController.Instance.ContentController.Get(ContentId).Data;
         }
 
         public override async Task<Dictionary<string,object>> Pack()

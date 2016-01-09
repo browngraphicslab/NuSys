@@ -103,7 +103,7 @@ namespace NuSysApp
                 Anim.FromTo(groupView, "ScaleX", 0, 1, 600, new BackEase());
 
             });
-            NetworkConnector.Instance.RequestMakeGroup(id1, id2, p.X.ToString(), p.Y.ToString(), null, props, callback);
+            //NetworkConnector.Instance.RequestMakeGroup(id1, id2, p.X.ToString(), p.Y.ToString(), null, props, callback);
 
         }
 

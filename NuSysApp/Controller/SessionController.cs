@@ -24,6 +24,11 @@ namespace NuSysApp
         public delegate void WorkspaceChangedHandler(object source, WorkspaceViewModel workspace);
         public event WorkspaceChangedHandler WorkspaceChanged;
 
+        public NuSysNetworkSession NuSysNetworkSession
+        {
+            get { return _nuSysNetworkSession; }
+        }
+
         private LockDictionary _locks;
 
         private ContentController _contentController = new ContentController();
@@ -34,6 +39,7 @@ namespace NuSysApp
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>(); 
 
+        private NuSysNetworkSession _nuSysNetworkSession;
 
         public WorkspaceViewModel ActiveWorkspace
         {
@@ -51,10 +57,11 @@ namespace NuSysApp
             set { _locks = value; }
         }
 
-        public SessionController()
+        private SessionController()
         {
             _locks = new LockDictionary(this);
             IdToSendables = new ObservableDictionary<string, Sendable>();
+            _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
         public FrameworkElement GetUserControlById(string id)
@@ -139,7 +146,7 @@ namespace NuSysApp
                 props.Remove("nodeType");
                 props.Remove("x");
                 props.Remove("y");
-                NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
+                //NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
             }
 
             //   ActiveWorkspace.Model.AddChild(group);
@@ -166,7 +173,7 @@ namespace NuSysApp
 
         }
 
-        public async Task CreateNewNode(string id, NodeType type)
+        public async Task<NodeModel> CreateNewNode(string id, NodeType type)
         {
             NodeModel node;
             NodeViewModel nodeViewModel;
@@ -201,14 +208,15 @@ namespace NuSysApp
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
-                    return;
+                    return null;
             }
             if (node == null)
-                return;
+                return null;
 
             // TODO: bullshit fix
             if (!IdToSendables.ContainsKey(id))
                 IdToSendables.Add(id, node);
+            return node;
         }
 
         public async Task RemoveSendable(string id)

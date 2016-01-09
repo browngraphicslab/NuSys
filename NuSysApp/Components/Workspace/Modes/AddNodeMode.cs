@@ -179,8 +179,13 @@ namespace NuSysApp
 
 
 
-            var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
-            var dict = new Dictionary<string, object>();
+            //var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
+            var contentId = SessionController.Instance.GenerateId();
+            var contentRequest = new NewContentRequest(contentId,data == null ? "" : data.ToString());
+            
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
+
+            var dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
 
@@ -189,7 +194,16 @@ namespace NuSysApp
 
             });
 
-                await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict, callback);
+//                await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict, callback);
+
+            dict["nodetype"] = nodeType.ToString();
+            dict["x"] = p.X;
+            dict["y"] = p.Y;
+            dict["contentId"] = contentId;
+            //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
+            var request = new NewNodeRequest(dict);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+//>>>>>>> origin/phil_groups_new_network
             vm.ClearSelection();
             vm.ClearMultiSelection();
 
