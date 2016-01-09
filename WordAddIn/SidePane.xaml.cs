@@ -14,6 +14,8 @@ using System.Drawing.Imaging;
 using System.Windows.Interop;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WordAddIn
 {
@@ -42,7 +44,7 @@ namespace WordAddIn
             ic2.DataContext = this;
 
             LoadSelectionData();
-            CheckSelectionLabels();
+            CheckSelectionLabels()
         }
 
         private void UnexpOnClick(object sender, RoutedEventArgs e)
@@ -122,10 +124,11 @@ namespace WordAddIn
             IDataObject prevData = null;
 
             foreach (var commentObj in comments)
-            {   
+            {
                 Comment comment = ((Comment)commentObj);
 
-                if (comment.Author == commentAuthor) {
+                if (comment.Author == commentAuthor)
+                {
                     if (first)
                     {
                         prevData = Clipboard.GetDataObject();
@@ -142,7 +145,8 @@ namespace WordAddIn
                     {
                         var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = false };
                         UnexportedSelections.Add(ns);
-                    } else
+                    }
+                    else
                     {
                         var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = true };
                         ExportedSelections.Add(ns);
