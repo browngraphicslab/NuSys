@@ -11,7 +11,14 @@
     <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Width="600" Height="750">
         <StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Margin="5,5" Width="600" Height="750">
             <StackPanel Orientation="Horizontal">
-                <Button Tapped="OnRecordClick">Record</Button>
+                <Button Height="30" Width="30"  Tapped="OnRecordClick">
+                    <Image Source="/Assets/icon_record.png" Height="15"></Image>
+                </Button>
+                <Button Name="BoldButton" Height="30" Width="30"  Content="B" Click="BoldButton_OnClick" Foreground="White"></Button>
+                <Button Name="ItalicButton" Height="30" Width="30"  Content="I" Click="ItalicButton_OnClick" Foreground="White"></Button>
+                <Button Name="UnderlineButton" Height="30" Width="30"  Content="U"  Click="UnderlineButton_OnClick" Foreground="White"></Button>
+                <ComboBox x:Name="SizeBox" Height="30" PlaceholderText="Size" ItemsSource="{x:Bind sizes}" SelectionChanged="SizeChanged"></ComboBox>
+                <ComboBox x:Name="FontBox" Height="30" PlaceholderText="Font" ItemsSource="{x:Bind fonts}" SelectionChanged="FontChanged" DisplayMemberPath="Source"></ComboBox>
             </StackPanel>
             <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
                                      BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
