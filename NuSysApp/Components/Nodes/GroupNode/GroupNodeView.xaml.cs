@@ -24,18 +24,58 @@ namespace NuSysApp
 {
     public sealed partial class GroupNodeView : AnimatableUserControl, IThumbnailable
     {
+        private bool _isExpanded;
+
         public GroupNodeView( GroupNodeViewModel vm)
         {
-            this.InitializeComponent();
+            RenderTransform = new CompositeTransform();
+            InitializeComponent();
             DataContext = vm;
+            xCircleView.RenderTransform = new CompositeTransform();
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-             //   IC.Clip = new RectangleGeometry {Rect = new Rect(0, 0, vm.Width, vm.Height)};
+                //IC.Clip = new RectangleGeometry {Rect = new Rect(0, 0, 1000, vm.Height-40)};
             };
 
+            Resizer.ManipulationDelta += ResizerOnManipulationDelta;
+
             Tapped += OnTapped;
-           
+        }
+
+        private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var vm = (GroupNodeViewModel) DataContext;
+            vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            if (vm.Height > 400 && !_isExpanded)
+            {
+                Anim.To(xExpandedView, "Alpha", 1, 600);
+                Anim.To(xCircleView, "Alpha", 0, 600);
+                _isExpanded = true;
+
+                Debug.WriteLine("opening");
+            }
+            else if (vm.Height < 400 && _isExpanded)
+            {
+                Anim.To(xExpandedView, "Alpha", 0, 600);
+                Anim.To(xCircleView, "Alpha", 1, 600);
+                _isExpanded = false;
+
+                Debug.WriteLine("closing");
+            
+            }
+            e.Handled = true;
+        }
+
+        public void Collapse()
+        {
+            xExpandedView.Visibility = Visibility.Collapsed;
+
+        }
+
+        public void Expand()
+        {
+            xExpandedView.Visibility = Visibility.Visible;
         }
 
         private void OnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
@@ -43,7 +83,7 @@ namespace NuSysApp
             xExpandedView.Visibility = Visibility.Visible;
         }
 
-        public async Task<ImageSource> ToThumbnail(int width, int height)
+        public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
             await r.RenderAsync(this, width, height);

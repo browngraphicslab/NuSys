@@ -48,6 +48,7 @@ namespace NuSysApp
         {
             var child = Children[id];
             AtomViewList.Remove(child);
+            Children.Remove(id);
         }
 
         public override void Translate(double dx, double dy)

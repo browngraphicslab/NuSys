@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -224,39 +226,30 @@ namespace NuSysApp
             }
         }
 
-        private async Task SaveThumbs()
-        {
-            var lines = new List<string>();
-            foreach (var id in Thumbnails.Keys)
-            {
-                var img = await ImageUtil.RenderTargetBitmapToByteArray(Thumbnails[id] as RenderTargetBitmap);
-                var dict = new KeyValuePair<string,byte[]>(id, img);
-                lines.Add(JsonConvert.SerializeObject(dict));
-            }
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_thumbs.nusys");
-            FileIO.WriteLinesAsync(file, lines);
-        }
-
         private async Task LoadThumbs()
         {
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_thumbs.nusys");
-            var lines = await FileIO.ReadLinesAsync(file);
 
-            foreach (var line in lines)
+            var thumbs = await NuSysStorages.Thumbs.GetFilesAsync();
+            foreach (var thumbFile in thumbs)
             {
-                var dict = JsonConvert.DeserializeObject<KeyValuePair<string, byte[]>>(line);
-                var id = dict.Key;
-                var img = await ImageUtil.ByteArrayToBitmapImage(dict.Value);
+                var buffer = await FileIO.ReadBufferAsync(thumbFile);
+                var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
+                var img = await ImageUtil.ByteArrayToBitmapImage(buffer.ToArray());
                 Thumbnails[id] = img;
-            }
-           
+            }           
+        }
+
+        public async Task SaveThumb(string id, RenderTargetBitmap image)
+        {
+            Thumbnails[id] = image;
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
+            var img = await ImageUtil.RenderTargetBitmapToByteArray(image);
+            FileIO.WriteBytesAsync(file, img);
         }
 
 
         public async Task SaveWorkspace()
         {
-            await SaveThumbs();
-
             await _contentController.Save();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
@@ -279,9 +272,6 @@ namespace NuSysApp
         {
             return Guid.NewGuid().ToString("N");
         }
-
-
-
 
         public static SessionController Instance
         {

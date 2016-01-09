@@ -86,6 +86,7 @@ namespace NuSysApp
         {
             NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
+            NuSysStorages.Thumbs = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.SaveFolder, Constants.FolderThumbs);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
 
             NuSysStorages.NuSysTempFolder =

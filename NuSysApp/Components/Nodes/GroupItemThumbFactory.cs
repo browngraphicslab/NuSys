@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class NodeContentThumbViewFactory : INodeViewFactory
+    public class GroupItemThumbFactory : INodeViewFactory
     {
         public async Task<FrameworkElement> CreateFromSendable(Sendable model, List<FrameworkElement> AtomViewList)
         {
@@ -51,6 +51,8 @@ namespace NuSysApp
                     rect.Height = (img.Source as BitmapImage).PixelHeight /
                                     DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
                 }
+
+                rect.DataContext = new GroupItemViewModel((AtomModel)model);
 
                 return rect;
             }

@@ -84,11 +84,12 @@ namespace NuSysApp
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _released = true;
+            Debug.WriteLine(_selectedAtomVm);
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-          
+
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc is NodeViewModel && !(dc is WorkspaceViewModel) )
             {

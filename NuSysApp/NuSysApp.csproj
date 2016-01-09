@@ -182,7 +182,11 @@
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
-    <Compile Include="Components\Nodes\NodeContentThumbViewFactory.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
+      <DependentUpon>GroupCircleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupItemViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupItemThumbFactory.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
@@ -462,6 +466,10 @@
     <Page Include="Components\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupCircleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml">
       <SubType>Designer</SubType>

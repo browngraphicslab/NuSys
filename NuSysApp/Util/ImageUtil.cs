@@ -35,7 +35,7 @@ namespace NuSysApp
             var pixels = (await source.GetPixelsAsync());
             var stream = new InMemoryRandomAccessStream();
             var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, (uint)source.PixelWidth, (uint)source.PixelHeight, 96, 96, pixels.ToArray());
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, (uint)source.PixelWidth, (uint)source.PixelHeight, 96, 96, pixels.ToArray());
             await encoder.FlushAsync();
             var ms = new MemoryStream();
             stream.GetInputStreamAt(0).AsStreamForRead().CopyTo(ms);

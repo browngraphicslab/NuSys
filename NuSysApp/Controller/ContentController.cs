@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    
     public class ContentController
     {
 
@@ -35,7 +34,7 @@ namespace NuSysApp
             
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
-;
+
             foreach (var line in lines)
             {
                 var o = JsonConvert.DeserializeObject<NodeContentModel>(line);

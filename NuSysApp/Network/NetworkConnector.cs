@@ -213,11 +213,8 @@ namespace NuSysApp
 
             packed["type"] = "duplicate";
 
-
             string message = MakeSubMessageFromDict(packed);
-
             await _clientHandler.SendMessageToHost(message);
-
             return id;
         }
 
@@ -664,17 +661,7 @@ namespace NuSysApp
                         node1.SetMetaData("groups", prevGroups1);
                         await (node2 as NodeContainerModel).AddChild(node1);
 
-                        if (node1 is NodeContainerModel)
-                        {
-                            foreach (var sendable in SessionController.Instance.IdToSendables.Values)
-                            {
-                                var atom = (AtomModel) sendable;
-                                if (atom.Creators.Contains(node1.Id))
-                                {
-                                    await (node2 as NodeContainerModel).AddChild(atom);
-                                }
-                            }
-                        }
+                   
                     }
                     else
                     {

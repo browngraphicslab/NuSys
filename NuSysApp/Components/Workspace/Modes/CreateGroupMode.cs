@@ -6,11 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
@@ -26,7 +24,6 @@ namespace NuSysApp
 
         public CreateGroupMode(WorkspaceView view, NodeManipulationMode nodeManipulationMode) : base(view)
         {
-
             _nodeManipulationMode = nodeManipulationMode;
         }
 
@@ -63,8 +60,10 @@ namespace NuSysApp
             var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
 
-            SessionController.Instance.Thumbnails[id1] = await ((IThumbnailable) sender).ToThumbnail(210, 100);
-            SessionController.Instance.Thumbnails[id2] = await _hoveredNodeView.ToThumbnail(210, 100);
+
+
+            SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
+            SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
 
             var callback = new Action<string>(async (s) =>
             {
@@ -135,7 +134,7 @@ namespace NuSysApp
                         _hoveredNodeView = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode).First() as IThumbnailable;
 
                     };
-                    _timer.Interval = TimeSpan.FromMilliseconds(700);
+                    _timer.Interval = TimeSpan.FromMilliseconds(400);
                     _timer.Start();
                 }
             }

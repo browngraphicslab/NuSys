@@ -317,7 +317,7 @@ namespace NuSysApp
             e.Handled = true;            
         }
 
-        public async Task<ImageSource> ToThumbnail(int width, int height)
+        public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
             await r.RenderAsync(rtfTextBox, width, height);

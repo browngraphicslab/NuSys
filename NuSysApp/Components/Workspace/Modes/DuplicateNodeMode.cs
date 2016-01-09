@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
@@ -83,16 +84,32 @@ namespace NuSysApp
                     var children = new List<string>();;
                     foreach (var child in (_selectedNode as NodeContainerViewModel).Children.Values)
                     {
-                        children.Add((child.DataContext as AtomViewModel).Id);
+                        children.Add((child.DataContext as GroupItemViewModel).Id);
                     }
                     props["groupChildren"] = children;
 
                 }
-               
-      
-                //  NetworkConnector.Instance.RequestMakeNode(, _selectedNode.NodeType.ToString(), props["contentId"]?.ToString(), null, props);
-                NetworkConnector.Instance.RequestDuplicateNode(props);
 
+                var callback = new Action<string>(async (newId) =>
+                {
+
+                    var wvm = _view.DataContext as WorkspaceViewModel;
+                    var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == newId);
+
+                    var duplicateModel = (AtomModel)SessionController.Instance.IdToSendables[newId];
+
+                    if (!(duplicateModel is NodeContainerModel))
+                        return;
+                    
+                    
+                    foreach (var child in SessionController.Instance.IdToSendables.Values.Where( s => (s as AtomModel).Creators.Contains(duplicateModel.Id)))
+                    {
+                        ((NodeContainerModel) duplicateModel).AddChild(child);
+                    }
+
+                });
+
+                NetworkConnector.Instance.RequestDuplicateNode(props, callback);
             }
 
         }

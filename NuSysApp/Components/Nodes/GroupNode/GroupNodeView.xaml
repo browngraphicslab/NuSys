@@ -11,33 +11,14 @@
     d:DesignWidth="400"
     RenderTransform="{Binding Transform}"
     Opacity="{Binding Alpha}"
-    Width="{Binding Width}" Height="{Binding Height}">
+    Width="{Binding Width}" Height="{Binding Height}"
+    Background="#99000000">
 
-    <Grid>
-        <Grid>
-            <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="Black"></Ellipse>
-            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" IsHitTestVisible="false">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Padding="42,42,42,42" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-            <Ellipse Stroke="LightSlateGray" StrokeThickness="20"  Width="{Binding Width}" Height="{Binding Height}"></Ellipse>
-            <Border CornerRadius="50"
-                            Width="28"
-                            Height="28"
-                            Background="DarkRed"
-                            x:Name="NumBorder"
-                            Canvas.Top="3">
-                <Border.RenderTransform>
-                    <TranslateTransform X="138" Y="-57"></TranslateTransform>
-                </Border.RenderTransform>
-                <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
-            </Border>
-        </Grid>
-        
-        <local:GroupNodeExpandedView x:Name="xExpandedView" Visibility="Collapsed"></local:GroupNodeExpandedView>
-        
-    </Grid>
+    <Canvas>
+        <local:GroupCircleView x:Name="xCircleView"></local:GroupCircleView>
+        <local:GroupNodeExpandedView x:Name="xExpandedView" Opacity="0"></local:GroupNodeExpandedView>
+        <Path x:Name="Resizer" Fill="Black" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+              Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
+              Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" Canvas.Left="250" Canvas.Top="250" />
+    </Canvas>
 </local:AnimatableUserControl>

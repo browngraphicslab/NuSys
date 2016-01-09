@@ -10,7 +10,7 @@ namespace NuSysApp
 {
     interface IThumbnailable
     {
-        Task<ImageSource> ToThumbnail(int width, int height);
+        Task<RenderTargetBitmap> ToThumbnail(int width, int height);
 
     }
 }
