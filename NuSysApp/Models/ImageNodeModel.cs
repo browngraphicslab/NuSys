@@ -37,7 +37,7 @@ namespace NuSysApp
        
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("data"))
+            if (props.ContainsKey("contentId"))
             {
                 var data =
                     Convert.FromBase64String(
