@@ -1,16 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.ExceptionServices;
+﻿using Microsoft.Office.Tools;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Word;
-using Microsoft.Office.Tools;
-using Application = Microsoft.Office.Interop.Word.Application;
-using Office = Microsoft.Office.Core;
-using System.Collections.ObjectModel;
 using System.Windows.Forms.Integration;
+using Office = Microsoft.Office.Core;
 
 namespace WordAddIn
 {

@@ -1,19 +1,15 @@
 ﻿
-using System.Windows.Controls;
+using Microsoft.Office.Interop.Word;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Windows;
-using System.Windows.Media;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Input;
-using Microsoft.Office.Interop.Word;
-using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace WordAddIn
 {

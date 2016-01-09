@@ -1,21 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using Microsoft.Office.Interop.Word;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Diagnostics;
-using System.Drawing;
-using Microsoft.Office.Interop.Word;
-using System.Drawing.Imaging;
-using System.Windows.Interop;
-using System.ComponentModel;
-using System.Windows.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace WordAddIn
 {
@@ -98,18 +89,23 @@ namespace WordAddIn
             if (ExportedSelections.Count == 0)
             {
                 noExpSelectionsLabel.Visibility = Visibility.Visible;
-            }else
+                expBttn.Visibility = Visibility.Hidden;
+            }
+            else if (ExportedSelections.Count > 0)
             {
                 noExpSelectionsLabel.Visibility = Visibility.Collapsed;
+                expBttn.Visibility = Visibility.Visible;
             }
 
             if (UnexportedSelections.Count == 0)
             {
                 noSelectionsLabel.Visibility = Visibility.Visible;
+                unexpBttn.Visibility = Visibility.Hidden;
             }
-            else
+            else if (UnexportedSelections.Count > 0)
             {
                 noSelectionsLabel.Visibility = Visibility.Collapsed;
+                unexpBttn.Visibility = Visibility.Visible;
             }
         }
 
@@ -159,13 +155,31 @@ namespace WordAddIn
                 Clipboard.Clear();
                 Clipboard.SetDataObject(prevData);
             }
+
+            if (ExportedSelections.Count > 0)
+            {
+                expBttn.Content = "-";
+            }
+
+            if (UnexportedSelections.Count > 0)
+            {
+                unexpBttn.Content = "-";
+            }
         }
 		
 		//delete all checked selections
 		private void OnDelete(){
 			foreach (var selection in CheckedSelections){
-				selection.Comment.Delete();
-                //may be a reference problem...?
+                try {
+                    //checking if Comment has not been deleted
+                    if (selection.Comment.Author != null)
+                    {
+                        selection.Comment.Delete();
+                    }
+                }catch (Exception ex)
+                {
+                    //if exception is thrown, comment has been deleted already so do nothing
+                }
 
                 if (UnexportedSelections.Contains(selection))
                 {
@@ -198,8 +212,19 @@ namespace WordAddIn
                     //File.Move(f, f);
 
                     selection.IsExported = true;
-                    selection.Comment.Range.Text = commentExported;
-                    
+                    try
+                    {
+                        //checking if Comment has not been deleted
+                        if (selection.Comment.Author != null)
+                        {
+                            selection.Comment.Range.Text = commentExported;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //if exception is thrown, comment has been deleted already so do nothing
+                    }
+
                     UnexportedSelections.Remove(selection);
                     ExportedSelections.Add(selection);
 

@@ -24,7 +24,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Column="0" FontSize="16" FontFamily="Segoe UI Light">Your Selections</Label>
-                <Button Grid.Column="1" x:Name="unexpBttn" Content="+" Click="UnexpOnClick" Width="23" Height="23" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" HorizontalAlignment="Right" />
+                <Button Grid.Column="1" x:Name="unexpBttn" Content="-" Click="UnexpOnClick" Width="23" Height="23" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" HorizontalAlignment="Right" />
             </Grid>
             <Grid Width="328" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
@@ -46,7 +46,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Column="0" FontSize="16" FontFamily="Segoe UI Light">Exported Selections</Label>
-                <Button Grid.Column="1" Name="expBttn" Content="+" Click="ExpOnClick" Width="23" Height="23" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" HorizontalAlignment="Right" />
+                <Button Grid.Column="1" Name="expBttn" Content="-" Click="ExpOnClick" Width="23" Height="23" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" HorizontalAlignment="Right" />
             </Grid>
 
             <Grid Width="328" HorizontalAlignment="Left">
