@@ -42,7 +42,9 @@ namespace WordAddIn
             InitializeComponent();
             ic.DataContext = this;
             ic2.DataContext = this;
+
             LoadSelectionData();
+            CheckSelectionLabels();
             IsUnexpVisible = Visibility.Visible;
         }
 
@@ -54,16 +56,39 @@ namespace WordAddIn
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             OnDelete();
+            CheckSelectionLabels();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
 			OnExport();
+            CheckSelectionLabels();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             OnSelectionAdded();
+            CheckSelectionLabels();
+        }
+
+        private void CheckSelectionLabels()
+        {
+            if (ExportedSelections.Count == 0)
+            {
+                noExpSelectionsLabel.Visibility = Visibility.Visible;
+            }else
+            {
+                noExpSelectionsLabel.Visibility = Visibility.Collapsed;
+            }
+
+            if (UnexportedSelections.Count == 0)
+            {
+                noSelectionsLabel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                noSelectionsLabel.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void LoadSelectionData()
