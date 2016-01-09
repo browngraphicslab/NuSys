@@ -1,14 +1,8 @@
-﻿using GemBox.Document;
-using Microsoft.Office.Interop.PowerPoint;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using Office = Microsoft.Office.Core;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
@@ -36,9 +30,7 @@ namespace PowerPointAddIn
     public class NuSysRibbon : Office.IRibbonExtensibility
     {
         private Office.IRibbonUI ribbon;
-        public event SelectionAddedHandler SelectionAdded;
         public delegate void SelectionAddedHandler();
-        public event SendHandler BtnSend;
         public delegate void SendHandler();
 
 
@@ -65,17 +57,8 @@ namespace PowerPointAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            if (SelectionAdded != null)
-                SelectionAdded();            
+            Globals.ThisAddIn.BuildSidebar();
         }
-
-        public void OnBtnSendClick(Office.IRibbonControl control)
-        {
-            if (BtnSend != null)
-                BtnSend();
-        }
-
-
 
         #endregion
 

@@ -251,14 +251,15 @@ namespace WordAddIn
         //add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
-            IDataObject prevData = Clipboard.GetDataObject();
             Clipboard.Clear();
 
             var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
             selection.Select();
             selection.Copy();
-            
-            if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
+
+            if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
+                Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
+                Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
             {
                 Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
                 c.Author = commentAuthor;
@@ -266,23 +267,6 @@ namespace WordAddIn
                 var ns = new SelectionItem { Comment = c, Range = selection.Range, IsExported = false };
                 UnexportedSelections.Add(ns);
             }
-
-            Clipboard.Clear();
-            Clipboard.SetDataObject(prevData);
-        }
-
-        public static Bitmap BitmapFromSource(BitmapSource bitmapsource)
-        {
-            Bitmap bitmap;
-            using (var outStream = new MemoryStream())
-            {
-                BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(bitmapsource));
-                enc.Save(outStream);
-                bitmap = new Bitmap(outStream);
-                bitmap.Save(mediaDir + "\\__ASDAD.png");
-            }
-            return bitmap;
         }
     }
 }

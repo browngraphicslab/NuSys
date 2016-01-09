@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WordAddIn
 {
@@ -24,16 +26,17 @@ namespace WordAddIn
         private Range _range;
         private string _text;
         private string _rtfContent;
-		
+        private MemoryStream _ms;
+
         public SelectionItem()
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
-            parseRtf();			
+            AddSelection();			
             DataContext = this;
         }
 
-        private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void SelectionItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is SelectionItem))
                 return;
@@ -60,10 +63,76 @@ namespace WordAddIn
             }
         }
 
+        public void AddSelection()
+        {
+            Text = "";
+            RtfContent = "";
+
+            if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
+            {
+                parseRtf();
+            }
+            else if (Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html))
+            {
+                parseHtml();
+            }
+            else if (Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+            {
+                parseImg();
+            }
+        }
+
+        public void parseHtml()
+        {
+            string html = (string)Clipboard.GetData(System.Windows.Forms.DataFormats.Html);
+            var converter = new SautinSoft.HtmlToRtf();
+            var RtfContent = converter.ConvertString(html);
+
+            using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(RtfContent)))
+            {
+                reader.Position = 0;
+                rtb.SelectAll();
+                rtb.Selection.Load(reader, DataFormats.Rtf);
+            }
+
+            getImgFromRtb();
+
+            StringBuilder tempText = new StringBuilder();
+            var lines = RtfContent.Split(Environment.NewLine.ToCharArray()).ToArray();
+            foreach (var line in lines)
+            {
+                if (line != String.Empty && line != " ")
+                {
+                    tempText.Append(" " + line);
+                }
+            }
+
+            Text = tempText.ToString();
+        }
+
+        public void parseImg()
+        {
+            Ms = new MemoryStream();
+
+            System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
+            Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
+            (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
+
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            Ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = Ms;
+            image.EndInit();
+
+            img.Source = image;
+            img.Visibility = Visibility.Visible;
+            imgBorder.Visibility = Visibility.Visible;
+        }
+
         public void parseRtf()
         {
             rtb.Paste();
-            TextRange textRange = new TextRange(
+            System.Windows.Documents.TextRange textRange = new System.Windows.Documents.TextRange(
                 rtb.Document.ContentStart,
                 rtb.Document.ContentEnd
             );
@@ -82,13 +151,18 @@ namespace WordAddIn
             var lines = textRange.Text.Split(Environment.NewLine.ToCharArray()).ToArray();
             foreach (var line in lines)
             {
-                if (line!=String.Empty && line != " ")
+                if (line != String.Empty && line != " ")
                 {
-                    tempText.Append(" " +line);
+                    tempText.Append(" " + line);
                 }
             }
             Text = tempText.ToString();
 
+            getImgFromRtb();
+        }
+
+        public void getImgFromRtb()
+        {
             foreach (Block block in rtb.Document.Blocks)
             {
                 if (block is System.Windows.Documents.Paragraph)
@@ -123,7 +197,7 @@ namespace WordAddIn
             }
         }
 
-		public Boolean IsExported
+        public Boolean IsExported
 		{
 			get { return _isExported; }
 			set { _isExported = value; }
@@ -145,6 +219,12 @@ namespace WordAddIn
         {
             get { return _range; }
             set { _range = value; }
+        }
+
+        private MemoryStream Ms
+        {
+            get { return _ms; }
+            set { _ms = value; }
         }
 
         public ScaleTransform RenderTransform
