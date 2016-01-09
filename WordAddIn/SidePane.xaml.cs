@@ -251,21 +251,27 @@ namespace WordAddIn
         //add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
-            Clipboard.Clear();
+            try {
+                Clipboard.Clear();
 
-            var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-            selection.Select();
-            selection.Copy();
+                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                selection.Select();
+                selection.Copy();
 
-            if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
-                Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
-                Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
+                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
+                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                {
+                    Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
+                    c.Author = commentAuthor;
+
+                    var ns = new SelectionItem { Comment = c, Range = selection.Range, IsExported = false };
+                    UnexportedSelections.Add(ns);
+                }
+            }
+            catch (Exception ex)
             {
-                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
-                c.Author = commentAuthor;
-
-                var ns = new SelectionItem { Comment = c, Range = selection.Range, IsExported = false };
-                UnexportedSelections.Add(ns);
+                //TODO exception handling
             }
         }
     }

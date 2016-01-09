@@ -209,22 +209,28 @@ namespace PowerPointAddIn
         //add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
-            Clipboard.Clear();
+            try {
+                Clipboard.Clear();
 
-            var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-            selection.Copy();
+                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                selection.Copy();
 
-            if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
-                Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
-                Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
+                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
+                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                {
+                    var posX = selection.ShapeRange.Left;
+                    var posY = selection.ShapeRange.Top;
+                    var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+                    var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, "");
+
+                    var ns = new SelectionItem { Comment = c, ThisSelection = selection, IsExported = false };
+                    UnexportedSelections.Add(ns);
+                }
+            }
+            catch (Exception ex)
             {
-                var posX = selection.ShapeRange.Left;
-                var posY = selection.ShapeRange.Top;
-                var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
-                var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, "");
-
-                var ns = new SelectionItem { Comment = c, ThisSelection = selection, IsExported = false };
-                UnexportedSelections.Add(ns);
+                //TODO error handling 
             }
         }
     }
