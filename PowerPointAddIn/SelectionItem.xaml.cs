@@ -222,7 +222,7 @@ namespace PowerPointAddIn
             set { _selection = value; }
         }
 
-        private MemoryStream Ms
+        public MemoryStream Ms
         {
             get { return _ms; }
             set { _ms = value; }

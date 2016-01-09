@@ -115,31 +115,37 @@ namespace WordAddIn
             ExportedSelections = new ObservableCollection<SelectionItem>();
             CheckedSelections = new ObservableCollection<SelectionItem>();
 
-            var comments = Globals.ThisAddIn.Application.ActiveDocument.Comments;
-            Boolean first = true;
-            IDataObject prevData = null;
+            var bookmarks = Globals.ThisAddIn.Application.ActiveDocument.Bookmarks;
 
+            //get rid of excesse bookmarks
+            foreach (Bookmark bookmark in bookmarks)
+            {
+                if (bookmark.Name.StartsWith("NuSysSelection"))
+                {
+                    bookmark.Delete();
+                }
+            }
+
+            var comments = Globals.ThisAddIn.Application.ActiveDocument.Comments;
             foreach (var commentObj in comments)
             {
                 Comment comment = ((Comment)commentObj);
 
                 if (comment.Author == commentAuthor)
                 {
-                    if (first)
-                    {
-                        prevData = Clipboard.GetDataObject();
-                        Clipboard.Clear();
-                        first = false;
-                    }
-
                     string commentTxt = comment.Range.Text;
+
+                    Clipboard.Clear();
 
                     comment.Scope.Select();
                     comment.Scope.Copy();
 
                     if (commentTxt == null)
                     {
-                        var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = false };
+                        var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
+                        comment.Scope.Bookmarks.Add(bookmarkId);
+
+                        var ns = new SelectionItem { Comment = comment, Bookmark = bookmarkId, Range = comment.Scope, IsExported = false };
                         UnexportedSelections.Add(ns);
                     }
                     else
@@ -148,12 +154,6 @@ namespace WordAddIn
                         ExportedSelections.Add(ns);
                     }
                 }
-            }
-
-            if (prevData != null)
-            {
-                Clipboard.Clear();
-                Clipboard.SetDataObject(prevData);
             }
 
             if (ExportedSelections.Count > 0)
@@ -174,8 +174,13 @@ namespace WordAddIn
                     //checking if Comment has not been deleted
                     if (selection.Comment.Author != null)
                     {
+                        if (selection.Comment.Scope.Bookmarks.Exists(selection.Bookmark))
+                        {
+                            selection.Comment.Scope.Bookmarks.get_Item(selection.Bookmark).Delete();
+                        }
                         selection.Comment.Delete();
                     }
+
                 }catch (Exception ex)
                 {
                     //if exception is thrown, comment has been deleted already so do nothing
@@ -258,6 +263,10 @@ namespace WordAddIn
                 selection.Select();
                 selection.Copy();
 
+                //using b as an arbitrary char to create a valid bookmarkId
+                var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
+                selection.Bookmarks.Add(bookmarkId);
+
                 if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
                     Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
                     Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
@@ -265,7 +274,7 @@ namespace WordAddIn
                     Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
                     c.Author = commentAuthor;
 
-                    var ns = new SelectionItem { Comment = c, Range = selection.Range, IsExported = false };
+                    var ns = new SelectionItem { Comment = c, Bookmark = bookmarkId, Range = selection.Range, IsExported = false };
                     UnexportedSelections.Add(ns);
                 }
             }

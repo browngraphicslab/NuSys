@@ -27,6 +27,7 @@ namespace WordAddIn
         private string _text;
         private string _rtfContent;
         private MemoryStream _ms;
+        private string _bookmarkId;
 
         public SelectionItem()
         {
@@ -221,7 +222,13 @@ namespace WordAddIn
             set { _range = value; }
         }
 
-        private MemoryStream Ms
+        public string Bookmark
+        {
+            get { return _bookmarkId; }
+            set { _bookmarkId = value; }
+        }
+
+        public MemoryStream Ms
         {
             get { return _ms; }
             set { _ms = value; }
