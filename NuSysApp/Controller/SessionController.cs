@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Media.SpeechRecognition;
 using Windows.Storage;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
@@ -26,6 +28,12 @@ namespace NuSysApp
         public SessionView SessionView { get; set; }
         public ContentController ContentController { get { return _contentController; } }
 
+        //speech recognition
+        public SpeechRecognizer Recognizer { get; set; }
+
+        public bool IsRecording { get; set; }
+
+        public string SpeechString { get; set; }
 
         public WorkspaceViewModel ActiveWorkspace
         {
@@ -36,6 +44,75 @@ namespace NuSysApp
                 WorkspaceChanged?.Invoke(this, _activeWorkspace);
             }
         }
+
+        #region Speech Recognition
+        public async Task InitializeRecog()
+        {
+            await Task.Run(async () =>
+            {
+                Recognizer = new SpeechRecognizer();
+                // Compile the dictation grammar that is loaded by default. = ""; 
+                await Recognizer.CompileConstraintsAsync();
+            });
+        }
+
+        public async Task TranscribeVoice()
+        {
+            string spokenString = "";
+            // Create an instance of SpeechRecognizer. 
+            // Start recognition. 
+
+            try
+            {
+                // this.RecordVoice.Click += stopTranscribing;
+                IsRecording = true;
+                SpeechRecognitionResult speechRecognitionResult = await Recognizer.RecognizeAsync();
+                IsRecording = false;
+                //  this.RecordVoice.Click -= stopTranscribing;
+                // If successful, display the recognition result. 
+                if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
+                {
+                    spokenString = speechRecognitionResult.Text;
+                }
+            }
+            catch (Exception ex)
+            {
+                const int privacyPolicyHResult = unchecked((int)0x80045509);
+                const int networkNotAvailable = unchecked((int)0x80045504);
+
+                if (ex.HResult == privacyPolicyHResult)
+                {
+                    // User has not accepted the speech privacy policy
+                    string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+                    messageDialog.ShowAsync();
+
+                }
+                else if (ex.HResult == networkNotAvailable)
+                {
+                    string error = "In order to use dictation features, NuSys requires an internet connection";
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+                    messageDialog.ShowAsync();
+                }
+            }
+            //_recognizer.Dispose();
+            // this.mdTextBox.Text = spokenString;
+
+            Debug.WriteLine(spokenString);
+
+            //var vm = (TextNodeViewModel)DataContext;
+            //(vm.Model as TextNodeModel).Text = spokenString;
+            SpeechString = spokenString;
+        }
+
+        private async void stopTranscribing(object o, RoutedEventArgs e)
+        {
+            Recognizer.StopRecognitionAsync();
+            IsRecording = false;
+            // this.RecordVoice.Click -= stopTranscribing;
+        }
+
+        #endregion
 
         public LockDictionary Locks
         {
