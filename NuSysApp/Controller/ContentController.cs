@@ -15,7 +15,11 @@ namespace NuSysApp
 
         private Dictionary<string, NodeContentModel> _contents = new Dictionary<string, NodeContentModel>();
 
-
+        public int Count
+        {
+            get { return _contents.Count; }
+        }
+    
         public NodeContentModel Get(string id)
         {
             return _contents.ContainsKey(id) ? _contents[id] : null;

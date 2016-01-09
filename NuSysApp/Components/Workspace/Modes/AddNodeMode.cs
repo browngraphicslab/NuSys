@@ -181,7 +181,9 @@ namespace NuSysApp
             //var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
             var contentId = SessionController.Instance.GenerateId();
             var contentRequest = new NewContentRequest(contentId,data == null ? "" : data.ToString());
+            
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
+
             var dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();

@@ -83,7 +83,7 @@ namespace NuSysApp
         #region Requests
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
-            await ThreadPool.RunAsync(async delegate {
+            await Task.Run(async delegate {
 
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
@@ -103,8 +103,10 @@ namespace NuSysApp
                     {
                         await SendRequest(message, packetType);
                     }
+                    Debug.WriteLine("WAIT "+requestID);
                     if (_requestEventDictionary.ContainsKey(requestID))
                         mre.WaitOne();
+                    Debug.WriteLine("FREE "+ requestID);
                 }
                 else
                 {
@@ -135,6 +137,7 @@ namespace NuSysApp
             if (recieverIPs != null)
             {
                 await _networkSession.SendRequestMessage(message, recieverIPs, packetType);
+                return;
             }
             switch (packetType)
             {
@@ -213,6 +216,7 @@ namespace NuSysApp
                     ManualResetEvent outMre;
                     _requestEventDictionary.TryRemove(local_id, out outMre);
                     mre.Set();
+                    Debug.WriteLine("SET "+local_id);
                 }
             }
         }

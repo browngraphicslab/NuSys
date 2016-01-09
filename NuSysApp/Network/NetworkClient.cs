@@ -112,7 +112,7 @@ namespace NuSysApp
             var m = message.GetSerialized();
             foreach (var ip  in ips)
             {
-                SendMessage(m, ip, type);
+                await SendMessage(m, ip, type);
             }
         }
         public async Task SendUDPMessage(Message message, ICollection<string> ips)
@@ -194,7 +194,7 @@ namespace NuSysApp
                     Debug.WriteLine("Exception caught during TCP connection recieve FROM IP " + ip + " with error code: " + e.Message);
                     return;
                 }
-                Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
+                //Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);
                 OnNewMessage?.Invoke(ip, new Message(message), PacketType.TCP);
             });
         }
