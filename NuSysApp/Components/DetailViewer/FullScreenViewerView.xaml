@@ -11,6 +11,14 @@
     <Grid x:Name="xContainer" Background="#AA000000">
         
         <ContentPresenter Content="{Binding View}" Margin="5,5,5,5"></ContentPresenter>
+        <StackPanel x:Name="TagContainer" Margin="5,5,5,5" Width="200"  HorizontalAlignment="Right">
+            <TextBlock Padding="5,5,5,5"  Text="Tags" Foreground="White" FontSize="20.0"  TextAlignment="Right"></TextBlock>
+            <StackPanel Height="35" HorizontalAlignment="Right" Orientation="Horizontal">
+                <TextBox x:Name="NewTagBox" Width="165"></TextBox>
+                <Button x:Name="AddTagButton"  Height="35" Width="35"  Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray"></Button>
+            </StackPanel>
+            <ItemsControl x:Name="Tags" Margin="5,5,5,5"></ItemsControl>
+        </StackPanel>
             
     </Grid>
 </local:AnimatableUserControl>

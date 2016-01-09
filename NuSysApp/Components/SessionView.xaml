@@ -11,7 +11,7 @@
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
         <local:FloatingMenuView x:Name="xFloatingMenu" />
-        <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
         <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
+        <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
     </Canvas>
 </Page>

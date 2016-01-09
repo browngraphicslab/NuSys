@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -87,7 +89,25 @@ namespace NuSysApp
         }
         protected virtual void OnMetadataChange(object source, string key)
         {
-            Tags = string.Join(",", Model.GetMetaData("tags") as List<string>);
+            //Tags = string.Join(", ", Model.GetMetaData("tags") as List<string>);
+            List<string> tagList = (List<string>) Model.GetMetaData("tags");
+            Tags = new ObservableCollection<Button>();
+            foreach (string tag in tagList)
+            {
+                //sorry about this - should also be in frontend and not in viewmodel
+                Button tagBlock = new Button();
+                tagBlock.Background = new SolidColorBrush(Colors.DarkSalmon);
+                tagBlock.Content = tag;
+                tagBlock.Height = 30;
+                tagBlock.Padding = new Thickness(5);
+                tagBlock.BorderThickness = new Thickness(0);
+                tagBlock.Foreground = new SolidColorBrush(Colors.White);
+                tagBlock.Margin = new Thickness(2, 2, 2, 2);
+                tagBlock.Opacity = 0.75;
+                tagBlock.FontStyle = FontStyle.Italic;
+                
+                Tags.Add(tagBlock);
+            }
             RaisePropertyChanged("Tags");
         }
 
@@ -354,7 +374,9 @@ namespace NuSysApp
             set { Model.Title = value; }
         }
 
-        public string Tags { get; set; }
+        //public string Tags { get; set; }
+
+        public ObservableCollection<Button> Tags { get; set; }
         #endregion Public Properties
     }
 }

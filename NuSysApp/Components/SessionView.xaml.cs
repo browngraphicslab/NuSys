@@ -278,6 +278,7 @@ namespace NuSysApp
         {
             var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);
+            vm.MakeTagList();
         }
  
 
