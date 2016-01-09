@@ -178,7 +178,10 @@ namespace NuSysApp
 
 
 
-            var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
+            //var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
+            var contentId = SessionController.Instance.GenerateId();
+            var contentRequest = new NewContentRequest(contentId,data == null ? "" : data.ToString());
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
             var dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
@@ -188,7 +191,7 @@ namespace NuSysApp
             dict["contentId"] = contentId;
             //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
             var request = new NewNodeRequest(dict);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             vm.ClearSelection();
             vm.ClearMultiSelection();
 

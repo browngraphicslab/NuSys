@@ -17,7 +17,8 @@ namespace NuSysApp
             SystemRequest,
             NewLinkRequest,
             SendableUpdateRequest,
-            NewGroupRequest
+            NewGroupRequest,
+            NewContentRequest
         }
         protected Message _message;
         private RequestType _requestType;
