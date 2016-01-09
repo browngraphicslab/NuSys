@@ -31,8 +31,6 @@ namespace WordAddIn
 
         public ObservableCollection<SelectionItem> CheckedSelections { get; set;}
 
-        public Visibility IsUnexpVisible { get; set; }
-
         private string commentAuthor = "NuSys";
 
         private string commentExported = "Exported to NuSys";
@@ -45,12 +43,34 @@ namespace WordAddIn
 
             LoadSelectionData();
             CheckSelectionLabels();
-            IsUnexpVisible = Visibility.Visible;
         }
 
         private void UnexpOnClick(object sender, RoutedEventArgs e)
         {
-            IsUnexpVisible = Visibility.Collapsed;
+            if((string)unexpBttn.Content == "+")
+            {
+                unexpBttn.Content = "-";
+                ic.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                unexpBttn.Content = "+";
+                ic.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ExpOnClick(object sender, RoutedEventArgs e)
+        {
+            if ((string)expBttn.Content == "+")
+            {
+                expBttn.Content = "-";
+                ic2.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                expBttn.Content = "+";
+                ic2.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -16,8 +16,22 @@
                 </Button>
                 <Button Content="Delete" Click="Button_Click" Width="101" Height="36" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" />
             </StackPanel>
-            <Label FontSize="16" FontFamily="Segoe UI Light"  MouseLeftButtonUp="UnexpOnClick">Your Selections:</Label>
-            <Label Name="noSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light"  HorizontalAlignment="Center">There are currently no selections to export.</Label>
+
+            <Grid Width="328" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" FontSize="16" FontFamily="Segoe UI Light">Your Selections</Label>
+                <Button Grid.Column="1" x:Name="unexpBttn" Content="+" Click="UnexpOnClick" Width="23" Height="23" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" HorizontalAlignment="Right" />
+            </Grid>
+            <Grid Width="328" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Width="240" Name="noSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections to export</Label>
+            </Grid>
             <ItemsControl Name="ic" ItemsSource="{Binding UnexportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -25,8 +39,22 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            <Label FontSize="16" FontFamily="Segoe UI Light">Exported Selections:</Label>
-            <Label Name="noExpSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections exported to NuSys</Label>
+            <Grid Width="328" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" FontSize="16" FontFamily="Segoe UI Light">Exported Selections</Label>
+                <Button Grid.Column="1" Name="expBttn" Content="+" Click="ExpOnClick" Width="23" Height="23" FontSize="14" FontFamily="Segoe UI Light" Margin="5,5,5,5" Background="#FFF3F0F0" HorizontalAlignment="Right" />
+            </Grid>
+
+            <Grid Width="328" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Width="293" Name="noExpSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections exported to NuSys</Label>
+            </Grid>
             <ItemsControl Name="ic2" ItemsSource="{Binding ExportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
