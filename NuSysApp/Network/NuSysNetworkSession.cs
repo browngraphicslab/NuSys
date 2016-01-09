@@ -185,6 +185,9 @@ namespace NuSysApp
                 case Request.RequestType.NewGroupRequest:
                     request = new NewGroupRequest(message);
                     break;
+                case Request.RequestType.NewThumbnailRequest:
+                    request = new NewThumbnailRequest(message);
+                    break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;
@@ -257,7 +260,7 @@ namespace NuSysApp
         {
             if (IsHostMachine)
             {
-                await ProcessIncomingRequest(message, NetworkClient.PacketType.TCP,ip);
+                await ProcessIncomingRequest(new Message(message.GetSerialized()), NetworkClient.PacketType.TCP,ip);
             }
             else
             {

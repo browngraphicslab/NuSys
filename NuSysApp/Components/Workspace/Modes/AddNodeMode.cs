@@ -129,18 +129,8 @@ namespace NuSysApp
                 if (Constants.ImageFileTypes.Contains(storageFile.FileType))
                 {
                     nodeType = NodeType.Image;
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
-                    {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-
-                    data = Convert.ToBase64String(fileBytes);
+                    
+                    data = Convert.ToBase64String(await ImageUtil.StorageFileToByteArray(storageFile));
                 }
 
                 if (Constants.PdfFileTypes.Contains(storageFile.FileType))
