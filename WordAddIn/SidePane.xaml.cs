@@ -44,7 +44,7 @@ namespace WordAddIn
             ic2.DataContext = this;
 
             LoadSelectionData();
-            CheckSelectionLabels()
+            CheckSelectionLabels();
         }
 
         private void UnexpOnClick(object sender, RoutedEventArgs e)
