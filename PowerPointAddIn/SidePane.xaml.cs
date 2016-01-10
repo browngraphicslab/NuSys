@@ -1,24 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using Microsoft.Office.Interop.PowerPoint;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Diagnostics;
 using System.Drawing;
-using Microsoft.Office.Interop.PowerPoint;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace PowerPointAddIn
 {
@@ -27,106 +16,238 @@ namespace PowerPointAddIn
     /// </summary>
     public partial class SidePane : UserControl
     {
-        public ObservableCollection<SelectionItem> Selections { get; set; }
+
+        private static string mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+
+        private static string dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
+
+        public ObservableCollection<SelectionItem> UnexportedSelections { get; set; }
+
+        public ObservableCollection<SelectionItem> ExportedSelections { get; set; }
+
+        public ObservableCollection<SelectionItem> CheckedSelections { get; set; }
+
+        private string commentAuthor = "NuSys";
+
+        private string commentExported = "Exported to NuSys";
 
         public SidePane()
         {
             InitializeComponent();
             ic.DataContext = this;
+            ic2.DataContext = this;
+
+            UnexportedSelections = new ObservableCollection<SelectionItem>();
+            ExportedSelections = new ObservableCollection<SelectionItem>();
+            CheckedSelections = new ObservableCollection<SelectionItem>();
+
+            CheckSelectionLabels();
+        }
+
+        private void UnexpOnClick(object sender, RoutedEventArgs e)
+        {
+            if ((string)unexpBttn.Content == "+")
+            {
+                unexpBttn.Content = "-";
+                ic.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                unexpBttn.Content = "+";
+                ic.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ExpOnClick(object sender, RoutedEventArgs e)
+        {
+            if ((string)expBttn.Content == "+")
+            {
+                expBttn.Content = "-";
+                ic2.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                expBttn.Content = "+";
+                ic2.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Selections.Clear();
+            OnDelete();
+            CheckSelectionLabels();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Send();
+            OnExport();
+            CheckSelectionLabels();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             OnSelectionAdded();
+            CheckSelectionLabels();
         }
 
-        private void OnSelectionAdded()
+        private void CheckSelectionLabels()
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
-            var mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
-
-            var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-            selection.Copy();
-
-            System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
-            if (null != data)
+            if (ExportedSelections.Count == 0)
             {
-                foreach (var f in data.GetFormats())
-                {
-                    Debug.WriteLine(f);
-                }
+                noExpSelectionsLabel.Visibility = Visibility.Visible;
+                expBttn.Visibility = Visibility.Hidden;
+            }
+            else if (ExportedSelections.Count > 0)
+            {
+                noExpSelectionsLabel.Visibility = Visibility.Collapsed;
+                expBttn.Visibility = Visibility.Visible;
+            }
 
-                string result = string.Empty;
-                var imgFileName = string.Format(@"{0}", Guid.NewGuid());
-                imgFileName = imgFileName + ".png";
-
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Rtf))
-                {
-                    result = (string)data.GetData(System.Windows.Forms.DataFormats.Rtf);
-                }
-                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Html))
-                {
-                    string html = (string)data.GetData(System.Windows.Forms.DataFormats.Html);
-                    var converter = new SautinSoft.HtmlToRtf();
-                    result = converter.ConvertString(html);
-                }
-                else if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    result = imgFileName;
-                    Bitmap bitmap = (data.GetData(System.Windows.Forms.DataFormats.Bitmap, true) as Bitmap);
-                    bitmap.Save(mediaDir + "\\" + imgFileName, System.Drawing.Imaging.ImageFormat.Png);
-                    System.IO.File.SetLastWriteTimeUtc(mediaDir + "\\" + imgFileName, DateTime.UtcNow);
-                }
-
-                Bitmap thumbnail = null;
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    result = imgFileName;
-                    thumbnail = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
-                    thumbnail.Save(mediaDir + "\\" + imgFileName, ImageFormat.Png);
-                }
-
-                if (result == string.Empty)
-                    return;
-
-
-                var imgSrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(thumbnail.GetHbitmap(), IntPtr.Zero, System.Windows.Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-
-                // Create a comment
-                var posX = selection.ShapeRange.Left;
-                var posY = selection.ShapeRange.Top;
-                var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
-                var c = currentSlide.Comments.Add(posX, posY, "NuSys", "NuSys", "This region to NuSys");
-                Selections.Add(new SelectionItem { Content = result, Comment = c, Slide = currentSlide, SlideNumber = currentSlide.SlideNumber, Thumbnail = imgSrc });
+            if (UnexportedSelections.Count == 0)
+            {
+                noSelectionsLabel.Visibility = Visibility.Visible;
+                unexpBttn.Visibility = Visibility.Hidden;
+            }
+            else if (UnexportedSelections.Count > 0)
+            {
+                noSelectionsLabel.Visibility = Visibility.Collapsed;
+                unexpBttn.Visibility = Visibility.Visible;
             }
         }
 
-        private void Send()
+        //delete all checked selections
+        private void OnDelete()
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
+            foreach (var selection in CheckedSelections)
+            {
+                try
+                {
+                    //checking if Comment has not been deleted
+                    if (selection.Comment.Author != null)
+                    {
+                        selection.Comment.Delete();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //if exception is thrown, comment has been deleted already so do nothing
+                }
+
+                if (UnexportedSelections.Contains(selection))
+                {
+                    UnexportedSelections.Remove(selection);
+                }
+                else if (ExportedSelections.Contains(selection))
+                {
+                    ExportedSelections.Remove(selection);
+                }
+            }
+
+            CheckedSelections.Clear();
+        }
+
+        //exports to NuSys all checked selections
+        private void OnExport()
+        {
             var fileDir = dir + "\\selection";
             int count = 0;
-            foreach (var result in Selections)
+
+            var temp_cs = new List<SelectionItem>();
+            var hasNewSelection = false;
+
+            List<SelectionItemView> selectionItemViews = new List<SelectionItemView>();
+
+            foreach (var selection in CheckedSelections)
             {
-                var f = fileDir + count + ".nusys";
-                File.WriteAllText(f, result.Content);
-                File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
-                File.Move(f, f);
-                count++;
+                if (UnexportedSelections.Contains(selection))
+                {
+                    var selectionItemView = selection.GetView();
+
+                    if (selection.ImageContent != null)
+                    {
+                        var imageFileName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
+                        selection.ImageContent.Save(mediaDir + "\\" + imageFileName, ImageFormat.Png);
+                        selectionItemView.ImageName = imageFileName;
+                    }
+
+                    selectionItemViews.Add(selectionItemView);
+
+                    selection.IsExported = true;
+                    try
+                    {
+                        //checking if Comment has not been deleted
+                        if (selection.Comment.Author != null)
+                        {
+                            var posX = selection.ThisSelection.ShapeRange.Left;
+                            var posY = selection.ThisSelection.ShapeRange.Top;
+                            var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+                            var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, commentExported);
+
+                            selection.Comment.Delete();
+                          
+                            selection.Comment = c;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //if exception is thrown, comment has been deleted already so do nothing
+                    }
+
+                    UnexportedSelections.Remove(selection);
+                    ExportedSelections.Add(selection);
+
+                    hasNewSelection = true;
+                    count++;
+                }
+
+                //need a seperate list to iterate and delete/uncheck
+                temp_cs.Add(selection);
             }
 
-            File.WriteAllText(dir + "\\update.nusys", "update");
+            if (hasNewSelection)
+            {
+                var selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemViews);
+                var f = fileDir + Guid.NewGuid().ToString() + ".nusys";
+                File.WriteAllText(f, selectionItemJson);
+                File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
+                File.Move(f, f);
+
+                File.WriteAllText(dir + "\\update.nusys", "update");
+            }
+
+            //need seperate for loop because unchecking triggers a removal in CheckedSelections
+            foreach (var cs in temp_cs)
+            {
+                cs.CheckBox.IsChecked = false;
+            }
         }
 
+        //add the highlighted content to the sidebar as a selection
+        private void OnSelectionAdded()
+        {
+            try {
+                Clipboard.Clear();
+
+                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                selection.Copy();
+
+                if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
+                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
+                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                {
+                    var posX = selection.ShapeRange.Left;
+                    var posY = selection.ShapeRange.Top;
+                    var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+                    var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, "");
+
+                    var ns = new SelectionItem { Comment = c, ThisSelection = selection, IsExported = false };
+                    UnexportedSelections.Add(ns);
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling 
+            }
+        }
     }
 }

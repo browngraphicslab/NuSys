@@ -138,6 +138,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\GemBox.Document.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="SautinSoft.HtmlToRtf">
@@ -206,6 +210,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -217,6 +222,7 @@
     <Compile Include="SelectionItem.xaml.cs">
       <DependentUpon>SelectionItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectionItemView.cs" />
     <Compile Include="SidePane.xaml.cs">
       <DependentUpon>SidePane.xaml</DependentUpon>
     </Compile>
@@ -231,6 +237,7 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <None Include="WordAddIn_1_TemporaryKey.pfx" />
     <None Include="WordAddIn_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -257,10 +264,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WordAddIn_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WordAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>B4384C66AA6AF9ED85AA438EF302B1DAAD9C5371</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>990354376ED7F2229C57D9561406503C9D0163B5</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
