@@ -40,6 +40,7 @@ namespace NuSysApp
               var vm = (FullScreenViewerViewModel)DataContext;
               vm.PropertyChanged += OnPropertyChanged;
               Tags.ItemsSource = vm.Tags;
+              vm.MakeTagList();
           };
 
             IsHitTestVisible = false;
