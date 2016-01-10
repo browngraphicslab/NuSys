@@ -125,7 +125,7 @@ namespace NuSysApp
             var inqCanvas = Parent as InqCanvasView;
             if (inqCanvas?.Mode is EraseInqMode && inqCanvas.IsPressed)
             {
-                NetworkConnector.Instance.RequestDeleteSendable((DataContext as InqLineViewModel).Model.Id);
+                //NetworkConnector.Instance.RequestDeleteSendable((DataContext as InqLineViewModel).Model.Id);
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -12,27 +13,27 @@ namespace NuSysApp
 {
     public class NodeContainerViewModel: NodeViewModel
     {
-        public ObservableDictionary<string, UserControl> Children { get; }
+        public ObservableDictionary<string, FrameworkElement> Children { get; }
 
-        public ObservableCollection<UserControl> AtomViewList { get; set; } 
+        public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
-        public delegate Task ChildAddedHandler(object source, AnimatableNodeView node);
+        public delegate Task ChildAddedHandler(object source, FrameworkElement node);
         public event ChildAddedHandler ChildAdded;
         public bool EnableChildMove { get; set; }
        
         public NodeContainerViewModel(NodeContainerModel model): base(model)
         {
-            Children = new ObservableDictionary<string, UserControl>();
+            Children = new ObservableDictionary<string, FrameworkElement>();
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             model.ChildAdded += OnChildAdded;
             model.ChildRemoved += OnChildRemoved;
-            AtomViewList = new ObservableCollection<UserControl>();
+            AtomViewList = new ObservableCollection<FrameworkElement>();
+        }
 
-            foreach (var sendable in SessionController.Instance.IdToSendables.Values.Where( s => (s as AtomModel).Creator == model.Id))
-            {
-                model.AddChild(sendable);
-            }
+        public async Task Init()
+        {
+     
         }
 
         public override void Dispose()
@@ -41,6 +42,13 @@ namespace NuSysApp
             model.ChildAdded += OnChildAdded;
             model.ChildRemoved += OnChildRemoved;
             base.Dispose();
+        }
+
+        public void RemoveChild(string id)
+        {
+            var child = Children[id];
+            AtomViewList.Remove(child);
+            Children.Remove(id);
         }
 
         public override void Translate(double dx, double dy)
@@ -59,15 +67,19 @@ namespace NuSysApp
 
         protected virtual async Task OnChildAdded(object source, Sendable nodeModel)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(nodeModel, Children.Values.ToList());
-            Children.Add(nodeModel.Id, view);
-            AtomViewList.Add(view);
-
-            var handler = ChildAdded;
-            if (handler != null)
+            if (!Children.ContainsKey(nodeModel.Id))
             {
-                var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (AnimatableNodeView)view));
-                await Task.WhenAll(tasks);
+                var view = await _nodeViewFactory.CreateFromSendable(nodeModel, Children.Values.ToList());
+
+            
+                Children.Add(nodeModel.Id, view);
+                AtomViewList.Add(view);
+                var handler = ChildAdded;
+                if (handler != null)
+                {
+                    var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (FrameworkElement)view));
+                    await Task.WhenAll(tasks);
+                }
             }
         }
 

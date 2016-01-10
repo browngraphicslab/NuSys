@@ -60,11 +60,14 @@ namespace NuSysApp
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
                 if (_inqLineModel.Points.Count > 1)
                 {
+                /*
                     NetworkConnector.Instance.RequestSendPartialLine(_inqLineModel.Id, ((InqCanvasViewModel)inqCanvas.DataContext).Model.Id,
                         _inqLineModel.Points[_inqLineModel.Points.Count - 2].X.ToString(),
                         _inqLineModel.Points[_inqLineModel.Points.Count - 2].Y.ToString(),
                         _inqLineModel.Points[_inqLineModel.Points.Count - 1].X.ToString(),
                         _inqLineModel.Points[_inqLineModel.Points.Count - 1].Y.ToString());
+
+    */
                 }
         }
 
@@ -73,7 +76,7 @@ namespace NuSysApp
             _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
-            NetworkConnector.Instance.RequestFinalizeGlobalInk(await _inqLineModel.Pack());
+            //NetworkConnector.Instance.RequestFinalizeGlobalInk(await _inqLineModel.Pack());
             (((InqCanvasViewModel) inqCanvas.DataContext).Model).LineFinalized += delegate
             {
                 inqCanvas.ViewModel.RemoveLine(_inqLineView);

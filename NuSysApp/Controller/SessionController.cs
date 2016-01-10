@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -18,6 +24,11 @@ namespace NuSysApp
         public delegate void WorkspaceChangedHandler(object source, WorkspaceViewModel workspace);
         public event WorkspaceChangedHandler WorkspaceChanged;
 
+        public NuSysNetworkSession NuSysNetworkSession
+        {
+            get { return _nuSysNetworkSession; }
+        }
+
         private LockDictionary _locks;
 
         private ContentController _contentController = new ContentController();
@@ -26,6 +37,9 @@ namespace NuSysApp
         public SessionView SessionView { get; set; }
         public ContentController ContentController { get { return _contentController; } }
 
+        public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>(); 
+
+        private NuSysNetworkSession _nuSysNetworkSession;
 
         public WorkspaceViewModel ActiveWorkspace
         {
@@ -43,13 +57,14 @@ namespace NuSysApp
             set { _locks = value; }
         }
 
-        public SessionController()
+        private SessionController()
         {
             _locks = new LockDictionary(this);
             IdToSendables = new ObservableDictionary<string, Sendable>();
+            _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
-        public UserControl GetUserControlById(string id)
+        public FrameworkElement GetUserControlById(string id)
         {
             var model = IdToSendables[id];
             foreach (var userControl in ActiveWorkspace.Children.Values)
@@ -75,19 +90,18 @@ namespace NuSysApp
                 Y = yCoordinate,
                 NodeType = NodeType.Group
             };
-
-            node1.Creator = group.Id;
-            node2.Creator = group.Id;
-
-            group.AddChild(node1);
-            group.AddChild(node2);
-
-            
-
-           // node1.MoveToGroup(group);
-//node2.MoveToGroup(group);
             IdToSendables.Add(id, group);
 
+            node1.Creators.Add(group.Id);
+            var prevGroups1 = (List<string>)node1.GetMetaData("groups");
+            prevGroups1.Add(group.Id);
+            node1.SetMetaData("groups", prevGroups1);
+
+            
+            node2.Creators.Add(group.Id);
+            var prevGroups2 = (List<string>)node2.GetMetaData("groups");
+            prevGroups2.Add(group.Id);
+            node2.SetMetaData("groups", prevGroups2);
         }
 
         public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
@@ -132,7 +146,7 @@ namespace NuSysApp
                 props.Remove("nodeType");
                 props.Remove("x");
                 props.Remove("y");
-                NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
+                //NetworkConnector.Instance.RequestMakeNode(group.X.ToString(), group.Y.ToString(), ((NodeModel)searchResult).NodeType.ToString(), null, null, props, callback);
             }
 
             //   ActiveWorkspace.Model.AddChild(group);
@@ -159,7 +173,7 @@ namespace NuSysApp
 
         }
 
-        public async Task CreateNewNode(string id, NodeType type)
+        public async Task<NodeModel> CreateNewNode(string id, NodeType type)
         {
             NodeModel node;
             NodeViewModel nodeViewModel;
@@ -190,18 +204,19 @@ namespace NuSysApp
                     node = new WorkspaceModel(id);
                     break;
                 case NodeType.Group:
-                    node = null;
+                    node = new NodeContainerModel(id);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
-                    return;
+                    return null;
             }
             if (node == null)
-                return;
+                return null;
 
             // TODO: bullshit fix
             if (!IdToSendables.ContainsKey(id))
                 IdToSendables.Add(id, node);
+            return node;
         }
 
         public async Task RemoveSendable(string id)
@@ -219,6 +234,27 @@ namespace NuSysApp
             }
         }
 
+        private async Task LoadThumbs()
+        {
+
+            var thumbs = await NuSysStorages.Thumbs.GetFilesAsync();
+            foreach (var thumbFile in thumbs)
+            {
+                var buffer = await FileIO.ReadBufferAsync(thumbFile);
+                var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
+                var img = await ImageUtil.ByteArrayToBitmapImage(buffer.ToArray());
+                Thumbnails[id] = img;
+            }           
+        }
+
+        public async Task SaveThumb(string id, RenderTargetBitmap image)
+        {
+            Thumbnails[id] = image;
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
+            var img = await ImageUtil.RenderTargetBitmapToByteArray(image);
+            FileIO.WriteBytesAsync(file, img);
+        }
+
 
         public async Task SaveWorkspace()
         {
@@ -232,6 +268,7 @@ namespace NuSysApp
 
         public async Task LoadWorkspace()
         {
+            await LoadThumbs();
             await _contentController.Load();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
@@ -243,9 +280,6 @@ namespace NuSysApp
         {
             return Guid.NewGuid().ToString("N");
         }
-
-
-
 
         public static SessionController Instance
         {

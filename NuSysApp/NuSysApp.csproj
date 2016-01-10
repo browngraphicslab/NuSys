@@ -100,6 +100,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
@@ -181,6 +182,15 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
+      <DependentUpon>GroupCircleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupItemViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupItemThumbFactory.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
+      <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeView.xaml.cs">
       <DependentUpon>GroupNodeView.xaml</DependentUpon>
     </Compile>
@@ -215,12 +225,29 @@
     <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
+    <Compile Include="Network\NetworkClient.cs" />
+    <Compile Include="Network\NetworkSession.cs" />
+    <Compile Include="Network\NuSysNetworkSession.cs" />
+    <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
+    <Compile Include="Network\Requests\NewContentRequest.cs" />
+    <Compile Include="Network\Requests\NewGroupRequest.cs" />
+    <Compile Include="Network\Requests\NewLinkRequest.cs" />
+    <Compile Include="Network\Requests\NewNodeRequest.cs" />
+    <Compile Include="Network\Requests\Request.cs" />
+    <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />
+    <Compile Include="Network\Requests\TestClass.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\ImageUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
+    <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\InqCanvas\InqLineViewModel.cs" />
@@ -455,6 +482,14 @@
     <Page Include="Components\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupCircleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeView.xaml">
       <SubType>Designer</SubType>

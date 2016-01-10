@@ -34,7 +34,7 @@ namespace NuSysApp
             storyboard.Begin();
         }
 
-        public static void To(UserControl target, string property, double to, int duration,
+        public static void To(FrameworkElement target, string property, double to, int duration,
     EasingFunctionBase easing = null, EventHandler<object> callback = null)
         {
             var transform = (CompositeTransform) target.RenderTransform;

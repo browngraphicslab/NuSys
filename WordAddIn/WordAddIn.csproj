@@ -29,6 +29,7 @@
     <AssemblyName>WordAddIn</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DefineConstants>VSTO40</DefineConstants>
+    <IsWebBootstrapper>False</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <PublishUrl>publish\</PublishUrl>
     <InstallUrl />
@@ -38,7 +39,6 @@
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
-    <IsWebBootstrapper>False</IsWebBootstrapper>
     <ProductName>WordAddIn</ProductName>
     <PublisherName />
     <SupportUrl />
@@ -267,7 +267,7 @@
     <ManifestKeyFile>WordAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>990354376ED7F2229C57D9561406503C9D0163B5</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B4384C66AA6AF9ED85AA438EF302B1DAAD9C5371</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>

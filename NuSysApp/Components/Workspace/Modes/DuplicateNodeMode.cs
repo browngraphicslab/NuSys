@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
@@ -37,8 +38,8 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var kv = (KeyValuePair<string, UserControl>) newItem;
-                var item = (UserControl)kv.Value;
+                var kv = (KeyValuePair<string, FrameworkElement>) newItem;
+                var item = (FrameworkElement)kv.Value;
                 if (item.DataContext is NodeViewModel) { 
                    item.PointerPressed += OnAtomPressed;
                    item.PointerReleased += OnAtomReleased;
@@ -65,21 +66,51 @@ namespace NuSysApp
             if (_selectedNode != null && _selectedNode != doubleTappedNode)
             {
                 var vm = (WorkspaceViewModel)_view.DataContext;
+
+                var tappedPoint = e.GetPosition(null);
+                var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
+                p.X -= _selectedNode.Width / 2;
+                p.Y -= _selectedNode.Height / 2;
                 var dict = await _selectedNode.Model.Pack();
 
                 var props = dict;
                 props.Remove("id");
                 props.Remove("type");
-                props.Remove("nodeType");
-                props.Remove("x");
-                props.Remove("y");
+                props["x"] = p.X.ToString();
+                props["y"] = p.Y.ToString();
 
-                var tappedPoint = e.GetPosition(null);
+                if (_selectedNode is NodeContainerViewModel)
+                {
+                    var children = new List<string>();;
+                    foreach (var child in (_selectedNode as NodeContainerViewModel).Children.Values)
+                    {
+                        children.Add((child.DataContext as GroupItemViewModel).Id);
+                    }
+                    props["groupChildren"] = children;
 
-                var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
-                p.X -= _selectedNode.Width / 2;
-                p.Y -= _selectedNode.Height / 2;
-                NetworkConnector.Instance.RequestMakeNode(p.X.ToString(),p.Y.ToString(), _selectedNode.NodeType.ToString(), null, null, props);
+                }
+
+
+                var callback = new Action<string>(async (newId) =>
+                {
+
+                    var wvm = _view.DataContext as WorkspaceViewModel;
+                    var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == newId);
+
+                    var duplicateModel = (AtomModel)SessionController.Instance.IdToSendables[newId];
+
+                    if (!(duplicateModel is NodeContainerModel))
+                        return;
+                    
+                    
+                    foreach (var child in SessionController.Instance.IdToSendables.Values.Where( s => (s as AtomModel).Creators.Contains(duplicateModel.Id)))
+                    {
+                        ((NodeContainerModel) duplicateModel).AddChild(child);
+                    }
+
+                });
+
+//                NetworkConnector.Instance.RequestDuplicateNode(props, callback);
             }
 
         }
@@ -91,7 +122,7 @@ namespace NuSysApp
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
-            _selectedNode = (NodeViewModel)((UserControl)sender).DataContext;
+            _selectedNode = (NodeViewModel)((FrameworkElement)sender).DataContext;
         }
     }
 }

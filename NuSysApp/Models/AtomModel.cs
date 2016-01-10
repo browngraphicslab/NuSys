@@ -46,10 +46,13 @@ namespace NuSysApp
 
         protected AtomModel(string id) : base(id)
         {
-            _debounceDict = new DebouncingDictionary(this);
+            _debounceDict = new DebouncingDictionary(this.Id);
             CanEdit = EditStatus.Maybe;
 
+            Creators = new List<string>();
+
             SetMetaData("tags", new List<string> {"none"});
+            SetMetaData("groups", new List<string>());
         }
         
         // TODO: Move color to higher level type
@@ -66,7 +69,7 @@ namespace NuSysApp
         {
             if (Metadata.ContainsKey(key))
                 return Metadata[key];
-            return "";
+            return null;
         }
 
         public void SetMetaData(string key, object value)
@@ -84,7 +87,7 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict.Add("metadata", Metadata);
-            dict.Add("creator", Creator);
+            dict.Add("creators", Creators);
             dict.Add("x", X);
             dict.Add("y", Y);
             dict.Add("width", Width);
@@ -104,6 +107,11 @@ namespace NuSysApp
             else
                 Metadata["tags"] = new List<string>();
 
+            if (Metadata.ContainsKey("groups"))
+                Metadata["groups"] = JsonConvert.DeserializeObject<List<string>>(Metadata["groups"].ToString());
+            else
+                Metadata["groups"] = new List<string>();
+
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
             Width = props.GetDouble("width", Width);
@@ -111,12 +119,12 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creator = props.GetString("creator", null);
+            Creators = props.GetList("creators", new List<string>());
             Title = props.GetString("title", "");
             await base.UnPack(props);
         }
 
-        public string Creator { get; set; }
+        public List<string> Creators { get; set; }
         public double X
         {
             get { return _x; }

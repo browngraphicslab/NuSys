@@ -58,7 +58,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("audio"))
             {
-                ByteArray = Convert.FromBase64String(props["audio"]);
+                ByteArray = Convert.FromBase64String(props.GetString("audio"));
                 MakeAudio(ByteArray);
             }
             base.UnPack(props);
@@ -86,7 +86,7 @@ namespace NuSysApp
         public async Task SendNetworkUpdate()
         {
             byte[] bytes = await ConvertAudioToByte(AudioFile);
-            if (!NetworkConnector.Instance.IsSendableBeingUpdated(Id))
+            if ("!NetworkConnector.Instance.IsSendableBeingUpdated(Id)" == "")
             {
                 Debug.WriteLine("add to debounce dict called");
                 DebounceDict.MakeNextMessageTCP();

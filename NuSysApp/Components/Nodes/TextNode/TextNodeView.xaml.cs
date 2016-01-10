@@ -26,7 +26,7 @@ using Windows.UI.Xaml.Media.Animation;
 namespace NuSysApp
 {
     
-    public sealed partial class TextNodeView : AnimatableNodeView
+    public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable
     {
 
         private List<Image> _images = new List<Image>();
@@ -315,6 +315,13 @@ namespace NuSysApp
         private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             e.Handled = true;            
-        }  
+        }
+
+        public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
+        {
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(rtfTextBox, width, height);
+            return r;
+        }
     }
 }

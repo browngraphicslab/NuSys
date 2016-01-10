@@ -29,10 +29,11 @@ namespace NuSysApp
         public Button btnDelete = null;
         public Path resizer = null;
         public Grid bg = null;
-        public TextBlock tags = null;
+        //public TextBlock tags = null;
         public Grid titleContainer = null;
         public TextBox title = null;
         public Border highlight = null;
+        public ItemsControl tags = null;
 
         public NodeTemplate()
         {
@@ -79,8 +80,12 @@ namespace NuSysApp
 
             highlight = (Border)GetTemplateChild("xHighlight");
 
-            tags = (TextBlock)GetTemplateChild("Tags");
-            var t = new TranslateTransform {X = 0, Y = 25};
+            //tags = (TextBlock)GetTemplateChild("Tags");
+            //var t = new TranslateTransform {X = 0, Y = 25};
+            //tags.RenderTransform = t;
+
+            tags = (ItemsControl) GetTemplateChild("Tags");
+            var t = new TranslateTransform {X = 0, Y = 35};
             tags.RenderTransform = t;
 
             title = (TextBox)GetTemplateChild("xTitle");
@@ -119,7 +124,7 @@ namespace NuSysApp
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
             var model = (NodeModel)((NodeViewModel) this.DataContext).Model;
-            NetworkConnector.Instance.RequestDeleteSendable(model.Id);
+            //NetworkConnector.Instance.RequestDeleteSendable(model.Id);
         }
 
 

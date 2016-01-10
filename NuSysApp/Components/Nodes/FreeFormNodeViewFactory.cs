@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 
@@ -12,7 +13,7 @@ namespace NuSysApp
 {
     public class FreeFormNodeViewFactory : INodeViewFactory
     {
-        public async Task<UserControl> CreateFromSendable(Sendable model, List<UserControl> AtomViewList)
+        public async Task<FrameworkElement> CreateFromSendable(Sendable model, List<FrameworkElement> AtomViewList)
         {
             UserControl view = null;
 
@@ -32,7 +33,7 @@ namespace NuSysApp
         }
 
 
-        private UserControl CreateLinkView(LinkModel model, List<UserControl> AtomViewList)
+        private UserControl CreateLinkView(LinkModel model, List<FrameworkElement> AtomViewList)
         {
             var atom1Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom1).DataContext;
             var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
@@ -44,7 +45,7 @@ namespace NuSysApp
             return view;
         }
 
-        private async Task<UserControl> CreateFromNodeType(NodeModel model)
+        private async Task<FrameworkElement> CreateFromNodeType(NodeModel model)
         {
             UserControl view = null;
 
@@ -56,7 +57,9 @@ namespace NuSysApp
                      await tvm.UpdateRtf();
                     break;
                 case NodeType.Group:
-                    view = new GroupNodeView(new GroupNodeViewModel((NodeContainerModel)model));
+                    var vm = new GroupNodeViewModel((NodeContainerModel) model);
+                    await vm.Init();
+                    view = new GroupNodeView(vm);
                     break;
                 case NodeType.GroupTag:
                     view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));

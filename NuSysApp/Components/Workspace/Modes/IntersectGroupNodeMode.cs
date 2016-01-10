@@ -17,7 +17,7 @@ namespace NuSysApp
         private LabelNodeView _intersectedGroupNode;
         private LabelNodeView _initialGroupNode;
         private bool _isIntersecting;
-        private List<UserControl> _searchList = new List<UserControl>();
+        private List<FrameworkElement> _searchList = new List<FrameworkElement>();
         private LabelNodeView _generatedLabel;
 
         private readonly DispatcherTimer _timer = new DispatcherTimer();
@@ -136,7 +136,7 @@ namespace NuSysApp
                 var avgX = (minX + (maxX-minX)/2.0);
                 var avgY = (initialTransform.TranslateY + intersectedTransform.TranslateY)/2.0;
 
-                NetworkConnector.Instance.RequestNewGroupTag(avgX.ToString(), (avgY + 450).ToString(), n1 + " ∩ " + n2, props, callback);
+                //NetworkConnector.Instance.RequestNewGroupTag(avgX.ToString(), (avgY + 450).ToString(), n1 + " ∩ " + n2, props, callback);
             };
         }
 

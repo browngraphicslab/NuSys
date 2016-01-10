@@ -24,7 +24,7 @@ namespace NuSysApp{
         {
             var vm = (WorkspaceViewModel)_view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(e.GetPosition(_view));
-            await NetworkConnector.Instance.RequestMakePin(p.X.ToString(), p.Y.ToString());
+            //await NetworkConnector.Instance.RequestMakePin(p.X.ToString(), p.Y.ToString());
             e.Handled = true;
         }
     }

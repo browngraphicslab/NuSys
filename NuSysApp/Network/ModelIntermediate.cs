@@ -436,7 +436,7 @@ namespace NuSysApp
             {
                 string l = locks.First();
                 locks.Remove(l);
-                await NetworkConnector.Instance.RequestReturnLock(l);
+                //await NetworkConnector.Instance.RequestReturnLock(l);
             }
         }
 
@@ -449,7 +449,7 @@ namespace NuSysApp
             if (!WorkSpaceModel.Children.ContainsKey(id)) return false;
             var sendable = WorkSpaceModel.Children[id];
             bool isLine = sendable is InqLineModel || sendable is PinModel; // TODO there should be no special casing for inks
-            return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == NetworkConnector.Instance.LocalIP);
+            return isLine || (WorkSpaceModel.Locks.ContainsID(id) && WorkSpaceModel.Locks.Value(id) == //NetworkConnector.Instance.LocalIP);
         }
         
         public async Task CheckLocks(List<string> ids)
@@ -468,7 +468,7 @@ namespace NuSysApp
             {
                 string l = locksToReturn.First();
                 locksToReturn.Remove(l);
-                await NetworkConnector.Instance.RequestReturnLock(l);
+                //await NetworkConnector.Instance.RequestReturnLock(l);
             }
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Windows.UI.Xaml;
 
@@ -9,26 +10,25 @@ namespace NuSysApp
 {
     public class DebouncingDictionary
     {
-        private ConcurrentDictionary<string, object> _dict;
+        private ConcurrentDictionary<string, object> _dict; 
         private bool _timing = false;
         private Timer _timer;
-        private Sendable _atom;
         private bool _sendNextTCP = false;
-        private int _milliSecondDebounce = 15;
-
-        public DebouncingDictionary(Sendable atom)
+        private int _milliSecondDebounce = 20;
+        private string _id;
+        public DebouncingDictionary(string id)
         {
             _timer = new Timer(SendMessage, null, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
-            _atom = atom;
+            _id = id;
         }
 
-        public DebouncingDictionary(AtomModel atom, int milliSecondDebounce)
+        public DebouncingDictionary(string id, int milliSecondDebounce)
         {
             _timer = new Timer(SendMessage, null, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
-            _atom = atom;
             _milliSecondDebounce = _milliSecondDebounce;
+            _id = id;
         }
 
         public void MakeNextMessageTCP()
@@ -36,47 +36,45 @@ namespace NuSysApp
             _sendNextTCP = true;
         }
 
-        public void Add(string id, string value)
+        public void Add(string id, object value)
         {
-            if (!NetworkConnector.Instance.IsSendableBeingUpdated(_atom.Id) && (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe))
+            if (!_timing)
             {
-                if (!_timing)
+                _timing = true;
+                _dict.TryAdd(id, value);
+                _timer = new Timer(SendMessage, null, 0, _milliSecondDebounce);
+            }
+            else
+            {
+                if (_dict.ContainsKey(id))
                 {
-                    _timing = true;
-                    _dict.TryAdd(id, value);
-                    _timer = new Timer(SendMessage, null, 0, _milliSecondDebounce);
+                    _dict[id] = value;
+                    return;
                 }
-                else
-                {
-                    if (_dict.ContainsKey(id))
-                    {
-                        _dict[id] = value;
-                        return;
-                    }
-                    _dict.TryAdd(id, value);
-                }
+                _dict.TryAdd(id, value);
             }
         }
 
         private async void SendMessage(object state)
         {
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
-            if (_atom.CanEdit == AtomModel.EditStatus.Yes || _atom.CanEdit == AtomModel.EditStatus.Maybe)
+            var packetType = NetworkClient.PacketType.UDP;
+            if (_sendNextTCP)
             {
-                _dict.TryAdd("id", _atom.Id);
-                if (NetworkConnector.Instance.HasSendableID(_atom.Id))
-                {
-                    if (_sendNextTCP)
-                    {
-                        _sendNextTCP = false;
-                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict), NetworkConnector.PacketType.TCP);
-                    }
-                    else
-                    {
-                        await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_dict));
-                    }
-                }
+                _sendNextTCP = false;
+                packetType = NetworkClient.PacketType.TCP;
+                //await NetworkConnector.Instance.QuickUpdateAtom(new Dictionary<string, object>(_message), NetworkConnector.PacketType.TCP);
             }
+            Dictionary<string, object> d = _dict.ToDictionary(kvp => kvp.Key,kvp => kvp.Value);
+            if (d.ContainsKey("id"))
+            {
+                Debug.WriteLine("Debounce dictionary had a previous 'id' value.  It was overritten with the original ID");
+            }
+            d["id"] = _id;
+            var message = new Message(d);
+            var request = new SendableUpdateRequest(message);
+            //Debug.WriteLine("sending debounce dict for id"+ _id);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, packetType);
             _timing = false;
             _dict.Clear();
         }

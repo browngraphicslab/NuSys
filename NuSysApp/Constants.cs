@@ -13,6 +13,7 @@ namespace NuSysApp
         #region Folders and files
         public const string FolderNusysTemp = "NuSys";
         public const string FolderSave = "Save";
+        public const string FolderThumbs = "Thumbs";
         public const string FolderChromeTransferName = "ChromeTransfer";
         public const string FolderWordTransferName = "WordTransfer";
         public const string FolderPowerpointTransferName = "PowerPointTransfer";
@@ -74,5 +75,7 @@ namespace NuSysApp
         #region Cortana
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
         #endregion
+
+       
     }
 }

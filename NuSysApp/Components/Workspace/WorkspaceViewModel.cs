@@ -91,17 +91,17 @@ namespace NuSysApp
         {
             List<string> locks = new List<string>();
             locks.Add(selected.Model.Id);
-            NetworkConnector.Instance.CheckLocks(locks);
+            //NetworkConnector.Instance.CheckLocks(locks);
             if (selected.Model.CanEdit == AtomModel.EditStatus.Maybe)
             {
-                NetworkConnector.Instance.RequestLock(selected.Model.Id);
+                //NetworkConnector.Instance.RequestLock(selected.Model.Id);
             }
             if (SelectedAtomViewModel == null)
             {
                 SelectedAtomViewModel = selected;
                 return;
             }
-           // NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
+           // //NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
             selected.SetSelected(false);
             SelectedAtomViewModel.SetSelected(false);
             SelectedAtomViewModel = null;
@@ -113,7 +113,7 @@ namespace NuSysApp
             if (!selected.IsMultiSelected)
             {
                 selected.IsMultiSelected = true;
-                NetworkConnector.Instance.RequestLock(selected.Id);
+                //NetworkConnector.Instance.RequestLock(selected.Id);
                 this.MultiSelectedAtomViewModels.Add(selected);
             }
         }
@@ -137,7 +137,7 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
-            NetworkConnector.Instance.ReturnAllLocks();
+            //NetworkConnector.Instance.ReturnAllLocks();
             if (SelectedAtomViewModel == null) return;
             SelectedAtomViewModel.SetSelected(false);
             SelectedAtomViewModel = null;
@@ -161,23 +161,23 @@ namespace NuSysApp
                     {
                         UITask.Run(async () =>
                         {
-                            //NetworkConnector.Instance.RequestLock(v.ID);
-                          //  NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.Id, model.GetString());
+                            ////NetworkConnector.Instance.RequestLock(v.ID);
+                          //  //NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.Id, model.GetString());
                             //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
                         });
                     }
                 }
             };
             Action<string> a = new Action<string>(add);
-            await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
+            //await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
         }
            
         public void ClearMultiSelection()
         {
-            NetworkConnector.Instance.ReturnAllLocks();
+            //NetworkConnector.Instance.ReturnAllLocks();
             foreach (var avm in MultiSelectedAtomViewModels)
             {
-                NetworkConnector.Instance.RequestReturnLock(avm.Id);
+                //NetworkConnector.Instance.RequestReturnLock(avm.Id);
                 avm.IsMultiSelected = false;
             }
             MultiSelectedAtomViewModels.Clear();
@@ -239,7 +239,7 @@ namespace NuSysApp
             props["height"] = (maxY - minY).ToString();
 
             var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
-          //  await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
+          //  //await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
         }
 
 

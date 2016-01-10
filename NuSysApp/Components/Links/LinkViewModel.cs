@@ -55,7 +55,7 @@ namespace NuSysApp
         #region Link Manipulation Methods
         public override void Remove()
         {
-            NetworkConnector.Instance.RequestDeleteSendable(Id);
+            //NetworkConnector.Instance.RequestDeleteSendable(Id);
             if (IsSelected)
             {
                 //TODO: re-add

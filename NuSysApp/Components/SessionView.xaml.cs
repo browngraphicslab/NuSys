@@ -33,6 +33,9 @@ namespace NuSysApp
         private WorkspaceView _activeWorkspace;
         private Options _prevOptions = Options.SelectNode;
 
+        private static List<AtomModel> addedModels;
+        private static List<AtomModel> createdModels;
+
         public bool IsPenMode { get; private set; }
 
         #endregion Private Members
@@ -62,6 +65,8 @@ namespace NuSysApp
                 _cortanaInitialized = false;
                 xFloatingMenu.SessionView = this;
 
+                await SessionController.Instance.NuSysNetworkSession.Init();
+
                 /*
                 var callback = new Action<string>(s =>
                 {
@@ -73,8 +78,8 @@ namespace NuSysApp
                 props.Add("width","350");
                 props.Add("height","200");
 
-                NetworkConnector.Instance.RequestNewGroupTag("100300", "100100", "Lorem", null);
-                NetworkConnector.Instance.RequestNewGroupTag("100500", "100100", "Ipsum", null);
+                //NetworkConnector.Instance.RequestNewGroupTag("100300", "100100", "Lorem", null);
+                //NetworkConnector.Instance.RequestNewGroupTag("100500", "100100", "Ipsum", null);
 
                 var pdf0 = await KnownFolders.PicturesLibrary.GetFileAsync("html.pdf");
                 var pdf1 = await KnownFolders.PicturesLibrary.GetFileAsync("css.pdf");
@@ -96,7 +101,7 @@ namespace NuSysApp
                         }
 
                         var data = Convert.ToBase64String(fileBytes);
-                        NetworkConnector.Instance.RequestMakeNode((100100 + (i * 300)).ToString(), "100300", NodeType.PDF.ToString(), data, null, new Dictionary<string, string>(props));
+                        //NetworkConnector.Instance.RequestMakeNode((100100 + (i * 300)).ToString(), "100300", NodeType.PDF.ToString(), data, null, new Dictionary<string, string>(props));
                     }
                 }
 
@@ -111,7 +116,7 @@ namespace NuSysApp
                     }
 
                     var data = Convert.ToBase64String(f);
-                    NetworkConnector.Instance.RequestMakeNode((100500).ToString(), "100200", NodeType.Image.ToString(), data, null, new Dictionary<string, string>(props));
+                    //NetworkConnector.Instance.RequestMakeNode((100500).ToString(), "100200", NodeType.Image.ToString(), data, null, new Dictionary<string, string>(props));
                 }
                 */
             };
@@ -153,18 +158,17 @@ namespace NuSysApp
 
             var atomCreator = new AtomCreator();
 
-            var createdModel = new List<AtomModel>();
+            createdModels = new List<AtomModel>();
             foreach (var dict in nodeStrings)
             {
-                var msg = new Message();
-                await msg.Init(dict);
+                var msg = new Message(dict);
                 var id = msg.GetString("id", "noId");
                 await atomCreator.HandleCreateNewSendable(id, msg);
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;
                 if (model == null)
                     continue;
 
-                createdModel.Add(model);
+                createdModels.Add(model);
                 await model.UnPack(msg);
                 if (model is WorkspaceModel)
                 {
@@ -175,14 +179,41 @@ namespace NuSysApp
                 
             }
 
-            foreach (var model in createdModel)
+            addedModels = new List<AtomModel>();
+            foreach (var model in createdModels)
             {
-                if (!(model is WorkspaceModel) && !(model is InqCanvasModel) && model.Creator != null)
+                if (!(model is WorkspaceModel) && !(model is InqCanvasModel))
                 {
-                    var container = (NodeContainerModel) SessionController.Instance.IdToSendables[model.Creator];
-                    await container.AddChild(model);
+
+                    await CreateCreators(model);
+                   
                 }
             }
+        }
+
+        private async Task CreateCreators(AtomModel node)
+        {
+            Debug.WriteLine("CreateCreators");
+            Debug.WriteLine(node.Id);
+            foreach (var creator in node.Creators)
+            {
+                var creatorModel = (NodeContainerModel)SessionController.Instance.IdToSendables[creator];
+                if (!addedModels.Contains(creatorModel))
+                {
+                    await CreateCreators(creatorModel);
+                }
+                await creatorModel.AddChild(node);
+                addedModels.Add(node);
+                //  Debug.WriteLine(node.Id);
+            }
+            if (node.Creators.Count == 0 && !addedModels.Contains(node))
+            {
+                var container = (NodeContainerModel)SessionController.Instance.ActiveWorkspace.Model;
+                await container.AddChild(node);
+                addedModels.Add(node);
+                //  Debug.WriteLine(node.Id);
+            }
+
         }
 
 
@@ -248,6 +279,7 @@ namespace NuSysApp
         {
             var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);
+            vm.MakeTagList();
         }
  
 
@@ -266,7 +298,7 @@ namespace NuSysApp
             var props = new Dictionary<string, object>();
             props["width"] = "400";
             props["height"] = "300";
-            await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);
+            //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);
         */   
     }
 

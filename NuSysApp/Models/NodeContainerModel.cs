@@ -69,12 +69,12 @@ namespace NuSysApp
 
             if (props.ContainsKey("isTemporary"))
             {
-                IsTemporary = bool.Parse(props["isTemporary"]);
+                IsTemporary = bool.Parse(props.GetString("isTemporary"));
             }
 
             if (props.ContainsKey("idList"))
             {
-                var ids = props["idList"];
+                var ids = props.GetString("idList");
                 var idList = ids.Split(',');
                 var idDict = new Dictionary<string, Sendable>();
                 foreach (var id in idList)

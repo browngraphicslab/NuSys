@@ -14,7 +14,6 @@ namespace NuSysApp
     public class ImageNodeViewModel : NodeViewModel
     {
         
-
         public ImageNodeViewModel(ImageNodeModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
