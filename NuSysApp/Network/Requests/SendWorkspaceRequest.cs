@@ -21,6 +21,7 @@ namespace NuSysApp.Network.Requests
                 var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
                 _message["nodelines"] = new List<string>(await FileIO.ReadLinesAsync(file));
             });
+            await base.CheckOutgoingRequest();
         }
 
         public virtual async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session,
