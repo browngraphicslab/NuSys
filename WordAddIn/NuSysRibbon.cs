@@ -60,16 +60,7 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            if (Globals.ThisAddIn.PaneControl != null)
-            {
-                if (!Globals.ThisAddIn.PaneControl.Visible)
-                {
-                    Globals.ThisAddIn.PaneControl.Visible = true;
-                }
-            }else
-            {
-                Globals.ThisAddIn.BuildSidebar();
-            }
+            Globals.ThisAddIn.BuildSidebar();
         }
 
         #endregion

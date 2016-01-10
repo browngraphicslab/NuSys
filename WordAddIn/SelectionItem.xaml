@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WordAddIn"
              mc:Ignorable="d"
-             Height="94.4" Width="298.8">
-    <Grid Margin="0,0,0.2,0.4">
+             Height="94.4" Width="298.8" MouseLeftButtonUp="SelectionItem_MouseLeftButtonUp" Background="White">
+    <Grid Margin="0,0,0.2,0.4" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition MinWidth="10" Width="Auto"/>
@@ -17,7 +17,7 @@
         <Border x:Name="imgBorder" Grid.Column="1" Margin="0.4,10,0,0" BorderThickness="1" BorderBrush="Black" Visibility="Hidden" MaxWidth="70" MaxHeight="80" VerticalAlignment="Top" HorizontalAlignment="Left">
             <Image x:Name="img" Visibility="Hidden" Stretch="Uniform"/>
         </Border>
-        <TextBlock MouseLeftButtonUp="SelectionItem_MouseLeftButtonUp" Grid.Column="2" x:Name="txtBox" Text="{Binding Text}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" IsHitTestVisible="False"  Margin="5.2,3,5.2,6" FontSize="13" FontFamily="Segoe UI Light" />
+        <TextBlock Grid.Column="2" x:Name="txtBox" Text="{Binding Text}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" IsHitTestVisible="False"  Margin="5.2,3,5.2,6" FontSize="13" FontFamily="Segoe UI Light" />
         <RichTextBox Grid.Column="2" x:Name="rtb" Height="94" IsHitTestVisible="False"  Margin="0.4,0,10.2,6" BorderBrush="{x:Null}" Background="{x:Null}" Visibility="Hidden"/>
     </Grid>
 </UserControl>

@@ -72,9 +72,6 @@ namespace PowerPointAddIn
 
         public void AddSelection()
         {
-            Text = "";
-            RtfContent = "";
-
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
                 parseRtf();
@@ -124,6 +121,7 @@ namespace PowerPointAddIn
             System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
             Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
             (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            ImageContent = bitmapImg;
 
             BitmapImage image = new BitmapImage();
             image.BeginInit();
