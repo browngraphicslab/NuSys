@@ -155,29 +155,22 @@ namespace PowerPointAddIn
             var temp_cs = new List<SelectionItem>();
             var hasNewSelection = false;
 
+            List<SelectionItemView> selectionItemViews = new List<SelectionItemView>();
+
             foreach (var selection in CheckedSelections)
             {
                 if (UnexportedSelections.Contains(selection))
                 {
                     var selectionItemView = selection.GetView();
-                    string selectionItemJson = "";
 
-                    if (selectionItemView.RtfContent != null)
-                    {
-                        selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemView);
-                    }
-                    else if (selection.ImageContent != null)
+                    if (selection.ImageContent != null)
                     {
                         var imageFileName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
                         selection.ImageContent.Save(mediaDir + "\\" + imageFileName, ImageFormat.Png);
                         selectionItemView.ImageName = imageFileName;
-                        selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemView);
                     }
 
-                    var f = fileDir + selectionItemView.BookmarkId + ".nusys";
-                    File.WriteAllText(f, selectionItemJson);
-                    File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
-                    File.Move(f, f);
+                    selectionItemViews.Add(selectionItemView);
 
                     selection.IsExported = true;
                     try
@@ -213,7 +206,14 @@ namespace PowerPointAddIn
 
             if (hasNewSelection)
             {
-                //File.WriteAllText(dir + "\\update.nusys", "update");
+
+                var selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemViews);
+                var f = fileDir + Guid.NewGuid().ToString() + ".nusys";
+                File.WriteAllText(f, selectionItemJson);
+                File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
+                File.Move(f, f);
+
+                File.WriteAllText(dir + "\\update.nusys", "update");
             }
 
             //need seperate for loop because unchecking triggers a removal in CheckedSelections
