@@ -40,7 +40,13 @@ namespace WordAddIn
 
         public SelectionItemView GetView()
         {
-            return new SelectionItemView(Bookmark, IsExported, RtfContent);
+            String path = null;
+            if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
+            {
+                path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
+            }
+
+            return new SelectionItemView(Bookmark, IsExported, RtfContent, path);
         }
 
         private void SelectionItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

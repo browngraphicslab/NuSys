@@ -206,7 +206,6 @@ namespace PowerPointAddIn
 
             if (hasNewSelection)
             {
-
                 var selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemViews);
                 var f = fileDir + Guid.NewGuid().ToString() + ".nusys";
                 File.WriteAllText(f, selectionItemJson);

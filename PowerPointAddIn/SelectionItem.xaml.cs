@@ -40,7 +40,12 @@ namespace PowerPointAddIn
 
         public SelectionItemView GetView()
         {
-            return new SelectionItemView(Guid.NewGuid().ToString(), IsExported, RtfContent);
+            String path = null;
+            if (Globals.ThisAddIn.Application.ActivePresentation != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActivePresentation.FullName))
+            {
+                path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
+            }
+            return new SelectionItemView(Guid.NewGuid().ToString(), IsExported, RtfContent, path);
         }
 
         private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
