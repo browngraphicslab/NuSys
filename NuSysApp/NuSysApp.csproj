@@ -251,7 +251,7 @@
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
-    <Compile Include="Util\ImageUtil.cs" />
+    <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\UITask.cs" />

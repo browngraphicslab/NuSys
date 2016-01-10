@@ -37,6 +37,7 @@ namespace NuSysApp
             _audioRecording = false;
             _videoRecording = false;
             stream = new InMemoryRandomAccessStream();
+            _recordingType = RecordingType.Audio;
         }
         private async void RecordButton_OnTapped(object sender, RoutedEventArgs e)
         {
@@ -69,6 +70,7 @@ namespace NuSysApp
                 }
                 _videoRecording = false;
                 _audioRecording = false;
+                mediaCapture.Dispose();
             }
             else
             {
@@ -110,6 +112,7 @@ namespace NuSysApp
 
                 _videoRecording = false;
                 _audioRecording = false;
+                mediaCapture.Dispose();
             }
             else
             {
@@ -135,7 +138,6 @@ namespace NuSysApp
 
         private async Task SendRequest(byte[] data, NodeType type)
         {
-
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;

@@ -31,7 +31,7 @@ namespace NuSysApp
             if (d != null)
             { 
                 var data = Convert.FromBase64String(d); //Converts to Byte Array
-                Image = await ImageUtil.ByteArrayToBitmapImage(data);
+                Image = await MediaUtil.ByteArrayToBitmapImage(data);
             }
 
             FilePath = props.GetString("filepath", FilePath);

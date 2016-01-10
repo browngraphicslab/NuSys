@@ -26,7 +26,7 @@ namespace NuSysApp
 
         public string Add( string contentData, string presetID = null)
         {
-            var id = presetID != null ? presetID : SessionController.Instance.GenerateId();
+            var id = presetID ?? SessionController.Instance.GenerateId();
             var n = new NodeContentModel(contentData, id);
             _contents.Add(id, n );
             return id;

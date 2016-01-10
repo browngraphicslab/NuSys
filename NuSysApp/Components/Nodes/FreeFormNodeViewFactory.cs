@@ -68,7 +68,9 @@ namespace NuSysApp
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));
                     break;
                 case NodeType.Audio:
-                    view = new AudioNodeView(new AudioNodeViewModel((AudioNodeModel)model));
+                    var audioVM = new AudioNodeViewModel((AudioNodeModel) model);
+                    await audioVM.InitAudio();
+                    view = new AudioNodeView(audioVM);
                     break;
                 case NodeType.PDF:
                     view = new PdfNodeView(new PdfNodeViewModel((PdfNodeModel)model));
