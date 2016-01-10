@@ -1,0 +1,20 @@
+﻿<UserControl
+    Width="200"
+    Height="162.5"
+    x:Class="NuSysApp.MediaRecorderView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:converters="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Height="162.5" Width="200" Background="Beige" VerticalAlignment="Top" HorizontalAlignment="Right">
+        <CaptureElement VerticalAlignment="Top" Height="112.5" Width="200" Name="Element"></CaptureElement>
+        <StackPanel Name="ControlBar" Width="200" Height ="50"  VerticalAlignment="Bottom" Background="Blue">
+            <Button Name="RecordButton" Width="50" Height="50" Background="Aqua" VerticalAlignment="Stretch" Tapped="RecordButton_OnTapped">
+                
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
