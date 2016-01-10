@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,8 @@ namespace WordAddIn
     {
 
         private static string mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+
+        private static string dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\WordTransfer";
 
         public ObservableCollection<SelectionItem> UnexportedSelections { get; set; }
 
@@ -200,7 +203,6 @@ namespace WordAddIn
 		
 		//exports to NuSys all checked selections
 		private void OnExport(){
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\PowerPointTransfer";
             var fileDir = dir + "\\selection";
             int count = 0;
 
@@ -211,10 +213,25 @@ namespace WordAddIn
             {
                 if (UnexportedSelections.Contains(selection))
                 {
-                    var f = fileDir + count + ".nusys";
-                    //File.WriteAllText(f, selection.RtfContent);
-                    //File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
-                    //File.Move(f, f);
+                    var selectionItemView = selection.GetView();
+                    string selectionItemJson = "";
+
+                    if (selectionItemView.RtfContent != null)
+                    {
+                        selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemView);
+                    }
+                    else if (selection.ImageContent != null)
+                    {
+                        var imageFileName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
+                        selection.ImageContent.Save(mediaDir + "\\" + imageFileName, ImageFormat.Png);
+                        selectionItemView.ImageName = imageFileName;
+                        selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(selectionItemView);
+                    }
+
+                    var f = fileDir + selectionItemView.BookmarkId + ".nusys";
+                    File.WriteAllText(f, selectionItemJson);
+                    File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
+                    File.Move(f, f);
 
                     selection.IsExported = true;
                     try
@@ -243,7 +260,7 @@ namespace WordAddIn
 
             if (hasNewSelection)
             {
-                //File.WriteAllText(dir + "\\update.nusys", "update");
+                File.WriteAllText(dir + "\\update.nusys", "update");
             }
 
             //need seperate for loop because unchecking triggers a removal in CheckedSelections

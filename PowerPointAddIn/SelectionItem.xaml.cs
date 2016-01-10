@@ -27,6 +27,7 @@ namespace PowerPointAddIn
         private Selection _selection;
         private string _rtfContent;
         private MemoryStream _ms;
+        private Bitmap _imageContent;
 
         public SelectionItem()
         {
@@ -35,6 +36,11 @@ namespace PowerPointAddIn
 
             AddSelection();
             DataContext = this;
+        }
+
+        public SelectionItemView GetView()
+        {
+            return new SelectionItemView(Guid.NewGuid().ToString(), IsExported, RtfContent);
         }
 
         private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -220,6 +226,12 @@ namespace PowerPointAddIn
         {
             get { return _selection; }
             set { _selection = value; }
+        }
+
+        public Bitmap ImageContent
+        {
+            get { return _imageContent; }
+            set { _imageContent = value; }
         }
 
         public MemoryStream Ms

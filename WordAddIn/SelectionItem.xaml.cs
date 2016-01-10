@@ -27,6 +27,7 @@ namespace WordAddIn
         private string _text;
         private string _rtfContent;
         private MemoryStream _ms;
+        private Bitmap _imageContent;
         private string _bookmarkId;
 
         public SelectionItem()
@@ -35,6 +36,11 @@ namespace WordAddIn
             _renderTransform = new ScaleTransform(1, 1);
             AddSelection();			
             DataContext = this;
+        }
+
+        public SelectionItemView GetView()
+        {
+            return new SelectionItemView(Bookmark, IsExported, RtfContent);
         }
 
         private void SelectionItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -66,9 +72,6 @@ namespace WordAddIn
 
         public void AddSelection()
         {
-            Text = "";
-            RtfContent = "";
-
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
                 parseRtf();
@@ -117,6 +120,7 @@ namespace WordAddIn
 
             System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
             Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
+            _imageContent = bitmapImg;
             (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
 
             BitmapImage image = new BitmapImage();
@@ -214,6 +218,12 @@ namespace WordAddIn
         {
             get { return _rtfContent; }
             set { _rtfContent = value; }
+        }
+
+        public Bitmap ImageContent
+        {
+            get { return _imageContent; }
+            set { _imageContent = value; }
         }
 
         public Range Range
