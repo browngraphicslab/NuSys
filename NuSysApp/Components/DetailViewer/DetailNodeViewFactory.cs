@@ -68,7 +68,6 @@ namespace NuSysApp
             {
                 tpl.OnTemplateReady += async delegate {
                     var inqVm = new InqCanvasViewModel(model.InqCanvas, new Size(model.Width, model.Height));
-                        //tpl.inkCanvas.ViewModel = inqVm;
                 };
             }
 

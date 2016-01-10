@@ -52,7 +52,10 @@ namespace NuSysApp
             Title = model.Title;
             X = model.X;
             Y = model.Y;
+            Tags = new ObservableCollection<Button>();
             _debouncingDictionary = new DebouncingDictionary(model.Id);
+
+            CreateTags();
         }
 
         private void OnTitleChanged(object source, string title)
@@ -91,9 +94,17 @@ namespace NuSysApp
         }
         protected virtual void OnMetadataChange(object source, string key)
         {
-            //Tags = string.Join(", ", Model.GetMetaData("tags") as List<string>);
-            List<string> tagList = (List<string>) Model.GetMetaData("tags");
-            Tags = new ObservableCollection<Button>();
+            if (key == "tags")
+                CreateTags();
+
+        }
+
+        private void CreateTags()
+        {
+            Tags.Clear();
+            
+            List<string> tagList = (List<string>)Model.GetMetaData("tags");
+
             foreach (string tag in tagList)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
@@ -107,7 +118,7 @@ namespace NuSysApp
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);
                 tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
-                
+
                 Tags.Add(tagBlock);
             }
             RaisePropertyChanged("Tags");

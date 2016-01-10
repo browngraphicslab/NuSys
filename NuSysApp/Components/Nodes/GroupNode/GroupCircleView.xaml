@@ -15,7 +15,7 @@
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" IsHitTestVisible="false">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Padding="42,42,42,42" Width="{Binding Width}" Height="{Binding Height}" HorizontalAlignment="Center" />
+                        <StackPanel Padding="42,42,42,42" HorizontalAlignment="Center" VerticalAlignment="Center"></StackPanel>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>

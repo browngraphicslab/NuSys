@@ -17,6 +17,7 @@ namespace NuSysApp
             }
             if (!_message.ContainsKey("nodeType"))
             {
+                Debug.WriteLine("UUUUUUUUUUUAAAAAAAAAAAAAAAAAAAAAAA");
                 throw new NewNodeRequestException("New Node requests require messages with at least 'nodeType'");
             }
         }
