@@ -258,8 +258,6 @@ namespace WordAddIn
                 File.WriteAllText(f, selectionItemJson);
                 File.SetLastWriteTimeUtc(f, DateTime.UtcNow);
                 File.Move(f, f);
-
-                File.WriteAllText(dir + "\\update.nusys", "update");
             }
 
             //need seperate for loop because unchecking triggers a removal in CheckedSelections
