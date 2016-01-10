@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Tools;
+using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Office = Microsoft.Office.Core;
@@ -12,17 +13,22 @@ namespace WordAddIn
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-
+            
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
-			
+
         }
 
         public SidePane SidePane
         {
             get { return _sidePane;  }
+        }
+
+        public CustomTaskPane PaneControl
+        {
+            get { return _pane; }
         }
 
         public void BuildSidebar()
@@ -55,7 +61,6 @@ namespace WordAddIn
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
             this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
         }
-        
         #endregion
     }
 }

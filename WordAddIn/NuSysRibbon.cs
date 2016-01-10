@@ -33,6 +33,7 @@ namespace WordAddIn
 
         public NuSysRibbon()
         {
+
         }
 
         #region IRibbonExtensibility Members
@@ -59,7 +60,16 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            Globals.ThisAddIn.BuildSidebar();
+            if (Globals.ThisAddIn.PaneControl != null)
+            {
+                if (!Globals.ThisAddIn.PaneControl.Visible)
+                {
+                    Globals.ThisAddIn.PaneControl.Visible = true;
+                }
+            }else
+            {
+                Globals.ThisAddIn.BuildSidebar();
+            }
         }
 
         #endregion

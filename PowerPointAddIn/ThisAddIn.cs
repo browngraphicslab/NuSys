@@ -26,6 +26,11 @@ namespace PowerPointAddIn
             get { return _sidePane; }
         }
 
+        public CustomTaskPane PaneControl
+        {
+            get { return _pane; }
+        }
+
         public void BuildSidebar()
         {
             var standardUC = new UserControl();
