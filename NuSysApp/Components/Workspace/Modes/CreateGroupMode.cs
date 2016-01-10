@@ -55,8 +55,8 @@ namespace NuSysApp
             var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
             
-            SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
-            SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
+            await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
+            await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
 
             var msg = new Message();
             msg["id1"] = id1;

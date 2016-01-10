@@ -31,16 +31,12 @@ namespace NuSysApp
             RenderTransform = new CompositeTransform();
             InitializeComponent();
             DataContext = vm;
-            xCircleView.RenderTransform = new CompositeTransform();
-
-            Loaded += async delegate(object sender, RoutedEventArgs args)
-            {
-                //IC.Clip = new RectangleGeometry {Rect = new Rect(0, 0, 1000, vm.Height-40)};
-            };
-
             Resizer.ManipulationDelta += ResizerOnManipulationDelta;
-
-            Tapped += OnTapped;
+           
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                PositionResizer();
+            };
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -64,25 +60,17 @@ namespace NuSysApp
                 Debug.WriteLine("closing");
             
             }
+            PositionResizer();
             e.Handled = true;
         }
 
-        public void Collapse()
+        private void PositionResizer()
         {
-            xExpandedView.Visibility = Visibility.Collapsed;
-
+            var vm = (GroupNodeViewModel)DataContext;
+            Canvas.SetLeft(Resizer, vm.Width - 50);
+            Canvas.SetTop(Resizer, vm.Height - 50);
         }
-
-        public void Expand()
-        {
-            xExpandedView.Visibility = Visibility.Visible;
-        }
-
-        private void OnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
-        {
-            xExpandedView.Visibility = Visibility.Visible;
-        }
-
+        
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();

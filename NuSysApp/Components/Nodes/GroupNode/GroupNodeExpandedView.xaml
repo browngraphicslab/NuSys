@@ -13,17 +13,17 @@
 
     <Border Width="{Binding Width}" Height="{Binding Height}" Background="#88000000" BorderBrush="LightSlateGray" BorderThickness="20" CornerRadius="20">
         <StackPanel>
-            <TextBox Text="{Binding Title}" HorizontalAlignment="Center" Foreground="White" FontSize="24" BorderBrush="Transparent"></TextBox>
+           <!-- <TextBox Text="{Binding Title}" HorizontalAlignment="Center" Foreground="White" FontSize="24" BorderBrush="Transparent"></TextBox> -->
             <Grid x:Name="xGrid" >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="100"></RowDefinition>
-                        <RowDefinition Height="100"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition ></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition ></ColumnDefinition>
+                        <ColumnDefinition ></ColumnDefinition>
+                        <ColumnDefinition ></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                 </Grid>
         </StackPanel>

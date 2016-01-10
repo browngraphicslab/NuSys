@@ -18,6 +18,8 @@ namespace NuSysApp
             base.ChildAdded += async delegate(object source, FrameworkElement node)
             {
                 node.Margin = new Thickness(0, -35 * Math.Max(0,Math.Min(count,1)), 0, 0);
+                node.VerticalAlignment = VerticalAlignment.Center;
+                
               //  node.RenderTransform = new TranslateTransform {Y = -70*Math.Min(count,1)};
                 //node.HorizontalAlignment = HorizontalAlignment.Center;
                 //node.VerticalAlignment = VerticalAlignment.Center;

@@ -329,7 +329,7 @@ namespace NuSysApp
 
         private async Task LoadThumbs()
         {
-
+            Thumbnails.Clear();
             var thumbs = await NuSysStorages.Thumbs.GetFilesAsync();
             foreach (var thumbFile in thumbs)
             {

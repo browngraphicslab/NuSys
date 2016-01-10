@@ -21,8 +21,7 @@ namespace NuSysApp
         public async Task<FrameworkElement> CreateFromSendable(Sendable model, List<FrameworkElement> AtomViewList)
         {
             if (!(model is NodeModel)) return null;
-
-
+            
             var img = new Image();
             if (SessionController.Instance.Thumbnails.ContainsKey(model.Id))
                 img.Source = SessionController.Instance.Thumbnails[model.Id];
@@ -36,7 +35,8 @@ namespace NuSysApp
                 AlignmentX = AlignmentX.Center,
                 AlignmentY = AlignmentY.Center,
                 ImageSource = img.Source,
-                Stretch = Stretch.Fill
+                Stretch = Stretch.Uniform,
+
             };
             if (img.Source is RenderTargetBitmap)
             {
