@@ -9,7 +9,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Grid Background="White" BorderBrush="Gainsboro" BorderThickness="2"  VerticalAlignment="Top" HorizontalAlignment="Right">
+    <Grid x:Name="MediaGrid" Visibility="Collapsed"  Background="White" BorderBrush="Gainsboro" BorderThickness="2"  VerticalAlignment="Top" HorizontalAlignment="Right">
         <CaptureElement VerticalAlignment="Top" Height="200" Width="300" Name="Element"></CaptureElement>
         <Button x:Name="StopButton" Visibility="Collapsed"  Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
             <Rectangle Width="20" Height="20" Fill="IndianRed"></Rectangle>
@@ -18,7 +18,7 @@
         <Button x:Name="RecordButton" Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
             <Ellipse Width="20" Height="20" Fill="IndianRed"></Ellipse>
         </Button>
-        <ToggleSwitch x:Name="AudioVideoSwitch" VerticalAlignment="Bottom" OnContent="Video" OffContent="Video"></ToggleSwitch>
+        <ToggleSwitch x:Name="AudioVideoSwitch" VerticalAlignment="Bottom" Margin="5,0,0,0"  OnContent="Video" OffContent="Audio"></ToggleSwitch>
         <TextBlock x:Name="RecordText" Height="18" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Record" Width="43" TextAlignment="Center"></TextBlock>
     </Grid>
 </UserControl>

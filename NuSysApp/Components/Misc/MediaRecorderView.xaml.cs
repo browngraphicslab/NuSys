@@ -51,6 +51,11 @@ namespace NuSysApp
             }
         }
 
+        public void Show()
+        {
+            MediaGrid.Visibility = Visibility.Visible;
+        }
+
         private void IsRecordingSwitch(bool boolean)
         {
             if (boolean)
@@ -180,6 +185,12 @@ namespace NuSysApp
                     Convert.ToBase64String(data)));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            this.Hide();
+        }
+
+        public void Hide()
+        {
+            MediaGrid.Visibility = Visibility.Collapsed;
         }
 
         private async void OnStopRecordingBtnClick(object sender, RoutedEventArgs e)
