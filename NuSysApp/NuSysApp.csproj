@@ -101,6 +101,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
