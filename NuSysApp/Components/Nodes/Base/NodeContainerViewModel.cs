@@ -70,7 +70,6 @@ namespace NuSysApp
             if (!Children.ContainsKey(nodeModel.Id))
             {
                 var view = await _nodeViewFactory.CreateFromSendable(nodeModel, Children.Values.ToList());
-
             
                 Children.Add(nodeModel.Id, view);
                 AtomViewList.Add(view);
