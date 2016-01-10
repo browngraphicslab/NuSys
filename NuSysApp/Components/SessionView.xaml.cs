@@ -51,7 +51,6 @@ namespace NuSysApp
             {
                 Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
             };
-            
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
@@ -66,6 +65,9 @@ namespace NuSysApp
                 xFloatingMenu.SessionView = this;
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
+                await SessionController.Instance.InitializeRecog();
+
+        
             };
         }
 
@@ -179,12 +181,15 @@ namespace NuSysApp
                 xWorkspaceTitle.Text = model.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+
             xWorkspaceTitle.TextChanging += delegate
             {
                 model.Title = xWorkspaceTitle.Text;
-                Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 20);
+                Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             };
-            Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 20);
+            Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
+
+            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);
             
         }
 
@@ -225,6 +230,23 @@ namespace NuSysApp
         public Canvas MainCanvas
         {
             get { return mainCanvas; }
+        }
+
+        private async void OnRecordClick(object sender, RoutedEventArgs e)
+        {
+            var session = SessionController.Instance;
+            if (!session.IsRecording)
+            {
+                await session.TranscribeVoice();
+
+                //var vm = (WorkspaceViewModel)DataContext;
+                //((TextNodeModel)vm.Model).Text = session.SpeechString;
+                xWorkspaceTitle.Text = session.SpeechString;
+            }
+            else
+            {
+                //var vm = this.DataContext as WorkspaceViewModel;
+            }
         }
     }
 }

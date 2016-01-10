@@ -25,7 +25,7 @@ namespace NuSysApp
         public TextNodeViewModel(TextNodeModel model) : base(model)
         {           
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
-            ((TextNodeModel) Model).TextChanged += TextChangedHandler;
+            //((TextNodeModel) Model).TextChanged += TextChangedHandler;
         }
 
         public async Task UpdateRtf()       
@@ -125,11 +125,11 @@ namespace NuSysApp
             }
         }
 
-        private async void TextChangedHandler(object source, TextChangedEventArgs e)
-        {
-           // this.MarkDownText = ((TextNode)this.Model).Text;
-            await UpdateRtf();
-        }
+        //private async void TextChangedHandler(object source, TextChangedEventArgs e)
+        //{
+        //   // this.MarkDownText = ((TextNode)this.Model).Text;
+        //    await UpdateRtf();
+        //}
 
 
         #region Public Properties
