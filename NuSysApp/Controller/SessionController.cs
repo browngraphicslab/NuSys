@@ -371,7 +371,7 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);
-            FileIO.WriteLinesAsync(file, lines);
+            await FileIO.WriteLinesAsync(file, lines);
         }
 
         public async Task LoadWorkspace()

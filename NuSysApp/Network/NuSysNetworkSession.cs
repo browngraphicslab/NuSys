@@ -21,15 +21,15 @@ namespace NuSysApp
         {
             get { return _hostIP; }
         }
+        public bool IsHostMachine
+        {
+            get { return _networkSession.LocalIP == _hostIP; }
+        }
         #endregion Public Members
         #region Private Members
         private string LocalIP
         {
             get { return _networkSession.LocalIP; }
-        }
-        private bool IsHostMachine
-        {
-            get { return _networkSession.LocalIP == _hostIP; }
         }
         
         private HashSet<string> NetworkMembers
