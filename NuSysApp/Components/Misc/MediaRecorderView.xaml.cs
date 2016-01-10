@@ -133,6 +133,7 @@ namespace NuSysApp
                 _videoRecording = false;
                 _audioRecording = false;
                 mediaCapture.Dispose();
+                this.IsRecordingSwitch(false);
             }
             else
             {
@@ -148,6 +149,7 @@ namespace NuSysApp
                             MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Auto),
                             stream);
                     _audioRecording = true;
+                    this.IsRecordingSwitch(true);
                 }
                 catch (Exception exception)
                 {

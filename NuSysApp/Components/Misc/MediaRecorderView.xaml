@@ -18,6 +18,7 @@
         <Button x:Name="RecordButton" Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
             <Ellipse Width="20" Height="20" Fill="IndianRed"></Ellipse>
         </Button>
+        <ToggleSwitch x:Name="AudioVideoSwitch" VerticalAlignment="Bottom" OnContent="Video" OffContent="Video"></ToggleSwitch>
         <TextBlock x:Name="RecordText" Height="18" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Record" Width="43" TextAlignment="Center"></TextBlock>
     </Grid>
 </UserControl>
