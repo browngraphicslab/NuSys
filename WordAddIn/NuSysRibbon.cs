@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows;
 using Office = Microsoft.Office.Core;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
@@ -60,6 +61,13 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
+            string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActiveDocument.FullName);
+
+            if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
+            {
+                MessageBox.Show("Please be advised that the NuSys plugin works best with .docx file types");
+            }
+
             Globals.ThisAddIn.BuildSidebar();
         }
 

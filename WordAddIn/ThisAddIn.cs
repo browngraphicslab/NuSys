@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Tools;
 using System;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Office = Microsoft.Office.Core;
@@ -13,7 +14,6 @@ namespace WordAddIn
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
