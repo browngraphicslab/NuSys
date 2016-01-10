@@ -14,6 +14,8 @@ namespace NuSysApp
         {
             DeleteSendableRequest,
             NewNodeRequest,
+            FinalizeInkRequest,
+            DuplicateNodeRequest,
             SystemRequest,
             NewLinkRequest,
             SendableUpdateRequest,

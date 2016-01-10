@@ -177,9 +177,6 @@ namespace NuSysApp
                 }
             }
 
-
-
-            //var contentId = SessionController.Instance.ContentController.Add(data == null ? "" :data.ToString());
             var contentId = SessionController.Instance.GenerateId();
             var contentRequest = new NewContentRequest(contentId,data == null ? "" : data.ToString());
             
@@ -188,28 +185,19 @@ namespace NuSysApp
             var dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
-
-            var callback = new Action<string>(async (s) =>
-            {
-
-            });
-
-//                await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict, callback);
-
-            dict["nodetype"] = nodeType.ToString();
+            dict["nodeType"] = nodeType.ToString();
             dict["x"] = p.X;
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
-            //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), nodeType.ToString(), contentId, null, dict);
+            dict["autoCreate"] = true;
+            dict["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
+
             var request = new NewNodeRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-//>>>>>>> origin/phil_groups_new_network
             vm.ClearSelection();
             vm.ClearMultiSelection();
 
             if (!_isFixed) { 
-            
-                // TODO: re-add
                 SessionController.Instance.SessionView.FloatingMenu.Reset();
             }           
         }

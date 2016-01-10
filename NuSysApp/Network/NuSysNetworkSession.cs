@@ -191,6 +191,12 @@ namespace NuSysApp
                 case Request.RequestType.NewContentRequest:
                     request = new NewContentRequest(message);
                     break;
+                case Request.RequestType.FinalizeInkRequest:
+                    request = new FinalizeInkRequest(message);
+                    break;
+                case Request.RequestType.DuplicateNodeRequest:
+                    request = new DuplicateNodeRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
@@ -257,7 +263,7 @@ namespace NuSysApp
         {
             if (IsHostMachine)
             {
-                await ProcessIncomingRequest(message, NetworkClient.PacketType.TCP,ip);
+                await ProcessIncomingRequest(new Message(message.GetSerialized()), NetworkClient.PacketType.TCP,ip);
             }
             else
             {

@@ -33,7 +33,7 @@ namespace NuSysApp
         private WorkspaceView _activeWorkspace;
         private Options _prevOptions = Options.SelectNode;
 
-        private static List<AtomModel> addedModels;
+    //    private static List<AtomModel> addedModels;
         private static List<AtomModel> createdModels;
 
         public bool IsPenMode { get; private set; }
@@ -66,61 +66,7 @@ namespace NuSysApp
                 xFloatingMenu.SessionView = this;
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
-
-                /*
-                var callback = new Action<string>(s =>
-                {
-             //       var nodeModel = (NodeModel) SessionController.Instance.IdToSendables[s];
-                //    nodeModel.MoveToGroup(workspaceModel);
-                });
-
-                var props = new Dictionary<string,string>();
-                props.Add("width","350");
-                props.Add("height","200");
-
-                //NetworkConnector.Instance.RequestNewGroupTag("100300", "100100", "Lorem", null);
-                //NetworkConnector.Instance.RequestNewGroupTag("100500", "100100", "Ipsum", null);
-
-                var pdf0 = await KnownFolders.PicturesLibrary.GetFileAsync("html.pdf");
-                var pdf1 = await KnownFolders.PicturesLibrary.GetFileAsync("css.pdf");
-                var img = await KnownFolders.PicturesLibrary.GetFileAsync("Native-American.jpg");
-
-                var pdfs = new StorageFile[] { pdf0, pdf1 };
-
-                var i = 0;
-                foreach (var storageFile in pdfs)
-                {
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
-                    {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-
-                        var data = Convert.ToBase64String(fileBytes);
-                        //NetworkConnector.Instance.RequestMakeNode((100100 + (i * 300)).ToString(), "100300", NodeType.PDF.ToString(), data, null, new Dictionary<string, string>(props));
-                    }
-                }
-
-                byte[] f = null;
-                using (IRandomAccessStreamWithContentType stream = await img.OpenReadAsync())
-                {
-                    f = new byte[stream.Size];
-                    using (DataReader reader = new DataReader(stream))
-                    {
-                        await reader.LoadAsync((uint)stream.Size);
-                        reader.ReadBytes(f);
-                    }
-
-                    var data = Convert.ToBase64String(f);
-                    //NetworkConnector.Instance.RequestMakeNode((100500).ToString(), "100200", NodeType.Image.ToString(), data, null, new Dictionary<string, string>(props));
-                }
-                */
             };
-            
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -156,67 +102,40 @@ namespace NuSysApp
             SessionController.Instance.Locks.Clear();
             SessionController.Instance.IdToSendables.Clear();
 
-            var atomCreator = new AtomCreator();
-
+            
             createdModels = new List<AtomModel>();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
+                
+
                 var id = msg.GetString("id", "noId");
-                await atomCreator.HandleCreateNewSendable(id, msg);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(msg));
+
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;
                 if (model == null)
                     continue;
 
                 createdModels.Add(model);
                 await model.UnPack(msg);
+
                 if (model is WorkspaceModel)
                 {
                     var wsModel = SessionController.Instance.IdToSendables[id] as AtomModel;
-                    await OpenWorkspace((WorkspaceModel) wsModel);
+                    await OpenWorkspace((WorkspaceModel)wsModel);
                 }
-               
-                
             }
 
-            addedModels = new List<AtomModel>();
+            var addedModels = new List<AtomModel>();
             foreach (var model in createdModels)
             {
-                if (!(model is WorkspaceModel) && !(model is InqCanvasModel))
+                if (!(model is InqCanvasModel))
                 {
-
-                    await CreateCreators(model);
-                   
+                    await SessionController.Instance.RecursiveCreate(model, addedModels);  
                 }
             }
         }
-
-        private async Task CreateCreators(AtomModel node)
-        {
-            Debug.WriteLine("CreateCreators");
-            Debug.WriteLine(node.Id);
-            foreach (var creator in node.Creators)
-            {
-                var creatorModel = (NodeContainerModel)SessionController.Instance.IdToSendables[creator];
-                if (!addedModels.Contains(creatorModel))
-                {
-                    await CreateCreators(creatorModel);
-                }
-                await creatorModel.AddChild(node);
-                addedModels.Add(node);
-                //  Debug.WriteLine(node.Id);
-            }
-            if (node.Creators.Count == 0 && !addedModels.Contains(node))
-            {
-                var container = (NodeContainerModel)SessionController.Instance.ActiveWorkspace.Model;
-                await container.AddChild(node);
-                addedModels.Add(node);
-                //  Debug.WriteLine(node.Id);
-            }
-
-        }
-
-
+        
         public async Task LoadEmptyWorkspace()
         {
             SessionController.Instance.IdToSendables.Clear();
@@ -235,9 +154,6 @@ namespace NuSysApp
             OpenWorkspace(workspaceModel);
             
             xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
-
-            //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
-            
         }
 
         public async Task OpenWorkspace(WorkspaceModel model)
@@ -265,7 +181,6 @@ namespace NuSysApp
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             xWorkspaceTitle.TextChanging += delegate
             {
-                
                 model.Title = xWorkspaceTitle.Text;
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 20);
             };

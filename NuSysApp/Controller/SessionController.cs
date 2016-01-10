@@ -76,6 +76,22 @@ namespace NuSysApp
             return null;
         }
 
+
+        public async Task RecursiveCreate(AtomModel node, List<AtomModel> addedModels )
+        {
+            foreach (var creator in node.Creators)
+            {
+                var creatorModel = (NodeContainerModel)IdToSendables[creator];
+                if (!addedModels.Contains(creatorModel))
+                {
+                    await RecursiveCreate(creatorModel, addedModels);
+                }
+                await creatorModel.AddChild(node);
+                addedModels.Add(node);
+            }
+        }
+    
+
         public void CreateLink(AtomModel atom1, AtomModel atom2, string id)
         {
             var link = new LinkModel(atom1, atom2, id);

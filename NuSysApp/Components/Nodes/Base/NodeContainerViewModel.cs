@@ -39,8 +39,8 @@ namespace NuSysApp
         public override void Dispose()
         {
             var model = (NodeContainerModel)Model;
-            model.ChildAdded += OnChildAdded;
-            model.ChildRemoved += OnChildRemoved;
+            model.ChildAdded -= OnChildAdded;
+            model.ChildRemoved -= OnChildRemoved;
             base.Dispose();
         }
 

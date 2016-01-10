@@ -51,60 +51,22 @@ namespace NuSysApp
             p.X -= 150;
             p.Y -= 150;
 
-            var props = new Dictionary<string, object>();
-            props["width"] = 300;
-            props["height"] = 300;
-
-
-
+          
             var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
-
-
-
+            
             SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
             SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
 
-            var callback = new Action<string>(async (s) =>
-            {
-                _createdGroupId = s;
+            var msg = new Message();
+            msg["id1"] = id1;
+            msg["id2"] = id2;
+            msg["width"] = 300;
+            msg["height"] = 300;
+            msg["x"] = p.X;
+            msg["y"] = p.Y;
 
-                var wvm = _view.DataContext as WorkspaceViewModel;
-                var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == s);
-
-                var node1 = SessionController.Instance.IdToSendables[id1];
-                var node2 = SessionController.Instance.IdToSendables[id2];
-
-                NodeContainerModel groupModel;
-                if (!found.Any())
-                {
-                    groupModel = (NodeContainerModel) node2;
-                    await groupModel.AddChild(node1);
-                    wvm.RemoveChild(node1.Id);
-                }
-                else
-                {
-                    groupModel = (NodeContainerModel) SessionController.Instance.IdToSendables[s];
-
-                    await groupModel.AddChild(node1);
-                    wvm.RemoveChild(node1.Id);
-                    await groupModel.AddChild(node2);
-                    wvm.RemoveChild(node2.Id);
-                }
-                
-                if (!found.Any())
-                    return;
-
-                var groupView = found.First() as AnimatableUserControl;
-                groupView.RenderTransformOrigin = new Point(0.5, 0.5);       
-
-                Anim.FromTo(groupView, "Alpha", 0, 1, 600, new BackEase());
-                Anim.FromTo(groupView, "ScaleY", 0, 1, 600, new BackEase());
-                Anim.FromTo(groupView, "ScaleX", 0, 1, 600, new BackEase());
-
-            });
-            //NetworkConnector.Instance.RequestMakeGroup(id1, id2, p.X.ToString(), p.Y.ToString(), null, props, callback);
-
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewGroupRequest(msg));
         }
 
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
