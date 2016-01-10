@@ -139,15 +139,15 @@ namespace NuSysApp
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.SessionView.RenderTransform.Inverse.TransformPoint(new Point(width/2, height/2));
+            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width/2, height/2));
 
             var contentId = SessionController.Instance.GenerateId();
 
             m["contentId"] = contentId;
-            m["x"] = centerpoint.X;
-            m["y"] = centerpoint.Y;
-            m["width"] = 200;
-            m["height"] = 200;
+            m["x"] = centerpoint.X - 200;
+            m["y"] = centerpoint.Y - 200;
+            m["width"] = 400;
+            m["height"] = 400;
             m["nodetype"] = type.ToString();
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewContentRequest(contentId,

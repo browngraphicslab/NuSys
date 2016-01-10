@@ -31,7 +31,6 @@ namespace NuSysApp
         public VideoNodeView(VideoNodeViewModel vm)
         {
             this.InitializeComponent();
-            InitializeCamera();
             this.DataContext = vm;
             InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
             var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).ContentId).Data);
@@ -41,38 +40,6 @@ namespace NuSysApp
             _isRecording = false;
             //  playbackElement.Play();
         }
-
-        private async void InitializeCamera()
-        {
-            var cameraDevice = await FindCameraDeviceByPanelAsync(Windows.Devices.Enumeration.Panel.Front);
-            _mediaCapture = new MediaCapture();
-            var settings = new MediaCaptureInitializationSettings { VideoDeviceId = cameraDevice.Id };
-
-            try
-            {
-                await _mediaCapture.InitializeAsync(settings);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Debug.WriteLine("The app was denied access to the camera");
-            }
-            preview.Source = _mediaCapture;
-            await _mediaCapture.StartPreviewAsync();
-
-        }
-        private static async Task<DeviceInformation> FindCameraDeviceByPanelAsync(Windows.Devices.Enumeration.Panel desiredPanel)
-        {
-
-            // Get available devices for capturing pictures
-            var allVideoDevices = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
-
-            // Get the desired camera by panel
-            DeviceInformation desiredDevice = allVideoDevices.FirstOrDefault(x => x.EnclosureLocation != null && x.EnclosureLocation.Panel == desiredPanel);
-
-            // If there is no device mounted on the desired panel, return the first device found
-            return desiredDevice ?? allVideoDevices.FirstOrDefault();
-        }
-
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
@@ -84,33 +51,7 @@ namespace NuSysApp
             //       _stopped = true;
             e.Handled = true;
         }
-        private async void OnRecord_Click(object sender, TappedRoutedEventArgs e)
-        {
-            var vm = (VideoNodeViewModel)this.DataContext;
-            var model = (VideoNodeModel)vm.Model;
-
-            if (!_isRecording)
-            {
-                model.Recording = new InMemoryRandomAccessStream();
-                var encodingProfile = MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto);
-                await _mediaCapture.StartRecordToStreamAsync(encodingProfile, model.Recording);
-                playbackElement.Visibility = Visibility.Collapsed;
-                preview.Visibility = Visibility.Visible;
-
-            }
-            else
-            {
-                await _mediaCapture.StopRecordAsync();
-                playbackElement.SetSource(model.Recording, "video/mp4");
-                playbackElement.Visibility = Visibility.Visible;
-                preview.Visibility = Visibility.Collapsed;
-                playbackElement.Play();
-            }
-
-
-            _isRecording = !_isRecording;
-        }
-
+        
 
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {

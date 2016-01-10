@@ -14,7 +14,7 @@ namespace NuSysApp
     public class NodeContainerViewModel: NodeViewModel
     {
         public ObservableDictionary<string, FrameworkElement> Children { get; }
-
+        
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
