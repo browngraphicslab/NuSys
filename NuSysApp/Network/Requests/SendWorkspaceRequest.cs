@@ -18,13 +18,15 @@ namespace NuSysApp.Network.Requests
         {
             await Task.Run(async delegate
             {
+                await SessionController.Instance.SaveWorkspace();
                 var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
-                _message["nodelines"] = new List<string>(await FileIO.ReadLinesAsync(file));
+                var lines = await FileIO.ReadLinesAsync(file);
+                _message["nodelines"] = new List<string>(lines);
             });
             await base.CheckOutgoingRequest();
         }
 
-        public virtual async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session,
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session,
             string senderIP)
         {
             await Task.Run(async delegate
