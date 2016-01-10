@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<local:AnimatableUserControl
     x:Class="NuSysApp.VideoNodeView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -13,7 +13,7 @@
     RenderTransform="{Binding Transform}"
     ManipulationMode="All">
 
-    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="White">
+    <local:NodeTemplate x:Name="nodeTpl" Background="Red" BorderBrush="White">
 
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
@@ -32,8 +32,9 @@
 
                 <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <CaptureElement Name="preview"/>
-                 <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True" Visibility="Collapsed" Stretch="Uniform" />        
+                <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True"  Stretch="Uniform" />
             </StackPanel>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
-</UserControl>
+</local:AnimatableUserControl>
+

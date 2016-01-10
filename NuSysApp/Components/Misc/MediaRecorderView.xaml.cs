@@ -141,11 +141,17 @@ namespace NuSysApp
             var height = SessionController.Instance.SessionView.ActualHeight;
             var centerpoint = SessionController.Instance.SessionView.RenderTransform.Inverse.TransformPoint(new Point(width/2, height/2));
 
+            var contentId = SessionController.Instance.GenerateId();
 
-            m["data"] = Convert.ToBase64String(data);
+            m["contentId"] = contentId;
             m["x"] = centerpoint.X;
             m["y"] = centerpoint.Y;
+            m["width"] = 200;
+            m["height"] = 200;
             m["nodetype"] = type.ToString();
+            await
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewContentRequest(contentId,
+                    Convert.ToBase64String(data)));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
         }
