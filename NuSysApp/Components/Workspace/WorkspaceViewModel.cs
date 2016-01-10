@@ -11,6 +11,7 @@ using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -51,6 +52,7 @@ namespace NuSysApp
         public void CheckForInkNodeIntersection(InqLineModel inq)
         {
             var nodes = new List<NodeViewModel>();
+            var links = new List<LinkViewModel>();
             foreach (var node2 in AtomViewList.Where(a => a.DataContext is NodeViewModel))
             {
                 var rect1 = Geometry.InqToBoudingRect(inq);
@@ -59,20 +61,52 @@ namespace NuSysApp
                 if (!rect1.IsEmpty)
                 {
                     nodes.Add(node2.DataContext as NodeViewModel);
+                    var linksToDelete = (node2.DataContext as NodeViewModel).LinkList;
+                    foreach (var link in linksToDelete)
+                    {
+                        links.Add(link);
+                    }
                 }
             }
-            removeNodes(nodes);
-        }
-
-        private void removeNodes(List<NodeViewModel> nodes)
-        {
-            foreach (NodeViewModel node in nodes)
+            foreach (var link in AtomViewList.Where(a => a.DataContext is LinkViewModel))
             {
-                DeleteNode(node);
+                var rect1 = Geometry.InqToBoudingRect(inq);
+                var LinkLine = (link.DataContext as LinkViewModel).LineRepresentation;
+                var rectLines = Geometry.RectToLineSegment(rect1);
+
+                foreach (var line in rectLines)
+                {
+                    if (Geometry.LinesIntersect(LinkLine,line))
+                    {
+                        links.Add(link.DataContext as LinkViewModel);
+                        break;
+                    }   
+                }
             }
+            foreach (var link in links)
+            {
+                DeleteLink(link);    
+            }
+            foreach (var node in nodes)
+            {
+                DeleteNode(node);    
+            }
+
         }
 
 
+        public void DeleteLink(LinkViewModel link)
+        {
+            Debug.WriteLine("deleting node");
+            var ucl = AtomViewList.Where(a => a.DataContext == link);
+            if (!ucl.Any())
+            {
+                return;
+            }
+            var uc = ucl.First();
+            AtomViewList.Remove(uc);
+
+        }
         public void DeleteNode(NodeViewModel node)
         {
             Debug.WriteLine("deleting node");
