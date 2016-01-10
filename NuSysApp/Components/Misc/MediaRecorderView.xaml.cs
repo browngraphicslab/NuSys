@@ -49,11 +49,29 @@ namespace NuSysApp
                 await OnStartRecordingVidClick(sender, e);
             }
         }
+
+        private void IsRecordingSwitch(bool boolean)
+        {
+            if (boolean)
+            {
+                RecordButton.Visibility = Visibility.Collapsed;
+                RecordText.Visibility = Visibility.Collapsed;
+                StopButton.Visibility = Visibility.Visible;
+                StopText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RecordButton.Visibility = Visibility.Visible;
+                RecordText.Visibility = Visibility.Visible;
+                StopButton.Visibility = Visibility.Collapsed;
+                StopText.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private async Task OnStartRecordingVidClick(object sender, RoutedEventArgs e)
         {
             if (_audioRecording || _videoRecording)
             {
-
                 await mediaCapture.StopRecordAsync();
                 stream.Seek(0);
                 byte[] fileBytes = new byte[stream.Size];
@@ -69,6 +87,7 @@ namespace NuSysApp
                 }
                 _videoRecording = false;
                 _audioRecording = false;
+                this.IsRecordingSwitch(false);
             }
             else
             {
@@ -85,6 +104,7 @@ namespace NuSysApp
                     Element.Source = mediaCapture;
                     await mediaCapture.StartPreviewAsync();
                     _videoRecording = true;
+                    this.IsRecordingSwitch(true);
                 }
                 catch (Exception exception)
                 {
