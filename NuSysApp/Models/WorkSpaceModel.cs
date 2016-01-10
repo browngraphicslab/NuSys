@@ -44,7 +44,7 @@ namespace NuSysApp
             pack.Add("locationY", LocationY);
             pack.Add("centerX", CenterX);
             pack.Add("centerY", CenterY);
-            pack["type"] = "workspace";
+          //  pack["type"] = AtomType.Workspace;
             return pack;
         }
 

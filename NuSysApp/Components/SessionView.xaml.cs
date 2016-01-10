@@ -109,11 +109,13 @@ namespace NuSysApp
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
+                var id = msg.GetString("id");
+                var type = (AtomModel.AtomType) Enum.Parse(typeof(AtomModel.AtomType), msg.GetString("type"));
+                if (type == AtomModel.AtomType.Node)
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(msg));
+                if (type == AtomModel.AtomType.Link)
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLinkRequest(msg));
                 
-
-                var id = msg.GetString("id", "noId");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(msg));
-
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;
                 if (model == null)
                     continue;
@@ -188,9 +190,9 @@ namespace NuSysApp
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             };
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-
-            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);
-            
+            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);           
+                        Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
+            Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
         }
 
   

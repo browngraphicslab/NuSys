@@ -19,6 +19,7 @@ namespace NuSysApp
             SystemRequest,
             NewLinkRequest,
             SendableUpdateRequest,
+            NewThumbnailRequest,
             NewGroupRequest,
             NewContentRequest
         }

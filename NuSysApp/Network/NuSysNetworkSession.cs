@@ -90,7 +90,7 @@ namespace NuSysApp
                 if (packetType == NetworkClient.PacketType.TCP)
                 {
                     ManualResetEvent mre = new ManualResetEvent(false);
-                    string requestID = Guid.NewGuid().ToString("N");
+                    string requestID = SessionController.Instance.GenerateId();
                     _requestEventDictionary[requestID] = mre;
 
                     message["local_request_id"] = requestID;
@@ -103,10 +103,8 @@ namespace NuSysApp
                     {
                         await SendRequest(message, packetType);
                     }
-                    Debug.WriteLine("WAIT "+requestID);
                     if (_requestEventDictionary.ContainsKey(requestID))
                         mre.WaitOne();
-                    Debug.WriteLine("FREE "+ requestID);
                 }
                 else
                 {
@@ -185,6 +183,9 @@ namespace NuSysApp
                 case Request.RequestType.NewGroupRequest:
                     request = new NewGroupRequest(message);
                     break;
+                case Request.RequestType.NewThumbnailRequest:
+                    request = new NewThumbnailRequest(message);
+                    break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;
@@ -222,7 +223,6 @@ namespace NuSysApp
                     ManualResetEvent outMre;
                     _requestEventDictionary.TryRemove(local_id, out outMre);
                     mre.Set();
-                    Debug.WriteLine("SET "+local_id);
                 }
             }
         }

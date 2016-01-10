@@ -15,6 +15,7 @@ namespace NuSysApp
         {
             //ByteArray = byteArray;
             Recording = new InMemoryRandomAccessStream();
+            NodeType = NodeType.Video;
         }
         public InMemoryRandomAccessStream Recording
         {
@@ -33,7 +34,7 @@ namespace NuSysApp
             {
                 props.Add("video", Convert.ToBase64String(ByteArray));
             }
-            props.Add("nodeType", NodeType.Video.ToString());
+
             return props;
         }
 

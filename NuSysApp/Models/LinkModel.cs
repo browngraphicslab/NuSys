@@ -18,7 +18,7 @@ namespace NuSysApp
             Id = id;
             Atom1 = inAtom;
             Atom2 = outAtom;
-            
+            Type = AtomType.Link;
         }
 
         public string InAtomID { get; set; }
@@ -39,7 +39,7 @@ namespace NuSysApp
             var dict = await base.Pack();
             dict.Add("id1",InAtomID);
             dict.Add("id2", OutAtomID);
-            dict.Add("type","linq");
+            dict.Add("type", Type.ToString());
             return dict;
         }
 

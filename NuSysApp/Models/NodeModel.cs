@@ -19,6 +19,7 @@ namespace NuSysApp
 
         public NodeModel(string id) : base(id)
         {
+            Type = AtomType.Node;
             InqCanvas = new InqCanvasModel(id);
             if (SessionController.Instance.ActiveWorkspace != null)
             {
@@ -28,11 +29,11 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {
+
             if (props.ContainsKey("nodeType")) { 
                 string t = props.GetString("nodeType");
                 NodeType = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
-
             ContentId = props.GetString("contentId", null);
             InqCanvas.UnPack(props);
             await base.UnPack(props);
@@ -42,7 +43,7 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict.Add("nodeType", NodeType.ToString());
-            dict.Add("type", "node");
+            dict.Add("type", Type.ToString());
             dict.Add("contentId", ContentId);
 
             var lines = new List<Dictionary<string,object>>();

@@ -73,6 +73,9 @@ namespace NuSysApp
                 case NodeType.PDF:
                     view = new PdfNodeView(new PdfNodeViewModel((PdfNodeModel)model));
                     break;
+                case NodeType.Video:
+                    view = new VideoNodeView(new VideoNodeViewModel((VideoNodeModel)model));
+                    break;
                 case NodeType.Workspace:
                     view = new WorkspaceView(new WorkspaceViewModel((WorkspaceModel)model));
                     break;

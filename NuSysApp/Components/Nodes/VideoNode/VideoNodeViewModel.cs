@@ -11,7 +11,6 @@ namespace NuSysApp
     {
         public VideoNodeViewModel(VideoNodeModel model) : base(model)
         {
-            this.Transform = new CompositeTransform();
          //   this.Width = 400;
          //   this.Height = 150;
 
