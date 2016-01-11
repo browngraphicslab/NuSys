@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
-    public sealed partial class WebNodeView : AnimatableNodeView
+    public sealed partial class WebNodeView : AnimatableUserControl
     {
         public WebNodeView(WebNodeViewModel vm)
         {

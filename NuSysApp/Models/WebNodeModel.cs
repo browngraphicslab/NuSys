@@ -23,7 +23,7 @@ namespace NuSysApp
         
         public override async Task UnPack(Message props)
         {
-            Url = props.GetString("url", "");
+            Url = props.GetString("url", null) ?? Url;
             await base.UnPack(props);
         }
 
