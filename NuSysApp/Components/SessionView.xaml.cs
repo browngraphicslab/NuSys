@@ -35,6 +35,7 @@ namespace NuSysApp
 
     //    private static List<AtomModel> addedModels;
         private static List<AtomModel> createdModels;
+        private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
 
@@ -68,6 +69,11 @@ namespace NuSysApp
                 await SessionController.Instance.InitializeRecog();
 
         
+            };
+
+            _contentImporter.ContentImported += delegate(List<string> markdown)
+            {
+                
             };
         }
 

@@ -191,6 +191,7 @@
     </Compile>
     <None Include="packages.config" />
     <None Include="PowerPointAddIn_1_TemporaryKey.pfx" />
+    <None Include="PowerPointAddIn_2_TemporaryKey.pfx" />
     <None Include="PowerPointAddIn_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -244,10 +245,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>PowerPointAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>PowerPointAddIn_2_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>6144A021A2F9660911256E8DD927B1C2904E5D92</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>1A8D0AECD29A90F284D80F7B2792FCAE40C0D761</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

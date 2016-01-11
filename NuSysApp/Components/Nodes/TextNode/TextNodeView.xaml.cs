@@ -42,6 +42,7 @@ namespace NuSysApp
             model.TextChanged += delegate(object source, TextChangedEventArgs args)
             {
                 rtfTextBox.SetRtfText(args.Text);
+               // rtfTextBox.SetRtfText();
             };
 
             
