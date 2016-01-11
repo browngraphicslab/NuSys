@@ -12,15 +12,21 @@
 
     <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
         <local:NodeTemplate.Inner>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top">
-                <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="30"></Image>
-                </Button>
-                <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_audionode_play.png" Height="40"></Image>
-                </Button>
-                <MediaElement x:Name="playbackElement"  Stretch="Fill" AudioCategory="Speech" Source="{Binding AudioSource}"/>
-            </StackPanel>
+            <Grid Width="{Binding Width}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top">
+                    <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_play.png" Height="25"></Image>
+                    </Button>
+                    <Button x:Name="pause" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_pause.png" Height="25"/>
+                    </Button>
+                    <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="25"></Image>
+                    </Button>
+                    <MediaElement x:Name="playbackElement"  Stretch="Fill" AudioCategory="Speech" Source="{Binding AudioSource}"/>
+                </StackPanel>
+            </Grid>
+           
         </local:NodeTemplate.Inner>
 
     </local:NodeTemplate>
