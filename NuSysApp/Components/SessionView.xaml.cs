@@ -70,11 +70,6 @@ namespace NuSysApp
 
         
             };
-
-            _contentImporter.ContentImported += delegate(List<string> markdown)
-            {
-                
-            };
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -201,7 +196,16 @@ namespace NuSysApp
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
         }
 
-  
+        public void ShowRecorder()
+        {
+            xMediaRecorder.Show();
+        }
+
+        public void HideRecorder()
+        {
+            xMediaRecorder.Hide();
+        }
+
 
         public void ShowFullScreen(NodeModel model)
         {

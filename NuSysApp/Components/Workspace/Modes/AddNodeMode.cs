@@ -130,7 +130,7 @@ namespace NuSysApp
                 {
                     nodeType = NodeType.Image;
                     
-                    data = Convert.ToBase64String(await ImageUtil.StorageFileToByteArray(storageFile));
+                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                 }
 
                 if (Constants.PdfFileTypes.Contains(storageFile.FileType))

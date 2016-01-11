@@ -335,7 +335,7 @@ namespace NuSysApp
             {
                 var buffer = await FileIO.ReadBufferAsync(thumbFile);
                 var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
-                var img = await ImageUtil.ByteArrayToBitmapImage(buffer.ToArray());
+                var img = await MediaUtil.ByteArrayToBitmapImage(buffer.ToArray());
                 Thumbnails[id] = img;
                 await SendThumbnail(thumbFile, id);
             }           
@@ -345,12 +345,12 @@ namespace NuSysApp
         {
             Thumbnails[id] = image;
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
-            var img = await ImageUtil.RenderTargetBitmapToByteArray(image);
+            var img = await MediaUtil.RenderTargetBitmapToByteArray(image);
             FileIO.WriteBytesAsync(file, img);
         }
         public async Task SaveThumb(string id, byte[] byteArray)
         {
-            var image = await ImageUtil.ByteArrayToBitmapImage(byteArray);
+            var image = await MediaUtil.ByteArrayToBitmapImage(byteArray);
             Thumbnails[id] = image;
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
             FileIO.WriteBytesAsync(file, byteArray);
@@ -358,7 +358,7 @@ namespace NuSysApp
         
         private async Task SendThumbnail(StorageFile storageFile, string id)
         {
-            var fileBytes = await ImageUtil.StorageFileToByteArray(storageFile);
+            var fileBytes = await MediaUtil.StorageFileToByteArray(storageFile);
             var s = Convert.ToBase64String(fileBytes);
             var request = new NewThumbnailRequest(s, id);
         }
@@ -371,7 +371,7 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);
-            FileIO.WriteLinesAsync(file, lines);
+            await FileIO.WriteLinesAsync(file, lines);
         }
 
         public async Task LoadWorkspace()

@@ -88,6 +88,8 @@ namespace NuSysApp
 
         public async void SwitchMode(Options mode, bool isFixed)
         {
+            SessionController.Instance.SessionView.HideRecorder();
+            //SessionController.Instance.SessionView.FloatingMenu.Reset();
             switch (mode)
             {
                 case Options.SelectNode:
@@ -119,6 +121,10 @@ namespace NuSysApp
                 case Options.AddMedia:
                     await
                         SetViewMode(new MultiMode(this, new SelectMode(this), new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
+                    break;
+                case Options.AddRecord:
+                    var sessionView = SessionController.Instance.SessionView;
+                    sessionView.ShowRecorder();
                     break;
                 case Options.PenErase:
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));

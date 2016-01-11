@@ -61,6 +61,12 @@ namespace NuSysApp
                 case NodeType.Web:
                     view = new WebDetailView(new WebNodeViewModel((WebNodeModel)model));
                     break;
+                case NodeType.Video:
+                    view = new VideoDetailView(new VideoNodeViewModel((VideoNodeModel) model));
+                    break;
+                case NodeType.Audio:
+                    view = new AudioDetailView(new AudioNodeViewModel((AudioNodeModel) model));
+                    break;
             }
 
             var tpl = view.FindName("nodeTpl") as NodeTemplate;

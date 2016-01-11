@@ -22,10 +22,10 @@ namespace NuSysApp
     public sealed partial class MediaRecorderView : UserControl
     {
         private MediaCapture mediaCapture;
-        private bool _audioRecording, _videoRecording;
+        private bool _recording;
         private InMemoryRandomAccessStream stream;
         private RecordingType _recordingType;
-        
+
         public enum RecordingType
         {
             Video,
@@ -34,41 +34,59 @@ namespace NuSysApp
         public MediaRecorderView()
         {
             this.InitializeComponent();
-            _audioRecording = false;
-            _videoRecording = false;
+            _recording = false;
             stream = new InMemoryRandomAccessStream();
+            _recordingType = RecordingType.Audio;
         }
         private async void RecordButton_OnTapped(object sender, RoutedEventArgs e)
         {
-            if (_recordingType == RecordingType.Audio)
+            AudioVideoSwitch.IsHitTestVisible = !AudioVideoSwitch.IsHitTestVisible;
+            if (AudioVideoSwitch.IsOn)
             {
-                await OnStartRecordingAudClick(sender, e);
+                await OnStartRecordingVidClick();
             }
             else
             {
-                await OnStartRecordingVidClick(sender, e);
+                await OnStartRecordingAudClick();
             }
         }
-        private async Task OnStartRecordingVidClick(object sender, RoutedEventArgs e)
-        {
-            if (_audioRecording || _videoRecording)
-            {
 
+        public void Show()
+        {
+            MediaGrid.Visibility = Visibility.Visible;
+        }
+
+        private void IsRecordingSwitch(bool boolean)
+        {
+            if (boolean)
+            {
+                RecordButton.Visibility = Visibility.Collapsed;
+                RecordText.Visibility = Visibility.Collapsed;
+                StopButton.Visibility = Visibility.Visible;
+                StopText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RecordButton.Visibility = Visibility.Visible;
+                RecordText.Visibility = Visibility.Visible;
+                StopButton.Visibility = Visibility.Collapsed;
+                StopText.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task OnStartRecordingVidClick()
+        {
+            if (_recording)
+            {
                 await mediaCapture.StopRecordAsync();
                 stream.Seek(0);
                 byte[] fileBytes = new byte[stream.Size];
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
-                if (_audioRecording)
-                {
-                    await SendRequest(fileBytes, NodeType.Audio);
-                }
-                else
-                {
-                    await SendRequest(fileBytes, NodeType.Video);
-                }
-                _videoRecording = false;
-                _audioRecording = false;
+                await SendRequest(fileBytes, NodeType.Video);
+                _recording = false;
+                mediaCapture.Dispose();
+                this.IsRecordingSwitch(false);
             }
             else
             {
@@ -84,7 +102,8 @@ namespace NuSysApp
                         stream);
                     Element.Source = mediaCapture;
                     await mediaCapture.StartPreviewAsync();
-                    _videoRecording = true;
+                    _recording = true;
+                    this.IsRecordingSwitch(true);
                 }
                 catch (Exception exception)
                 {
@@ -94,10 +113,11 @@ namespace NuSysApp
         }
 
 
-        private async Task OnStartRecordingAudClick(object sender, RoutedEventArgs e)
+
+        private async Task OnStartRecordingAudClick()
         {
 
-            if (_audioRecording || _videoRecording)
+            if (_recording)
             {
 
                 await mediaCapture.StopRecordAsync();
@@ -108,8 +128,10 @@ namespace NuSysApp
 
                 await SendRequest(fileBytes, NodeType.Audio);
 
-                _videoRecording = false;
-                _audioRecording = false;
+                _recording = false;
+
+                mediaCapture.Dispose();
+                this.IsRecordingSwitch(false);
             }
             else
             {
@@ -124,7 +146,8 @@ namespace NuSysApp
                         mediaCapture.StartRecordToStreamAsync(
                             MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Auto),
                             stream);
-                    _audioRecording = true;
+                    _recording = true;
+                    this.IsRecordingSwitch(true);
                 }
                 catch (Exception exception)
                 {
@@ -135,11 +158,10 @@ namespace NuSysApp
 
         private async Task SendRequest(byte[] data, NodeType type)
         {
-
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width/2, height/2));
+            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
 
             var contentId = SessionController.Instance.GenerateId();
 
@@ -150,27 +172,19 @@ namespace NuSysApp
             m["height"] = 400;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewContentRequest(contentId,
                     Convert.ToBase64String(data)));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            this.Hide();
         }
 
-        private async void OnStopRecordingBtnClick(object sender, RoutedEventArgs e)
+        public void Hide()
         {
-            try
-            {
-                String fileName;
-                await mediaCapture.StopRecordAsync();
-            }
-            catch (Exception exception)
-            {
-                // Do Exception Handling...
-            }
+            MediaGrid.Visibility = Visibility.Collapsed;
         }
-
 
         public WorkspaceView WorkspaceView { get; set; }
 

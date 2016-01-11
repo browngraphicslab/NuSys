@@ -26,7 +26,7 @@ namespace NuSysApp
 
         public string Add( string contentData, string presetID = null)
         {
-            var id = presetID != null ? presetID : SessionController.Instance.GenerateId();
+            var id = presetID ?? SessionController.Instance.GenerateId();
             var n = new NodeContentModel(contentData, id);
             _contents.Add(id, n );
             return id;
@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
             var lines = _contents.Values.Select(s => JsonConvert.SerializeObject(s) );
-            FileIO.WriteLinesAsync(file, lines);
+            await FileIO.WriteLinesAsync(file, lines);
         }
     }
 }

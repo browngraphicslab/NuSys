@@ -101,6 +101,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
@@ -158,8 +159,14 @@
       <DependentUpon>FullScreenViewerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\DetailViewer\FullScreenViewerViewModel.cs" />
+    <Compile Include="Components\DetailViewer\Views\AudioDetailView.xaml.cs">
+      <DependentUpon>AudioDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\DetailViewer\Views\LinkDetailView.xaml.cs">
       <DependentUpon>LinkDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DetailViewer\Views\VideoDetailView.xaml.cs">
+      <DependentUpon>VideoDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\DetailViewer\Views\WebDetailView.xaml.cs">
       <DependentUpon>WebDetailView.xaml</DependentUpon>
@@ -241,6 +248,7 @@
     <Compile Include="Network\Requests\NewThumnailRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
@@ -251,7 +259,7 @@
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
-    <Compile Include="Util\ImageUtil.cs" />
+    <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\UITask.cs" />
@@ -457,9 +465,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\DetailViewer\Views\AudioDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\DetailViewer\Views\LinkDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\DetailViewer\Views\VideoDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\DetailViewer\Views\WebDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>

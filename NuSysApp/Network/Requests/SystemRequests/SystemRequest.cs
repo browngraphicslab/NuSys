@@ -12,7 +12,8 @@ namespace NuSysApp
         {
             AddClient,
             RemoveClient,
-            SetHost
+            SetHost,
+            SendWorkspace
         }
 
         private SystemRequestType _systemRequestType;

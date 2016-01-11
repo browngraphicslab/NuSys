@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {
@@ -21,6 +22,12 @@ namespace NuSysApp
                 var list = new List<string>();
                 list.Add(senderIP);
                 await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, list);
+                if (nusysSession.IsHostMachine)
+                {
+                    var l = new List<string>();
+                    l.Add(senderIP);
+                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest(),NetworkClient.PacketType.TCP,l);
+                }
             }
         }
     }

@@ -36,8 +36,8 @@ namespace NuSysApp
                     if (eventArgs.PropertyName != "ImageSource")
                         return;
 
-                    var sw = SessionController.Instance.SessionView.ActualWidth / 2;
-                    var sh = SessionController.Instance.SessionView.ActualHeight / 2;
+                    var sw = SessionController.Instance.SessionView.ActualWidth / 1.2;
+                    var sh = SessionController.Instance.SessionView.ActualHeight / 1.2;
                     var ratio = vm.Width > vm.Height ? vm.Width / sw : vm.Height/ sh;
                     xImg.Width = vm.Width / ratio;
                     xImg.Height = vm.Height / ratio;
