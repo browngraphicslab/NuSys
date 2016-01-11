@@ -19,9 +19,36 @@ namespace NuSysApp
 {
     public sealed partial class AudioDetailView : UserControl
     {
+        private bool _stopped;
+
         public AudioDetailView(AudioNodeViewModel vm)
         {
             this.InitializeComponent();
+            this.DataContext = vm;
+            
+        }
+
+        private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (playbackElement.Source == null)
+                playbackElement.SetSource((DataContext as AudioNodeViewModel).AudioSource, "audio/mp3");
+            Play.Opacity = .3;
+            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
+            {
+                Play.Opacity = 1;
+            };
+            playbackElement.Play();
+        }
+        private void Pause_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            
+        }
+        private void Stop_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            playbackElement.Stop();
+            Play.Opacity = 1;
+            _stopped = true;
+            e.Handled = true;
         }
     }
 }
