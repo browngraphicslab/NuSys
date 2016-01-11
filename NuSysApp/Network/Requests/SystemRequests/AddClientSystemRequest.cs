@@ -24,7 +24,9 @@ namespace NuSysApp
                 await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, list);
                 if (nusysSession.IsHostMachine)
                 {
-                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest());
+                    var l = new List<string>();
+                    l.Add(senderIP);
+                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest(),NetworkClient.PacketType.TCP,l);
                 }
             }
         }
