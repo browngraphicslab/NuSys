@@ -238,6 +238,7 @@
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
+    <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewContentRequest.cs" />
