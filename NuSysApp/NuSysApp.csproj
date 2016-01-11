@@ -162,6 +162,9 @@
     <Compile Include="Components\DetailViewer\Views\AudioDetailView.xaml.cs">
       <DependentUpon>AudioDetailView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\DetailViewer\Views\GroupDetailView.xaml.cs">
+      <DependentUpon>GroupDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\DetailViewer\Views\LinkDetailView.xaml.cs">
       <DependentUpon>LinkDetailView.xaml</DependentUpon>
     </Compile>
@@ -467,6 +470,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\DetailViewer\Views\AudioDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\DetailViewer\Views\GroupDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
