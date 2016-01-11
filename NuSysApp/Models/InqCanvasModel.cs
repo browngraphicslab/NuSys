@@ -114,7 +114,10 @@ namespace NuSysApp
                     AddLine(line);
                 }
             }
-            Page = props.GetInt("page", 0);
+            if (props.ContainsKey("page"))
+            {
+                Page = props.GetInt("page", 0);
+            }
             return base.UnPack(props);
         }
     }

@@ -9,7 +9,18 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
-
+    <Grid Width="400" Height="55" Background="DarkGray" CornerRadius="10">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button x:Name="Play" Tapped="Play_OnTapped" Background="Transparent">
+                <Image Source="/Assets/icon_audionode_play.png" Height="20" Width="20"></Image>
+            </Button>
+            <Button x:Name="Pause" Tapped="Pause_OnTapped" Background="Transparent">
+                <Image Source="/Assets/icon_audionode_pause.png" Height="20" Width="20"></Image>
+            </Button>
+            <Button x:Name="Stop" Tapped="Stop_OnTapped" Background="Transparent">
+                <Image Source="/Assets/icon_audionode_stop.png" Height="20" Width="20"></Image>
+            </Button>
+            <MediaElement x:Name="playbackElement"  Stretch="Fill" AudioCategory="Speech" Source="{Binding AudioSource}"></MediaElement>
+        </StackPanel>
     </Grid>
 </UserControl>
