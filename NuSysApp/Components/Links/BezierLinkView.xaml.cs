@@ -41,7 +41,7 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
                 AnnotationContainer.Visibility = vm.AnnotationText == "" ? Visibility.Collapsed : Visibility.Visible;
-                await SessionController.Instance.InitializeRecog();
+         //       await SessionController.Instance.InitializeRecog();
             };
         }
 

@@ -90,6 +90,8 @@ namespace NuSysApp
             if (releasedNode == null)
                 return;
 
+            //_view.ReleasePointerCaptures();
+
             if (_pressedItems.Count == 2)
             {
                 BuildGroup(_pressedItems[0], _pressedItems[1], true);
@@ -191,6 +193,8 @@ namespace NuSysApp
            
             if (pressedNode == null)
                 return;
+
+            //_view.CapturePointer(e.Pointer);
 
             
             if (!(pressedNode is LabelNodeViewModel))

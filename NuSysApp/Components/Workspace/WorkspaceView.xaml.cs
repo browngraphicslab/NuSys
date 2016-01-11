@@ -72,7 +72,7 @@ namespace NuSysApp
             var Model = wsmodel.InqCanvas;
             var outerRect = Geometry.PointCollecionToBoundingRect(line.Points.ToList());
 
-            if (outerRect.Width * outerRect.Height < (100.0 / Constants.MaxCanvasSize * 100.0 /Constants.MaxCanvasSize) )
+            if (outerRect.Width * outerRect.Height < (150.0 / Constants.MaxCanvasSize * 150.0 /Constants.MaxCanvasSize) )
                 return false;
 
             var idsToDelete = new List<InqLineModel>();
@@ -101,10 +101,11 @@ namespace NuSysApp
                 }
             }
 
+            line.Delete();
 
             var first = line.Points.First();
             var last = line.Points.Last();
-            if (encompassedLines.Count == 0 || (Math.Abs(first.X - last.X) > 40 && Math.Abs(first.Y - last.Y) > 40))
+            if (encompassedLines.Count == 0 || (Math.Abs(first.X - last.X) > 40 || Math.Abs(first.Y - last.Y) > 40))
             {
                 return false;
             }

@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
+using Windows.Devices.Input;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -48,6 +49,26 @@ namespace NuSysApp
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
 
+            PointerEntered += delegate (object o, PointerRoutedEventArgs eventArgs)
+            {
+                if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen &&_prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
+                {
+                    xFloatingMenu.SetActive(Options.PenGlobalInk);
+                    _prevOptions = Options.PenGlobalInk;
+                    IsPenMode = true;
+                }
+            };
+
+            PointerExited += delegate (object o, PointerRoutedEventArgs eventArgs)
+            {
+                if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
+                {
+                    xFloatingMenu.SetActive(Options.SelectNode);
+                    _prevOptions = Options.SelectNode;
+                    IsPenMode = false;
+                }
+            };
+
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
                 Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
@@ -67,7 +88,7 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
                 await SessionController.Instance.InitializeRecog();
-
+                
         
             };
         }
