@@ -22,6 +22,7 @@ namespace NuSysApp
             NewThumbnailRequest,
             NewGroupRequest,
             NewContentRequest,
+            ChangeContentRequest
         }
         protected Message _message;
         private RequestType _requestType;

@@ -206,6 +206,9 @@ namespace NuSysApp
                 case Request.RequestType.DuplicateNodeRequest:
                     request = new DuplicateNodeRequest(message);
                     break;
+                case Request.RequestType.ChangeContentRequest:
+                    request = new ChangeContentRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }

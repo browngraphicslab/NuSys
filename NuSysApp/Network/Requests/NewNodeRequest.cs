@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NuSysApp
@@ -24,6 +25,17 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
+            /*
+            if (_message.ContainsKey("contentId") && SessionController.Instance.ContentController.Get(_message.GetString("contentId")) == null)
+            {
+                await Task.Run(async delegate
+                {
+                    var mre = new ManualResetEvent(false);
+                    SessionController.Instance.ContentController.AddWaitingNodeCreation(
+                        _message.GetString("contentId"), mre);
+                    mre.WaitOne();
+                });
+            }*/
             NodeModel node = await SessionController.Instance.CreateNewNode(_message.GetString("id"), (NodeType)Enum.Parse(typeof(NodeType),_message.GetString("nodeType")));
             SessionController.Instance.IdToSendables[_message.GetString("id")] = node;
             await node.UnPack(_message);
