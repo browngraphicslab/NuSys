@@ -34,6 +34,8 @@ namespace NuSysApp.Network.Requests
                 var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
                 var lines = _message.GetList<string>("nodelines");
                 await FileIO.WriteLinesAsync(file, lines);
+            });
+            await UITask.Run(async delegate {
                 await SessionController.Instance.LoadWorkspace();
             });
         }
