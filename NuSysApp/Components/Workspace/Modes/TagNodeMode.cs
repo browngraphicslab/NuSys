@@ -69,9 +69,8 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var kv = (KeyValuePair<string, UserControl>)newItem;
-
-
+                var kv = (KeyValuePair<string, FrameworkElement>)newItem;
+                
                 if (((FrameworkElement)kv.Value).DataContext is LabelNodeViewModel) {
                     Canvas.SetZIndex((UserControl)kv.Value, 100);
                     continue;

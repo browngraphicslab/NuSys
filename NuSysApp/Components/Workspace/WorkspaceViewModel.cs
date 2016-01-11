@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media;
 using SQLite.Net.Async;
 using System;
 using System.Linq;
+using Windows.Devices.WiFiDirect;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
@@ -49,7 +50,7 @@ namespace NuSysApp
 
         #region Node Interaction
 
-        public void CheckForInkNodeIntersection(InqLineModel inq)
+        public bool CheckForInkNodeIntersection(InqLineModel inq)
         {
             var nodes = new List<NodeViewModel>();
             var links = new List<LinkViewModel>();
@@ -83,15 +84,18 @@ namespace NuSysApp
                     }   
                 }
             }
+            var deletedSome = false;
             foreach (var link in links)
             {
-                DeleteLink(link);    
+                DeleteLink(link);
+                deletedSome = true;
             }
             foreach (var node in nodes)
             {
-                DeleteNode(node);    
+                DeleteNode(node);
+                deletedSome = true;
             }
-
+            return deletedSome;
         }
 
 

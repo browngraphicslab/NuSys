@@ -209,7 +209,7 @@
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\WebNode\WebNodeViewModel.cs" />
-    <Compile Include="Components\Nodes\LabelNode\LabelNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\TagNode\LabelNodeViewModel.cs" />
     <Compile Include="Components\Nodes\ImageNode\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
     </Compile>
@@ -240,6 +240,7 @@
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
+    <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
     <Compile Include="Network\Requests\NewContentRequest.cs" />
     <Compile Include="Network\Requests\NewGroupRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
@@ -399,7 +400,7 @@
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\FreeFormNodeViewFactory.cs" />
-    <Compile Include="Components\Nodes\LabelNode\LabelNodeView.xaml.cs">
+    <Compile Include="Components\Nodes\TagNode\LabelNodeView.xaml.cs">
       <DependentUpon>LabelNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Workspace\INodeViewFactory.cs" />
@@ -577,7 +578,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Nodes\LabelNode\LabelNodeView.xaml">
+    <Page Include="Components\Nodes\TagNode\LabelNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
