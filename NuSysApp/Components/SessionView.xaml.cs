@@ -113,9 +113,9 @@ namespace NuSysApp
                 var id = msg.GetString("id");
                 var type = (AtomModel.AtomType) Enum.Parse(typeof(AtomModel.AtomType), msg.GetString("type"));
                 if (type == AtomModel.AtomType.Node)
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(msg));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
                 if (type == AtomModel.AtomType.Link)
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLinkRequest(msg));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 
                 var model = SessionController.Instance.IdToSendables[id] as AtomModel;
                 if (model == null)

@@ -33,8 +33,10 @@ namespace NuSysApp
                 var data = Convert.FromBase64String(d); //Converts to Byte Array
                 Image = await MediaUtil.ByteArrayToBitmapImage(data);
             }
-
-            FilePath = props.GetString("filepath", FilePath);
+            if (props.ContainsKey("filepath"))
+            {
+                FilePath = props.GetString("filepath", FilePath);
+            }
         }
 
         public override async Task<Dictionary<string, object>> Pack()
