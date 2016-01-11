@@ -10,9 +10,10 @@ namespace NuSysApp.Network.Requests
 {
     public class SendWorkspaceRequest : SystemRequest
     {
-        public SendWorkspaceRequest() : base(SystemRequestType.SendWorkspace)
-        {
-        }
+        public SendWorkspaceRequest(Message m) : base(m){}
+
+        public SendWorkspaceRequest() : base(SystemRequestType.SendWorkspace){}
+
         public override async Task CheckOutgoingRequest()
         {
             await Task.Run(async delegate

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
+using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {
@@ -252,6 +253,9 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.SetHost:
                     request = new SetHostSystemRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.SendWorkspace:
+                    request = new SendWorkspaceRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
