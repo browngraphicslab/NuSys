@@ -12,8 +12,8 @@ namespace NuSysApp
         private IRandomAccessStream _stream;
         public AudioNodeViewModel(AudioNodeModel model) : base(model)
         {
-            Width = 400;
-            Height = 150;
+            Width = 200;
+            Height = 80;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
