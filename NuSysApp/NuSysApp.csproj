@@ -159,8 +159,14 @@
       <DependentUpon>FullScreenViewerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\DetailViewer\FullScreenViewerViewModel.cs" />
+    <Compile Include="Components\DetailViewer\Views\AudioDetailView.xaml.cs">
+      <DependentUpon>AudioDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\DetailViewer\Views\LinkDetailView.xaml.cs">
       <DependentUpon>LinkDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DetailViewer\Views\VideoDetailView.xaml.cs">
+      <DependentUpon>VideoDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\DetailViewer\Views\WebDetailView.xaml.cs">
       <DependentUpon>WebDetailView.xaml</DependentUpon>
@@ -459,9 +465,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\DetailViewer\Views\AudioDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\DetailViewer\Views\LinkDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\DetailViewer\Views\VideoDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\DetailViewer\Views\WebDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
