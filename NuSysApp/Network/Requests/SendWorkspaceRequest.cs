@@ -23,7 +23,7 @@ namespace NuSysApp.Network.Requests
                 var lines = await FileIO.ReadLinesAsync(file);
                 _message["nodeLines"] = new List<string>(lines);
 
-                var contentsFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
+                var contentsFile = await NuSysStorages.SaveFolder.GetFileAsync("_contents.nusys");
                 var contentLines = await FileIO.ReadLinesAsync(contentsFile);
                 _message["contentLines"] = new List<string>(contentLines);
             });

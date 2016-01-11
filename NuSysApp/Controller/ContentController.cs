@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
             var lines = _contents.Values.Select(s => JsonConvert.SerializeObject(s) );
-            FileIO.WriteLinesAsync(file, lines);
+            await FileIO.WriteLinesAsync(file, lines);
         }
     }
 }

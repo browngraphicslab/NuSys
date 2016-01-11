@@ -26,8 +26,8 @@ namespace NuSysApp
        
         public override async Task UnPack(Message props)
         {
-
-            var d = SessionController.Instance.ContentController.Get(props.GetString("contentId", null))?.Data;
+            await base.UnPack(props);
+            var d = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""))?.Data;
             if (d != null)
             { 
                 var data = Convert.FromBase64String(d); //Converts to Byte Array
@@ -35,7 +35,6 @@ namespace NuSysApp
             }
 
             FilePath = props.GetString("filepath", FilePath);
-            await base.UnPack(props);
         }
 
         public override async Task<Dictionary<string, object>> Pack()
