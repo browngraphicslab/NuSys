@@ -65,7 +65,9 @@ namespace NuSysApp
                     view = new VideoDetailView(new VideoNodeViewModel((VideoNodeModel) model));
                     break;
                 case NodeType.Audio:
-                    view = new AudioDetailView(new AudioNodeViewModel((AudioNodeModel) model));
+                    AudioNodeViewModel audioVM = new AudioNodeViewModel((AudioNodeModel) model);
+                    await audioVM.InitAudio();
+                    view = new AudioDetailView(audioVM);
                     break;
             }
 
