@@ -25,7 +25,9 @@ namespace NuSysApp
             set
             {
                 _text = value;
-                SessionController.Instance.ContentController.Get(ContentId).Data = _text;
+                var content = SessionController.Instance.ContentController.Get(ContentId);
+                if (content != null)
+                    content.Data = _text;
                 TextChanged?.Invoke(this, new TextChangedEventArgs(_text));
             } 
         }
@@ -33,7 +35,7 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
-            if (ContentId != null)
+            if (!string.IsNullOrEmpty(ContentId))
                _text = SessionController.Instance.ContentController.Get(ContentId).Data;
         }
 

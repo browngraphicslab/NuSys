@@ -82,6 +82,13 @@ namespace NuSysApp
             };
         }
         #region Requests
+
+        public async Task ExecuteRequestLocally(Request request)
+        {
+            await request.CheckOutgoingRequest();
+            var m = new Message(request.GetFinalMessage().GetSerialized());
+            await request.ExecuteRequestFunction();
+        }
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
             await Task.Run(async delegate {
