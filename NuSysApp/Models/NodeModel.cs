@@ -34,7 +34,7 @@ namespace NuSysApp
                 string t = props.GetString("nodeType");
                 NodeType = (NodeType)Enum.Parse(typeof(NodeType), t);
             }
-            ContentId = props.GetString("contentId", null);
+            ContentId = props.GetString("contentId", "");
             InqCanvas.UnPack(props);
             await base.UnPack(props);
         }
