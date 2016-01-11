@@ -125,7 +125,7 @@ namespace NuSysApp
                             if (isImage)
                             {
                                 var imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
-                                var ba = await ImageUtil.StorageFileToByteArray(imgFile);
+                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 content = Convert.ToBase64String(ba);
                             }
                             else
@@ -198,7 +198,7 @@ namespace NuSysApp
                             if (isImage)
                             {
                                 var imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
-                                var ba = await ImageUtil.StorageFileToByteArray(imgFile);
+                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 content = Convert.ToBase64String(ba);
                             }
                             else
