@@ -89,6 +89,7 @@ namespace NuSysApp
         public async void SwitchMode(Options mode, bool isFixed)
         {
             SessionController.Instance.SessionView.HideRecorder();
+            //SessionController.Instance.SessionView.FloatingMenu.Reset();
             switch (mode)
             {
                 case Options.SelectNode:
