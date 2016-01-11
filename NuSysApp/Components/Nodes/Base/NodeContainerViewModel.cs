@@ -14,7 +14,7 @@ namespace NuSysApp
     public class NodeContainerViewModel: NodeViewModel
     {
         public ObservableDictionary<string, FrameworkElement> Children { get; }
-
+        
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
@@ -39,8 +39,8 @@ namespace NuSysApp
         public override void Dispose()
         {
             var model = (NodeContainerModel)Model;
-            model.ChildAdded += OnChildAdded;
-            model.ChildRemoved += OnChildRemoved;
+            model.ChildAdded -= OnChildAdded;
+            model.ChildRemoved -= OnChildRemoved;
             base.Dispose();
         }
 
@@ -70,7 +70,6 @@ namespace NuSysApp
             if (!Children.ContainsKey(nodeModel.Id))
             {
                 var view = await _nodeViewFactory.CreateFromSendable(nodeModel, Children.Values.ToList());
-
             
                 Children.Add(nodeModel.Id, view);
                 AtomViewList.Add(view);

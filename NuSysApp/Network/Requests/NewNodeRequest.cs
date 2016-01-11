@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NuSysApp
@@ -15,36 +16,40 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
-            if (!_message.ContainsKey("nodetype"))
+            if (!_message.ContainsKey("nodeType"))
             {
-                throw new NewNodeRequestException("New Node requests require messages with at least 'nodetype'");
+                Debug.WriteLine("UUUUUUUUUUUAAAAAAAAAAAAAAAAAAAAAAA");
+                throw new NewNodeRequestException("New Node requests require messages with at least 'nodeType'");
             }
         }
 
         public override async Task ExecuteRequestFunction()
         {
-            NodeModel node = await SessionController.Instance.CreateNewNode(_message.GetString("id"), (NodeType)Enum.Parse(typeof(NodeType),_message.GetString("nodetype")));
+            /*
+            if (_message.ContainsKey("contentId") && SessionController.Instance.ContentController.Get(_message.GetString("contentId")) == null)
+            {
+                await Task.Run(async delegate
+                {
+                    var mre = new ManualResetEvent(false);
+                    SessionController.Instance.ContentController.AddWaitingNodeCreation(
+                        _message.GetString("contentId"), mre);
+                    mre.WaitOne();
+                });
+            }*/
+            NodeModel node = await SessionController.Instance.CreateNewNode(_message.GetString("id"), (NodeType)Enum.Parse(typeof(NodeType),_message.GetString("nodeType")));
             SessionController.Instance.IdToSendables[_message.GetString("id")] = node;
             await node.UnPack(_message);
 
-            var creators = node.Creators;
-            if (creators.Count > 0)
-            {
-                foreach (var creator in creators)
-                {
-                    await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(node);
-                }
-            }
-            else
-                await (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).AddChild(node);
+            if (!_message.GetBool("autoCreate"))
+                return;
 
+            var creators = node.Creators;
+            var addedModels = new List<AtomModel>();
+            SessionController.Instance.RecursiveCreate(node, addedModels);
             
         }
-        private byte[] ParseToByteArray(string s)
-        {
-            return Convert.FromBase64String(s);
-        }
     }
+
     public class NewNodeRequestException : Exception
     {
         public NewNodeRequestException(string message) : base(message) { }

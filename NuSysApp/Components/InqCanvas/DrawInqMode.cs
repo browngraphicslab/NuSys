@@ -76,11 +76,10 @@ namespace NuSysApp
             _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
-            //NetworkConnector.Instance.RequestFinalizeGlobalInk(await _inqLineModel.Pack());
-            (((InqCanvasViewModel) inqCanvas.DataContext).Model).LineFinalized += delegate
-            {
-                inqCanvas.ViewModel.RemoveLine(_inqLineView);
-            };
+
+            var request = new FinalizeInkRequest( new Message(await _inqLineModel.Pack()));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            inqCanvas.ViewModel.RemoveLine(_inqLineView);
         }
     }
 }

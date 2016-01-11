@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Media.SpeechRecognition;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -40,6 +41,13 @@ namespace NuSysApp
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>(); 
 
         private NuSysNetworkSession _nuSysNetworkSession;
+        //speech recognition
+        public SpeechRecognizer Recognizer { get; set; }
+
+        public bool IsRecording { get; set; }
+
+        public string SpeechString { get; set; }
+
 
         public WorkspaceViewModel ActiveWorkspace
         {
@@ -50,6 +58,75 @@ namespace NuSysApp
                 WorkspaceChanged?.Invoke(this, _activeWorkspace);
             }
         }
+
+        #region Speech Recognition
+        public async Task InitializeRecog()
+        {
+            await Task.Run(async () =>
+            {
+                Recognizer = new SpeechRecognizer();
+                // Compile the dictation grammar that is loaded by default. = ""; 
+                await Recognizer.CompileConstraintsAsync();
+            });
+        }
+
+        public async Task TranscribeVoice()
+        {
+            string spokenString = "";
+            // Create an instance of SpeechRecognizer. 
+            // Start recognition. 
+
+            try
+            {
+                // this.RecordVoice.Click += stopTranscribing;
+                IsRecording = true;
+                SpeechRecognitionResult speechRecognitionResult = await Recognizer.RecognizeAsync();
+                IsRecording = false;
+                //  this.RecordVoice.Click -= stopTranscribing;
+                // If successful, display the recognition result. 
+                if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
+                {
+                    spokenString = speechRecognitionResult.Text;
+                }
+            }
+            catch (Exception ex)
+            {
+                const int privacyPolicyHResult = unchecked((int)0x80045509);
+                const int networkNotAvailable = unchecked((int)0x80045504);
+
+                if (ex.HResult == privacyPolicyHResult)
+                {
+                    // User has not accepted the speech privacy policy
+                    string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+                    messageDialog.ShowAsync();
+
+                }
+                else if (ex.HResult == networkNotAvailable)
+                {
+                    string error = "In order to use dictation features, NuSys requires an internet connection";
+                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+                    messageDialog.ShowAsync();
+                }
+            }
+            //_recognizer.Dispose();
+            // this.mdTextBox.Text = spokenString;
+
+            Debug.WriteLine(spokenString);
+
+            //var vm = (TextNodeViewModel)DataContext;
+            //(vm.Model as TextNodeModel).Text = spokenString;
+            SpeechString = spokenString;
+        }
+
+        private async void stopTranscribing(object o, RoutedEventArgs e)
+        {
+            Recognizer.StopRecognitionAsync();
+            IsRecording = false;
+            // this.RecordVoice.Click -= stopTranscribing;
+        }
+
+        #endregion
 
         public LockDictionary Locks
         {
@@ -75,6 +152,22 @@ namespace NuSysApp
             }
             return null;
         }
+
+
+        public async Task RecursiveCreate(AtomModel node, List<AtomModel> addedModels )
+        {
+            foreach (var creator in node.Creators)
+            {
+                var creatorModel = (NodeContainerModel)IdToSendables[creator];
+                if (!addedModels.Contains(creatorModel))
+                {
+                    await RecursiveCreate(creatorModel, addedModels);
+                }
+                await creatorModel.AddChild(node);
+                addedModels.Add(node);
+            }
+        }
+    
 
         public void CreateLink(AtomModel atom1, AtomModel atom2, string id)
         {
@@ -104,7 +197,7 @@ namespace NuSysApp
             node2.SetMetaData("groups", prevGroups2);
         }
 
-        public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
+        public async Task CreateTagNode(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
         {
             var group = new NodeContainerModel(id)
             {
@@ -112,11 +205,12 @@ namespace NuSysApp
                 Y = yCoordinate,
                 Width = width,
                 Height = height,
-                NodeType = NodeType.GroupTag,
+                NodeType = NodeType.Tag,
                 Title = title
             };
             IdToSendables.Add(id, group);
 
+            /*
             var searchResults = SessionController.Instance.IdToSendables.Values.Where(m =>
             {
                 var mm = m as AtomModel;
@@ -150,6 +244,7 @@ namespace NuSysApp
             }
 
             //   ActiveWorkspace.Model.AddChild(group);
+            */
         }
 
         public void AddGlobalInq(InqLineModel lineView)
@@ -194,7 +289,7 @@ namespace NuSysApp
                 case NodeType.Video:
                     node = new VideoNodeModel(id);
                     break;
-                case NodeType.GroupTag:
+                case NodeType.Tag:
                     node = new NodeContainerModel(id);
                     break;
                 case NodeType.Web:
@@ -236,14 +331,15 @@ namespace NuSysApp
 
         private async Task LoadThumbs()
         {
-
+            Thumbnails.Clear();
             var thumbs = await NuSysStorages.Thumbs.GetFilesAsync();
             foreach (var thumbFile in thumbs)
             {
                 var buffer = await FileIO.ReadBufferAsync(thumbFile);
                 var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
-                var img = await ImageUtil.ByteArrayToBitmapImage(buffer.ToArray());
+                var img = await MediaUtil.ByteArrayToBitmapImage(buffer.ToArray());
                 Thumbnails[id] = img;
+                await SendThumbnail(thumbFile, id);
             }           
         }
 
@@ -251,8 +347,22 @@ namespace NuSysApp
         {
             Thumbnails[id] = image;
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
-            var img = await ImageUtil.RenderTargetBitmapToByteArray(image);
+            var img = await MediaUtil.RenderTargetBitmapToByteArray(image);
             FileIO.WriteBytesAsync(file, img);
+        }
+        public async Task SaveThumb(string id, byte[] byteArray)
+        {
+            var image = await MediaUtil.ByteArrayToBitmapImage(byteArray);
+            Thumbnails[id] = image;
+            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
+            FileIO.WriteBytesAsync(file, byteArray);
+        }
+        
+        private async Task SendThumbnail(StorageFile storageFile, string id)
+        {
+            var fileBytes = await MediaUtil.StorageFileToByteArray(storageFile);
+            var s = Convert.ToBase64String(fileBytes);
+            var request = new NewThumbnailRequest(s, id);
         }
 
 
@@ -263,7 +373,7 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);
-            FileIO.WriteLinesAsync(file, lines);
+            await FileIO.WriteLinesAsync(file, lines);
         }
 
         public async Task LoadWorkspace()

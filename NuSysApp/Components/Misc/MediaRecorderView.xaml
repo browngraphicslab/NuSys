@@ -1,0 +1,24 @@
+﻿<UserControl
+    Width="300"
+    Height="200"
+    x:Class="NuSysApp.MediaRecorderView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:converters="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid x:Name="MediaGrid" Visibility="Collapsed"  Background="White" BorderBrush="Gainsboro" BorderThickness="2"  VerticalAlignment="Top" HorizontalAlignment="Right">
+        <CaptureElement VerticalAlignment="Top" Height="200" Width="300" Name="Element"></CaptureElement>
+        <Button x:Name="StopButton" Visibility="Collapsed"  Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
+            <Rectangle Width="20" Height="20" Fill="IndianRed"></Rectangle>
+        </Button>
+        <TextBlock x:Name="StopText" Visibility="Collapsed" Height="18" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Stop" Width="43" TextAlignment="Center"></TextBlock>
+        <Button x:Name="RecordButton" Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
+            <Ellipse Width="20" Height="20" Fill="IndianRed"></Ellipse>
+        </Button>
+        <ToggleSwitch x:Name="AudioVideoSwitch" VerticalAlignment="Bottom" Margin="5,0,0,0"  OnContent="Video" OffContent="Audio"></ToggleSwitch>
+        <TextBlock x:Name="RecordText" Height="18" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Record" Width="43" TextAlignment="Center"></TextBlock>
+    </Grid>
+</UserControl>

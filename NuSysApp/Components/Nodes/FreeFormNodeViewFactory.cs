@@ -61,17 +61,22 @@ namespace NuSysApp
                     await vm.Init();
                     view = new GroupNodeView(vm);
                     break;
-                case NodeType.GroupTag:
+                case NodeType.Tag:
                     view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
                     break;
                 case NodeType.Image:
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));
                     break;
                 case NodeType.Audio:
-                    view = new AudioNodeView(new AudioNodeViewModel((AudioNodeModel)model));
+                    var audioVM = new AudioNodeViewModel((AudioNodeModel) model);
+                    await audioVM.InitAudio();
+                    view = new AudioNodeView(audioVM);
                     break;
                 case NodeType.PDF:
                     view = new PdfNodeView(new PdfNodeViewModel((PdfNodeModel)model));
+                    break;
+                case NodeType.Video:
+                    view = new VideoNodeView(new VideoNodeViewModel((VideoNodeModel)model));
                     break;
                 case NodeType.Workspace:
                     view = new WorkspaceView(new WorkspaceViewModel((WorkspaceModel)model));

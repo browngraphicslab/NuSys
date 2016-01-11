@@ -24,7 +24,7 @@ namespace NuSysApp
 {
     public sealed partial class BucketWindowView : UserControl
     {
-        private ContentImporter _contentImporter = new ContentImporter();
+        private ContentImporter _contentImporter;
 
         private FloatingMenuView _floatingMenu;
 
@@ -40,6 +40,7 @@ namespace NuSysApp
 
             Border.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 98, 189, 197));
 
+            /*
             _contentImporter.ContentImported += async delegate (List<string> contents)
             {
                 if (contents.Count == 0)
@@ -63,6 +64,7 @@ namespace NuSysApp
                 cdEvent.Wait();  
                 
             };
+            */
         }
 
         private void ContentContainer_DragItemsStarting(object sender, DragItemsStartingEventArgs e)

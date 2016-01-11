@@ -18,87 +18,24 @@ namespace NuSysApp
         public AudioNodeModel(string id) : base(id)
         {
             NodeType = NodeType.Audio;
-          //  Content = new NodeContentModel(byteArray, id);
-          //  ByteArray = byteArray;
-          //  MakeAudio(byteArray);
-            //FileName = "nusysAudioCapture" + DateTime.Now + ".mp3";
         }
 
-        public byte[] ByteArray
-        {
-            get { return null; }
-            set {}
-        }
-
-        public StorageFile AudioFile {
-            get
-            {
-                return _audioFile;
-            }
-            set
-            {
-                if (_audioFile == value) return;
-                _audioFile = value;
-            }
-        }
         public string FileName { get; set; }
 
         public override async Task<Dictionary<string, object>> Pack()
         {
             var props = await base.Pack();
-            if (ByteArray != null)
-            {
-                props.Add("audio", Convert.ToBase64String(ByteArray));
-            }
-            props.Add("nodeType", NodeType.Audio.ToString());
+            props["fileName"] = FileName;
             return props;
         }
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("audio"))
+            if (props.ContainsKey("fileName"))
             {
-                ByteArray = Convert.FromBase64String(props.GetString("audio"));
-                MakeAudio(ByteArray);
+                FileName = props.GetString("fileName");
             }
             base.UnPack(props);
         } 
-        public async Task<byte[]> ConvertAudioToByte(StorageFile file)
-        {
-            byte[] fileBytes = null;
-            using (IRandomAccessStreamWithContentType stream = await file.OpenReadAsync())
-            {
-                fileBytes = new byte[stream.Size];
-                using (DataReader reader = new DataReader(stream))
-                {
-                    await reader.LoadAsync((uint)stream.Size);
-                    reader.ReadBytes(fileBytes);
-                }
-            }
-            return fileBytes;
-        }
-
-        public async Task MakeAudio(byte[] byteArray)
-        {
-            if (byteArray == null) return;
-            AudioFile = await this.ConvertByteToAudio(byteArray);
-        }
-        public async Task SendNetworkUpdate()
-        {
-            byte[] bytes = await ConvertAudioToByte(AudioFile);
-            if ("!NetworkConnector.Instance.IsSendableBeingUpdated(Id)" == "")
-            {
-                Debug.WriteLine("add to debounce dict called");
-                DebounceDict.MakeNextMessageTCP();
-                DebounceDict.Add("audio", Convert.ToBase64String(bytes));
-                DebounceDict.MakeNextMessageTCP();
-            }
-        }
-        public async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
-        {
-            var recordStorageFile = await _rootFolder.CreateFileAsync(Id + ".mp3", CreationCollisionOption.GenerateUniqueName);
-            await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
-            return recordStorageFile;
-        }
     }
 }

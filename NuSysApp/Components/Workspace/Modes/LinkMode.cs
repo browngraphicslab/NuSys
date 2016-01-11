@@ -28,20 +28,15 @@ namespace NuSysApp {
             _view.InqCanvas.ViewModel.Model.LineFinalized -= OnLineFinalized;
         }
 
-        private void OnLineFinalized(InqLineModel lineModel)
+        private async void OnLineFinalized(InqLineModel lineModel)
         {
-            var Points = new List<Point>();
-
             var unNormalizedPoints = lineModel.Points.Select(p => new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
-            foreach (var p in unNormalizedPoints)
-            {
-                Points.Add(p);
-            }
+            var points = unNormalizedPoints.ToList();
 
             var t = (_view.DataContext as WorkspaceViewModel).CompositeTransform;
 
-            var pStart = t.TransformPoint(Points.First());
-            var pEnd = t.TransformPoint(Points.Last());
+            var pStart = t.TransformPoint(points.First());
+            var pEnd = t.TransformPoint(points.Last());
 
             
             var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(pStart, _view);
@@ -55,20 +50,13 @@ namespace NuSysApp {
             var startVm = (hitsStart.First() as FrameworkElement).DataContext as AtomViewModel;
             var endVm = (hitsEnd.First() as FrameworkElement).DataContext as AtomViewModel;
 
-
+            // Don't allow links where the start and end atom are identical
             if (startVm == endVm)
                 return;
 
-           // var linkVm = new LinkViewModel(new LinkModel(startVm.Model, endVm.Model, "LINK_ID"), startVm, endVm);
-            var request = new NewLinkRequest(startVm.Id, endVm.Id);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //NetworkConnector.Instance.RequestMakeLinq(startVm.Id, endVm.Id, null, null, null);
-          //  startVm.AddLink(linkVm);
-          //  endVm.AddLink(linkVm);
-           // var linkView = new BezierLinkView(linkVm);
-           // (_view.DataContext as WorkspaceViewModel).AtomViewList.Add(linkView);
-
-                lineModel.Delete();
+            var request = new NewLinkRequest(startVm.Id, endVm.Id, SessionController.Instance.ActiveWorkspace.Id ,true);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            lineModel.Delete();
             
         }
     }

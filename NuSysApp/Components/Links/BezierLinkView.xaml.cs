@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -21,7 +22,12 @@ namespace NuSysApp
 
             vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
-            
+
+            var model = vm.Model;
+            model.TitleChanged += delegate
+            {
+                Annotation.Text = model.Title;
+            }; 
 
             Annotation.SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
@@ -31,10 +37,11 @@ namespace NuSysApp
 
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            Loaded += async delegate(object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
                 AnnotationContainer.Visibility = vm.AnnotationText == "" ? Visibility.Collapsed : Visibility.Visible;
+         //       await SessionController.Instance.InitializeRecog();
             };
         }
 
@@ -52,6 +59,10 @@ namespace NuSysApp
             if (propertyChangedEventArgs.PropertyName == "IsSelected" && vm.AnnotationText == "")
             {
                 AnnotationContainer.Visibility = vm.IsSelected ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else if (propertyChangedEventArgs.PropertyName == "IsSelected")
+            {
+                Record.Visibility = vm.IsSelected ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -90,6 +101,23 @@ namespace NuSysApp
             var atom2 = vm.Atom2;
             pathfigure.StartPoint = atom1.Anchor;
             curve.Point3 = atom2.Anchor;
+        }
+
+        private async void OnRecordClick(object sender, RoutedEventArgs e)
+        {
+            var session = SessionController.Instance;
+            if (!session.IsRecording)
+            {
+                await session.TranscribeVoice();
+
+                var vm = (LinkViewModel)DataContext;
+                //((TextNodeModel)vm.Model).Text = session.SpeechString;
+                vm.AnnotationText = session.SpeechString;
+            }
+            else
+            {
+                var vm = this.DataContext as LinkViewModel;
+            }
         }
     }
 }

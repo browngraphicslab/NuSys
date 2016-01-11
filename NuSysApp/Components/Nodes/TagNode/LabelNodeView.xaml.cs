@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
-    public sealed partial class LabelNodeView : AnimatableNodeView
+    public sealed partial class LabelNodeView : AnimatableUserControl
     {
         private bool _isOpen;
 
@@ -23,7 +23,7 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
-            IsDoubleTapEnabled = true;
+            //IsDoubleTapEnabled = true;
             RenderTransformOrigin = new Point(0.5,0.5);
             vm.Alpha = 0;
             var groupNodeModel = (NodeContainerModel)vm.Model;
@@ -45,13 +45,6 @@ namespace NuSysApp
                 OnChildrenChanged(node);
             };
 
-
-
-            nodeTpl.OnTemplateReady += delegate
-            {
-                nodeTpl.resizer.Visibility = Visibility.Collapsed;
-                nodeTpl.tags.Visibility = Visibility.Collapsed;
-            };
 
             PointerEntered += delegate
             {

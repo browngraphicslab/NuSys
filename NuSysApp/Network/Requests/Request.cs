@@ -14,11 +14,14 @@ namespace NuSysApp
         {
             DeleteSendableRequest,
             NewNodeRequest,
+            FinalizeInkRequest,
+            DuplicateNodeRequest,
             SystemRequest,
             NewLinkRequest,
             SendableUpdateRequest,
+            NewThumbnailRequest,
             NewGroupRequest,
-            NewContentRequest
+            NewContentRequest,
         }
         protected Message _message;
         private RequestType _requestType;

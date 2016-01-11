@@ -42,7 +42,10 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public delegate void TitleChangedHandler(object source, string title);
         public event TitleChangedHandler TitleChanged;
+
+        public enum AtomType { Workspace, Node, Link }
         
+        public AtomType Type { get; set; }
 
         protected AtomModel(string id) : base(id)
         {

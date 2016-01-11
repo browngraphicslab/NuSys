@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,10 +10,12 @@ using System.Net.Mime;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Xml;
 using ChromeNusysIntermediate.Properties;
 using SautinSoft;
 using Newtonsoft.Json.Linq;
+using Image = System.Drawing.Image;
 
 namespace ChromeNusysIntermediate
 {
@@ -22,7 +23,7 @@ namespace ChromeNusysIntermediate
     {
 
         static Stream stdin = Console.OpenStandardInput();
-
+        [STAThread]
         static void Main(string[] args)
         {
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\ChromeTransfer";
@@ -50,7 +51,7 @@ namespace ChromeNusysIntermediate
                     }
                     string pattern = @"<img[^>]+\>";
                     Regex rgx = new Regex(pattern);
-                    // input = rgx.Replace(input, "---IMAGE---");
+                    input = rgx.Replace(input, "---IMAGE---");
 
                     string imageRtf = string.Empty;
                     if (!imgSrc.Equals(""))
@@ -81,19 +82,18 @@ namespace ChromeNusysIntermediate
                         imageRtf = imageRtf.Replace("---IMG_DATA---", imgData);
                     }
 
-                    //input = HtmlToRichText(input, "");
-                    var i = input.IndexOf("________________________________________________________");
-                    // input = input.Remove(i, input.Length - i) + "}";
+                    input = MarkupConverter.HtmlToRtfConverter.ConvertHtmlToRtf(input);
+                 //   var i = input.IndexOf("________________________________________________________");
+                  //  input = input.Remove(i, input.Length - i) + "}";
 
                     if (!imgSrc.Equals("http:"))
                     {
-                        //  input = input.Replace("---IMAGE---", imageRtf);
+                          input = input.Replace("---IMAGE---", imageRtf);
                     }
 
-                    string[] line = { input };
-                    File.WriteAllLines(fileDir, line);
-                    System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
-                    File.Move(fileDir, fileDir);
+                    File.WriteAllText(fileDir, input);
+                   // System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
+                    //File.Move(fileDir, fileDir);
                 }
 
                 input = OpenStandardStreamIn();
@@ -110,6 +110,7 @@ namespace ChromeNusysIntermediate
             var reuslt = h.ConvertString(html, imgList);
 
             return reuslt;
+            
         }
 
         private static string OpenStandardStreamIn()

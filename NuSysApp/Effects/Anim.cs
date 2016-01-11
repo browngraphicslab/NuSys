@@ -13,7 +13,7 @@ namespace NuSysApp
     public class Anim
     {
 
-        public static void FromTo(DependencyObject target, string property, double from, double to, int duration,
+        public static Storyboard FromTo(DependencyObject target, string property, double from, double to, int duration,
             EasingFunctionBase easing = null, EventHandler<object> callback = null)
         {
             easing = easing ?? new QuadraticEase();
@@ -32,9 +32,10 @@ namespace NuSysApp
             Storyboard.SetTargetProperty(anim, property);
             Storyboard.SetTarget(anim, target);
             storyboard.Begin();
+            return storyboard;
         }
 
-        public static void To(FrameworkElement target, string property, double to, int duration,
+        public static Storyboard To(FrameworkElement target, string property, double to, int duration,
     EasingFunctionBase easing = null, EventHandler<object> callback = null)
         {
             var transform = (CompositeTransform) target.RenderTransform;
@@ -77,6 +78,7 @@ namespace NuSysApp
             Storyboard.SetTargetProperty(anim, property);
             Storyboard.SetTarget(anim, target);
             storyboard.Begin();
+            return storyboard;
         }
     }
 }

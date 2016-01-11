@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using NuSysApp.Util;
@@ -25,22 +26,20 @@ namespace NuSysApp
     public sealed partial class GroupNodeView : AnimatableUserControl, IThumbnailable
     {
         private bool _isExpanded;
+        private Storyboard _circleAnim;
+        private Storyboard _expandedAnim;
 
         public GroupNodeView( GroupNodeViewModel vm)
         {
             RenderTransform = new CompositeTransform();
             InitializeComponent();
             DataContext = vm;
-            xCircleView.RenderTransform = new CompositeTransform();
-
-            Loaded += async delegate(object sender, RoutedEventArgs args)
-            {
-                //IC.Clip = new RectangleGeometry {Rect = new Rect(0, 0, 1000, vm.Height-40)};
-            };
-
             Resizer.ManipulationDelta += ResizerOnManipulationDelta;
-
-            Tapped += OnTapped;
+           
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                PositionResizer();
+            };
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -49,40 +48,34 @@ namespace NuSysApp
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             if (vm.Height > 400 && !_isExpanded)
             {
-                Anim.To(xExpandedView, "Alpha", 1, 600);
-                Anim.To(xCircleView, "Alpha", 0, 600);
-                _isExpanded = true;
+                _expandedAnim?.Stop();
+                _circleAnim?.Stop();
 
-                Debug.WriteLine("opening");
+                _expandedAnim = Anim.To(xExpandedView, "Alpha", 1, 450);
+                _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
+                _isExpanded = true;
             }
             else if (vm.Height < 400 && _isExpanded)
             {
-                Anim.To(xExpandedView, "Alpha", 0, 600);
-                Anim.To(xCircleView, "Alpha", 1, 600);
-                _isExpanded = false;
+                _expandedAnim?.Stop();
+                _circleAnim?.Stop();
 
-                Debug.WriteLine("closing");
+                _expandedAnim = Anim.To(xExpandedView, "Alpha", 0, 450);
+                _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
+                _isExpanded = false;
             
             }
+            PositionResizer();
             e.Handled = true;
         }
 
-        public void Collapse()
+        private void PositionResizer()
         {
-            xExpandedView.Visibility = Visibility.Collapsed;
-
+            var vm = (GroupNodeViewModel)DataContext;
+            Canvas.SetLeft(Resizer, vm.Width - 50);
+            Canvas.SetTop(Resizer, vm.Height - 50);
         }
-
-        public void Expand()
-        {
-            xExpandedView.Visibility = Visibility.Visible;
-        }
-
-        private void OnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
-        {
-            xExpandedView.Visibility = Visibility.Visible;
-        }
-
+        
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();

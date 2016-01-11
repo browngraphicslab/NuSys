@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
+using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {
@@ -21,15 +22,15 @@ namespace NuSysApp
         {
             get { return _hostIP; }
         }
+        public bool IsHostMachine
+        {
+            get { return _networkSession.LocalIP == _hostIP; }
+        }
         #endregion Public Members
         #region Private Members
         private string LocalIP
         {
             get { return _networkSession.LocalIP; }
-        }
-        private bool IsHostMachine
-        {
-            get { return _networkSession.LocalIP == _hostIP; }
         }
         
         private HashSet<string> NetworkMembers
@@ -67,7 +68,16 @@ namespace NuSysApp
                 var client = new HttpClient { BaseAddress = new Uri(URL) };
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await client.GetAsync(urlParameters);
+
+                                                      try
+                                                      {
+                                                          await client.GetAsync(urlParameters);
+                                                      }
+                                                      catch (Exception e)
+                                                      {
+                    // TODO: handle better
+                                                          Debug.WriteLine("couldn't send ping");
+                                                      }
             };
             
             _networkSession.OnMessageRecieved += async (message, type, ip) =>
@@ -81,6 +91,13 @@ namespace NuSysApp
             };
         }
         #region Requests
+
+        public async Task ExecuteRequestLocally(Request request)
+        {
+            await request.CheckOutgoingRequest();
+            var m = new Message(request.GetFinalMessage().GetSerialized());
+            await request.ExecuteRequestFunction();
+        }
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
             await Task.Run(async delegate {
@@ -90,7 +107,7 @@ namespace NuSysApp
                 if (packetType == NetworkClient.PacketType.TCP)
                 {
                     ManualResetEvent mre = new ManualResetEvent(false);
-                    string requestID = Guid.NewGuid().ToString("N");
+                    string requestID = SessionController.Instance.GenerateId();
                     _requestEventDictionary[requestID] = mre;
 
                     message["local_request_id"] = requestID;
@@ -103,10 +120,8 @@ namespace NuSysApp
                     {
                         await SendRequest(message, packetType);
                     }
-                    Debug.WriteLine("WAIT "+requestID);
                     if (_requestEventDictionary.ContainsKey(requestID))
                         mre.WaitOne();
-                    Debug.WriteLine("FREE "+ requestID);
                 }
                 else
                 {
@@ -185,11 +200,20 @@ namespace NuSysApp
                 case Request.RequestType.NewGroupRequest:
                     request = new NewGroupRequest(message);
                     break;
+                case Request.RequestType.NewThumbnailRequest:
+                    request = new NewThumbnailRequest(message);
+                    break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;
                 case Request.RequestType.NewContentRequest:
                     request = new NewContentRequest(message);
+                    break;
+                case Request.RequestType.FinalizeInkRequest:
+                    request = new FinalizeInkRequest(message);
+                    break;
+                case Request.RequestType.DuplicateNodeRequest:
+                    request = new DuplicateNodeRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
@@ -216,7 +240,6 @@ namespace NuSysApp
                     ManualResetEvent outMre;
                     _requestEventDictionary.TryRemove(local_id, out outMre);
                     mre.Set();
-                    Debug.WriteLine("SET "+local_id);
                 }
             }
         }
@@ -247,6 +270,9 @@ namespace NuSysApp
                 case SystemRequest.SystemRequestType.SetHost:
                     request = new SetHostSystemRequest(message);
                     break;
+                case SystemRequest.SystemRequestType.SendWorkspace:
+                    request = new SendWorkspaceRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }
@@ -257,7 +283,7 @@ namespace NuSysApp
         {
             if (IsHostMachine)
             {
-                await ProcessIncomingRequest(message, NetworkClient.PacketType.TCP,ip);
+                await ProcessIncomingRequest(new Message(message.GetSerialized()), NetworkClient.PacketType.TCP,ip);
             }
             else
             {

@@ -9,11 +9,13 @@ namespace NuSysApp
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, bool autoCreate = false) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
             _message["id"] = SessionController.Instance.GenerateId();
+            _message["creators"] = new List<string>() {creator};
+            _message["autoCreate"] = autoCreate;
         }
         public override async Task CheckOutgoingRequest()
         {
@@ -35,15 +37,14 @@ namespace NuSysApp
                 await link.UnPack(_message);
 
                 var creators = link.Creators;
-                if (creators.Count > 0)
+                if (!_message.GetBool("autoCreate"))
+                    return;
+
+                foreach (var creator in creators)
                 {
-                    foreach (var creator in creators)
-                    {
-                        await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(link);
-                    }
+                    await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(link);
                 }
-                else
-                    await (SessionController.Instance.ActiveWorkspace.Model as WorkspaceModel).AddChild(link);
+                
 
             }
         }

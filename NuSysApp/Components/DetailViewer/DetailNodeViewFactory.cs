@@ -61,6 +61,14 @@ namespace NuSysApp
                 case NodeType.Web:
                     view = new WebDetailView(new WebNodeViewModel((WebNodeModel)model));
                     break;
+                case NodeType.Video:
+                    view = new VideoDetailView(new VideoNodeViewModel((VideoNodeModel) model));
+                    break;
+                case NodeType.Audio:
+                    AudioNodeViewModel audioVM = new AudioNodeViewModel((AudioNodeModel) model);
+                    await audioVM.InitAudio();
+                    view = new AudioDetailView(audioVM);
+                    break;
             }
 
             var tpl = view.FindName("nodeTpl") as NodeTemplate;
@@ -68,7 +76,6 @@ namespace NuSysApp
             {
                 tpl.OnTemplateReady += async delegate {
                     var inqVm = new InqCanvasViewModel(model.InqCanvas, new Size(model.Width, model.Height));
-                        //tpl.inkCanvas.ViewModel = inqVm;
                 };
             }
 

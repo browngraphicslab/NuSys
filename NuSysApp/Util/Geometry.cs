@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -122,6 +123,50 @@ namespace NuSysApp
 
             return lines;
         }
+        public static Line[] RectToLineSegment(Rect rect)
+        {
+            var lines = new Line[4];
+            var x = rect.X;
+            var y = rect.Y; 
+
+            //AB line  
+            lines[0] = new Line
+            {
+                X1 = x,
+                Y1 = y,
+                X2 = x + rect.Width,
+                Y2 = y
+            };
+
+            //CD line 
+            lines[1] = new Line
+            {
+                X1 = x,
+                Y1 = y + rect.Height,
+                X2 = x + rect.Width,
+                Y2 = y + rect.Height
+            };
+
+            //AC line 
+            lines[2] = new Line
+            {
+                X1 = x,
+                Y1 = y,
+                X2 = x,
+                Y2 = y + rect.Height
+            };
+
+            //BC line 
+            lines[3] = new Line
+            {
+                X1 = x + rect.Width,
+                Y1 = y,
+                X2 = x + rect.Width,
+                Y2 = y + rect.Height
+            };
+
+            return lines;
+        }
 
         public static Rect NodeToBoudingRect(NodeViewModel nodeVm)
         {
@@ -134,7 +179,7 @@ namespace NuSysApp
             };
         }
 
-        public static Rect PointCollecionToBoundingRect(PointCollection pc)
+        public static Rect PointCollecionToBoundingRect(List<Point2d> pc)
         {
             var minX = double.MaxValue;
             var minY = double.MaxValue;
@@ -153,36 +198,35 @@ namespace NuSysApp
         public static Rect InqToBoudingRect(InqLineModel inqM)
         {
             var points = inqM.Points;
-            var rect = new Rect()
-            {
-                Height = 0,
-                Width = 0,
-                X = Double.MaxValue,
-                Y = Double.MaxValue
-            };
+            var min = new Point(Double.MaxValue, Double.MaxValue);
+            var max = new Point(Double.MinValue, Double.MinValue);
             foreach (Point p in points)
             {
-                if (p.X < rect.X)
+                if (p.X > max.X)
                 {
-                    rect.Width = rect.Width + rect.X - p.X;
-                    rect.X = p.X;
+                    max.X = p.X;
                 }
-                if (p.X - rect.X > rect.Width)
+                if (p.Y > max.Y)
                 {
-                    rect.Width = p.X - rect.X;
+                    max.Y = p.Y;
                 }
-                if (p.Y < rect.Y)
+                if (p.X < min.X)
                 {
-                    rect.Height = rect.Height + rect.Y - p.Y;
-                    rect.Y = p.Y;
+                    min.X = p.X;
                 }
-                if (p.Y - rect.Y > rect.Height)
+                if (p.Y < min.Y)
                 {
-                    rect.Height = p.Y - rect.Y;
+                    min.Y = p.Y;
                 }
             }
 
-            return rect;
+            return new Rect()
+            {
+                Height = (max.X - min.X) * Constants.MaxCanvasSize,
+                Width = (max.Y - min.Y) * Constants.MaxCanvasSize,
+                X = min.X * Constants.MaxCanvasSize,
+                Y = min.Y * Constants.MaxCanvasSize
+            };
         }
     }
 }

@@ -16,11 +16,12 @@ namespace NuSysApp
 
         public string AnnotationText
         {
-            get { return _annotationText; }
+            get { return Model.Title; }
             set
             {
-                _annotationText = value;
-                Model.SetMetaData("annotation", _annotationText);
+                //_annotationText = value;
+                //Model.SetMetaData("annotation", _annotationText);
+                Model.Title = value;
             }
         }
 
@@ -33,7 +34,8 @@ namespace NuSysApp
             Atom1.AddLink(this);
             Atom2.AddLink(this);
 
-            AnnotationText = (string)model.GetMetaData("annotation");
+            //AnnotationText = (string)model.GetMetaData("annotation");
+            AnnotationText = model.Title; 
             model.OnDeletion += DeletionHappend;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150,189,204,212));

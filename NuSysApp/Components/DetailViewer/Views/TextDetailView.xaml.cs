@@ -31,8 +31,8 @@ namespace NuSysApp
     
     public sealed partial class TextDetailView : AnimatableNodeView
     {
-        private SpeechRecognizer _recognizer;
-        private bool _isRecording;
+        //private SpeechRecognizer _recognizer;
+        //private bool _isRecording;
         private ObservableCollection<String> sizes = new ObservableCollection<String>();
         private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
 
@@ -55,7 +55,7 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                await InitializeRecog();
+              //  await SessionController.Instance.InitializeRecog();
             };
 
             sizes.Add("8");
@@ -70,15 +70,15 @@ namespace NuSysApp
             fonts.Add(new FontFamily("Verdana"));
         }
 
-        private async Task InitializeRecog()
-        {
-            await Task.Run( async () =>
-            {
-                _recognizer = new SpeechRecognizer();
-                // Compile the dictation grammar that is loaded by default. = ""; 
-                await _recognizer.CompileConstraintsAsync();
-            });
-        }
+        //private async Task InitializeRecog()
+        //{
+        //    await Task.Run( async () =>
+        //    {
+        //        _recognizer = new SpeechRecognizer();
+        //        // Compile the dictation grammar that is loaded by default. = ""; 
+        //        await _recognizer.CompileConstraintsAsync();
+        //    });
+        //}
 
 
 
@@ -91,7 +91,10 @@ namespace NuSysApp
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
-            if (!_isRecording)
+            //if (!_isRecording)
+
+            var session = SessionController.Instance;
+            if (!session.IsRecording)
             {
                 //var oldColor = this.RecordVoice.Background;
                 Color c = new Color();
@@ -100,8 +103,11 @@ namespace NuSysApp
                 c.G = 84;
                 c.B = 82;
            //     this.RecordVoice.Background = new SolidColorBrush(c);
-                await TranscribeVoice();
-           //     this.RecordVoice.Background = oldColor;
+                //await TranscribeVoice();
+                await session.TranscribeVoice();
+                //     this.RecordVoice.Background = oldColor;
+                var vm = (TextNodeViewModel) DataContext;
+                ((TextNodeModel) vm.Model).Text = session.SpeechString;
             }
             else
             {
@@ -110,60 +116,60 @@ namespace NuSysApp
             }
         }
 
-        private async Task TranscribeVoice()
-        {
-            string spokenString = "";
-            // Create an instance of SpeechRecognizer. 
-            // Start recognition. 
+        //private async Task TranscribeVoice()
+        //{
+        //    string spokenString = "";
+        //    // Create an instance of SpeechRecognizer. 
+        //    // Start recognition. 
 
-            try
-            {
-               // this.RecordVoice.Click += stopTranscribing;
-                _isRecording = true;
-                SpeechRecognitionResult speechRecognitionResult = await _recognizer.RecognizeAsync();
-                _isRecording = false;
-              //  this.RecordVoice.Click -= stopTranscribing;
-                // If successful, display the recognition result. 
-                if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
-                {
-                    spokenString = speechRecognitionResult.Text;
-                }
-            }
-            catch (Exception ex)
-            {
-                const int privacyPolicyHResult = unchecked((int)0x80045509);
-                const int networkNotAvailable = unchecked((int)0x80045504);
+        //    try
+        //    {
+        //       // this.RecordVoice.Click += stopTranscribing;
+        //        _isRecording = true;
+        //        SpeechRecognitionResult speechRecognitionResult = await _recognizer.RecognizeAsync();
+        //        _isRecording = false;
+        //      //  this.RecordVoice.Click -= stopTranscribing;
+        //        // If successful, display the recognition result. 
+        //        if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
+        //        {
+        //            spokenString = speechRecognitionResult.Text;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        const int privacyPolicyHResult = unchecked((int)0x80045509);
+        //        const int networkNotAvailable = unchecked((int)0x80045504);
 
-                if (ex.HResult == privacyPolicyHResult)
-                {
-                    // User has not accepted the speech privacy policy
-                    string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
-                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
-                    messageDialog.ShowAsync();
+        //        if (ex.HResult == privacyPolicyHResult)
+        //        {
+        //            // User has not accepted the speech privacy policy
+        //            string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
+        //            var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+        //            messageDialog.ShowAsync();
 
-                }
-                else if (ex.HResult == networkNotAvailable)
-                {
-                    string error = "In order to use dictation features, NuSys requires an internet connection";
-                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
-                    messageDialog.ShowAsync();
-                }
-            }
-            //_recognizer.Dispose();
-           // this.mdTextBox.Text = spokenString;
+        //        }
+        //        else if (ex.HResult == networkNotAvailable)
+        //        {
+        //            string error = "In order to use dictation features, NuSys requires an internet connection";
+        //            var messageDialog = new Windows.UI.Popups.MessageDialog(error);
+        //            messageDialog.ShowAsync();
+        //        }
+        //    }
+        //    //_recognizer.Dispose();
+        //   // this.mdTextBox.Text = spokenString;
             
-            Debug.WriteLine(spokenString);
+        //    Debug.WriteLine(spokenString);
             
-            var vm = (TextNodeViewModel)DataContext;
-            (vm.Model as TextNodeModel).Text = spokenString;
-        }
+        //    var vm = (TextNodeViewModel)DataContext;
+        //    (vm.Model as TextNodeModel).Text = spokenString;
+        //}
 
-        private async void stopTranscribing(object o, RoutedEventArgs e)
-        {
-            _recognizer.StopRecognitionAsync();
-            _isRecording = false;
-           // this.RecordVoice.Click -= stopTranscribing;
-        }
+        //private async void stopTranscribing(object o, RoutedEventArgs e)
+        //{
+        //    _recognizer.StopRecognitionAsync();
+        //    _isRecording = false;
+        //   // this.RecordVoice.Click -= stopTranscribing;
+        //}
 
         private void BoldButton_OnClick(object sender, RoutedEventArgs e)
         {

@@ -71,48 +71,26 @@ namespace NuSysApp
                 var p = vm.CompositeTransform.Inverse.TransformPoint(tappedPoint);
                 p.X -= _selectedNode.Width / 2;
                 p.Y -= _selectedNode.Height / 2;
-                var dict = await _selectedNode.Model.Pack();
 
-                var props = dict;
-                props.Remove("id");
-                props.Remove("type");
-                props["x"] = p.X.ToString();
-                props["y"] = p.Y.ToString();
+                var msg = new Message();
+                msg["id"] = _selectedNode.Id;
+                msg["targetX"] = p.X;
+                msg["targetY"] = p.Y;
 
+                // TODO: factor this out to the DuplicateNodeRequest
                 if (_selectedNode is NodeContainerViewModel)
                 {
-                    var children = new List<string>();;
+                    var children = new List<string>(); ;
                     foreach (var child in (_selectedNode as NodeContainerViewModel).Children.Values)
                     {
                         children.Add((child.DataContext as GroupItemViewModel).Id);
                     }
-                    props["groupChildren"] = children;
-
+                    msg["groupChildren"] = children;
                 }
-
-
-                var callback = new Action<string>(async (newId) =>
-                {
-
-                    var wvm = _view.DataContext as WorkspaceViewModel;
-                    var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == newId);
-
-                    var duplicateModel = (AtomModel)SessionController.Instance.IdToSendables[newId];
-
-                    if (!(duplicateModel is NodeContainerModel))
-                        return;
-                    
-                    
-                    foreach (var child in SessionController.Instance.IdToSendables.Values.Where( s => (s as AtomModel).Creators.Contains(duplicateModel.Id)))
-                    {
-                        ((NodeContainerModel) duplicateModel).AddChild(child);
-                    }
-
-                });
-
-//                NetworkConnector.Instance.RequestDuplicateNode(props, callback);
+                
+                var request = new DuplicateNodeRequest(msg);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }
-
         }
 
         private void OnAtomReleased(object sender, PointerRoutedEventArgs e)

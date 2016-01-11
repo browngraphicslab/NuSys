@@ -79,6 +79,11 @@ namespace NuSysApp
             return ContainsKey(key) ? Get(key) : defaultValue;
         }
 
+        public bool GetBool(string key, bool defaultValue = false)
+        {
+            return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
+        }
+
         public byte[] GetByteArray(string key)
         {
             return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;
@@ -86,7 +91,8 @@ namespace NuSysApp
 
         public List<T> GetList<T>(string key, List<T> def = null)
         {
-            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key)) : def;
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key), settings) : def;
         }
 
         public Dictionary<T, K> GetDict<T, K>(string key)
