@@ -47,7 +47,7 @@ namespace NuSysApp
                 SwitchMode(Options.SelectNode, false);
             };
 
-            wsModel.InqCanvas.LineFinalized += delegate (InqLineModel model)
+            wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
                 var gestureType = GestureRecognizer.testGesture(model);
                 switch (gestureType)
@@ -59,7 +59,88 @@ namespace NuSysApp
                         //model.Delete();
                         break;
                 }
+
+                await CheckForGroupCreation(model);
             };
+        }
+
+        private async Task<bool> CheckForGroupCreation(InqLineModel line)
+        {
+            var wsmodel = (DataContext as WorkspaceViewModel).Model as WorkspaceModel;
+            var Model = wsmodel.InqCanvas;
+            var outerRect = Geometry.PointCollecionToBoundingRect(line.Points.ToList());
+
+            if (outerRect.Width * outerRect.Height < 100 * 100)
+                return false;
+
+            var idsToDelete = new List<string>();
+            var encompassedLines = new List<InqLineModel>();
+            foreach (var otherLine in Model.Lines.Where(l => l != line))
+            {
+                var innerRect = Geometry.PointCollecionToBoundingRect(otherLine.Points.ToList());
+                var innerRect2 = new Rect(innerRect.X, innerRect.Y, innerRect.Width, innerRect.Height);
+                innerRect.Intersect(outerRect);
+                if (Math.Abs(innerRect2.Width - innerRect.Width) < 70 && Math.Abs(innerRect2.Height - innerRect.Height) < 70)
+                {
+
+                    idsToDelete.Add(otherLine.Id);
+                    InqLineModel newModel = new InqLineModel(DateTime.UtcNow.Ticks.ToString())
+                    {
+                        Stroke = otherLine.Stroke,
+                        StrokeThickness = otherLine.StrokeThickness
+                    };
+
+                    foreach (var point in otherLine.Points)
+                    {
+                        newModel.AddPoint(new Point2d(point.X - outerRect.X, point.Y - outerRect.Y));
+                    }
+                    encompassedLines.Add(newModel);
+                }
+            }
+
+
+            var first = line.Points.First();
+            var last = line.Points.Last();
+            if (encompassedLines.Count == 0 || (Math.Abs(first.X - last.X) > 40 && Math.Abs(first.Y - last.Y) > 40))
+            {
+                return false;
+            }
+
+            /*
+            foreach (var idToDelete in idsToDelete)
+            {
+                NetworkConnector.Instance.RequestDeleteSendable(idToDelete);
+            }
+           
+
+
+            var title = await InkToText(encompassedLines);
+            var dict = new Dictionary<string, string>();
+            dict["title"] = title;
+            Action<string> addCallback = delegate (string s)
+            {
+                NetworkConnector.Instance.RequestDeleteSendable(line.Id);
+                var v = SessionController.Instance.IdToSendables[s] as TextNodeModel;
+                if (v != null)
+                {
+                    Debug.Assert(encompassedLines.Count > 0);
+                    foreach (var model in encompassedLines)
+                    {
+                        UITask.Run(async () =>
+                        {
+                            //NetworkConnector.Instance.RequestLock(v.ID);
+                            NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.ID, model.GetString());
+                            //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
+                        });
+
+                    }
+                }
+            };
+            var tagNodePos = new Point(outerRect.X + outerRect.Width / 6, outerRect.Y + outerRect.Height / 6);
+            await NetworkConnector.Instance.RequestNewGroupTag(tagNodePos.X.ToString(), tagNodePos.Y.ToString(), title, dict, addCallback);
+            return true;
+             */
+            return false;
         }
 
         public MultiSelectMenuView MultiMenu

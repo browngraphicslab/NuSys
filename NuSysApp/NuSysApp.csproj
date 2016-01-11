@@ -407,7 +407,7 @@
       <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Workspace\Modes\IntersectGroupNodeMode.cs" />
-    <Compile Include="Components\Workspace\Modes\GroupNodeMode.cs" />
+    <Compile Include="Components\Workspace\Modes\TagNodeMode.cs" />
     <Compile Include="Components\Workspace\Modes\DuplicateNodeMode.cs" />
     <Compile Include="Components\Workspace\WorkspaceView.xaml.cs">
       <DependentUpon>WorkspaceView.xaml</DependentUpon>

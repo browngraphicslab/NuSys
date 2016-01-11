@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -134,7 +135,7 @@ namespace NuSysApp
             };
         }
 
-        public static Rect PointCollecionToBoundingRect(PointCollection pc)
+        public static Rect PointCollecionToBoundingRect(List<Point2d> pc)
         {
             var minX = double.MaxValue;
             var minY = double.MaxValue;

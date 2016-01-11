@@ -11,13 +11,13 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class GroupNodeMode : AbstractWorkspaceViewMode
+    public class TagNodeMode : AbstractWorkspaceViewMode
     {
         private UserControl _selectedView;
         private LabelNodeView _hoveredGroup;
         private List<NodeViewModel> _pressedItems = new List<NodeViewModel>(); 
 
-        public GroupNodeMode(WorkspaceView view) : base(view) { }
+        public TagNodeMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
         {
