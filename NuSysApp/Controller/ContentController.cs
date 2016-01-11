@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Newtonsoft.Json;
@@ -13,7 +15,7 @@ namespace NuSysApp
     {
 
         private Dictionary<string, NodeContentModel> _contents = new Dictionary<string, NodeContentModel>();
-
+        private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
         public int Count
         {
             get { return _contents.Count; }
@@ -29,7 +31,25 @@ namespace NuSysApp
             var id = presetID ?? SessionController.Instance.GenerateId();
             var n = new NodeContentModel(contentData, id);
             _contents.Add(id, n );
+            if (presetID != null)
+            {
+                foreach (var kvp in _waitingNodeCreations)
+                {
+                    if (kvp.Key == id)
+                    {
+                        kvp.Value.Set();
+                        _waitingNodeCreations.Remove(kvp.Key);
+                        break;
+                    }
+                }
+            }
+            Debug.WriteLine("content added with ID: "+id);
             return id;
+        }
+
+        public void AddWaitingNodeCreation(string id, ManualResetEvent mre)
+        {
+            _waitingNodeCreations.Add(id, mre);
         }
 
         public async Task Load()
