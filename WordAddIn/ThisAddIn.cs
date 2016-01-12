@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Tools;
+using Microsoft.Office.Tools.Word;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -11,9 +12,31 @@ namespace WordAddIn
     {
         private CustomTaskPane _pane;
         private SidePane _sidePane;
+        private String _selectionId;
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\LauncherArguments\\OpenWord.txt"))
+            {
+                // Read the stream to a string, and write the string to the console.
+                _selectionId = sr.ReadToEnd();
+            }
+
+            if (!String.IsNullOrEmpty(_selectionId))
+            {
+                BuildSidebar();
+
+                var bookmarks = Globals.ThisAddIn.Application.ActiveDocument.Bookmarks;
+
+                //get rid of excesse bookmarks
+                foreach (Bookmark bookmark in bookmarks)
+                {
+                    if (bookmark.Name.Equals(_selectionId))
+                    {
+                        bookmark.Range.Select();
+                    }
+                }
+            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -30,6 +53,12 @@ namespace WordAddIn
         {
             get { return _pane; }
         }
+
+        public String SelectionId
+        {
+            get { return _selectionId; }
+        }
+
 
         public void BuildSidebar()
         {
