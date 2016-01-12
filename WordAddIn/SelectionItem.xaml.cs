@@ -29,7 +29,8 @@ namespace WordAddIn
         private string _rtfContent;
         private MemoryStream _ms;
         private List<Bitmap> _imageContent;
-        private string _bookmarkId;
+        private Bookmark _bookmark;
+        private String _dateTimeExported;
 
         public SelectionItem()
         {
@@ -52,7 +53,12 @@ namespace WordAddIn
                 ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
             }
 
-            return new SelectionItemView(Bookmark, IsExported, RtfContent, path, ImageNames);
+            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported);
+        }
+
+        public SelectionItemIdView GetIdView()
+        {
+            return new SelectionItemIdView(this.Bookmark.Name, IsExported, DateTimeExported);
         }
 
         private void SelectionItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -90,17 +96,10 @@ namespace WordAddIn
             {
                 foreach (Shape shape in this.Range.ShapeRange)
                 {
-                    try
-                    {
-                        shape.Select();
-                        Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                        selection.Copy();
-                        parseImg();
-                    }
-                    catch (Exception ex)
-                    {
-                        //TODO exception handling
-                    }
+                    shape.Select();
+                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    selection.Copy();
+                    parseImg();
                 }
 
                 if (this.Range.Text != null)
@@ -114,17 +113,10 @@ namespace WordAddIn
             }
             else
             {
-                try
-                {
-                    this.Range.Select();
-                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                    selection.Copy();
-                    fromClipboard();
-                }
-                catch (Exception ex)
-                {
-                    //TODO exception handling
-                }
+                this.Range.Select();
+                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                selection.Copy();
+                fromClipboard();
             }
 
             if (ImageContent.Count > 0)
@@ -277,6 +269,12 @@ namespace WordAddIn
 			set { _isExported = value; }
 		}
 
+        public String DateTimeExported
+        {
+            get { return _dateTimeExported; }
+            set { _dateTimeExported = value; }
+        }
+
         public string Text
         {
             get { return _text; }
@@ -301,10 +299,10 @@ namespace WordAddIn
             set { _range = value; }
         }
 
-        public string Bookmark
+        public Bookmark Bookmark
         {
-            get { return _bookmarkId; }
-            set { _bookmarkId = value; }
+            get { return _bookmark; }
+            set { _bookmark = value; }
         }
 
         public MemoryStream Ms

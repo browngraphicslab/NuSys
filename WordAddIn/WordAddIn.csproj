@@ -222,6 +222,7 @@
     <Compile Include="SelectionItem.xaml.cs">
       <DependentUpon>SelectionItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectionItemIdView.cs" />
     <Compile Include="SelectionItemView.cs" />
     <Compile Include="SidePane.xaml.cs">
       <DependentUpon>SidePane.xaml</DependentUpon>

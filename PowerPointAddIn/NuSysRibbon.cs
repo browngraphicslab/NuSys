@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -34,7 +36,6 @@ namespace PowerPointAddIn
         public delegate void SelectionAddedHandler();
         public delegate void SendHandler();
 
-
         public NuSysRibbon()
         {
         }
@@ -64,8 +65,8 @@ namespace PowerPointAddIn
             {
                 MessageBox.Show("Please be advised that the NuSys plugin works best with .pptx file types");
             }
+
             Globals.ThisAddIn.BuildSidebar();
-            
         }
 
         #endregion
