@@ -14,7 +14,7 @@ namespace WordAddIn
     {
         private CustomTaskPane _pane;
         private SidePane _sidePane;
-        private String _selectionId;
+        public String _selectionId;
         public List<SelectionItemIdView> _allSelectionItems = new List<SelectionItemIdView>();
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
@@ -29,17 +29,6 @@ namespace WordAddIn
                 if (!String.IsNullOrEmpty(_selectionId))
                 {
                     BuildSidebar();
-
-                    var bookmarks = Globals.ThisAddIn.Application.ActiveDocument.Bookmarks;
-
-                    //get rid of excesse bookmarks
-                    foreach (Microsoft.Office.Tools.Word.Bookmark bookmark in bookmarks)
-                    {
-                        if (bookmark.Name.Equals(_selectionId))
-                        {
-                            bookmark.Range.Select();
-                        }
-                    }
                 }
             }
             catch (Exception ex)

@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace WordAddIn
     /// <summary>
     /// Interaction logic for SelectionItem.xaml
     /// </summary>
-    public partial class SelectionItem : UserControl
+    public partial class SelectionItem : UserControl, INotifyPropertyChanged
     {
 		private Boolean _isExported;
         private Comment _comment;
@@ -31,11 +32,15 @@ namespace WordAddIn
         private List<Bitmap> _imageContent;
         private Bookmark _bookmark;
         private String _dateTimeExported;
+        private double _dropShadowOpac;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public SelectionItem()
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
+            DropShadowOpac = 0;
             DataContext = this;
         }
 
@@ -68,6 +73,15 @@ namespace WordAddIn
 
             var selectionItem = (SelectionItem)sender;
             selectionItem.Range.Select();
+
+            this.DropShadowOpac = 1.0;
+
+            if (Globals.ThisAddIn.SidePane.SelectedSelection != null && Globals.ThisAddIn.SidePane.SelectedSelection != this)
+            {
+                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadowOpac = 0.0;
+            }
+
+            Globals.ThisAddIn.SidePane.SelectedSelection = this;
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -261,6 +275,15 @@ namespace WordAddIn
             img.Source = image;
             img.Visibility = Visibility.Visible;
             imgBorder.Visibility = Visibility.Visible;
+        }
+
+        public double DropShadowOpac
+        {
+            get { return _dropShadowOpac; }
+            set {
+                _dropShadowOpac = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DropShadowOpac"));
+            }
         }
 
         public Boolean IsExported

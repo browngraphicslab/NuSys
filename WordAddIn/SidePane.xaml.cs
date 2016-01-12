@@ -33,6 +33,8 @@ namespace WordAddIn
 
         private string commentExported = "Exported to NuSys";
 
+        public SelectionItem SelectedSelection { get; set;}
+
         public SidePane()
         {
             InitializeComponent();
@@ -139,13 +141,14 @@ namespace WordAddIn
             {
                 if (bookmarks.Exists(selection.BookmarkId)){
                     var docSelection = bookmarks[selection.BookmarkId].Range;
+                    SelectionItem ns;
 
                     if (!selection.IsExported)
                     {
                         Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, "");
                         c.Author = commentAuthor;
 
-                        var ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = false };
+                        ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = false };
                         ns.AddSelection();
                         UnexportedSelections.Add(ns);
                     }
@@ -154,9 +157,21 @@ namespace WordAddIn
                         Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, "");
                         c.Author = commentAuthor;
 
-                        var ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
+                        ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
                         ns.AddSelection();
                         ExportedSelections.Add(ns);
+                    }
+
+                    if (selection.BookmarkId == Globals.ThisAddIn.SelectionId)
+                    {
+                        ns.DropShadowOpac = 1.0;
+
+                        if (SelectedSelection != null && SelectedSelection != ns)
+                        {
+                            SelectedSelection.DropShadowOpac = 0.0;
+                        }
+
+                        SelectedSelection = ns;
                     }
                 }
             }
