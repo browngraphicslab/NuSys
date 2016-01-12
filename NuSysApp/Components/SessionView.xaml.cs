@@ -188,7 +188,7 @@ namespace NuSysApp
 
             _activeWorkspace = new WorkspaceView(workspaceViewModel);
             mainCanvas.Children.Insert(0, _activeWorkspace);
-      
+
             _activeWorkspace.DataContext = workspaceViewModel;
             xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
 
@@ -206,12 +206,13 @@ namespace NuSysApp
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             };
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);           
-                        Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
+            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);
+            Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, mainCanvas.ActualWidth - Users.ActualWidth);
-                        Canvas.SetTop(Users, mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight);
+            Canvas.SetTop(Users, mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight);
+        }
 
         public void ShowRecorder()
         {
