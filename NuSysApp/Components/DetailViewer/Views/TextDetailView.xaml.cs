@@ -60,7 +60,7 @@ namespace NuSysApp
             rtfTextBox.TextChanged += delegate (object s, RoutedEventArgs a)
             {
                 var t = rtfTextBox.GetRtfText();
-                if (t != SessionController.Instance.ContentController.Get(model.ContentId).Data)
+                if (t != SessionController.Instance.ContentController.Get(model.ContentId).Data && false)
                 {
                     var request = new ChangeContentRequest(model.Id, model.ContentId, t);
                     SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
