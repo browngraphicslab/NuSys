@@ -136,24 +136,23 @@ namespace WordAddIn
 
                 if (comment.Author == commentAuthor)
                 {
-                    string commentTxt = comment.Range.Text;
-
+                    string commentText = comment.Range.Text;
                     Clipboard.Clear();
 
-                    comment.Scope.Select();
-                    comment.Scope.Copy();
-
-                    if (commentTxt == null)
+                    Range range = (Range)comment.Scope;
+                    if (commentText == null)
                     {
                         var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
                         comment.Scope.Bookmarks.Add(bookmarkId);
 
                         var ns = new SelectionItem { Comment = comment, Bookmark = bookmarkId, Range = comment.Scope, IsExported = false };
+                        ns.AddSelection();
                         UnexportedSelections.Add(ns);
                     }
                     else
                     {
                         var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = true };
+                        ns.AddSelection();
                         ExportedSelections.Add(ns);
                     }
                 }
@@ -169,7 +168,7 @@ namespace WordAddIn
                 unexpBttn.Content = "-";
             }
         }
-		
+
 		//delete all checked selections
 		private void OnDelete(){
 			foreach (var selection in CheckedSelections){
@@ -217,11 +216,9 @@ namespace WordAddIn
                 {
                     var selectionItemView = selection.GetView();
 
-                    if (selection.ImageContent != null)
+                    for (int i=0; i<selection.ImageContent.Count; i++)
                     {
-                        var imageFileName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
-                        selection.ImageContent.Save(mediaDir + "\\" + imageFileName, ImageFormat.Png);
-                        selectionItemView.ImageName = imageFileName;
+                        selection.ImageContent[i].Save(mediaDir + "\\" + selectionItemView.ImageNames[i], ImageFormat.Png);
                     }
 
                     selectionItemViews.Add(selectionItemView);
@@ -232,7 +229,7 @@ namespace WordAddIn
                         //checking if Comment has not been deleted
                         if (selection.Comment.Author != null)
                         {
-                            selection.Comment.Range.Text = commentExported;
+                            selection.Comment.Range.Text = commentExported + DateTime.Now.ToString();
                         }
                     }
                     catch (Exception ex)
@@ -271,26 +268,28 @@ namespace WordAddIn
         private void OnSelectionAdded()
         {
             try {
-                Clipboard.Clear();
-
-                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                selection.Select();
-                selection.Copy();
-
-                //using b as an arbitrary char to create a valid bookmarkId
-                var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
-                selection.Bookmarks.Add(bookmarkId);
+                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
 
                 if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
                     Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
                     Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
                 {
-                    Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
+                    Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(selection.Range, "");
                     c.Author = commentAuthor;
 
+                    //using b as an arbitrary char to create a valid bookmarkId
+                    var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
+                    selection.Bookmarks.Add(bookmarkId);
+
                     var ns = new SelectionItem { Comment = c, Bookmark = bookmarkId, Range = selection.Range, IsExported = false };
-                    UnexportedSelections.Add(ns);
+                    ns.AddSelection();
+
+                    if (ns.ImageContent.Count > 0 || String.IsNullOrEmpty(ns.RtfContent))
+                    {
+                        UnexportedSelections.Add(ns);
+                    }
                 }
+
             }
             catch (Exception ex)
             {

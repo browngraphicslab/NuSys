@@ -265,10 +265,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WordAddIn_2_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WordAddIn_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>8FE22AA58D0D0502AF4863BBD39F401734037368</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>990354376ED7F2229C57D9561406503C9D0163B5</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>

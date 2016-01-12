@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Office.Interop.Word;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
@@ -27,14 +28,13 @@ namespace WordAddIn
         private string _text;
         private string _rtfContent;
         private MemoryStream _ms;
-        private Bitmap _imageContent;
+        private List<Bitmap> _imageContent;
         private string _bookmarkId;
 
         public SelectionItem()
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
-            AddSelection();			
             DataContext = this;
         }
 
@@ -46,7 +46,13 @@ namespace WordAddIn
                 path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
             }
 
-            return new SelectionItemView(Bookmark, IsExported, RtfContent, path);
+            List<string> ImageNames = new List<string>();
+            foreach (Bitmap img in ImageContent)
+            {
+                ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
+            }
+
+            return new SelectionItemView(Bookmark, IsExported, RtfContent, path, ImageNames);
         }
 
         private void SelectionItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -77,6 +83,57 @@ namespace WordAddIn
         }
 
         public void AddSelection()
+        {
+            ImageContent = new List<Bitmap>();
+
+            if (this.Range.ShapeRange.Count > 0)
+            {
+                foreach (Shape shape in this.Range.ShapeRange)
+                {
+                    try
+                    {
+                        shape.Select();
+                        Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                        selection.Copy();
+                        parseImg();
+                    }
+                    catch (Exception ex)
+                    {
+                        //TODO exception handling
+                    }
+                }
+
+                if (this.Range.Text != null)
+                {
+                    Range textRange = Globals.ThisAddIn.Application.ActiveDocument.Range(this.Range.Start, this.Range.End);
+                    textRange.Select();
+                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    selection.Copy();
+                    fromClipboard();
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.Range.Select();
+                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    selection.Copy();
+                    fromClipboard();
+                }
+                catch (Exception ex)
+                {
+                    //TODO exception handling
+                }
+            }
+
+            if (ImageContent.Count > 0)
+            {
+                setPreviewImage();
+            }
+        }
+
+        public void fromClipboard()
         {
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
@@ -126,18 +183,8 @@ namespace WordAddIn
 
             System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
             Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
-            _imageContent = bitmapImg;
-            (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
 
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            Ms.Seek(0, SeekOrigin.Begin);
-            image.StreamSource = Ms;
-            image.EndInit();
-
-            img.Source = image;
-            img.Visibility = Visibility.Visible;
-            imgBorder.Visibility = Visibility.Visible;
+            ImageContent.Add(bitmapImg);
         }
 
         public void parseRtf()
@@ -208,6 +255,22 @@ namespace WordAddIn
             }
         }
 
+        public void setPreviewImage()
+        {
+            Bitmap bitmapImg = ImageContent.First();
+            (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
+
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            Ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = Ms;
+            image.EndInit();
+
+            img.Source = image;
+            img.Visibility = Visibility.Visible;
+            imgBorder.Visibility = Visibility.Visible;
+        }
+
         public Boolean IsExported
 		{
 			get { return _isExported; }
@@ -226,7 +289,7 @@ namespace WordAddIn
             set { _rtfContent = value; }
         }
 
-        public Bitmap ImageContent
+        public List<Bitmap> ImageContent
         {
             get { return _imageContent; }
             set { _imageContent = value; }
