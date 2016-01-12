@@ -19,7 +19,7 @@ namespace NuSysApp
 
         public UserControl View { get; set; }
 
-        public ObservableCollection<TextBlock> Tags { get; set; }
+        public ObservableCollection<Button> Tags { get; set; }
  
         public FullScreenViewerViewModel()
         {
@@ -37,11 +37,11 @@ namespace NuSysApp
         {
             if (_nodeModel != null)
             {
-                Tags = new ObservableCollection<TextBlock>();
+                Tags = new ObservableCollection<Button>();
                 List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
                 foreach (string tag in tags)
                 {
-                    TextBlock tagBlock = this.MakeTagBlock(tag);
+                    Button tagBlock = this.MakeTagBlock(tag);
                     Tags.Add(tagBlock);
                 }
             }
@@ -55,22 +55,24 @@ namespace NuSysApp
             _nodeModel.SetMetaData("tags", tags);
 
             //this should be refactored later
-            TextBlock tagBlock = this.MakeTagBlock(tag);
+            Button tagBlock = this.MakeTagBlock(tag);
             Tags.Add(tagBlock);
 
             RaisePropertyChanged("Tags");
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel
-        public TextBlock MakeTagBlock(string text)
+        public Button MakeTagBlock(string text)
         {
-            TextBlock tagBlock = new TextBlock();
-            tagBlock.Text = text;
-            tagBlock.Height = 20;
-            tagBlock.TextWrapping = TextWrapping.Wrap;
-            tagBlock.TextAlignment = TextAlignment.Right;
+
+            Button tagBlock = new Button();
+            tagBlock.Content = text;
+            tagBlock.HorizontalAlignment = HorizontalAlignment.Right;
+            tagBlock.Height = 40;
+            tagBlock.Margin = new Thickness(0, 2,0,0);
             tagBlock.FontStyle = FontStyle.Italic;
             tagBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            tagBlock.Background = new SolidColorBrush(Colors.DarkSalmon);
             return tagBlock;
         }
     }
