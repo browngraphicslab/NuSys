@@ -10,6 +10,10 @@
     d:DesignWidth="400">
 
     <Grid>
-
+        <StackPanel VerticalAlignment="Center" Width="800">
+            <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
+            <CaptureElement x:Name="preview"/>
+            <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="True"/>
+        </StackPanel>
     </Grid>
 </UserControl>
