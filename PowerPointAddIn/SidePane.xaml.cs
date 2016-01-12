@@ -163,11 +163,9 @@ namespace PowerPointAddIn
                 {
                     var selectionItemView = selection.GetView();
 
-                    if (selection.ImageContent != null)
+                    for (int i = 0; i < selection.ImageContent.Count; i++)
                     {
-                        var imageFileName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
-                        selection.ImageContent.Save(mediaDir + "\\" + imageFileName, ImageFormat.Png);
-                        selectionItemView.ImageName = imageFileName;
+                        selection.ImageContent[i].Save(mediaDir + "\\" + selectionItemView.ImageNames[i], ImageFormat.Png);
                     }
 
                     selectionItemViews.Add(selectionItemView);
@@ -181,7 +179,7 @@ namespace PowerPointAddIn
                             var posX = selection.ThisSelection.ShapeRange.Left;
                             var posY = selection.ThisSelection.ShapeRange.Top;
                             var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
-                            var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, commentExported);
+                            var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, commentExported + " " + DateTime.Now.ToString());
 
                             selection.Comment.Delete();
                           
@@ -227,6 +225,7 @@ namespace PowerPointAddIn
                 Clipboard.Clear();
 
                 var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+
                 selection.Copy();
 
                 if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
@@ -239,6 +238,7 @@ namespace PowerPointAddIn
                     var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, "");
 
                     var ns = new SelectionItem { Comment = c, ThisSelection = selection, IsExported = false };
+                    ns.AddSelection();
                     UnexportedSelections.Add(ns);
                 }
             }

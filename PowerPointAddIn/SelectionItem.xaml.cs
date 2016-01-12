@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Office.Interop.PowerPoint;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
@@ -27,14 +28,12 @@ namespace PowerPointAddIn
         private Selection _selection;
         private string _rtfContent;
         private MemoryStream _ms;
-        private Bitmap _imageContent;
+        private List<Bitmap> _imageContent;
 
         public SelectionItem()
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
-
-            AddSelection();
             DataContext = this;
         }
 
@@ -45,7 +44,14 @@ namespace PowerPointAddIn
             {
                 path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
             }
-            return new SelectionItemView(Guid.NewGuid().ToString(), IsExported, RtfContent, path);
+
+            List<string> ImageNames = new List<string>();
+            foreach (Bitmap img in ImageContent)
+            {
+                ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
+            }
+
+            return new SelectionItemView(Guid.NewGuid().ToString(), IsExported, RtfContent, path, ImageNames);
         }
 
         private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -76,6 +82,11 @@ namespace PowerPointAddIn
         }
 
         public void AddSelection()
+        {
+            fromClipboard();
+        }
+
+        public void fromClipboard()
         {
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
@@ -125,8 +136,14 @@ namespace PowerPointAddIn
 
             System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
             Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
+
+            ImageContent.Add(bitmapImg);
+        }
+
+        private void setPreviewImage() {
+            Bitmap bitmapImg = ImageContent.First();
+
             (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            ImageContent = bitmapImg;
 
             BitmapImage image = new BitmapImage();
             image.BeginInit();
@@ -231,7 +248,7 @@ namespace PowerPointAddIn
             set { _selection = value; }
         }
 
-        public Bitmap ImageContent
+        public List<Bitmap> ImageContent
         {
             get { return _imageContent; }
             set { _imageContent = value; }

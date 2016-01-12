@@ -229,7 +229,7 @@ namespace WordAddIn
                         //checking if Comment has not been deleted
                         if (selection.Comment.Author != null)
                         {
-                            selection.Comment.Range.Text = commentExported + DateTime.Now.ToString();
+                            selection.Comment.Range.Text = commentExported + " " + DateTime.Now.ToString();
                         }
                     }
                     catch (Exception ex)

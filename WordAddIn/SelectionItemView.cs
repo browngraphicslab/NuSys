@@ -12,8 +12,8 @@ namespace WordAddIn
         public String BookmarkId;
         public Boolean IsExported;
         public String RtfContent;
-        public List<String> ImageNames;
         public String DocPath;
+        public List<String> ImageNames;
 
         public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String DocPath, List<String> ImageNames)
         {
