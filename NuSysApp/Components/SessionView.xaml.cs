@@ -73,12 +73,7 @@ namespace NuSysApp
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
                     foreach (var user in list)
                     {
-                        Button b = new Button();
-                        b.Height = 50;
-                        b.Width = 150;
-                        b.HorizontalAlignment = HorizontalAlignment.Right;
-                        b.Content = user.Name ?? user.IP;
-                        b.Background = new SolidColorBrush(user.Color);
+                        UserLabel b = new UserLabel(user);
                         Users.Children.Add(b);
                     }
                 };
@@ -211,7 +206,7 @@ namespace NuSysApp
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, mainCanvas.ActualWidth - Users.ActualWidth);
-            Canvas.SetTop(Users, mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight);
+            Canvas.SetTop(Users, mainCanvas.ActualHeight - Users.ActualHeight);
         }
 
         public void ShowRecorder()
