@@ -223,7 +223,7 @@ namespace NuSysApp
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
             var systemDict = new Dictionary<string, object>();
-            systemDict["system_sender_ip"] = ip;
+            systemDict["system_sender_ip"] = ip??LocalIP;
             if (NetworkMembers.ContainsKey(ip))
             {
                 systemDict["system_sender_networkuser"] = NetworkMembers[ip];
