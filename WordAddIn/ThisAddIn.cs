@@ -112,17 +112,6 @@ namespace WordAddIn
             }
         }
 
-        private void taskPaneValue_VisibleChanged(object sender, System.EventArgs e)
-        {
-            if (_pane.Visible) //opened
-            {
-                readSelectionData();
-            }
-            else //closed
-            {
-                saveSelectionData();
-            }
-        }
         public SidePane SidePane
         {
             get { return _sidePane;  }
@@ -156,7 +145,7 @@ namespace WordAddIn
             _pane.Width = 450;
             _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
             _pane.Visible = true;
-            _pane.VisibleChanged += taskPaneValue_VisibleChanged;
+
             Document vstoDoc = Globals.Factory.GetVstoObject(this.Application.ActiveDocument);
             vstoDoc.BeforeClose += new System.ComponentModel.CancelEventHandler(ThisDocument_BeforeClose);
         }
