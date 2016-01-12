@@ -22,12 +22,9 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="nusys">
+          <uap:FileTypeAssociation Name="pdf">
             <uap:SupportedFileTypes>
-              <uap:FileType>.nusys</uap:FileType>
-              <uap:FileType>.png</uap:FileType>
-              <uap:FileType>.jpg</uap:FileType>
-              <uap:FileType>.pptx#3</uap:FileType>
+              <uap:FileType>.pdf</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -39,9 +36,12 @@
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pdf">
+          <uap:FileTypeAssociation Name="nusys">
             <uap:SupportedFileTypes>
-              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.nusys</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.pptx#3</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -55,6 +55,7 @@
     <uap:Capability Name="documentsLibrary" />
     <uap:Capability Name="picturesLibrary" />
     <uap:Capability Name="musicLibrary" />
+    <uap:Capability Name="userAccountInformation" />
     <DeviceCapability Name="microphone" />
     <DeviceCapability Name="webcam" />
   </Capabilities>

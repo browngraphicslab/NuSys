@@ -54,7 +54,7 @@ namespace NuSysApp
 
             Creators = new List<string>();
 
-            SetMetaData("tags", new List<string> {"none"});
+            SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
         }
         

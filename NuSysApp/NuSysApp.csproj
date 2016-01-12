@@ -240,6 +240,7 @@
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
+    <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
@@ -252,8 +253,10 @@
     <Compile Include="Network\Requests\NewThumnailRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
-    <Compile Include="Network\Requests\SendWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />

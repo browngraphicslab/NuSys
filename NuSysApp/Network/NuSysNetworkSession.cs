@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
-using NuSysApp.Network.Requests;
+using Windows.UI;
 
 namespace NuSysApp
 {
@@ -26,6 +26,7 @@ namespace NuSysApp
         {
             get { return _networkSession.LocalIP == _hostIP; }
         }
+        public Dictionary<string, NetworkUser> NetworkMembers;
         #endregion Public Members
         #region Private Members
         private string LocalIP
@@ -33,28 +34,28 @@ namespace NuSysApp
             get { return _networkSession.LocalIP; }
         }
         
-        private HashSet<string> NetworkMembers
+        private HashSet<string> NetworkMemberIPs
         {
             get { return _networkSession.NetworkMembers; }
         }
         private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
         private NetworkSession _networkSession;
         private string _hostIP;
-
         #endregion Private Members
 
         public async Task Init()
         {
+            NetworkMembers = new Dictionary<string, NetworkUser>();
             _networkSession = new NetworkSession(await GetNetworkIPs());
             await _networkSession.Init();
 
-            if (NetworkMembers.Count <= 1)
+            if (NetworkMemberIPs.Count <= 1)
             {
                 _hostIP = LocalIP; //just makes this machine the host
                 Debug.WriteLine("This machine made to be host");
-                if (NetworkMembers.Count == 0)
+                if (NetworkMemberIPs.Count == 0)
                 {
-                    NetworkMembers.Add(LocalIP);
+                    NetworkMemberIPs.Add(LocalIP);
                 }
             }
             else
@@ -78,7 +79,13 @@ namespace NuSysApp
             
             _networkSession.OnClientDrop += async ip =>
             {
+                await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
+                _networkSession.RemoveIP(ip);
                 await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
+                if (ip == _hostIP)
+                {
+                    _hostIP = LocalIP;
+                }
             };
         }
         #region Requests
@@ -101,7 +108,7 @@ namespace NuSysApp
                     string requestID = SessionController.Instance.GenerateId();
                     _requestEventDictionary[requestID] = mre;
 
-                    message["local_request_id"] = requestID;
+                    message["system_local_request_id"] = requestID;
 
                     if (request.GetRequestType() == Request.RequestType.SystemRequest)
                     {
@@ -135,7 +142,7 @@ namespace NuSysApp
         } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
         {
-            await _networkSession.SendRequestMessage(message, recieverIPs == null ? NetworkMembers : recieverIPs, NetworkClient.PacketType.TCP);
+            await _networkSession.SendRequestMessage(message, recieverIPs == null ? NetworkMemberIPs : recieverIPs, NetworkClient.PacketType.TCP);
         }
 
         private async Task SendRequest(Message message,NetworkClient.PacketType packetType, ICollection<string> recieverIPs = null)
@@ -151,7 +158,7 @@ namespace NuSysApp
                     await SendMessageToHost(message, packetType);
                     break;
                 case NetworkClient.PacketType.UDP:
-                    await _networkSession.SendRequestMessage(message, NetworkMembers, packetType);
+                    await _networkSession.SendRequestMessage(message, NetworkMemberIPs, packetType);
                     break;
             }
         }
@@ -209,10 +216,19 @@ namespace NuSysApp
                 case Request.RequestType.ChangeContentRequest:
                     request = new ChangeContentRequest(message);
                     break;
+                case Request.RequestType.SetTagsRequest:
+                    request = new SetTagsRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
-
+            var systemDict = new Dictionary<string, object>();
+            systemDict["system_sender_ip"] = ip;
+            if (NetworkMembers.ContainsKey(ip))
+            {
+                systemDict["system_sender_networkuser"] = NetworkMembers[ip];
+            }
+            request.SetSystemProperties(systemDict);
             await UITask.Run(async () =>
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
@@ -220,14 +236,14 @@ namespace NuSysApp
             if(packetType == NetworkClient.PacketType.TCP)
                 await ResumeWaitingRequestThread(message);
             if (IsHostMachine && packetType == NetworkClient.PacketType.TCP)
-                await _networkSession.SendRequestMessage(message, NetworkMembers, NetworkClient.PacketType.TCP);
+                await _networkSession.SendRequestMessage(message, NetworkMemberIPs, NetworkClient.PacketType.TCP);
         }
 
         private async Task ResumeWaitingRequestThread(Message message)
         {
-            if (message.ContainsKey("local_request_id"))
+            if (message.ContainsKey("system_local_request_id"))
             {
-                var local_id = message.GetString("local_request_id");
+                var local_id = message.GetString("system_local_request_id");
                 if (_requestEventDictionary.ContainsKey(local_id))
                 {
                     var mre = _requestEventDictionary[local_id];
@@ -266,6 +282,9 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.SendWorkspace:
                     request = new SendWorkspaceRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.SendClientInfo:
+                    request = new SendClientInfoSystemRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");

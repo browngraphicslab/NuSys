@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace NuSysApp.Network.Requests
+namespace NuSysApp
 {
     public class SendWorkspaceRequest : SystemRequest
     {

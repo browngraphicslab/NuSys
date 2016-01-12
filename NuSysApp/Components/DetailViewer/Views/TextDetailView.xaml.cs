@@ -35,7 +35,8 @@ namespace NuSysApp
         //private bool _isRecording;
         private ObservableCollection<String> sizes = new ObservableCollection<String>();
         private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
-
+        private string _modelContentId;
+        private string _modelId;
         public TextDetailView(TextNodeViewModel vm)
         {
 
@@ -57,12 +58,13 @@ namespace NuSysApp
             {
                 await SessionController.Instance.InitializeRecog();
             };
-            rtfTextBox.TextChanged += delegate
+            rtfTextBox.KeyUp += delegate
             {
-                var request = new ChangeContentRequest(model.Id,model.ContentId, rtfTextBox.GetRtfText());
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
+                UpdateText();
             };
 
+            _modelContentId = model.ContentId;
+            _modelId = model.Id;
             sizes.Add("8");
             sizes.Add("12");
             sizes.Add("16");
@@ -185,6 +187,7 @@ namespace NuSysApp
                 format.Bold = FormatEffect.Toggle;
                 selectedText.CharacterFormat = format;
             }
+            UpdateText();
         }
 
         private void ItalicButton_OnClick(object sender, RoutedEventArgs e)
@@ -196,6 +199,7 @@ namespace NuSysApp
                 format.Italic = FormatEffect.Toggle;
                 selectedText.CharacterFormat = format;
             }
+            UpdateText();
         }
 
         private void UnderlineButton_OnClick(object sender, RoutedEventArgs e)
@@ -214,6 +218,7 @@ namespace NuSysApp
                 }
                 selectedText.CharacterFormat = format;
             }
+            UpdateText();
         }
 
         private void SizeChanged(object sender, RoutedEventArgs e)
@@ -230,6 +235,7 @@ namespace NuSysApp
                 }
                 
             }
+            UpdateText();
         }
 
         private void FontChanged(object sender, RoutedEventArgs e)
@@ -245,7 +251,13 @@ namespace NuSysApp
                     selectedText.CharacterFormat = format;
                 }
             }
+            UpdateText();
         }
 
+        private void UpdateText()
+        {
+            var request = new ChangeContentRequest(_modelId, _modelContentId, rtfTextBox.GetRtfText());
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
+        }
     }
 }

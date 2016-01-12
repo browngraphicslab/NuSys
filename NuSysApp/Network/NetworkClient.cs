@@ -78,18 +78,24 @@ namespace NuSysApp
             DataWriter writer = new DataWriter(socket.OutputStream);
             _outgoingUdpDictionary[ip] = new Tuple<DatagramSocket, DataWriter>(socket,writer);
         }
+
+        private string GetSerializedMessage(Message m)
+        {
+            m["system_sent_timestamp"] = DateTime.UtcNow.Ticks;
+            return m.GetSerialized();
+        }
         #region Sending Messages
         public async Task SendTCPMessage(Message message, string ip)
         {
-            await SendTCPMessage(message.GetSerialized(), ip);
+            await SendTCPMessage(GetSerializedMessage(message), ip);
         }
         public async Task SendUDPMessage(Message message, string ip)
         {
-            await SendUDPMessage(message.GetSerialized(), ip);
+            await SendUDPMessage(GetSerializedMessage(message), ip);
         }
         public async Task SendTCPMessage(Message message, ICollection<string> ips)
         {
-            var stringMessage = message.GetSerialized();
+            var stringMessage = GetSerializedMessage(message);
             foreach (var ip in ips)
             {
                 await SendTCPMessage(stringMessage, ip);
@@ -109,7 +115,7 @@ namespace NuSysApp
         }
         public async Task SendMessage(Message message, ICollection<string> ips, PacketType type)
         {
-            var m = message.GetSerialized();
+            var m = GetSerializedMessage(message);
             foreach (var ip  in ips)
             {
                 await SendMessage(m, ip, type);
@@ -117,7 +123,7 @@ namespace NuSysApp
         }
         public async Task SendUDPMessage(Message message, ICollection<string> ips)
         {
-            var stringMessage = message.GetSerialized();
+            var stringMessage = GetSerializedMessage(message);
             foreach (var ip in ips)
             {
                 await SendUDPMessage(stringMessage, ip);

@@ -22,7 +22,8 @@ namespace NuSysApp
             NewThumbnailRequest,
             NewGroupRequest,
             NewContentRequest,
-            ChangeContentRequest
+            ChangeContentRequest,
+            SetTagsRequest
         }
         protected Message _message;
         private RequestType _requestType;
@@ -63,6 +64,14 @@ namespace NuSysApp
         public RequestType GetRequestType()
         {
             return _requestType;
+        }
+
+        public void SetSystemProperties(Dictionary<string, object> propertiesDictionary)
+        {
+            foreach (var kvp in propertiesDictionary)
+            {
+                _message[kvp.Key] = kvp.Value;
+            }
         }
 
         public virtual async Task CheckOutgoingRequest(){}//for anything you want to check right before execution
