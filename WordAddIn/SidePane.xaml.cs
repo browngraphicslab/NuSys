@@ -270,26 +270,20 @@ namespace WordAddIn
             try {
                 Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
 
-                if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
-                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
-                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(selection.Range, "");
+                c.Author = commentAuthor;
+
+                //using b as an arbitrary char to create a valid bookmarkId
+                var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
+                selection.Bookmarks.Add(bookmarkId);
+
+                var ns = new SelectionItem { Comment = c, Bookmark = bookmarkId, Range = selection.Range, IsExported = false };
+                ns.AddSelection();
+
+                if (ns.ImageContent.Count > 0 || !String.IsNullOrEmpty(ns.RtfContent))
                 {
-                    Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(selection.Range, "");
-                    c.Author = commentAuthor;
-
-                    //using b as an arbitrary char to create a valid bookmarkId
-                    var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
-                    selection.Bookmarks.Add(bookmarkId);
-
-                    var ns = new SelectionItem { Comment = c, Bookmark = bookmarkId, Range = selection.Range, IsExported = false };
-                    ns.AddSelection();
-
-                    if (ns.ImageContent.Count > 0 || String.IsNullOrEmpty(ns.RtfContent))
-                    {
-                        UnexportedSelections.Add(ns);
-                    }
+                    UnexportedSelections.Add(ns);
                 }
-
             }
             catch (Exception ex)
             {
