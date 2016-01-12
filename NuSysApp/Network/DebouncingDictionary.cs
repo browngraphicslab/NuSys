@@ -14,7 +14,7 @@ namespace NuSysApp
         private bool _timing = false;
         private Timer _timer;
         private bool _sendNextTCP = false;
-        private int _milliSecondDebounce = 20;
+        private int _milliSecondDebounce = 40;
         private string _id;
         public DebouncingDictionary(string id)
         {

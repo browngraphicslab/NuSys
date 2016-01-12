@@ -58,6 +58,11 @@ namespace NuSysApp
             {
                 await SessionController.Instance.InitializeRecog();
             };
+            rtfTextBox.KeyUp += delegate
+            {
+                UpdateText();
+            };
+
             _modelContentId = model.ContentId;
             _modelId = model.Id;
             sizes.Add("8");
