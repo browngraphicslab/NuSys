@@ -16,7 +16,7 @@
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
             <Image Source="/Assets/icon_record.png"></Image>
         </Button>
-        <StackPanel Name="Users" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200" Background="Azure">
+        <StackPanel Name="Users" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
         </StackPanel>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
     </Canvas>

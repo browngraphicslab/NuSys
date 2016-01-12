@@ -75,6 +75,8 @@ namespace NuSysApp
                     {
                         Button b = new Button();
                         b.Height = 50;
+                        b.Width = 150;
+                        b.HorizontalAlignment = HorizontalAlignment.Right;
                         b.Content = user.Name ?? user.IP;
                         b.Background = new SolidColorBrush(user.Color);
                         Users.Children.Add(b);
