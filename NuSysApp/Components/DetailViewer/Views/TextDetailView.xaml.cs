@@ -57,12 +57,11 @@ namespace NuSysApp
             {
                 await SessionController.Instance.InitializeRecog();
             };
-            rtfTextBox.TextChanged += delegate
+            rtfTextBox.TextChanged += delegate (object s, RoutedEventArgs a)
             {
-                var request = new ChangeContentRequest(model.Id,model.ContentId, rtfTextBox.GetRtfText());
+                var request = new ChangeContentRequest(model.Id, model.ContentId, rtfTextBox.GetRtfText());
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
             };
-
             sizes.Add("8");
             sizes.Add("12");
             sizes.Add("16");
