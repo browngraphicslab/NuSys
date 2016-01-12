@@ -101,7 +101,7 @@ namespace NuSysApp
                     string requestID = SessionController.Instance.GenerateId();
                     _requestEventDictionary[requestID] = mre;
 
-                    message["local_request_id"] = requestID;
+                    message["system_local_request_id"] = requestID;
 
                     if (request.GetRequestType() == Request.RequestType.SystemRequest)
                     {
@@ -215,7 +215,9 @@ namespace NuSysApp
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
-
+            var systemDict = new Dictionary<string, object>();
+            systemDict["system_sender_ip"] = ip;
+            request.SetSystemProperties(systemDict);
             await UITask.Run(async () =>
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
@@ -228,9 +230,9 @@ namespace NuSysApp
 
         private async Task ResumeWaitingRequestThread(Message message)
         {
-            if (message.ContainsKey("local_request_id"))
+            if (message.ContainsKey("system_local_request_id"))
             {
-                var local_id = message.GetString("local_request_id");
+                var local_id = message.GetString("system_local_request_id");
                 if (_requestEventDictionary.ContainsKey(local_id))
                 {
                     var mre = _requestEventDictionary[local_id];
