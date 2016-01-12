@@ -70,7 +70,7 @@ namespace NuSysApp
                     view = new AudioDetailView(audioVM);
                     break;
                 case NodeType.Group:
-                    view = new GroupDetailView(new GroupNodeViewModel((NodeContainerModel)model));
+                    view = new GroupDetailView(new NodeContainerViewModel((NodeContainerModel)model));
                     break;
             }
 
