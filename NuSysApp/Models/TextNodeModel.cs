@@ -36,7 +36,7 @@ namespace NuSysApp
         {
             await base.UnPack(props);
             if (!string.IsNullOrEmpty(props.GetString("contentId")) && _text != SessionController.Instance.ContentController.Get(ContentId).Data)
-               _text = SessionController.Instance.ContentController.Get(ContentId).Data;
+               Text = SessionController.Instance.ContentController.Get(ContentId).Data;
         }
 
         public override async Task<Dictionary<string,object>> Pack()
