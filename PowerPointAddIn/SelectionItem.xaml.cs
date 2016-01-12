@@ -83,7 +83,13 @@ namespace PowerPointAddIn
 
         public void AddSelection()
         {
+            ImageContent = new List<Bitmap>();
             fromClipboard();
+
+            if (ImageContent.Count > 0)
+            {
+                setPreviewImage();
+            }
         }
 
         public void fromClipboard()
