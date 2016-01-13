@@ -18,10 +18,7 @@ namespace NuSysApp
             
             _user = user;
             this.MakeProperties();
-            _user.OnUserRemoved += delegate
-            {
-                //die
-            };
+           
         }
 
         private void MakeProperties()
