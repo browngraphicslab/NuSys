@@ -67,6 +67,7 @@ namespace NuSysApp
             }
             var trimmed = fronttrim.Remove(i, fronttrim.Length - i);
             _message["name"] = trimmed;
+            base.CheckOutgoingRequest();
         }
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
