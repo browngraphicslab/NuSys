@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
 using Windows.UI;
-using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {

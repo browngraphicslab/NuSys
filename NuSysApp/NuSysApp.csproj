@@ -250,7 +250,7 @@
     <Compile Include="Network\Requests\NewThumnailRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
-    <Compile Include="Network\Requests\SendWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
