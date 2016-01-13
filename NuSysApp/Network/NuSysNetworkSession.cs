@@ -61,6 +61,7 @@ namespace NuSysApp
             else
             {
                 await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));
+                await ExecuteSystemRequest(new SendClientInfoSystemRequest());
             }
 
             _networkSession.OnPing += async () => {

@@ -23,13 +23,11 @@ namespace NuSysApp
                 await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, list);
 
                 var clientRequest = new SendClientInfoSystemRequest();//send client info
-                await nusysSession.ExecuteSystemRequest(clientRequest);
+                await nusysSession.ExecuteSystemRequest(clientRequest, NetworkClient.PacketType.TCP,list);
 
                 if (nusysSession.IsHostMachine)
                 {
-                    var l = new List<string>();
-                    l.Add(senderIP);
-                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest(),NetworkClient.PacketType.TCP,l);//send entire workspace
+                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest(),NetworkClient.PacketType.TCP,list);//send entire workspace
                 }
 
             }

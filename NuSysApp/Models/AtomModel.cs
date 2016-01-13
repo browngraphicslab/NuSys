@@ -77,6 +77,13 @@ namespace NuSysApp
 
         public void SetMetaData(string key, object value)
         {
+            if (key == "tags" && Metadata.ContainsKey("tags"))
+            {
+                if (((List<string>) value).Count < ((List<string>)Metadata["tags"]).Count)
+                {
+                    
+                }
+            }
             Metadata[key] = value;
             MetadataChange?.Invoke(this, key);
         }
