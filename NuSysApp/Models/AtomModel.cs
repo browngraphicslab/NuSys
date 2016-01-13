@@ -77,13 +77,6 @@ namespace NuSysApp
 
         public void SetMetaData(string key, object value)
         {
-            if (key == "tags" && Metadata.ContainsKey("tags"))
-            {
-                if (((List<string>) value).Count < ((List<string>)Metadata["tags"]).Count)
-                {
-                    
-                }
-            }
             Metadata[key] = value;
             MetadataChange?.Invoke(this, key);
         }
@@ -114,12 +107,12 @@ namespace NuSysApp
             Metadata = props.GetDict<string, object>("metadata");
             if (Metadata.ContainsKey("tags"))
                 Metadata["tags"] = JsonConvert.DeserializeObject<List<string>>(Metadata["tags"].ToString());
-            else
+            else 
                 Metadata["tags"] = new List<string>();
 
             if (Metadata.ContainsKey("groups"))
                 Metadata["groups"] = JsonConvert.DeserializeObject<List<string>>(Metadata["groups"].ToString());
-            else
+            else 
                 Metadata["groups"] = new List<string>();
 
             X = props.GetDouble("x", X);
