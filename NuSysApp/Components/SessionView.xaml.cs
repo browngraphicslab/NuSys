@@ -91,7 +91,6 @@ namespace NuSysApp
                 await SessionController.Instance.InitializeRecog();
                 SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate
                 {
-                    Users.Children.Clear();
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
                     foreach (var user in list)
                     {
