@@ -80,6 +80,7 @@ namespace NuSysApp
                         Users.Children.Add(b);
                     }
                 };
+                SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
 
             };
         }

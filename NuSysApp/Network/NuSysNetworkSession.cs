@@ -22,6 +22,11 @@ namespace NuSysApp
         {
             get { return _hostIP; }
         }
+        public string LocalIP
+        {
+            get { return _networkSession.LocalIP; }
+        }
+
         public bool IsHostMachine
         {
             get { return _networkSession.LocalIP == _hostIP; }
@@ -33,11 +38,6 @@ namespace NuSysApp
 
         #endregion Public Members
         #region Private Members
-        private string LocalIP
-        {
-            get { return _networkSession.LocalIP; }
-        }
-        
         private HashSet<string> NetworkMemberIPs
         {
             get { return _networkSession.NetworkMembers; }
@@ -60,14 +60,12 @@ namespace NuSysApp
                 if (NetworkMemberIPs.Count == 0)
                 {
                     NetworkMemberIPs.Add(LocalIP);
-                    AddNetworkUser(new NetworkUser(LocalIP) {Name = "Me"});
                 }
             }
             else
             {
                 await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));
                 await ExecuteSystemRequest(new SendClientInfoSystemRequest());
-                AddNetworkUser(new NetworkUser(LocalIP) { Name = "Me" });
             }
 
             _networkSession.OnPing += async () => {
