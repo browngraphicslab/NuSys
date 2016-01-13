@@ -14,7 +14,7 @@ namespace NuSysApp
 {
     public class FullScreenViewerViewModel : BaseINPC
     {
-        private NodeModel _nodeModel;
+        private AtomModel _nodeModel;
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
 
         public UserControl View { get; set; }
@@ -26,7 +26,7 @@ namespace NuSysApp
             
         }
 
-        public async void SetNodeModel(NodeModel model)
+        public async void SetNodeModel(AtomModel model)
         {
             _nodeModel = model;
             View = await _viewFactory.CreateFromSendable(_nodeModel);

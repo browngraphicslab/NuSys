@@ -241,7 +241,7 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(NodeModel model)
+        public void ShowFullScreen(AtomModel model)
         {
             var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);

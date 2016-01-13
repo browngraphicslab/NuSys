@@ -26,7 +26,7 @@ namespace NuSysApp
 
         private ObservableCollection<FrameworkElement> _views;
         private FreeFormNodeViewFactory _factory;
-        //private GroupItemThumbFactory _factory;
+        
         private int _count = 0;
 
         public GroupDetailView(NodeContainerViewModel vm)
@@ -39,8 +39,18 @@ namespace NuSysApp
             _views = new ObservableCollection<FrameworkElement>();
 
             _factory = new FreeFormNodeViewFactory();
-            //_factory = new GroupItemThumbFactory();
+
             this.AddChildren();
+
+            //Loaded += delegate (object sender, RoutedEventArgs args)
+            //{
+            //    var sw = SessionController.Instance.SessionView.ActualWidth / 1.2;
+            //    var sh = SessionController.Instance.SessionView.ActualHeight / 1.2;
+
+            //    var ratio = xGrid.ActualWidth > xGrid.ActualHeight ? xGrid.ActualWidth / sw : xGrid.ActualHeight / sh;
+            //    xGrid.Width = xGrid.ActualWidth / ratio;
+            //    xGrid.Height = xGrid.ActualHeight / ratio;
+            //};
         }
 
         public async Task AddChildren()
@@ -60,36 +70,39 @@ namespace NuSysApp
 
             foreach (var model in modelList)
             {
-                //var foundViews =
-                //    SessionController.Instance.ActiveWorkspace.AtomViewList.Where(
-                //        s => { (s.DataContext as AtomModel).Id == model.Id);
-
-                //var view = (IThumbnailable)foundViews.First();
-                //var thumb = await view.ToThumbnail(300, 300);
-                //var img = new Image();
-                //img.Source = thumb;
                 Sendable nodeModel = SessionController.Instance.IdToSendables[model.Id];
                 var view = await _factory.CreateFromSendable(nodeModel, null);
                 var viewVm = (AtomViewModel)view.DataContext;
-                viewVm.X = 0;
-                viewVm.Y = 0;
+                view.RenderTransform = new CompositeTransform();
                 _views.Add(view);
             }
 
-            var numCols = 2;
+            var numCols = 4;
             var numRows = 4;
 
-            
+            List<FrameworkElement> children = new List<FrameworkElement>();
 
             foreach (FrameworkElement view in _views)
             {
                 Border wrapping = new Border();
                 wrapping.Padding = new Thickness(10);
                 wrapping.Child = view;
-                Grid.SetRow(wrapping, _count / numRows);
-                Grid.SetColumn(wrapping, _count % numCols);
-                xGrid.Children.Add(wrapping);
-                _count++;
+                children.Add(wrapping);
+
+            }
+
+            int count = 0;
+            
+            for (int i = 0; i < numRows; i++)
+            {
+                for (int j = 0; j < numCols; j++)
+                {
+                    var wrapping = children[count];
+                    Grid.SetRow(wrapping, i);
+                    Grid.SetColumn(wrapping, j);
+                    xGrid.Children.Add(wrapping);
+                    count++;
+                }
             }
         }
 
