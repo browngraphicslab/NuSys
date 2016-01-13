@@ -250,7 +250,7 @@
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewNodeRequest.cs" />
-    <Compile Include="Network\Requests\NewThumnailRequest.cs" />
+    <Compile Include="Network\Requests\NewThumbnailRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />

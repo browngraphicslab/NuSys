@@ -71,8 +71,10 @@ namespace NuSysApp
         }
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
-            SessionController.Instance.NuSysNetworkSession.NetworkMembers[senderIP] = new NetworkUser(senderIP);
-            SessionController.Instance.NuSysNetworkSession.NetworkMembers[senderIP].Name = _message.GetString("name");
+            await UITask.Run(async delegate
+            {
+                SessionController.Instance.NuSysNetworkSession.NetworkMembers[senderIP] = new NetworkUser(senderIP);
+            });
         }
     }
 }

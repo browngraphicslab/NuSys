@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
+using Windows.Networking.NetworkOperators;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -66,10 +67,21 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
                 await SessionController.Instance.InitializeRecog();
+                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate
+                {
+                    Users.Children.Clear();
+                    var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
+                    foreach (var user in list)
+                    {
+                        Button b = new Button();
+                        b.Height = 50;
+                        b.Content = user.Name ?? user.IP;
+                        b.Background = new SolidColorBrush(user.Color);
+                        Users.Children.Add(b);
+                    }
+                };
 
-        
             };
-            
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)

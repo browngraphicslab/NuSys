@@ -16,7 +16,6 @@ namespace NuSysApp
         {
             get { return _colorSet ? _color : GetColor(); }
         }
-
         public string Name;
         #endregion Public Variables
         #region Private Variables

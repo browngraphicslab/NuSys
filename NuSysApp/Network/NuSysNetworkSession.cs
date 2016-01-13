@@ -27,6 +27,10 @@ namespace NuSysApp
             get { return _networkSession.LocalIP == _hostIP; }
         }
         public Dictionary<string, NetworkUser> NetworkMembers;
+
+        public delegate void NewUserEventHandler();
+        public event NewUserEventHandler OnNewNetworkUser;
+
         #endregion Public Members
         #region Private Members
         private string LocalIP
@@ -63,6 +67,7 @@ namespace NuSysApp
                 await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));
                 await ExecuteSystemRequest(new SendClientInfoSystemRequest());
             }
+            AddNetworkUser(new NetworkUser(LocalIP));
 
             _networkSession.OnPing += async () => {
                 const string URL = "http://aint.ch/nusys/clients.php";
@@ -349,6 +354,12 @@ namespace NuSysApp
         {
             _hostIP = ip;
             Debug.WriteLine("Machine "+ip+" made to be host");
+        }
+
+        public void AddNetworkUser(NetworkUser user)
+        {
+            NetworkMembers[user.IP] = user;
+            OnNewNetworkUser?.Invoke();
         }
     }
     public class NoRequestTypeException : Exception
