@@ -44,7 +44,7 @@ namespace NuSysApp
                 var number = Int32.Parse(IP.Replace(@".", ""));
                 int r = 10 + ((int) number%210);
                 int g = 10 + ((int) (number*Int32.Parse(IP[IP.Length - 1].ToString())%210));
-                int b = 10 + ((int) (number%Int32.Parse(IP[IP.Length - 1].ToString())%210));
+                int b = 10 + ((int) (number*r*g*Int32.Parse(IP[IP.Length - 1].ToString())%245));
                 _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);
             }
             catch (Exception e)

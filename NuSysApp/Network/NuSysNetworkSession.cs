@@ -107,7 +107,7 @@ namespace NuSysApp
         {
             await request.CheckOutgoingRequest();
             var m = new Message(request.GetFinalMessage().GetSerialized());
-            await request.ExecuteRequestFunction();
+            await ProcessIncomingRequest(m, NetworkClient.PacketType.TCP, LocalIP);
         }
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
@@ -365,8 +365,12 @@ namespace NuSysApp
 
         public void AddNetworkUser(NetworkUser user)
         {
-            NetworkMembers[user.IP] = user;
-            OnNewNetworkUser?.Invoke(user);
+            var add = NetworkMembers.ContainsKey(user.IP);
+            if (!add)
+            {
+                NetworkMembers[user.IP] = user;
+                OnNewNetworkUser?.Invoke(user);
+            }
         }
     }
     public class NoRequestTypeException : Exception
