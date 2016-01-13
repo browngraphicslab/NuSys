@@ -13,11 +13,8 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
-<<<<<<< HEAD
 using Windows.Networking.NetworkOperators;
-=======
 using Windows.Devices.Input;
->>>>>>> ac169b6df5faea588ba45a8c1d38cc35f53ed2dd
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -92,7 +89,6 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
                 await SessionController.Instance.InitializeRecog();
-<<<<<<< HEAD
                 SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate
                 {
                     Users.Children.Clear();
@@ -104,11 +100,6 @@ namespace NuSysApp
                     }
                 };
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
-
-=======
-                
-        
->>>>>>> ac169b6df5faea588ba45a8c1d38cc35f53ed2dd
             };
         }
 

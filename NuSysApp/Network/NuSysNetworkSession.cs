@@ -31,7 +31,7 @@ namespace NuSysApp
         {
             get { return _networkSession.LocalIP == _hostIP; }
         }
-        public Dictionary<string, NetworkUser> NetworkMembers;
+        public ObservableDictionary<string, NetworkUser> NetworkMembers;
 
         public delegate void NewUserEventHandler();
         public event NewUserEventHandler OnNewNetworkUser;
@@ -49,7 +49,7 @@ namespace NuSysApp
 
         public async Task Init()
         {
-            NetworkMembers = new Dictionary<string, NetworkUser>();
+            NetworkMembers = new ObservableDictionary<string, NetworkUser>();
             _networkSession = new NetworkSession(await GetNetworkIPs());
             await _networkSession.Init();
 
@@ -74,16 +74,15 @@ namespace NuSysApp
                 var client = new HttpClient { BaseAddress = new Uri(URL) };
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
-
-                                                      try
-                                                      {
-                                                          await client.GetAsync(urlParameters);
-                                                      }
-                                                      catch (Exception e)
-                                                      {
+                    try
+                    {
+                        await client.GetAsync(urlParameters);
+                    }
+                    catch (Exception e)
+                    {
                     // TODO: handle better
-                                                          Debug.WriteLine("couldn't send ping");
-                                                      }
+                        Debug.WriteLine("couldn't send ping");
+                    }
             };
             
             _networkSession.OnMessageRecieved += async (message, type, ip) =>

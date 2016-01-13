@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,9 @@ namespace NuSysApp
             get { return _colorSet ? _color : GetColor(); }
         }
         public string Name;
+
+        public delegate void UserRemovedEventHandler();
+        public event UserRemovedEventHandler OnUserRemoved;
         #endregion Public Variables
         #region Private Variables
         private Color _color;
@@ -25,6 +29,13 @@ namespace NuSysApp
         public NetworkUser(string ip)
         {
             IP = ip;
+            SessionController.Instance.NuSysNetworkSession.NetworkMembers.CollectionChanged += (sender, args) =>
+            {
+                if (args.Action == NotifyCollectionChangedAction.Remove && args.OldItems.Contains(IP))
+                {
+                    OnUserRemoved.Invoke();
+                }
+            };
         }
         private Color GetColor()
         {
