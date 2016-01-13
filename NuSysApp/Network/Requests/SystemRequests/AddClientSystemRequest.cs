@@ -18,16 +18,21 @@ namespace NuSysApp
             session.AddIP(_message.GetString("ip"));
             if (senderIP != null)
             {
-                var request = new SetHostSystemRequest(nusysSession.HostIP);
+                var request = new SetHostSystemRequest(nusysSession.HostIP);//set host
                 var list = new List<string>();
                 list.Add(senderIP);
                 await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, list);
+
+                var clientRequest = new SendClientInfoSystemRequest();//send client info
+                await nusysSession.ExecuteSystemRequest(clientRequest);
+
                 if (nusysSession.IsHostMachine)
                 {
                     var l = new List<string>();
                     l.Add(senderIP);
-                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest(),NetworkClient.PacketType.TCP,l);
+                    await nusysSession.ExecuteSystemRequest(new SendWorkspaceRequest(),NetworkClient.PacketType.TCP,l);//send entire workspace
                 }
+
             }
         }
     }

@@ -252,6 +252,7 @@
     <Compile Include="Network\Requests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />

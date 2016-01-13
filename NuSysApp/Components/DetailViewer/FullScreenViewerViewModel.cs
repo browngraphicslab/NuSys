@@ -50,10 +50,9 @@ namespace NuSysApp
         public async void AddTag(string tag)
         {
             //add to model
+
             List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
             tags.Add(tag);
-            _nodeModel.SetMetaData("tags", tags);
-
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
 
             //this should be refactored later
