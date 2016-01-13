@@ -446,6 +446,7 @@
     <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\UserLabel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
