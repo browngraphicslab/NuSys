@@ -225,7 +225,7 @@ namespace NuSysApp
             }
             var systemDict = new Dictionary<string, object>();
             systemDict["system_sender_ip"] = ip??LocalIP;
-            if (NetworkMembers.ContainsKey(ip))
+            if (ip != null && NetworkMembers.ContainsKey(ip))
             {
                 systemDict["system_sender_networkuser"] = NetworkMembers[ip];
             }
