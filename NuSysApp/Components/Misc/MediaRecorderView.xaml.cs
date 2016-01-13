@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media.Capture;
@@ -25,7 +26,7 @@ namespace NuSysApp
         private bool _audioRecording, _videoRecording;
         private InMemoryRandomAccessStream stream;
         private RecordingType _recordingType;
-        
+
         public enum RecordingType
         {
             Video,
@@ -139,7 +140,7 @@ namespace NuSysApp
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width/2, height/2));
+            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
 
             var contentId = SessionController.Instance.GenerateId();
 
@@ -150,7 +151,27 @@ namespace NuSysApp
             m["height"] = 400;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            var settings = mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
+            if (settings.Count > 0)
+            {
+                var maxX = 0;
+                var maxY = 0;
+                foreach (var settingInst in settings)
+                {
+                    if ((settingInst as VideoEncodingProperties).Width > maxX)
+                    {
+                        maxX = (int) (settingInst as VideoEncodingProperties).Width;
+                    }
+                    if ((settingInst as VideoEncodingProperties).Height > maxY)
+                    {
+                        maxY = (int) (settingInst as VideoEncodingProperties).Height;
+                    }
+                }
+                    m["resolutionX"] = maxX;
+                    m["resolutionY"] = maxY;
+            }
+
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewContentRequest(contentId,
                     Convert.ToBase64String(data)));
