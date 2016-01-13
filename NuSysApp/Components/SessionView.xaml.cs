@@ -75,6 +75,8 @@ namespace NuSysApp
                     {
                         Button b = new Button();
                         b.Height = 50;
+                        b.Width = 150;
+                        b.HorizontalAlignment = HorizontalAlignment.Right;
                         b.Content = user.Name ?? user.IP;
                         b.Background = new SolidColorBrush(user.Color);
                         Users.Children.Add(b);
@@ -207,9 +209,9 @@ namespace NuSysApp
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);           
                         Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
-            Users.Height = mainCanvas.ActualHeight;
+            Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, mainCanvas.ActualWidth - Users.ActualWidth);
-        }
+                        Canvas.SetTop(Users, mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight);
 
         public void ShowRecorder()
         {
