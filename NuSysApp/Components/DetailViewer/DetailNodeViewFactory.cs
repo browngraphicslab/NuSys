@@ -69,6 +69,9 @@ namespace NuSysApp
                     await audioVM.InitAudio();
                     view = new AudioDetailView(audioVM);
                     break;
+                case NodeType.Group:
+                    view = new GroupDetailView(new NodeContainerViewModel((NodeContainerModel)model));
+                    break;
             }
 
             var tpl = view.FindName("nodeTpl") as NodeTemplate;
