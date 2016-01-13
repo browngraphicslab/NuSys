@@ -61,7 +61,7 @@ namespace NuSysApp
             var filepath = AppContext.BaseDirectory;
             var fronttrim = filepath.Remove(0, 9);
             int i = 0;
-            while (fronttrim[i] != '/')
+            while (fronttrim[i] != '\\')
             {
                 i++;
             }
