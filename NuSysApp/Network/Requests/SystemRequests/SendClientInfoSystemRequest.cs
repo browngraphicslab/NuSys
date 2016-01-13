@@ -73,7 +73,9 @@ namespace NuSysApp
         {
             await UITask.Run(async delegate
             {
-                SessionController.Instance.NuSysNetworkSession.NetworkMembers[senderIP] = new NetworkUser(senderIP);
+                var user = new NetworkUser(senderIP);
+                user.Name = _message.GetString("name");
+                SessionController.Instance.NuSysNetworkSession.AddNetworkUser(user);
             });
         }
     }

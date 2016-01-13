@@ -60,14 +60,15 @@ namespace NuSysApp
                 if (NetworkMemberIPs.Count == 0)
                 {
                     NetworkMemberIPs.Add(LocalIP);
+                    AddNetworkUser(new NetworkUser(LocalIP) {Name = "Me"});
                 }
             }
             else
             {
                 await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));
                 await ExecuteSystemRequest(new SendClientInfoSystemRequest());
+                AddNetworkUser(new NetworkUser(LocalIP) { Name = "Me" });
             }
-            AddNetworkUser(new NetworkUser(LocalIP));
 
             _networkSession.OnPing += async () => {
                 const string URL = "http://aint.ch/nusys/clients.php";
