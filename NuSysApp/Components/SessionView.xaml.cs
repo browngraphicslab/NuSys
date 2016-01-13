@@ -230,7 +230,7 @@ namespace NuSysApp
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, mainCanvas.ActualWidth - Users.ActualWidth);
-            Canvas.SetTop(Users, mainCanvas.ActualHeight - Users.ActualHeight);
+            Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
         }
 
         public void ShowRecorder()
