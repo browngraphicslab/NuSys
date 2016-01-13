@@ -61,7 +61,7 @@ namespace NuSysApp
                     await vm.Init();
                     view = new GroupNodeView(vm);
                     break;
-                case NodeType.GroupTag:
+                case NodeType.Tag:
                     view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
                     break;
                 case NodeType.Image:

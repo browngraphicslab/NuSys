@@ -164,7 +164,7 @@ namespace NuSysApp.Components
             {
                 title = props.GetString("title");
             }
-            await UITask.Run(async () => { await SessionController.Instance.CreateGroupTag(id, x, y, w, h, title); });
+            await UITask.Run(async () => { await SessionController.Instance.CreateTagNode(id, x, y, w, h, title); });
         }
     }
 }

@@ -21,7 +21,6 @@ namespace NuSysApp
         private IThumbnailable _hoveredNodeView;
         private string _createdGroupId;
 
-
         public CreateGroupMode(WorkspaceView view, NodeManipulationMode nodeManipulationMode) : base(view)
         {
             _nodeManipulationMode = nodeManipulationMode;
@@ -76,9 +75,7 @@ namespace NuSysApp
             var draggedItem = (AnimatableUserControl) sender;
 
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
-
             
-
             if (result.Any())
             {
                 draggedItem.Opacity = 0.5;

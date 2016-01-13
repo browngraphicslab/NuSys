@@ -4,7 +4,7 @@
     <tabs>
       <tab idMso="TabAddIns">
         <group id="MyGroup" label="My Group">
-          <button id="textButton" size="large" label="Insert Text" screentip="Text" onAction="OnBtnClick" supertip="Inserts text at the cursor location." getImage="getImage"/>
+          <button id="textButton" size="large" label="Open Plugin" screentip="Text" onAction="OnBtnClick" supertip="Inserts text at the cursor location." getImage="getImage"/>
         </group>
       </tab>
     </tabs>

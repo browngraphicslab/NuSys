@@ -11,13 +11,13 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class GroupNodeMode : AbstractWorkspaceViewMode
+    public class TagNodeMode : AbstractWorkspaceViewMode
     {
         private UserControl _selectedView;
         private LabelNodeView _hoveredGroup;
         private List<NodeViewModel> _pressedItems = new List<NodeViewModel>(); 
 
-        public GroupNodeMode(WorkspaceView view) : base(view) { }
+        public TagNodeMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
         {
@@ -69,9 +69,8 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var kv = (KeyValuePair<string, UserControl>)newItem;
-
-
+                var kv = (KeyValuePair<string, FrameworkElement>)newItem;
+                
                 if (((FrameworkElement)kv.Value).DataContext is LabelNodeViewModel) {
                     Canvas.SetZIndex((UserControl)kv.Value, 100);
                     continue;
@@ -90,6 +89,8 @@ namespace NuSysApp
 
             if (releasedNode == null)
                 return;
+
+            //_view.ReleasePointerCaptures();
 
             if (_pressedItems.Count == 2)
             {
@@ -192,6 +193,8 @@ namespace NuSysApp
            
             if (pressedNode == null)
                 return;
+
+            //_view.CapturePointer(e.Pointer);
 
             
             if (!(pressedNode is LabelNodeViewModel))

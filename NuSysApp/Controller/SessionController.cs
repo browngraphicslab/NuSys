@@ -197,7 +197,7 @@ namespace NuSysApp
             node2.SetMetaData("groups", prevGroups2);
         }
 
-        public async Task CreateGroupTag(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
+        public async Task CreateTagNode(string id, double xCooordinate, double yCoordinate, double width, double height, string title)
         {
             var group = new NodeContainerModel(id)
             {
@@ -205,11 +205,12 @@ namespace NuSysApp
                 Y = yCoordinate,
                 Width = width,
                 Height = height,
-                NodeType = NodeType.GroupTag,
+                NodeType = NodeType.Tag,
                 Title = title
             };
             IdToSendables.Add(id, group);
 
+            /*
             var searchResults = SessionController.Instance.IdToSendables.Values.Where(m =>
             {
                 var mm = m as AtomModel;
@@ -243,6 +244,7 @@ namespace NuSysApp
             }
 
             //   ActiveWorkspace.Model.AddChild(group);
+            */
         }
 
         public void AddGlobalInq(InqLineModel lineView)
@@ -287,7 +289,7 @@ namespace NuSysApp
                 case NodeType.Video:
                     node = new VideoNodeModel(id);
                     break;
-                case NodeType.GroupTag:
+                case NodeType.Tag:
                     node = new NodeContainerModel(id);
                     break;
                 case NodeType.Web:

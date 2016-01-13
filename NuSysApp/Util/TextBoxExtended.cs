@@ -46,7 +46,6 @@ namespace NuSysApp
 
         public void SetRtfText(string text)
         {
-
             Document.SetText(TextSetOptions.FormatRtf, text);
             Document.ApplyDisplayUpdates();
         }

@@ -56,7 +56,7 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                await SessionController.Instance.InitializeRecog();
+              //  await SessionController.Instance.InitializeRecog();
             };
             rtfTextBox.KeyUp += delegate
             {

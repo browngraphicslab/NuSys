@@ -74,7 +74,16 @@ namespace NuSysApp
                 var client = new HttpClient { BaseAddress = new Uri(URL) };
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = await client.GetAsync(urlParameters);
+
+                                                      try
+                                                      {
+                                                          await client.GetAsync(urlParameters);
+                                                      }
+                                                      catch (Exception e)
+                                                      {
+                    // TODO: handle better
+                                                          Debug.WriteLine("couldn't send ping");
+                                                      }
             };
             
             _networkSession.OnMessageRecieved += async (message, type, ip) =>

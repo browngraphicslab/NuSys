@@ -13,7 +13,11 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using System.Diagnostics;
+<<<<<<< HEAD
 using Windows.Networking.NetworkOperators;
+=======
+using Windows.Devices.Input;
+>>>>>>> ac169b6df5faea588ba45a8c1d38cc35f53ed2dd
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -36,6 +40,7 @@ namespace NuSysApp
 
     //    private static List<AtomModel> addedModels;
         private static List<AtomModel> createdModels;
+        private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
 
@@ -47,6 +52,26 @@ namespace NuSysApp
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+
+            PointerEntered += delegate (object o, PointerRoutedEventArgs eventArgs)
+            {
+                if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen &&_prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
+                {
+                    xFloatingMenu.SetActive(Options.PenGlobalInk);
+                    _prevOptions = Options.PenGlobalInk;
+                    IsPenMode = true;
+                }
+            };
+
+            PointerExited += delegate (object o, PointerRoutedEventArgs eventArgs)
+            {
+                if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
+                {
+                    xFloatingMenu.SetActive(Options.SelectNode);
+                    _prevOptions = Options.SelectNode;
+                    IsPenMode = false;
+                }
+            };
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
@@ -67,6 +92,7 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
                 await SessionController.Instance.InitializeRecog();
+<<<<<<< HEAD
                 SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate
                 {
                     Users.Children.Clear();
@@ -84,6 +110,10 @@ namespace NuSysApp
                 };
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
 
+=======
+                
+        
+>>>>>>> ac169b6df5faea588ba45a8c1d38cc35f53ed2dd
             };
         }
 
