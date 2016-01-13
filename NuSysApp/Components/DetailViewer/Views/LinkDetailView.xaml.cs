@@ -58,11 +58,18 @@ namespace NuSysApp
 
             atomview1.RenderTransform = new CompositeTransform();
             atomview2.RenderTransform = new CompositeTransform();
+            atomview1.IsHitTestVisible = false;
+            atomview2.IsHitTestVisible = false;
             //linkview.RenderTransform = new CompositeTransform();
 
-            xGrid.Children.Add(atomview1);
-            xGrid.Children.Add(atomview2);
+            //Canvas.SetLeft(atomview1, 0);
+            Canvas.SetLeft(atomview2, xCanvas.ActualWidth - atomview2.Width);
+            Canvas.SetTop(atomview2, xCanvas.ActualHeight - atomview2.Height);
+
+            xCanvas.Children.Add(atomview1);
+            xCanvas.Children.Add(atomview2);
             //xGrid.Children.Add(linkview);
+
         }
 
     }
