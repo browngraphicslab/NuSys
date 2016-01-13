@@ -33,7 +33,7 @@ namespace NuSysApp
             {
                 if (args.Action == NotifyCollectionChangedAction.Remove && args.OldItems.Contains(IP))
                 {
-                    OnUserRemoved.Invoke();
+                    OnUserRemoved?.Invoke();
                 }
             };
         }
