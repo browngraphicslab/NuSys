@@ -33,7 +33,7 @@ namespace NuSysApp
         }
         public ObservableDictionary<string, NetworkUser> NetworkMembers;
 
-        public delegate void NewUserEventHandler();
+        public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
 
         #endregion Public Members
@@ -366,7 +366,7 @@ namespace NuSysApp
         public void AddNetworkUser(NetworkUser user)
         {
             NetworkMembers[user.IP] = user;
-            OnNewNetworkUser?.Invoke();
+            OnNewNetworkUser?.Invoke(user);
         }
     }
     public class NoRequestTypeException : Exception

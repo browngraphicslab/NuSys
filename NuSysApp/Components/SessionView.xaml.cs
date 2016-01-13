@@ -89,18 +89,15 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
                 await SessionController.Instance.InitializeRecog();
-                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate
+                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user) 
                 {
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
-                    foreach (var user in list)
+                    UserLabel b = new UserLabel(user);
+                    Users.Children.Add(b);
+                    user.OnUserRemoved += delegate
                     {
-                        UserLabel b = new UserLabel(user);
-                        Users.Children.Add(b);
-                        user.OnUserRemoved += delegate
-                        {
-                            Users.Children.Remove(b);
-                        };
-                    }
+                        Users.Children.Remove(b);
+                    };
                 };
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
             };
