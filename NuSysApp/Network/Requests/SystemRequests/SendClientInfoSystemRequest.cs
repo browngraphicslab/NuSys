@@ -11,6 +11,7 @@ namespace NuSysApp
     public class SendClientInfoSystemRequest : SystemRequest
     {
         public SendClientInfoSystemRequest() : base(SystemRequestType.SendClientInfo){}
+        public SendClientInfoSystemRequest(Message m) : base(m) { }
 
         public override async Task CheckOutgoingRequest()
         {
