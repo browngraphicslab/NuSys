@@ -89,7 +89,7 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.Init();
                 await SessionController.Instance.InitializeRecog();
-                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate
+                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user) 
                 {
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
                     UserLabel b = new UserLabel(user);
