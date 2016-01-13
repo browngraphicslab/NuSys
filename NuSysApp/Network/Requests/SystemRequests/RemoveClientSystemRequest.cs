@@ -13,7 +13,12 @@ namespace NuSysApp
         public RemoveClientSystemRequest(Message m) : base(m) { }
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
-            session.RemoveIP(_ip);
+            string ip = _message.GetString("ip");
+            session.RemoveIP(ip);
+            if (nusysSession.NetworkMembers.ContainsKey(ip))
+            {
+                nusysSession.NetworkMembers.Remove(ip);
+            }
         }
     }
 }
