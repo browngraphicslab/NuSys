@@ -1,4 +1,4 @@
-﻿<local:AnimatableUserControl
+﻿<UserControl
     x:Class="NuSysApp.TextDetailView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -14,7 +14,7 @@
                 <Button Height="30" Width="30" Tapped="OnRecordClick">
                     <Image Source="/Assets/icon_record.png" Height="15"></Image>
                 </Button>
-                <Button Name="BoldButton" Height="30" Width="30" Content="B" Background="DarkSalmon"  Click="BoldButton_OnClick" Foreground="White"></Button>
+                <Button Name="BoldButton" Height="30" Width="30" Content="B" Click="BoldButton_OnClick" Foreground="White"></Button>
                 <Button Name="ItalicButton" Height="30" Width="30" Content="I" Click="ItalicButton_OnClick" Foreground="White"></Button>
                 <Button Name="UnderlineButton" Height="30" Width="30" Content="U"  Click="UnderlineButton_OnClick" Foreground="White"></Button>
                 <ComboBox x:Name="SizeBox" Height="30" PlaceholderText="Size" ItemsSource="{x:Bind sizes}" SelectionChanged="SizeChanged"></ComboBox>
@@ -25,4 +25,4 @@
                                      BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
         </StackPanel>
     </Border>
-</local:AnimatableUserControl>
+</UserControl>
