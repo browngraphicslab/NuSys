@@ -1,7 +1,9 @@
 ﻿
 using Microsoft.Office.Interop.Word;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace WordAddIn
     /// <summary>
     /// Interaction logic for SelectionItem.xaml
     /// </summary>
-    public partial class SelectionItem : UserControl
+    public partial class SelectionItem : UserControl, INotifyPropertyChanged
     {
 		private Boolean _isExported;
         private Comment _comment;
@@ -27,14 +29,18 @@ namespace WordAddIn
         private string _text;
         private string _rtfContent;
         private MemoryStream _ms;
-        private Bitmap _imageContent;
-        private string _bookmarkId;
+        private List<Bitmap> _imageContent;
+        private Bookmark _bookmark;
+        private String _dateTimeExported;
+        private double _dropShadowOpac;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public SelectionItem()
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
-            AddSelection();			
+            DropShadowOpac = 0;
             DataContext = this;
         }
 
@@ -46,7 +52,18 @@ namespace WordAddIn
                 path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
             }
 
-            return new SelectionItemView(Bookmark, IsExported, RtfContent, path);
+            List<string> ImageNames = new List<string>();
+            foreach (Bitmap img in ImageContent)
+            {
+                ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
+            }
+
+            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported);
+        }
+
+        public SelectionItemIdView GetIdView()
+        {
+            return new SelectionItemIdView(this.Bookmark.Name, IsExported, DateTimeExported);
         }
 
         private void SelectionItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -56,6 +73,15 @@ namespace WordAddIn
 
             var selectionItem = (SelectionItem)sender;
             selectionItem.Range.Select();
+
+            this.DropShadowOpac = 1.0;
+
+            if (Globals.ThisAddIn.SidePane.SelectedSelection != null && Globals.ThisAddIn.SidePane.SelectedSelection != this)
+            {
+                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadowOpac = 0.0;
+            }
+
+            Globals.ThisAddIn.SidePane.SelectedSelection = this;
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -77,6 +103,43 @@ namespace WordAddIn
         }
 
         public void AddSelection()
+        {
+            ImageContent = new List<Bitmap>();
+
+            if (this.Range.ShapeRange.Count > 0)
+            {
+                foreach (Shape shape in this.Range.ShapeRange)
+                {
+                    shape.Select();
+                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    selection.Copy();
+                    parseImg();
+                }
+
+                if (this.Range.Text != null)
+                {
+                    Range textRange = Globals.ThisAddIn.Application.ActiveDocument.Range(this.Range.Start, this.Range.End);
+                    textRange.Select();
+                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    selection.Copy();
+                    fromClipboard();
+                }
+            }
+            else
+            {
+                this.Range.Select();
+                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                selection.Copy();
+                fromClipboard();
+            }
+
+            if (ImageContent.Count > 0)
+            {
+                setPreviewImage();
+            }
+        }
+
+        public void fromClipboard()
         {
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
@@ -126,18 +189,8 @@ namespace WordAddIn
 
             System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
             Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
-            _imageContent = bitmapImg;
-            (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
 
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            Ms.Seek(0, SeekOrigin.Begin);
-            image.StreamSource = Ms;
-            image.EndInit();
-
-            img.Source = image;
-            img.Visibility = Visibility.Visible;
-            imgBorder.Visibility = Visibility.Visible;
+            ImageContent.Add(bitmapImg);
         }
 
         public void parseRtf()
@@ -208,11 +261,42 @@ namespace WordAddIn
             }
         }
 
+        public void setPreviewImage()
+        {
+            Bitmap bitmapImg = ImageContent.First();
+            (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
+
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            Ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = Ms;
+            image.EndInit();
+
+            img.Source = image;
+            img.Visibility = Visibility.Visible;
+            imgBorder.Visibility = Visibility.Visible;
+        }
+
+        public double DropShadowOpac
+        {
+            get { return _dropShadowOpac; }
+            set {
+                _dropShadowOpac = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DropShadowOpac"));
+            }
+        }
+
         public Boolean IsExported
 		{
 			get { return _isExported; }
 			set { _isExported = value; }
 		}
+
+        public String DateTimeExported
+        {
+            get { return _dateTimeExported; }
+            set { _dateTimeExported = value; }
+        }
 
         public string Text
         {
@@ -226,7 +310,7 @@ namespace WordAddIn
             set { _rtfContent = value; }
         }
 
-        public Bitmap ImageContent
+        public List<Bitmap> ImageContent
         {
             get { return _imageContent; }
             set { _imageContent = value; }
@@ -238,10 +322,10 @@ namespace WordAddIn
             set { _range = value; }
         }
 
-        public string Bookmark
+        public Bookmark Bookmark
         {
-            get { return _bookmarkId; }
-            set { _bookmarkId = value; }
+            get { return _bookmark; }
+            set { _bookmark = value; }
         }
 
         public MemoryStream Ms

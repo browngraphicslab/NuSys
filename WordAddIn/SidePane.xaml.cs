@@ -1,4 +1,6 @@
-﻿using Microsoft.Office.Interop.Word;
+﻿using Microsoft.Office.Core;
+using Microsoft.Office.Interop.Word;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,6 +32,8 @@ namespace WordAddIn
         private string commentAuthor = "NuSys";
 
         private string commentExported = "Exported to NuSys";
+
+        public SelectionItem SelectedSelection { get; set;}
 
         public SidePane()
         {
@@ -118,17 +122,7 @@ namespace WordAddIn
             ExportedSelections = new ObservableCollection<SelectionItem>();
             CheckedSelections = new ObservableCollection<SelectionItem>();
 
-            var bookmarks = Globals.ThisAddIn.Application.ActiveDocument.Bookmarks;
-
-            //get rid of excesse bookmarks
-            foreach (Bookmark bookmark in bookmarks)
-            {
-                if (bookmark.Name.StartsWith("NuSysSelection"))
-                {
-                    bookmark.Delete();
-                }
-            }
-
+            //delete all NuSys comments
             var comments = Globals.ThisAddIn.Application.ActiveDocument.Comments;
             foreach (var commentObj in comments)
             {
@@ -136,55 +130,73 @@ namespace WordAddIn
 
                 if (comment.Author == commentAuthor)
                 {
-                    string commentTxt = comment.Range.Text;
+                    comment.Delete();
+                }
+            }
 
-                    Clipboard.Clear();
+            var allSelections = Globals.ThisAddIn._allSelectionItems;
+            var bookmarks = Globals.ThisAddIn.Application.ActiveDocument.Bookmarks;
 
-                    comment.Scope.Select();
-                    comment.Scope.Copy();
+            foreach (var selection in allSelections)
+            {
+                if (bookmarks.Exists(selection.BookmarkId)){
+                    var docSelection = bookmarks[selection.BookmarkId].Range;
+                    SelectionItem ns;
 
-                    if (commentTxt == null)
+                    if (!selection.IsExported)
                     {
-                        var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
-                        comment.Scope.Bookmarks.Add(bookmarkId);
+                        Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, "");
+                        c.Author = commentAuthor;
 
-                        var ns = new SelectionItem { Comment = comment, Bookmark = bookmarkId, Range = comment.Scope, IsExported = false };
+                        ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = false };
+                        ns.AddSelection();
                         UnexportedSelections.Add(ns);
                     }
                     else
                     {
-                        var ns = new SelectionItem { Comment = comment, Range = comment.Scope, IsExported = true };
+                        Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, "");
+                        c.Author = commentAuthor;
+
+                        ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
+                        ns.AddSelection();
                         ExportedSelections.Add(ns);
+                    }
+
+                    if (selection.BookmarkId == Globals.ThisAddIn.SelectionId)
+                    {
+                        ns.DropShadowOpac = 1.0;
+
+                        if (SelectedSelection != null && SelectedSelection != ns)
+                        {
+                            SelectedSelection.DropShadowOpac = 0.0;
+                        }
+
+                        SelectedSelection = ns;
                     }
                 }
             }
-
-            if (ExportedSelections.Count > 0)
-            {
-                expBttn.Content = "-";
-            }
-
-            if (UnexportedSelections.Count > 0)
-            {
-                unexpBttn.Content = "-";
-            }
         }
-		
-		//delete all checked selections
-		private void OnDelete(){
-			foreach (var selection in CheckedSelections){
-                try {
+
+        //delete all checked selections
+        private void OnDelete()
+        {
+            foreach (var selection in CheckedSelections)
+            {
+                try
+                {
+                    if (!selection.Bookmark.Empty)
+                    {
+                        selection.Bookmark.Delete();
+                    }
+
                     //checking if Comment has not been deleted
                     if (selection.Comment.Author != null)
                     {
-                        if (selection.Comment.Scope.Bookmarks.Exists(selection.Bookmark))
-                        {
-                            selection.Comment.Scope.Bookmarks.get_Item(selection.Bookmark).Delete();
-                        }
                         selection.Comment.Delete();
                     }
 
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     //if exception is thrown, comment has been deleted already so do nothing
                 }
@@ -192,15 +204,16 @@ namespace WordAddIn
                 if (UnexportedSelections.Contains(selection))
                 {
                     UnexportedSelections.Remove(selection);
-                }else if (ExportedSelections.Contains(selection))
+                }
+                else if (ExportedSelections.Contains(selection))
                 {
                     ExportedSelections.Remove(selection);
                 }
-			}
+            }
 
             CheckedSelections.Clear();
-		}
-		
+        }
+
 		//exports to NuSys all checked selections
 		private void OnExport(){
             var fileDir = dir + "\\selection";
@@ -210,18 +223,20 @@ namespace WordAddIn
             var hasNewSelection = false;
 
             List<SelectionItemView> selectionItemViews = new List<SelectionItemView>();
+            List<SelectionItemIdView> selectionItemIdViews = new List<SelectionItemIdView>();
 
             foreach (var selection in CheckedSelections)
             {
-                if (UnexportedSelections.Contains(selection))
+                if (!selection.IsExported)
                 {
+                    string dateTimeExported = DateTime.Now.ToString();
+                    selection.DateTimeExported = dateTimeExported;
+
                     var selectionItemView = selection.GetView();
 
-                    if (selection.ImageContent != null)
+                    for (int i=0; i<selection.ImageContent.Count; i++)
                     {
-                        var imageFileName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
-                        selection.ImageContent.Save(mediaDir + "\\" + imageFileName, ImageFormat.Png);
-                        selectionItemView.ImageName = imageFileName;
+                        selection.ImageContent[i].Save(mediaDir + "\\" + selectionItemView.ImageNames[i], ImageFormat.Png);
                     }
 
                     selectionItemViews.Add(selectionItemView);
@@ -232,7 +247,7 @@ namespace WordAddIn
                         //checking if Comment has not been deleted
                         if (selection.Comment.Author != null)
                         {
-                            selection.Comment.Range.Text = commentExported;
+                            selection.Comment.Range.Text = commentExported + " " + dateTimeExported;
                         }
                     }
                     catch (Exception ex)
@@ -271,24 +286,22 @@ namespace WordAddIn
         private void OnSelectionAdded()
         {
             try {
-                Clipboard.Clear();
+                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
 
-                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                selection.Select();
-                selection.Copy();
+                var ns = new SelectionItem { Range = selection.Range, IsExported = false };
+                ns.AddSelection();
+
+                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(selection.Range, "");
+                c.Author = commentAuthor;
+                ns.Comment = c;
 
                 //using b as an arbitrary char to create a valid bookmarkId
                 var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
-                selection.Bookmarks.Add(bookmarkId);
+                var bookmark = selection.Bookmarks.Add(bookmarkId);
+                ns.Bookmark = bookmark;
 
-                if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
-                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
-                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
+                if (ns.ImageContent.Count > 0 || !String.IsNullOrEmpty(ns.RtfContent))
                 {
-                    Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(Globals.ThisAddIn.Application.Selection.Range, "");
-                    c.Author = commentAuthor;
-
-                    var ns = new SelectionItem { Comment = c, Bookmark = bookmarkId, Range = selection.Range, IsExported = false };
                     UnexportedSelections.Add(ns);
                 }
             }
@@ -296,6 +309,7 @@ namespace WordAddIn
             {
                 //TODO exception handling
             }
+
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows;
 using Office = Microsoft.Office.Core;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
@@ -33,7 +36,6 @@ namespace PowerPointAddIn
         public delegate void SelectionAddedHandler();
         public delegate void SendHandler();
 
-
         public NuSysRibbon()
         {
         }
@@ -57,17 +59,14 @@ namespace PowerPointAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            if (Globals.ThisAddIn.PaneControl != null)
+            string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActivePresentation.FullName);
+
+            if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
             {
-                if (!Globals.ThisAddIn.PaneControl.Visible)
-                {
-                    Globals.ThisAddIn.PaneControl.Visible = true;
-                }
+                MessageBox.Show("Please be advised that the NuSys plugin works best with .pptx file types");
             }
-            else
-            {
-                Globals.ThisAddIn.BuildSidebar();
-            }
+
+            Globals.ThisAddIn.BuildSidebar();
         }
 
         #endregion
