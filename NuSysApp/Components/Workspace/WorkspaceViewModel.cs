@@ -101,22 +101,11 @@ namespace NuSysApp
 
         public void DeleteLink(LinkViewModel link)
         {
-            Debug.WriteLine("deleting node");
-            var ucl = AtomViewList.Where(a => a.DataContext == link);
-            if (!ucl.Any())
-            {
-                return;
-            }
-            var uc = ucl.First();
-            AtomViewList.Remove(uc);
-
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(link.Id));
         }
         public void DeleteNode(NodeViewModel node)
         {
-            Debug.WriteLine("deleting node");
-            var uc = AtomViewList.Where(a => a.DataContext == node).First();
-            AtomViewList.Remove(uc);
-
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(node.Id));
         }
 
 

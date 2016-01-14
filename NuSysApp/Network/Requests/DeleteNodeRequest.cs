@@ -28,7 +28,9 @@ namespace NuSysApp
         }
         public override async Task ExecuteRequestFunction()
         {
-            await SessionController.Instance.RemoveSendable(Id);
+            var atomModel = (AtomModel)SessionController.Instance.IdToSendables[Id];
+            atomModel.Delete();
+            SessionController.Instance.IdToSendables.Remove(Id);
         }
     }
     public class DeleteSendableRequestException : Exception
