@@ -228,6 +228,9 @@ namespace NuSysApp
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, mainCanvas.ActualWidth - Users.ActualWidth);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
+            overlayCanvas.Width = mainCanvas.ActualWidth;
+            overlayCanvas.Height = mainCanvas.ActualHeight;
+
         }
 
         public void ShowRecorder()
@@ -238,6 +241,16 @@ namespace NuSysApp
         public void HideRecorder()
         {
             xMediaRecorder.Hide();
+        }
+
+        public void SearchView()
+        {
+            overlayCanvas.Visibility = Visibility.Visible;
+        }
+
+        public void SearchHide(object sender, TappedRoutedEventArgs e)
+        {
+            overlayCanvas.Visibility = Visibility.Collapsed;
         }
 
 

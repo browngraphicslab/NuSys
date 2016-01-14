@@ -203,6 +203,9 @@ namespace NuSysApp
                 case Options.SelectMarquee:
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
                     break;
+                case Options.MainSearch:
+                    SessionController.Instance.SessionView.SearchView();
+                    break;
                 case Options.PenGlobalInk:
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));
                     // TODO: delegate to workspaceview

@@ -100,6 +100,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\icon_mainmenu_search.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\logos\150x150.png" />
@@ -195,6 +196,9 @@
     <Compile Include="Components\Misc\MediaRecorderView.xaml.cs">
       <DependentUpon>MediaRecorderView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\SearchButton.xaml.cs">
+      <DependentUpon>SearchButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
@@ -262,6 +266,9 @@
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />
     <Compile Include="Network\Requests\TestClass.cs" />
+    <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
+      <DependentUpon>SearchWindowView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
@@ -522,6 +529,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Nodes\GroupNode\GroupCircleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -555,6 +566,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\ContextMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\SearchWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
