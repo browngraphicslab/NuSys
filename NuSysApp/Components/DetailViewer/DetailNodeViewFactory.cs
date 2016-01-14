@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
@@ -23,7 +24,13 @@ namespace NuSysApp
             {
                 var vm = new PinViewModel((PinModel)model);
                 return vm.View;
-            }   
+            }
+
+            if (model is LinkModel)
+            {
+                List<UserControl> list = await CreateLinkAtomList((LinkModel)model);
+                return CreateLinkView((LinkModel) model, list);
+            }
 
             return null;
         }
@@ -35,10 +42,25 @@ namespace NuSysApp
             var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
 
             var viewModel = new LinkViewModel(model, atom1Vm, atom2Vm);
-            var view = new BezierLinkView(viewModel);
+            //var view = new BezierLinkView(viewModel);
             atom1Vm.AddLink(viewModel);
             atom2Vm.AddLink(viewModel);
+            var view = new LinkDetailView(viewModel);
             return view;
+
+        }
+
+        private async Task<List<UserControl>> CreateLinkAtomList(LinkModel model)
+        {
+            AtomModel atom1 = model.Atom1;
+            AtomModel atom2 = model.Atom2;
+            var factory = new FreeFormNodeViewFactory();
+            var atomview1 = (UserControl)await factory.CreateFromSendable(atom1, null);
+            var atomview2 = (UserControl)await factory.CreateFromSendable(atom2, null);
+            List<UserControl> list = new List<UserControl>();
+            list.Add(atomview1);
+            list.Add(atomview2);
+            return list;
         }
 
         private async Task<UserControl> CreateFromNodeType(NodeModel model)

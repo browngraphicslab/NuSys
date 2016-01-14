@@ -91,10 +91,18 @@ namespace NuSysApp
         {
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc is NodeViewModel && !(dc is WorkspaceViewModel) )
+            if ((dc is NodeViewModel || dc is LinkViewModel) && !(dc is WorkspaceViewModel) )
             {
-                var vm = (NodeViewModel)dc;
-                SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);
+                if (dc is NodeViewModel)
+                {
+                    var vm = (NodeViewModel)dc;
+                    SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);
+                }
+                if (dc is LinkViewModel)
+                {
+                    var vm = (LinkViewModel)dc;
+                    SessionController.Instance.SessionView.ShowFullScreen((LinkModel)vm.Model);
+                }
                // vm.ToggleSelection();
                 //e.Handled = true;
             }   

@@ -222,7 +222,7 @@ namespace NuSysApp
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             };
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth - 30);
+            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth);
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
@@ -241,7 +241,7 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(NodeModel model)
+        public void ShowFullScreen(AtomModel model)
         {
             var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);

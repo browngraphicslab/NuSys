@@ -28,127 +28,49 @@ using Windows.Media.SpeechRecognition;
 namespace NuSysApp
 {
     
-    public sealed partial class LinkDetailView : AnimatableNodeView
+    public sealed partial class LinkDetailView : AnimatableUserControl
     {
         private SpeechRecognizer _recognizer;
         private bool _isRecording;
+        private FreeFormNodeViewFactory _factory;
 
-        public LinkDetailView(TextNodeViewModel vm)
+        public LinkDetailView(LinkViewModel vm)
         {
 
             InitializeComponent();
             DataContext = vm;
 
-            var model = (TextNodeModel)vm.Model;
+            _factory = new FreeFormNodeViewFactory();
 
-            if (model.Text != "") { 
-                rtfTextBox.SetRtfText(model.Text);
-            }
+            this.AddChildren();
 
-            model.TextChanged += delegate
-            {
-                rtfTextBox.SetRtfText(model.Text);
-            };
-
-            Loaded += async delegate(object sender, RoutedEventArgs args)
-            {
-                await InitializeRecog();
-            };
         }
 
-        private async Task InitializeRecog()
+        public async Task AddChildren()
         {
-            await Task.Run( async () =>
-            {
-                _recognizer = new SpeechRecognizer();
-                // Compile the dictation grammar that is loaded by default. = ""; 
-                await _recognizer.CompileConstraintsAsync();
-            });
+            var vm = (LinkViewModel) DataContext;
+            var atomvm1 = vm.Atom1;
+            var atomvm2 = vm.Atom2;
+
+            var atomview1 = await _factory.CreateFromSendable(atomvm1.Model, null);
+            var atomview2 = await _factory.CreateFromSendable(atomvm2.Model, null);
+            //var linkview = await _factory.CreateFromSendable(vm.Model, new List<FrameworkElement> {atomview1, atomview2});
+
+            atomview1.RenderTransform = new CompositeTransform();
+            atomview2.RenderTransform = new CompositeTransform();
+            atomview1.IsHitTestVisible = false;
+            atomview2.IsHitTestVisible = false;
+            //linkview.RenderTransform = new CompositeTransform();
+
+            //Canvas.SetLeft(atomview1, 0);
+            Canvas.SetLeft(atomview2, xCanvas.ActualWidth - atomview2.Width);
+            Canvas.SetTop(atomview2, xCanvas.ActualHeight - atomview2.Height);
+
+            xCanvas.Children.Add(atomview1);
+            xCanvas.Children.Add(atomview2);
+            //xGrid.Children.Add(linkview);
+
         }
 
-
-
-        public void Dispose()
-        {
-            var vm = DataContext as TextNodeViewModel;
-            var model = (TextNodeModel)vm.Model;
-            model.Text = rtfTextBox.GetRtfText();
-        }
-
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
-        {
-            if (!_isRecording)
-            {
-                //var oldColor = this.RecordVoice.Background;
-                Color c = new Color();
-                c.A = 255;
-                c.R = 199;
-                c.G = 84;
-                c.B = 82;
-           //     this.RecordVoice.Background = new SolidColorBrush(c);
-                await TranscribeVoice();
-           //     this.RecordVoice.Background = oldColor;
-            }
-            else
-            {
-                var vm = this.DataContext as TextNodeViewModel;
-             //   this.RecordVoice.Background = vm.Color;
-            }
-        }
-
-        private async Task TranscribeVoice()
-        {
-            string spokenString = "";
-            // Create an instance of SpeechRecognizer. 
-            // Start recognition. 
-
-            try
-            {
-               // this.RecordVoice.Click += stopTranscribing;
-                _isRecording = true;
-                SpeechRecognitionResult speechRecognitionResult = await _recognizer.RecognizeAsync();
-                _isRecording = false;
-              //  this.RecordVoice.Click -= stopTranscribing;
-                // If successful, display the recognition result. 
-                if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
-                {
-                    spokenString = speechRecognitionResult.Text;
-                }
-            }
-            catch (Exception ex)
-            {
-                const int privacyPolicyHResult = unchecked((int)0x80045509);
-                const int networkNotAvailable = unchecked((int)0x80045504);
-
-                if (ex.HResult == privacyPolicyHResult)
-                {
-                    // User has not accepted the speech privacy policy
-                    string error = "In order to use dictation features, we need you to agree to Microsoft's speech privacy policy. To do this, go to your Windows 10 Settings and go to Privacy - Speech, inking, & typing, and enable data collection.";
-                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
-                    messageDialog.ShowAsync();
-
-                }
-                else if (ex.HResult == networkNotAvailable)
-                {
-                    string error = "In order to use dictation features, NuSys requires an internet connection";
-                    var messageDialog = new Windows.UI.Popups.MessageDialog(error);
-                    messageDialog.ShowAsync();
-                }
-            }
-            //_recognizer.Dispose();
-           // this.mdTextBox.Text = spokenString;
-            
-            Debug.WriteLine(spokenString);
-            
-            var vm = (TextNodeViewModel)DataContext;
-            (vm.Model as TextNodeModel).Text = spokenString;
-        }
-
-        private async void stopTranscribing(object o, RoutedEventArgs e)
-        {
-            _recognizer.StopRecognitionAsync();
-            _isRecording = false;
-           // this.RecordVoice.Click -= stopTranscribing;
-        }
     }
 }
