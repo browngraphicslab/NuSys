@@ -18,7 +18,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>E6E6AEC6810EF5224658C2CB0B3EA8E642FC2935</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>39EC66F4E78ABDEC36FFC55A39C7EE7FC58A1086</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxPackageDir>C:\Users\Philipp\Desktop\deploy\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
