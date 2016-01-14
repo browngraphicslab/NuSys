@@ -1,4 +1,4 @@
-﻿<local:AnimatableNodeView
+﻿<UserControl
     x:Class="NuSysApp.TextDetailView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -25,4 +25,4 @@
                                      BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
         </StackPanel>
     </Border>
-</local:AnimatableNodeView>
+</UserControl>

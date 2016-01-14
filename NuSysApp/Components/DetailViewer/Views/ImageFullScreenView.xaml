@@ -10,7 +10,10 @@
     d:DesignWidth="400"
 >
     <StackPanel VerticalAlignment="Center">
-        <Button Click="ButtonBase_OnClick">Ink</Button>
+        <StackPanel  Orientation="Horizontal">
+            <Button Click="ButtonBase_OnClick" Foreground="White">Ink</Button>
+            <Button Height="30" Content="Go To Source" Foreground="White" HorizontalAlignment="Left"></Button>
+        </StackPanel>
         <Grid x:Name="xWrapper">
             <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>
         </Grid>
