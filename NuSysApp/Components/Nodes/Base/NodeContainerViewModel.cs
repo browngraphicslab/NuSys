@@ -79,7 +79,17 @@ namespace NuSysApp
                     var tasks = handler.GetInvocationList().Cast<ChildAddedHandler>().Select(s => s(this, (FrameworkElement)view));
                     await Task.WhenAll(tasks);
                 }
+
+                var atomModel = (AtomModel) nodeModel;
+                atomModel.Deleted += OnChildDeleted;
             }
+        }
+
+        private void OnChildDeleted(object source)
+        {
+            var atomModel = (AtomModel) source;
+            var atomId = atomModel.Id;
+            RemoveChild(atomId);
         }
 
         protected virtual async Task OnChildRemoved(object source, Sendable sendable)

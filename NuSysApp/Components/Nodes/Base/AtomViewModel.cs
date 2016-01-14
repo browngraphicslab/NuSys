@@ -40,6 +40,7 @@ namespace NuSysApp
             model.AlphaChanged += OnAlphaChanged;
             model.MetadataChange += OnMetadataChange;
             model.TitleChanged += OnTitleChanged;
+            model.Deleted += OnDeleted;
 
             Transform.TranslateX = model.X;
             Transform.TranslateY = model.Y;
@@ -56,6 +57,11 @@ namespace NuSysApp
             _debouncingDictionary = new DebouncingDictionary(model.Id);
 
             CreateTags();
+        }
+
+        private void OnDeleted(object source)
+        {
+            // TODO: Dispose everything in here.
         }
 
         private void OnTitleChanged(object source, string title)

@@ -30,7 +30,7 @@ namespace NuSysApp
         public delegate void MetadataChangeEventHandler(object source, string key);
         public event MetadataChangeEventHandler MetadataChange;
         public delegate void LinkedEventHandler(object source, LinkedEventArgs e);
-        public delegate void DeleteEventHandler(object source, DeleteEventArgs e);
+        public delegate void DeleteEventHandler(object source);
         public event DeleteEventHandler Deleted;
         public delegate void LocationUpdateEventHandler(object source, PositionChangeEventArgs e);
         public event LocationUpdateEventHandler PositionChanged;
@@ -79,6 +79,11 @@ namespace NuSysApp
         {
             Metadata[key] = value;
             MetadataChange?.Invoke(this, key);
+        }
+
+        public  virtual void Delete()
+        {
+            Deleted?.Invoke(this);
         }
 
         public DebouncingDictionary DebounceDict

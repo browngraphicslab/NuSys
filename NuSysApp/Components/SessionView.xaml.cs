@@ -138,6 +138,7 @@ namespace NuSysApp
 
             
             createdModels = new List<AtomModel>();
+            var l = nodeStrings.ToList();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);

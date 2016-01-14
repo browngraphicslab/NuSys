@@ -45,6 +45,8 @@ namespace NuSysApp
 
             var model = (TextNodeModel)vm.Model;
 
+            model.GetMetaData("fileName");
+
             if (model.Text != "") { 
                 rtfTextBox.SetRtfText(model.Text);
             }
