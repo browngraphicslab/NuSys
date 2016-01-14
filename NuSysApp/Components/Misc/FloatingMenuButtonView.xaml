@@ -36,7 +36,7 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Ellipse Height="85" Width ="85" Fill="#62BDC5" x:Name="Ellipse" Opacity=".9" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10" HorizontalAlignment="Left"/>
+                            <Ellipse Height="85" Width ="85" Fill="#62BDC5" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10" HorizontalAlignment="Left"/>
                             <ContentPresenter></ContentPresenter>
                         </Grid>
                     </ControlTemplate>

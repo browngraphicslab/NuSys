@@ -42,14 +42,19 @@ namespace NuSysApp
             try
             {
                 var number = Int32.Parse(IP.Replace(@".", ""));
-                int r = 10 + ((int) number%210);
-                int g = 10 + ((int) (number*Int32.Parse(IP[IP.Length - 1].ToString())%210));
-                int b = 10 + ((int) (number*r*g*Int32.Parse(IP[IP.Length - 1].ToString())%245));
+
+                var start = 2*(Int32.Parse(IP[IP.Length - 1].ToString()) + 1);
+
+                var mod = 250 - start;
+
+                int r = Math.Abs(start + ((int) number%mod));
+                int b = Math.Abs(start + ((int) (number*Int32.Parse(IP[IP.Length - 1].ToString())% mod)));
+                int g = Math.Abs(start + ((int) (start*number*r*b*Int32.Parse(IP[IP.Length - 1].ToString())% mod)));
                 _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);
             }
             catch (Exception e)
             {
-                _color = Colors.DarkTurquoise;
+                _color = Colors.Black;
             }
             return _color;
         }

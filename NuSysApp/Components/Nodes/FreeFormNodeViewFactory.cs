@@ -49,6 +49,12 @@ namespace NuSysApp
         {
             UserControl view = null;
 
+            if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
+            {
+                //view = new LoadNodeView(new LoadNodeViewModel(model));
+                return view;
+            }
+
             switch (model.NodeType)
             {
                 case NodeType.Text:

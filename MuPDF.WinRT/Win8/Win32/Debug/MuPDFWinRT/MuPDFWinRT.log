@@ -1,7 +1,7 @@
-﻿Build started 1/13/2016 4:53:21 PM.
-     1>Project "C:\Users\Miranda\Documents\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 6 (Rebuild target(s)).
+﻿Build started 1/14/2016 4:09:24 PM.
+     1>Project "C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\ThirdParty\mupdf\fitz /I..\ThirdParty\mupdf\pdf /IC:\Users\Miranda\Documents\NuSys\MuPDF.WinRT\Win8\ /I"Generated Files\\" /IWin32\Debug\MuPDFWinRT\ /ZI /ZW /ZW:nostdlib /nologo /W3 /WX- /sdl /MP /Od /Oy- /D _WINRT_DLL /D _WINDLL /D _UNICODE /D UNICODE /D _DEBUG /D WINAPI_FAMILY=WINAPI_FAMILY_APP /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Win32\Debug\MuPDFWinRT\\" /Fd"Win32\Debug\MuPDFWinRT\vc120.pdb" /Gd /TP /FU"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\References\CommonConfiguration\neutral\platform.winmd" /FU"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" /FU"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" /analyze- /errorReport:prompt /bigobj ..\Src\Document.cpp ..\Src\LinkInfoInternal.cpp ..\Src\LinkInfoRemote.cpp ..\Src\LinkInfoURI.cpp ..\Src\LinkInfoVisitor.cpp ..\Src\MuPDFDoc.cpp ..\Src\OutlineItem.cpp ..\Src\Utilities.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\ThirdParty\mupdf\fitz /I..\ThirdParty\mupdf\pdf /IC:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\ /I"Generated Files\\" /IWin32\Debug\MuPDFWinRT\ /ZI /ZW /ZW:nostdlib /nologo /W3 /WX- /sdl /MP /Od /Oy- /D _WINRT_DLL /D _WINDLL /D _UNICODE /D UNICODE /D _DEBUG /D WINAPI_FAMILY=WINAPI_FAMILY_APP /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Win32\Debug\MuPDFWinRT\\" /Fd"Win32\Debug\MuPDFWinRT\vc120.pdb" /Gd /TP /FU"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\References\CommonConfiguration\neutral\platform.winmd" /FU"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" /FU"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" /analyze- /errorReport:prompt /bigobj ..\Src\Document.cpp ..\Src\LinkInfoInternal.cpp ..\Src\LinkInfoRemote.cpp ..\Src\LinkInfoURI.cpp ..\Src\LinkInfoVisitor.cpp ..\Src\MuPDFDoc.cpp ..\Src\OutlineItem.cpp ..\Src\Utilities.cpp
          Document.cpp
          LinkInfoInternal.cpp
          LinkInfoRemote.cpp
@@ -26,11 +26,11 @@
      1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
          Generating code
          Finished generating code
-         MuPDFWinRT.vcxproj -> C:\Users\Miranda\Documents\NuSys\MuPDF.WinRT\Win8\Win32\Debug\MuPDFWinRT.dll
+         MuPDFWinRT.vcxproj -> C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\Win32\Debug\MuPDFWinRT.dll
        _GenerateProjectPriFileCore:
-         C:\Program Files (x86)\Windows Kits\8.1\bin\x64\MakePri.exe New -ProjectRoot C:\Users\Miranda\Documents\NuSys\MuPDF.WinRT\Win8\ -ConfigXml Win32\Debug\MuPDFWinRT\priconfig.xml -OutputFile C:\Users\Miranda\Documents\NuSys\MuPDF.WinRT\Win8\Win32\Debug\MuPDFWinRT.pri -IndexName MuPDFWinRT -Verbose -Overwrite  
-     1>Done Building Project "C:\Users\Miranda\Documents\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" (Rebuild target(s)).
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x64\MakePri.exe New -ProjectRoot C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\ -ConfigXml Win32\Debug\MuPDFWinRT\priconfig.xml -OutputFile C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\Win32\Debug\MuPDFWinRT.pri -IndexName MuPDFWinRT -Verbose -Overwrite  
+     1>Done Building Project "C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:48.92
+Time Elapsed 00:00:20.91

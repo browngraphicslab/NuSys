@@ -29,7 +29,7 @@ using Windows.Media.SpeechRecognition;
 namespace NuSysApp
 {
     
-    public sealed partial class TextDetailView : AnimatableNodeView
+    public sealed partial class TextDetailView : UserControl
     {
         //private SpeechRecognizer _recognizer;
         //private bool _isRecording;

@@ -115,6 +115,7 @@
             </StackPanel.RenderTransform>
             <local:FloatingMenuButtonView x:Name="btnSelectNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Select / Move"  />
             <local:FloatingMenuButtonView x:Name="btnPen" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Ink" />
+            <local:FloatingMenuButtonView x:Name="btnSearch" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_search.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Search"/>
         </StackPanel>
 
         <StackPanel x:Name="SubMenuPen"  VerticalAlignment="Top" Margin="0,40,0,0" Opacity="0" IsHitTestVisible="False">
@@ -124,7 +125,7 @@
             <local:FloatingMenuButtonView x:Name="btnGlobalInk" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnPen}" Caption="Ink" />
             <local:FloatingMenuButtonView x:Name="btnInkErase" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" Caption="Erase" />
         </StackPanel>
-        
+
         <StackPanel x:Name="SubMenuNodes" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
@@ -137,7 +138,7 @@
             <local:FloatingMenuButtonView x:Name="btnBucket" Visibility="Collapsed" Icon="ms-appx:///Assets/icon_mainmenu_bucket.png" Window="{Binding ElementName=bucketWindow}" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnVideo" Visibility="Collapsed" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />
         </StackPanel>
-        
+
         <StackPanel x:Name="SubMenuAdditional" VerticalAlignment="Top" Margin="0,220,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
@@ -149,7 +150,7 @@
         </StackPanel>
 
         <!-- Bucket Window -->
-        <local:BucketWindowView x:Name="bucketWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
+        <local:BucketWindowView x:Name="bucketWindow" Opacity="0" IsHitTestVisible="False" Canvas.Left="30" Canvas.Top="71">
             <local:BucketWindowView.RenderTransform>
                 <CompositeTransform />
             </local:BucketWindowView.RenderTransform>
@@ -162,13 +163,13 @@
             </local:PinWindowView.RenderTransform>
         </local:PinWindowView>
         <!--PinList="{Binding PinViewModelList}"-->
-        
+
         <!--UserWindow-->
         <local:UserWindowView x:Name="userWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
             <local:UserWindowView.RenderTransform>
                 <CompositeTransform />
             </local:UserWindowView.RenderTransform>
         </local:UserWindowView>
-        
+
     </Canvas>
 </UserControl>

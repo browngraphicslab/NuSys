@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿Build started 1/13/2016 3:59:30 PM.
      1>Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
@@ -36,6 +37,9 @@ Build succeeded.
 Time Elapsed 00:00:20.09
 =======
 ﻿Build started 1/13/2016 7:43:52 PM.
+=======
+﻿Build started 1/14/2016 3:43:27 PM.
+>>>>>>> origin/phil_groups_trent
      1>Project "C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
 =======
 ﻿Build started 1/13/2016 8:42:42 PM.
@@ -48,8 +52,12 @@ Time Elapsed 00:00:20.09
 Build succeeded.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Time Elapsed 00:00:00.15
 >>>>>>> origin/phil_groups_trent
 =======
 Time Elapsed 00:00:00.12
 >>>>>>> phil_groups_trent
+=======
+Time Elapsed 00:00:00.13
+>>>>>>> origin/phil_groups_trent

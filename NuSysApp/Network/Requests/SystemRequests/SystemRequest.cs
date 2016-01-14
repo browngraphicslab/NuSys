@@ -14,13 +14,21 @@ namespace NuSysApp
             RemoveClient,
             SetHost,
             SendWorkspace,
-            SendClientInfo
+            SendClientInfo,
+            NewContent,
+            ContentAvailableNotification,
+            FetchContent
         }
 
         private SystemRequestType _systemRequestType;
         public SystemRequest(SystemRequestType systemRequestType) : base(RequestType.SystemRequest)
         {
             _systemRequestType = systemRequestType;
+        }
+
+        public SystemRequest(SystemRequestType type, Message m) : base(RequestType.SystemRequest, m)
+        {
+            _systemRequestType = type;
         }
 
         public SystemRequest(Message m) : base(m){}
