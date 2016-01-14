@@ -64,7 +64,7 @@ namespace NuSysApp
 
                    
                     await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                             new NewContentSystemRequest(contentId,
                                 text));
 
@@ -120,6 +120,7 @@ namespace NuSysApp
                             m["nodeType"] = isImage ? NodeType.Image.ToString() : NodeType.Text.ToString();
                             m["autoCreate"] = true;
                             m["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
+                            m["metadata"] = new Dictionary<string,object>();
 
                             var content = string.Empty;
                             if (isImage)
@@ -134,7 +135,7 @@ namespace NuSysApp
                             }
                         
                             await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                                     new NewContentSystemRequest(contentId,
                                         content));
 
@@ -207,7 +208,7 @@ namespace NuSysApp
                             }
 
                             await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                                     new NewContentSystemRequest(contentId,
                                         content));
 
