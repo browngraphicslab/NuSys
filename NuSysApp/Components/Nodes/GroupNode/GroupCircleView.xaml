@@ -11,7 +11,7 @@
 
     <Grid  x:Name="xCircleView" >
         <Grid Width="{Binding Width}" Height="{Binding Height}">
-            <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="Black"></Ellipse>
+            <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="#62bcd5"></Ellipse>
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" IsHitTestVisible="false">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -19,7 +19,7 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            <Ellipse Stroke="LightSlateGray" StrokeThickness="20"  Width="{Binding Width}" Height="{Binding Height}"></Ellipse>
+            <Ellipse Stroke="CadetBlue"  StrokeThickness="20"  Width="{Binding Width}" Height="{Binding Height}"></Ellipse>
             <Border CornerRadius="50"
                             Width="34"
                             Height="34"

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -17,8 +18,25 @@ namespace NuSysApp
         }
         public Message(string m)
         {
-            var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
-            _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings);
+            try
+            {
+                var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
+                _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings);
+            }
+            catch (Exception e)
+            {
+                var matches = Regex.Match(m, "(?:({[^}]+}) *)*");
+                string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
+                try
+                {
+                    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(miniStrings[0], settings);
+                }
+                catch (Exception f)
+                {
+                    
+                }
+            }
         }
 
         public Message(Dictionary<string, string> dict)

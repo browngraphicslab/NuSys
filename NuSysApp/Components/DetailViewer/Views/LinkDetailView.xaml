@@ -8,14 +8,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Width="600" Height="750">
-        <!--<StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Margin="5,5" Width="600" Height="750">-->
-            <!--<StackPanel Orientation="Horizontal">
-                <Button Tapped="OnRecordClick">Record</Button>
-            </StackPanel>
-            <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                     BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />-->
-        <!--</StackPanel>-->
-        <Grid x:Name="xGrid"></Grid>
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Width="900" Height="750">
+        <Canvas x:Name="xCanvas" Width="900" Height="750"></Canvas>
     </Border>
 </local:AnimatableUserControl>
