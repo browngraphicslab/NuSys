@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    class LoadNodeViewModel : NodeViewModel
+    public class LoadNodeViewModel : NodeViewModel
     {
         public LoadNodeViewModel(NodeModel model) : base(model)
         {

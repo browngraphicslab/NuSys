@@ -218,7 +218,7 @@ namespace NuSysApp
                     request = new SendableUpdateRequest(message);
                     break;
                 case Request.RequestType.NewContentRequest:
-                    request = new NewContentRequest(message);
+                    request = new NewContentSystemRequest(message);
                     break;
                 case Request.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);

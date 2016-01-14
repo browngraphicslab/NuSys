@@ -170,7 +170,7 @@ namespace NuSysApp
             }
 
             var contentId = SessionController.Instance.GenerateId();
-            var contentRequest = new NewContentRequest(contentId,data == null ? "" : data.ToString());
+            var contentRequest = new NewContentSystemRequest(contentId,data == null ? "" : data.ToString());
             
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
 
