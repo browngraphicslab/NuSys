@@ -170,7 +170,7 @@ namespace NuSysApp
             var contentId = SessionController.Instance.GenerateId();
             var contentRequest = new NewContentSystemRequest(contentId,data == null ? "" : data.ToString());
             
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(contentRequest);
 
             var dict = new Message();
             dict["width"] = size.Width.ToString();
