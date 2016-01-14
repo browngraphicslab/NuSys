@@ -174,7 +174,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
             await
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewContentRequest(contentId,
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewContentSystemRequest(contentId,
                     Convert.ToBase64String(data)));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
