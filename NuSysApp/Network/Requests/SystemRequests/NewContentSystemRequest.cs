@@ -30,7 +30,7 @@ namespace NuSysApp
             SessionController.Instance.ContentController.Add(data, id);
             if (nusysSession.IsHostMachine)
             {
-                await nusysSession.ExecuteSystemRequest(new ContentAvailableNotificationSystemRequest(id));
+                //await nusysSession.ExecuteSystemRequest(new ContentAvailableNotificationSystemRequest(id));
             }
         }
     }
