@@ -115,7 +115,9 @@ namespace NuSysApp
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
 
-                var fileType = storageFile.ContentType;
+                var fileType = storageFile.FileType.ToLower();
+            
+               
                 try
                 {
              //       CheckFileType(fileType); TODO readd
@@ -126,14 +128,14 @@ namespace NuSysApp
                     return;
                 }
 
-                if (Constants.ImageFileTypes.Contains(storageFile.FileType))
+                if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     nodeType = NodeType.Image;
                     
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                 }
 
-                if (Constants.PdfFileTypes.Contains(storageFile.FileType))
+                if (Constants.PdfFileTypes.Contains(fileType))
                 {
                     nodeType = NodeType.PDF;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
@@ -149,7 +151,7 @@ namespace NuSysApp
 
                     data = Convert.ToBase64String(fileBytes);
                 }
-                if (Constants.VideoFileTypes.Contains(storageFile.FileType))
+                if (Constants.VideoFileTypes.Contains(fileType))
                 {
                     nodeType = NodeType.Video;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
