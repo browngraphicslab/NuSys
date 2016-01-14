@@ -19,7 +19,7 @@ namespace NuSysApp
 {
     public sealed partial class LoadNodeView : AnimatableUserControl
     {
-        public LoadNodeView(LoadNodeViewModel vm)
+        public LoadNodeView()
         {
             this.InitializeComponent();
         }
