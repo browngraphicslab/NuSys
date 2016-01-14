@@ -12,9 +12,7 @@
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
-    <UserControl.Resources>
-        
-    </UserControl.Resources>
+
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="White">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
