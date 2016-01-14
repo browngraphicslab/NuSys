@@ -212,6 +212,10 @@
       <DependentUpon>GroupNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\LoadNode\LoadNodeView.xaml.cs">
+      <DependentUpon>LoadNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\LoadNode\LoadNodeViewModel.cs" />
     <Compile Include="Components\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -542,6 +546,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\LoadNode\LoadNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
