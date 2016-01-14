@@ -30,8 +30,8 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                var sw = SessionController.Instance.SessionView.ActualWidth /1.2 ;
-                var sh = SessionController.Instance.SessionView.ActualHeight /1.2;
+                var sw = SessionController.Instance.SessionView.ActualWidth /2;
+                var sh = SessionController.Instance.SessionView.ActualHeight /2;
 
                 var ratio = xImg.ActualWidth > xImg.ActualHeight ? xImg.ActualWidth/sw : xImg.ActualHeight/sh;
                 xImg.Width = xImg.ActualWidth/ratio;

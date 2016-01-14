@@ -19,6 +19,7 @@ namespace NuSysApp
         MainSelect,
             SelectNode,
             SelectMarquee,
+        MainSearch,
         MainPen,
             PenGlobalInk,
             PenErase,
@@ -75,6 +76,8 @@ namespace NuSysApp
             _buttons[btnGlobalInk] = Options.PenGlobalInk;
             _buttons[btnInkErase] = Options.PenErase;
           //  _buttons[btnHighlight] = Options.PenHighlight;    
+
+            _buttons[btnSearch] = Options.MainSearch;
 
             _buttons[btnAdd] = Options.MainAdd;
             _buttons[btnNewNode] = Options.AddTextNode;

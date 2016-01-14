@@ -30,6 +30,7 @@ namespace NuSysApp
         public FloatingMenuButtonView()
         {
             this.InitializeComponent();
+            btn.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 98, 189, 197));
         }
 
         public bool Active
