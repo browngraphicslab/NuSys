@@ -16,6 +16,17 @@ using Newtonsoft.Json.Linq;
 
 namespace NuSysApp
 {
+    public class SelectionItem
+    {
+        public String BookmarkId;
+        public Boolean IsExported;
+        public String RtfContent;
+        public String DocPath;
+        public String DocName;
+        public String ImageName;
+        public String DateTimeExported;
+    }
+
     public class ContentImporter
     {
         public event ContentImportedHandler ContentImported;
@@ -91,17 +102,14 @@ namespace NuSysApp
                 {
                     var text = await FileIO.ReadTextAsync(file);
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    var jsonArray = (JArray)JsonConvert.DeserializeObject(text, settings);
+                    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                    foreach (var entry in jsonArray)
+                    foreach (SelectionItem selectionItem in selectionItems)
                     {
                         await UITask.Run(async () =>
                         {
-                            var jsonObj = (JObject) entry;
-                            var rtfContent = jsonObj["RtfContent"].ToString();
-                            rtfContent = rtfContent.Replace("\\\\", "\\");
-                            var imageName = jsonObj["ImageName"].ToString();
-                            var isImage = imageName != "";
+                            var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
+                            var isImage = String.IsNullOrEmpty(rtfContent);
 
                             var m = new Message();
                             var width = SessionController.Instance.SessionView.ActualWidth;
@@ -120,12 +128,19 @@ namespace NuSysApp
                             m["nodeType"] = isImage ? NodeType.Image.ToString() : NodeType.Text.ToString();
                             m["autoCreate"] = true;
                             m["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
-                            m["metadata"] = new Dictionary<string,object>();
+
+                            var metadata = new Dictionary<string, object>();
+                            metadata["BookmarkId"] = selectionItem.BookmarkId;
+                            metadata["IsExported"] = selectionItem.IsExported;
+                            metadata["DocPath"] = selectionItem.DocPath;
+                            metadata["DocName"] = selectionItem.DocName;
+                            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+                            m["metadata"] = metadata;
 
                             var content = string.Empty;
                             if (isImage)
                             {
-                                var imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
+                                var imgFile = await NuSysStorages.Media.GetFileAsync(selectionItem.ImageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 content = Convert.ToBase64String(ba);
                             }

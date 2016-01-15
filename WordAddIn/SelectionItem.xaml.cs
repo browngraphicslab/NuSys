@@ -29,7 +29,7 @@ namespace WordAddIn
         private string _text;
         private string _rtfContent;
         private MemoryStream _ms;
-        private List<Bitmap> _imageContent;
+        private Bitmap _imageContent;
         private Bookmark _bookmark;
         private String _dateTimeExported;
         private double _dropShadowOpac;
@@ -46,19 +46,19 @@ namespace WordAddIn
 
         public SelectionItemView GetView()
         {
-            String path = null;
+            String path = String.Empty;
             if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
             {
                 path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
             }
 
-            List<string> ImageNames = new List<string>();
-            foreach (Bitmap img in ImageContent)
+            string ImageName = String.Empty;
+            if (ImageContent != null)
             {
-                ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
+                ImageName = string.Format(@"{0}", Guid.NewGuid()) + ".png";
             }
 
-            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported);
+            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageName, DateTimeExported); 
         }
 
         public SelectionItemIdView GetIdView()
@@ -104,43 +104,6 @@ namespace WordAddIn
 
         public void AddSelection()
         {
-            ImageContent = new List<Bitmap>();
-
-            if (this.Range.ShapeRange.Count > 0)
-            {
-                foreach (Shape shape in this.Range.ShapeRange)
-                {
-                    shape.Select();
-                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                    selection.Copy();
-                    parseImg();
-                }
-
-                if (this.Range.Text != null)
-                {
-                    Range textRange = Globals.ThisAddIn.Application.ActiveDocument.Range(this.Range.Start, this.Range.End);
-                    textRange.Select();
-                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                    selection.Copy();
-                    fromClipboard();
-                }
-            }
-            else
-            {
-                this.Range.Select();
-                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                selection.Copy();
-                fromClipboard();
-            }
-
-            if (ImageContent.Count > 0)
-            {
-                setPreviewImage();
-            }
-        }
-
-        public void fromClipboard()
-        {
             if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf))
             {
                 parseRtf();
@@ -152,6 +115,11 @@ namespace WordAddIn
             else if (Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
             {
                 parseImg();
+            }
+
+            if (ImageContent != null)
+            {
+                setPreviewImage();
             }
         }
 
@@ -190,7 +158,7 @@ namespace WordAddIn
             System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
             Bitmap bitmapImg = (data.GetData(DataFormats.Bitmap, true) as Bitmap);
 
-            ImageContent.Add(bitmapImg);
+            ImageContent = bitmapImg;
         }
 
         public void parseRtf()
@@ -263,7 +231,7 @@ namespace WordAddIn
 
         public void setPreviewImage()
         {
-            Bitmap bitmapImg = ImageContent.First();
+            Bitmap bitmapImg = ImageContent;
             (bitmapImg).Save(Ms, System.Drawing.Imaging.ImageFormat.Bmp);
 
             BitmapImage image = new BitmapImage();
@@ -310,7 +278,7 @@ namespace WordAddIn
             set { _rtfContent = value; }
         }
 
-        public List<Bitmap> ImageContent
+        public Bitmap ImageContent
         {
             get { return _imageContent; }
             set { _imageContent = value; }
