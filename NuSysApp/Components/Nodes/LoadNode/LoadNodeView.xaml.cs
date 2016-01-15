@@ -24,6 +24,7 @@ namespace NuSysApp
         public LoadNodeView(LoadNodeViewModel vm)
         {
             this.InitializeComponent();
+            this.DataContext = vm;
         }
 
         public Task<RenderTargetBitmap> ToThumbnail(int width, int height)

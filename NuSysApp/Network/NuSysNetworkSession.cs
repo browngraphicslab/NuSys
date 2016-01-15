@@ -148,10 +148,10 @@ namespace NuSysApp
             });
         }
 
-        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendToSelf = false)
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendToSelfIfHost = false)
         {
             await request.CheckOutgoingRequest();
-            if (sendToSelf)
+            if (sendToSelfIfHost && IsHostMachine)
             {
                 await ProcessIncomingRequest(request.GetFinalMessage(),packetType,LocalIP);
             }

@@ -51,27 +51,18 @@ namespace NuSysApp
 
             if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
             {
-<<<<<<< HEAD
                 view = new LoadNodeView(new LoadNodeViewModel(model));
                 SessionController.Instance.LoadingNodeDictionary[model.ContentId] = new Tuple<AtomModel, LoadNodeView>(model,(LoadNodeView)view);
                 return view;
-=======
-                //view = new LoadNodeView(new LoadNodeViewModel(model));
-                //return view;
->>>>>>> origin/phil_groups_trent
             }
 
             switch (model.NodeType)
             {
                 case NodeType.Text:
-                    var tvm = new TextNodeViewModel((TextNodeModel) model);
-                    view = new TextNodeView(tvm);
-                     await tvm.UpdateRtf();
+                    view = new TextNodeView(new TextNodeViewModel((TextNodeModel)model));
                     break;
                 case NodeType.Group:
-                    var vm = new GroupNodeViewModel((NodeContainerModel) model);
-                    await vm.Init();
-                    view = new GroupNodeView(vm);
+                    view = new GroupNodeView(new GroupNodeViewModel((NodeContainerModel)model));
                     break;
                 case NodeType.Tag:
                     view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
@@ -80,9 +71,7 @@ namespace NuSysApp
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));
                     break;
                 case NodeType.Audio:
-                    var audioVM = new AudioNodeViewModel((AudioNodeModel) model);
-                    await audioVM.InitAudio();
-                    view = new AudioNodeView(audioVM);
+                    view = new AudioNodeView(new AudioNodeViewModel((AudioNodeModel)model));
                     break;
                 case NodeType.PDF:
                     view = new PdfNodeView(new PdfNodeViewModel((PdfNodeModel)model));
@@ -97,6 +86,7 @@ namespace NuSysApp
                     view = new WebNodeView(new WebNodeViewModel((WebNodeModel)model));
                     break;
             }
+            await ((AtomViewModel) view.DataContext).Init();
 
             var tpl = view.FindName("nodeTpl") as NodeTemplate;
             if (tpl != null)

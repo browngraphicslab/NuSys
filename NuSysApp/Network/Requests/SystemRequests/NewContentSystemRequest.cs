@@ -28,6 +28,7 @@ namespace NuSysApp
         }
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
+            
             var data = _message.GetString("data");
             var id = _message.GetString("id");
             SessionController.Instance.ContentController.Add(data, id);
@@ -38,9 +39,11 @@ namespace NuSysApp
                 AtomModel model = tuple.Item1;
                 var factory = new FreeFormNodeViewFactory();
                 var newView = await factory.CreateFromSendable(model, null);
-                var p = (Panel) view.Parent;
-                p.Children.Remove(view);
-                p.Children.Add(newView);
+                //var p = (Panel) view.Parent;
+                //p.Children.Remove(view);
+                //p.Children.Add(newView);
+                SessionController.Instance.ActiveWorkspace.AtomViewList.Remove(view);
+                SessionController.Instance.ActiveWorkspace.AtomViewList.Add(newView);
 
                 if (nusysSession.IsHostMachine)
                 {

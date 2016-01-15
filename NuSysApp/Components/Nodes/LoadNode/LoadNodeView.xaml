@@ -6,10 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+    RenderTransform="{Binding Transform}"
+    Height="{Binding Height}"
+    Width="{Binding Width}">
 
-    <Grid>
-        <local:LoadingBar HorizontalAlignment="Center" VerticalAlignment="Center"></local:LoadingBar>
-    </Grid>
+    <local:NodeTemplate x:Name="nodeTpl" Background="BlanchedAlmond" BorderBrush="LightBlue" BorderThickness="1">
+        <local:NodeTemplate.Inner>
+            <local:LoadingBar HorizontalAlignment="Center" VerticalAlignment="Center"></local:LoadingBar>
+        </local:NodeTemplate.Inner>
+    </local:NodeTemplate>
 </local:AnimatableUserControl>
