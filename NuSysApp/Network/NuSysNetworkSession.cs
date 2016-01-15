@@ -149,14 +149,24 @@ namespace NuSysApp
             });
         }
 
-        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendToSelfIfHost = false)
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendOnlyToHost = false)
         {
             await request.CheckOutgoingRequest();
-            if (sendToSelfIfHost && IsHostMachine)
+            if (sendOnlyToHost)
             {
-                await ProcessIncomingRequest(request.GetFinalMessage(),packetType,LocalIP);
+                if (IsHostMachine)
+                {
+                    await ProcessIncomingRequest(request.GetFinalMessage(), packetType, LocalIP);
+                }
+                else
+                {
+                    await SendSystemRequest(request.GetFinalMessage(), new List<string>() {HostIP});
+                }
             }
-            await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
+            else
+            {
+                await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
+            }
         } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
         {

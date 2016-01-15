@@ -25,7 +25,11 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            var data = Convert.FromBase64String(SessionController.Instance.ContentController.Get(((NodeModel)Model).ContentId).Data); //Converts to Byte Array
+            byte[] data = null;
+            data =
+                Convert.FromBase64String(
+                    SessionController.Instance.ContentController.Get(
+                        ((NodeModel) Model).ContentId).Data); //Converts to Byte Array
             Image = await MediaUtil.ByteArrayToBitmapImage(data);
             SetSize(Width, Height);
             InkScale = new CompositeTransform();

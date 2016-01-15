@@ -28,28 +28,27 @@ namespace NuSysApp
         }
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
-            
-            var data = _message.GetString("data");
-            var id = _message.GetString("id");
-            SessionController.Instance.ContentController.Add(data, id);
-            if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(id))
+            await UITask.Run(async delegate
             {
-                var tuple = SessionController.Instance.LoadingNodeDictionary[id];
-                LoadNodeView view = tuple.Item2;
-                AtomModel model = tuple.Item1;
-                var factory = new FreeFormNodeViewFactory();
-                var newView = await factory.CreateFromSendable(model, null);
-                //var p = (Panel) view.Parent;
-                //p.Children.Remove(view);
-                //p.Children.Add(newView);
-                SessionController.Instance.ActiveWorkspace.AtomViewList.Remove(view);
-                SessionController.Instance.ActiveWorkspace.AtomViewList.Add(newView);
-
-                if (nusysSession.IsHostMachine)
+                var data = _message.GetString("data");
+                var id = _message.GetString("id");
+                SessionController.Instance.ContentController.Add(data, id);
+                if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(id))
                 {
-                    await nusysSession.ExecuteSystemRequest(new ContentAvailableNotificationSystemRequest(id));
+                    var tuple = SessionController.Instance.LoadingNodeDictionary[id];
+                    LoadNodeView view = tuple.Item2;
+                    AtomModel model = tuple.Item1;
+                    var factory = new FreeFormNodeViewFactory();
+                    FrameworkElement newView;
+                    newView = await factory.CreateFromSendable(model, null);
+                    SessionController.Instance.ActiveWorkspace.AtomViewList.Remove(view);
+                    SessionController.Instance.ActiveWorkspace.AtomViewList.Add(newView);
+                    if (nusysSession.IsHostMachine)
+                    {
+                        await nusysSession.ExecuteSystemRequest(new ContentAvailableNotificationSystemRequest(id));
+                    }
                 }
-            }
+            });
         }
     }
 }
