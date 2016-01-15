@@ -249,10 +249,11 @@ namespace NuSysApp
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
             var systemDict = new Dictionary<string, object>();
-            systemDict["system_sender_ip"] = ip??LocalIP;
-            if (ip != null && NetworkMembers.ContainsKey(ip))
+            var systemIP = ip ?? LocalIP;
+            systemDict["system_sender_ip"] = systemIP;
+            if (systemDict.ContainsKey(systemIP))
             {
-                systemDict["system_sender_networkuser"] = NetworkMembers[ip];
+                systemDict["system_sender_networkuser"] = NetworkMembers[systemIP];
             }
             request.SetSystemProperties(systemDict);
             await UITask.Run(async () =>
