@@ -95,6 +95,7 @@ namespace NuSysApp
             {
                 await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
                 _networkSession.RemoveIP(ip);
+                NetworkMembers.Remove(ip);
                 await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
                 if (ip == _hostIP)
                 {
