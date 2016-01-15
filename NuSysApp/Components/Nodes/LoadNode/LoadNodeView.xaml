@@ -10,9 +10,11 @@
     Height="{Binding Height}"
     Width="{Binding Width}">
 
-    <local:NodeTemplate x:Name="nodeTpl" Background="BlanchedAlmond" BorderBrush="LightBlue" BorderThickness="1">
+    <local:NodeTemplate x:Name="nodeTpl">
         <local:NodeTemplate.Inner>
-            <local:LoadingBar HorizontalAlignment="Center" VerticalAlignment="Center"></local:LoadingBar>
+            <Grid Height="{Binding Height}" Width="{Binding Width}"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                <local:LoadingBar x:Name="Bar" HorizontalAlignment="Center" VerticalAlignment="Center"></local:LoadingBar>
+            </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableUserControl>

@@ -53,6 +53,7 @@ namespace NuSysApp
             {
                 view = new LoadNodeView(new LoadNodeViewModel(model));
                 SessionController.Instance.LoadingNodeDictionary[model.ContentId] = new Tuple<AtomModel, LoadNodeView>(model,(LoadNodeView)view);
+                ((LoadNodeView)view).StartBar();
                 return view;
             }
 
