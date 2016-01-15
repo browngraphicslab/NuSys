@@ -111,7 +111,7 @@ namespace NuSysApp
 
             vm.Model.UserChanged += delegate
             {
-                //highlight.Visibility = Visibility.Visible;
+                highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
                 highlight.BorderBrush = vm.UserColor;
             };
             
