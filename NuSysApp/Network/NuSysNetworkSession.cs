@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
 using Windows.UI;
+using NuSysApp.Network.Requests.SystemRequests;
 
 namespace NuSysApp
 {
@@ -302,6 +303,12 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.SendClientInfo:
                     request = new SendClientInfoSystemRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.ContentAvailableNotification:
+                    request = new ContentAvailableNotificationSystemRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.FetchContent:
+                    request = new FetchContentSystemRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
