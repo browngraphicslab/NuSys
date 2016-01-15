@@ -10,6 +10,6 @@
     d:DesignWidth="400">
 
     <Grid>
-
+        <local:LoadingBar HorizontalAlignment="Center" VerticalAlignment="Center"></local:LoadingBar>
     </Grid>
 </local:AnimatableUserControl>

@@ -193,6 +193,9 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\LoadingBar.xaml.cs">
+      <DependentUpon>LoadingBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\MediaRecorderView.xaml.cs">
       <DependentUpon>MediaRecorderView.xaml</DependentUpon>
     </Compile>
@@ -530,6 +533,10 @@
     <Page Include="Components\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\LoadingBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\MediaRecorderView.xaml">
       <Generator>MSBuild:Compile</Generator>
