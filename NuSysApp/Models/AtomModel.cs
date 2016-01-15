@@ -144,6 +144,8 @@ namespace NuSysApp
                     {
                         _lastNetworkUser?.RemoveAtomInUse(this);
                         value.AddAtomInUse(this);
+                        _lastNetworkUser = value;
+                        UserChanged?.Invoke(value);
                     }
                     else
                     {
