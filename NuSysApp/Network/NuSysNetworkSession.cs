@@ -93,14 +93,14 @@ namespace NuSysApp
             
             _networkSession.OnClientDrop += async ip =>
             {
-                await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
                 _networkSession.RemoveIP(ip);
                 NetworkMembers.Remove(ip);
-                await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
                 if (ip == _hostIP)
                 {
                     _hostIP = LocalIP;
                 }
+                await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
+                await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
             };
         }
         #region Requests

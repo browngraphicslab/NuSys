@@ -22,9 +22,11 @@ namespace NuSysApp
         public delegate void UserRemovedEventHandler();
         public event UserRemovedEventHandler OnUserRemoved;
         #endregion Public Variables
+
         #region Private Variables
         private Color _color;
         private bool _colorSet;
+        private HashSet<AtomModel> _modelsInUse = new HashSet<AtomModel>(); 
         #endregion Private Variables
         public NetworkUser(string ip)
         {
@@ -57,6 +59,20 @@ namespace NuSysApp
                 _color = Colors.Black;
             }
             return _color;
+        }
+
+        public void AddAtomInUse(AtomModel model)
+        {
+            foreach (var atom in _modelsInUse)
+            {
+                atom.LastNetworkUser = null;
+            }
+            _modelsInUse.Add(model);
+        }
+
+        public void RemoveAtomInUse(AtomModel model)
+        {
+            _modelsInUse.Remove(model);
         }
     }
 }
