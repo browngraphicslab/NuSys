@@ -208,7 +208,7 @@ namespace WordAddIn
                     ExportedSelections.Remove(selection);
                 }
             }
-
+            Comments c = Globals.ThisAddIn.Application.ActiveDocument.Comments;
             CheckedSelections.Clear();
         }
 
@@ -334,7 +334,7 @@ namespace WordAddIn
                     selectionRange.Select();
                     Selection otherSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
                     otherSelection.Copy();
-                    AddSelectionItem(selectionRange);
+                    AddSelectionItem(selection.Range);
                 }
             }
             catch (Exception ex)

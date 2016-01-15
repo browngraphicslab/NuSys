@@ -109,8 +109,6 @@ namespace NuSysApp
                         await UITask.Run(async () =>
                         {
                             var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
-                            var isImage = String.IsNullOrEmpty(rtfContent);
-
                             var m = new Message();
                             var width = SessionController.Instance.SessionView.ActualWidth;
                             var height = SessionController.Instance.SessionView.ActualHeight;
@@ -119,6 +117,7 @@ namespace NuSysApp
                                     new Point(width/2, height/2));
 
                             var contentId = SessionController.Instance.GenerateId();
+                            var isImage = !String.IsNullOrEmpty(selectionItem.ImageName);
 
                             m["contentId"] = contentId;
                             m["x"] = centerpoint.X - 200;
@@ -138,6 +137,7 @@ namespace NuSysApp
                             m["metadata"] = metadata;
 
                             var content = string.Empty;
+
                             if (isImage)
                             {
                                 var imgFile = await NuSysStorages.Media.GetFileAsync(selectionItem.ImageName);
