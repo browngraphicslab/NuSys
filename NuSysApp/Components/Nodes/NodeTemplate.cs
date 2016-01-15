@@ -108,6 +108,12 @@ namespace NuSysApp
             {
                 inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
             };
+
+            vm.Model.UserChanged += delegate
+            {
+                //highlight.Visibility = Visibility.Visible;
+                highlight.BorderBrush = vm.UserColor;
+            };
             
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
@@ -147,6 +153,10 @@ namespace NuSysApp
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             }
+            //if (e.PropertyName == "UserColor")
+            //{
+            //    highlight.BorderBrush = vm.UserColor;
+            //}
              
         }
     }
