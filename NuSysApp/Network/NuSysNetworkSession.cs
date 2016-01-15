@@ -217,9 +217,6 @@ namespace NuSysApp
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;
-                case Request.RequestType.NewContentRequest:
-                    request = new NewContentRequest(message);
-                    break;
                 case Request.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);
                     break;
@@ -295,6 +292,9 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.SendWorkspace:
                     request = new SendWorkspaceRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.NewContent:
+                    request = new NewContentSystemRequest(message);
                     break;
                 case SystemRequest.SystemRequestType.SendClientInfo:
                     request = new SendClientInfoSystemRequest(message);

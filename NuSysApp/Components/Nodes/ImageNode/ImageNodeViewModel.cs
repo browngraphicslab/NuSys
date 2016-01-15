@@ -26,20 +26,6 @@ namespace NuSysApp
             InkScale = new CompositeTransform();
         }
 
-        public override void SetSize(double width, double height)
-        {
-
-            var Image = ((ImageNodeModel) Model).Image;
-            if (Image.PixelWidth > Image.PixelHeight)
-            {
-                var r = Image.PixelHeight / (double)Image.PixelWidth;
-                base.SetSize(width, width * r);
-            }
-            else
-            {
-                var r = Image.PixelWidth / (double)Image.PixelHeight;
-                base.SetSize(height * r, height);
-            }
-        }
+       
     }
 }

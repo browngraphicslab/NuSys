@@ -19,5 +19,15 @@
         <StackPanel Name="Users" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
         </StackPanel>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
+
+        <Grid Name ="overlayCanvas" Background="#55000000" Tapped="SearchHide" Visibility ="Collapsed">
+            <local:SearchWindowView x:Name="xSearchWindowView"></local:SearchWindowView>
+        </Grid>
+      
+
+
+
     </Canvas>
+   
+
 </Page>
