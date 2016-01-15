@@ -138,10 +138,19 @@ namespace NuSysApp
             get { return _lastNetworkUser; }
             set
             {
-                _lastNetworkUser?.RemoveAtomInUse(this);
-                value?.AddAtomInUse(this);
-                _lastNetworkUser = value;
-                UserChanged?.Invoke(value);
+                if (value != _lastNetworkUser)
+                {
+                    if (value != null)
+                    {
+                        _lastNetworkUser?.RemoveAtomInUse(this);
+                        value.AddAtomInUse(this);
+                    }
+                    else
+                    {
+                        _lastNetworkUser = null;
+                        UserChanged?.Invoke(null);
+                    }
+                }
             }
         }
         public List<string> Creators { get; set; }
