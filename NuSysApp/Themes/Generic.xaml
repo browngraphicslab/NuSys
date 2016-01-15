@@ -63,7 +63,7 @@
                             </ItemsControl>
                         </Grid>
                         <Canvas>
-                        <Border x:Name="xHighlight" Width="{Binding Width}" BorderBrush="{Binding UserColor}" BorderThickness="4" CornerRadius="5,5,0,0" Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+                        <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
                         </Canvas>
                     
                     </Grid>
