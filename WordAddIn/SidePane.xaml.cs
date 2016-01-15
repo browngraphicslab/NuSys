@@ -317,6 +317,7 @@ namespace WordAddIn
                         shape.Select();
                         Selection shapeSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
                         shapeSelection.Copy();
+                        AddSelectionItem(selectionRange);
                     }
 
                     if (selectionRange.Text != null)
@@ -325,6 +326,7 @@ namespace WordAddIn
                         textRange.Select();
                         Selection textSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
                         textSelection.Copy();
+                        AddSelectionItem(selectionRange);
                     }
                 }
                 else
@@ -332,9 +334,8 @@ namespace WordAddIn
                     selectionRange.Select();
                     Selection otherSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
                     otherSelection.Copy();
+                    AddSelectionItem(selectionRange);
                 }
-
-                AddSelectionItem(selectionRange);
             }
             catch (Exception ex)
             {

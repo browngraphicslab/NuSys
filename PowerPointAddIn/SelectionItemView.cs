@@ -13,15 +13,15 @@ namespace PowerPointAddIn
         public Boolean IsExported;
         public String RtfContent;
         public String DocPath;
-        public List<String> ImageNames;
+        public String ImageName;
 
-        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String DocPath, List<String> ImageNames)
+        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String DocPath, String ImageName)
         {
             this.BookmarkId = BookmarkId;
             this.IsExported = IsExported;
             this.RtfContent = RtfContent;
             this.DocPath = DocPath;
-            this.ImageNames = ImageNames;
+            this.ImageName = ImageName;
         }
     }
 }
