@@ -148,9 +148,13 @@ namespace NuSysApp
             });
         }
 
-        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendToSelf = false)
         {
             await request.CheckOutgoingRequest();
+            if (sendToSelf)
+            {
+                await ProcessIncomingRequest(request.GetFinalMessage(),packetType,LocalIP);
+            }
             await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
         } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
@@ -216,9 +220,6 @@ namespace NuSysApp
                     break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
-                    break;
-                case Request.RequestType.NewContentRequest:
-                    request = new NewContentSystemRequest(message);
                     break;
                 case Request.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);
@@ -295,6 +296,9 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.SendWorkspace:
                     request = new SendWorkspaceRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.NewContent:
+                    request = new NewContentSystemRequest(message);
                     break;
                 case SystemRequest.SystemRequestType.SendClientInfo:
                     request = new SendClientInfoSystemRequest(message);

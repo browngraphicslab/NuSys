@@ -64,7 +64,7 @@ namespace NuSysApp
 
                    
                     await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                        SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                             new NewContentSystemRequest(contentId,
                                 text));
 
@@ -134,7 +134,7 @@ namespace NuSysApp
                             }
                         
                             await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                     new NewContentSystemRequest(contentId,
                                         content));
 
@@ -207,7 +207,7 @@ namespace NuSysApp
                             }
 
                             await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                     new NewContentSystemRequest(contentId,
                                         content));
 

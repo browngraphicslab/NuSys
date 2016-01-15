@@ -115,7 +115,9 @@ namespace NuSysApp
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
 
-                var fileType = storageFile.ContentType;
+                var fileType = storageFile.FileType.ToLower();
+            
+               
                 try
                 {
              //       CheckFileType(fileType); TODO readd
@@ -126,14 +128,14 @@ namespace NuSysApp
                     return;
                 }
 
-                if (Constants.ImageFileTypes.Contains(storageFile.FileType))
+                if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     nodeType = NodeType.Image;
                     
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                 }
 
-                if (Constants.PdfFileTypes.Contains(storageFile.FileType))
+                if (Constants.PdfFileTypes.Contains(fileType))
                 {
                     nodeType = NodeType.PDF;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
@@ -149,7 +151,7 @@ namespace NuSysApp
 
                     data = Convert.ToBase64String(fileBytes);
                 }
-                if (Constants.VideoFileTypes.Contains(storageFile.FileType))
+                if (Constants.VideoFileTypes.Contains(fileType))
                 {
                     nodeType = NodeType.Video;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
@@ -166,11 +168,7 @@ namespace NuSysApp
                     data = Convert.ToBase64String(fileBytes);
                 }
             }
-
             var contentId = SessionController.Instance.GenerateId();
-            var contentRequest = new NewContentSystemRequest(contentId,data == null ? "" : data.ToString());
-            
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
 
             var dict = new Message();
             dict["width"] = size.Width.ToString();
@@ -184,6 +182,8 @@ namespace NuSysApp
 
             var request = new NewNodeRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
             vm.ClearSelection();
             vm.ClearMultiSelection();
 
