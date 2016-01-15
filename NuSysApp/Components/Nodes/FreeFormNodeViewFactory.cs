@@ -51,9 +51,14 @@ namespace NuSysApp
 
             if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
             {
+<<<<<<< HEAD
                 view = new LoadNodeView(new LoadNodeViewModel(model));
                 SessionController.Instance.LoadingNodeDictionary[model.ContentId] = new Tuple<AtomModel, LoadNodeView>(model,(LoadNodeView)view);
                 return view;
+=======
+                //view = new LoadNodeView(new LoadNodeViewModel(model));
+                //return view;
+>>>>>>> origin/phil_groups_trent
             }
 
             switch (model.NodeType)
