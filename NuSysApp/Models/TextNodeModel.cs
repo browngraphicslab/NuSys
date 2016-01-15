@@ -35,9 +35,16 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
+<<<<<<< HEAD
             var controller = SessionController.Instance.ContentController.Get(ContentId);
             if (!string.IsNullOrEmpty(props.GetString("contentId")))
                Text = SessionController.Instance.ContentController.Get(ContentId).Data;
+=======
+            var controller = SessionController.Instance.ContentController;
+            var contentId = props.GetString("contentId");
+            if (!string.IsNullOrEmpty(contentId) && controller.Get(contentId) != null)
+                Text = SessionController.Instance.ContentController.Get(ContentId).Data;
+>>>>>>> origin/phil_groups
         }
 
         public override async Task<Dictionary<string,object>> Pack()
