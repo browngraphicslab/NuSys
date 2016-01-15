@@ -1,9 +1,75 @@
-﻿Build started 1/14/2016 3:43:27 PM.
-     1>Project "C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
-     1>Link:
-         MuPDFWinRT.vcxproj -> C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\Win32\Release\MuPDFWinRT.dll
-     1>Done Building Project "C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" (Build target(s)).
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+﻿Build started 1/13/2016 3:59:30 PM.
+     1>Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Rebuild target(s)).
+=======
+﻿Build started 12/31/2015 1:33:08 PM.
+     1>Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
+>>>>>>> phil_groups_trent
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\ThirdParty\mupdf\fitz /I..\ThirdParty\mupdf\pdf /IS:\NuSys\MuPDF.WinRT\Win8\ /I"Generated Files\\" /IWin32\Release\MuPDFWinRT\ /Zi /ZW /ZW:nostdlib /nologo /W3 /WX- /sdl /MP /O2 /Oi /Ot /Oy- /GL /D _WINRT_DLL /D NDEBUG /D _WINDLL /D _UNICODE /D UNICODE /D WINAPI_FAMILY=WINAPI_FAMILY_APP /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Win32\Release\MuPDFWinRT\\" /Fd"Win32\Release\MuPDFWinRT\vc120.pdb" /FR"Win32\Release\MuPDFWinRT\\" /Gd /TP /FU"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\Microsoft.VCLibs\12.0\References\CommonConfiguration\neutral\platform.winmd" /FU"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" /FU"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral\Windows.winmd" /analyze- /errorReport:prompt /bigobj ..\Src\Document.cpp ..\Src\LinkInfoInternal.cpp ..\Src\LinkInfoRemote.cpp ..\Src\LinkInfoURI.cpp ..\Src\LinkInfoVisitor.cpp ..\Src\MuPDFDoc.cpp ..\Src\OutlineItem.cpp ..\Src\Utilities.cpp
+         Document.cpp
+         LinkInfoInternal.cpp
+         LinkInfoRemote.cpp
+         LinkInfoURI.cpp
+         LinkInfoVisitor.cpp
+         MuPDFDoc.cpp
+         OutlineItem.cpp
+         Utilities.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Win32\Release\MuPDFWinRT.dll" /NOLOGO ..\ThirdParty\Win8\Win32\Release\libthirdparty.lib "..\ThirdParty\Win8\Win32\Release\libmupdf-nov8.lib" ..\ThirdParty\Win8\Win32\Release\libmupdf.lib runtimeobject.lib kernel32.lib /MANIFEST:NO /PDB:"Win32\Release\MuPDFWinRT.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /APPCONTAINER /WINMD /WINMDFILE:"Win32\Release\MuPDFWinRT.winmd" /DYNAMICBASE /NXCOMPAT /MACHINE:X86 /SAFESEH /DLL Win32\Release\MuPDFWinRT\Document.obj
+         Win32\Release\MuPDFWinRT\LinkInfoInternal.obj
+         Win32\Release\MuPDFWinRT\LinkInfoRemote.obj
+         Win32\Release\MuPDFWinRT\LinkInfoURI.obj
+         Win32\Release\MuPDFWinRT\LinkInfoVisitor.obj
+         Win32\Release\MuPDFWinRT\MuPDFDoc.obj
+         Win32\Release\MuPDFWinRT\OutlineItem.obj
+         Win32\Release\MuPDFWinRT\Utilities.obj
+            Creating library Win32\Release\MuPDFWinRT.lib and object Win32\Release\MuPDFWinRT.exp
+         Generating code
+         Finished generating code
+         MuPDFWinRT.vcxproj -> S:\NuSys\MuPDF.WinRT\Win8\Win32\Release\MuPDFWinRT.dll
+       BscMake:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\bscmake.exe /nologo /o"Win32\Release\MuPDFWinRT.bsc" /n Win32\Release\MuPDFWinRT\Document.sbr Win32\Release\MuPDFWinRT\LinkInfoInternal.sbr Win32\Release\MuPDFWinRT\LinkInfoRemote.sbr Win32\Release\MuPDFWinRT\LinkInfoURI.sbr Win32\Release\MuPDFWinRT\LinkInfoVisitor.sbr Win32\Release\MuPDFWinRT\MuPDFDoc.sbr Win32\Release\MuPDFWinRT\OutlineItem.sbr Win32\Release\MuPDFWinRT\Utilities.sbr
+       _GenerateProjectPriFileCore:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x64\MakePri.exe New -ProjectRoot S:\NuSys\MuPDF.WinRT\Win8\ -ConfigXml Win32\Release\MuPDFWinRT\priconfig.xml -OutputFile S:\NuSys\MuPDF.WinRT\Win8\Win32\Release\MuPDFWinRT.pri -IndexName MuPDFWinRT -Verbose -Overwrite  
+<<<<<<< HEAD
+     1>Done Building Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
+Time Elapsed 00:00:20.09
+=======
+﻿Build started 1/13/2016 7:43:52 PM.
+=======
+﻿Build started 1/14/2016 3:43:27 PM.
+>>>>>>> origin/phil_groups_trent
+     1>Project "C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
+=======
+﻿Build started 1/13/2016 8:42:42 PM.
+     1>Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
+>>>>>>> phil_groups_trent
+     1>Link:
+         MuPDFWinRT.vcxproj -> S:\NuSys\MuPDF.WinRT\Win8\Win32\Release\MuPDFWinRT.dll
+=======
+>>>>>>> phil_groups_trent
+     1>Done Building Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+Time Elapsed 00:00:00.15
+>>>>>>> origin/phil_groups_trent
+=======
+Time Elapsed 00:00:00.12
+>>>>>>> phil_groups_trent
+=======
 Time Elapsed 00:00:00.13
+>>>>>>> origin/phil_groups_trent
+=======
+Time Elapsed 00:00:18.31
+>>>>>>> phil_groups_trent
