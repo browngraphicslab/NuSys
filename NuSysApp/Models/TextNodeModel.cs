@@ -35,7 +35,7 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
-            if (!string.IsNullOrEmpty(props.GetString("contentId")))
+            if (!string.IsNullOrEmpty(props.GetString("contentId")) && SessionController.Instance.ContentController.Get(props.GetString("contentId")) != null)
                Text = SessionController.Instance.ContentController.Get(ContentId).Data;
         }
 

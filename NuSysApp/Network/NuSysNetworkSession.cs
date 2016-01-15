@@ -148,9 +148,13 @@ namespace NuSysApp
             });
         }
 
-        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendToSelf = false)
         {
             await request.CheckOutgoingRequest();
+            if (sendToSelf)
+            {
+                await ProcessIncomingRequest(request.GetFinalMessage(),packetType,LocalIP);
+            }
             await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
         } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
