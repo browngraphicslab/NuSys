@@ -187,6 +187,7 @@ namespace NuSysApp
             }
             
             var workspaceModel = new WorkspaceModel( SessionController.Instance.GenerateId() );
+            workspaceModel.Title = "New Workspace";
             SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
             OpenWorkspace(workspaceModel);
             

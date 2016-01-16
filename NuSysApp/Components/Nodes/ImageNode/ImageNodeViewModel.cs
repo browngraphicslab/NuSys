@@ -20,16 +20,24 @@ namespace NuSysApp
 
         }
 
-        public void Init()
+
+        public BitmapImage Image { get; set; }
+
+        public override async Task Init()
         {
+            byte[] data = null;
+            data =
+                Convert.FromBase64String(
+                    SessionController.Instance.ContentController.Get(
+                        ((NodeModel) Model).ContentId).Data); //Converts to Byte Array
+            Image = await MediaUtil.ByteArrayToBitmapImage(data);
             SetSize(Width, Height);
             InkScale = new CompositeTransform();
         }
 
+
         public override void SetSize(double width, double height)
         {
-
-            var Image = ((ImageNodeModel) Model).Image;
             if (Image.PixelWidth > Image.PixelHeight)
             {
                 var r = Image.PixelHeight / (double)Image.PixelWidth;
@@ -41,5 +49,6 @@ namespace NuSysApp
                 base.SetSize(height * r, height);
             }
         }
+
     }
 }

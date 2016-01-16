@@ -72,7 +72,7 @@ namespace NuSysApp
                 case NodeType.Text:
                     var tvm = new TextNodeViewModel((TextNodeModel) model);
                     view = new TextDetailView(tvm);
-                    await tvm.UpdateRtf();
+                    await tvm.Init();
                     break;
                 case NodeType.Image:
                     view = new ImageFullScreenView(new ImageNodeViewModel((ImageNodeModel)model));
@@ -88,7 +88,7 @@ namespace NuSysApp
                     break;
                 case NodeType.Audio:
                     AudioNodeViewModel audioVM = new AudioNodeViewModel((AudioNodeModel) model);
-                    await audioVM.InitAudio();
+                    await audioVM.Init();
                     view = new AudioDetailView(audioVM);
                     break;
                 case NodeType.Group:

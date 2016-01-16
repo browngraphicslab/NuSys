@@ -204,7 +204,8 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.MainSearch:
-                    SessionController.Instance.SessionView.SearchView();
+                    SearchWindowView.SetFocus();
+                   // SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));

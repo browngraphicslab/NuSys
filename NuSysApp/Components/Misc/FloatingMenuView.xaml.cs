@@ -114,6 +114,8 @@ namespace NuSysApp
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 1), new Tuple<Storyboard, string>(windowOpen, "bucketWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 0), new Tuple<Storyboard, string>(windowClose, "userWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 1), new Tuple<Storyboard, string>(windowOpen, "userWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 0), new Tuple<Storyboard, string>(windowClose, "searchWindow"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 1), new Tuple<Storyboard, string>(windowOpen, "searchWindow"));
 
 
             _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
@@ -194,13 +196,21 @@ namespace NuSysApp
             } else
             {
                 // A mainmenu button was clicked
-                var activeSubMenuButton = _activeSubMenuButtons[btnToActivate];
-                activeSubMenuButton.Active = activeSubMenuButton.IsMode;
-                btnToActivate.Active = true;
+                if (_activeSubMenuButtons.ContainsKey(btnToActivate))
+                {
+                    var activeSubMenuButton = _activeSubMenuButtons[btnToActivate];
+                    activeSubMenuButton.Active = activeSubMenuButton.IsMode;
+                    btnToActivate.Active = true;
 
-                // activate previsouly selected submenu mode
-                if (activeSubMenuButton.IsMode)
-                    option = _buttons[activeSubMenuButton];
+                    // activate previsouly selected submenu mode
+                    if (activeSubMenuButton.IsMode)
+                        option = _buttons[activeSubMenuButton];
+                }
+                else
+                {
+                    option = _buttons[btnToActivate];
+                }
+
             }
 
             _activeButton = btnToActivate;
