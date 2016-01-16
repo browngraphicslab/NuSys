@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,11 +25,24 @@ namespace NuSysApp
         public LoadNodeView(LoadNodeViewModel vm)
         {
             this.InitializeComponent();
+            this.DataContext = vm;
+
+            nodeTpl.Background = new SolidColorBrush(Color.FromArgb(50, 173, 216, 230));
         }
 
         public Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             throw new NotImplementedException();
+        }
+
+        public void StartBar()
+        {
+            Bar.Start();
+        }
+
+        public void EndBar()
+        {
+            Bar.Finished();
         }
     }
 }

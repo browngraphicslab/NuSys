@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
 using Windows.UI;
+using NuSysApp.Network.Requests.SystemRequests;
 
 namespace NuSysApp
 {
@@ -31,10 +32,13 @@ namespace NuSysApp
         {
             get { return _networkSession.LocalIP == _hostIP; }
         }
-        public ObservableDictionary<string, NetworkUser> NetworkMembers;
+        public Dictionary<string, NetworkUser> NetworkMembers;
 
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
+
+        public delegate void UserDroppedEventHandler(NetworkUser user);
+        public event UserDroppedEventHandler OnNetworkUserDropped;
 
         #endregion Public Members
         #region Private Members
@@ -49,7 +53,7 @@ namespace NuSysApp
 
         public async Task Init()
         {
-            NetworkMembers = new ObservableDictionary<string, NetworkUser>();
+            NetworkMembers = new Dictionary<string, NetworkUser>();
             _networkSession = new NetworkSession(await GetNetworkIPs());
             await _networkSession.Init();
 
@@ -89,17 +93,8 @@ namespace NuSysApp
             {
                 await ProcessIncomingRequest(message, type, ip);
             };
-            
-            _networkSession.OnClientDrop += async ip =>
-            {
-                await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
-                _networkSession.RemoveIP(ip);
-                await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
-                if (ip == _hostIP)
-                {
-                    _hostIP = LocalIP;
-                }
-            };
+
+            _networkSession.OnClientDrop += OnClientDrop;
         }
         #region Requests
 
@@ -148,10 +143,24 @@ namespace NuSysApp
             });
         }
 
-        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null)
+        public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendOnlyToHost = false)
         {
             await request.CheckOutgoingRequest();
-            await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
+            if (sendOnlyToHost)
+            {
+                if (IsHostMachine)
+                {
+                    await ProcessIncomingRequest(request.GetFinalMessage(), packetType, LocalIP);
+                }
+                else
+                {
+                    await SendSystemRequest(request.GetFinalMessage(), new List<string>() {HostIP});
+                }
+            }
+            else
+            {
+                await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
+            }
         } 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
         {
@@ -233,10 +242,11 @@ namespace NuSysApp
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
             var systemDict = new Dictionary<string, object>();
-            systemDict["system_sender_ip"] = ip??LocalIP;
-            if (ip != null && NetworkMembers.ContainsKey(ip))
+            var systemIP = ip ?? LocalIP;
+            systemDict["system_sender_ip"] = systemIP;
+            if (systemDict.ContainsKey(systemIP))
             {
-                systemDict["system_sender_networkuser"] = NetworkMembers[ip];
+                systemDict["system_sender_networkuser"] = NetworkMembers[systemIP];
             }
             request.SetSystemProperties(systemDict);
             await UITask.Run(async () =>
@@ -298,6 +308,12 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.SendClientInfo:
                     request = new SendClientInfoSystemRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.ContentAvailableNotification:
+                    request = new ContentAvailableNotificationSystemRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.FetchContent:
+                    request = new FetchContentSystemRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
@@ -371,6 +387,32 @@ namespace NuSysApp
                 NetworkMembers[user.IP] = user;
                 OnNewNetworkUser?.Invoke(user);
             }
+        }
+
+        public void DropNetworkUser(NetworkUser user){DropNetworkUser(user.IP);}
+
+        public async Task DropNetworkUser(string ip)
+        {
+            if (NetworkMembers.ContainsKey(ip))
+            {
+                var user = NetworkMembers[ip];
+                NetworkMembers.Remove(ip);
+                await UITask.Run(async delegate {
+                        OnNetworkUserDropped?.Invoke(user);
+                });
+            }
+            _networkSession.RemoveIP(ip);
+        }
+
+        public async void OnClientDrop(string ip)
+        {
+            await DropNetworkUser(ip);
+            if (ip == _hostIP)
+            {
+                _hostIP = LocalIP;
+            }
+            await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
+            await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
         }
     }
     public class NoRequestTypeException : Exception

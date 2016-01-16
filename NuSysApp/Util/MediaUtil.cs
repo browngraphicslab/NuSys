@@ -22,9 +22,14 @@ namespace NuSysApp
         {
 
             var bitmapImage = new BitmapImage();
-            using (var stream = new InMemoryRandomAccessStream()) { 
-                await stream.WriteAsync(byteArray.AsBuffer());
-            stream.Seek(0);
+            InMemoryRandomAccessStream stream = null;
+            using (stream = new InMemoryRandomAccessStream())
+            {
+                await Task.Run(async delegate
+                {
+                    await stream.WriteAsync(byteArray.AsBuffer());
+                    stream.Seek(0);
+                });
                 bitmapImage.SetSource(stream);
             }
             return bitmapImage;

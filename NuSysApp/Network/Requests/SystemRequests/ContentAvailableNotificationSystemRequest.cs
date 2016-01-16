@@ -17,10 +17,8 @@ namespace NuSysApp.Network.Requests.SystemRequests
         public ContentAvailableNotificationSystemRequest(Message m) : base(m){}
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
-            var list = new List<string>();
-            list.Add(_message.GetString("fetchIP"));
             var request = new FetchContentSystemRequest(_message.GetString("contentId"));
-            await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP,list);
+            await nusysSession.ExecuteSystemRequest(request, NetworkClient.PacketType.TCP, new List<string>() { _message.GetString("fetchIP") });
         }
     }
 }

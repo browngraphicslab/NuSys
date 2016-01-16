@@ -62,13 +62,10 @@ namespace NuSysApp
                     m["autoCreate"] = true;
                     m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
 
-                   
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                            new NewContentSystemRequest(contentId,
-                                text));
-
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
+
 
 
                 });
@@ -132,13 +129,12 @@ namespace NuSysApp
                             {
                                 content = rtfContent;
                             }
-                        
-                            await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                                    new NewContentSystemRequest(contentId,
-                                        content));
+
 
                             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                new NewContentSystemRequest(contentId, content), NetworkClient.PacketType.TCP, null, true);
                         });
                     }
                 }
@@ -206,12 +202,8 @@ namespace NuSysApp
                                 content = rtfContent;
                             }
 
-                            await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                                    new NewContentSystemRequest(contentId,
-                                        content));
-
                             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, content), NetworkClient.PacketType.TCP, null, true);
                         });
                     }
                 }

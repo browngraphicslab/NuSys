@@ -48,7 +48,7 @@ namespace NuSysApp
 
         public string SpeechString { get; set; }
 
-
+        public Dictionary<string, Tuple<AtomModel,LoadNodeView>> LoadingNodeDictionary =  new Dictionary<string, Tuple<AtomModel, LoadNodeView>>();
         public WorkspaceViewModel ActiveWorkspace
         {
             get { return _activeWorkspace; }
