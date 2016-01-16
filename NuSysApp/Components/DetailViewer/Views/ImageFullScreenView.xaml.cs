@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -53,6 +54,36 @@ namespace NuSysApp
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             
+        }
+
+        private async void OnGoToSource(object sender, RoutedEventArgs e)
+        {
+            var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+
+            string filePath = model.GetMetaData("DocPath").ToString();
+            string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+
+            //write to OpenWord the bookmarkId
+            StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
+            string fileExt = Path.GetExtension(filePath);
+
+            if (fileExt == ".pptx")
+            {
+                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\word.txt", new List<string>() { bookmarkId });
+            }
+            else if (fileExt == ".doc")
+            {
+                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\ppt.txt", new List<string>() { bookmarkId });
+            }
+
+            //Open word document
+            StorageFile fileToOpen = await StorageFile.GetFileFromPathAsync(filePath);
+            bool success = await Windows.System.Launcher.LaunchFileAsync(fileToOpen);
+
+            if (success)
+            {
+                //TODO woo
+            }
         }
     }
 }

@@ -270,7 +270,16 @@ namespace NuSysApp
 
             //write to OpenWord the bookmarkId
             var toWriteFolder = NuSysStorages.OpenDocParamsFolder;
-            System.IO.File.WriteAllLines(toWriteFolder.Path, new List<string>() { bookmarkId });
+            string fileExt = Path.GetExtension(filePath);
+
+            if (fileExt == ".pptx")
+            {
+                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\word.txt", new List<string>() { bookmarkId });
+            }
+            else if (fileExt == ".doc")
+            {
+                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\ppt.txt", new List<string>() { bookmarkId });
+            }
 
             //Open word document
             StorageFile fileToOpen = await StorageFile.GetFileFromPathAsync(filePath);
@@ -278,7 +287,7 @@ namespace NuSysApp
 
             if (success)
             {
-                //woo
+                //TODO woo
             }
         }
     }
