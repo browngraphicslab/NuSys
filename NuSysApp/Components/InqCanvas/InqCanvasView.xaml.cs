@@ -56,6 +56,19 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+
+            //Point[] points = new Point[2];
+            //points[0] = new Point(30, 30);
+            //points[1] = new Point(100, 100);
+            //source.DrawLine(Colors.Black, points);
+            //_source.BeginDraw();
+            //_source.Clear(Windows.UI.Colors.Beige);
+            //Point[] points = new Point[2];
+            //points[0] = new Point(30, 30);
+            //points[1] = new Point(100, 100);
+            //_source.DrawLine(Windows.UI.Colors.Black, points);
+            //_source.EndDraw();
+
             if (_pointerId != uint.MaxValue)
             {
                 return;

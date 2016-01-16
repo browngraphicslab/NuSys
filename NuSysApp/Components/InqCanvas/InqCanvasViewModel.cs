@@ -22,6 +22,8 @@ namespace NuSysApp
 
         private Size _canvasSize;
 
+        private InqCanvasImageSource _source;
+
         private int _page;
 
        public int Page
@@ -49,7 +51,12 @@ namespace NuSysApp
             Model.LineAdded += OnLineAdded;
             Model.PageChanged +=OnPageChanged;
             _page = model.Page;
-            
+
+            _source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);
+            _source.BeginDraw();
+            _source.Clear(Windows.UI.Colors.White);
+            _source.EndDraw();
+
             Lines = new ObservableCollection<InqLineView>();
 
             if (model.Lines == null)
@@ -84,6 +91,31 @@ namespace NuSysApp
         {
             var lineView = new InqLineView(new InqLineViewModel(lineModel, _canvasSize));
             AddLine(lineView);
+
+            List<Point> allP = new List<Point>();
+            List<InqLineModel> ll = Model.Lines.ToList();
+            
+            foreach(InqLineModel ilm in ll)
+            {
+                foreach(Point2d p in ilm.Points) {
+                    allP.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
+                }
+            }
+
+
+            //foreach(InqLineView ilv in _lines)
+            //{
+            //    foreach(Point p in ilv.Points)
+            //    {
+            //        allP.Add(p);
+            //    }
+            //}
+            _source.BeginDraw();
+
+            // Clear background
+            _source.Clear(Windows.UI.Colors.White);
+            _source.DrawLine(Windows.UI.Colors.Black, allP.ToArray());
+            _source.EndDraw();
             RaisePropertyChanged("FinalLineAdded");
         }
 
@@ -100,6 +132,11 @@ namespace NuSysApp
                 Lines.Add(line);
         }
 
+        public Windows.UI.Xaml.Media.ImageSource CanvasSource
+        {
+            get { return _source; }
+        }
+
         public Size CanvasSize {
             get { return _canvasSize; }
             set
@@ -110,6 +147,11 @@ namespace NuSysApp
                 {
                     (inqLineView.DataContext as InqLineViewModel).CanvasSize = _canvasSize;
                 }
+
+                RaisePropertyChanged("CanvasSize.Height");
+                RaisePropertyChanged("CanvasSize.Height");
+                RaisePropertyChanged("CanvasSize");
+
             }
         }
     }

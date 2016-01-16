@@ -48,7 +48,7 @@ namespace NuSysApp
             _inqLineView.StrokeThickness = _inqLineModel.StrokeThickness;
             
 
-            inqCanvas.ViewModel.AddLine(_inqLineView);
+            //inqCanvas.ViewModel.AddLine(_inqLineView);
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y/ _view.Height));
         }
