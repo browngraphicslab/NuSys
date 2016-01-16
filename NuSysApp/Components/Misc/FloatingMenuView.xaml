@@ -107,6 +107,8 @@
             <local:FloatingMenuButtonView x:Name="btnSelect" Icon="ms-appx:///Assets/icon_mainmenu_select.png" />
             <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" />
             <local:FloatingMenuButtonView x:Name="btnMisc" Icon="ms-appx:///Assets/icon_mainmenu_additional.png" />
+            <local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/icon_mainmenu_search.png"  Window="{Binding ElementName=bucketWindow}"/>
+
         </StackPanel>
 
         <StackPanel Name="SubMenuSelect" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
@@ -115,7 +117,6 @@
             </StackPanel.RenderTransform>
             <local:FloatingMenuButtonView x:Name="btnSelectNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Select / Move"  />
             <local:FloatingMenuButtonView x:Name="btnPen" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Ink" />
-            <local:FloatingMenuButtonView x:Name="btnSearch" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_search.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Search"/>
         </StackPanel>
 
         <StackPanel x:Name="SubMenuPen"  VerticalAlignment="Top" Margin="0,40,0,0" Opacity="0" IsHitTestVisible="False">
@@ -149,6 +150,8 @@
             <local:FloatingMenuButtonView x:Name="btnUsers" Visibility="Collapsed" Icon="ms-appx:///Assets/icon_users.png" Window="{Binding ElementName=userWindow}" ParentButton="{Binding ElementName=btnMisc}" />
         </StackPanel>
 
+     
+
         <!-- Bucket Window -->
         <local:BucketWindowView x:Name="bucketWindow" Opacity="0" IsHitTestVisible="False" Canvas.Left="30" Canvas.Top="71">
             <local:BucketWindowView.RenderTransform>
@@ -170,6 +173,12 @@
                 <CompositeTransform />
             </local:UserWindowView.RenderTransform>
         </local:UserWindowView>
+
+        <local:SearchWindowView x:Name="searchWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
+            <local:SearchWindowView.RenderTransform>
+                <CompositeTransform />
+            </local:SearchWindowView.RenderTransform>
+        </local:SearchWindowView>
 
     </Canvas>
 </UserControl>

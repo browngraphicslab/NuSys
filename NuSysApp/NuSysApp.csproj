@@ -199,6 +199,7 @@
     <Compile Include="Components\Misc\SearchButton.xaml.cs">
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>

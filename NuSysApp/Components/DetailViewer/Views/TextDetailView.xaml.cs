@@ -23,6 +23,7 @@ using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.Media.SpeechSynthesis;
 using Windows.Media.SpeechRecognition;
+using Windows.Storage;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -39,27 +40,30 @@ namespace NuSysApp
         private string _modelId;
         public TextDetailView(TextNodeViewModel vm)
         {
-
             InitializeComponent();
             DataContext = vm;
-
             var model = (TextNodeModel)vm.Model;
+
+
 
             model.GetMetaData("fileName");
 
             if (model.Text != "") { 
                 rtfTextBox.SetRtfText(model.Text);
+
             }
 
             model.TextChanged += delegate
             {
                 rtfTextBox.SetRtfText(model.Text);
+                var r = rtfTextBox.Document.GetRange(0, model.Text.Length - 1);
             };
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-              //  await SessionController.Instance.InitializeRecog();
+                //await SessionController.Instance.InitializeRecog();
             };
+
             rtfTextBox.KeyUp += delegate
             {
                 UpdateText();
