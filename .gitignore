@@ -6,11 +6,8 @@
 *.user
 *.userosscache
 *.sln.docstates
-<<<<<<< HEAD
-MuPdf.WinRT/*
-=======
 *.opendb
->>>>>>> phil_groups_trent
+MuPDF*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
