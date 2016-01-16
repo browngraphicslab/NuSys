@@ -23,6 +23,7 @@ using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.Media.SpeechSynthesis;
 using Windows.Media.SpeechRecognition;
+using Windows.Storage;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -44,8 +45,6 @@ namespace NuSysApp
             DataContext = vm;
 
             var model = (TextNodeModel)vm.Model;
-
-            model.GetMetaData("fileName");
 
             if (model.Text != "") { 
                 rtfTextBox.SetRtfText(model.Text);
@@ -260,6 +259,27 @@ namespace NuSysApp
         {
             var request = new ChangeContentRequest(_modelId, _modelContentId, rtfTextBox.GetRtfText());
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
+        }
+
+        private async void OnGoToSource(object sender, RoutedEventArgs e)
+        {
+            var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+
+            string filePath = model.GetMetaData("DocPath").ToString();
+            string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+
+            //write to OpenWord the bookmarkId
+            var toWriteFolder = NuSysStorages.OpenDocParamsFolder;
+            System.IO.File.WriteAllLines(toWriteFolder.Path, new List<string>() { bookmarkId });
+
+            //Open word document
+            StorageFile fileToOpen = await StorageFile.GetFileFromPathAsync(filePath);
+            bool success = await Windows.System.Launcher.LaunchFileAsync(fileToOpen);
+
+            if (success)
+            {
+                //woo
+            }
         }
     }
 }

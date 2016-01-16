@@ -20,6 +20,7 @@ namespace NuSysApp
         public const string FolderMediaName = "Media";
         public const string FileChromeTransferName = "selections.nusys";
         public const string FolderOfficeToPdf = "OfficeToPdf";
+        public const string FolderOpenDocParams = "OpenDocParams";
         #endregion Folders and files
 
         #region Node Dimensions
@@ -77,6 +78,6 @@ namespace NuSysApp
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
         #endregion
 
-       
+
     }
 }
