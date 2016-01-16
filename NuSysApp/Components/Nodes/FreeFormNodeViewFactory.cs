@@ -49,7 +49,7 @@ namespace NuSysApp
         {
             UserControl view = null;
 
-            if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
+            if (model.ContentId != null && SessionController.Instance.ContentController.Get(model.ContentId) == null)
             {
                 view = new LoadNodeView(new LoadNodeViewModel(model));
                 SessionController.Instance.LoadingNodeDictionary[model.ContentId] = new Tuple<AtomModel, LoadNodeView>(model,(LoadNodeView)view);

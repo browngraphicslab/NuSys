@@ -62,15 +62,7 @@ namespace NuSysApp
                     m["autoCreate"] = true;
                     m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
 
-<<<<<<< HEAD
-                   
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new NewContentSystemRequest(contentId,
-                                text));
 
-=======
->>>>>>> phil_groups_trent
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
@@ -139,15 +131,7 @@ namespace NuSysApp
                             {
                                 content = rtfContent;
                             }
-<<<<<<< HEAD
-                        
-                            await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                                    new NewContentSystemRequest(contentId,
-                                        content));
-=======
 
->>>>>>> phil_groups_trent
 
                             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
@@ -220,14 +204,7 @@ namespace NuSysApp
                                 content = rtfContent;
                             }
 
-<<<<<<< HEAD
-                            await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                                    new NewContentSystemRequest(contentId,
-                                        content));
 
-=======
->>>>>>> phil_groups_trent
                             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
                             await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, content), NetworkClient.PacketType.TCP, null, true);
                         });

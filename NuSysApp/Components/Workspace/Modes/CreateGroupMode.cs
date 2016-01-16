@@ -76,6 +76,7 @@ namespace NuSysApp
 
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
             
+
             if (result.Any())
             {
                 draggedItem.Opacity = 0.5;

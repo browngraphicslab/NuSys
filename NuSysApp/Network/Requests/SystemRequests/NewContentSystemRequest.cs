@@ -41,6 +41,8 @@ namespace NuSysApp
                     var factory = new FreeFormNodeViewFactory();
                     FrameworkElement newView;
                     newView = await factory.CreateFromSendable(model, null);
+                    SessionController.Instance.ActiveWorkspace.Children.Remove(model.Id);
+                    SessionController.Instance.ActiveWorkspace.Children.Add(model.Id, newView);
                     SessionController.Instance.ActiveWorkspace.AtomViewList.Remove(view);
                     SessionController.Instance.ActiveWorkspace.AtomViewList.Add(newView);
                     if (nusysSession.IsHostMachine)
