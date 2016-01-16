@@ -31,9 +31,9 @@ namespace NuSysApp
         public NetworkUser(string ip)
         {
             IP = ip;
-            SessionController.Instance.NuSysNetworkSession.NetworkMembers.CollectionChanged += (sender, args) =>
+            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += delegate (NetworkUser user)
             {
-                if (args.Action == NotifyCollectionChangedAction.Remove && args.OldItems.Contains(IP))
+                if (user.IP == IP)
                 {
                     OnUserRemoved?.Invoke();
                 }

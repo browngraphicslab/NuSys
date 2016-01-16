@@ -32,10 +32,13 @@ namespace NuSysApp
         {
             get { return _networkSession.LocalIP == _hostIP; }
         }
-        public ObservableDictionary<string, NetworkUser> NetworkMembers;
+        public Dictionary<string, NetworkUser> NetworkMembers;
 
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
+
+        public delegate void UserDroppedEventHandler(NetworkUser user);
+        public event UserDroppedEventHandler OnNetworkUserDropped;
 
         #endregion Public Members
         #region Private Members
@@ -50,7 +53,7 @@ namespace NuSysApp
 
         public async Task Init()
         {
-            NetworkMembers = new ObservableDictionary<string, NetworkUser>();
+            NetworkMembers = new Dictionary<string, NetworkUser>();
             _networkSession = new NetworkSession(await GetNetworkIPs());
             await _networkSession.Init();
 
@@ -90,18 +93,8 @@ namespace NuSysApp
             {
                 await ProcessIncomingRequest(message, type, ip);
             };
-            
-            _networkSession.OnClientDrop += async ip =>
-            {
-                _networkSession.RemoveIP(ip);
-                NetworkMembers.Remove(ip);
-                if (ip == _hostIP)
-                {
-                    _hostIP = LocalIP;
-                }
-                await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
-                await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
-            };
+
+            _networkSession.OnClientDrop += OnClientDrop;
         }
         #region Requests
 
@@ -394,6 +387,32 @@ namespace NuSysApp
                 NetworkMembers[user.IP] = user;
                 OnNewNetworkUser?.Invoke(user);
             }
+        }
+
+        public void DropNetworkUser(NetworkUser user){DropNetworkUser(user.IP);}
+
+        public async Task DropNetworkUser(string ip)
+        {
+            if (NetworkMembers.ContainsKey(ip))
+            {
+                var user = NetworkMembers[ip];
+                NetworkMembers.Remove(ip);
+                await UITask.Run(async delegate {
+                        OnNetworkUserDropped?.Invoke(user);
+                });
+            }
+            _networkSession.RemoveIP(ip);
+        }
+
+        public async void OnClientDrop(string ip)
+        {
+            await DropNetworkUser(ip);
+            if (ip == _hostIP)
+            {
+                _hostIP = LocalIP;
+            }
+            await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
+            await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
         }
     }
     public class NoRequestTypeException : Exception

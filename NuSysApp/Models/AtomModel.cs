@@ -138,20 +138,17 @@ namespace NuSysApp
             get { return _lastNetworkUser; }
             set
             {
-                if (value != _lastNetworkUser)
+                if (value != null)
                 {
-                    if (value != null)
-                    {
-                        _lastNetworkUser?.RemoveAtomInUse(this);
-                        value.AddAtomInUse(this);
-                        _lastNetworkUser = value;
-                        UserChanged?.Invoke(value);
-                    }
-                    else
-                    {
-                        _lastNetworkUser = null;
-                        UserChanged?.Invoke(null);
-                    }
+                    _lastNetworkUser?.RemoveAtomInUse(this);
+                    value.AddAtomInUse(this);
+                    _lastNetworkUser = value;
+                    UserChanged?.Invoke(value);
+                }
+                else
+                {
+                    _lastNetworkUser = null;
+                    UserChanged?.Invoke(null);
                 }
             }
         }
