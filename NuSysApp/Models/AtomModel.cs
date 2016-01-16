@@ -131,7 +131,7 @@ namespace NuSysApp
             ScaleY = props.GetDouble("scaleY", ScaleY);
             Creators = props.GetList("creators", new List<string>());
             Title = props.GetString("title", "");
-            if (props.ContainsKey("system_sender_ip"))
+            if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(props.GetString("system_sender_ip")))
             {
                 LastNetworkUser = SessionController.Instance.NuSysNetworkSession.NetworkMembers[props.GetString("system_sender_ip")];
             }
