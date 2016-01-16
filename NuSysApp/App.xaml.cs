@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
@@ -117,8 +119,8 @@ namespace NuSysApp
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            //await NetworkConnector.Instance.Disconnect();
-
+            var request = new RemoveClientSystemRequest(SessionController.Instance.NuSysNetworkSession.LocalIP);
+            SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(request);
             var deferral = e.SuspendingOperation.GetDeferral();            
             //TODO: Save application state and stop any background activity
             deferral.Complete();

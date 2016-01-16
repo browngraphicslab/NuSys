@@ -16,7 +16,7 @@
                     <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                         
                         <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
-                            <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#99000000" BorderBrush="#99000000" BorderThickness="2" Width="{Binding Width}"  />
+                            <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#807D8D" BorderBrush="#807D8D" BorderThickness="2" Width="{Binding Width}"  />
                             <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="White" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
                         </Grid>
 
@@ -50,7 +50,7 @@
                                         <Image Source="ms-appx:///Assets/icon_x2.png" />
                                     </Button.Content>-->
                             </Button>
-                            <Path x:Name="Resizer" Fill="Black" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                            <Path x:Name="Resizer" Fill="#807D8D" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" />
                             <!--<TextBlock x:Name="Tags" VerticalAlignment="Bottom" FontSize="18" Text="{Binding Tags}"></TextBlock>-->
@@ -63,7 +63,7 @@
                             </ItemsControl>
                         </Grid>
                         <Canvas>
-                        <Border x:Name="xHighlight" Width="{Binding Width}" BorderBrush="#FFFFAA2D" BorderThickness="4" CornerRadius="5,5,0,0" Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+                        <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
                         </Canvas>
                     
                     </Grid>

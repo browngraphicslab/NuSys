@@ -16,23 +16,11 @@ namespace NuSysApp
             NodeType = NodeType.Image;
         }
 
-        
-
-        public BitmapImage Image { get; set; }
-
         public string FilePath { get; set; }
-
-
        
         public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
-            var d = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""))?.Data;
-            if (d != null)
-            { 
-                var data = Convert.FromBase64String(d); //Converts to Byte Array
-                Image = await MediaUtil.ByteArrayToBitmapImage(data);
-            }
             if (props.ContainsKey("filepath"))
             {
                 FilePath = props.GetString("filepath", FilePath);

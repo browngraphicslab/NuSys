@@ -111,7 +111,7 @@ namespace NuSysApp
             speechRecognizer.Dispose();
             //this.mdTextBox.Text = spokenString;
             var vm = (TextNodeViewModel)this.DataContext;
-            vm.UpdateRtf();
+            vm.Init();
         }
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
@@ -127,7 +127,7 @@ namespace NuSysApp
             
             if (!vm.IsEditing)
             {
-                await vm.UpdateRtf();
+                await vm.Init();
                 RearrangeImagePlaceHolders();
             }
 

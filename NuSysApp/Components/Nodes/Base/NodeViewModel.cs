@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -14,10 +15,16 @@ namespace NuSysApp
     {
         private bool _isEditing, _isEditingInk;
         private CompositeTransform _inkScale;
+        private SolidColorBrush _userColor;
 
         protected NodeViewModel(NodeModel model) : base(model)
         {
             InkScale = new CompositeTransform { ScaleX = 1, ScaleY = 1 };
+            
+            model.UserChanged += delegate (NetworkUser user)
+            {
+                _userColor = user != null ? new SolidColorBrush(user.Color) : new SolidColorBrush(Colors.Transparent);
+            };
         }
         
         #region Node Manipulations
@@ -58,7 +65,20 @@ namespace NuSysApp
 
         #region Public Properties
 
+        public SolidColorBrush UserColor
+        {
+            get { return _userColor; }
+            set
+            {
+                if (_userColor == value)
+                {
+                    return;
+                }
+                
+                RaisePropertyChanged("UserColor");
+            }
 
+        }
         
         public bool IsEditing
         {
