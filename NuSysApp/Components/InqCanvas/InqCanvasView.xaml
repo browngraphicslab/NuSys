@@ -22,6 +22,6 @@
         --><!--<Image x:Name="xCanvas" Width="5000" Height="5000"/>--><!--
     </Canvas>-->
     <Grid x:Name="xGrid" Background="Transparent">
-        <Image x:Name="xCanvas" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" Source="{Binding CanvasSource}"/>
+        <Image x:Name="xCanvas" Width="{Binding CanvasSize.Width, Mode=TwoWay}" Height="{Binding CanvasSize.Height, Mode=TwoWay}" Source="{Binding CanvasSource}"/>
     </Grid>
 </UserControl>

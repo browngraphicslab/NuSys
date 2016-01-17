@@ -101,7 +101,7 @@ namespace NuSysApp
                 }
             }
 
-            line.Delete();
+            //line.Delete();
 
             var first = line.Points.First();
             var last = line.Points.Last();

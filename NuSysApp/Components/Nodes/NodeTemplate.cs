@@ -106,7 +106,9 @@ namespace NuSysApp
 
             vm.Model.SizeChanged += delegate(object source, WidthHeightUpdateEventArgs args)
             {
-                inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
+                //inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
+                inkCanvas.Width = args.Width;
+                inkCanvas.Height = args.Height;
             };
             
             vm.PropertyChanged += OnPropertyChanged;

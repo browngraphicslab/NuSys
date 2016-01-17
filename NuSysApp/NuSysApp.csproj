@@ -286,18 +286,13 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
-    <Compile Include="Components\InqCanvas\InqLineViewModel.cs" />
     <Compile Include="Components\Misc\PinWindowViewModel.cs" />
     <Compile Include="Components\Nodes\VideoNode\VideoNodeViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\InqCanvas\InqLineView.xaml.cs">
-      <DependentUpon>InqLineView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
     <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Components\InqCanvas\HighlightInqMode.cs" />
     <Compile Include="Components\InqCanvas\IInqMode.cs" />
     <Compile Include="Util\TextBoxExtended.cs" />
     <Compile Include="Util\TwoFingerScrollViewer.cs" />
@@ -565,10 +560,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Misc\FloatingMenuButtonView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\InqCanvas\InqLineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

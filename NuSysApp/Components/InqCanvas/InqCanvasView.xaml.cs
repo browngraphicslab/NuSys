@@ -43,31 +43,14 @@ namespace NuSysApp
             IsEnabled = false;
             // Initally, set mode to Inq drawing.
 
-            _mode = new DrawInqMode(this);
+            _mode = new DrawInqMode(vm.CanvasSize, vm.Model.Id);
 
             if (_viewModel == null)
                 return;
         }
 
-        public InqCanvasViewModel ViewModel 
-        {
-            get { return (InqCanvasViewModel) DataContext; }
-        }
-
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
-            //Point[] points = new Point[2];
-            //points[0] = new Point(30, 30);
-            //points[1] = new Point(100, 100);
-            //source.DrawLine(Colors.Black, points);
-            //_source.BeginDraw();
-            //_source.Clear(Windows.UI.Colors.Beige);
-            //Point[] points = new Point[2];
-            //points[0] = new Point(30, 30);
-            //points[1] = new Point(100, 100);
-            //_source.DrawLine(Windows.UI.Colors.Black, points);
-            //_source.EndDraw();
 
             if (_pointerId != uint.MaxValue)
             {
@@ -128,40 +111,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode(this);
-            }
-        }
-
-        /// <summary>
-        /// Turns highlighting on or off
-        /// </summary>
-        /// <param name="highlight"></param>
-        public void SetHighlighting(bool highlight)
-        {
-
-            if (highlight)
-            {
-                _mode = new HighlightInqMode();
-            }
-            else
-            {
-                _mode = new DrawInqMode(this);
-            }
-        }
-
-
-        public void ReRenderLines()
-        {
-            ViewModel.Lines.Clear();
-
-            var lines = ViewModel.Model.Lines;
-            if (lines == null)
-                return;
-
-            foreach (InqLineModel line in lines)
-            {
-                var inqView = new InqLineView(new InqLineViewModel(line, new Size(Width, Height)), line.StrokeThickness, line.Stroke);
-                ViewModel.AddLine(inqView);
+                _mode = new DrawInqMode(_viewModel.CanvasSize, _viewModel.Model.Id);
             }
         }
 
