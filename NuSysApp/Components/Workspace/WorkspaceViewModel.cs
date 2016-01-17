@@ -61,11 +61,6 @@ namespace NuSysApp
                 if (!rect1.IsEmpty)
                 {
                     nodes.Add(node2.DataContext as NodeViewModel);
-                    var linksToDelete = (node2.DataContext as NodeViewModel).LinkList;
-                    foreach (var link in linksToDelete)
-                    {
-                        links.Add(link);
-                    }
                 }
             }
             foreach (var link in AtomViewList.Where(a => a.DataContext is LinkViewModel))
@@ -93,13 +88,10 @@ namespace NuSysApp
                     {
                         var rect1 = new Rect(new Point(inq.Points[i].X * Constants.MaxCanvasSize, inq.Points[i].Y * Constants.MaxCanvasSize), new Point(inq.Points[i + 1].X * Constants.MaxCanvasSize, inq.Points[i + 1].Y * Constants.MaxCanvasSize));
                         var rectLines = Geometry.RectToLineSegment(rect1);
-                        foreach (var line in rectLines)
+                        if (rectLines.Any(line => Geometry.LinesIntersect(LinkLine, line)))
                         {
-                            if (Geometry.LinesIntersect(LinkLine, line))
-                            {
-                                DeleteLink(link);
-                                return;
-                            }
+                            DeleteLink(link);
+                            return;
                         }
                     }
                 };
@@ -117,6 +109,10 @@ namespace NuSysApp
                         rect1.Intersect(nodeRect);
                         if (!rect1.IsEmpty)
                         {
+                            foreach(var nodelink in node.LinkList)
+                            {
+                                DeleteLink(nodelink);
+                            }
                             DeleteNode(node);
                             return;
                         }
@@ -135,6 +131,10 @@ namespace NuSysApp
             if (!ucl.Any())
             {
                 return;
+            }
+            foreach (var links in link.LinkList)
+            {
+                DeleteLink(links);
             }
             var uc = ucl.First();
             AtomViewList.Remove(uc);
