@@ -123,12 +123,12 @@ namespace NuSysApp
                         metadata["DateTimeExported"] = selectionItem.DateTimeExported;
                         m["metadata"] = metadata;
 
-                        await
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                         await
                             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
-                                    rtfContent));
-
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                                    rtfContent),NetworkClient.PacketType.TCP,null,true);
                     }
 
                     var hasImage = selectionItem.ImageNames.Count > 0;
