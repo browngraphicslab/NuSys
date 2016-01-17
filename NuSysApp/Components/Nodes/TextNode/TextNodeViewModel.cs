@@ -27,8 +27,7 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
             //((TextNodeModel) Model).TextChanged += TextChangedHandler;
         }
-
-
+        
         public override async Task Init()       
         {
 
