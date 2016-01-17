@@ -89,9 +89,9 @@ namespace NuSysApp
         private static async Task<bool> SetupDirectories()
         {
             //StorageFolder workspaceFolder = await AccessList.GetWorkspaceFolder();
-            StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            //StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(localFolder, Constants.FolderNusysTemp);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
             NuSysStorages.Thumbs = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.SaveFolder, Constants.FolderThumbs);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
