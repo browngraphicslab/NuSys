@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using NuSysApp.Util;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -50,9 +52,6 @@ namespace NuSysApp
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-
-            await SetupDirectories();
-
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -82,11 +81,15 @@ namespace NuSysApp
             }
             // Ensure the current window is active
             Window.Current.Activate();
+
+            await SetupDirectories();
+            await AccessList.ReadFileTokens();
         }
 
         private static async Task<bool> SetupDirectories()
         {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            var workspaceFolder = await AccessList.GetWorkspaceFolder();
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(workspaceFolder, Constants.FolderNusysTemp);
             NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
             NuSysStorages.Thumbs = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.SaveFolder, Constants.FolderThumbs);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
@@ -98,7 +101,6 @@ namespace NuSysApp
 
             return true;
         }
-
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails
@@ -121,8 +123,10 @@ namespace NuSysApp
         {
             var request = new RemoveClientSystemRequest(SessionController.Instance.NuSysNetworkSession.LocalIP);
             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(request);
-            var deferral = e.SuspendingOperation.GetDeferral();            
+            var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
+            await AccessList.SaveFileTokens();
+
             deferral.Complete();
         }
     }
