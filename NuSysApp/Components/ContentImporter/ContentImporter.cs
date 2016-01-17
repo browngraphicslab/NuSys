@@ -87,7 +87,7 @@ namespace NuSysApp
             };
         }
 
-        private async void AddinTransfer(List<SelectionItem> selectionItems)
+        private async Task AddinTransfer(List<SelectionItem> selectionItems)
         {
             foreach (SelectionItem selectionItem in selectionItems)
             {
@@ -99,11 +99,11 @@ namespace NuSysApp
                         SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
 
-                    var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
-                    var hasRtf = !String.IsNullOrEmpty(rtfContent);
+                    var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
 
                     if (hasRtf)
                     {
+                        var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
                         var contentId = SessionController.Instance.GenerateId();
                         var m = new Message();
 
@@ -148,15 +148,25 @@ namespace NuSysApp
                             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
                             m["nodeType"] = NodeType.Image.ToString();
 
-                            var imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
-                            var ba = await MediaUtil.StorageFileToByteArray(imgFile);
+                            StorageFile imgFile;
+                            try {
+                                imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
+                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
 
-                            await
-                                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                                    new NewContentSystemRequest(contentId,
-                                        Convert.ToBase64String(ba)));
+                                await
+                                    SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                        new NewContentSystemRequest(contentId,
+                                            Convert.ToBase64String(ba)));
 
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+
+
                         }
                     }
                 });
@@ -177,7 +187,7 @@ namespace NuSysApp
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                    AddinTransfer(selectionItems);
+                    await AddinTransfer(selectionItems);
                 }
 
                 foreach (var file in transferFiles)
@@ -211,7 +221,7 @@ namespace NuSysApp
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                    AddinTransfer(selectionItems);
+                    await AddinTransfer(selectionItems);
                 }
 
                 foreach (var file in transferFiles)
