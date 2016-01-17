@@ -48,6 +48,18 @@ namespace NuSysApp
             FMTransform = new CompositeTransform();
         }
 
+        public void MoveToNode(string id)
+        {
+            var node = (AtomModel)SessionController.Instance.IdToSendables[id];
+            var tp = new Point(-node.X, -node.Y);
+            var np = CompositeTransform.Inverse.TransformPoint(tp);
+            var ns = new Size(node.Width, node.Height);
+            CompositeTransform.ScaleX = 1;
+            CompositeTransform.ScaleY = 1;
+            CompositeTransform.TranslateX = tp.X + (SessionController.Instance.SessionView.ActualWidth - node.Width) / 2;
+            CompositeTransform.TranslateY = tp.Y + (SessionController.Instance.SessionView.ActualHeight - node.Height) / 2;
+        }
+
         #region Node Interaction
 
         public bool CheckForInkNodeIntersection(InqLineModel inq)

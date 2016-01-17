@@ -20,6 +20,10 @@ namespace NuSysApp
         public const string FolderMediaName = "Media";
         public const string FileChromeTransferName = "selections.nusys";
         public const string FolderOfficeToPdf = "OfficeToPdf";
+        public const string FolderOpenDocParams = "OpenDocParams";
+        public const string NuSysFALFiles = "NuSysFALFiles.txt";
+        public const string NuSysFALFolders = "NuSysFALFolders.txt";
+        public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
         #endregion Folders and files
 
         #region Node Dimensions
@@ -70,13 +74,14 @@ namespace NuSysApp
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg", ".tif", ".tiff" };
 
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
-        public static IEnumerable<string> VideoFileTypes   = new List<string> { };//TODO add more types
-        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes));
+        public static IEnumerable<string> VideoFileTypes   = new List<string> {".mp4" };//TODO add more types
+        public static IEnumerable<string> AudioFileTypes = new List<string> {".mp3"};
+        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes.Concat(AudioFileTypes)));
 
         #region Cortana
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
         #endregion
 
-       
+
     }
 }

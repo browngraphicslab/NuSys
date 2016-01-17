@@ -21,8 +21,8 @@ namespace NuSysApp
         private double _width;
         private double _height;
         private string _title = string.Empty;
+        private NetworkUser _lastNetworkUser;
 
-        private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
 
         protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
@@ -42,14 +42,14 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public delegate void TitleChangedHandler(object source, string title);
         public event TitleChangedHandler TitleChanged;
-
+        public delegate void NetworkUserChangedEventHandler(NetworkUser user);
+        public event NetworkUserChangedEventHandler UserChanged;
         public enum AtomType { Workspace, Node, Link }
         
         public AtomType Type { get; set; }
 
         protected AtomModel(string id) : base(id)
         {
-            _debounceDict = new DebouncingDictionary(this.Id);
             CanEdit = EditStatus.Maybe;
 
             Creators = new List<string>();
@@ -86,11 +86,6 @@ namespace NuSysApp
             Deleted?.Invoke(this);
         }
 
-        public DebouncingDictionary DebounceDict
-        {
-            get { return _debounceDict; }
-        }
-
         public override async Task<Dictionary<string, object>> Pack()
         {
             var dict = await base.Pack();
@@ -119,7 +114,7 @@ namespace NuSysApp
                 Metadata["groups"] = JsonConvert.DeserializeObject<List<string>>(Metadata["groups"].ToString());
             else 
                 Metadata["groups"] = new List<string>();
-
+           
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
             Width = props.GetDouble("width", Width);
@@ -127,11 +122,34 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creators = props.GetList("creators", new List<string>());
+            Creators = props.GetList("creators", Creators);
             Title = props.GetString("title", "");
+            if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(props.GetString("system_sender_ip")))
+            {
+                LastNetworkUser = SessionController.Instance.NuSysNetworkSession.NetworkMembers[props.GetString("system_sender_ip")];
+            }
             await base.UnPack(props);
         }
 
+        public NetworkUser LastNetworkUser
+        {
+            get { return _lastNetworkUser; }
+            set
+            {
+                if (value != null)
+                {
+                    _lastNetworkUser?.RemoveAtomInUse(this);
+                    value.AddAtomInUse(this);
+                    _lastNetworkUser = value;
+                    UserChanged?.Invoke(value);
+                }
+                else
+                {
+                    _lastNetworkUser = null;
+                    UserChanged?.Invoke(null);
+                }
+            }
+        }
         public List<string> Creators { get; set; }
         public double X
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
@@ -63,6 +64,9 @@ namespace NuSysApp
         {
             // TODO: Dispose everything in here.
         }
+
+
+        public virtual async Task Init(){} 
 
         private void OnTitleChanged(object source, string title)
         {
@@ -393,7 +397,11 @@ namespace NuSysApp
         public string Title
         {
             get { return _title; }
-            set { Model.Title = value; }
+            set
+            {
+                Model.Title = value;
+                _debouncingDictionary?.Add("title", value);
+            }
         }
 
         //public string Tags { get; set; }

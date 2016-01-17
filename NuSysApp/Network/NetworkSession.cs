@@ -71,13 +71,14 @@ namespace NuSysApp
             OnMessageRecieved?.Invoke(message, packetType,ip);
         }
 
-        public async Task SendRequestMessage(Message message, ICollection<string> ips, NetworkClient.PacketType packetType)
+        public async Task SendRequestMessage(Message message, ICollection<string> ips,
+            NetworkClient.PacketType packetType)
         {
             if (ips.Contains(LocalIP))
             {
                 ips.Remove(LocalIP);
             }
-            await _networkClient.SendMessage(message, ips, packetType);
+            await _networkClient.SendMessage(message, ips.ToArray(), packetType);
         }
 
         public async Task SendRequestMessage(Message message, string ip, NetworkClient.PacketType packetType)

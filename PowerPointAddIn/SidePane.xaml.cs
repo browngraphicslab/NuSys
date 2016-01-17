@@ -163,9 +163,9 @@ namespace PowerPointAddIn
                 {
                     var selectionItemView = selection.GetView();
 
-                    if (selection.ImageContent != null)
+                    for (int i = 0; i < selection.ImageContent.Count; i++)
                     {
-                        selection.ImageContent.Save(mediaDir + "\\" + selectionItemView.ImageName, ImageFormat.Png);
+                        selection.ImageContent[i].Save(mediaDir + "\\" + selectionItemView.ImageNames[i], ImageFormat.Png);
                     }
 
                     selectionItemViews.Add(selectionItemView);

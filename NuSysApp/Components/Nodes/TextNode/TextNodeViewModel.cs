@@ -28,8 +28,10 @@ namespace NuSysApp
             //((TextNodeModel) Model).TextChanged += TextChangedHandler;
         }
 
-        public async Task UpdateRtf()       
-        {  
+
+        public override async Task Init()       
+        {
+            
         }
 
         private static async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
@@ -78,7 +80,7 @@ namespace NuSysApp
         //private async void TextChangedHandler(object source, TextChangedEventArgs e)
         //{
         //   // this.MarkDownText = ((TextNode)this.Model).Text;
-        //    await UpdateRtf();
+        //    await Init();
         //}
 
 

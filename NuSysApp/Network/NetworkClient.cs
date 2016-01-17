@@ -198,6 +198,7 @@ namespace NuSysApp
                 catch (Exception e)
                 {
                     Debug.WriteLine("Exception caught during TCP connection recieve FROM IP " + ip + " with error code: " + e.Message);
+                    OnTCPClientDrop?.Invoke(ip);
                     return;
                 }
                 //Debug.WriteLine("TCP connection recieve FROM IP " + ip + " with message: " + message);

@@ -163,6 +163,8 @@ namespace NuSysApp
             return false;
         }
 
+
+
         public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }
@@ -204,7 +206,8 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
                     break;
                 case Options.MainSearch:
-                    SessionController.Instance.SessionView.SearchView();
+                    SearchWindowView.SetFocus();
+                   // SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));
@@ -232,6 +235,8 @@ namespace NuSysApp
                             new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddRecord:
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new FloatingMenuMode(this), new DuplicateNodeMode(this),
+                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this)));
                     var sessionView = SessionController.Instance.SessionView;
                     sessionView.ShowRecorder();
                     break;

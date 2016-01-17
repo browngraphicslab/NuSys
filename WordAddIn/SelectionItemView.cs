@@ -13,16 +13,16 @@ namespace WordAddIn
         public Boolean IsExported;
         public String RtfContent;
         public String DocPath;
-        public String ImageName;
+        public List<String> ImageNames;
         public String DateTimeExported;
 
-        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String DocPath, String ImageName, String DateTimeExported)
+        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String DocPath, List<String> ImageNames, String DateTimeExported)
         {
             this.BookmarkId = BookmarkId;
             this.IsExported = IsExported;
             this.RtfContent = RtfContent;
             this.DocPath = DocPath;
-            this.ImageName = ImageName;
+            this.ImageNames = ImageNames;
             this.DateTimeExported = DateTimeExported;
         }
     }

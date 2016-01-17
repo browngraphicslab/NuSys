@@ -37,9 +37,13 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
-            var model = (TextNodeModel)vm.Model;
-            rtfTextBox.SetRtfText(model.Text);
-            model.TextChanged += delegate(object source, TextChangedEventArgs args)
+
+            var contentId = (vm.Model as NodeModel).ContentId;
+            var content = SessionController.Instance.ContentController.Get(contentId);
+            if (content != null)
+                rtfTextBox.SetRtfText(content.Data);
+
+            (vm.Model as TextNodeModel).TextChanged += delegate(object source, TextChangedEventArgs args)
             {
                 rtfTextBox.SetRtfText(args.Text);
                // rtfTextBox.SetRtfText();
@@ -111,7 +115,7 @@ namespace NuSysApp
             speechRecognizer.Dispose();
             //this.mdTextBox.Text = spokenString;
             var vm = (TextNodeViewModel)this.DataContext;
-            vm.UpdateRtf();
+            vm.Init();
         }
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
@@ -127,7 +131,7 @@ namespace NuSysApp
             
             if (!vm.IsEditing)
             {
-                await vm.UpdateRtf();
+                await vm.Init();
                 RearrangeImagePlaceHolders();
             }
 
@@ -172,7 +176,6 @@ namespace NuSysApp
 
                 startPos = objPos + 1;
             }
-
             rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
         }
 
