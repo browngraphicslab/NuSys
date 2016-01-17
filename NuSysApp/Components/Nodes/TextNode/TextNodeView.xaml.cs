@@ -172,7 +172,6 @@ namespace NuSysApp
 
                 startPos = objPos + 1;
             }
-
             rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
         }
 
