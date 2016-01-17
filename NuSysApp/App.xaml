@@ -43,9 +43,9 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>-->
 
-        <converters:SelectionToColorConverter x:Key="sConverter" />
-        <converters:BoolToVisibilityConverter x:Key="vConverter" />
-        <converters:SubStractConverter x:Key="subtractConverter" />
+        <local:SelectionToColorConverter x:Key="sConverter" />
+        <local:BoolToVisibilityConverter x:Key="vConverter" />
+        <local:SubStractConverter x:Key="subtractConverter" />
 
         <!-- radial menu style -->
         <Style x:Key="RadialMenu" TargetType="MenuFlyoutPresenter">

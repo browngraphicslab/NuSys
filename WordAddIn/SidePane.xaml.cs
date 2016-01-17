@@ -1,13 +1,15 @@
 ﻿using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Word;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace WordAddIn
 {
@@ -232,9 +234,9 @@ namespace WordAddIn
 
                     var selectionItemView = selection.GetView();
 
-                    if (selection.ImageContent != null)
+                    for (int i=0; i<selection.ImageContent.Count; i++)
                     {
-                        selection.ImageContent.Save(mediaDir + "\\" + selectionItemView.ImageName, ImageFormat.Png);
+                        selection.ImageContent[i].Save(mediaDir + "\\" + selectionItemView.ImageNames[i], ImageFormat.Png);
                     }
 
                     selectionItemViews.Add(selectionItemView);
@@ -280,61 +282,27 @@ namespace WordAddIn
             }
         }
 
-        private void AddSelectionItem(Range range)
-        {
-            var ns = new SelectionItem { Range = range, IsExported = false };
-            ns.AddSelection();
-
-            Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(range, "");
-            c.Author = commentAuthor;
-            ns.Comment = c;
-
-            //using b as an arbitrary char to create a valid bookmarkId
-            var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
-            var bookmark = range.Bookmarks.Add(bookmarkId);
-            ns.Bookmark = bookmark;
-
-            if (ns.ImageContent != null || !String.IsNullOrEmpty(ns.RtfContent))
-            {
-                UnexportedSelections.Add(ns);
-            }
-
-            
-        }
-
-
         //add the highlighted content to the sidebar as a selection
         private void OnSelectionAdded()
         {
             try {
                 Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                Range selectionRange = selection.Range;
 
-                if (selectionRange.ShapeRange.Count > 0)
-                {
-                    foreach (Microsoft.Office.Interop.Word.Shape shape in selectionRange.ShapeRange)
-                    {
-                        shape.Select();
-                        Selection shapeSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                        shapeSelection.Copy();
-                        AddSelectionItem(selectionRange);
-                    }
+                var ns = new SelectionItem { Range = selection.Range, IsExported = false };
+                ns.AddSelection();
 
-                    if (selectionRange.Text != null)
-                    {
-                        Range textRange = Globals.ThisAddIn.Application.ActiveDocument.Range(selectionRange.Start, selectionRange.End);
-                        textRange.Select();
-                        Selection textSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                        textSelection.Copy();
-                        AddSelectionItem(selectionRange);
-                    }
-                }
-                else
+                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(selection.Range, "");
+                c.Author = commentAuthor;
+                ns.Comment = c;
+
+                //using b as an arbitrary char to create a valid bookmarkId
+                var bookmarkId = "NuSys" + (Guid.NewGuid().ToString()).Replace('-', 'b');
+                var bookmark = selection.Bookmarks.Add(bookmarkId);
+                ns.Bookmark = bookmark;
+
+                if (ns.ImageContent.Count > 0 || !String.IsNullOrEmpty(ns.RtfContent))
                 {
-                    selectionRange.Select();
-                    Selection otherSelection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                    otherSelection.Copy();
-                    AddSelectionItem(selectionRange);
+                    UnexportedSelections.Add(ns);
                 }
             }
             catch (Exception ex)

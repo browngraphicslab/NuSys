@@ -13,6 +13,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace NuSysApp
 {
@@ -23,7 +24,7 @@ namespace NuSysApp
         public String RtfContent;
         public String DocPath;
         public String DocName;
-        public String ImageName;
+        public List<String> ImageNames;
         public String DateTimeExported;
     }
 
@@ -86,7 +87,91 @@ namespace NuSysApp
             };
         }
 
+        private async Task AddinTransfer(List<SelectionItem> selectionItems)
+        {
+            foreach (SelectionItem selectionItem in selectionItems)
+            {
+                await UITask.Run(async () =>
+                {
+                    var width = SessionController.Instance.SessionView.ActualWidth;
+                    var height = SessionController.Instance.SessionView.ActualHeight;
+                    var centerpoint =
+                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                            new Point(width / 2, height / 2));
 
+                    var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
+
+                    if (hasRtf)
+                    {
+                        var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
+                        var contentId = SessionController.Instance.GenerateId();
+                        var m = new Message();
+
+                        m["contentId"] = contentId;
+                        m["x"] = centerpoint.X - 200;
+                        m["y"] = centerpoint.Y - 200;
+                        m["width"] = 400;
+                        m["height"] = 400;
+                        m["autoCreate"] = true;
+                        m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                        m["nodeType"] = NodeType.Text.ToString();
+
+                        var metadata = new Dictionary<string, object>();
+                        metadata["BookmarkId"] = selectionItem.BookmarkId;
+                        metadata["IsExported"] = selectionItem.IsExported;
+                        metadata["DocPath"] = selectionItem.DocPath;
+                        metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+                        m["metadata"] = metadata;
+
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                         await
+                            SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                new NewContentSystemRequest(contentId,
+                                    rtfContent),NetworkClient.PacketType.TCP,null,true);
+                    }
+
+                    var hasImage = selectionItem.ImageNames.Count > 0;
+                    if (hasImage)
+                    {
+                        foreach (String imageName in selectionItem.ImageNames)
+                        {
+                            var contentId = SessionController.Instance.GenerateId();
+
+                            var m = new Message();
+                            m["contentId"] = contentId;
+                            m["x"] = centerpoint.X - 200;
+                            m["y"] = centerpoint.Y - 200;
+                            m["width"] = 400;
+                            m["height"] = 400;
+                            m["autoCreate"] = true;
+                            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                            m["nodeType"] = NodeType.Image.ToString();
+
+                            StorageFile imgFile;
+                            try {
+                                imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
+                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
+
+                                await
+                                    SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                        new NewContentSystemRequest(contentId,
+                                            Convert.ToBase64String(ba)));
+
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+
+
+                        }
+                    }
+                });
+            }
+        }
         private async void SetupWordTransfer()
         {
             var fw = new FolderWatcher(NuSysStorages.WordTransferFolder);
@@ -102,63 +187,19 @@ namespace NuSysApp
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                    foreach (SelectionItem selectionItem in selectionItems)
-                    {
-                        await UITask.Run(async () =>
-                        {
-                            var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
-                            var isImage = String.IsNullOrEmpty(rtfContent);
-
-                            var m = new Message();
-                            var width = SessionController.Instance.SessionView.ActualWidth;
-                            var height = SessionController.Instance.SessionView.ActualHeight;
-                            var centerpoint =
-                                SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
-                                    new Point(width/2, height/2));
-
-                            var contentId = SessionController.Instance.GenerateId();
-
-                            m["contentId"] = contentId;
-                            m["x"] = centerpoint.X - 200;
-                            m["y"] = centerpoint.Y - 200;
-                            m["width"] = 400;
-                            m["height"] = 400;
-                            m["nodeType"] = isImage ? NodeType.Image.ToString() : NodeType.Text.ToString();
-                            m["autoCreate"] = true;
-                            m["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
-
-                            var metadata = new Dictionary<string, object>();
-                            metadata["BookmarkId"] = selectionItem.BookmarkId;
-                            metadata["IsExported"] = selectionItem.IsExported;
-                            metadata["DocPath"] = selectionItem.DocPath;
-                            metadata["DocName"] = selectionItem.DocName;
-                            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                            m["metadata"] = metadata;
-
-                            var content = string.Empty;
-                            if (isImage)
-                            {
-                                var imgFile = await NuSysStorages.Media.GetFileAsync(selectionItem.ImageName);
-                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-                                content = Convert.ToBase64String(ba);
-                            }
-                            else
-                            {
-                                content = rtfContent;
-                            }
-
-
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                                new NewContentSystemRequest(contentId, content), NetworkClient.PacketType.TCP, null, true);
-                        });
-                    }
+                    await AddinTransfer(selectionItems);
                 }
 
                 foreach (var file in transferFiles)
                 {
-                    await file.DeleteAsync();
+                    try
+                    {
+                        await file.DeleteAsync();
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        //TODO EXCEPTION HANDLING
+                    }
                 }
 
                 ContentImported?.Invoke(contents.ToList());
@@ -178,58 +219,21 @@ namespace NuSysApp
                 {
                     var text = await FileIO.ReadTextAsync(file);
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    var jsonArray = (JArray)JsonConvert.DeserializeObject(text, settings);
+                    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                    foreach (var entry in jsonArray)
-                    {
-                        await UITask.Run(async () =>
-                        {
-                            var jsonObj = (JObject)entry;
-                            var rtfContent = jsonObj["RtfContent"].ToString();
-                            var imageName = jsonObj["ImageName"].ToString();
-                            var isImage = imageName != "";
-
-                            var m = new Message();
-                            var width = SessionController.Instance.SessionView.ActualWidth;
-                            var height = SessionController.Instance.SessionView.ActualHeight;
-                            var centerpoint =
-                                SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
-                                    new Point(width / 2, height / 2));
-
-                            var contentId = SessionController.Instance.GenerateId();
-
-                            m["contentId"] = contentId;
-                            m["x"] = centerpoint.X - 200;
-                            m["y"] = centerpoint.Y - 200;
-                            m["width"] = 400;
-                            m["height"] = 400;
-                            m["nodeType"] = isImage ? NodeType.Image.ToString() : NodeType.Text.ToString();
-                            m["autoCreate"] = true;
-                            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
-
-                            var content = string.Empty;
-                            if (isImage)
-                            {
-                                var imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
-                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-                                content = Convert.ToBase64String(ba);
-                            }
-                            else
-                            {
-                                content = rtfContent;
-                            }
-
-
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, content), NetworkClient.PacketType.TCP, null, true);
-                        });
-                    }
+                    await AddinTransfer(selectionItems);
                 }
 
                 foreach (var file in transferFiles)
                 {
-                    await file.DeleteAsync();
-                }
+                    try { 
+                        await file.DeleteAsync();
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        //TODO EXCEPTION HANDLING
+                    }
+            }
 
                 ContentImported?.Invoke(contents.ToList());
             };
