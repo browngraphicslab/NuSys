@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="NuSysApp.ImageFullScreenView"
+    x:Class="NuSysApp.WordDetailView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -15,7 +15,7 @@
             <Button Foreground="White" Click="OnGoToSource">Go To Source</Button>
         </StackPanel>
         <Grid x:Name="xWrapper" Margin="0,100,0,0">
-            <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Image}" Stretch="Uniform"/>
+            <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>
         </Grid>
     </StackPanel>
 </UserControl>

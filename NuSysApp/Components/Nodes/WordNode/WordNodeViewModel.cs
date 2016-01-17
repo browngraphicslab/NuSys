@@ -11,18 +11,17 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageNodeViewModel : NodeViewModel
+    public class WordNodeViewModel : NodeViewModel
     {
         
-        public ImageNodeViewModel(ImageNodeModel model) : base(model)
+        public WordNodeViewModel(WordNodeModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
         }
 
 
-        public BitmapImage Image { get;
-            set; }
+        public BitmapImage Image { get; set; }
 
         public override async Task Init()
         {

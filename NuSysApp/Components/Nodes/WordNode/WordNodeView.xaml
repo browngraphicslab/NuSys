@@ -1,0 +1,30 @@
+﻿<local:AnimatableUserControl
+    x:Class="NuSysApp.WordNodeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:converters="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Width="{Binding Width}"
+    Height="{Binding Height}"
+    RenderTransform="{Binding Transform}"
+    IsDoubleTapEnabled="True">
+
+    <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
+        <local:NodeTemplate.SubMenu>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="30" Width="30"></Image>
+                </Button>
+                <Button x:Name="EditInk" Click="OnEditInk" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="30" Width="30"></Image>
+                </Button>
+            </StackPanel>
+        </local:NodeTemplate.SubMenu>
+        <local:NodeTemplate.Inner>
+            <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform"/>
+        </local:NodeTemplate.Inner>
+    </local:NodeTemplate>
+</local:AnimatableUserControl>

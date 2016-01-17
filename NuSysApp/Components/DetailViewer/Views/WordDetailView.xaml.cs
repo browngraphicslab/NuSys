@@ -19,11 +19,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageFullScreenView : UserControl
+    public sealed partial class WordDetailView : UserControl
     {
         private InqCanvasView _inqCanvasView;
 
-        public ImageFullScreenView(ImageNodeViewModel vm)
+        public WordDetailView(WordNodeViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
@@ -34,10 +34,9 @@ namespace NuSysApp
                 var sw = SessionController.Instance.SessionView.ActualWidth /2;
                 var sh = SessionController.Instance.SessionView.ActualHeight /2;
 
-
-                var ratio = vm.Width > vm.Height ? vm.Width/sw : vm.Height/sh;
-                xImg.Width = vm.Width/ratio;
-                xImg.Height = vm.Height/ratio;
+                var ratio = xImg.ActualWidth > xImg.ActualHeight ? xImg.ActualWidth/sw : xImg.ActualHeight/sh;
+                xImg.Width = xImg.ActualWidth/ratio;
+                xImg.Height = xImg.ActualHeight/ratio;
                 //  xBorder.Width = xImg.Width + 5;
                 // xBorder.Height = xImg.Height +5;
 
