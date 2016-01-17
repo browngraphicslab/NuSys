@@ -29,7 +29,9 @@ namespace NuSysApp
         }
 
         public override async Task Init()       
-        {  
+        {
+
+
             try { 
             _inlineImages.Clear();
 

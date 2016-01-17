@@ -35,9 +35,9 @@ namespace NuSysApp
 
         public void MakeTagList()
         {
+            Tags = new ObservableCollection<Button>();
             if (_nodeModel != null)
             {
-                Tags = new ObservableCollection<Button>();
                 List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
                 foreach (string tag in tags)
                 {

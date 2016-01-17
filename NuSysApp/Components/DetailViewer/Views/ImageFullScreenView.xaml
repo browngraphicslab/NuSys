@@ -12,11 +12,10 @@
     <StackPanel VerticalAlignment="Top">
         <StackPanel  Orientation="Horizontal">
             <Button Click="ButtonBase_OnClick" Foreground="White">Ink</Button>
-
-            <Button Foreground="White">Go To Source</Button>
+            <Button Foreground="White" Click="OnGoToSource">Go To Source</Button>
         </StackPanel>
         <Grid x:Name="xWrapper" Margin="0,100,0,0">
-            <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>
+            <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Image}" Stretch="Uniform"/>
         </Grid>
     </StackPanel>
 </UserControl>

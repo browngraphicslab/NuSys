@@ -235,6 +235,8 @@ namespace NuSysApp
                             new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddRecord:
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new FloatingMenuMode(this), new DuplicateNodeMode(this),
+                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this)));
                     var sessionView = SessionController.Instance.SessionView;
                     sessionView.ShowRecorder();
                     break;

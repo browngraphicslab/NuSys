@@ -75,7 +75,15 @@ namespace NuSysApp
                     await tvm.Init();
                     break;
                 case NodeType.Image:
-                    view = new ImageFullScreenView(new ImageNodeViewModel((ImageNodeModel)model));
+                    var ivm = new ImageNodeViewModel((ImageNodeModel)model);
+                    await ivm.Init();
+                    view = new ImageFullScreenView(ivm);
+                    break;
+                case NodeType.Word:
+                    view = new WordDetailView(new WordNodeViewModel((WordNodeModel)model));
+                    break;
+                case NodeType.Powerpoint:
+                    view = new PowerpointDetailView(new PowerpointNodeViewModel((PowerpointNodeModel)model));
                     break;
                 case NodeType.PDF:
                     view = new PdfDetailView(new PdfNodeViewModel((PdfNodeModel)model));

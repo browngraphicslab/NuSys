@@ -169,6 +169,9 @@
     <Compile Include="Components\DetailViewer\Views\LinkDetailView.xaml.cs">
       <DependentUpon>LinkDetailView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\DetailViewer\Views\PowerpointDetailView.xaml.cs">
+      <DependentUpon>PowerpointDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\DetailViewer\Views\VideoDetailView.xaml.cs">
       <DependentUpon>VideoDetailView.xaml</DependentUpon>
     </Compile>
@@ -183,6 +186,9 @@
     </Compile>
     <Compile Include="Components\DetailViewer\Views\TextDetailView.xaml.cs">
       <DependentUpon>TextDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\DetailViewer\Views\WordDetailView.xaml.cs">
+      <DependentUpon>WordDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
@@ -220,6 +226,10 @@
       <DependentUpon>LoadNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\LoadNode\LoadNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\PowerpointNode\PowerpointNodeView.xaml.cs">
+      <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\TextNode\PowerpointNodeViewModel.cs" />
     <Compile Include="Components\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -232,6 +242,10 @@
     <Compile Include="Components\ContextMenuView.xaml.cs">
       <DependentUpon>ContextMenuView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Nodes\WordNode\WordNodeView.xaml.cs">
+      <DependentUpon>WordNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\WordNode\WordNodeViewModel.cs" />
     <Compile Include="Components\Workspace\Modes\CreateGroupMode.cs" />
     <Compile Include="Components\Workspace\Modes\LinkMode.cs" />
     <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
@@ -242,10 +256,12 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
+    <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
+    <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Network\ID.cs" />
@@ -279,6 +295,7 @@
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
@@ -503,6 +520,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\DetailViewer\Views\PowerpointDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\DetailViewer\Views\VideoDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -520,6 +541,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\DetailViewer\Views\TextDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\DetailViewer\Views\WordDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -563,6 +588,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Nodes\PowerpointNode\PowerpointNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Nodes\WebNode\WebNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -590,6 +619,10 @@
     <Page Include="Components\Misc\SearchWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\WordNode\WordNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
