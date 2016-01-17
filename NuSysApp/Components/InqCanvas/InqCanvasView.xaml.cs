@@ -43,7 +43,7 @@ namespace NuSysApp
             IsEnabled = false;
             // Initally, set mode to Inq drawing.
 
-            _mode = new DrawInqMode(vm.CanvasSize, vm.Model.Id);
+            _mode = new DrawInqMode(vm.CanvasSize, vm.Model.Id, vm.CanvasSource);
 
             if (_viewModel == null)
                 return;
@@ -111,7 +111,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode(_viewModel.CanvasSize, _viewModel.Model.Id);
+                _mode = new DrawInqMode(_viewModel.CanvasSize, _viewModel.Model.Id, _viewModel.CanvasSource);
             }
         }
 

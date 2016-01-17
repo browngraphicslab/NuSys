@@ -62,25 +62,30 @@ namespace NuSysApp
         {
 
             //List<Point> allP = new List<Point>();
-            List<InqLineModel> ll = Model.Lines.ToList();
+            //List<InqLineModel> ll = Model.Lines.ToList();
 
-            _source.BeginDraw();
-            _source.Clear(Windows.UI.Colors.White);
-            foreach (InqLineModel ilm in ll)
+            //foreach (InqLineModel ilm in ll)
+            //{
+            //    List<Point> currLine = new List<Point>();
+            //    foreach(Point2d p in ilm.Points) {
+            //        currLine.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
+            //    }
+            //    _source.RenderLines();
+            //}
+
+            List<Point> currLine = new List<Point>();
+            foreach (Point2d p in lineModel.Points)
             {
-                List<Point> currLine = new List<Point>();
-                foreach(Point2d p in ilm.Points) {
-                    currLine.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
-                }
-                _source.DrawLine(Windows.UI.Colors.Black, currLine.ToArray());
+                currLine.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
             }
 
-            // Clear background
-            _source.EndDraw();
+            _source.AddLine(Windows.UI.Colors.Black, currLine.ToArray());
+            _source.RenderLines();
+
             RaisePropertyChanged("FinalLineAdded");
         }
 
-        public Windows.UI.Xaml.Media.ImageSource CanvasSource
+        public InqCanvasImageSource CanvasSource
         {
             get { return _source; }
         }

@@ -20,9 +20,11 @@ namespace NuSysApp
         private SharpDX.Direct3D11.Device d3dDevice;
         private SharpDX.Direct2D1.Device d2dDevice;
         private SharpDX.Direct2D1.DeviceContext d2dContext;
-        private SharpDX.Direct2D1.Factory factory;
+        //private SharpDX.Direct2D1.Factory factory;
         private readonly int width;
         private readonly int height;
+
+        private List<SharpDX.Direct2D1.PathGeometry> lines;
 
         public InqCanvasImageSource(int pixelWidth, int pixelHeight, bool isOpaque)
             : base(pixelWidth, pixelHeight, isOpaque)
@@ -30,17 +32,28 @@ namespace NuSysApp
             width = pixelWidth;
             height = pixelHeight;
 
+            lines = new List<SharpDX.Direct2D1.PathGeometry>();
+
             CreateDeviceResources();
 
             Application.Current.Suspending += OnSuspending;
         }
 
+        public void Dispose()
+        {
+            Utilities.Dispose(ref d2dDevice);
+            Utilities.Dispose(ref d2dContext);
+            foreach (SharpDX.Direct2D1.PathGeometry geom in lines)
+            {
+                geom.Dispose();
+            }
+        }
+
         private void CreateDeviceResources()
         {
             //we have to dispose explicitly cause were not using c++
-            Utilities.Dispose(ref d2dDevice);
-            Utilities.Dispose(ref d2dContext);
-            Utilities.Dispose(ref factory);
+            Dispose();
+            //Utilities.Dispose(ref factory);
             //add support for surfaces with different color channel orders cause we need this to use Direct2d
             var creationFlags = DeviceCreationFlags.BgraSupport;
 
@@ -56,7 +69,7 @@ namespace NuSysApp
                 SharpDX.Direct3D.FeatureLevel.Level_9_1,
             };
             d3dDevice = new SharpDX.Direct3D11.Device(DriverType.Hardware, creationFlags, featureLevels);
-            factory = new SharpDX.Direct2D1.Factory(FactoryType.SingleThreaded);
+            //factory = new SharpDX.Direct2D1.Factory(FactoryType.SingleThreaded);
 
             // Get the Direct3D 11.1 API device.
             using (var dxgiDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device>())
@@ -166,34 +179,54 @@ namespace NuSysApp
             }
         }
 
-        public void DrawLine(Windows.UI.Color color, Windows.Foundation.Point[] points)
+
+        private List<RawVector2> _currLine = new List<RawVector2>();
+         
+        //this is VERY naive. am currently working on a better method
+        public void DrawContinuousLine(Windows.Foundation.Point nextPoint)
         {
-            if(points.Length < 2)
+            _currLine.Add(ConvertToRawVector2(nextPoint));
+
+            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(d2dContext.Factory);
+            GeometrySink sink = geometry.Open();
+
+            sink.BeginFigure(_currLine.First(), new FigureBegin());
+            sink.AddLines(_currLine.ToArray());
+            sink.EndFigure(new FigureEnd());
+            sink.Close();
+            sink.Dispose();
+
+            BeginDraw();
+            Clear(Windows.UI.Colors.White);
+            using (var brush = new SolidColorBrush(d2dContext, ConvertToColorF(Windows.UI.Colors.Black)))
             {
-                return;
-            }
-            using (var brush = new SolidColorBrush(d2dContext, ConvertToColorF(color)))
-            {
-                for (int i = 0; i < points.Length - 1; i++)
+
+                d2dContext.DrawGeometry(geometry, brush);
+                foreach (SharpDX.Direct2D1.PathGeometry geom in lines)
                 {
-                    d2dContext.DrawLine(ConvertToRawVector2(points[i]), ConvertToRawVector2(points[i + 1]), brush);
+                    d2dContext.DrawGeometry(geom, brush);
                 }
-                //d2dContext.DrawLine(ConvertToRawVector2(points[0]), ConvertToRawVector2(points[points.Length - 1]), brush);
             }
+            EndDraw();
+            geometry.Dispose();
         }
 
-        //ignore this method for now, im still working on it
-        public void RenderLines(Windows.UI.Color color, Windows.Foundation.Point[] points)
+        public void EndContinuousLine()
         {
-            RawVector2[] converted = new RawVector2[points.Length]; 
+            _currLine.Clear();
+        }
+
+        public void AddLine(Windows.UI.Color color, Windows.Foundation.Point[] points)
+        {
+            RawVector2[] converted = new RawVector2[points.Length - 1];
             //we want to start at index 1 cause we want to start the figure at index 0
-            for(int i = 1; i < points.Length; i++)
+            for (int i = 1; i < points.Length; i++)
             {
-                converted[i] = ConvertToRawVector2(points[i]);
+                converted[i - 1] = ConvertToRawVector2(points[i]);
             }
 
 
-            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(factory);
+            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(d2dContext.Factory);
             GeometrySink sink = geometry.Open();
 
             sink.BeginFigure(ConvertToRawVector2(points[0]), new FigureBegin());
@@ -201,15 +234,22 @@ namespace NuSysApp
             sink.EndFigure(new FigureEnd());
             sink.Close();
 
-            d2dContext.BeginDraw();
-            d2dContext.Clear(ConvertToColorF(Windows.UI.Colors.White));
-            using (var brush = new SolidColorBrush(d2dContext, ConvertToColorF(color)))
+            lines.Add(geometry);
+            sink.Dispose();
+        }
+
+        public void RenderLines()
+        {
+
+            BeginDraw();
+            Clear(Windows.UI.Colors.White);
+            using (var brush = new SolidColorBrush(d2dContext, ConvertToColorF(Windows.UI.Colors.Black)))
             {
-                // Draw a filled rectangle.
-                d2dContext.DrawGeometry(geometry, brush);
+                foreach(SharpDX.Direct2D1.PathGeometry geom in lines) {
+                    d2dContext.DrawGeometry(geom, brush);
+                }
             }
-            d2dContext.EndDraw();
-            geometry.Dispose();
+            EndDraw();
         }
 
         private void OnSuspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)

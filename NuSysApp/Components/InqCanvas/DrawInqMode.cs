@@ -23,10 +23,13 @@ namespace NuSysApp
         private string _canvasId;
         private Size _canvasSize;
 
-        public DrawInqMode(Size canvasSize, string canvasID)
+        private InqCanvasImageSource _s;
+
+        public DrawInqMode(Size canvasSize, string canvasID, InqCanvasImageSource i)
         {
             _canvasSize = canvasSize;
             _canvasId = canvasID;
+            _s = i;
         }
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -42,6 +45,8 @@ namespace NuSysApp
             
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y/ _canvasSize.Height));
+
+            _s.DrawContinuousLine(currentPoint.Position);
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -49,14 +54,13 @@ namespace NuSysApp
 
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y / _canvasSize.Height));
-                if (_inqLineModel.Points.Count > 1)
-                {
-                //TODO: continuous updates
-                }
+
+            _s.DrawContinuousLine(currentPoint.Position);
         }
 
         public async void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
+            _s.EndContinuousLine();
 
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y / _canvasSize.Height));
