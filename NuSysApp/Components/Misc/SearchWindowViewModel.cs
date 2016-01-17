@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp.Components.Misc
+namespace NuSysApp
 {
     public class SearchWindowViewModel
     {
-        public ObservableCollection<string> SearchResults { get; set; }
+        public ObservableCollection<SearchResultItem> SearchResults { get; set; }
 
         public SearchWindowViewModel()
         {
-            SearchResults = new ObservableCollection<string>();
+            SearchResults = new ObservableCollection<SearchResultItem>();
         }
 
         public void SearchFor(string queryString)
@@ -44,7 +44,8 @@ namespace NuSysApp.Components.Misc
 
             foreach (var atomModel in found)
             {
-                SearchResults.Add(atomModel.Title);
+                var title = atomModel.Title == "" ? "Unnamed Node" : atomModel.Title;
+                SearchResults.Add(new SearchResultItem {Id = atomModel.Id, Name = title});
             }
         }
 
@@ -52,5 +53,11 @@ namespace NuSysApp.Components.Misc
         {
             return "";
         }
+    }
+
+    public class SearchResultItem
+    {
+        public string Name { get; set; }
+        public string Id { get; set; }
     }
 }

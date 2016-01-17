@@ -16,7 +16,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using NuSysApp.Components.Misc;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -46,6 +45,12 @@ namespace NuSysApp
         public static void SetFocus()
         {
             _instance.searchBox.Focus(FocusState.Programmatic);
+        }
+
+        private void UIElement_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = (SearchResultItem)((FrameworkElement) sender).DataContext;
+            SessionController.Instance.ActiveWorkspace.MoveToNode(vm.Id);
         }
     }
 }

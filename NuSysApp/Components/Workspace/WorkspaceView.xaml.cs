@@ -163,6 +163,8 @@ namespace NuSysApp
             return false;
         }
 
+
+
         public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }

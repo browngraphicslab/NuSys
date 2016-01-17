@@ -23,9 +23,11 @@
                         <StackPanel  HorizontalAlignment="Left" Background="DarkGray" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
+                <ItemsControl.ItemTemplate> 
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Padding="5,5"></TextBlock>
+                        <Border DoubleTapped="UIElement_OnDoubleTapped" IsDoubleTapEnabled="True" Tag="">
+                            <TextBlock Text="{Binding Name}" Padding="5,5"></TextBlock>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
