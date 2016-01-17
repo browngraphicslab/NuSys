@@ -24,7 +24,7 @@ namespace NuSysApp
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private AtomViewModel _preparedAtomVm;
-  
+
         #endregion Private Members
 
         public WorkspaceViewModel(WorkspaceModel model) : base(model)
@@ -32,7 +32,7 @@ namespace NuSysApp
             GroupDict = new Dictionary<string, NodeContainerViewModel>();
             MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
-            
+
             var c = new CompositeTransform
             {
                 TranslateX = model.LocationX,
@@ -76,20 +76,53 @@ namespace NuSysApp
 
                 foreach (var line in rectLines)
                 {
-                    if (Geometry.LinesIntersect(LinkLine,line))
+                    if (Geometry.LinesIntersect(LinkLine, line))
                     {
                         links.Add(link.DataContext as LinkViewModel);
                         break;
-                    }   
+                    }
                 }
             }
+
             foreach (var link in links)
             {
-                DeleteLink(link);    
+                var LinkLine = link.LineRepresentation;
+                Action checkLines = delegate
+                {
+                    for (int i = 0; i < inq.Points.Count - 1; i++)
+                    {
+                        var rect1 = new Rect(new Point(inq.Points[i].X * Constants.MaxCanvasSize, inq.Points[i].Y * Constants.MaxCanvasSize), new Point(inq.Points[i + 1].X * Constants.MaxCanvasSize, inq.Points[i + 1].Y * Constants.MaxCanvasSize));
+                        var rectLines = Geometry.RectToLineSegment(rect1);
+                        foreach (var line in rectLines)
+                        {
+                            if (Geometry.LinesIntersect(LinkLine, line))
+                            {
+                                DeleteLink(link);
+                                return;
+                            }
+                        }
+                    }
+                };
+                checkLines();
             }
             foreach (var node in nodes)
             {
-                DeleteNode(node);    
+                Action checkLines = delegate
+                {
+
+                    var nodeRect = Geometry.NodeToBoudingRect(node);
+                    for (int i = 0; i < inq.Points.Count - 1; i++)
+                    {
+                        var rect1 = new Rect(new Point(inq.Points[i].X * Constants.MaxCanvasSize, inq.Points[i].Y * Constants.MaxCanvasSize), new Point(inq.Points[i + 1].X * Constants.MaxCanvasSize, inq.Points[i + 1].Y * Constants.MaxCanvasSize));
+                        rect1.Intersect(nodeRect);
+                        if (!rect1.IsEmpty)
+                        {
+                            DeleteNode(node);
+                            return;
+                        }
+                    }
+                };
+                checkLines();
             }
 
         }
@@ -135,7 +168,7 @@ namespace NuSysApp
                 SelectedAtomViewModel = selected;
                 return;
             }
-           // //NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
+            // //NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
             selected.SetSelected(false);
             SelectedAtomViewModel.SetSelected(false);
             SelectedAtomViewModel = null;
@@ -196,7 +229,7 @@ namespace NuSysApp
                         UITask.Run(async () =>
                         {
                             ////NetworkConnector.Instance.RequestLock(v.ID);
-                          //  //NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.Id, model.GetString());
+                            //  //NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.Id, model.GetString());
                             //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
                         });
                     }
@@ -205,7 +238,7 @@ namespace NuSysApp
             Action<string> a = new Action<string>(add);
             //await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
         }
-           
+
         public void ClearMultiSelection()
         {
             //NetworkConnector.Instance.ReturnAllLocks();
@@ -273,7 +306,7 @@ namespace NuSysApp
             props["height"] = (maxY - minY).ToString();
 
             var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
-          //  //await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
+            //  //await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
         }
 
 
@@ -290,11 +323,11 @@ namespace NuSysApp
         #endregion Event Handlers
         #region Public Members
 
-      
+
         public AtomViewModel SelectedAtomViewModel { get; private set; }
 
         public List<AtomViewModel> MultiSelectedAtomViewModels { get; private set; }
-        
+
         public CompositeTransform CompositeTransform
         {
             get { return _compositeTransform; }
@@ -310,7 +343,7 @@ namespace NuSysApp
         }
 
         public CompositeTransform FMTransform
-            {
+        {
             get { return _fMTransform; }
             set
             {
@@ -323,7 +356,7 @@ namespace NuSysApp
             }
         }
 
-        public override void Remove(){}
+        public override void Remove() { }
         public override void UpdateAnchor() { }
 
         public Dictionary<string, NodeContainerViewModel> GroupDict { get; private set; }
@@ -331,6 +364,6 @@ namespace NuSysApp
         public InqLineModel LastPartialLineModel { get; set; }
         #endregion Public Members
 
-        
+
     }
 }
