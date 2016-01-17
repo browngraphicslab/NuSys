@@ -22,6 +22,7 @@ namespace NuSysApp
             {
                 var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
                 _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings);
+
             }
             catch (Exception e)
             {

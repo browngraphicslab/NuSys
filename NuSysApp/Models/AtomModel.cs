@@ -23,7 +23,6 @@ namespace NuSysApp
         private string _title = string.Empty;
         private NetworkUser _lastNetworkUser;
 
-        private readonly DebouncingDictionary _debounceDict;
         private SolidColorBrush _color;
 
         protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
@@ -51,7 +50,6 @@ namespace NuSysApp
 
         protected AtomModel(string id) : base(id)
         {
-            _debounceDict = new DebouncingDictionary(this.Id);
             CanEdit = EditStatus.Maybe;
 
             Creators = new List<string>();
@@ -86,11 +84,6 @@ namespace NuSysApp
         public  virtual void Delete()
         {
             Deleted?.Invoke(this);
-        }
-
-        public DebouncingDictionary DebounceDict
-        {
-            get { return _debounceDict; }
         }
 
         public override async Task<Dictionary<string, object>> Pack()
@@ -129,9 +122,9 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creators = props.GetList("creators", new List<string>());
+            Creators = props.GetList("creators", Creators);
             Title = props.GetString("title", "");
-            if (props.ContainsKey("system_sender_ip"))
+            if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(props.GetString("system_sender_ip")))
             {
                 LastNetworkUser = SessionController.Instance.NuSysNetworkSession.NetworkMembers[props.GetString("system_sender_ip")];
             }

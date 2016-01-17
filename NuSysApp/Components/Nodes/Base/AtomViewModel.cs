@@ -397,7 +397,11 @@ namespace NuSysApp
         public string Title
         {
             get { return _title; }
-            set { Model.Title = value; }
+            set
+            {
+                Model.Title = value;
+                _debouncingDictionary?.Add("title", value);
+            }
         }
 
         //public string Tags { get; set; }
