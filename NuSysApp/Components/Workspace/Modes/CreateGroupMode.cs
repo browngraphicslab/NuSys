@@ -60,6 +60,7 @@ namespace NuSysApp
             var msg = new Message();
             msg["id1"] = id1;
             msg["id2"] = id2;
+            msg["groupNodeId"] = SessionController.Instance.GenerateId();
             msg["width"] = 300;
             msg["height"] = 300;
             msg["x"] = p.X;

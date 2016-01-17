@@ -1,4 +1,4 @@
-﻿Build started 1/17/2016 4:26:20 PM.
+﻿Build started 1/17/2016 4:52:25 PM.
      1>Project "S:\NuSys\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj" on node 2 (Build target(s)).
      1>Link:
          MuPDFWinRT.vcxproj -> S:\NuSys\MuPDF.WinRT\Win8\Win32\Debug\MuPDFWinRT.dll
@@ -6,4 +6,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.10
+Time Elapsed 00:00:00.38
