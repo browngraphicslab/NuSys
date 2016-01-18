@@ -183,6 +183,34 @@ namespace NuSysApp
         private List<RawVector2> _currLine = new List<RawVector2>();
          
         //this is VERY naive. am currently working on a better method
+        public void DrawContinuousLine(Windows.Foundation.Point nextPoint, Windows.Foundation.Rect clip)
+        {
+            _currLine.Add(ConvertToRawVector2(nextPoint));
+
+            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(d2dContext.Factory);
+            GeometrySink sink = geometry.Open();
+
+            sink.BeginFigure(_currLine.First(), new FigureBegin());
+            sink.AddLines(_currLine.ToArray());
+            sink.EndFigure(new FigureEnd());
+            sink.Close();
+            sink.Dispose();
+
+            BeginDraw(clip);
+            Clear(Windows.UI.Colors.White);
+            using (var brush = new SolidColorBrush(d2dContext, ConvertToColorF(Windows.UI.Colors.Black)))
+            {
+
+                d2dContext.DrawGeometry(geometry, brush);
+                foreach (SharpDX.Direct2D1.PathGeometry geom in lines)
+                {
+                    d2dContext.DrawGeometry(geom, brush);
+                }
+            }
+            EndDraw();
+            geometry.Dispose();
+        }
+
         public void DrawContinuousLine(Windows.Foundation.Point nextPoint)
         {
             _currLine.Add(ConvertToRawVector2(nextPoint));

@@ -19,6 +19,7 @@ namespace NuSysApp
 
         //current strokes
         private InqLineModel _inqLineModel;
+        private Point _start;
 
         private string _canvasId;
         private Size _canvasSize;
@@ -46,7 +47,9 @@ namespace NuSysApp
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y/ _canvasSize.Height));
 
-            _s.DrawContinuousLine(currentPoint.Position);
+            _start = currentPoint.Position;
+
+            _s.DrawContinuousLine(new Point(0, 0), new Rect(new Point(5000, 5000), new Point(8000, 8000)));
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -55,7 +58,9 @@ namespace NuSysApp
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y / _canvasSize.Height));
 
-            _s.DrawContinuousLine(currentPoint.Position);
+            Rect clip = new Rect(_start, currentPoint.Position);
+            _s.DrawContinuousLine(new Point(0, 0), new Rect(new Point(5000, 5000), new Point(8000, 8000)));
+            _s.DrawContinuousLine(new Point(500, 500), new Rect(new Point(5000, 5000), new Point(8000, 8000)));
         }
 
         public async void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
