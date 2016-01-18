@@ -26,6 +26,7 @@ namespace NuSysApp
         public String DocName;
         public List<String> ImageNames;
         public String DateTimeExported;
+        public String Token;
     }
 
     public class ContentImporter
@@ -119,8 +120,10 @@ namespace NuSysApp
                         var metadata = new Dictionary<string, object>();
                         metadata["BookmarkId"] = selectionItem.BookmarkId;
                         metadata["IsExported"] = selectionItem.IsExported;
-                        metadata["DocPath"] = selectionItem.DocPath;
+                        metadata["FilePath"] = selectionItem.DocPath;
                         metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+                        metadata["Token"] = selectionItem.Token;
+
                         m["metadata"] = metadata;
 
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));

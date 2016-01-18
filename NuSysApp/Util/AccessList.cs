@@ -12,7 +12,7 @@ namespace NuSysApp.Util
 
     public class AccessList
     {
-        public static Dictionary<string, string> fileTokenDict = new Dictionary<string, string>();
+        public static Dictionary<string, string> FileTokenDict = new Dictionary<string, string>();
 
         public static async Task<StorageFolder> GetWorkspaceFolder()
         {
@@ -39,6 +39,12 @@ namespace NuSysApp.Util
             return workspaceFolder;
         }
 
+        public static async Task OpenFile(string token)
+        {
+            StorageFile file = await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
+            bool success = await Windows.System.Launcher.LaunchFileAsync(file);
+        }
+
         public static async Task ReadFileTokens()
         {
             StorageFile NuSysFALFiles = await GetNuSysFAL(Constants.NuSysFALFiles);
@@ -53,7 +59,7 @@ namespace NuSysApp.Util
                     {
                         path = fileReader.ReadLine();
                         token = fileReader.ReadLine();
-                        fileTokenDict.Add(path, token);
+                        FileTokenDict.Add(path, token);
                     }
                 }
             }
@@ -67,7 +73,7 @@ namespace NuSysApp.Util
             {
                 using (StreamWriter fileWriter = new StreamWriter(await NuSysFALFiles.OpenStreamForWriteAsync()))
                 {
-                    foreach (KeyValuePair<string, string> tokenPair in fileTokenDict)
+                    foreach (KeyValuePair<string, string> tokenPair in FileTokenDict)
                     {
                         fileWriter.WriteLine(tokenPair.Key);
                         fileWriter.WriteLine(tokenPair.Value);

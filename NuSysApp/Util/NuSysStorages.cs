@@ -13,5 +13,8 @@ namespace NuSysApp
         public static StorageFolder SaveFolder;
         public static StorageFolder Thumbs;
         public static StorageFolder OpenDocParamsFolder;
+
+        public static StorageFile FirstTimeWord;
+        public static StorageFile FirstTimePowerpoint;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,30 +61,34 @@ namespace NuSysApp
         {
             var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
 
-            string filePath = model.GetMetaData("DocPath").ToString();
-            string bookmarkId = model.GetMetaData("BookmarkId").ToString();
-
-            //write to OpenWord the bookmarkId
+            string token = model.GetMetaData("Token").ToString();
+            string ext = Path.GetExtension(model.GetMetaData("DocPath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
-            string fileExt = Path.GetExtension(filePath);
 
-            if (fileExt == ".pptx")
+            if (Constants.WordFileTypes.Contains(ext))
             {
-                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\word.txt", new List<string>() { bookmarkId });
+                string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+                StorageFile writeBookmarkFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, token);
+
+                using (StreamWriter writer = new StreamWriter(await writeBookmarkFile.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(bookmarkId);
+                }
+
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(token);
+                }
             }
-            else if (fileExt == ".doc")
+            else if (Constants.PowerpointFileTypes.Contains(ext))
             {
-                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\ppt.txt", new List<string>() { bookmarkId });
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(token);
+                }
             }
 
-            //Open word document
-            StorageFile fileToOpen = await StorageFile.GetFileFromPathAsync(filePath);
-            bool success = await Windows.System.Launcher.LaunchFileAsync(fileToOpen);
-
-            if (success)
-            {
-                //TODO woo
-            }
+            await AccessList.OpenFile(token);
         }
     }
 }

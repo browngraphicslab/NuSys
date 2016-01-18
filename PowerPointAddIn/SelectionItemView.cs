@@ -12,16 +12,18 @@ namespace PowerPointAddIn
         public String BookmarkId;
         public Boolean IsExported;
         public String RtfContent;
-        public String DocPath;
+        public String FilePath;
         public List<String> ImageNames;
+        public String Token;
 
-        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String DocPath, List<String> ImageNames)
+        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String FilePath, List<String> ImageNames, String Token)
         {
             this.BookmarkId = BookmarkId;
             this.IsExported = IsExported;
             this.RtfContent = RtfContent;
-            this.DocPath = DocPath;
+            this.FilePath = FilePath;
             this.ImageNames = ImageNames;
+            this.Token = Token;
         }
     }
 }

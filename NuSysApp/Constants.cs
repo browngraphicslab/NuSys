@@ -23,6 +23,8 @@ namespace NuSysApp
         public const string FolderOpenDocParams = "OpenDocParams";
         public const string NuSysFALFiles = "NuSysFALFiles.txt";
         public const string NuSysFALFolders = "NuSysFALFolders.txt";
+        public const string FirstTimeWord = "FirstTimeWord";
+        public const string FirstTimePowerpoint = "FirstTimePowerpoint";
         public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
         #endregion Folders and files
 
@@ -72,10 +74,12 @@ namespace NuSysApp
         public const double ButtonDeactivatedOpacity = 0.5;
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg", ".tif", ".tiff" };
+        public static IEnumerable<string> WordFileTypes = new List<string> { ".doc", ".docx" };
+        public static IEnumerable<string> PowerpointFileTypes = new List<string> { ".ppt", ".pptx" };
 
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
         public static IEnumerable<string> VideoFileTypes   = new List<string> { };//TODO add more types
-        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes));
+        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes).Concat(WordFileTypes).Concat(PowerpointFileTypes));
 
         #region Cortana
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
