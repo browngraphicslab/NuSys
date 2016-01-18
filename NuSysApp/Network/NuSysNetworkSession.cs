@@ -253,10 +253,19 @@ namespace NuSysApp
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
             });
-            if(packetType == NetworkClient.PacketType.TCP)
+
+            if (ip!=null && !NetworkMembers.ContainsKey(ip) && ip != LocalIP)
+            {
+                await ExecuteSystemRequest(new RequestClientInfoSystemRequest(), NetworkClient.PacketType.TCP, new List<string>() {ip});
+            }
+            if (packetType == NetworkClient.PacketType.TCP)
+            {
                 await ResumeWaitingRequestThread(message);
+            }
             if (IsHostMachine && packetType == NetworkClient.PacketType.TCP && !local)
+            {
                 await _networkSession.SendRequestMessage(message, NetworkMemberIPs, NetworkClient.PacketType.TCP);
+            }
         }
 
         private async Task ResumeWaitingRequestThread(Message message)
@@ -314,6 +323,9 @@ namespace NuSysApp
                     break;
                 case SystemRequest.SystemRequestType.FetchContent:
                     request = new FetchContentSystemRequest(message);
+                    break;
+                case SystemRequest.SystemRequestType.RequestClientInfo:
+                    request = new RequestClientInfoSystemRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
