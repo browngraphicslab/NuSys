@@ -102,7 +102,7 @@ namespace NuSysApp
         {
             await request.CheckOutgoingRequest();
             var m = new Message(request.GetFinalMessage().GetSerialized());
-            await ProcessIncomingRequest(m, NetworkClient.PacketType.TCP, LocalIP);
+            await ProcessIncomingRequest(m, NetworkClient.PacketType.TCP, LocalIP,true);
         }
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
@@ -185,7 +185,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task ProcessIncomingRequest(Message message, NetworkClient.PacketType packetType, string ip = null)
+        private async Task ProcessIncomingRequest(Message message, NetworkClient.PacketType packetType, string ip = null, bool local = false)
         {
             Request request;
             Request.RequestType requestType;
@@ -255,7 +255,7 @@ namespace NuSysApp
             });
             if(packetType == NetworkClient.PacketType.TCP)
                 await ResumeWaitingRequestThread(message);
-            if (IsHostMachine && packetType == NetworkClient.PacketType.TCP)
+            if (IsHostMachine && packetType == NetworkClient.PacketType.TCP && !local)
                 await _networkSession.SendRequestMessage(message, NetworkMemberIPs, NetworkClient.PacketType.TCP);
         }
 
