@@ -12,7 +12,7 @@
     <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Padding="3,3">
         <Canvas>
             <ScrollViewer x:Name="xScrollViewer">
-                <WebView x:Name="xWebView" Width="1024" Height="600" Margin="3,37,3,3" DefaultBackgroundColor="White" />
+                <WebView x:Name="xWebView"  Width="1024" Height="600" Margin="3,37,3,3" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" />
             </ScrollViewer>
             <Border Background="#99000000" Width="{Binding ElementName=xWebView, Path=Width}">
             <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
