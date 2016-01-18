@@ -24,7 +24,6 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                vm.Init();
                 nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
             };
         }

@@ -15,6 +15,7 @@ namespace NuSysApp
             SetHost,
             SendWorkspace,
             SendClientInfo,
+            RequestClientInfo,
             NewContent,
             ContentAvailableNotification,
             FetchContent

@@ -224,7 +224,7 @@ namespace NuSysApp
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             };
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth);
+            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;

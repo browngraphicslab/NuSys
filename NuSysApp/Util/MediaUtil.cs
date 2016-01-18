@@ -10,6 +10,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -22,16 +23,17 @@ namespace NuSysApp
         {
 
             var bitmapImage = new BitmapImage();
-            InMemoryRandomAccessStream stream = null;
-            using (stream = new InMemoryRandomAccessStream())
-            {
-                await Task.Run(async delegate
-                {
-                    await stream.WriteAsync(byteArray.AsBuffer());
-                    stream.Seek(0);
-                });
-                bitmapImage.SetSource(stream);
-            }
+
+            InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
+
+            await stream.WriteAsync(byteArray.AsBuffer());
+            stream.Seek(0);
+            bitmapImage.CreateOptions = BitmapCreateOptions.None;
+
+            bitmapImage.SetSource(stream);
+            await stream.FlushAsync();
+            stream.Dispose();
+
             return bitmapImage;
         }
 
