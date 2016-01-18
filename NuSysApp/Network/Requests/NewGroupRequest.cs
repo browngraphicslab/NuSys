@@ -18,7 +18,7 @@ namespace NuSysApp
             
             var node1 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
             var node2 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
-            var groupNodeId = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("groupNodeId")];
+            var groupNodeId = props.GetString("groupNodeId");
 
             var wvm = SessionController.Instance.ActiveWorkspace;
 
