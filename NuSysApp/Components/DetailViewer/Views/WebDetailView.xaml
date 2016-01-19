@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Padding="3,3" >
+    <Border Width="1024"  x:Name="xBorder" BorderThickness="2" BorderBrush="White">
         <StackPanel Width="1024">
             <StackPanel  Background="#99000000" Width="{Binding ElementName=xWebView, Path=Width}" Orientation="Horizontal">
                 <Button x:Name="Back" Height="37" Foreground="White" Click="Back_OnClick">
