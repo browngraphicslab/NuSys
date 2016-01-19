@@ -31,6 +31,9 @@ namespace NuSysApp
             //};
         }
 
+        
+
+
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
             _inkManager.ProcessPointerDown(e.GetCurrentPoint(inqCanvas));
@@ -76,6 +79,7 @@ namespace NuSysApp
             _inkManager.ProcessPointerUp(e.GetCurrentPoint(inqCanvas));
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
+            _inqLineModel.IsGesture = currentPoint.Properties.IsBarrelButtonPressed || currentPoint.Properties.IsRightButtonPressed;
 
             var request = new FinalizeInkRequest( new Message(await _inqLineModel.Pack()));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);

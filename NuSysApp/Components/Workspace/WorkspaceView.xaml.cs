@@ -50,6 +50,10 @@ namespace NuSysApp
 
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
+                if (!model.IsGesture)
+                {
+                    return;
+                }
                 var gestureType = GestureRecognizer.testGesture(model);
                 switch (gestureType)
                 {

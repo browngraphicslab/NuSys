@@ -20,6 +20,7 @@ namespace NuSysApp
         public string InqCanvasId { get; set; }
         public int Page { get; set; }
         public SolidColorBrush Stroke { get; set; }
+        public bool IsGesture { get; set; }
 
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
         public event DeleteInqLineEventHandler OnDeleteInqLine;
@@ -47,6 +48,7 @@ namespace NuSysApp
             InqCanvasId = props.GetString("canvasNodeID", null);
             Points = new ObservableCollection<Point2d>(props.GetList<Point2d>("points"));
             Page = props.GetInt("page", 0);
+            IsGesture = props.GetBool("isGesture", false);
             return base.UnPack(props);
         }
 
@@ -59,6 +61,7 @@ namespace NuSysApp
             props.Add("type", "ink");
             props.Add("inkType", "full");
             props.Add("page", Page);
+            props.Add("isGesture", IsGesture);
             return props;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media.Capture;
@@ -173,6 +174,28 @@ namespace NuSysApp
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+
+            var settings = mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
+            if (settings.Count > 0)
+            {
+                var maxX = 0;
+                var maxY = 0;
+                foreach (var settingInst in settings)
+                {
+                    if ((settingInst as VideoEncodingProperties).Width > maxX)
+                    {
+                        maxX = (int) (settingInst as VideoEncodingProperties).Width;
+                    }
+                    if ((settingInst as VideoEncodingProperties).Height > maxY)
+                    {
+                        maxY = (int) (settingInst as VideoEncodingProperties).Height;
+                    }
+                }
+                    m["resolutionX"] = maxX;
+                    m["resolutionY"] = maxY;
+            }
+
+
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 

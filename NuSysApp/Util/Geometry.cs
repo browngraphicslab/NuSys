@@ -222,10 +222,10 @@ namespace NuSysApp
 
             return new Rect()
             {
-                Height = (max.X - min.X) * Constants.MaxCanvasSize,
-                Width = (max.Y - min.Y) * Constants.MaxCanvasSize,
-                X = min.X * Constants.MaxCanvasSize,
-                Y = min.Y * Constants.MaxCanvasSize
+                Height = (max.X - min.X) * ((double)Constants.MaxCanvasSize),
+                Width = (max.Y - min.Y) * ((double)Constants.MaxCanvasSize),
+                X = min.X * ((double)Constants.MaxCanvasSize),
+                Y = min.Y *((double)Constants.MaxCanvasSize) 
             };
         }
     }
