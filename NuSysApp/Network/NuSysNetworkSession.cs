@@ -253,11 +253,6 @@ namespace NuSysApp
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
             });
-
-            if (ip!=null && !NetworkMembers.ContainsKey(ip) && ip != LocalIP)
-            {
-                await ExecuteSystemRequest(new RequestClientInfoSystemRequest(), NetworkClient.PacketType.TCP, new List<string>() {ip});
-            }
             if (packetType == NetworkClient.PacketType.TCP)
             {
                 await ResumeWaitingRequestThread(message);
@@ -410,7 +405,7 @@ namespace NuSysApp
                 var user = NetworkMembers[ip];
                 NetworkMembers.Remove(ip);
                 await UITask.Run(async delegate {
-                        OnNetworkUserDropped?.Invoke(user);
+                    OnNetworkUserDropped?.Invoke(user);
                 });
             }
             _networkSession.RemoveIP(ip);

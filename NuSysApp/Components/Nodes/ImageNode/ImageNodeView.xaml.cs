@@ -26,6 +26,7 @@ namespace NuSysApp
             {
                 nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
             };
+            //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
         }
 
         private void OnEditInk(object sender, RoutedEventArgs e)

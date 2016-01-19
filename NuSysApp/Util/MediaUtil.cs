@@ -23,7 +23,6 @@ namespace NuSysApp
         {
 
             var bitmapImage = new BitmapImage();
-
             InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
 
             await stream.WriteAsync(byteArray.AsBuffer());
@@ -39,7 +38,6 @@ namespace NuSysApp
 
         public static async Task<byte[]> RenderTargetBitmapToByteArray(RenderTargetBitmap source)
         {
-
             var pixels = (await source.GetPixelsAsync());
             var stream = new InMemoryRandomAccessStream();
             var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
