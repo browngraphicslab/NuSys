@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -29,6 +32,7 @@ namespace NuSysApp
         private PointerEventHandler _pointerPressedHandler;
         private PointerEventHandler _pointerMovedHandler;
         private PointerEventHandler _pointerReleasedHandler;
+        private PointerEventHandler _pointerEnteredHandler;
 
         public InqCanvasView(InqCanvasViewModel vm)
         {
@@ -39,6 +43,7 @@ namespace NuSysApp
             _pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
             _pointerMovedHandler = new PointerEventHandler(OnPointerMoved);
             _pointerReleasedHandler = new PointerEventHandler(OnPointerReleased);
+            _pointerEnteredHandler = new PointerEventHandler(OnPointerEntered);
 
             IsEnabled = false;
             // Initally, set mode to Inq drawing.
@@ -54,6 +59,13 @@ namespace NuSysApp
             get { return (InqCanvasViewModel) DataContext; }
         }
 
+        private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if ((e.GetCurrentPoint(this) as PointerPoint).Properties.IsBarrelButtonPressed)
+            {
+
+            }
+        }
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (_pointerId != uint.MaxValue)
@@ -164,13 +176,14 @@ namespace NuSysApp
                 if (value)
                 {
                     AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
-
+                    AddHandler(PointerEnteredEvent, _pointerEnteredHandler, true);
                 }
                 else
                 {
                     RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
                     RemoveHandler(PointerMovedEvent, _pointerMovedHandler);
                     RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
+                    RemoveHandler(PointerEnteredEvent, _pointerEnteredHandler);
                 }
                 _isEnabled = value;
                 IsHitTestVisible = value;
