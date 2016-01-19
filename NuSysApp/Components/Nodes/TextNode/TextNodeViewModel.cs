@@ -30,7 +30,6 @@ namespace NuSysApp
         
         public override async Task Init()       
         {
-<<<<<<< HEAD
             try { 
             _inlineImages.Clear();
 
@@ -81,9 +80,6 @@ namespace NuSysApp
             {
                 Debug.WriteLine("Couldn't update rtf.");
             }
-=======
-
->>>>>>> c6c8178bd8aceb6acd9b8295987bf2ce050b4020
         }
 
         private static async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
