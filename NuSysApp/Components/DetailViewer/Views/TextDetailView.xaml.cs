@@ -47,6 +47,11 @@ namespace NuSysApp
 
             var model = (TextNodeModel)vm.Model;
 
+            if (model.GetMetaData("Token") == null)
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+
             if (model.Text != "") { 
                 rtfTextBox.SetRtfText(model.Text);
             }
