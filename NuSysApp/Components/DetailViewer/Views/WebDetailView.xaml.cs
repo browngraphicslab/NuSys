@@ -20,13 +20,11 @@ namespace NuSysApp
 {
     public sealed partial class WebDetailView : UserControl
     {
-        private WebNodeViewModel viewmodel;
-        public WebDetailView(WebNodeViewModel vm)
+       public WebDetailView(WebNodeViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
-            viewmodel = vm;
-
+          
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 var sw = SessionController.Instance.SessionView.ActualWidth/1.5;
@@ -125,9 +123,14 @@ namespace NuSysApp
         {
             string url = sender.Source.AbsoluteUri;
             xUrlBox.Text = url;
-            if ((viewmodel.Model as WebNodeModel).Url != url)
+            if (((DataContext as WebNodeViewModel).Model as WebNodeModel).Url != url)
             {
-                (viewmodel.Model as WebNodeModel).Url = url;
+                (DataContext as WebNodeViewModel).Url = url;
+                var message = new Message();
+                message["url"] = url;
+                message["id"] = (DataContext as WebNodeViewModel).Id;
+                var request = new SendableUpdateRequest(message);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }
 
         }
