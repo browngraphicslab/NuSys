@@ -19,7 +19,7 @@ namespace NuSysApp
 
         private Size _canvasSize;
 
-        private InqCanvasImageSource _source;
+        //private InqCanvasImageSource _source;
 
         public InqCanvasViewModel(InqCanvasModel model, Size canvasSize)
         {
@@ -30,10 +30,10 @@ namespace NuSysApp
             Model.LineAdded += OnLineAdded;
             Model.PageChanged +=OnPageChanged;
 
-            _source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);
-            _source.BeginDraw();
-            _source.Clear(Windows.UI.Colors.White);
-            _source.EndDraw();
+            //_source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);
+            //_source.BeginDraw();
+            //_source.Clear(Windows.UI.Colors.White);
+            //_source.EndDraw();
 
             if (model.Lines == null)
                 return;
@@ -79,16 +79,16 @@ namespace NuSysApp
                 currLine.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
             }
 
-            _source.AddLine(Windows.UI.Colors.Black, currLine.ToArray());
-            _source.RenderLines();
+            //_source.AddLine(Windows.UI.Colors.Black, currLine.ToArray());
+            //_source.RenderLines();
 
             RaisePropertyChanged("FinalLineAdded");
         }
 
-        public InqCanvasImageSource CanvasSource
-        {
-            get { return _source; }
-        }
+        //public InqCanvasImageSource CanvasSource
+        //{
+        //    get { return _source; }
+        //}
 
         public Size CanvasSize {
             get { return _canvasSize; }

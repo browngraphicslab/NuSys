@@ -62,7 +62,6 @@ namespace NuSysApp
 
         public const int InitialPenSize = 4;
 
-        //change this back
         public const int MaxCanvasSize = 10000;
 
         public const double ButtonActivatedOpacity = 1.0;

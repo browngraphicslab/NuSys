@@ -19,18 +19,19 @@ namespace NuSysApp
 
         //current strokes
         private InqLineModel _inqLineModel;
-        private Point _start;
 
         private string _canvasId;
         private Size _canvasSize;
 
-        private InqCanvasImageSource _s;
+        //private InqCanvasImageSource _s;
+        private Point _offset;
+        private Rect _clip;
 
         public DrawInqMode(Size canvasSize, string canvasID, InqCanvasImageSource i)
         {
             _canvasSize = canvasSize;
             _canvasId = canvasID;
-            _s = i;
+            //_s = i;
         }
 
         public void OnPointerPressed(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -44,29 +45,30 @@ namespace NuSysApp
             //TODO - deal with pages
             //_inqLineModel.Page = _view.ViewModel.Page;
             
-            var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y/ _canvasSize.Height));
+            var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
+            _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y/ _canvasSize.Height));
 
-            _start = currentPoint.Position;
+            var offset = inqCanvas.TransformToVisual(null).TransformPoint(new Point(0, 0));
+            Rect bounds = Window.Current.Bounds;
+            _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
 
-            _s.DrawContinuousLine(new Point(0, 0), new Rect(new Point(5000, 5000), new Point(8000, 8000)));
+            inqCanvas.DrawContinuousLine(new Point(currentPoint.X, currentPoint.Y));
+
         }
 
         public void OnPointerMoved(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
 
-            var currentPoint = e.GetCurrentPoint(inqCanvas);
-            _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y / _canvasSize.Height));
+            var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
+            _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y / _canvasSize.Height));
 
-            Rect clip = new Rect(_start, currentPoint.Position);
-            _s.DrawContinuousLine(new Point(0, 0), new Rect(new Point(5000, 5000), new Point(8000, 8000)));
-            _s.DrawContinuousLine(new Point(500, 500), new Rect(new Point(5000, 5000), new Point(8000, 8000)));
+            inqCanvas.DrawContinuousLine(new Point(currentPoint.X, currentPoint.Y));
         }
 
         public async void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
         {
-            _s.EndContinuousLine();
-
+            //_s.EndContinuousLine();;
+            inqCanvas.EndContinuousLine();
             var currentPoint = e.GetCurrentPoint(inqCanvas);
             _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y / _canvasSize.Height));
 
