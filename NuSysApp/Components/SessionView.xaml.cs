@@ -86,10 +86,7 @@ namespace NuSysApp
 
                 _cortanaInitialized = false;
                 xFloatingMenu.SessionView = this;
-
-                await SessionController.Instance.NuSysNetworkSession.Init();
-                await SessionController.Instance.InitializeRecog();
-                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user) 
+                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user)
                 {
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
                     UserLabel b = new UserLabel(user);
@@ -99,6 +96,9 @@ namespace NuSysApp
                         Users.Children.Remove(b);
                     };
                 };
+                await SessionController.Instance.NuSysNetworkSession.Init();
+                await SessionController.Instance.InitializeRecog();
+               
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
             };
         }
@@ -224,7 +224,7 @@ namespace NuSysApp
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             };
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth);
+            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;

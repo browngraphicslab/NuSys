@@ -82,9 +82,12 @@ namespace NuSysApp
 
         protected virtual void OnSizeChanged(object source, WidthHeightUpdateEventArgs e)
         {
-            Width = Model.Width;
-            Height = Model.Height;
+
+            _width = Model.Width;
+            _height = Model.Height;
             UpdateAnchor();
+            RaisePropertyChanged("Height");
+            RaisePropertyChanged("Width");
         }
 
         protected virtual void OnScaleChanged(object source)
@@ -347,7 +350,7 @@ namespace NuSysApp
             get { return _width; }
             set
             {
-                if (_width == value || value < Constants.MinNodeSize) //prevent atom from getting too small
+                if (value < Constants.MinNodeSize) //prevent atom from getting too small
                     return;
                 _width = value;
                 Model.Width = value;
@@ -360,7 +363,7 @@ namespace NuSysApp
             get { return _height; }
             set
             {
-                if (_height == value || value < Constants.MinNodeSize)
+                if (value < Constants.MinNodeSize)
                     return;
 
                 _height = value;
