@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             SetupChromeIntermediate();
             SetupWordTransfer();
-            SetupPowerPointTransfer();
+            SetupPowerpointTransfer();
         }
 
         private void SetupChromeIntermediate()
