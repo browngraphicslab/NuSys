@@ -27,9 +27,10 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
             //((TextNodeModel) Model).TextChanged += TextChangedHandler;
         }
-
+        
         public override async Task Init()       
         {
+<<<<<<< HEAD
             try { 
             _inlineImages.Clear();
 
@@ -80,6 +81,9 @@ namespace NuSysApp
             {
                 Debug.WriteLine("Couldn't update rtf.");
             }
+=======
+
+>>>>>>> c6c8178bd8aceb6acd9b8295987bf2ce050b4020
         }
 
         private static async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)

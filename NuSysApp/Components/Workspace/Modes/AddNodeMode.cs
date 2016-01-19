@@ -186,6 +186,24 @@ namespace NuSysApp
 
                     data = Convert.ToBase64String(fileBytes);
                 }
+                if (Constants.AudioFileTypes.Contains(fileType))
+                {
+                    nodeType = NodeType.Audio;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
             }
             var contentId = SessionController.Instance.GenerateId();
 

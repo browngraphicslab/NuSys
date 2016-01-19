@@ -284,6 +284,7 @@
     <Compile Include="Network\Requests\NewThumbnailRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />

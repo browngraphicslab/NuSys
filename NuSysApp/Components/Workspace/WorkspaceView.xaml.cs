@@ -50,6 +50,10 @@ namespace NuSysApp
 
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
+                if (!model.IsGesture)
+                {
+                    return;
+                }
                 var gestureType = GestureRecognizer.testGesture(model);
                 switch (gestureType)
                 {
@@ -163,6 +167,8 @@ namespace NuSysApp
             return false;
         }
 
+
+
         public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }
@@ -233,6 +239,8 @@ namespace NuSysApp
                             new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddRecord:
+                    await SetViewMode(new MultiMode(this, new SelectMode(this), new FloatingMenuMode(this), new DuplicateNodeMode(this),
+                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this)));
                     var sessionView = SessionController.Instance.SessionView;
                     sessionView.ShowRecorder();
                     break;

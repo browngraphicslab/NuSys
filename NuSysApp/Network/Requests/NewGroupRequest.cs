@@ -10,6 +10,7 @@ namespace NuSysApp
 {
     public class NewGroupRequest : Request
     {
+        
         public NewGroupRequest(Message message) : base(RequestType.NewGroupRequest, message){}
         public async override Task ExecuteRequestFunction()
         {
@@ -17,6 +18,7 @@ namespace NuSysApp
             
             var node1 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
             var node2 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
+            var groupNodeId = props.GetString("groupNodeId");
 
             var wvm = SessionController.Instance.ActiveWorkspace;
 
@@ -33,7 +35,7 @@ namespace NuSysApp
             else
             {
                 var msg = new Message();
-                msg["id"] = SessionController.Instance.GenerateId();
+                msg["id"] = groupNodeId;
                 msg["nodeType"] = NodeType.Group.ToString();
                 msg["width"] = _message.GetDouble("width");
                 msg["height"] = _message.GetDouble("height");
@@ -42,7 +44,7 @@ namespace NuSysApp
                 msg["autoCreate"] = true;
                 msg["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(msg));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
 
                 var group = SessionController.Instance.IdToSendables[msg.GetString("id")];
                 

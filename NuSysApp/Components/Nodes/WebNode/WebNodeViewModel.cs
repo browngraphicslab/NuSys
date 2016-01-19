@@ -13,7 +13,7 @@ namespace NuSysApp
     public class WebNodeViewModel : NodeViewModel
     {
         private double  _zoom = 1;
-
+       
         public string Url { get; set; }
         public Rect ClipRect { get; set; }
 
@@ -31,6 +31,7 @@ namespace NuSysApp
         {
             ClipRect = new Rect(0,0, model.Width, model.Height);
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            Url = model.Url;
             model.SizeChanged += delegate(object source, WidthHeightUpdateEventArgs args)
             {
                 Zoom = (Width / 1024.0);

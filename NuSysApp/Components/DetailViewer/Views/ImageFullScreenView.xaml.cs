@@ -35,9 +35,10 @@ namespace NuSysApp
                 var sw = SessionController.Instance.SessionView.ActualWidth /2;
                 var sh = SessionController.Instance.SessionView.ActualHeight /2;
 
-                var ratio = xImg.ActualWidth > xImg.ActualHeight ? xImg.ActualWidth/sw : xImg.ActualHeight/sh;
-                xImg.Width = xImg.ActualWidth/ratio;
-                xImg.Height = xImg.ActualHeight/ratio;
+
+                var ratio = vm.Width > vm.Height ? vm.Width/sw : vm.Height/sh;
+                xImg.Width = vm.Width/ratio;
+                xImg.Height = vm.Height/ratio;
                 //  xBorder.Width = xImg.Width + 5;
                 // xBorder.Height = xImg.Height +5;
 

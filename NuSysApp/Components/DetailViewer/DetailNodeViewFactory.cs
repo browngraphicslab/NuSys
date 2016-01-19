@@ -75,7 +75,9 @@ namespace NuSysApp
                     await tvm.Init();
                     break;
                 case NodeType.Image:
-                    view = new ImageFullScreenView(new ImageNodeViewModel((ImageNodeModel)model));
+                    var ivm = new ImageNodeViewModel((ImageNodeModel)model);
+                    await ivm.Init();
+                    view = new ImageFullScreenView(ivm);
                     break;
                 case NodeType.Word:
                     view = new WordDetailView(new WordNodeViewModel((WordNodeModel)model));

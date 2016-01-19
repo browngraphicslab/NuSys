@@ -21,7 +21,8 @@ namespace NuSysApp
         }
 
 
-        public BitmapImage Image { get; set; }
+        public BitmapImage Image { get;
+            set; }
 
         public override async Task Init()
         {

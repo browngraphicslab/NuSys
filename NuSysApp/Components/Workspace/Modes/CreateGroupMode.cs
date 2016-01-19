@@ -45,14 +45,19 @@ namespace NuSysApp
             if (!_isHovering)
                 return;
 
+            var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
+            var id2 = _hoveredNode.Id;
+
+            if (id1 == id2)
+                return;
+
             var p = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
                             manipulationCompletedRoutedEventArgs.Position);
             p.X -= 150;
             p.Y -= 150;
 
           
-            var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
-            var id2 = _hoveredNode.Id;
+
             
             await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
             await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
@@ -60,6 +65,7 @@ namespace NuSysApp
             var msg = new Message();
             msg["id1"] = id1;
             msg["id2"] = id2;
+            msg["groupNodeId"] = SessionController.Instance.GenerateId();
             msg["width"] = 300;
             msg["height"] = 300;
             msg["x"] = p.X;
@@ -83,27 +89,21 @@ namespace NuSysApp
 
                 if (_timer == null)
                 {
-                    Debug.WriteLine("Creating timer");
                     _timer = new DispatcherTimer();
                     _timer.Tick += delegate(object o, object o1)
                     {
-                        Debug.WriteLine("Give feedback!");
                         _timer.Stop();
                         _isHovering = true;
                         _hoveredNode = (result.First() as FrameworkElement).DataContext as NodeViewModel;
                         _hoveredNodeView = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode).First() as IThumbnailable;
 
                     };
-                    _timer.Interval = TimeSpan.FromMilliseconds(400);
+                    _timer.Interval = TimeSpan.FromMilliseconds(200);
                     _timer.Start();
                 }
             }
             else
             {
-                if (_createdGroupId != null)
-                {
-                   // SessionController.Instance.IdToSendables[_createdGroupId]
-                }
                 draggedItem.Opacity = 1;
                 _timer?.Stop();
                 _timer = null;

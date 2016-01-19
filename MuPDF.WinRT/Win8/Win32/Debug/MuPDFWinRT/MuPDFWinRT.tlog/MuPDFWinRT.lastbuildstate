@@ -1,2 +1,6 @@
 #TargetFrameworkVersion=:PlatformToolSet=v120:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit
-Debug|Win32|C:\Users\jjfu\Desktop\phil_groups\|
+<<<<<<< HEAD
+Debug|Win32|C:\Users\Trent\Documents\Nusys_stuff\nusys3\nusys\|
+=======
+Debug|Win32|C:\Users\sony\Documents\NuSys_Repo\nusys2\nusys\|
+>>>>>>> origin/trent

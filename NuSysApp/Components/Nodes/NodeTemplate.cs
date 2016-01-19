@@ -34,6 +34,7 @@ namespace NuSysApp
         public TextBox title = null;
         public Border highlight = null;
         public ItemsControl tags = null;
+        public TextBlock userName = null;
 
         public NodeTemplate()
         {
@@ -79,6 +80,7 @@ namespace NuSysApp
             resizer.ManipulationDelta += OnResizerManipulationDelta;
 
             highlight = (Border)GetTemplateChild("xHighlight");
+            userName = (TextBlock) GetTemplateChild("xUserName");
 
             //tags = (TextBlock)GetTemplateChild("Tags");
             //var t = new TranslateTransform {X = 0, Y = 25};
@@ -109,10 +111,12 @@ namespace NuSysApp
                 inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
             };
 
-            vm.Model.UserChanged += delegate
+            vm.Model.UserChanged += delegate (NetworkUser user)
             {
                 highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
                 highlight.BorderBrush = vm.UserColor;
+                userName.Foreground = vm.UserColor;
+                userName.Text = user?.Name ?? "";
             };
             
             vm.PropertyChanged += OnPropertyChanged;

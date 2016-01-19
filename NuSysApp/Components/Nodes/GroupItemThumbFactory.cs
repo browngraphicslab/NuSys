@@ -20,6 +20,7 @@ namespace NuSysApp
     {
         public async Task<FrameworkElement> CreateFromSendable(Sendable model, List<FrameworkElement> AtomViewList)
         {
+            var rect = new Rectangle();
             if (!(model is NodeModel)) return null;
             
             var img = new Image();
@@ -27,9 +28,10 @@ namespace NuSysApp
                 img.Source = SessionController.Instance.Thumbnails[model.Id];
             else
             {
-                return new Rectangle();
+                rect.DataContext = new GroupItemViewModel((AtomModel)model);
+                return rect;
             }
-            var rect = new Rectangle();
+           
             rect.Fill = new ImageBrush
             {
                 AlignmentX = AlignmentX.Center,
