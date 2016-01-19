@@ -9,17 +9,18 @@ namespace PowerPointAddIn
 {
     public class SelectionItemView
     {
-        public String BookmarkId;
         public Boolean IsExported;
         public String RtfContent;
         public String FilePath;
         public String DateTimeExported;
         public List<String> ImageNames;
         public String Token;
+        private string v;
+        private string path;
+        private string _fileToken;
 
-        public SelectionItemView(string BookmarkId, Boolean IsExported, String RtfContent, String FilePath, String DateTimeExported, List<String> ImageNames, String Token)
+        public SelectionItemView(Boolean IsExported, String RtfContent, String FilePath, String DateTimeExported, List<String> ImageNames, String Token)
         {
-            this.BookmarkId = BookmarkId;
             this.IsExported = IsExported;
             this.RtfContent = RtfContent;
             this.FilePath = FilePath;
