@@ -47,7 +47,7 @@ namespace NuSysApp
 
             var model = (TextNodeModel)vm.Model;
 
-            if (model.GetMetaData("Token") == null)
+            if (model.GetMetaData("Token") == null || (model.GetMetaData("Token") != null && String.IsNullOrEmpty(model.GetMetaData("Token").ToString())))
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
             }

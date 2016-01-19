@@ -29,6 +29,11 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
+            var model = (ImageNodeModel)vm.Model;
+            if (model.GetMetaData("Token") == null || (model.GetMetaData("Token") != null && String.IsNullOrEmpty(model.GetMetaData("Token").ToString())))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
