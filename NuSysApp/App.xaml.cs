@@ -83,15 +83,15 @@ namespace NuSysApp
             Window.Current.Activate();
 
             await SetupDirectories();
-            await AccessList.ReadFileTokens();
+            //await AccessList.ReadFileTokens();
         }
 
         private static async Task<bool> SetupDirectories()
         {
-            //StorageFolder workspaceFolder = await AccessList.GetWorkspaceFolder();
+            StorageFolder workspaceFolder = await AccessList.GetWorkspaceFolder();
             //StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(workspaceFolder, Constants.FolderNusysTemp);
             NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
             NuSysStorages.Thumbs = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.SaveFolder, Constants.FolderThumbs);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
@@ -101,6 +101,8 @@ namespace NuSysApp
             NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
             NuSysStorages.OfficeToPdfFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
 
+            NuSysStorages.FirstTimeWord = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimeWord);
+            NuSysStorages.FirstTimePowerpoint = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimePowerpoint);
             return true;
         }
 
@@ -127,7 +129,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(request);
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
-            await AccessList.SaveFileTokens();
+            //await AccessList.SaveFileTokens();
 
             deferral.Complete();
         }

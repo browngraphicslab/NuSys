@@ -12,18 +12,20 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WordNodeViewModel : NodeViewModel
+    public class PowerpointNodeViewModel : NodeViewModel
     {
         
-        public WordNodeViewModel(WordNodeModel model) : base(model)
+        public PowerpointNodeViewModel(PowerpointNodeModel model) : base(model)
         {
             var title = Path.GetFileName(model.GetMetaData("FilePath").ToString());
             Title = title;
         }
 
+
         public override async Task Init()
         {
-
+            
         }
+
     }
 }

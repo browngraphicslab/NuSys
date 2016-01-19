@@ -229,7 +229,7 @@
     <Compile Include="Components\Nodes\PowerpointNode\PowerpointNodeView.xaml.cs">
       <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Nodes\TextNode\PowerpointNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\PowerpointNode\PowerpointNodeViewModel.cs" />
     <Compile Include="Components\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -495,9 +495,11 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
+    <Content Include="Assets\wordIcon.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>

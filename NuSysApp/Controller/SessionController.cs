@@ -280,6 +280,12 @@ namespace NuSysApp
                 case NodeType.Image:
                     node = new ImageNodeModel(id);
                     break;
+                case NodeType.Word:
+                    node = new WordNodeModel(id);
+                    break;
+                case NodeType.Powerpoint:
+                    node = new PowerpointNodeModel(id);
+                    break;
                 case NodeType.PDF:
                     node = new PdfNodeModel(id);
                     break;

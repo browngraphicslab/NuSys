@@ -30,7 +30,60 @@ namespace NuSysApp
         
         public override async Task Init()       
         {
+<<<<<<< HEAD
+            try { 
+            _inlineImages.Clear();
 
+            const string rtfImagePlaceholder = "---IMAGE---";
+            var md = ((TextNodeModel)Model).Text;
+
+            var imgData = new List<byte[]>();
+            while (true)
+            {
+
+                var match = Regex.Match(md, @"\[!\[.*\]\((.*)\)\]", RegexOptions.IgnoreCase);
+                Regex rgx = new Regex(@"\[!\[.*\]\(.*\)\]\(.*\)");
+                md = rgx.Replace(md, rtfImagePlaceholder, 1);
+
+                if (match.Groups.Count <= 1)
+                {
+                    break;
+                }
+
+                string imgUrl = "http:" + match.Groups[1].Value;
+                var img = await DownloadImageFromWebsiteAsync(imgUrl);
+
+                imgData.Add(img);
+                _inlineImages.Add(await ByteArrayToBitmapImage(img));
+            }
+
+            var rtf = await ContentConverter.MdToRtf(md);
+            rtf = rtf.Replace(@"\fonttbl{\f0\froman\fcharset0 Times New Roman;", @"\fonttbl{\f0\froman\fcharset0 Calibri;");
+
+            for (var i = 0; i < _inlineImages.Count; i++)
+            {
+                var imageRtf = @"{\pict\pngblip\picw---IMG_W---0\pich---IMG_H---\picwgoal---IMG_GOAL_W---\pichgoal---IMG_GOAL_H---\hex ---IMG_DATA---}";
+                imageRtf = imageRtf.Replace("---IMG_W---", _inlineImages[i].PixelWidth.ToString());
+                imageRtf = imageRtf.Replace("---IMG_H---", _inlineImages[i].PixelHeight.ToString());
+                imageRtf = imageRtf.Replace("---IMG_GOAL_W---", (_inlineImages[i].PixelWidth * 15).ToString());
+                imageRtf = imageRtf.Replace("---IMG_GOAL_H---", (_inlineImages[i].PixelHeight * 15).ToString());
+
+                var imgDataHex = BitConverter.ToString(imgData[i]).Replace("-", "");
+                imageRtf = imageRtf.Replace("---IMG_DATA---", imgDataHex);
+
+                var regex = new Regex(Regex.Escape(rtfImagePlaceholder));
+                rtf = regex.Replace(rtf, imageRtf, 1);
+            }
+
+            RtfText = rtf;
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Couldn't update rtf.");
+            }
+=======
+
+>>>>>>> c6c8178bd8aceb6acd9b8295987bf2ce050b4020
         }
 
         private static async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)

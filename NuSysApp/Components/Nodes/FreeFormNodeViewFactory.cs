@@ -71,6 +71,12 @@ namespace NuSysApp
                 case NodeType.Image:
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));
                     break;
+                case NodeType.Word:
+                    view = new WordNodeView(new WordNodeViewModel((WordNodeModel)model));
+                    break;
+                case NodeType.Powerpoint:
+                    view = new PowerpointNodeView(new PowerpointNodeViewModel((PowerpointNodeModel)model));
+                    break;
                 case NodeType.Audio:
                     view = new AudioNodeView(new AudioNodeViewModel((AudioNodeModel)model));
                     break;

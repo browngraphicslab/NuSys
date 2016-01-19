@@ -155,10 +155,10 @@ namespace WordAddIn
                     }
                     else
                     {
-                        Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, "");
+                        Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, commentExported + " " + selection.DateTimeExported);
                         c.Author = commentAuthor;
 
-                        ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
+                        ns = new SelectionItem { Comment = c, DateTimeExported = selection.DateTimeExported, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
                         ns.AddSelection();
                         ExportedSelections.Add(ns);
                     }
