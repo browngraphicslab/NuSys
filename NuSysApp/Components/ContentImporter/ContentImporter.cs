@@ -22,8 +22,7 @@ namespace NuSysApp
         public String BookmarkId;
         public Boolean IsExported;
         public String RtfContent;
-        public String DocPath;
-        public String DocName;
+        public String FilePath;
         public List<String> ImageNames;
         public String DateTimeExported;
         public String Token;
@@ -120,9 +119,9 @@ namespace NuSysApp
                         var metadata = new Dictionary<string, object>();
                         metadata["BookmarkId"] = selectionItem.BookmarkId;
                         metadata["IsExported"] = selectionItem.IsExported;
-                        metadata["FilePath"] = selectionItem.DocPath;
+                        metadata["FilePath"] = selectionItem.FilePath;
                         metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                        metadata["Token"] = selectionItem.Token;
+                        metadata["Token"] = selectionItem.Token.Trim();
 
                         m["metadata"] = metadata;
 
@@ -150,6 +149,15 @@ namespace NuSysApp
                             m["autoCreate"] = true;
                             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
                             m["nodeType"] = NodeType.Image.ToString();
+
+                            var metadata = new Dictionary<string, object>();
+                            metadata["BookmarkId"] = selectionItem.BookmarkId;
+                            metadata["IsExported"] = selectionItem.IsExported;
+                            metadata["FilePath"] = selectionItem.FilePath;
+                            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+                            metadata["Token"] = selectionItem.Token.Trim();
+
+                            m["metadata"] = metadata;
 
                             StorageFile imgFile;
                             try {
@@ -220,11 +228,18 @@ namespace NuSysApp
 
                 foreach (var file in transferFiles)
                 {
-                    var text = await FileIO.ReadTextAsync(file);
-                    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+                    try
+                    {
+                        var text = await FileIO.ReadTextAsync(file);
+                        var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                        List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                    await AddinTransfer(selectionItems);
+                        await AddinTransfer(selectionItems);
+                    }
+                    catch (Exception ex)
+                    {
+                        //TODO exception handling
+                    }
                 }
 
                 foreach (var file in transferFiles)

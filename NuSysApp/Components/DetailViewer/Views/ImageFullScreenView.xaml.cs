@@ -59,10 +59,10 @@ namespace NuSysApp
 
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
-            var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+            var model = (ImageNodeModel)((ImageNodeViewModel)DataContext).Model;
 
             string token = model.GetMetaData("Token").ToString();
-            string ext = Path.GetExtension(model.GetMetaData("DocPath").ToString());
+            string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 
             if (Constants.WordFileTypes.Contains(ext))

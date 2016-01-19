@@ -267,7 +267,7 @@ namespace NuSysApp
             var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
 
             string token = model.GetMetaData("Token").ToString();
-            string ext = Path.GetExtension(model.GetMetaData("DocPath").ToString());
+            string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 
             if (Constants.WordFileTypes.Contains(ext))

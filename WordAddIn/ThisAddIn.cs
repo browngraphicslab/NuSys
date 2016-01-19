@@ -134,6 +134,21 @@ namespace WordAddIn
                 }
 
                 File.WriteAllText(path + "\\" + fileName, String.Empty);
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
+
+                    foreach (Office.DocumentProperty prop in properties)
+                    {
+                        if (prop.Name == "FileToken")
+                        {
+                            prop.Delete();
+                        }
+                    }
+
+                    properties.Add("FileToken", false, 4, _fileToken);
+                }
             }
             catch (Exception ex)
             {

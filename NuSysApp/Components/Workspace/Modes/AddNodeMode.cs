@@ -123,7 +123,7 @@ namespace NuSysApp
                 var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
                 var metadata = new Dictionary<string, object>();
                 metadata["FilePath"] = storageFile.Path;
-                metadata["FALToken"] = token;
+                metadata["FALToken"] = token.Trim();
 
                 dict["metadata"] = metadata;
 
