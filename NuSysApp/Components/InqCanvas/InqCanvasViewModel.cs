@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SharpDX.Direct2D1;
+using SharpDX.Mathematics.Interop;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -19,7 +21,7 @@ namespace NuSysApp
 
         private Size _canvasSize;
 
-        //private InqCanvasImageSource _source;
+        private List<SharpDX.Direct2D1.PathGeometry> _lines = new List<SharpDX.Direct2D1.PathGeometry>();
 
         public InqCanvasViewModel(InqCanvasModel model, Size canvasSize)
         {
@@ -61,34 +63,35 @@ namespace NuSysApp
         private async void OnLineFinalized(InqLineModel lineModel)
         {
 
-            //List<Point> allP = new List<Point>();
-            //List<InqLineModel> ll = Model.Lines.ToList();
-
-            //foreach (InqLineModel ilm in ll)
-            //{
-            //    List<Point> currLine = new List<Point>();
-            //    foreach(Point2d p in ilm.Points) {
-            //        currLine.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
-            //    }
-            //    _source.RenderLines();
-            //}
-
-            List<Point> currLine = new List<Point>();
-            foreach (Point2d p in lineModel.Points)
+            PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(RenderTarget.Factory);
+            GeometrySink sink = geometry.Open();
+            RawVector2 start = new RawVector2();
+            start.X = (float)(lineModel.Points.First().X * Constants.MaxCanvasSize);
+            start.Y = (float)(lineModel.Points.First().Y * Constants.MaxCanvasSize);
+            sink.BeginFigure(start, new FigureBegin());
+            foreach (Point2d p in lineModel.Points.Skip(1))
             {
-                currLine.Add(new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize));
+                RawVector2 vec = new RawVector2();
+                vec.X = (float)(p.X * Constants.MaxCanvasSize);
+                vec.Y = (float)(p.Y * Constants.MaxCanvasSize);
+                sink.AddLine(vec);
             }
+            sink.EndFigure(new FigureEnd());
+            sink.Close();
+            sink.Dispose();
+            _lines.Add(geometry);
 
-            //_source.AddLine(Windows.UI.Colors.Black, currLine.ToArray());
-            //_source.RenderLines();
-
-            RaisePropertyChanged("FinalLineAdded");
         }
 
-        //public InqCanvasImageSource CanvasSource
-        //{
-        //    get { return _source; }
-        //}
+        public List<PathGeometry> Lines
+        {
+            get { return _lines; }
+        }
+
+        public SharpDX.Direct2D1.RenderTarget RenderTarget
+        {
+            get; set;
+        }
 
         public Size CanvasSize {
             get { return _canvasSize; }

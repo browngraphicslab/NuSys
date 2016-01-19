@@ -39,7 +39,7 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             await vm.FlipLeft();
-            (nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
             // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
@@ -51,7 +51,7 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             await vm.FlipRight();
-            (nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;

@@ -39,12 +39,12 @@ namespace NuSysApp
                 //  xBorder.Width = xImg.Width + 5;
                 // xBorder.Height = xImg.Height +5;
 
-                _inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
-                xWrapper.Children.Add(_inqCanvasView);
-                _inqCanvasView.IsEnabled = true;
-                _inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
-                _inqCanvasView.Width = xImg.Width;
-                _inqCanvasView.Height = xImg.Height;
+                //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
+                //xWrapper.Children.Add(_inqCanvasView);
+                //_inqCanvasView.IsEnabled = true;
+                //_inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
+                //_inqCanvasView.Width = xImg.Width;
+                //_inqCanvasView.Height = xImg.Height;
          
 
             };

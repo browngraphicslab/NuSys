@@ -41,6 +41,7 @@ namespace NuSysApp
             _inqCanvas.Width = Constants.MaxCanvasSize;
             _inqCanvas.Height = Constants.MaxCanvasSize;
             xWrapper.Children.Add(_inqCanvas);
+            Canvas.SetZIndex(_inqCanvas, -5);
             //wsModel.InqCanvas = inqCanvasModel;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
@@ -190,6 +191,7 @@ namespace NuSysApp
         public async void SwitchMode(Options mode, bool isFixed)
         {
             SessionController.Instance.SessionView.HideRecorder();
+            IC.IsHitTestVisible = true;
             //SessionController.Instance.SessionView.FloatingMenu.Reset();
             switch (mode)
             {
@@ -207,6 +209,7 @@ namespace NuSysApp
                     SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
+                    IC.IsHitTestVisible = false;
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));
                     // TODO: delegate to workspaceview
                     //InqCanvas.SetErasing(false);

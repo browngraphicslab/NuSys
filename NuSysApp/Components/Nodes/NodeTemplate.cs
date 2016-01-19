@@ -25,7 +25,7 @@ namespace NuSysApp
         public event TemplateReady OnTemplateReady;
         public delegate void TemplateReady();
 
-        public InqCanvasView inkCanvas = null;
+        //public InqCanvasView inkCanvas = null;
         public Button btnDelete = null;
         public Path resizer = null;
         public Grid bg = null;
@@ -66,12 +66,14 @@ namespace NuSysApp
             
             bg = (Grid)GetTemplateChild("bg");
             
-            inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
+            //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
         
-            (GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
+            //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
  
-            inkCanvas.IsEnabled = false;
-            inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
+            //inkCanvas.IsEnabled = false;
+            //inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
+            //Canvas.SetZIndex(inkCanvas, -5);
+
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
 
@@ -107,8 +109,8 @@ namespace NuSysApp
             vm.Model.SizeChanged += delegate(object source, WidthHeightUpdateEventArgs args)
             {
                 //inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
-                inkCanvas.Width = args.Width;
-                inkCanvas.Height = args.Height;
+                //inkCanvas.Width = args.Width;
+                //inkCanvas.Height = args.Height;
             };
             
             vm.PropertyChanged += OnPropertyChanged;
@@ -120,7 +122,7 @@ namespace NuSysApp
         {
             var vm = (NodeViewModel)this.DataContext;
             vm.ToggleEditingInk();
-            inkCanvas.IsEnabled = vm.IsEditingInk;
+            //inkCanvas.IsEnabled = vm.IsEditingInk;
         }
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)

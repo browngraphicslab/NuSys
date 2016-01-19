@@ -27,8 +27,8 @@ namespace NuSysApp
                 vm.Init();
                 //lets see if this 2 way binding works
                 //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
-                nodeTpl.inkCanvas.Width = vm.Width;
-                nodeTpl.inkCanvas.Height = vm.Height;
+                //nodeTpl.inkCanvas.Width = vm.Width;
+                //nodeTpl.inkCanvas.Height = vm.Height;
             };
         }
 

@@ -170,16 +170,17 @@ namespace NuSysApp
         private DXGI.SwapChain1 swapChain;
         private D3D11.Texture2D backBufferTexture;
         private D3D11.RenderTargetView backBufferView;
-        private SharpDX.Direct2D1.RenderTarget renderTarget;
 
         private List<RawVector2> _currLine = new List<RawVector2>();
-        private List<SharpDX.Direct2D1.PathGeometry> _lines = new List<SharpDX.Direct2D1.PathGeometry>();
+
+        private Rect _clip = new Rect(5000, 5000, 1000, 1000);
+        private Matrix3x2 _scale = Matrix3x2.Identity;
 
 
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
         {
 
-            // Get the default hardware device and enable debugging. Don't care about the available feature level.
+            
             // DeviceCreationFlags.BgraSupport must be enabled to allow Direct2D interop.
             SharpDX.Direct3D11.Device defaultDevice = new SharpDX.Direct3D11.Device(D3D.DriverType.Hardware, D3D11.DeviceCreationFlags.BgraSupport);
 
@@ -189,10 +190,6 @@ namespace NuSysApp
 
             float pixelScale = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().LogicalDpi/96.0f;
 
-            // Query for the adapter and more advanced DXGI objects.
-            //SharpDX.DXGI.Device2 dxgiDevice2 = device.QueryInterface<SharpDX.DXGI.Device2>();
-            //SharpDX.DXGI.Adapter dxgiAdapter = dxgiDevice2.Adapter;
-            //SharpDX.DXGI.Factory2 dxgiFactory2 = dxgiAdapter.GetParent<SharpDX.DXGI.Factory2>();
 
             // Description for our swap chain settings.
             DXGI.SwapChainDescription1 description = new DXGI.SwapChainDescription1()
@@ -243,45 +240,72 @@ namespace NuSysApp
             // Create a Texture2D from the existing swap chain to use as 
             this.backBufferTexture = D3D11.Texture2D.FromSwapChain<D3D11.Texture2D>(this.swapChain, 0);
             this.backBufferView = new D3D11.RenderTargetView(this.device, this.backBufferTexture);
-
+            //create a surface from the texture so we can write to it with Direct2d
             DXGI.Surface surface = backBufferTexture.QueryInterface<DXGI.Surface>();
-            renderTarget = new SharpDX.Direct2D1.RenderTarget(d2dContext.Factory, surface, new SharpDX.Direct2D1.RenderTargetProperties()
+            _viewModel.RenderTarget = new SharpDX.Direct2D1.RenderTarget(d2dContext.Factory, surface, new SharpDX.Direct2D1.RenderTargetProperties()
             {
                 PixelFormat = new SharpDX.Direct2D1.PixelFormat(
                         SharpDX.DXGI.Format.Unknown,
                         SharpDX.Direct2D1.AlphaMode.Premultiplied),
             });
 
+            _viewModel.RenderTarget.BeginDraw();
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+            _viewModel.RenderTarget.EndDraw();
+            this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
+            _viewModel.RenderTarget.BeginDraw();
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+            _viewModel.RenderTarget.EndDraw();
+            this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
+
 
             CompositionTarget.Rendering += CompositionTarget_Rendering;
+        }
+
+        public void BeginContinuousLine(Windows.Foundation.Point nextPoint)
+        {
+            _currLine.Clear();
+            DrawContinuousLine(nextPoint);
         }
 
         public void DrawContinuousLine(Windows.Foundation.Point nextPoint)
         {
             RawVector2 next = ConvertToRawVector2(nextPoint);
-            if (_currLine.Count() != 0 && _currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
+            if (_currLine.Count() != 0)
             {
-                return;
+                if(_currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
+                Rect bounds = Window.Current.Bounds;
+                _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
             }
             _currLine.Add(next);
 
             needsRender = true;
         }
 
-        public void EndContinuousLine()
-        {
-            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(renderTarget.Factory);
-            GeometrySink sink = geometry.Open();
+        //public void DrawFinalLine(Windows.Foundation.Point[] line)
+        //{
+        //    SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(_viewModel.RenderTarget.Factory);
+        //    GeometrySink sink = geometry.Open();
 
-            sink.BeginFigure(_currLine.First(), new FigureBegin());
-            sink.AddLines(_currLine.ToArray());
-            sink.EndFigure(new FigureEnd());
-            sink.Close();
-            sink.Dispose();
-            _lines.Add(geometry);
-            _currLine.Clear();
-            needsRender = false;
-        }
+        //    sink.BeginFigure(ConvertToRawVector2(line[0]), new FigureBegin());
+        //    for(int i = 1; i < line.Length; i++)
+        //    {
+        //        sink.AddLine(ConvertToRawVector2(line[i]));
+        //    }
+        //    sink.EndFigure(new FigureEnd());
+        //    sink.Close();
+        //    sink.Dispose();
+        //    _lines.Add(geometry);
+        //    _currLine.Clear();
+        //    needsRender = true;
+        //}
 
         private void CompositionTarget_Rendering(object sender, object e)
         {
@@ -290,34 +314,34 @@ namespace NuSysApp
                 return;
             }
 
-            renderTarget.BeginDraw();
-            renderTarget.PushAxisAlignedClip(
-            new RectangleF(
-                5000,
-                5000,
-                6000,
-                6000
-                ),
+            _viewModel.RenderTarget.BeginDraw();
+            _viewModel.RenderTarget.PushAxisAlignedClip(
+            ConvertToRectF(_clip),
             AntialiasMode.Aliased
             );
-            renderTarget.Clear(ConvertToColorF(Colors.White));
-            using (var brush = new SharpDX.Direct2D1.SolidColorBrush(renderTarget, ConvertToColorF(Windows.UI.Colors.Black)))
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+            using (var brush = new SharpDX.Direct2D1.SolidColorBrush(_viewModel.RenderTarget, ConvertToColorF(Windows.UI.Colors.Black)))
             {
-                foreach(SharpDX.Direct2D1.PathGeometry l in _lines) {
-                    renderTarget.DrawGeometry(l, brush);
+                foreach(SharpDX.Direct2D1.PathGeometry l in _viewModel.Lines) {
+                    _viewModel.RenderTarget.DrawGeometry(l, brush);
                 }
-                SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(renderTarget.Factory);
-                GeometrySink sink = geometry.Open();
 
-                sink.BeginFigure(_currLine.First(), new FigureBegin());
-                sink.AddLines(_currLine.ToArray());
-                sink.EndFigure(new FigureEnd());
-                sink.Close();
-                sink.Dispose();
-                renderTarget.DrawGeometry(geometry, brush);
+                if(_currLine.Count() > 0)
+                {
+                    SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(_viewModel.RenderTarget.Factory);
+                    GeometrySink sink = geometry.Open();
+
+                    sink.BeginFigure(_currLine.First(), new FigureBegin());
+                    sink.AddLines(_currLine.ToArray());
+
+                    sink.EndFigure(new FigureEnd());
+                    sink.Close();
+                    sink.Dispose();
+                    _viewModel.RenderTarget.DrawGeometry(geometry, brush);
+                }
             }
-            renderTarget.PopAxisAlignedClip();
-            renderTarget.EndDraw();
+            _viewModel.RenderTarget.PopAxisAlignedClip();
+            _viewModel.RenderTarget.EndDraw();
 
             // Tell the swap chain to present the buffer.
             this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
@@ -335,6 +359,11 @@ namespace NuSysApp
             r.X = (float)p.X;
             r.Y = (float)p.Y;
             return r;
+        }
+
+        private static RectangleF ConvertToRectF(Windows.Foundation.Rect rect)
+        {
+            return new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);
         }
 
         private void DisposeResources()
