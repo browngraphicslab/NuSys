@@ -196,6 +196,7 @@ namespace NuSysApp
 
         public async Task OpenWorkspace(WorkspaceModel model)
         {
+            await DisposeWorspace(_activeWorkspace);
             if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
                 mainCanvas.Children.Remove(_activeWorkspace);
 
@@ -222,7 +223,13 @@ namespace NuSysApp
             {
                 model.Title = xWorkspaceTitle.Text;
                 Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
+                var m = new Message();
+                m["id"] = model.Id;
+                m["title"] = model.Title;
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
+                    NetworkClient.PacketType.UDP);
             };
+            model.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
@@ -233,6 +240,14 @@ namespace NuSysApp
             overlayCanvas.Width = mainCanvas.ActualWidth;
             overlayCanvas.Height = mainCanvas.ActualHeight;
 
+        }
+
+        private void TitleChanged(object source, string title)
+        {
+            if (xWorkspaceTitle.Text != title)
+            {
+                xWorkspaceTitle.Text = title;
+            }
         }
 
         public void ShowRecorder()
@@ -308,6 +323,11 @@ namespace NuSysApp
             {
                 //var vm = this.DataContext as WorkspaceViewModel;
             }
+        }
+
+        private async Task DisposeWorspace(WorkspaceView oldWorkspaceView)
+        {
+            
         }
     }
 }
