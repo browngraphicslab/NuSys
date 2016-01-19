@@ -121,7 +121,7 @@ namespace NuSysApp
                         metadata["IsExported"] = selectionItem.IsExported;
                         metadata["FilePath"] = selectionItem.FilePath;
                         metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                        metadata["Token"] = selectionItem.Token.Trim();
+                        metadata["Token"] = selectionItem.Token?.Trim();
 
                         m["metadata"] = metadata;
 
@@ -155,7 +155,7 @@ namespace NuSysApp
                             metadata["IsExported"] = selectionItem.IsExported;
                             metadata["FilePath"] = selectionItem.FilePath;
                             metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                            metadata["Token"] = selectionItem.Token.Trim();
+                            metadata["Token"] = selectionItem.Token?.Trim();
 
                             m["metadata"] = metadata;
 
@@ -163,13 +163,11 @@ namespace NuSysApp
                             try {
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
                                 await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                         new NewContentSystemRequest(contentId,
-                                            Convert.ToBase64String(ba)));
-
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);
 
                             }
                             catch (Exception ex)

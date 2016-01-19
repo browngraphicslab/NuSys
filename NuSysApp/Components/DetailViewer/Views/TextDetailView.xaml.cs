@@ -51,14 +51,15 @@ namespace NuSysApp
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
-
-            if (model.Text != "") { 
-                rtfTextBox.SetRtfText(model.Text);
+            var txt = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
+            if (txt != "") { 
+                rtfTextBox.SetRtfText(txt);
             }
 
             model.TextChanged += delegate
             {
-                rtfTextBox.SetRtfText(model.Text);
+                var text = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
+                rtfTextBox.SetRtfText(text);
             };
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
