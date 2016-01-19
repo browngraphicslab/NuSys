@@ -90,6 +90,9 @@ namespace NuSysApp
             curve.Point2 = new Point(anchor1.X - distanceX/2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX/2, anchor1.Y);
 
+            Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
+            Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
+
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX/2 - Rect.ActualWidth/2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY/2 - Rect.ActualHeight*1.5);
         }
