@@ -54,7 +54,7 @@ namespace PowerPointAddIn
                 {
                     if (prop.Name == "FileToken")
                     {
-                        _fileToken = properties["FileToken"].ToString();
+                        _fileToken = prop.Value.ToString();
                     }
                 }
             }

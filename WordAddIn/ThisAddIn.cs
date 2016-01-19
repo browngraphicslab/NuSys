@@ -110,7 +110,7 @@ namespace WordAddIn
                 {
                     if (prop.Name == "FileToken")
                     {
-                        _fileToken = properties["FileToken"].ToString();
+                        _fileToken = prop.Value.ToString();
                     }
                 }
             }
@@ -147,7 +147,7 @@ namespace WordAddIn
                         }
                     }
 
-                    properties.Add("FileToken", false, 4, _fileToken);
+                    properties.Add("FileToken", false, 4, _fileToken.Trim());
                 }
             }
             catch (Exception ex)

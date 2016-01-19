@@ -89,8 +89,7 @@ namespace NuSysApp
 
         private Message CreateMessage(SelectionItem selectionItem, String contentId, Point centerpoint)
         {
-            var m = new Message();
-
+            Message m = new Message();
             m["contentId"] = contentId;
             m["x"] = centerpoint.X - 200;
             m["y"] = centerpoint.Y - 200;
@@ -98,7 +97,6 @@ namespace NuSysApp
             m["height"] = 400;
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
-            m["nodeType"] = NodeType.Text.ToString();
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = selectionItem.BookmarkId;
@@ -116,14 +114,16 @@ namespace NuSysApp
         {
             foreach (SelectionItem selectionItem in selectionItems)
             {
+                double width, height;
+                Point centerpoint;
                 await UITask.Run(async () =>
                 {
-                    var width = SessionController.Instance.SessionView.ActualWidth;
-                    var height = SessionController.Instance.SessionView.ActualHeight;
-                    var centerpoint =
+                    width = SessionController.Instance.SessionView.ActualWidth;
+                    height = SessionController.Instance.SessionView.ActualHeight;
+                    centerpoint =
                         SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
-
+                });
                     var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
 
                     if (hasRtf)
@@ -132,8 +132,9 @@ namespace NuSysApp
                         var contentId = SessionController.Instance.GenerateId();
 
                         Message m = CreateMessage(selectionItem, contentId, centerpoint);
+                        m["nodeType"] = NodeType.Text.ToString();
 
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
                          await
                             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
@@ -149,6 +150,7 @@ namespace NuSysApp
                             var contentId = SessionController.Instance.GenerateId();
 
                             Message m = CreateMessage(selectionItem, contentId, centerpoint);
+                            m["nodeType"] = NodeType.Image.ToString();
 
                             StorageFile imgFile;
                             try {
@@ -165,11 +167,9 @@ namespace NuSysApp
                             {
 
                             }
-
-
                         }
                     }
-                });
+                
             }
         }
 
