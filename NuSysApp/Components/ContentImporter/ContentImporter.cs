@@ -87,6 +87,31 @@ namespace NuSysApp
             };
         }
 
+        private Message CreateMessage(SelectionItem selectionItem, String contentId, Point centerpoint)
+        {
+            var m = new Message();
+
+            m["contentId"] = contentId;
+            m["x"] = centerpoint.X - 200;
+            m["y"] = centerpoint.Y - 200;
+            m["width"] = 400;
+            m["height"] = 400;
+            m["autoCreate"] = true;
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["nodeType"] = NodeType.Text.ToString();
+
+            var metadata = new Dictionary<string, object>();
+            metadata["BookmarkId"] = selectionItem.BookmarkId;
+            metadata["IsExported"] = selectionItem.IsExported;
+            metadata["FilePath"] = selectionItem.FilePath;
+            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+            metadata["Token"] = selectionItem.Token?.Trim();
+
+            m["metadata"] = metadata;
+
+            return m;
+        }
+
         private async Task AddinTransfer(List<SelectionItem> selectionItems)
         {
             foreach (SelectionItem selectionItem in selectionItems)
@@ -105,25 +130,8 @@ namespace NuSysApp
                     {
                         var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
                         var contentId = SessionController.Instance.GenerateId();
-                        var m = new Message();
 
-                        m["contentId"] = contentId;
-                        m["x"] = centerpoint.X - 200;
-                        m["y"] = centerpoint.Y - 200;
-                        m["width"] = 400;
-                        m["height"] = 400;
-                        m["autoCreate"] = true;
-                        m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
-                        m["nodeType"] = NodeType.Text.ToString();
-
-                        var metadata = new Dictionary<string, object>();
-                        metadata["BookmarkId"] = selectionItem.BookmarkId;
-                        metadata["IsExported"] = selectionItem.IsExported;
-                        metadata["FilePath"] = selectionItem.FilePath;
-                        metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                        metadata["Token"] = selectionItem.Token?.Trim();
-
-                        m["metadata"] = metadata;
+                        Message m = CreateMessage(selectionItem, contentId, centerpoint);
 
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
@@ -140,24 +148,7 @@ namespace NuSysApp
                         {
                             var contentId = SessionController.Instance.GenerateId();
 
-                            var m = new Message();
-                            m["contentId"] = contentId;
-                            m["x"] = centerpoint.X - 200;
-                            m["y"] = centerpoint.Y - 200;
-                            m["width"] = 400;
-                            m["height"] = 400;
-                            m["autoCreate"] = true;
-                            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
-                            m["nodeType"] = NodeType.Image.ToString();
-
-                            var metadata = new Dictionary<string, object>();
-                            metadata["BookmarkId"] = selectionItem.BookmarkId;
-                            metadata["IsExported"] = selectionItem.IsExported;
-                            metadata["FilePath"] = selectionItem.FilePath;
-                            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                            metadata["Token"] = selectionItem.Token?.Trim();
-
-                            m["metadata"] = metadata;
+                            Message m = CreateMessage(selectionItem, contentId, centerpoint);
 
                             StorageFile imgFile;
                             try {
