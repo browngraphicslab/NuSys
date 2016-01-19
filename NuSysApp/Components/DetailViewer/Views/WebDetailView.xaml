@@ -9,14 +9,25 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Padding="3,3">
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Padding="3,3" >
         <Canvas>
-            <ScrollViewer x:Name="xScrollViewer">
+            <ScrollViewer x:Name="xScrollViewer" Width="600">
                 <WebView x:Name="xWebView"  Width="1024" Height="600" Margin="3,37,3,3" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" />
             </ScrollViewer>
             <Border Background="#99000000" Width="{Binding ElementName=xWebView, Path=Width}">
-            <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
-        </Border>
+                <StackPanel Orientation="Horizontal" Width="1024">
+                    <Button x:Name="Back" Height="37" Foreground="White" Click="Back_OnClick">
+                        <Image Source="http://www.iconsplace.com/icons/preview/white/left-round-256.png"></Image>
+                    </Button>
+                    <Button x:Name="Forward" Height="37" Foreground="White" Click="Forward_OnClick">
+                        <Image Source="http://www.iconsdb.com/icons/preview/white/right-round-xxl.png"></Image>
+                    </Button>
+                    <TextBox x:Name="xUrlBox" Tag="NoManipulation" Width="890" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
+                    <Button x:Name="Refresh" Height="37" Foreground="White" Click="Refresh_OnClick">
+                        <Image Source="http://www.iconsdb.com/icons/preview/white/recurring-appointment-xxl.png"></Image>
+                    </Button>
+                </StackPanel>
+            </Border>
         </Canvas>
     </Border>
 </UserControl>

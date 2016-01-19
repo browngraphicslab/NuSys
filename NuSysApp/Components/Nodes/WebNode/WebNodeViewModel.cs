@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace NuSysApp
         private double  _zoom = 1;
        
         public string Url { get; set; }
+        public List<WebNodeModel.Webpage> History { get { return (Model as WebNodeModel).History; } } 
         public Rect ClipRect { get; set; }
 
         public double Zoom

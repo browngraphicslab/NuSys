@@ -31,11 +31,11 @@ namespace NuSysApp
                 var sh = SessionController.Instance.SessionView.ActualHeight/2;
 
                 var ratio = xWebView.Width > xWebView.Height ? xWebView.Width/sw : xWebView.Height/sh;
-                xWebView.Width = xWebView.Width/ratio;
+                xWebView.Width = (xWebView.Width/ratio) + 65;
                 //xWebView.Height = xWebView.Height/ratio;
                 xBorder.Width = xWebView.Width + 5;
                 xBorder.Height = xWebView.Height / ratio + 5;
-                xScrollViewer.Width = xWebView.Width / ratio;
+                xScrollViewer.Width = (xWebView.Width / ratio) + 65;
                 xScrollViewer.Height = xWebView.Height / ratio;
 
                 //(vm.Model as WebNodeModel).Url = "http://www.google.com";
@@ -126,6 +126,9 @@ namespace NuSysApp
             if (((DataContext as WebNodeViewModel).Model as WebNodeModel).Url != url)
             {
                 (DataContext as WebNodeViewModel).Url = url;
+                (DataContext as WebNodeViewModel).History.Add(new WebNodeModel.Webpage(url, GetTimestamp(DateTime.Now)));
+                Back.IsEnabled = true;
+
                 var message = new Message();
                 message["url"] = url;
                 message["id"] = (DataContext as WebNodeViewModel).Id;
@@ -135,5 +138,41 @@ namespace NuSysApp
 
         }
 
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmss");
+        }
+
+        private void Back_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (xWebView.CanGoBack == true)
+            {
+                xWebView.GoBack();
+                Forward.IsEnabled = true;
+            }
+            else
+            {
+                Back.IsEnabled = false;
+            }
+        }
+
+        private void Forward_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (xWebView.CanGoForward == true)
+            {
+                xWebView.GoForward();
+                Back.IsEnabled = true;
+            }
+            else
+            {
+                Forward.IsEnabled = false;
+            }
+            
+        }
+
+        private void Refresh_OnClick(object sender, RoutedEventArgs e)
+        {
+            xWebView.Refresh();
+        }
     }
 }
