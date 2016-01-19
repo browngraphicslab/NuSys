@@ -51,7 +51,7 @@ namespace PowerPointAddIn
                 ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
             }
 
-            return new SelectionItemView(Guid.NewGuid().ToString(), IsExported, RtfContent, path, ImageNames, Globals.ThisAddIn._fileToken);
+            return new SelectionItemView(IsExported, RtfContent, path, DateTime.Now.ToString(), ImageNames, Globals.ThisAddIn._fileToken);
         }
 
         private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
