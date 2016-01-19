@@ -172,78 +172,60 @@ namespace NuSysApp
                 });
             }
         }
+
         private async void SetupWordTransfer()
         {
-            var fw = new FolderWatcher(NuSysStorages.WordTransferFolder);
-            fw.FilesChanged += async delegate
+            Task.Run(async () =>
             {
-                var transferFiles = await NuSysStorages.WordTransferFolder.GetFilesAsync().AsTask();
-                var contents = new List<string>();
-                var count = 0;
-
-                foreach (var file in transferFiles)
-                {
-                    var text = await FileIO.ReadTextAsync(file);
-                    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
-
-                    await AddinTransfer(selectionItems);
+                while (true) {
+                    await WordTransfer();
+                    Task.Delay(1000);
                 }
-
-                foreach (var file in transferFiles)
-                {
-                    try
-                    {
-                        await file.DeleteAsync();
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //TODO EXCEPTION HANDLING
-                    }
-                }
-
-                ContentImported?.Invoke(contents.ToList());
-            };
+            });
         }
 
-        private async void SetupPowerPointTransfer()
+        private async void SetupPowerpointTransfer()
         {
-            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
-            fw.FilesChanged += async delegate
+            Task.Run(async () =>
             {
-                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
-                var contents = new List<string>();
-                var count = 0;
-
-                foreach (var file in transferFiles)
+                while (true)
                 {
-                    try
-                    {
-                        var text = await FileIO.ReadTextAsync(file);
-                        var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                        List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
-
-                        await AddinTransfer(selectionItems);
-                    }
-                    catch (Exception ex)
-                    {
-                        //TODO exception handling
-                    }
+                    await PowerpointTransfer();
+                    Task.Delay(1000);
                 }
+            });
+        }
 
-                foreach (var file in transferFiles)
-                {
-                    try { 
-                        await file.DeleteAsync();
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //TODO EXCEPTION HANDLING
-                    }
+        private async Task WordTransfer()
+        {
+            var fileList = await NuSysStorages.WordTransferFolder.GetFilesAsync();
+
+            foreach (var file in fileList)
+            {
+                var text = await FileIO.ReadTextAsync(file);
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+
+                await AddinTransfer(selectionItems);
+
+                await file.DeleteAsync();
             }
+        }
 
-                ContentImported?.Invoke(contents.ToList());
-            };
+        private async Task PowerpointTransfer()
+        {
+            var fileList = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync();
+
+            foreach (var file in fileList)
+            {
+                var text = await FileIO.ReadTextAsync(file);
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+
+                await AddinTransfer(selectionItems);
+
+                await file.DeleteAsync();
+            }
         }
 
     }

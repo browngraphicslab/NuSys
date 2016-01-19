@@ -69,7 +69,7 @@ namespace PowerPointAddIn
             try
             {
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\OpenDocParams";
-                string fileName = "FirstTimePowerpoint";
+                string fileName = "FirstTimePowerpoint.txt";
 
                 using (StreamReader sr = new StreamReader(path + "\\" + fileName))
                 {

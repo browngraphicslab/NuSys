@@ -125,7 +125,7 @@ namespace WordAddIn
             try
             {
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\OpenDocParams";
-                string fileName = "FirstTimeWord";
+                string fileName = "FirstTimeWord.txt";
 
                 using (StreamReader sr = new StreamReader(path + "\\" + fileName))
                 {
