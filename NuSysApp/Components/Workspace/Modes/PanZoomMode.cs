@@ -81,6 +81,10 @@ namespace NuSysApp
             model.CenterX = compositeTransform.CenterX;
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
+
+            _view.InqCanvas.SetClipTranslate(-compositeTransform.TranslateX, -compositeTransform.TranslateY);
+            _view.InqCanvas.ScaleClip(compositeTransform.ScaleX, compositeTransform.ScaleY);
+
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
@@ -165,6 +169,10 @@ namespace NuSysApp
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
             // e.Handled = true;
-        }  
+
+            _view.InqCanvas.SetClipTranslate(-compositeTransform.TranslateX, -compositeTransform.TranslateY);
+            _view.InqCanvas.ScaleClip(compositeTransform.ScaleX, compositeTransform.ScaleY);
+
+        }
     }
 }

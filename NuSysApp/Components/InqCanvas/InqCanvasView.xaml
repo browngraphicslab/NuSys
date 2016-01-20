@@ -10,19 +10,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     x:Name="Parent">
-    <!--<Canvas x:Name="xContainer">
-        --><!--<ItemsControl ItemsSource="{Binding Lines}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas HorizontalAlignment="Left" Background="Transparent" Width="{Binding ElementName=Parent, Path=Width}" Height="{Binding ElementName=Parent, Path=Height}"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>--><!--
-        <Image x:Name="xCanvas" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}"/>
-        --><!--<Image x:Name="xCanvas" Width="5000" Height="5000"/>--><!--
-    </Canvas>-->
+
     <SwapChainPanel x:Name="SwapChainPanel" Loaded="SwapChainPanel_Loaded"/>
-    <!--<Grid x:Name="xGrid" Background="Transparent">
-        <Image x:Name="xCanvas" Width="{Binding CanvasSize.Width, Mode=TwoWay}" Height="{Binding CanvasSize.Height, Mode=TwoWay}" Source="{Binding CanvasSource}"/>
-    </Grid>-->
+
 </UserControl>

@@ -173,14 +173,25 @@ namespace NuSysApp
 
         private List<RawVector2> _currLine = new List<RawVector2>();
 
-        private Rect _clip = new Rect(5000, 5000, 1000, 1000);
-        private Matrix3x2 _scale = Matrix3x2.Identity;
+        private Rect _clip;
+        public void SetClipTranslate(double x, double y)
+        {
+            _clip = new Rect(x, y, _clip.Width, _clip.Width);
+        }
 
+        public void ScaleClip(double x, double y)
+        {
+            var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
+            _clip = new Rect(offset.X, offset.Y, _clip.Width / x, _clip.Height / y);
+        }
 
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
         {
 
-            
+            var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
+            Rect bounds = Window.Current.Bounds;
+            _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
+
             // DeviceCreationFlags.BgraSupport must be enabled to allow Direct2D interop.
             SharpDX.Direct3D11.Device defaultDevice = new SharpDX.Direct3D11.Device(D3D.DriverType.Hardware, D3D11.DeviceCreationFlags.BgraSupport);
 
@@ -188,6 +199,7 @@ namespace NuSysApp
             device = defaultDevice.QueryInterface<SharpDX.Direct3D11.Device1>();
             d3dContext = device.ImmediateContext.QueryInterface<SharpDX.Direct3D11.DeviceContext1>();
 
+            //idk what to change this to
             float pixelScale = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().LogicalDpi/96.0f;
 
 
@@ -271,44 +283,21 @@ namespace NuSysApp
         public void DrawContinuousLine(Windows.Foundation.Point nextPoint)
         {
             RawVector2 next = ConvertToRawVector2(nextPoint);
-            if (_currLine.Count() != 0)
+            if (_currLine.Count() != 0 && _currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
             {
-                if(_currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
-                {
-                    return;
-                }
+                return;
             }
-            else
-            {
-                var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
-                Rect bounds = Window.Current.Bounds;
-                _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
-            }
+
             _currLine.Add(next);
 
             needsRender = true;
         }
 
-        //public void DrawFinalLine(Windows.Foundation.Point[] line)
-        //{
-        //    SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(_viewModel.RenderTarget.Factory);
-        //    GeometrySink sink = geometry.Open();
-
-        //    sink.BeginFigure(ConvertToRawVector2(line[0]), new FigureBegin());
-        //    for(int i = 1; i < line.Length; i++)
-        //    {
-        //        sink.AddLine(ConvertToRawVector2(line[i]));
-        //    }
-        //    sink.EndFigure(new FigureEnd());
-        //    sink.Close();
-        //    sink.Dispose();
-        //    _lines.Add(geometry);
-        //    _currLine.Clear();
-        //    needsRender = true;
-        //}
 
         private void CompositionTarget_Rendering(object sender, object e)
         {
+
+            //optimize by not rendering when we dont need to
             if(!needsRender)
             {
                 return;

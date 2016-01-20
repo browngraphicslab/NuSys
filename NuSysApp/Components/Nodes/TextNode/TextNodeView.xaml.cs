@@ -324,10 +324,5 @@ namespace NuSysApp
             await r.RenderAsync(rtfTextBox, width, height);
             return r;
         }
-
-        private void AnimatableUserControl_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            int i = 0;
-        }
     }
 }
