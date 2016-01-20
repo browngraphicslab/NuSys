@@ -24,7 +24,7 @@ namespace NuSysApp
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
 
             var model = vm.Model;
-            model.TitleChanged += delegate
+            model.TitleChanged += delegate//TODO remove this handler eventually
             {
                 Annotation.Text = model.Title;
             }; 
@@ -34,7 +34,7 @@ namespace NuSysApp
                 Rect.Width = args.NewSize.Width;
                 Rect.Height = args.NewSize.Height;
             };
-
+            Annotation.TextChanged += OnAnnotationTextChanged;
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
@@ -43,6 +43,18 @@ namespace NuSysApp
                 AnnotationContainer.Visibility = vm.AnnotationText == "" ? Visibility.Collapsed : Visibility.Visible;
          //       await SessionController.Instance.InitializeRecog();
             };
+        }
+        private void OnAnnotationTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
+        {
+            var model = (DataContext as LinkViewModel).Model;
+            if (model.Title != Annotation.Text)
+            {
+                model.Title = Annotation.Text;
+                var m = new Message();
+                m["id"] = model.Id;
+                m["title"] = model.Title;
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m));
+            }
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
