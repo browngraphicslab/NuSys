@@ -55,8 +55,9 @@ namespace WordAddIn
                 {
                     String path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
                     String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+                    string pdfPath = mediaFolderPath + "\\" + _fileToken + ".pdf";
 
-                    OfficeInterop.SaveWordAsPdf(path, mediaFolderPath + "\\" + _fileToken);
+                    OfficeInterop.SaveWordAsPdf(path, pdfPath);
                 }
             }
             catch (Exception ex)
@@ -228,8 +229,6 @@ namespace WordAddIn
         public void BuildSidebar()
         {
             try {
-                ConvertToPdf();
-
                 readSelectionData();
                 var standardUC = new UserControl();
                 _sidePane = new SidePane();

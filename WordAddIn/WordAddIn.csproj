@@ -196,7 +196,6 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="ConvertToPdf.cs" />
     <Compile Include="NuSysRibbon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

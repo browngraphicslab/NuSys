@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Tools;
+using MicrosoftOfficeInterop;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -25,7 +26,7 @@ namespace PowerPointAddIn
 
             if (!String.IsNullOrEmpty(_fileToken))
             {
-                BuildSidebar();
+                ConvertToPdf();
             }
         }
 
@@ -42,6 +43,25 @@ namespace PowerPointAddIn
         public CustomTaskPane PaneControl
         {
             get { return _pane; }
+        }
+
+        private void ConvertToPdf()
+        {
+            try
+            {
+                if (Globals.ThisAddIn.Application.ActivePresentation != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActivePresentation.FullName))
+                {
+                    String path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
+                    String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+                    string pdfPath = mediaFolderPath + "\\" + _fileToken + ".pdf";
+
+                    OfficeInterop.SavePresentationAsPdf(path, pdfPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling
+            }
         }
 
         private void GetToken()
