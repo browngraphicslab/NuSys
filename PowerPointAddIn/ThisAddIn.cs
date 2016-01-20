@@ -83,7 +83,7 @@ namespace PowerPointAddIn
                 using (StreamReader sr = new StreamReader(path + "\\" + fileName))
                 {
                     // Read the stream to a string, and write the string to the console.
-                    _fileToken = sr.ReadToEnd();
+                    _fileToken = (sr.ReadToEnd())?.Trim();
                 }
 
                 File.WriteAllText(path + "\\" + fileName, String.Empty);
