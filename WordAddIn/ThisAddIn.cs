@@ -50,6 +50,8 @@ namespace WordAddIn
 
         private void readSelectionData()
         {
+            _allSelectionItems = new List<SelectionItemIdView>();
+
             try
             {
                 Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
