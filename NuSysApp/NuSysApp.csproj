@@ -274,7 +274,6 @@
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
-    <Compile Include="Network\Requests\SendWordDocRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\ContentAvailableNotificationSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\FetchContentSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\NewContentSystemRequest.cs" />

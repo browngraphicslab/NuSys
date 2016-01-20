@@ -14,7 +14,7 @@ namespace NuSysApp
         public RemoveClientSystemRequest(Message m) : base(m) { }
         public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
         {
-            await nusysSession.DropNetworkUser(_message.GetString("ip"));
+            nusysSession.ClientDrop(_message.GetString("ip"));
         }
     }
 }

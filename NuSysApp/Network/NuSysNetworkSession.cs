@@ -94,7 +94,7 @@ namespace NuSysApp
                 await ProcessIncomingRequest(message, type, ip);
             };
 
-            _networkSession.OnClientDrop += OnClientDrop;
+            _networkSession.OnClientDrop += ClientDrop;
         }
         #region Requests
 
@@ -395,9 +395,6 @@ namespace NuSysApp
                 OnNewNetworkUser?.Invoke(user);
             }
         }
-
-        public void DropNetworkUser(NetworkUser user){DropNetworkUser(user.IP);}
-
         public async Task DropNetworkUser(string ip)
         {
             if (NetworkMembers.ContainsKey(ip))
@@ -411,7 +408,7 @@ namespace NuSysApp
             _networkSession.RemoveIP(ip);
         }
 
-        public async void OnClientDrop(string ip)
+        public async void ClientDrop(string ip)
         {
             await DropNetworkUser(ip);
             if (ip == _hostIP)
