@@ -174,8 +174,7 @@ namespace NuSysApp
         private List<RawVector2> _currLine = new List<RawVector2>();
 
         private Rect _clip;
-        private double absoluteWidth;
-        private double absoluteHeight;
+
         public void SetClipTranslate(double x, double y)
         {
             _clip = new Rect(x, y, _clip.Width, _clip.Width);
@@ -196,8 +195,6 @@ namespace NuSysApp
             var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
             Rect bounds = Window.Current.Bounds;
             _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
-            absoluteHeight = bounds.Height;
-            absoluteWidth = bounds.Width;
 
             // DeviceCreationFlags.BgraSupport must be enabled to allow Direct2D interop.
             SharpDX.Direct3D11.Device defaultDevice = new SharpDX.Direct3D11.Device(D3D.DriverType.Hardware, D3D11.DeviceCreationFlags.BgraSupport);
@@ -305,10 +302,10 @@ namespace NuSysApp
         {
 
             ////optimize by not rendering when we dont need to
-            //if(!needsRender)
-            //{
-            //    return;
-            //}
+            if (!needsRender)
+            {
+                return;
+            }
 
             _viewModel.RenderTarget.BeginDraw();
             _viewModel.RenderTarget.PushAxisAlignedClip(
