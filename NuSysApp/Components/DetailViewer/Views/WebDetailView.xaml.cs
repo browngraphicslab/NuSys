@@ -31,12 +31,13 @@ namespace NuSysApp
                 var sh = SessionController.Instance.SessionView.ActualHeight/2;
 
                 var ratio = xWebView.Width > xWebView.Height ? xWebView.Width/sw : xWebView.Height/sh;
-                xWebView.Width = (xWebView.Width/ratio) + 65;
+                //xWebView.Width = (xWebView.Width/ratio);
+                xWebView.Height = (xWebView.Height/ratio);
                 //xWebView.Height = xWebView.Height/ratio;
                 xBorder.Width = xWebView.Width + 5;
-                xBorder.Height = xWebView.Height / ratio + 5;
-                xScrollViewer.Width = (xWebView.Width / ratio) + 65;
-                xScrollViewer.Height = xWebView.Height / ratio;
+                xBorder.Height = xWebView.Height + 5;
+                xScrollViewer.Width = xWebView.Width;
+                xScrollViewer.Height = xWebView.Height;
 
                 //(vm.Model as WebNodeModel).Url = "http://www.google.com";
                 (vm.Model as WebNodeModel).Url = vm.Url;
