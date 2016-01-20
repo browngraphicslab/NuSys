@@ -47,10 +47,15 @@ namespace NuSysApp
 
             var model = (TextNodeModel)vm.Model;
 
-            if (model.GetMetaData("Token") == null || (model.GetMetaData("Token") != null && String.IsNullOrEmpty(model.GetMetaData("Token").ToString())))
+            var token = model.GetMetaData("Token");
+            if (token == null || String.IsNullOrEmpty(token?.ToString()))
             {
-                SourceBttn.Visibility = Visibility.Collapsed;
+                if (Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+                {
+                    SourceBttn.Visibility = Visibility.Collapsed;
+                }
             }
+
             var txt = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
             if (txt != "") { 
                 rtfTextBox.SetRtfText(txt);
@@ -271,8 +276,13 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+            string token = model.GetMetaData("Token")?.ToString();
 
-            string token = model.GetMetaData("Token").ToString();
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                return;
+            }
+
             string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 

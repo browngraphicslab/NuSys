@@ -22,6 +22,9 @@
                     <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                 </Button.Content>
             </Button>
+            <StackPanel  VerticalAlignment="Top" Orientation="Horizontal">
+                <Button Name="SourceBttn" Foreground="White" Click="OnGoToSource">Go To Source</Button>
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>

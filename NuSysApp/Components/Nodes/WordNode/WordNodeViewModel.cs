@@ -37,18 +37,24 @@ namespace NuSysApp
                     {
                         string ext = Path.GetExtension(file.Path);
                         string name = Path.GetFileNameWithoutExtension(file.Path);
-                        string token = this.Model.GetMetaData("token")?.ToString();
+                        string token = this.Model.GetMetaData("Token")?.ToString();
 
                         if (Constants.PdfFileTypes.Contains(ext) && token == name)
                         {
                             foundPdf = true;
-                            await CreatePdfNode(file);
+                            try {
+                                await CreatePdfNode(file);
+                            }
+                            catch (Exception ex)
+                            {
+                                //TODO error handling
+                            }
                         }
                     }
 
                     if (!foundPdf)
                     {
-                        Task.Delay(1000 * 60);
+                        await Task.Delay(1000 * 5);
                     }else
                     {
                         return;
@@ -60,7 +66,7 @@ namespace NuSysApp
         private async Task CreatePdfNode(StorageFile pdfFile)
         {
             var wordModel = ((WordNodeModel)this.Model);
-            var wordContentId = wordModel.ContentId;
+            var wordId = wordModel.Id;
 
             var contentId = SessionController.Instance.GenerateId();
             Message m = new Message();
@@ -102,7 +108,7 @@ namespace NuSysApp
                     new NewContentSystemRequest(contentId,
                         pdfContent), NetworkClient.PacketType.TCP, null, true);
 
-            Request deleteRequest = new DeleteSendableRequest(wordContentId);
+            Request deleteRequest = new DeleteSendableRequest(wordId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(deleteRequest);
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Util;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -27,6 +29,16 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
+
+            var model = (PdfNodeModel)vm.Model;
+            var token = model.GetMetaData("Token");
+
+            if (token == null || String.IsNullOrEmpty(token?.ToString()))
+            {
+                if (Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString())) { 
+                    SourceBttn.Visibility = Visibility.Collapsed;
+                }
+            }
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
@@ -88,6 +100,14 @@ namespace NuSysApp
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //   nodeTpl.inkCanvas.ReRenderLines();
         }
-        
+
+        private async void OnGoToSource(object sender, RoutedEventArgs e)
+        {
+            var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
+
+            string token = model.GetMetaData("Token")?.ToString();
+            
+            await AccessList.OpenFile(token);
+        }
     }
 }

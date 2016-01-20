@@ -267,7 +267,13 @@ namespace NuSysApp
 
         public async void OpenFile(NodeViewModel vm)
         {
-            String token = vm.Model.GetMetaData("FALToken").ToString();
+            String token = vm.Model.GetMetaData("Token")?.ToString();
+
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                return;
+            }
+
             string ext = System.IO.Path.GetExtension(vm.Model.GetMetaData("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 

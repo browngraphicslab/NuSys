@@ -179,7 +179,7 @@ namespace NuSysApp
             {
                 while (true) {
                     await WordTransfer();
-                    Task.Delay(1000);
+                    await Task.Delay(1000);
                 }
             });
         }
@@ -191,7 +191,7 @@ namespace NuSysApp
                 while (true)
                 {
                     await PowerpointTransfer();
-                    Task.Delay(1000);
+                    await Task.Delay(1000);
                 }
             });
         }
