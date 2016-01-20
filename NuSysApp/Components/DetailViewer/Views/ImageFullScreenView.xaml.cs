@@ -29,6 +29,16 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
+            var model = (ImageNodeModel)vm.Model;
+            var token = model.GetMetaData("Token");
+            if (token == null || String.IsNullOrEmpty(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -62,7 +72,13 @@ namespace NuSysApp
         {
             var model = (ImageNodeModel)((ImageNodeViewModel)DataContext).Model;
 
-            string token = model.GetMetaData("Token").ToString();
+            string token = model.GetMetaData("Token")?.ToString();
+
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                return;
+            }
+
             string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 

@@ -122,11 +122,6 @@ namespace NuSysApp
 
 
                 var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
-                var metadata = new Dictionary<string, object>();
-                metadata["FilePath"] = storageFile.Path;
-                metadata["FALToken"] = token.Trim();
-
-                dict["metadata"] = metadata;
 
                 try
                 {
@@ -147,12 +142,28 @@ namespace NuSysApp
 
                 if (Constants.WordFileTypes.Contains(fileType))
                 {
+                    var metadata = new Dictionary<string, object>();
+                    metadata["FilePath"] = storageFile.Path;
+                    metadata["Token"] = token.Trim();
+
+                    dict["metadata"] = metadata;
+
                     nodeType = NodeType.Word;
+
+                    //data = File.ReadAllBytes(storageFile.Path);
                 }
 
                 if (Constants.PowerpointFileTypes.Contains(fileType))
                 {
+                    var metadata = new Dictionary<string, object>();
+                    metadata["FilePath"] = storageFile.Path;
+                    metadata["Token"] = token.Trim();
+
+                    dict["metadata"] = metadata;
+
                     nodeType = NodeType.Powerpoint;
+
+                    //data = File.ReadAllBytes(storageFile.Path);
                 }
 
                 if (Constants.PdfFileTypes.Contains(fileType))

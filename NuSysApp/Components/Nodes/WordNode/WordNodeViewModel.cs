@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -14,11 +16,100 @@ namespace NuSysApp
 {
     public class WordNodeViewModel : NodeViewModel
     {
-        
+
         public WordNodeViewModel(WordNodeModel model) : base(model)
         {
             var title = Path.GetFileName(model.GetMetaData("FilePath").ToString());
             Title = title;
+            WatchForPdf();
+        }
+
+        private async void WatchForPdf()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    var fileList = await NuSysStorages.Media.GetFilesAsync();
+                    bool foundPdf = false;
+
+                    foreach (StorageFile file in fileList)
+                    {
+                        string ext = Path.GetExtension(file.Path);
+                        string name = Path.GetFileNameWithoutExtension(file.Path);
+                        string token = this.Model.GetMetaData("Token")?.ToString();
+
+                        if (Constants.PdfFileTypes.Contains(ext) && token == name)
+                        {
+                            foundPdf = true;
+                            try {
+                                await CreatePdfNode(file);
+                            }
+                            catch (Exception ex)
+                            {
+                                //TODO error handling
+                            }
+                        }
+                    }
+
+                    if (!foundPdf)
+                    {
+                        await Task.Delay(1000 * 5);
+                    }else
+                    {
+                        return;
+                    }
+                }
+            });
+        }
+
+        private async Task CreatePdfNode(StorageFile pdfFile)
+        {
+            var wordModel = ((WordNodeModel)this.Model);
+            var wordId = wordModel.Id;
+
+            var contentId = SessionController.Instance.GenerateId();
+            Message m = new Message();
+            m["contentId"] = contentId;
+            m["x"] = wordModel.X;
+            m["y"] = wordModel.Y;
+            m["width"] = 400;
+            m["height"] = 400;
+            m["autoCreate"] = true;
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["nodeType"] = NodeType.PDF.ToString();
+
+            var metadata = new Dictionary<string, object>();
+            metadata["BookmarkId"] = wordModel.GetMetaData("BookmarkId");
+            metadata["IsExported"] = wordModel.GetMetaData("IsExported");
+            metadata["FilePath"] = wordModel.GetMetaData("FilePath");
+            metadata["DateTimeExported"] = wordModel.GetMetaData("DateTimeExported");
+            metadata["Token"] = wordModel.GetMetaData("Token");
+            m["metadata"] = metadata;
+
+            byte[] fileBytes = null;
+            using (IRandomAccessStreamWithContentType stream = await pdfFile.OpenReadAsync())
+            {
+                fileBytes = new byte[stream.Size];
+                using (DataReader reader = new DataReader(stream))
+                {
+                    await reader.LoadAsync((uint)stream.Size);
+                    reader.ReadBytes(fileBytes);
+                }
+            }
+
+            var pdfContent = Convert.ToBase64String(fileBytes);
+
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+            await
+                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                    new NewContentSystemRequest(contentId,
+                        pdfContent), NetworkClient.PacketType.TCP, null, true);
+
+            Request deleteRequest = new DeleteSendableRequest(wordId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(deleteRequest);
         }
 
         public override async Task Init()

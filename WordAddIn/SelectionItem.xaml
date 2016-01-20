@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              Height="94.4" Width="298.8" MouseLeftButtonUp="SelectionItem_MouseLeftButtonUp" Background="White" Margin="0,0,0,10">
     <UserControl.Effect>
-        <DropShadowEffect Opacity="{Binding DropShadowOpac}" Color="#FFD6D6D6" BlurRadius="6" Direction="-75" ShadowDepth="1"/>
+        <DropShadowEffect x:Name="DropShadow" Opacity="1" Color="#FFD6D6D6" BlurRadius="6" Direction="-75" ShadowDepth="1"/>
     </UserControl.Effect>
     <Grid Margin="0,0,0.2,0.4" >
         <Grid.ColumnDefinitions>

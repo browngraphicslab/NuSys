@@ -74,11 +74,12 @@ namespace WordAddIn
             var selectionItem = (SelectionItem)sender;
             selectionItem.Range.Select();
 
-            this.DropShadowOpac = 1.0;
+            //this.DropShadowOpac = 1.0;
+            DropShadow.Opacity = 1.0;
 
             if (Globals.ThisAddIn.SidePane.SelectedSelection != null && Globals.ThisAddIn.SidePane.SelectedSelection != this)
             {
-                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadowOpac = 0.0;
+                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadow.Opacity = 0.0;
             }
 
             Globals.ThisAddIn.SidePane.SelectedSelection = this;

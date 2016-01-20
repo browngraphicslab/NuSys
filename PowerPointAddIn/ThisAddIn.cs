@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Tools;
+using MicrosoftOfficeInterop;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -16,17 +17,6 @@ namespace PowerPointAddIn
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            GetToken();
-
-            if (String.IsNullOrEmpty(_fileToken))
-            {
-                GetTokenFromFile();
-            }
-
-            if (!String.IsNullOrEmpty(_fileToken))
-            {
-                BuildSidebar();
-            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -44,6 +34,25 @@ namespace PowerPointAddIn
             get { return _pane; }
         }
 
+        private void ConvertToPdf()
+        {
+            try
+            {
+                if (Globals.ThisAddIn.Application.ActivePresentation != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActivePresentation.FullName))
+                {
+                    String path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
+                    String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+                    string pdfPath = mediaFolderPath + "\\" + _fileToken + ".pdf";
+
+                    OfficeInterop.SavePresentationAsPdf(path, pdfPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling
+            }
+        }
+
         private void GetToken()
         {
             try
@@ -54,7 +63,7 @@ namespace PowerPointAddIn
                 {
                     if (prop.Name == "FileToken")
                     {
-                        _fileToken = properties["FileToken"].ToString();
+                        _fileToken = prop.Value.ToString();
                     }
                 }
             }
@@ -69,15 +78,34 @@ namespace PowerPointAddIn
             try
             {
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\OpenDocParams";
-                string fileName = "FirstTimePowerpoint";
+                string fileName = "FirstTimePowerpoint.txt";
 
                 using (StreamReader sr = new StreamReader(path + "\\" + fileName))
                 {
                     // Read the stream to a string, and write the string to the console.
-                    _fileToken = sr.ReadToEnd();
+                    _fileToken = (sr.ReadToEnd())?.Trim();
                 }
 
                 File.WriteAllText(path + "\\" + fileName, String.Empty);
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActivePresentation.CustomDocumentProperties;
+
+                    foreach (Office.DocumentProperty prop in properties)
+                    {
+                        if (prop.Name == "FileToken")
+                        {
+                            prop.Delete();
+                        }
+                    }
+
+                    properties.Add("FileToken", false, 4, _fileToken);
+                }
+                else
+                {
+                    _fileToken = null;
+                }
             }
             catch (Exception ex)
             {
@@ -87,16 +115,33 @@ namespace PowerPointAddIn
 
         public void BuildSidebar()
         {
-            var standardUC = new UserControl();
-            _sidePane = new SidePane();
-            var wpfHost = new ElementHost { Child = _sidePane };
-            wpfHost.Dock = DockStyle.Fill;
-            standardUC.Controls.Add(wpfHost);
-            _pane = CustomTaskPanes.Add(standardUC, "NuSys");
-            _pane.Visible = false;
-            _pane.Width = 450;
-            _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
-            _pane.Visible = true;
+            try {
+                GetToken();
+                if (String.IsNullOrEmpty(_fileToken))
+                {
+                    GetTokenFromFile();
+                }
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    ConvertToPdf();
+                }
+
+                var standardUC = new UserControl();
+                _sidePane = new SidePane();
+                var wpfHost = new ElementHost { Child = _sidePane };
+                wpfHost.Dock = DockStyle.Fill;
+                standardUC.Controls.Add(wpfHost);
+                _pane = CustomTaskPanes.Add(standardUC, "NuSys");
+                _pane.Visible = false;
+                _pane.Width = 450;
+                _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
+                _pane.Visible = true;
+            }
+            catch (Exception ex)
+            {
+                //TODO handle exceptions
+            }
         }
 
         #region VSTO generated code

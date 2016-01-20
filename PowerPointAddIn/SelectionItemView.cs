@@ -15,9 +15,6 @@ namespace PowerPointAddIn
         public String DateTimeExported;
         public List<String> ImageNames;
         public String Token;
-        private string v;
-        private string path;
-        private string _fileToken;
 
         public SelectionItemView(Boolean IsExported, String RtfContent, String FilePath, String DateTimeExported, List<String> ImageNames, String Token)
         {

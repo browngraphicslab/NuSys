@@ -23,9 +23,8 @@ namespace NuSysApp
         public const string FolderOpenDocParams = "OpenDocParams";
         public const string NuSysFALFiles = "NuSysFALFiles.txt";
         public const string NuSysFALFolders = "NuSysFALFolders.txt";
-        public const string FirstTimeWord = "FirstTimeWord";
-        public const string FirstTimePowerpoint = "FirstTimePowerpoint";
-        public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
+        public const string FirstTimeWord = "FirstTimeWord.txt";
+        public const string FirstTimePowerpoint = "FirstTimePowerpoint.txt";
         #endregion Folders and files
 
         #region Node Dimensions
@@ -81,12 +80,13 @@ namespace NuSysApp
         public static IEnumerable<string> VideoFileTypes   = new List<string> { };//TODO add more types
         public static IEnumerable<string> AudioFileTypes = new List<string> { ".mp3" };
         public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes).Concat(AudioFileTypes).Concat(WordFileTypes).Concat(PowerpointFileTypes));
-        
 
         #region Cortana
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
         #endregion
 
-
+        #region Other
+        public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
+        #endregion Other
     }
 }

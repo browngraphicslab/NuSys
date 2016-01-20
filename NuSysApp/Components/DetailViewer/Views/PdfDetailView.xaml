@@ -9,19 +9,25 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White">
-        <Grid x:Name="xWrapper">
-            <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform"/>
-            <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
-                <Button.Content>
-                    <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
-                </Button.Content>
-            </Button>
-            <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="OnPageRightClick">
-                <Button.Content>
-                    <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
-                </Button.Content>
-            </Button>
-        </Grid>
-    </Border>
+    <StackPanel>
+        <StackPanel  VerticalAlignment="Top" Orientation="Horizontal">
+            <Button Name="SourceBttn" Foreground="White" Click="OnGoToSource">Go To Source</Button>
+        </StackPanel>
+        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White">
+            <Grid x:Name="xWrapper">
+                <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform"/>
+                <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
+                    <Button.Content>
+                        <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="pageRight" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Click="OnPageRightClick">
+                    <Button.Content>
+                        <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
+                    </Button.Content>
+                </Button>
+            </Grid>
+        </Border>
+    </StackPanel>
+    
 </UserControl>
