@@ -83,7 +83,7 @@ namespace NuSysApp
             Window.Current.Activate();
 
             await SetupDirectories();
-            await AccessList.ReadFileTokens();
+            //await AccessList.ReadFileTokens();
         }
 
         private static async Task<bool> SetupDirectories()
@@ -127,7 +127,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(request);
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
-            await AccessList.SaveFileTokens();
+            //await AccessList.SaveFileTokens();
 
             deferral.Complete();
         }

@@ -58,7 +58,7 @@ namespace WordAddIn
                 ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
             }
 
-            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported);
+            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported, Globals.ThisAddIn._fileToken);
         }
 
         public SelectionItemIdView GetIdView()

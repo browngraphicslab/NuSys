@@ -27,6 +27,8 @@ namespace NuSysApp
                 vm.Init();
                 nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
             };
+
+            
         }
 
         private void OnEditInk(object sender, RoutedEventArgs e)

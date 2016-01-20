@@ -142,10 +142,9 @@ namespace NuSysApp
 
         public void DeleteLink(LinkViewModel link)
         {
-
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(link.Id));
-
         }
+
         public void DeleteNode(NodeViewModel node)
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(node.Id));

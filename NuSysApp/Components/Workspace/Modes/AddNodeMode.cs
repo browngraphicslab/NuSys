@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -111,14 +112,21 @@ namespace NuSysApp
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
             var dict = new Message();
-
-            if (nodeType == NodeType.Document || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
+            if (nodeType == NodeType.Document || nodeType == NodeType.Word || nodeType == NodeType.Powerpoint || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
 
                 var fileType = storageFile.FileType.ToLower();
                 dict["title"] = storageFile.DisplayName;
+
+
+                var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
+                var metadata = new Dictionary<string, object>();
+                metadata["FilePath"] = storageFile.Path;
+                metadata["FALToken"] = token.Trim();
+
+                dict["metadata"] = metadata;
 
                 try
                 {
@@ -135,6 +143,16 @@ namespace NuSysApp
                     nodeType = NodeType.Image;
                     
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                }
+
+                if (Constants.WordFileTypes.Contains(fileType))
+                {
+                    nodeType = NodeType.Word;
+                }
+
+                if (Constants.PowerpointFileTypes.Contains(fileType))
+                {
+                    nodeType = NodeType.Powerpoint;
                 }
 
                 if (Constants.PdfFileTypes.Contains(fileType))

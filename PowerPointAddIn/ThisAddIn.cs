@@ -1,5 +1,7 @@
 ﻿using Microsoft.Office.Tools;
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Office = Microsoft.Office.Core;
@@ -10,10 +12,21 @@ namespace PowerPointAddIn
     {
         private CustomTaskPane _pane;
         private SidePane _sidePane;
+        public string _fileToken;
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            GetToken();
 
+            if (String.IsNullOrEmpty(_fileToken))
+            {
+                GetTokenFromFile();
+            }
+
+            if (!String.IsNullOrEmpty(_fileToken))
+            {
+                BuildSidebar();
+            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -29,6 +42,47 @@ namespace PowerPointAddIn
         public CustomTaskPane PaneControl
         {
             get { return _pane; }
+        }
+
+        private void GetToken()
+        {
+            try
+            {
+                Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActivePresentation.CustomDocumentProperties;
+
+                foreach (Office.DocumentProperty prop in properties)
+                {
+                    if (prop.Name == "FileToken")
+                    {
+                        _fileToken = properties["FileToken"].ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
+        }
+
+        private void GetTokenFromFile()
+        {
+            try
+            {
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\OpenDocParams";
+                string fileName = "FirstTimePowerpoint";
+
+                using (StreamReader sr = new StreamReader(path + "\\" + fileName))
+                {
+                    // Read the stream to a string, and write the string to the console.
+                    _fileToken = sr.ReadToEnd();
+                }
+
+                File.WriteAllText(path + "\\" + fileName, String.Empty);
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
         }
 
         public void BuildSidebar()

@@ -21,6 +21,8 @@ using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
 using NuSysApp.Components;
+using NuSysApp.Util;
+using System.IO;
 
 namespace NuSysApp
 {
@@ -277,7 +279,30 @@ namespace NuSysApp
             vm.SetNodeModel(model);
             vm.MakeTagList();
         }
- 
+
+        public async void OpenFile(NodeViewModel vm)
+        {
+            String token = vm.Model.GetMetaData("FALToken").ToString();
+            string ext = System.IO.Path.GetExtension(vm.Model.GetMetaData("FilePath").ToString());
+            StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
+
+            if (Constants.WordFileTypes.Contains(ext))
+            {
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
+                {
+                    await writer.WriteLineAsync(token);
+                }
+            }
+            else if (Constants.PowerpointFileTypes.Contains(ext))
+            {
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
+                {
+                    await writer.WriteLineAsync(token);
+                }
+            }
+
+            await AccessList.OpenFile(token);
+        }
 
         public void RemoveLoading()
         {

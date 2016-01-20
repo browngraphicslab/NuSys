@@ -190,6 +190,9 @@
     <Compile Include="Components\DetailViewer\Views\WordDetailView.xaml.cs">
       <DependentUpon>WordDetailView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
     </Compile>
@@ -229,7 +232,7 @@
     <Compile Include="Components\Nodes\PowerpointNode\PowerpointNodeView.xaml.cs">
       <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Nodes\TextNode\PowerpointNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\PowerpointNode\PowerpointNodeViewModel.cs" />
     <Compile Include="Components\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -302,9 +305,13 @@
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\LineEquation.cs" />
+    <Compile Include="Util\LineSegment.cs" />
+    <Compile Include="Util\MathUtil.cs" />
     <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\RenderTask.cs" />
+    <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\InqCanvas\InqLineViewModel.cs" />
@@ -482,6 +489,7 @@
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\UserLabel.cs" />
+    <Compile Include="Util\Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -495,9 +503,11 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
+    <Content Include="Assets\wordIcon.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
