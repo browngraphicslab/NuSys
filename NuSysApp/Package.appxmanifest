@@ -30,7 +30,6 @@
               <uap:FileType>.jpg</uap:FileType>
               <uap:FileType>.pptx#3</uap:FileType>
               <uap:FileType>.pptx</uap:FileType>
-              <uap:FileType>.pdf</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
