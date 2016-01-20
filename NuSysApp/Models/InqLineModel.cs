@@ -31,7 +31,8 @@ namespace NuSysApp
             Stroke = new SolidColorBrush(Colors.Black);
             StrokeThickness = 3;
         }
-        
+
+
         public void AddPoint(Point2d p)
         {
             Points.Add(p);
@@ -72,6 +73,18 @@ namespace NuSysApp
             {
                 _points = value;
             }
+        }
+
+        public IList<LineSegment> ToLineSegments()
+        {
+            var result = new List<LineSegment>();
+            for (var i = 0; i < Points.Count - 1; ++i)
+            {
+                Point2d start = Points[i];
+                Point2d end = Points[i + 1];
+                result.Add(new LineSegment(start.ToVector2(), end.ToVector2()));
+            }
+            return result;
         }
     }
 }

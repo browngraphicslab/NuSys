@@ -103,6 +103,7 @@ namespace NuSysApp
 
             //NuSysStorages.FirstTimeWord = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimeWord);
             //NuSysStorages.FirstTimePowerpoint = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimePowerpoint);
+
             return true;
         }
 
