@@ -50,10 +50,12 @@ namespace NuSysApp
             var token = model.GetMetaData("Token");
             if (token == null || String.IsNullOrEmpty(token?.ToString()))
             {
-                if (Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-                {
-                    SourceBttn.Visibility = Visibility.Collapsed;
-                }
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
             }
 
             var txt = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;

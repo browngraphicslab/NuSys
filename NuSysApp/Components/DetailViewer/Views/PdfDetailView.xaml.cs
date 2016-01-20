@@ -35,9 +35,12 @@ namespace NuSysApp
 
             if (token == null || String.IsNullOrEmpty(token?.ToString()))
             {
-                if (Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString())) { 
-                    SourceBttn.Visibility = Visibility.Collapsed;
-                }
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
             }
 
             Loaded += async delegate(object sender, RoutedEventArgs args)

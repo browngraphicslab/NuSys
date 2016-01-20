@@ -31,12 +31,12 @@ namespace NuSysApp
 
             var model = (ImageNodeModel)vm.Model;
             var token = model.GetMetaData("Token");
-            if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            {
-                if (Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-                {
-                    SourceBttn.Visibility = Visibility.Collapsed;
-                }
+            if (token == null || String.IsNullOrEmpty(token?.ToString())) {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString())){
+                SourceBttn.Visibility = Visibility.Collapsed;
             }
 
             Loaded += delegate(object sender, RoutedEventArgs args)

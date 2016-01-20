@@ -269,7 +269,7 @@ namespace NuSysApp
         {
             String token = vm.Model.GetMetaData("Token")?.ToString();
 
-            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
             {
                 return;
             }
