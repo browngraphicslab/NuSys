@@ -23,7 +23,8 @@ namespace NuSysApp
             NewGroupRequest,
             NewContentRequest,
             ChangeContentRequest,
-            SetTagsRequest
+            SetTagsRequest,
+            SendWordDocRequest
         }
         protected Message _message;
         private RequestType _requestType;

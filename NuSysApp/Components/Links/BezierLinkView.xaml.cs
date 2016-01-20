@@ -27,6 +27,10 @@ namespace NuSysApp
             model.TitleChanged += delegate//TODO remove this handler eventually
             {
                 Annotation.Text = model.Title;
+                //Annotation.Visibility
+                AnnotationContainer.Visibility = model.Title == ""
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             }; 
 
             Annotation.SizeChanged += delegate(object sender, SizeChangedEventArgs args)
@@ -53,7 +57,7 @@ namespace NuSysApp
                 var m = new Message();
                 m["id"] = model.Id;
                 m["title"] = model.Title;
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m));
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),NetworkClient.PacketType.UDP);
             }
         }
 
