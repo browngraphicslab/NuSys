@@ -60,7 +60,7 @@ namespace NuSysApp
 
             
             await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
-            await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
+             await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
 
             var msg = new Message();
             msg["id1"] = id1;

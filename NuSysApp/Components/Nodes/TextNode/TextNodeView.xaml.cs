@@ -20,6 +20,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Shapes;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -326,6 +327,16 @@ namespace NuSysApp
             var r = new RenderTargetBitmap();
             await r.RenderAsync(rtfTextBox, width, height);
             return r;
+        }
+
+        private void borderRect_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            borderRect.Opacity = 1;
+        }
+
+        private void borderRect_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            borderRect.Opacity = 0;
         }
     }
 }

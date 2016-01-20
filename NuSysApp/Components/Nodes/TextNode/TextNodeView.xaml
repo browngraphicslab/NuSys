@@ -13,7 +13,7 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
-    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="White">
+    <local:NodeTemplate x:Name="nodeTpl" Background="Transparent" BorderBrush="Transparent">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
@@ -42,9 +42,10 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Grid Width="{Binding Width}" Height="{Binding Height}">
+            <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
+                <Rectangle x:Name="borderRect" Opacity="0"  StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
                     <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                Background="White" BorderBrush="Transparent" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" />
+                                Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" Padding="20"/>
             </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
