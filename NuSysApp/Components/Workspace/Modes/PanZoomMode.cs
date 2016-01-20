@@ -83,7 +83,7 @@ namespace NuSysApp
             model.Zoom = compositeTransform.ScaleX;
 
             _view.InqCanvas.SetClipTranslate(-compositeTransform.TranslateX, -compositeTransform.TranslateY);
-            _view.InqCanvas.ScaleClip(compositeTransform.ScaleX, compositeTransform.ScaleY);
+            _view.InqCanvas.ScaleClip(center);
 
         }
 
@@ -171,7 +171,7 @@ namespace NuSysApp
             // e.Handled = true;
 
             _view.InqCanvas.SetClipTranslate(-compositeTransform.TranslateX, -compositeTransform.TranslateY);
-            _view.InqCanvas.ScaleClip(compositeTransform.ScaleX, compositeTransform.ScaleY);
+            _view.InqCanvas.ScaleClip(center);
 
         }
     }

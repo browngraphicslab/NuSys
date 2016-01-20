@@ -181,11 +181,13 @@ namespace NuSysApp
             _clip = new Rect(x, y, _clip.Width, _clip.Width);
         }
 
-        public void ScaleClip(double x, double y)
+        public void ScaleClip(Windows.Foundation.Point center)
         {
             Rect bounds = Window.Current.Bounds;
             var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
-            _clip = new Rect(-offset.X, -offset.Y, absoluteWidth / x, absoluteWidth / y);
+            double width = center.X + offset.X + center.X + offset.X;
+            double height = center.Y + offset.Y + center.Y + offset.Y;
+            _clip = new Rect(-offset.X, -offset.Y, width, height);
         }
 
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
@@ -302,18 +304,18 @@ namespace NuSysApp
         private void CompositionTarget_Rendering(object sender, object e)
         {
 
-            //optimize by not rendering when we dont need to
-            if(!needsRender)
-            {
-                return;
-            }
+            ////optimize by not rendering when we dont need to
+            //if(!needsRender)
+            //{
+            //    return;
+            //}
 
             _viewModel.RenderTarget.BeginDraw();
             _viewModel.RenderTarget.PushAxisAlignedClip(
             ConvertToRectF(_clip),
             AntialiasMode.Aliased
             );
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
             using (var brush = new SharpDX.Direct2D1.SolidColorBrush(_viewModel.RenderTarget, ConvertToColorF(Windows.UI.Colors.Black)))
             {
                 foreach(SharpDX.Direct2D1.PathGeometry l in _viewModel.Lines) {
