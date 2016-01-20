@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Tools;
 using Microsoft.Office.Tools.Word;
+using MicrosoftOfficeInterop;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -27,17 +28,41 @@ namespace WordAddIn
                 GetTokenFromFile();
             }
 
-            GetBookmarkFromFile();
-
-            if (!String.IsNullOrEmpty(_selectionId))
+            if (!String.IsNullOrEmpty(_fileToken))
             {
-                BuildSidebar();
+                GetBookmarkFromFile();
+                if (!String.IsNullOrEmpty(_selectionId))
+                {
+                    BuildSidebar();
+                }
+
+                ConvertToPdf();
             }
+
+
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
 
+        }
+
+        private void ConvertToPdf()
+        {
+            try
+            {
+                if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
+                {
+                    String path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
+                    String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+
+                    OfficeInterop.SaveWordAsPdf(path, mediaFolderPath + "\\" + _fileToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling
+            }
         }
 
         private void readSelectionData()
@@ -130,7 +155,7 @@ namespace WordAddIn
                 using (StreamReader sr = new StreamReader(path + "\\" + fileName))
                 {
                     // Read the stream to a string, and write the string to the console.
-                    _fileToken = sr.ReadToEnd();
+                    _fileToken = (sr.ReadToEnd()).Trim();
                 }
 
                 File.WriteAllText(path + "\\" + fileName, String.Empty);
@@ -147,7 +172,10 @@ namespace WordAddIn
                         }
                     }
 
-                    properties.Add("FileToken", false, 4, _fileToken.Trim());
+                    properties.Add("FileToken", false, 4, _fileToken);
+                }else
+                {
+                    _fileToken = null;
                 }
             }
             catch (Exception ex)
@@ -166,7 +194,7 @@ namespace WordAddIn
                 using (StreamReader sr = new StreamReader(path + "\\" + fileName))
                 {
                     // Read the stream to a string, and write the string to the console.
-                    _selectionId = sr.ReadToEnd();
+                    _selectionId = (sr.ReadToEnd()).Trim();
                 }
 
                 File.WriteAllText(path + "\\" + fileName, String.Empty);
@@ -199,20 +227,28 @@ namespace WordAddIn
 
         public void BuildSidebar()
         {
-            readSelectionData();
-            var standardUC = new UserControl();
-            _sidePane = new SidePane();
-            var wpfHost = new ElementHost { Child = _sidePane };
-            wpfHost.Dock = DockStyle.Fill;
-            standardUC.Controls.Add(wpfHost);
-            _pane = CustomTaskPanes.Add(standardUC, "NuSys");
-            _pane.Visible = false;
-            _pane.Width = 450;
-            _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
-            _pane.Visible = true;
+            try {
+                ConvertToPdf();
 
-            Document vstoDoc = Globals.Factory.GetVstoObject(this.Application.ActiveDocument);
-            vstoDoc.BeforeClose += new System.ComponentModel.CancelEventHandler(ThisDocument_BeforeClose);
+                readSelectionData();
+                var standardUC = new UserControl();
+                _sidePane = new SidePane();
+                var wpfHost = new ElementHost { Child = _sidePane };
+                wpfHost.Dock = DockStyle.Fill;
+                standardUC.Controls.Add(wpfHost);
+                _pane = CustomTaskPanes.Add(standardUC, "NuSys");
+                _pane.Visible = false;
+                _pane.Width = 450;
+                _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
+                _pane.Visible = true;
+
+                Document vstoDoc = Globals.Factory.GetVstoObject(this.Application.ActiveDocument);
+                vstoDoc.BeforeClose += new System.ComponentModel.CancelEventHandler(ThisDocument_BeforeClose);
+            }
+            catch (Exception ex)
+            {
+                //TODO handle exception
+            }
         }
 
         #region VSTO generated code

@@ -78,6 +78,25 @@ namespace PowerPointAddIn
                 }
 
                 File.WriteAllText(path + "\\" + fileName, String.Empty);
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActivePresentation.CustomDocumentProperties;
+
+                    foreach (Office.DocumentProperty prop in properties)
+                    {
+                        if (prop.Name == "FileToken")
+                        {
+                            prop.Delete();
+                        }
+                    }
+
+                    properties.Add("FileToken", false, 4, _fileToken);
+                }
+                else
+                {
+                    _fileToken = null;
+                }
             }
             catch (Exception ex)
             {
