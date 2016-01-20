@@ -21,24 +21,6 @@ namespace WordAddIn
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            GetToken();
-            
-            if (String.IsNullOrEmpty(_fileToken))
-            {
-                GetTokenFromFile();
-            }
-
-            if (!String.IsNullOrEmpty(_fileToken))
-            {
-                GetBookmarkFromFile();
-                if (!String.IsNullOrEmpty(_selectionId))
-                {
-                    BuildSidebar();
-                }
-
-                ConvertToPdf();
-            }
-
 
         }
 
@@ -229,6 +211,20 @@ namespace WordAddIn
         public void BuildSidebar()
         {
             try {
+
+                GetToken();
+
+                if (String.IsNullOrEmpty(_fileToken))
+                {
+                    GetTokenFromFile();
+                }
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    GetBookmarkFromFile();
+                    ConvertToPdf();
+                }
+
                 readSelectionData();
                 var standardUC = new UserControl();
                 _sidePane = new SidePane();

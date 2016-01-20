@@ -17,17 +17,6 @@ namespace PowerPointAddIn
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            GetToken();
-
-            if (String.IsNullOrEmpty(_fileToken))
-            {
-                GetTokenFromFile();
-            }
-
-            if (!String.IsNullOrEmpty(_fileToken))
-            {
-                ConvertToPdf();
-            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -126,16 +115,33 @@ namespace PowerPointAddIn
 
         public void BuildSidebar()
         {
-            var standardUC = new UserControl();
-            _sidePane = new SidePane();
-            var wpfHost = new ElementHost { Child = _sidePane };
-            wpfHost.Dock = DockStyle.Fill;
-            standardUC.Controls.Add(wpfHost);
-            _pane = CustomTaskPanes.Add(standardUC, "NuSys");
-            _pane.Visible = false;
-            _pane.Width = 450;
-            _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
-            _pane.Visible = true;
+            try {
+                GetToken();
+                if (String.IsNullOrEmpty(_fileToken))
+                {
+                    GetTokenFromFile();
+                }
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    ConvertToPdf();
+                }
+
+                var standardUC = new UserControl();
+                _sidePane = new SidePane();
+                var wpfHost = new ElementHost { Child = _sidePane };
+                wpfHost.Dock = DockStyle.Fill;
+                standardUC.Controls.Add(wpfHost);
+                _pane = CustomTaskPanes.Add(standardUC, "NuSys");
+                _pane.Visible = false;
+                _pane.Width = 450;
+                _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
+                _pane.Visible = true;
+            }
+            catch (Exception ex)
+            {
+                //TODO handle exceptions
+            }
         }
 
         #region VSTO generated code

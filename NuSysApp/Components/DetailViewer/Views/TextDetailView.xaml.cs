@@ -52,8 +52,7 @@ namespace NuSysApp
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
-
-            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
