@@ -239,7 +239,7 @@ namespace NuSysApp
                     request = new SetTagsRequest(message);
                     break;
                 case Request.RequestType.SendWordDocRequest:
-                    request = new SendWordDocRequest(message);
+                    //request = new SendWordDocRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
