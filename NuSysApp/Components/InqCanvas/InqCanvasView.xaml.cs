@@ -312,7 +312,7 @@ namespace NuSysApp
             ConvertToRectF(_clip),
             AntialiasMode.Aliased
             );
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
             using (var brush = new SharpDX.Direct2D1.SolidColorBrush(_viewModel.RenderTarget, ConvertToColorF(Windows.UI.Colors.Black)))
             {
                 foreach(SharpDX.Direct2D1.PathGeometry l in _viewModel.Lines) {
