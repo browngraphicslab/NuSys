@@ -110,14 +110,16 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
+            var dict = new Message();
+
             if (nodeType == NodeType.Document || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
 
                 var fileType = storageFile.FileType.ToLower();
-            
-               
+                dict["title"] = storageFile.DisplayName;
+
                 try
                 {
              //       CheckFileType(fileType); TODO readd
@@ -188,7 +190,6 @@ namespace NuSysApp
             }
             var contentId = SessionController.Instance.GenerateId();
 
-            var dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = nodeType.ToString();
