@@ -174,6 +174,8 @@ namespace NuSysApp
         private List<RawVector2> _currLine = new List<RawVector2>();
 
         private Rect _clip;
+        private double absoluteWidth;
+        private double absoluteHeight;
         public void SetClipTranslate(double x, double y)
         {
             _clip = new Rect(x, y, _clip.Width, _clip.Width);
@@ -181,8 +183,9 @@ namespace NuSysApp
 
         public void ScaleClip(double x, double y)
         {
+            Rect bounds = Window.Current.Bounds;
             var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
-            _clip = new Rect(offset.X, offset.Y, _clip.Width / x, _clip.Height / y);
+            _clip = new Rect(-offset.X, -offset.Y, absoluteWidth / x, absoluteWidth / y);
         }
 
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
@@ -191,6 +194,8 @@ namespace NuSysApp
             var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
             Rect bounds = Window.Current.Bounds;
             _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
+            absoluteHeight = bounds.Height;
+            absoluteWidth = bounds.Width;
 
             // DeviceCreationFlags.BgraSupport must be enabled to allow Direct2D interop.
             SharpDX.Direct3D11.Device defaultDevice = new SharpDX.Direct3D11.Device(D3D.DriverType.Hardware, D3D11.DeviceCreationFlags.BgraSupport);
