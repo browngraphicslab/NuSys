@@ -48,15 +48,16 @@ namespace NuSysApp
         {
             try
             {
-                var number = Int32.Parse(IP.Replace(@".", ""));
+                var number = Int64.Parse(IP.Replace(@".", ""));
+                var start = 2*(Int64.Parse(IP[IP.Length - 1].ToString()) + 1);
 
-                var start = 2*(Int32.Parse(IP[IP.Length - 1].ToString()) + 1);
+                number += start*2*number; 
 
                 var mod = 250 - start;
 
-                int r = Math.Abs(start + ((int) number%mod));
-                int b = Math.Abs(start + ((int) (number*Int32.Parse(IP[IP.Length - 1].ToString())% mod)));
-                int g = Math.Abs(start + ((int) (start*number*r*b*Int32.Parse(IP[IP.Length - 1].ToString())% mod)));
+                int r = (int)Math.Abs(start + ((int) number%mod));
+                int b = (int)Math.Abs(start + ((int) (number*Int64.Parse(IP[IP.Length - 1].ToString())% mod)));
+                int g = (int)Math.Abs(start + ((int) ((start*number*r )% mod)));
                 _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);
             }
             catch (Exception e)
