@@ -5,6 +5,7 @@
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.0.0",
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "MyToolkit.Extended": "2.5.9",
     "Newtonsoft.Json": "8.0.1",
     "sqlite-net": "1.0.8",
     "SQLite.Net-PCL": "3.0.5",

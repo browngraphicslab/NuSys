@@ -60,8 +60,6 @@ namespace NuSysApp
                 Grid.SetColumn(wrappedView, _count % numCols);
                 xGrid.Children.Add(wrappedView);
                 _count++;
-
-
             }
         }
 

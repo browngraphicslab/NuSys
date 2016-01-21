@@ -63,6 +63,7 @@ namespace NuSysApp
                 var nodeVm = (NodeViewModel)sendable.DataContext;
                 nodeVm.Translate(dx, dy);
             }
+            
         }
 
         protected virtual async Task OnChildAdded(object source, Sendable nodeModel)

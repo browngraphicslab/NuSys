@@ -28,6 +28,7 @@ namespace NuSysApp
         private bool _isExpanded;
         private Storyboard _circleAnim;
         private Storyboard _expandedAnim;
+        private Storyboard _expandedListAnim;
 
         public GroupNodeView( GroupNodeViewModel vm)
         {
@@ -50,18 +51,22 @@ namespace NuSysApp
             {
                 _expandedAnim?.Stop();
                 _circleAnim?.Stop();
+                //_expandedListAnim?.Stop();
 
-                _expandedAnim = Anim.To(xExpandedView, "Alpha", 1, 450);
+                _expandedAnim = Anim.To(xExpandedView, "Alpha", 1, 450); //1
                 _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
+                //_expandedListAnim = Anim.To(xDataGridView, "Alpha", 1, 450);
                 _isExpanded = true;
             }
             else if (vm.Height < 400 && _isExpanded)
             {
                 _expandedAnim?.Stop();
                 _circleAnim?.Stop();
+                //_expandedListAnim?.Stop();
 
                 _expandedAnim = Anim.To(xExpandedView, "Alpha", 0, 450);
                 _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
+                //_expandedListAnim = Anim.To(xDataGridView, "Alpha", 0, 450);
                 _isExpanded = false;
             
             }

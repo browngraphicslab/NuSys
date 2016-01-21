@@ -17,6 +17,7 @@
     <Canvas>
         <local:GroupCircleView x:Name="xCircleView"></local:GroupCircleView>
         <local:GroupNodeExpandedView x:Name="xExpandedView" Opacity="0"></local:GroupNodeExpandedView>
+        <local:GroupNodeDataGridView x:Name="xDataGridView" Opacity ="0"></local:GroupNodeDataGridView>
         <Path x:Name="Resizer" Fill="Black" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
               Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" />

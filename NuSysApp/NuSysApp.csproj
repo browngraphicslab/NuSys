@@ -215,6 +215,11 @@
     </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupItemViewModel.cs" />
     <Compile Include="Components\Nodes\GroupItemThumbFactory.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridInfo.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridView.xaml.cs">
+      <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
@@ -573,6 +578,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Nodes\GroupNode\GroupCircleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeDataGridView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

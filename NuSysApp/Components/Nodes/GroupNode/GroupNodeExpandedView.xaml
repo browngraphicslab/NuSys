@@ -14,7 +14,7 @@
     <Border Width="{Binding Width}" Height="{Binding Height}" Background="AliceBlue" BorderBrush="#62bcd5" BorderThickness="20" CornerRadius="20">
         <StackPanel>
            <!-- <TextBox Text="{Binding Title}" HorizontalAlignment="Center" Foreground="White" FontSize="24" BorderBrush="Transparent"></TextBox> -->
-            <Grid x:Name="xGrid" >
+            <Grid x:Name="xGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
                         <RowDefinition ></RowDefinition>
@@ -29,3 +29,5 @@
         </StackPanel>
     </Border>
 </local:AnimatableUserControl>
+
+    
