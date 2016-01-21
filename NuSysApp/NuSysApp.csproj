@@ -208,6 +208,9 @@
     <Compile Include="Components\Misc\MediaRecorderView.xaml.cs">
       <DependentUpon>MediaRecorderView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\UserLabel.xaml.cs">
+      <DependentUpon>UserLabel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\SearchButton.xaml.cs">
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
@@ -488,7 +491,6 @@
     <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\UserLabel.cs" />
     <Compile Include="Util\Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -578,6 +580,10 @@
     <Page Include="Components\Misc\MediaRecorderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\UserLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SearchButton.xaml">
       <SubType>Designer</SubType>
