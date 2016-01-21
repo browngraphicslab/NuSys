@@ -237,7 +237,7 @@ namespace NuSysApp
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
-            Canvas.SetLeft(Users, mainCanvas.ActualWidth - Users.ActualWidth);
+            Canvas.SetLeft(Users, 5);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
             overlayCanvas.Width = mainCanvas.ActualWidth;
             overlayCanvas.Height = mainCanvas.ActualHeight;
