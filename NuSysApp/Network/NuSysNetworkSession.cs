@@ -87,7 +87,7 @@ namespace NuSysApp
                     // TODO: handle better
                         Debug.WriteLine("couldn't send ping");
                     }
-            };
+            };mu
             
             _networkSession.OnMessageRecieved += async (message, type, ip) =>
             {
@@ -237,9 +237,6 @@ namespace NuSysApp
                     break;
                 case Request.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
-                    break;
-                case Request.RequestType.SendWordDocRequest:
-                    //request = new SendWordDocRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
