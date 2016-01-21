@@ -164,46 +164,60 @@ namespace NuSysApp
 
         //Graphics stuff
 
+        //NOTE: the actual render target (where all the draw calls are made on) is in the ViewModel
+
+        //whether we need to update the current frame
         private bool needsRender = false;
+        //the device we're drawing to
         private D3D11.Device1 device;
+
         private D3D11.DeviceContext1 d3dContext;
+        //swap chain and textures to use double buffering
         private DXGI.SwapChain1 swapChain;
         private D3D11.Texture2D backBufferTexture;
         private D3D11.RenderTargetView backBufferView;
 
+        //the stroke that is currently being drawn
         private List<RawVector2> _currLine = new List<RawVector2>();
 
-        private Rect _clip;
+        //the point to scale around
+        private RawVector2 scaleOrigin;
+        //the point (0, 0) on the screen transformed relative to the big canvas
+        private RawVector2 transformedOrigin;
 
-        public void SetClipTranslate(double x, double y)
+        private float size = 50000;
+
+        //update the translation on the lines
+        public void TranslateInk(float x, float y)
         {
-            _clip = new Rect(x, y, _clip.Width, _clip.Width);
+            //_clip = new Rect(x, y, _clip.Width, _clip.Width);
+            _viewModel.XOffset += x*_viewModel.XScale;
+            _viewModel.YOffset += y*_viewModel.YScale;
         }
 
-        public void ScaleClip(Windows.Foundation.Point center)
+        //update the scale on the lines
+        public void ScaleInk(float x, float y, Windows.Foundation.Point sOrigin, Windows.Foundation.Point tOrigin)
         {
-            Rect bounds = Window.Current.Bounds;
-            var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
-            double width = center.X + offset.X + center.X + offset.X;
-            double height = center.Y + offset.Y + center.Y + offset.Y;
-            _clip = new Rect(-offset.X, -offset.Y, width, height);
+            _viewModel.XScale = x;
+            _viewModel.YScale = y;
+            scaleOrigin = ConvertToRawVector2(sOrigin);
+            transformedOrigin = ConvertToRawVector2(tOrigin);
         }
 
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
         {
+            //initialize constants for transforms
+            scaleOrigin = new RawVector2();
+            scaleOrigin.X = 0; scaleOrigin.Y = 0;
 
-            var offset = this.TransformToVisual(null).TransformPoint(new Windows.Foundation.Point(0, 0));
-            Rect bounds = Window.Current.Bounds;
-            _clip = new Rect(-offset.X, -offset.Y, bounds.Width, bounds.Height);
-
-            // DeviceCreationFlags.BgraSupport must be enabled to allow Direct2D interop.
+            // DeviceCreationFlags.BgraSupport is needed to use Direct2D
             SharpDX.Direct3D11.Device defaultDevice = new SharpDX.Direct3D11.Device(D3D.DriverType.Hardware, D3D11.DeviceCreationFlags.BgraSupport);
 
             // Query the default device for the supported device and context interfaces.
             device = defaultDevice.QueryInterface<SharpDX.Direct3D11.Device1>();
             d3dContext = device.ImmediateContext.QueryInterface<SharpDX.Direct3D11.DeviceContext1>();
 
-            //idk what to change this to
+            //convert from display dependent pixels to display independent pixels 
             float pixelScale = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().LogicalDpi/96.0f;
 
 
@@ -211,25 +225,26 @@ namespace NuSysApp
             DXGI.SwapChainDescription1 description = new DXGI.SwapChainDescription1()
             {
                 AlphaMode = DXGI.AlphaMode.Ignore,
-                // Double buffer.
+                // Double buffers
                 BufferCount = 2,
-                // BGRA 32bit pixel format.
+                // BGRA 32bit pixel format
                 Format = DXGI.Format.B8G8R8A8_UNorm,
-                // Unlike in CoreWindow swap chains, the dimensions must be set.
+                //set the width and height to current display dimensions
                 Height = (int)(this.SwapChainPanel.RenderSize.Height * pixelScale),
                 Width = (int)(this.SwapChainPanel.RenderSize.Width * pixelScale),
-                // Default multisampling.
+                // Default multisampling
                 SampleDescription = new DXGI.SampleDescription(1, 0),
-                // In case the control is resized, stretch the swap chain accordingly.
+                // I dont know if this is actuall necessary? we'll see in testing I guess
                 Scaling = DXGI.Scaling.Stretch,
-                // No support for stereo display.
+                // No support for stereo display
                 Stereo = false,
-                // Sequential displaying for double buffering.
+                // Double buffering
                 SwapEffect = DXGI.SwapEffect.FlipSequential,
                 // This swapchain is going to be used as the back buffer.
                 Usage = DXGI.Usage.BackBuffer | DXGI.Usage.RenderTargetOutput,
             };
 
+            //make a direct2d context cause we will be using direct2d to actually draw the lines
             SharpDX.Direct2D1.DeviceContext d2dContext;
             using (DXGI.Device3 dxgiDevice3 = this.device.QueryInterface<DXGI.Device3>())
             {
@@ -256,8 +271,10 @@ namespace NuSysApp
             // Create a Texture2D from the existing swap chain to use as 
             this.backBufferTexture = D3D11.Texture2D.FromSwapChain<D3D11.Texture2D>(this.swapChain, 0);
             this.backBufferView = new D3D11.RenderTargetView(this.device, this.backBufferTexture);
-            //create a surface from the texture so we can write to it with Direct2d
+
+            //create a surface from the texture so we can write to it with Direct2d (yay double buffering)
             DXGI.Surface surface = backBufferTexture.QueryInterface<DXGI.Surface>();
+            //generate the render target
             _viewModel.RenderTarget = new SharpDX.Direct2D1.RenderTarget(d2dContext.Factory, surface, new SharpDX.Direct2D1.RenderTargetProperties()
             {
                 PixelFormat = new SharpDX.Direct2D1.PixelFormat(
@@ -265,28 +282,33 @@ namespace NuSysApp
                         SharpDX.Direct2D1.AlphaMode.Premultiplied),
             });
 
+            //clear both buffers just cause
             _viewModel.RenderTarget.BeginDraw();
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
             _viewModel.RenderTarget.EndDraw();
             this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
             _viewModel.RenderTarget.BeginDraw();
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
             _viewModel.RenderTarget.EndDraw();
             this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
 
-
+            //attach a function to the rendering event that will fire on every rendering call
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
-        public void BeginContinuousLine(Windows.Foundation.Point nextPoint)
+        //call to start drawing an in progress stroke
+        public void BeginContinuousLine(double x, double y)
         {
             _currLine.Clear();
-            DrawContinuousLine(nextPoint);
+            DrawContinuousLine(x, y);
         }
 
-        public void DrawContinuousLine(Windows.Foundation.Point nextPoint)
+        //call while updating a currently being drawn stroke
+        public void DrawContinuousLine(double x, double y)
         {
-            RawVector2 next = ConvertToRawVector2(nextPoint);
+            RawVector2 next = new RawVector2();
+            next.X = (float)(x - _viewModel.XOffset + size);
+            next.Y = (float)(y - _viewModel.YOffset + size);
             if (_currLine.Count() != 0 && _currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
             {
                 return;
@@ -298,27 +320,42 @@ namespace NuSysApp
         }
 
 
+        //called when we render things
         private void CompositionTarget_Rendering(object sender, object e)
         {
 
             ////optimize by not rendering when we dont need to
-            if (!needsRender)
-            {
-                return;
-            }
+            //if (!needsRender)
+            //{
+            //    return;
+            //}
 
+            //begin the draw
             _viewModel.RenderTarget.BeginDraw();
-            _viewModel.RenderTarget.PushAxisAlignedClip(
-            ConvertToRectF(_clip),
-            AntialiasMode.Aliased
-            );
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
+
+            //transform our area so it looks in line with all other UI elements
+            Matrix3x2 scale = Matrix3x2.Scaling(_viewModel.XScale, _viewModel.YScale);
+            Matrix3x2 trans = Matrix3x2.Translation(_viewModel.XOffset, _viewModel.YOffset);
+            Matrix3x2 toOrig = Matrix3x2.Translation(-scaleOrigin.X, -scaleOrigin.Y);
+            Matrix3x2 fromOrig = Matrix3x2.Translation(scaleOrigin.X, scaleOrigin.Y);
+            //Matrix3x2 toCanvas = Matrix3x2.Translation(-transformedOrigin.X, -transformedOrigin.Y);
+            Matrix3x2 fromCanvas = Matrix3x2.Translation(-50000, -50000);
+
+            _viewModel.RenderTarget.Transform = fromCanvas * toOrig * scale * fromOrig;
+            //_viewModel.RenderTarget.Transform = toCanvas * toOrig * scale * trans * fromOrig * fromCanvas;
+
+            //clear the render target so we can draw to an empty space (direct2d is an immediate mode API)
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
+
+            //eventually we will change the brush for each line according to that line's color
             using (var brush = new SharpDX.Direct2D1.SolidColorBrush(_viewModel.RenderTarget, ConvertToColorF(Windows.UI.Colors.Black)))
             {
+                //draw all of the lines that have already been drawn (we've already created the geometries for these)
                 foreach(SharpDX.Direct2D1.PathGeometry l in _viewModel.Lines) {
                     _viewModel.RenderTarget.DrawGeometry(l, brush);
                 }
 
+                //draw the line that is currently being drawn
                 if(_currLine.Count() > 0)
                 {
                     SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(_viewModel.RenderTarget.Factory);
@@ -333,19 +370,22 @@ namespace NuSysApp
                     _viewModel.RenderTarget.DrawGeometry(geometry, brush);
                 }
             }
-            _viewModel.RenderTarget.PopAxisAlignedClip();
+
             _viewModel.RenderTarget.EndDraw();
 
-            // Tell the swap chain to present the buffer.
+            // Tell the swap chain to present the panel we're currently drawing to
             this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
+            //weve rendered all we need to
             needsRender = false;
         }
 
+        //converts from Windows.UI color to DirectX color
         private static SharpDX.Color ConvertToColorF(Windows.UI.Color color)
         {
             return new SharpDX.Color(color.R, color.G, color.B, color.A);
         }
 
+        //Converts from Windows.Foundation Point to vector2
         private static RawVector2 ConvertToRawVector2(Windows.Foundation.Point p)
         {
             RawVector2 r = new RawVector2();
@@ -359,6 +399,8 @@ namespace NuSysApp
             return new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);
         }
 
+        //our version of a destructor(we need to explicitly free resources because
+        //under the hood this is all C++
         private void DisposeResources()
         {
             Utilities.Dispose(ref device);

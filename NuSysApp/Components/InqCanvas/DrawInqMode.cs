@@ -48,7 +48,7 @@ namespace NuSysApp
             var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
             _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y/ _canvasSize.Height));
 
-            inqCanvas.BeginContinuousLine(new Point(currentPoint.X, currentPoint.Y));
+            inqCanvas.BeginContinuousLine(currentPoint.X, currentPoint.Y);
 
         }
 
@@ -58,7 +58,7 @@ namespace NuSysApp
             var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
             _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y / _canvasSize.Height));
 
-            inqCanvas.DrawContinuousLine(new Point(currentPoint.X, currentPoint.Y));
+            inqCanvas.DrawContinuousLine(currentPoint.X, currentPoint.Y);
         }
 
         public async void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)

@@ -66,14 +66,16 @@ namespace NuSysApp
             PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(RenderTarget.Factory);
             GeometrySink sink = geometry.Open();
             RawVector2 start = new RawVector2();
-            start.X = (float)(lineModel.Points.First().X * Constants.MaxCanvasSize);
-            start.Y = (float)(lineModel.Points.First().Y * Constants.MaxCanvasSize);
+            double xshift = XOffset * XScale;
+            double yshift = YOffset * YScale;
+            start.X = (float)(lineModel.Points.First().X * Constants.MaxCanvasSize - xshift + 50000);
+            start.Y = (float)(lineModel.Points.First().Y * Constants.MaxCanvasSize - yshift+ 50000);
             sink.BeginFigure(start, new FigureBegin());
             foreach (Point2d p in lineModel.Points.Skip(1))
             {
                 RawVector2 vec = new RawVector2();
-                vec.X = (float)(p.X * Constants.MaxCanvasSize);
-                vec.Y = (float)(p.Y * Constants.MaxCanvasSize);
+                vec.X = (float)(p.X * Constants.MaxCanvasSize - xshift + 50000);
+                vec.Y = (float)(p.Y * Constants.MaxCanvasSize - yshift + 50000);
                 sink.AddLine(vec);
             }
             sink.EndFigure(new FigureEnd());
@@ -92,6 +94,12 @@ namespace NuSysApp
         {
             get; set;
         }
+        
+        //oop gotta change this
+        public float XOffset = 0;
+        public float YOffset = 0;
+        public float XScale = 1;
+        public float YScale = 1;
 
         public Size CanvasSize {
             get { return _canvasSize; }
