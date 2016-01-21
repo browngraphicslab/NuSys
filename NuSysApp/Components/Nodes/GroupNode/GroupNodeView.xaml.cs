@@ -29,6 +29,7 @@ namespace NuSysApp
         private Storyboard _circleAnim;
         private Storyboard _expandedAnim;
         private Storyboard _expandedListAnim;
+        private GroupNodeDataGridView xDataGridView;
 
         public GroupNodeView( GroupNodeViewModel vm)
         {
@@ -41,32 +42,37 @@ namespace NuSysApp
             {
                 PositionResizer();
             };
+
+            xDataGridView = new GroupNodeDataGridView(new GroupNodeDataGridViewModel((NodeContainerModel)vm.Model));
+            xDataGridView.Opacity = 0;
+            GroupNodeCanvas.Children.Add(xDataGridView);
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (GroupNodeViewModel) DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            
             if (vm.Height > 400 && !_isExpanded)
             {
                 _expandedAnim?.Stop();
                 _circleAnim?.Stop();
-                //_expandedListAnim?.Stop();
-
-                _expandedAnim = Anim.To(xExpandedView, "Alpha", 1, 450); //1
+                _expandedListAnim?.Stop();
+                
+                _expandedAnim = Anim.To(xExpandedView, "Alpha", 0, 450); //1
                 _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
-                //_expandedListAnim = Anim.To(xDataGridView, "Alpha", 1, 450);
+                _expandedListAnim = Anim.To(xDataGridView, "Alpha", 1, 450);
                 _isExpanded = true;
             }
             else if (vm.Height < 400 && _isExpanded)
             {
                 _expandedAnim?.Stop();
                 _circleAnim?.Stop();
-                //_expandedListAnim?.Stop();
+                _expandedListAnim?.Stop();
 
                 _expandedAnim = Anim.To(xExpandedView, "Alpha", 0, 450);
                 _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
-                //_expandedListAnim = Anim.To(xDataGridView, "Alpha", 0, 450);
+                _expandedListAnim = Anim.To(xDataGridView, "Alpha", 0, 450);
                 _isExpanded = false;
             
             }

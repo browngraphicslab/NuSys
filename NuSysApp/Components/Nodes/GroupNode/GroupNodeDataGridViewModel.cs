@@ -1,18 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public class GroupNodeDataGridViewModel : GroupNodeViewModel
+    public class GroupNodeDataGridViewModel : NodeContainerViewModel
     {
         private List<GroupNodeDataGridInfo> _atomDataList;
         private AtomModel _nodeModel;
 
         public GroupNodeDataGridViewModel(NodeContainerModel model) : base(model)
-        {   
-            foreach (var atom in AtomViewList)
+        {
+            AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
+            _atomDataList = new List<GroupNodeDataGridInfo>();
+        }
+
+        private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems == null)
+                return;
+            
+            foreach (var atom in e.NewItems)
             {
-                var vm = (AtomViewModel)atom.DataContext; //access viewmodel
+                Debug.WriteLine("item added!");
+                var atomTest = (FrameworkElement) atom;
+                var vm = (AtomViewModel)atomTest.DataContext; //access viewmodel
                 _nodeModel = (AtomModel)vm.Model; // access model
 
                 _nodeModel.SetMetaData("timestamp", "10/29/1992");
