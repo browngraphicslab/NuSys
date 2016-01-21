@@ -19,48 +19,59 @@ namespace NuSysApp
 
         public WordNodeViewModel(WordNodeModel model) : base(model)
         {
-            var title = Path.GetFileName(model.GetMetaData("FilePath").ToString());
-            Title = title;
+            String path = model.GetMetaData("FilePath")?.ToString();
+
+            if (!String.IsNullOrEmpty(path))
+            {
+                Title = Path.GetFileName(path);
+            }
+            
             WatchForPdf();
         }
 
         private async void WatchForPdf()
         {
-            Task.Run(async () =>
+            string token = this.Model.GetMetaData("Token")?.ToString();
+
+            if (!String.IsNullOrEmpty(token) && !Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
             {
-                while (true)
+                Task.Run(async () =>
                 {
-                    var fileList = await NuSysStorages.Media.GetFilesAsync();
-                    bool foundPdf = false;
-
-                    foreach (StorageFile file in fileList)
+                    while (true)
                     {
-                        string ext = Path.GetExtension(file.Path);
-                        string name = Path.GetFileNameWithoutExtension(file.Path);
-                        string token = this.Model.GetMetaData("Token")?.ToString();
+                        var fileList = await NuSysStorages.Media.GetFilesAsync();
+                        bool foundPdf = false;
 
-                        if (Constants.PdfFileTypes.Contains(ext) && token == name)
+                        foreach (StorageFile file in fileList)
                         {
-                            foundPdf = true;
-                            try {
-                                await CreatePdfNode(file);
-                            }
-                            catch (Exception ex)
+                            string ext = Path.GetExtension(file.Path);
+                            string name = Path.GetFileNameWithoutExtension(file.Path);
+
+                            if (Constants.PdfFileTypes.Contains(ext) && token == name)
                             {
+                                foundPdf = true;
+                                try
+                                {
+                                    await CreatePdfNode(file);
+                                }
+                                catch (Exception ex)
+                                {
                                 //TODO error handling
                             }
+                            }
+                        }
+
+                        if (!foundPdf)
+                        {
+                            await Task.Delay(1000 * 5);
+                        }
+                        else
+                        {
+                            return;
                         }
                     }
-
-                    if (!foundPdf)
-                    {
-                        await Task.Delay(1000 * 5);
-                    }else
-                    {
-                        return;
-                    }
-                }
-            });
+                });
+            }
         }
 
         private async Task CreatePdfNode(StorageFile pdfFile)
