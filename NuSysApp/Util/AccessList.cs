@@ -41,6 +41,16 @@ namespace NuSysApp.Util
 
         public static async Task OpenFile(string token)
         {
+            if (String.IsNullOrEmpty(token))
+            {
+                return;
+            }
+
+            if (!String.IsNullOrEmpty(token) && !Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
+            {
+                return;
+            }
+
             StorageFile file = await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
             bool success = await Windows.System.Launcher.LaunchFileAsync(file);
         }

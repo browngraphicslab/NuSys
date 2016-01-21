@@ -33,7 +33,7 @@ namespace NuSysApp
         {
             string token = this.Model.GetMetaData("Token")?.ToString();
 
-            if (!String.IsNullOrEmpty(token) && !Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
+            if (!String.IsNullOrEmpty(token) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
             {
                 Task.Run(async () =>
                 {
