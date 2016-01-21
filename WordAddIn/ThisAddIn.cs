@@ -33,6 +33,7 @@ namespace WordAddIn
         {
             try
             {
+                MessageBox.Show("Converting to pdf for NuSys");
                 if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
                 {
                     String path = Globals.ThisAddIn.Application.ActiveDocument.FullName;

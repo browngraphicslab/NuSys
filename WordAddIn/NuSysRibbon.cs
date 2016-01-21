@@ -63,14 +63,20 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActiveDocument.FullName);
+            try {
+                string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActiveDocument.FullName);
 
-            if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
-            {
-                MessageBox.Show("Please be advised that the NuSys plugin works best with .docx file types");
+                if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
+                {
+                    MessageBox.Show("Please be advised that the NuSys plugin works best with .docx file types");
+                }
+
+                Globals.ThisAddIn.BuildSidebar();
             }
-
-            Globals.ThisAddIn.BuildSidebar();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+            }
         }
 
         #endregion

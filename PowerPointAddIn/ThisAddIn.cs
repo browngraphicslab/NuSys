@@ -38,6 +38,7 @@ namespace PowerPointAddIn
         {
             try
             {
+                MessageBox.Show("Converting to pdf for NuSys");
                 if (Globals.ThisAddIn.Application.ActivePresentation != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActivePresentation.FullName))
                 {
                     String path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
