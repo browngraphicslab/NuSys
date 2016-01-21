@@ -10,7 +10,7 @@
     >
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
-        <local:FloatingMenuView x:Name="xFloatingMenu" Loaded="xFloatingMenu_Loaded" />
+        <local:FloatingMenuView x:Name="xFloatingMenu" />
         <local:MediaRecorderView x:Name="xMediaRecorder" VerticalAlignment="Top"/>
         <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
