@@ -165,11 +165,11 @@ namespace WordAddIn
 
                     if (selection.BookmarkId == Globals.ThisAddIn.SelectionId)
                     {
-                        ns.DropShadowOpac = 1.0;
+                        ns.DropShadow.Opacity = 1.0;
 
                         if (SelectedSelection != null && SelectedSelection != ns)
                         {
-                            SelectedSelection.DropShadowOpac = 0.0;
+                            SelectedSelection.DropShadow.Opacity = 0.0;
                         }
 
                         SelectedSelection = ns;
