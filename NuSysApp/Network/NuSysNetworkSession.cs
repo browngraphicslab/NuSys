@@ -87,7 +87,7 @@ namespace NuSysApp
                     // TODO: handle better
                         Debug.WriteLine("couldn't send ping");
                     }
-            };mu
+            };
             
             _networkSession.OnMessageRecieved += async (message, type, ip) =>
             {
