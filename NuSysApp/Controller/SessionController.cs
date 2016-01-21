@@ -385,11 +385,12 @@ namespace NuSysApp
         public async Task LoadWorkspace()
         {
             await LoadThumbs();
-            await _contentController.Load();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
-;           SessionView.LoadWorksapce(lines);
+;           await SessionView.LoadWorksapce(lines);
+            await _contentController.Load();
+
         }
 
         public string GenerateId()

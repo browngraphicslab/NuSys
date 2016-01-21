@@ -63,7 +63,8 @@ namespace NuSysApp
             foreach (var line in lines)
             {
                 var o = JsonConvert.DeserializeObject<NodeContentModel>(line);
-                _contents.Add(o.Id, o);
+                var request = new NewContentSystemRequest(o.Id,o.Data);//TODO not ideal
+                await request.ExecuteSystemRequestFunction(SessionController.Instance.NuSysNetworkSession, null, null);//TODO not ideal
             }
         }
 

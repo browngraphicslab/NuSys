@@ -77,7 +77,7 @@ namespace NuSysApp
         public static IEnumerable<string> PowerpointFileTypes = new List<string> { ".ppt", ".pptx" };
 
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
-        public static IEnumerable<string> VideoFileTypes   = new List<string> { };//TODO add more types
+        public static IEnumerable<string> VideoFileTypes   = new List<string> { ".mp4"};//TODO add more types
         public static IEnumerable<string> AudioFileTypes = new List<string> { ".mp3" };
         public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes).Concat(AudioFileTypes).Concat(WordFileTypes).Concat(PowerpointFileTypes));
 
