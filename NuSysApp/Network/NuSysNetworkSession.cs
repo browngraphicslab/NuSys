@@ -94,7 +94,7 @@ namespace NuSysApp
                 await ProcessIncomingRequest(message, type, ip);
             };
 
-            _networkSession.OnClientDrop += OnClientDrop;
+            _networkSession.OnClientDrop += ClientDrop;
         }
         #region Requests
 
@@ -395,31 +395,34 @@ namespace NuSysApp
                 OnNewNetworkUser?.Invoke(user);
             }
         }
-
-        public void DropNetworkUser(NetworkUser user){DropNetworkUser(user.IP);}
-
         public async Task DropNetworkUser(string ip)
         {
-            if (NetworkMembers.ContainsKey(ip))
+            if (ip != null)
             {
-                var user = NetworkMembers[ip];
-                NetworkMembers.Remove(ip);
-                await UITask.Run(async delegate {
-                    OnNetworkUserDropped?.Invoke(user);
-                });
+                if (NetworkMembers.ContainsKey(ip))
+                {
+                    var user = NetworkMembers[ip];
+                    NetworkMembers.Remove(ip);
+                    await UITask.Run(async delegate {
+                                                        OnNetworkUserDropped?.Invoke(user);
+                    });
+                }
+                _networkSession.RemoveIP(ip);
             }
-            _networkSession.RemoveIP(ip);
         }
 
-        public async void OnClientDrop(string ip)
+        public async void ClientDrop(string ip)
         {
-            await DropNetworkUser(ip);
-            if (ip == _hostIP)
+            if (ip != null)
             {
-                _hostIP = LocalIP;
+                await DropNetworkUser(ip);
+                if (ip == _hostIP)
+                {
+                    _hostIP = LocalIP;
+                }
+                await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
+                await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
             }
-            await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
-            await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
         }
     }
     public class NoRequestTypeException : Exception

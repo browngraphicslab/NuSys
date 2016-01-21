@@ -58,7 +58,7 @@ namespace WordAddIn
                 ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
             }
 
-            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported);
+            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported, Globals.ThisAddIn._fileToken);
         }
 
         public SelectionItemIdView GetIdView()
@@ -74,11 +74,12 @@ namespace WordAddIn
             var selectionItem = (SelectionItem)sender;
             selectionItem.Range.Select();
 
-            this.DropShadowOpac = 1.0;
+            //this.DropShadowOpac = 1.0;
+            DropShadow.Opacity = 1.0;
 
             if (Globals.ThisAddIn.SidePane.SelectedSelection != null && Globals.ThisAddIn.SidePane.SelectedSelection != this)
             {
-                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadowOpac = 0.0;
+                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadow.Opacity = 0.0;
             }
 
             Globals.ThisAddIn.SidePane.SelectedSelection = this;

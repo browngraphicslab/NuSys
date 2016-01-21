@@ -14,10 +14,10 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WordNodeViewModel : NodeViewModel
+    public class PowerpointNodeViewModel : NodeViewModel
     {
-
-        public WordNodeViewModel(WordNodeModel model) : base(model)
+        
+        public PowerpointNodeViewModel(PowerpointNodeModel model) : base(model)
         {
             String path = model.GetMetaData("FilePath")?.ToString();
 
@@ -25,7 +25,7 @@ namespace NuSysApp
             {
                 Title = Path.GetFileName(path);
             }
-            
+
             WatchForPdf();
         }
 
@@ -76,7 +76,7 @@ namespace NuSysApp
 
         private async Task CreatePdfNode(StorageFile pdfFile)
         {
-            var wordModel = ((WordNodeModel)this.Model);
+            var wordModel = ((PowerpointNodeModel)this.Model);
             var wordId = wordModel.Id;
 
             var contentId = SessionController.Instance.GenerateId();
@@ -125,7 +125,8 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-
+            
         }
+
     }
 }

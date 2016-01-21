@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,16 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
+            var model = (ImageNodeModel)vm.Model;
+            var token = model.GetMetaData("Token");
+            if (token == null || String.IsNullOrEmpty(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -59,32 +70,42 @@ namespace NuSysApp
 
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
-            var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+            var model = (ImageNodeModel)((ImageNodeViewModel)DataContext).Model;
 
-            string filePath = model.GetMetaData("DocPath").ToString();
-            string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+            string token = model.GetMetaData("Token")?.ToString();
 
-            //write to OpenWord the bookmarkId
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                return;
+            }
+
+            string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
-            string fileExt = Path.GetExtension(filePath);
 
-            if (fileExt == ".pptx")
+            if (Constants.WordFileTypes.Contains(ext))
             {
-                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\word.txt", new List<string>() { bookmarkId });
+                string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+                StorageFile writeBookmarkFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, token);
+
+                using (StreamWriter writer = new StreamWriter(await writeBookmarkFile.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(bookmarkId);
+                }
+
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(token);
+                }
             }
-            else if (fileExt == ".doc")
+            else if (Constants.PowerpointFileTypes.Contains(ext))
             {
-                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\ppt.txt", new List<string>() { bookmarkId });
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(token);
+                }
             }
 
-            //Open word document
-            StorageFile fileToOpen = await StorageFile.GetFileFromPathAsync(filePath);
-            bool success = await Windows.System.Launcher.LaunchFileAsync(fileToOpen);
-
-            if (success)
-            {
-                //TODO woo
-            }
+            await AccessList.OpenFile(token);
         }
     }
 }

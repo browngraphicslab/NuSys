@@ -61,7 +61,7 @@ namespace PowerPointAddIn
         {
             string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActivePresentation.FullName);
 
-            if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
+            if (docExt != ".pptx" || String.IsNullOrEmpty(docExt))
             {
                 MessageBox.Show("Please be advised that the NuSys plugin works best with .pptx file types");
             }

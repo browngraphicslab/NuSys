@@ -33,7 +33,6 @@ namespace NuSysApp
             this.InitializeComponent();
             var wsModel = (WorkspaceModel)vm.Model;
 
-
             var inqCanvasModel = wsModel.InqCanvas;
             var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
             //SessionController.Instance.IdToSendables[inqCanvasModel.Id] = inqCanvasModel;
@@ -54,6 +53,7 @@ namespace NuSysApp
                 {
                     return;
                 }
+
                 var gestureType = GestureRecognizer.testGesture(model);
                 switch (gestureType)
                 {
@@ -66,7 +66,7 @@ namespace NuSysApp
                         break;
                 }
 
-                await CheckForTagCreation(model);
+         //       await CheckForTagCreation(model);
             };
         }
 

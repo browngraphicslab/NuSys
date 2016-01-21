@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Tools;
 using Microsoft.Office.Tools.Word;
+using MicrosoftOfficeInterop;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,25 +17,11 @@ namespace WordAddIn
         private SidePane _sidePane;
         public String _selectionId;
         public List<SelectionItemIdView> _allSelectionItems = new List<SelectionItemIdView>();
+        public String _fileToken;
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            try { 
-                using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\LauncherArguments\\OpenWord.txt"))
-                {
-                    // Read the stream to a string, and write the string to the console.
-                    _selectionId = sr.ReadToEnd();
-                }
 
-                if (!String.IsNullOrEmpty(_selectionId))
-                {
-                    BuildSidebar();
-                }
-            }
-            catch (Exception ex)
-            {
-                //TODO error handing
-            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -42,32 +29,42 @@ namespace WordAddIn
 
         }
 
-        private void saveSelectionData() {
+        private void ConvertToPdf()
+        {
             try
             {
-                List<SelectionItemIdView> allSelectionItems = new List<SelectionItemIdView>();
-                foreach (SelectionItem expSel in Globals.ThisAddIn.SidePane.ExportedSelections)
+                if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
                 {
-                    allSelectionItems.Add(expSel.GetIdView());
-                }
+                    String path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
+                    String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+                    string pdfPath = mediaFolderPath + "\\" + _fileToken + ".pdf";
 
-                foreach (SelectionItem unexpSel in Globals.ThisAddIn.SidePane.UnexportedSelections)
-                {
-                    allSelectionItems.Add(unexpSel.GetIdView());
+                    OfficeInterop.SaveWordAsPdf(path, pdfPath);
                 }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling
+            }
+        }
 
+        private void readSelectionData()
+        {
+            _allSelectionItems = new List<SelectionItemIdView>();
+
+            try
+            {
                 Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
 
                 foreach (Office.DocumentProperty prop in properties)
                 {
-                    if (prop.Name == "NuSysSelections")
+                    if (prop.Name.Contains("NuSysSelection"))
                     {
-                        properties["NuSysSelections"].Delete();
+                        string json = prop.Value.ToString();
+                        _allSelectionItems.Add(JsonConvert.DeserializeObject<SelectionItemIdView>(json));
+
                     }
                 }
-
-                string selectionItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(allSelectionItems);
-                properties.Add("NuSysSelections", false, 4, selectionItemJson);
             }
             catch (Exception ex)
             {
@@ -75,25 +72,117 @@ namespace WordAddIn
             }
         }
 
-        private void readSelectionData()
-        {
+        private void saveSelectionData() {
             try
             {
-                //read in any customproperties
-                string selectionItemJson = String.Empty;
                 Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
 
                 foreach (Office.DocumentProperty prop in properties)
                 {
-                    if (prop.Name == "NuSysSelections")
+                    if (prop.Name.StartsWith("NuSysSelection"))
                     {
-                        selectionItemJson = prop.Value.ToString();
+                        prop.Delete();
                     }
                 }
-                if (!String.IsNullOrEmpty(selectionItemJson))
+
+                int count = 0;
+                foreach (SelectionItem expSel in Globals.ThisAddIn.SidePane.ExportedSelections)
                 {
-                    _allSelectionItems = JsonConvert.DeserializeObject<List<SelectionItemIdView>>(selectionItemJson);
+                    SelectionItemIdView view = expSel.GetIdView();
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(view);
+
+                    properties.Add("NuSysSelection" + count, false, 4, json);
+                    count++;
                 }
+
+                foreach (SelectionItem unexpSel in Globals.ThisAddIn.SidePane.UnexportedSelections)
+                {
+                    SelectionItemIdView view = unexpSel.GetIdView();
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(view);
+
+                    properties.Add("NuSysSelection" + count, false, 4, json);
+                    count++;
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
+        }
+        
+        private void GetToken()
+        {
+            try
+            {
+                Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
+
+                foreach (Office.DocumentProperty prop in properties)
+                {
+                    if (prop.Name == "FileToken")
+                    {
+                        _fileToken = prop.Value.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
+        }
+
+        private void GetTokenFromFile()
+        {
+            try
+            {
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\OpenDocParams";
+                string fileName = "FirstTimeWord.txt";
+
+                using (StreamReader sr = new StreamReader(path + "\\" + fileName))
+                {
+                    // Read the stream to a string, and write the string to the console.
+                    _fileToken = (sr.ReadToEnd())?.Trim();
+                }
+
+                File.WriteAllText(path + "\\" + fileName, String.Empty);
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    Microsoft.Office.Core.DocumentProperties properties = (Office.DocumentProperties)Globals.ThisAddIn.Application.ActiveDocument.CustomDocumentProperties;
+
+                    foreach (Office.DocumentProperty prop in properties)
+                    {
+                        if (prop.Name == "FileToken")
+                        {
+                            prop.Delete();
+                        }
+                    }
+
+                    properties.Add("FileToken", false, 4, _fileToken);
+                }else
+                {
+                    _fileToken = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
+        }
+
+        private void GetBookmarkFromFile()
+        {
+            try
+            {
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\OpenDocParams";
+                string fileName = _fileToken;
+
+                using (StreamReader sr = new StreamReader(path + "\\" + fileName))
+                {
+                    // Read the stream to a string, and write the string to the console.
+                    _selectionId = (sr.ReadToEnd()).Trim();
+                }
+
+                File.WriteAllText(path + "\\" + fileName, String.Empty);
             }
             catch (Exception ex)
             {
@@ -123,20 +212,40 @@ namespace WordAddIn
 
         public void BuildSidebar()
         {
-            readSelectionData();
-            var standardUC = new UserControl();
-            _sidePane = new SidePane();
-            var wpfHost = new ElementHost { Child = _sidePane };
-            wpfHost.Dock = DockStyle.Fill;
-            standardUC.Controls.Add(wpfHost);
-            _pane = CustomTaskPanes.Add(standardUC, "NuSys");
-            _pane.Visible = false;
-            _pane.Width = 450;
-            _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
-            _pane.Visible = true;
+            try {
 
-            Document vstoDoc = Globals.Factory.GetVstoObject(this.Application.ActiveDocument);
-            vstoDoc.BeforeClose += new System.ComponentModel.CancelEventHandler(ThisDocument_BeforeClose);
+                GetToken();
+
+                if (String.IsNullOrEmpty(_fileToken))
+                {
+                    GetTokenFromFile();
+                }
+
+                if (!String.IsNullOrEmpty(_fileToken))
+                {
+                    GetBookmarkFromFile();
+                    ConvertToPdf();
+                }
+
+                readSelectionData();
+                var standardUC = new UserControl();
+                _sidePane = new SidePane();
+                var wpfHost = new ElementHost { Child = _sidePane };
+                wpfHost.Dock = DockStyle.Fill;
+                standardUC.Controls.Add(wpfHost);
+                _pane = CustomTaskPanes.Add(standardUC, "NuSys");
+                _pane.Visible = false;
+                _pane.Width = 450;
+                _pane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight;
+                _pane.Visible = true;
+
+                Document vstoDoc = Globals.Factory.GetVstoObject(this.Application.ActiveDocument);
+                vstoDoc.BeforeClose += new System.ComponentModel.CancelEventHandler(ThisDocument_BeforeClose);
+            }
+            catch (Exception ex)
+            {
+                //TODO handle exception
+            }
         }
 
         #region VSTO generated code

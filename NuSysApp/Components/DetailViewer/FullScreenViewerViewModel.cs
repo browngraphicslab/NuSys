@@ -18,7 +18,7 @@ namespace NuSysApp
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
 
         public UserControl View { get; set; }
-
+            
         public ObservableCollection<Button> Tags { get; set; }
  
         public FullScreenViewerViewModel()

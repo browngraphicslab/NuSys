@@ -36,6 +36,11 @@ namespace NuSysApp
                 if (user.IP == IP)
                 {
                     OnUserRemoved?.Invoke();
+                    foreach (var atom in _modelsInUse)
+                    {
+                        atom.LastNetworkUser = null;
+                    }
+                    _modelsInUse.Clear();
                 }
             };
         }

@@ -21,7 +21,7 @@ namespace NuSysApp
         public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
-           _view.DoubleTapped += OnDoubleTapped;
+            _view.DoubleTapped += OnDoubleTapped;
             _view.PointerPressed += OnPointerPressed;
             _view.PointerReleased += OnPointerReleased;
             _view.ManipulationMode = ManipulationModes.All;
@@ -96,7 +96,16 @@ namespace NuSysApp
                 if (dc is NodeViewModel)
                 {
                     var vm = (NodeViewModel)dc;
-                    SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);
+
+                    if (vm.NodeType == NodeType.Word || vm.NodeType == NodeType.Powerpoint)
+                    {
+                        SessionController.Instance.SessionView.OpenFile(vm);
+                    }
+                    else
+                    {
+                        SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);
+                    }
+
                 }
                 if (dc is LinkViewModel)
                 {

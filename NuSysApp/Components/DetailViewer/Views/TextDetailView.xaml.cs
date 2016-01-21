@@ -1,35 +1,36 @@
-﻿using Windows.UI;
+﻿using NuSysApp.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.SpeechRecognition;
+using Windows.Media.SpeechSynthesis;
+using Windows.Storage;
+using Windows.System;
+using Windows.UI;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using System.Diagnostics;
-using Windows.UI.Xaml.Media.Imaging;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.Media.SpeechSynthesis;
-using Windows.Media.SpeechRecognition;
-using Windows.Storage;
+using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
-    
+
     public sealed partial class TextDetailView : UserControl
     {
         //private SpeechRecognizer _recognizer;
@@ -46,13 +47,25 @@ namespace NuSysApp
 
             var model = (TextNodeModel)vm.Model;
 
-            if (model.Text != "") { 
-                rtfTextBox.SetRtfText(model.Text);
+            var token = model.GetMetaData("Token");
+            if (token == null || String.IsNullOrEmpty(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            {
+                SourceBttn.Visibility = Visibility.Collapsed;
+            }
+
+            var txt = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
+            if (txt != "") { 
+                rtfTextBox.SetRtfText(txt);
             }
 
             model.TextChanged += delegate
             {
-                rtfTextBox.SetRtfText(model.Text);
+                var text = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
+                rtfTextBox.SetRtfText(text);
             };
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
@@ -264,31 +277,40 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+            string token = model.GetMetaData("Token")?.ToString();
 
-            string filePath = model.GetMetaData("DocPath").ToString();
-            string bookmarkId = model.GetMetaData("BookmarkId").ToString();
-
-            //write to OpenWord the bookmarkId
-            var toWriteFolder = NuSysStorages.OpenDocParamsFolder;
-            string fileExt = Path.GetExtension(filePath);
-
-            if (fileExt == ".pptx")
+            if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
             {
-                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\word.txt", new List<string>() { bookmarkId });
-            }
-            else if (fileExt == ".doc")
-            {
-                System.IO.File.WriteAllLines(toWriteFolder.Path + "\\ppt.txt", new List<string>() { bookmarkId });
+                return;
             }
 
-            //Open word document
-            StorageFile fileToOpen = await StorageFile.GetFileFromPathAsync(filePath);
-            bool success = await Windows.System.Launcher.LaunchFileAsync(fileToOpen);
+            string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
+            StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 
-            if (success)
+            if (Constants.WordFileTypes.Contains(ext))
             {
-                //TODO woo
+                string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+                StorageFile writeBookmarkFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, token);
+
+                using (StreamWriter writer = new StreamWriter(await writeBookmarkFile.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(bookmarkId);
+                }
+
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(token);
+                }
             }
+            else if (Constants.PowerpointFileTypes.Contains(ext))
+            {
+                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
+                {
+                    writer.WriteLineAsync(token);
+                }
+            }
+
+            await AccessList.OpenFile(token);
         }
     }
 }

@@ -22,10 +22,10 @@ namespace NuSysApp
         public String BookmarkId;
         public Boolean IsExported;
         public String RtfContent;
-        public String DocPath;
-        public String DocName;
+        public String FilePath;
         public List<String> ImageNames;
         public String DateTimeExported;
+        public String Token;
     }
 
     public class ContentImporter
@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             SetupChromeIntermediate();
             SetupWordTransfer();
-            SetupPowerPointTransfer();
+            SetupPowerpointTransfer();
         }
 
         private void SetupChromeIntermediate()
@@ -87,43 +87,54 @@ namespace NuSysApp
             };
         }
 
+        private Message CreateMessage(SelectionItem selectionItem, String contentId, Point centerpoint)
+        {
+            Message m = new Message();
+            m["contentId"] = contentId;
+            m["x"] = centerpoint.X - 200;
+            m["y"] = centerpoint.Y - 200;
+            m["width"] = 400;
+            m["height"] = 400;
+            m["autoCreate"] = true;
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+
+            var metadata = new Dictionary<string, object>();
+            metadata["BookmarkId"] = selectionItem.BookmarkId;
+            metadata["IsExported"] = selectionItem.IsExported;
+            metadata["FilePath"] = selectionItem.FilePath;
+            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+            metadata["Token"] = selectionItem.Token?.Trim();
+
+            m["metadata"] = metadata;
+
+            return m;
+        }
+
         private async Task AddinTransfer(List<SelectionItem> selectionItems)
         {
             foreach (SelectionItem selectionItem in selectionItems)
             {
+                double width, height;
+                Point centerpoint;
                 await UITask.Run(async () =>
                 {
-                    var width = SessionController.Instance.SessionView.ActualWidth;
-                    var height = SessionController.Instance.SessionView.ActualHeight;
-                    var centerpoint =
+                    width = SessionController.Instance.SessionView.ActualWidth;
+                    height = SessionController.Instance.SessionView.ActualHeight;
+                    centerpoint =
                         SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
-
+                });
                     var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
 
                     if (hasRtf)
                     {
                         var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
                         var contentId = SessionController.Instance.GenerateId();
-                        var m = new Message();
 
-                        m["contentId"] = contentId;
-                        m["x"] = centerpoint.X - 200;
-                        m["y"] = centerpoint.Y - 200;
-                        m["width"] = 400;
-                        m["height"] = 400;
-                        m["autoCreate"] = true;
-                        m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                        Message m = CreateMessage(selectionItem, contentId, centerpoint);
                         m["nodeType"] = NodeType.Text.ToString();
 
-                        var metadata = new Dictionary<string, object>();
-                        metadata["BookmarkId"] = selectionItem.BookmarkId;
-                        metadata["IsExported"] = selectionItem.IsExported;
-                        metadata["DocPath"] = selectionItem.DocPath;
-                        metadata["DateTimeExported"] = selectionItem.DateTimeExported;
-                        m["metadata"] = metadata;
-
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
                          await
                             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
@@ -138,105 +149,83 @@ namespace NuSysApp
                         {
                             var contentId = SessionController.Instance.GenerateId();
 
-                            var m = new Message();
-                            m["contentId"] = contentId;
-                            m["x"] = centerpoint.X - 200;
-                            m["y"] = centerpoint.Y - 200;
-                            m["width"] = 400;
-                            m["height"] = 400;
-                            m["autoCreate"] = true;
-                            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                            Message m = CreateMessage(selectionItem, contentId, centerpoint);
                             m["nodeType"] = NodeType.Image.ToString();
 
                             StorageFile imgFile;
                             try {
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
                                 await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                         new NewContentSystemRequest(contentId,
-                                            Convert.ToBase64String(ba)));
-
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);
 
                             }
                             catch (Exception ex)
                             {
 
                             }
-
-
                         }
                     }
-                });
+                
             }
         }
+
         private async void SetupWordTransfer()
         {
-            var fw = new FolderWatcher(NuSysStorages.WordTransferFolder);
-            fw.FilesChanged += async delegate
+            Task.Run(async () =>
             {
-                var transferFiles = await NuSysStorages.WordTransferFolder.GetFilesAsync().AsTask();
-                var contents = new List<string>();
-                var count = 0;
-
-                foreach (var file in transferFiles)
-                {
-                    var text = await FileIO.ReadTextAsync(file);
-                    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
-
-                    await AddinTransfer(selectionItems);
+                while (true) {
+                    await WordTransfer();
+                    await Task.Delay(1000);
                 }
-
-                foreach (var file in transferFiles)
-                {
-                    try
-                    {
-                        await file.DeleteAsync();
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //TODO EXCEPTION HANDLING
-                    }
-                }
-
-                ContentImported?.Invoke(contents.ToList());
-            };
+            });
         }
 
-        private async void SetupPowerPointTransfer()
+        private async void SetupPowerpointTransfer()
         {
-            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
-            fw.FilesChanged += async delegate
+            Task.Run(async () =>
             {
-                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
-                var contents = new List<string>();
-                var count = 0;
-
-                foreach (var file in transferFiles)
+                while (true)
                 {
-                    var text = await FileIO.ReadTextAsync(file);
-                    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
-
-                    await AddinTransfer(selectionItems);
+                    await PowerpointTransfer();
+                    await Task.Delay(1000);
                 }
+            });
+        }
 
-                foreach (var file in transferFiles)
-                {
-                    try { 
-                        await file.DeleteAsync();
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //TODO EXCEPTION HANDLING
-                    }
+        private async Task WordTransfer()
+        {
+            var fileList = await NuSysStorages.WordTransferFolder.GetFilesAsync();
+
+            foreach (var file in fileList)
+            {
+                var text = await FileIO.ReadTextAsync(file);
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+
+                await AddinTransfer(selectionItems);
+
+                await file.DeleteAsync();
             }
+        }
 
-                ContentImported?.Invoke(contents.ToList());
-            };
+        private async Task PowerpointTransfer()
+        {
+            var fileList = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync();
+
+            foreach (var file in fileList)
+            {
+                var text = await FileIO.ReadTextAsync(file);
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+
+                await AddinTransfer(selectionItems);
+
+                await file.DeleteAsync();
+            }
         }
 
     }

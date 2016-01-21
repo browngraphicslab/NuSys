@@ -104,16 +104,21 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {     
-            Metadata = props.GetDict<string, object>("metadata");
-            if (Metadata.ContainsKey("tags"))
-                Metadata["tags"] = JsonConvert.DeserializeObject<List<string>>(Metadata["tags"].ToString());
-            else 
-                Metadata["tags"] = new List<string>();
+            var md = props.GetDict<string, object>("metadata");
+            if (md.ContainsKey("tags"))
+                md["tags"] = JsonConvert.DeserializeObject<List<string>>(md["tags"].ToString());
+            else
+                md["tags"] = new List<string>();
 
-            if (Metadata.ContainsKey("groups"))
-                Metadata["groups"] = JsonConvert.DeserializeObject<List<string>>(Metadata["groups"].ToString());
-            else 
-                Metadata["groups"] = new List<string>();
+            if (md.ContainsKey("groups"))
+                md["groups"] = JsonConvert.DeserializeObject<List<string>>(md["groups"].ToString());
+            else
+                md["groups"] = new List<string>();
+
+            foreach(var data in md)
+            {
+                Metadata[data.Key] = data.Value;
+            }
            
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
