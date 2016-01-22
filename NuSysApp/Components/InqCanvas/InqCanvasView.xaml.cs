@@ -210,7 +210,6 @@ namespace NuSysApp
         private D3D11.RenderTargetView backBufferView;
 
         //the stroke that is currently being drawn
-        private List<RawVector2> _currLine = new List<RawVector2>();
         private float size = 50000;
 
 
@@ -315,7 +314,7 @@ namespace NuSysApp
         //call to start drawing an in progress stroke
         public void BeginContinuousLine(double x, double y)
         {
-            _currLine.Clear();
+            _viewModel.CurrentLine.Clear();
             DrawContinuousLine(x, y);
         }
 
@@ -326,12 +325,12 @@ namespace NuSysApp
             RawVector2 next = new RawVector2();
             next.X = (float)(p.X);
             next.Y = (float)(p.Y);
-            if (_currLine.Count() != 0 && _currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
+            if (_viewModel.CurrentLine.Count() != 0 && _viewModel.CurrentLine.Last().X == next.X && _viewModel.CurrentLine.Last().Y == next.Y)
             {
                 return;
             }
 
-            _currLine.Add(next);
+            _viewModel.CurrentLine.Add(next);
 
             needsRender = true;
         }
@@ -370,13 +369,13 @@ namespace NuSysApp
                 }
 
                 //draw the line that is currently being drawn
-                if(_currLine.Count() > 0)
+                if(_viewModel.CurrentLine.Count() > 0)
                 {
                     SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(_viewModel.RenderTarget.Factory);
                     GeometrySink sink = geometry.Open();
 
-                    sink.BeginFigure(_currLine.First(), new FigureBegin());
-                    sink.AddLines(_currLine.ToArray());
+                    sink.BeginFigure(_viewModel.CurrentLine.First(), new FigureBegin());
+                    sink.AddLines(_viewModel.CurrentLine.ToArray());
 
                     sink.EndFigure(new FigureEnd());
                     sink.Close();

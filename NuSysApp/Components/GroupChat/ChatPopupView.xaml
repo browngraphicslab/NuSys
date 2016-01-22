@@ -13,7 +13,7 @@
         <Grid MaxHeight="600" Width="300" Background="#8f98a1" CornerRadius="7">
             <Grid MaxHeight="420" MinHeight="150" Margin="20,20,20,130" Background="White">
             <Grid Height="300" Name="DialogPanel" Margin="5,5,5,5">
-                <ScrollViewer Height="300" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Name="Scroller" Height="300" VerticalScrollBarVisibility="Auto">
                         <ItemsControl Name="Texts"></ItemsControl>
                 </ScrollViewer>
             </Grid>
