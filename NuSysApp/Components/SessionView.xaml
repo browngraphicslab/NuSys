@@ -47,12 +47,12 @@
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
             <Image Source="/Assets/icon_record.png"></Image>
         </Button>
-        <Button x:Name="ChatButton" Style="{StaticResource ChatButtonStyle}">
+        <Button x:Name="ChatButton" Style="{StaticResource ChatButtonStyle}" Click="ChatButton_OnClick">
             <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
-        <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="50,0,0,50"></local:ChatPopupView>
+        <local:ChatPopupView x:Name="ChatPopup" Visibility="Collapsed" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="50,0,0,50"></local:ChatPopupView>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
 
         <Grid Name ="overlayCanvas" Background="#55000000" Tapped="SearchHide" Visibility ="Collapsed">

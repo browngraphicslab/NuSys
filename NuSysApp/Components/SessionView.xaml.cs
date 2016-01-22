@@ -367,5 +367,10 @@ namespace NuSysApp
         {
             
         }
+
+        private void ChatButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 }
