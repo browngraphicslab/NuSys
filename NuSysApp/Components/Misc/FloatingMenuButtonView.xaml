@@ -14,7 +14,7 @@
             <Setter Property="Template" >
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid Width="300" Height="100">
+                        <Grid Width="300" Height="75">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal" />
@@ -36,7 +36,7 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Ellipse Height="85" Width ="85" Fill="#62BDC5" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10" HorizontalAlignment="Left"/>
+                            <Ellipse Height="60" Width ="60" Fill="#62BDC5" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10" HorizontalAlignment="Left"/>
                             <ContentPresenter></ContentPresenter>
                         </Grid>
                     </ControlTemplate>
@@ -48,7 +48,7 @@
     <Button x:Name="btn" Style="{StaticResource FloatingButton}">
         <Button.Content>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                 <Image x:Name="icon" Height="50" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0"></Image>
+                <Image x:Name="icon" Height="35" Width="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0"></Image>
                 <TextBlock x:Name="btnCaption" FontSize="18" FontWeight="Bold" Foreground="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="25,0"></TextBlock>
             </StackPanel>
         </Button.Content>

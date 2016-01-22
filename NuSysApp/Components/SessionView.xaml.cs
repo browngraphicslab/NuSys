@@ -91,6 +91,7 @@ namespace NuSysApp
 
                 _cortanaInitialized = false;
                 xFloatingMenu.SessionView = this;
+
                 SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user)
                 {
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
@@ -240,9 +241,11 @@ namespace NuSysApp
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
-            Canvas.SetLeft(Users, 5);
+            Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
             Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70-ChatPopup.ActualHeight);
+            Canvas.SetLeft(ChatButton, 5);
+            Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             overlayCanvas.Width = mainCanvas.ActualWidth;
             overlayCanvas.Height = mainCanvas.ActualHeight;
 

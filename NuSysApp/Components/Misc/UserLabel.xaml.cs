@@ -26,13 +26,8 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             _user = user;
-            SetUserLabel(_user);
             UserButton.Background = new SolidColorBrush(_user.Color);
-        }
-
-        private void SetUserLabel(NetworkUser myUser)
-        {
-            var content = myUser.Name ?? myUser.IP;
+            var content = _user.Name ?? _user.IP;
             if (content != "Me")
             {
                 UserBubbleText.Text = content.Substring(0, 1).ToUpper();
@@ -41,7 +36,7 @@ namespace NuSysApp
             {
                 UserBubbleText.Text = "Me";
             }
-            if (myUser.IP == SessionController.Instance.NuSysNetworkSession.HostIP)//if the user is host
+            if (user.IP == SessionController.Instance.NuSysNetworkSession.HostIP)//if the user is host
             {
                 var weight = new FontWeight();
                 weight.Weight = (ushort) (UserBubbleText.FontWeight.Weight + UserBubbleText.FontWeight.Weight);
