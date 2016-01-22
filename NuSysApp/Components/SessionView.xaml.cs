@@ -244,10 +244,13 @@ namespace NuSysApp
             Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
             Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70-ChatPopup.ActualHeight);
+            Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
-            overlayCanvas.Width = mainCanvas.ActualWidth;
-            overlayCanvas.Height = mainCanvas.ActualHeight;
+            //overlayCanvas.Width = mainCanvas.ActualWidth;
+            //overlayCanvas.Height = mainCanvas.ActualHeight;
+            Canvas.SetTop(xSearchWindowView, 25);
+            Canvas.SetLeft(xSearchWindowView, 50);
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
@@ -271,12 +274,14 @@ namespace NuSysApp
 
         public void SearchView()
         {
-            overlayCanvas.Visibility = Visibility.Visible;
+            //xSearchWindowView.Visibility = Visibility.Visible;
+            Canvas.SetTop(xSearchWindowView, 25);
+            Canvas.SetLeft(xSearchWindowView, 50);
         }
 
         public void SearchHide(object sender, TappedRoutedEventArgs e)
         {
-            overlayCanvas.Visibility = Visibility.Collapsed;
+            xSearchWindowView.Visibility = Visibility.Collapsed;
         }
 
 
@@ -374,6 +379,7 @@ namespace NuSysApp
             if (ChatPopup.Visibility == Visibility.Visible)
             {
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
+                Canvas.SetLeft(ChatPopup, 5);
             }
         }
     }
