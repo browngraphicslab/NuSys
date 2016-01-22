@@ -42,7 +42,9 @@ namespace NuSysApp
                 Y = compositeTransform.CenterY
             };
 
-            var cent = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(_view).Position);
+            var mousePoint = e.GetCurrentPoint(_view).Position;
+
+            var cent = compositeTransform.Inverse.TransformPoint(mousePoint);
 
             var localPoint = tmpTranslate.Inverse.TransformPoint(cent);
 
@@ -81,6 +83,9 @@ namespace NuSysApp
             model.CenterX = compositeTransform.CenterX;
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
+
+            _view.InqCanvas.SetTransform(compositeTransform);
+
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
@@ -164,7 +169,8 @@ namespace NuSysApp
             model.CenterX = compositeTransform.CenterX;
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
-            // e.Handled = true;
-        }  
+
+            _view.InqCanvas.SetTransform(compositeTransform);
+        }
     }
 }

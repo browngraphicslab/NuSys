@@ -100,9 +100,9 @@ namespace NuSysApp
             {
                 tpl.OnTemplateReady += async delegate {
                     var inqVm = new InqCanvasViewModel(model.InqCanvas, new Size(model.Width, model.Height));
-                    if (tpl.inkCanvas != null) { 
-                    //    tpl.inkCanvas.ViewModel = inqVm;
-                    }
+                    //if (tpl.inkCanvas != null) { 
+                    ////    tpl.inkCanvas.ViewModel = inqVm;
+                    //}
                 };
             }
 

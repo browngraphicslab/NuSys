@@ -14,6 +14,7 @@ namespace NuSysApp
 {
     public class InqLineModel : Sendable
     {
+        //We might change this to hashset for erasing but we'll cross that bridge later
         private ObservableCollection<Point2d> _points;
 
         public double StrokeThickness { get; set; }

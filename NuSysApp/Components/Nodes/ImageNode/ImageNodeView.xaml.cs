@@ -24,7 +24,14 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
+                //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
+
+                vm.Init();
+                //lets see if this 2 way binding works
+                //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
+                //nodeTpl.inkCanvas.Width = vm.Width;
+                //nodeTpl.inkCanvas.Height = vm.Height;
+
             };
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
         }

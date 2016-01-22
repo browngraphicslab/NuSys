@@ -11,6 +11,7 @@ namespace NuSysApp
         public override async Task Activate()
         {
             _view.InqCanvas.IsEnabled = true;
+            
         }
 
         public override async Task Deactivate()

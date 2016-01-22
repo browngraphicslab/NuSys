@@ -320,18 +320,13 @@
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
-    <Compile Include="Components\InqCanvas\InqLineViewModel.cs" />
     <Compile Include="Components\Misc\PinWindowViewModel.cs" />
     <Compile Include="Components\Nodes\VideoNode\VideoNodeViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\InqCanvas\InqLineView.xaml.cs">
-      <DependentUpon>InqLineView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
     <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Components\InqCanvas\HighlightInqMode.cs" />
     <Compile Include="Components\InqCanvas\IInqMode.cs" />
     <Compile Include="Util\TextBoxExtended.cs" />
     <Compile Include="Util\TwoFingerScrollViewer.cs" />
@@ -628,10 +623,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\InqCanvas\InqLineView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Cortana\CortanaPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -724,7 +715,41 @@
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.Effects.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D12">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D12.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.MediaFoundation">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.MediaFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
