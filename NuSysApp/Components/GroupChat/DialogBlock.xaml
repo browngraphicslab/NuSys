@@ -8,8 +8,8 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    <Grid CornerRadius="12" MinHeight="25" MinWidth="25"  Name="TheGrid" Width="Auto" Height="Auto" BorderThickness="3">
-        <TextBlock Name="Box" TextWrapping="WrapWholeWords" Margin="5.5,.5,5.5,.5"/>
+    <Grid CornerRadius="12" MinHeight="25" MinWidth="25"  Name="TheGrid" Width="Auto" Height="Auto" BorderThickness="3"  Margin="0,1.5,0,1.5">
+        <TextBlock Name="Box" TextWrapping="WrapWholeWords" Margin="5.5,.8,5.5,.8"/>
     </Grid>
 
 </UserControl>
