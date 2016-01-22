@@ -92,15 +92,7 @@
     </UserControl.Resources>
 
     <Canvas RenderTransform="{Binding FMTransform}" Margin="10,30,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
-        <Button x:Name="CollapseExpand" Background="#62BDC5" Height="20" Width="30" Padding="0,0,0,0" Margin="5,0,0,0" Tapped="ExpandTapped">
-            <Button.Content>
-                <Grid>
-                    <Image x:Name="CollapseImage" Source="ms-appx:///Assets/icon_collapse.png" Width="20"></Image>
-                    <Image x:Name="ExpandImage" Source="ms-appx:///Assets/icon_additional.png" Width="20" Visibility="Collapsed"></Image>
-                </Grid>
-            </Button.Content>
-        </Button>
-        <StackPanel x:Name="FloatingMenuPanel" Margin="30,20,0,0">
+        <StackPanel x:Name="FloatingMenuPanel" Margin="0,20,0,0">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
@@ -111,7 +103,7 @@
 
         </StackPanel>
 
-        <StackPanel Name="SubMenuSelect" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel Name="SubMenuSelect" VerticalAlignment="Top" Margin="-40,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
@@ -119,7 +111,7 @@
             <local:FloatingMenuButtonView x:Name="btnPen" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Ink" />
         </StackPanel>
 
-        <StackPanel x:Name="SubMenuPen"  VerticalAlignment="Top" Margin="0,40,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuPen"  VerticalAlignment="Top" Margin="-40,40,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
@@ -127,7 +119,7 @@
             <local:FloatingMenuButtonView x:Name="btnInkErase" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" Caption="Erase" />
         </StackPanel>
 
-        <StackPanel x:Name="SubMenuNodes" VerticalAlignment="Top" Margin="0,20,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuNodes" VerticalAlignment="Top" Margin="-40,20,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
@@ -140,7 +132,7 @@
             <local:FloatingMenuButtonView x:Name="btnVideo" Visibility="Collapsed" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />
         </StackPanel>
 
-        <StackPanel x:Name="SubMenuAdditional" VerticalAlignment="Top" Margin="0,220,0,0" Opacity="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuAdditional" VerticalAlignment="Top" Margin="-40,170,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>

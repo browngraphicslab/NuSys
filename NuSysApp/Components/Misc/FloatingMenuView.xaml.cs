@@ -231,7 +231,7 @@ namespace NuSysApp
                 }
             }
         }
-
+        /*
         private void ExpandTapped(object sender, TappedRoutedEventArgs e)
         {
             CloseAllSubMenus();
@@ -256,7 +256,7 @@ namespace NuSysApp
             }
            // e.Handled = true;
         }
-
+        */
         private void OnBtnTapped(object sender, TappedRoutedEventArgs e)
         {
             var btn = (FloatingMenuButtonView)sender;
