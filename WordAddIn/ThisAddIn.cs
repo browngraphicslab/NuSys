@@ -33,9 +33,9 @@ namespace WordAddIn
         {
             try
             {
-                MessageBox.Show("Converting to pdf for NuSys");
                 if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
                 {
+                    MessageBox.Show("Converting to pdf for NuSys");
                     String path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
                     String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
                     string pdfPath = mediaFolderPath + "\\" + _fileToken + ".pdf";

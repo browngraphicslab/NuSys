@@ -38,9 +38,9 @@ namespace PowerPointAddIn
         {
             try
             {
-                MessageBox.Show("Converting to pdf for NuSys");
                 if (Globals.ThisAddIn.Application.ActivePresentation != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActivePresentation.FullName))
                 {
+                    MessageBox.Show("Converting to pdf for NuSys");
                     String path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
                     String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
                     string pdfPath = mediaFolderPath + "\\" + _fileToken + ".pdf";
