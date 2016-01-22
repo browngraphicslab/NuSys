@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -63,19 +64,20 @@ namespace NuSysApp
         private async void OnLineFinalized(InqLineModel lineModel)
         {
 
-            PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(RenderTarget.Factory);
+            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(RenderTarget.Factory);
             GeometrySink sink = geometry.Open();
             RawVector2 start = new RawVector2();
-            double xshift = XOffset * XScale;
-            double yshift = YOffset * YScale;
-            start.X = (float)(lineModel.Points.First().X * Constants.MaxCanvasSize - xshift + 50000);
-            start.Y = (float)(lineModel.Points.First().Y * Constants.MaxCanvasSize - yshift+ 50000);
+            Windows.Foundation.Point first = Transform.Inverse.TransformPoint(new Point(lineModel.Points.First().X * Constants.MaxCanvasSize, lineModel.Points.First().Y * Constants.MaxCanvasSize));
+            start.X = (float)(first.X);
+            start.Y = (float)(first.Y);
             sink.BeginFigure(start, new FigureBegin());
             foreach (Point2d p in lineModel.Points.Skip(1))
             {
+                Point transformed = new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize);
+                transformed = Transform.Inverse.TransformPoint(transformed);
                 RawVector2 vec = new RawVector2();
-                vec.X = (float)(p.X * Constants.MaxCanvasSize - xshift + 50000);
-                vec.Y = (float)(p.Y * Constants.MaxCanvasSize - yshift + 50000);
+                vec.X = (float)(transformed.X);
+                vec.Y = (float)(transformed.Y);
                 sink.AddLine(vec);
             }
             sink.EndFigure(new FigureEnd());
@@ -85,7 +87,7 @@ namespace NuSysApp
 
         }
 
-        public List<PathGeometry> Lines
+        public List<SharpDX.Direct2D1.PathGeometry> Lines
         {
             get { return _lines; }
         }
@@ -94,12 +96,12 @@ namespace NuSysApp
         {
             get; set;
         }
-        
-        //oop gotta change this
-        public float XOffset = 0;
-        public float YOffset = 0;
-        public float XScale = 1;
-        public float YScale = 1;
+
+        //transform the draw
+        public CompositeTransform Transform
+        {
+            get; set;
+        }
 
         public Size CanvasSize {
             get { return _canvasSize; }

@@ -54,7 +54,7 @@ namespace NuSysApp
             IsEnabled = false;
             // Initally, set mode to Inq drawing.
 
-            _mode = new DrawInqMode(vm.CanvasSize, vm.Model.Id, null);
+            _mode = new DrawInqMode(vm.CanvasSize, vm.Model.Id);
 
             if (_viewModel == null)
                 return;
@@ -122,7 +122,7 @@ namespace NuSysApp
             }
             else
             {
-                _mode = new DrawInqMode(_viewModel.CanvasSize, _viewModel.Model.Id, null);
+                _mode = new DrawInqMode(_viewModel.CanvasSize, _viewModel.Model.Id);
             }
         }
 
@@ -162,6 +162,19 @@ namespace NuSysApp
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
         //Graphics stuff
 
         //NOTE: the actual render target (where all the draw calls are made on) is in the ViewModel
@@ -179,36 +192,20 @@ namespace NuSysApp
 
         //the stroke that is currently being drawn
         private List<RawVector2> _currLine = new List<RawVector2>();
-
-        //the point to scale around
-        private RawVector2 scaleOrigin;
-        //the point (0, 0) on the screen transformed relative to the big canvas
-        private RawVector2 transformedOrigin;
-
         private float size = 50000;
 
-        //update the translation on the lines
-        public void TranslateInk(float x, float y)
-        {
-            //_clip = new Rect(x, y, _clip.Width, _clip.Width);
-            _viewModel.XOffset += x*_viewModel.XScale;
-            _viewModel.YOffset += y*_viewModel.YScale;
-        }
 
-        //update the scale on the lines
-        public void ScaleInk(float x, float y, Windows.Foundation.Point sOrigin, Windows.Foundation.Point tOrigin)
+        public void SetTransform(CompositeTransform ct)
         {
-            _viewModel.XScale = x;
-            _viewModel.YScale = y;
-            scaleOrigin = ConvertToRawVector2(sOrigin);
-            transformedOrigin = ConvertToRawVector2(tOrigin);
+            _viewModel.Transform = ct;
+
         }
 
         private void SwapChainPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //initialize constants for transforms
-            scaleOrigin = new RawVector2();
-            scaleOrigin.X = 0; scaleOrigin.Y = 0;
+            DisposeResources();
+
+            _viewModel.Transform = new CompositeTransform { TranslateX = -50000, TranslateY = -50000 , CenterX = 50000, CenterY = 50000};
 
             // DeviceCreationFlags.BgraSupport is needed to use Direct2D
             SharpDX.Direct3D11.Device defaultDevice = new SharpDX.Direct3D11.Device(D3D.DriverType.Hardware, D3D11.DeviceCreationFlags.BgraSupport);
@@ -306,9 +303,10 @@ namespace NuSysApp
         //call while updating a currently being drawn stroke
         public void DrawContinuousLine(double x, double y)
         {
+            Windows.Foundation.Point p = _viewModel.Transform.Inverse.TransformPoint(new Windows.Foundation.Point(x, y));
             RawVector2 next = new RawVector2();
-            next.X = (float)(x - _viewModel.XOffset + size);
-            next.Y = (float)(y - _viewModel.YOffset + size);
+            next.X = (float)(p.X);
+            next.Y = (float)(p.Y);
             if (_currLine.Count() != 0 && _currLine.Last().X == next.X && _currLine.Last().Y == next.Y)
             {
                 return;
@@ -333,16 +331,13 @@ namespace NuSysApp
             //begin the draw
             _viewModel.RenderTarget.BeginDraw();
 
-            //transform our area so it looks in line with all other UI elements
-            Matrix3x2 scale = Matrix3x2.Scaling(_viewModel.XScale, _viewModel.YScale);
-            Matrix3x2 trans = Matrix3x2.Translation(_viewModel.XOffset, _viewModel.YOffset);
-            Matrix3x2 toOrig = Matrix3x2.Translation(-scaleOrigin.X, -scaleOrigin.Y);
-            Matrix3x2 fromOrig = Matrix3x2.Translation(scaleOrigin.X, scaleOrigin.Y);
-            //Matrix3x2 toCanvas = Matrix3x2.Translation(-transformedOrigin.X, -transformedOrigin.Y);
-            Matrix3x2 fromCanvas = Matrix3x2.Translation(-50000, -50000);
+            Matrix3x2 translation = Matrix3x2.Translation((float)_viewModel.Transform.TranslateX, (float)_viewModel.Transform.TranslateY);
+            Matrix3x2 scale = Matrix3x2.Scaling((float)_viewModel.Transform.ScaleX, (float)_viewModel.Transform.ScaleY);
+            Matrix3x2 toOrigin = Matrix3x2.Translation((float)(_viewModel.Transform.CenterX + _viewModel.Transform.TranslateX), (float)(_viewModel.Transform.CenterY+ _viewModel.Transform.TranslateY));
+            Matrix3x2 fromOrigin = Matrix3x2.Translation((float)-(_viewModel.Transform.CenterX + _viewModel.Transform.TranslateX), (float)-(_viewModel.Transform.CenterY+ _viewModel.Transform.TranslateY));
 
-            _viewModel.RenderTarget.Transform = fromCanvas * toOrig * scale * fromOrig;
-            //_viewModel.RenderTarget.Transform = toCanvas * toOrig * scale * trans * fromOrig * fromCanvas;
+            _viewModel.RenderTarget.Transform = translation * fromOrigin * scale * toOrigin;
+
 
             //clear the render target so we can draw to an empty space (direct2d is an immediate mode API)
             _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
@@ -406,8 +401,12 @@ namespace NuSysApp
             Utilities.Dispose(ref device);
             Utilities.Dispose(ref d3dContext);
             Utilities.Dispose(ref swapChain);
-            //Utilities.Dispose(ref d2dContext);
-            //Utilities.Dispose(ref d2dTarget);
+            Utilities.Dispose(ref backBufferTexture);
+            Utilities.Dispose(ref backBufferView);
+            if(_viewModel.RenderTarget != null)
+            {
+                _viewModel.RenderTarget.Dispose();
+            }
         }
     }
 }

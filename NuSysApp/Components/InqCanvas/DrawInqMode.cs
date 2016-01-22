@@ -23,11 +23,10 @@ namespace NuSysApp
         private string _canvasId;
         private Size _canvasSize;
 
-        //private InqCanvasImageSource _s;
         private Point _offset;
         private Rect _clip;
 
-        public DrawInqMode(Size canvasSize, string canvasID, InqCanvasImageSource i)
+        public DrawInqMode(Size canvasSize, string canvasID)
         {
             _canvasSize = canvasSize;
             _canvasId = canvasID;
@@ -57,7 +56,7 @@ namespace NuSysApp
 
             var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
             _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y / _canvasSize.Height));
-
+            //var vv = vm.Transform.TransformPoint();
             inqCanvas.DrawContinuousLine(currentPoint.X, currentPoint.Y);
         }
 
