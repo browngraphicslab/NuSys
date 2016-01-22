@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -39,6 +40,12 @@ namespace NuSysApp
             else
             {
                 UserBubbleText.Text = "Me";
+            }
+            if (myUser.IP == SessionController.Instance.NuSysNetworkSession.HostIP)//if the user is host
+            {
+                var weight = new FontWeight();
+                weight.Weight = (ushort) (UserBubbleText.FontWeight.Weight + UserBubbleText.FontWeight.Weight);
+                UserBubbleText.FontWeight = weight;
             }
         }
     }

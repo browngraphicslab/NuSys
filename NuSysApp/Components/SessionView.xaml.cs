@@ -42,6 +42,9 @@ namespace NuSysApp
         private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
+        public ChatPopupView ChatPopupWindow {
+            get { return ChatPopup; }
+        }
 
         #endregion Private Members
 
@@ -239,6 +242,7 @@ namespace NuSysApp
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 5);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
+            Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70-ChatPopup.ActualHeight);
             overlayCanvas.Width = mainCanvas.ActualWidth;
             overlayCanvas.Height = mainCanvas.ActualHeight;
 

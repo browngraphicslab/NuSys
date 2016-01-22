@@ -193,6 +193,9 @@
     <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
       <DependentUpon>ChatPopupView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\GroupChat\DialogBlock.xaml.cs">
+      <DependentUpon>DialogBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
     <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
     <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
@@ -280,6 +283,7 @@
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
+    <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
@@ -560,6 +564,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\GroupChat\ChatPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\GroupChat\DialogBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

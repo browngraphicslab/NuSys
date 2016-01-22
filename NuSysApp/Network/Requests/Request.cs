@@ -23,7 +23,8 @@ namespace NuSysApp
             NewGroupRequest,
             NewContentRequest,
             ChangeContentRequest,
-            SetTagsRequest
+            SetTagsRequest,
+            ChatDialogRequest
         }
         protected Message _message;
         private RequestType _requestType;
@@ -58,6 +59,7 @@ namespace NuSysApp
         public Message GetFinalMessage()
         {
             _message["request_type"] = _requestType.ToString();
+            _message["system_sent_timestamp"] = DateTime.UtcNow.Ticks;
             return _message;
         }
 

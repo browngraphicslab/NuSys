@@ -1,8 +1,8 @@
 ﻿<UserControl
-    x:Class="NuSysApp.Components.GroupChat.ChatPopupView"
+    x:Class="NuSysApp.ChatPopupView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:NuSysApp.Components.GroupChat"
+    xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -10,15 +10,15 @@
     d:DesignWidth="400">
 
     <Grid>
-        <Grid MaxHeight="200" Width="100" Background="Aquamarine" CornerRadius="12">
-            <Grid MaxHeight="140" Margin="10,10,10,50" Background="Beige">
-                <StackPanel Name="DialogPanel">
-                    <ItemsControl Name="Texts"></ItemsControl>
+        <Grid MaxHeight="600" Width="300" Background="Aquamarine" CornerRadius="12">
+            <Grid MaxHeight="420" MinHeight="150" Margin="20,20,20,150" Background="Beige">
+                <StackPanel Height="300" Name="DialogPanel">
+                    <ItemsControl Name="Texts" Height="300"></ItemsControl>
                 </StackPanel>
             </Grid>
-            <Grid Height="30" Width="80"  Margin="10,0,10,10" VerticalAlignment="Bottom" Background="Azure">
-                <TextBox Name="TextBox" Height="20" Margin="5,5,30,5" Background="Cornsilk" HorizontalAlignment="Left"></TextBox>
-                <Button Height="20" HorizontalAlignment="Right" Margin="5,5,5,5" Width="20" Click="Enter_Click">Ok</Button>
+            <Grid Height="90" Width="260"  Margin="20,0,20,20" VerticalAlignment="Bottom" Background="Azure">
+                <TextBox Name="TextBox" Width ="180" Height="60" Margin="10,10,90,10" Background="Cornsilk" HorizontalAlignment="Left"></TextBox>
+                <Button Height="60" HorizontalAlignment="Right" Margin="10,10,10,10" Width="60" Click="Enter_Click">Ok</Button>
             </Grid>
         </Grid>
     </Grid>

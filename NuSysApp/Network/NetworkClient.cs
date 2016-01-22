@@ -81,7 +81,6 @@ namespace NuSysApp
 
         private string GetSerializedMessage(Message m)
         {
-            m["system_sent_timestamp"] = DateTime.UtcNow.Ticks;
             return m.GetSerialized();
         }
         #region Sending Messages

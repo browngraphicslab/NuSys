@@ -93,6 +93,11 @@ namespace NuSysApp
             return ContainsKey(key) ? int.Parse(Get(key)) : defaultValue;
         }
 
+        public long GetLong(string key, int defaultValue = 0)
+        {
+            return ContainsKey(key) ? long.Parse(Get(key)) : defaultValue;
+        }
+
         public string GetString(string key, string defaultValue = null)
         {
             return ContainsKey(key) ? Get(key) : defaultValue;

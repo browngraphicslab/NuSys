@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.System.Threading;
 using Windows.UI;
+using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 
 namespace NuSysApp
@@ -238,6 +239,9 @@ namespace NuSysApp
                     break;
                 case Request.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
+                    break;
+                case Request.RequestType.ChatDialogRequest:
+                    request = new ChatDialogRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
