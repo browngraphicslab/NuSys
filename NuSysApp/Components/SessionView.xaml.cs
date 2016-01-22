@@ -248,7 +248,7 @@ namespace NuSysApp
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             overlayCanvas.Width = mainCanvas.ActualWidth;
             overlayCanvas.Height = mainCanvas.ActualHeight;
-
+            ChatPopup.Visibility = Visibility.Collapsed;
         }
 
         private void TitleChanged(object source, string title)
@@ -373,7 +373,7 @@ namespace NuSysApp
             ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
             if (ChatPopup.Visibility == Visibility.Visible)
             {
-                Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70-ChatPopup.ActualHeight);
+                Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
             }
         }
     }
