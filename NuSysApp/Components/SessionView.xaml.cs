@@ -238,7 +238,7 @@ namespace NuSysApp
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
             Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
-            Canvas.SetLeft(Users, 60);
+            Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
