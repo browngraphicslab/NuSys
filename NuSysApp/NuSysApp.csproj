@@ -190,6 +190,9 @@
     <Compile Include="Components\DetailViewer\Views\WordDetailView.xaml.cs">
       <DependentUpon>WordDetailView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
+      <DependentUpon>ChatPopupView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
     <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
     <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
@@ -560,6 +563,10 @@
     <Page Include="Components\DetailViewer\Views\WordDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\GroupChat\ChatPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\InqCanvas\InqCanvasView.xaml">
       <SubType>Designer</SubType>

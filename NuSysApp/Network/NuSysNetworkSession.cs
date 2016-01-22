@@ -162,9 +162,10 @@ namespace NuSysApp
                 await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
             }
         } 
+
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
         {
-            await _networkSession.SendRequestMessage(message, recieverIPs == null ? NetworkMemberIPs : recieverIPs, NetworkClient.PacketType.TCP);
+            await _networkSession.SendRequestMessage(message, recieverIPs ?? NetworkMemberIPs, NetworkClient.PacketType.TCP);
         }
 
         private async Task SendRequest(Message message,NetworkClient.PacketType packetType, ICollection<string> recieverIPs = null)
