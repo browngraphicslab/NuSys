@@ -30,7 +30,6 @@ namespace NuSysApp
         public SearchWindowView()
         {
             this.InitializeComponent();
-            searchBox.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 98, 189, 197));
             searchBox.TextChanging += SearchBoxOnTextChanged;
             DataContext = new SearchWindowViewModel();
             _instance = this;

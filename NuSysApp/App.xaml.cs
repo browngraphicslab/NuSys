@@ -88,10 +88,10 @@ namespace NuSysApp
 
         private static async Task<bool> SetupDirectories()
         {
-            StorageFolder workspaceFolder = await AccessList.GetWorkspaceFolder();
+            //StorageFolder workspaceFolder = await AccessList.GetWorkspaceFolder();
             //StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(workspaceFolder, Constants.FolderNusysTemp);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
             NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
             NuSysStorages.Thumbs = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.SaveFolder, Constants.FolderThumbs);
             NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
@@ -127,6 +127,7 @@ namespace NuSysApp
         {
             var request = new RemoveClientSystemRequest(SessionController.Instance.NuSysNetworkSession.LocalIP);
             SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(request);
+            SessionController.Instance.DisposeInq();
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             //await AccessList.SaveFileTokens();

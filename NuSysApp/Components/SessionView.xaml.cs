@@ -225,16 +225,10 @@ namespace NuSysApp
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
 
-            xWorkspaceTitle.TextChanging += delegate
-            {
-                model.Title = xWorkspaceTitle.Text;
-                Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-                var m = new Message();
-                m["id"] = model.Id;
-                m["title"] = model.Title;
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
-                    NetworkClient.PacketType.UDP);
-            };
+            xWorkspaceTitle.KeyUp += UpdateTitle;
+            xWorkspaceTitle.DropCompleted += UpdateTitle;
+            xWorkspaceTitle.Paste += UpdateTitle;
+
             model.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
@@ -244,13 +238,26 @@ namespace NuSysApp
             Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
             Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70-ChatPopup.ActualHeight);
+            Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
-            overlayCanvas.Width = mainCanvas.ActualWidth;
-            overlayCanvas.Height = mainCanvas.ActualHeight;
+            //overlayCanvas.Width = mainCanvas.ActualWidth;
+            //overlayCanvas.Height = mainCanvas.ActualHeight;
+            Canvas.SetTop(xSearchWindowView, 25);
+            Canvas.SetLeft(xSearchWindowView, 50);
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
+        private void UpdateTitle(object sender, object args)
+        {
+            var model = (WorkspaceModel) DataContext;
+            model.Title = xWorkspaceTitle.Text;
+            var m = new Message();
+            m["id"] = model.Id;
+            m["title"] = model.Title;
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
+                NetworkClient.PacketType.UDP);
+        }
         private void TitleChanged(object source, string title)
         {
             if (xWorkspaceTitle.Text != title)
@@ -271,12 +278,14 @@ namespace NuSysApp
 
         public void SearchView()
         {
-            overlayCanvas.Visibility = Visibility.Visible;
+            //xSearchWindowView.Visibility = Visibility.Visible;
+            Canvas.SetTop(xSearchWindowView, 25);
+            Canvas.SetLeft(xSearchWindowView, 50);
         }
 
         public void SearchHide(object sender, TappedRoutedEventArgs e)
         {
-            overlayCanvas.Visibility = Visibility.Collapsed;
+            xSearchWindowView.Visibility = Visibility.Collapsed;
         }
 
 
@@ -374,6 +383,7 @@ namespace NuSysApp
             if (ChatPopup.Visibility == Visibility.Visible)
             {
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
+                Canvas.SetLeft(ChatPopup, 5);
             }
         }
     }

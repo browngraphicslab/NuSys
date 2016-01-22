@@ -48,6 +48,11 @@ namespace NuSysApp
                 SwitchMode(Options.SelectNode, false);
             };
 
+            inqCanvasModel.AppSuspended += delegate()
+            {
+                _inqCanvas.DisposeResources();
+            };
+
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
                 if (!model.IsGesture)
@@ -213,7 +218,7 @@ namespace NuSysApp
                     break;
                 case Options.MainSearch:
                     SearchWindowView.SetFocus();
-                   // SessionController.Instance.SessionView.SearchView();
+                    SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
                     IC.IsHitTestVisible = false;

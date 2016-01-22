@@ -10,17 +10,17 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <StackPanel>
-        <StackPanel Orientation ="Horizontal" Width="370">
-            <TextBox Name="searchBox"  BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment ="Center" PlaceholderText="Search" Width="370" Height="35" Margin="0"></TextBox>
-            <local:SearchButton x:Name="btnSearch" Margin ="0" Icon="ms-appx:///Assets/icon_mainmenu_search.png"  />
+    <StackPanel Width="400">
+        <StackPanel Orientation ="Horizontal">
+            <TextBox Name="searchBox" BorderBrush="#d6d6d6" Foreground="#606d7a"  BorderThickness="1" PlaceholderText="Search" FontFamily="ms-appx:///Assets/fonts/FiraSans-Hair.otf" FontSize="20"  Width="400"  Height="35" Margin="0,0,0,0"></TextBox>
+            <!--<local:SearchButton x:Name="btnSearch" Margin ="0" Icon="ms-appx:///Assets/icon_mainmenu_search.png"  />-->
         </StackPanel>
 
-        <ScrollViewer Height="250" Background="#55000000">
+        <ScrollViewer Height="250" Background="#d6d6d6" Foreground="#606d7a"  Margin="0,5,0,0">
             <ItemsControl Name="IC" ItemsSource="{Binding SearchResults}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel  HorizontalAlignment="Left" Background="DarkGray" />
+                        <StackPanel  HorizontalAlignment="Left" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate> 
