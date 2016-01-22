@@ -19,7 +19,7 @@
                 <Button Name="UnderlineButton" Height="30" Width="30" Content="U"  Click="UnderlineButton_OnClick" Foreground="White"></Button>
                 <ComboBox x:Name="SizeBox" Height="30" PlaceholderText="Size" ItemsSource="{x:Bind sizes}" SelectionChanged="SizeChanged"></ComboBox>
                 <ComboBox x:Name="FontBox" Height="30" PlaceholderText="Font" ItemsSource="{x:Bind fonts}" SelectionChanged="FontChanged" DisplayMemberPath="Source"></ComboBox>
-                <Button Visibility="Visible" Name="SourceBttn" Height="30" Content="Go To Source" Foreground="White" HorizontalAlignment="Right" Click="OnGoToSource"></Button>
+                <Button Visibility="Visible" Name="SourceBttn" Width="auto" Height="30" Content="Go To Source" Foreground="White" HorizontalAlignment="Right" Click="OnGoToSource"></Button>
             </StackPanel>
             <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
                                      BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
