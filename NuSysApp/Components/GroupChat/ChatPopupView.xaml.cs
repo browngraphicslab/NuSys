@@ -36,6 +36,7 @@ namespace NuSysApp
             var request = new ChatDialogRequest(text);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(request);
+            TextBox.Text = "";
         }
 
         public void AddText(string text, long time, NetworkUser user)
@@ -45,10 +46,12 @@ namespace NuSysApp
             if (user.IP == SessionController.Instance.NuSysNetworkSession.LocalIP)
             {
                 block.HorizontalAlignment = HorizontalAlignment.Right;
+                block.Margin = new Thickness(0, 0, 6, 0);
             }
             else
             {
                 block.HorizontalAlignment = HorizontalAlignment.Left;
+                block.Margin = new Thickness(6, 0, 0, 0);
             }
             /*
             var index = _texts.Count - 1;
