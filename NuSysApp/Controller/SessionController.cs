@@ -247,6 +247,13 @@ namespace NuSysApp
             */
         }
 
+        public void DisposeInq()
+        {
+            var wvm = (WorkspaceModel)Instance.ActiveWorkspace.Model;
+            var cm = (InqCanvasModel)wvm.InqCanvas;
+            cm.DisposeInq();
+        }
+
         public void AddGlobalInq(InqLineModel lineView)
         {
             //PartialLineAdded?.Invoke(this, new AddPartialLineEventArgs("Added Lines", lineView));

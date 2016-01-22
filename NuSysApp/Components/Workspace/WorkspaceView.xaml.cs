@@ -48,6 +48,11 @@ namespace NuSysApp
                 SwitchMode(Options.SelectNode, false);
             };
 
+            inqCanvasModel.AppSuspended += delegate()
+            {
+                _inqCanvas.DisposeResources();
+            };
+
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
                 if (!model.IsGesture)

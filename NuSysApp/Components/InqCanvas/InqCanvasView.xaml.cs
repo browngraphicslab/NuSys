@@ -381,6 +381,7 @@ namespace NuSysApp
                     sink.Close();
                     sink.Dispose();
                     _viewModel.RenderTarget.DrawGeometry(geometry, brush);
+                    geometry.Dispose();
                 }
             }
 
@@ -414,7 +415,7 @@ namespace NuSysApp
 
         //our version of a destructor(we need to explicitly free resources because
         //under the hood this is all C++
-        private void DisposeResources()
+        public void DisposeResources()
         {
             Utilities.Dispose(ref device);
             Utilities.Dispose(ref d3dContext);
@@ -424,6 +425,13 @@ namespace NuSysApp
             if(_viewModel.RenderTarget != null)
             {
                 _viewModel.RenderTarget.Dispose();
+            }
+            if(_viewModel.Lines != null)
+            {
+                foreach(SharpDX.Direct2D1.PathGeometry g in _viewModel.Lines)
+                {
+                    g.Dispose();
+                }
             }
         }
     }

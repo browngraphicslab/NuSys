@@ -22,9 +22,11 @@ namespace NuSysApp
         public event LineHandler LineRemoved;
         public event LineHandler LineAdded;
         public event PageChangeHandler PageChanged;
+        public event DisposeInqHandler AppSuspended;
         public delegate void PageChangeHandler(int page);
         public delegate void LineHandler(InqLineModel lineModel);
         public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
+        public delegate void DisposeInqHandler();
         
         private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
@@ -60,6 +62,11 @@ namespace NuSysApp
             _lines.Add(line);
             line.OnDeleteInqLine += LineOnDeleteInqLine;
             LineFinalized?.Invoke( line );
+        }
+
+        public void DisposeInq()
+        {
+            AppSuspended?.Invoke();
         }
 
         private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)
