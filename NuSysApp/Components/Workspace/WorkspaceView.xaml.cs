@@ -218,7 +218,7 @@ namespace NuSysApp
                     break;
                 case Options.MainSearch:
                     SearchWindowView.SetFocus();
-                   // SessionController.Instance.SessionView.SearchView();
+                    SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
                     IC.IsHitTestVisible = false;

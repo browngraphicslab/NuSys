@@ -145,6 +145,12 @@
     <Content Include="Assets\logos\StoreLogo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
+    <Content Include="Assets\fonts\FiraSans-Hair.otf" />
+    <Content Include="Assets\fonts\FiraSans-HairItalic.otf" />
+    <Content Include="Assets\fonts\FiraSans-Light.otf" />
+    <Content Include="Assets\fonts\FiraSans-LightItalic.otf" />
+    <Content Include="Assets\fonts\FiraSans-UltraLight.otf" />
+    <Content Include="Assets\fonts\FiraSans-UltraLightItalic.otf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />

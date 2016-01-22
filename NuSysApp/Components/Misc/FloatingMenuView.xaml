@@ -91,7 +91,7 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Canvas RenderTransform="{Binding FMTransform}" Margin="10,30,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
+    <Canvas RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <StackPanel x:Name="FloatingMenuPanel" Margin="0,20,0,0">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>

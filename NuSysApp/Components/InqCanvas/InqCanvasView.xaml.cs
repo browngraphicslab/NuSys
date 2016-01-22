@@ -299,11 +299,11 @@ namespace NuSysApp
 
             //clear both buffers just cause
             _viewModel.RenderTarget.BeginDraw();
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
             _viewModel.RenderTarget.EndDraw();
             this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
             _viewModel.RenderTarget.BeginDraw();
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
             _viewModel.RenderTarget.EndDraw();
             this.swapChain.Present(1, DXGI.PresentFlags.None, new DXGI.PresentParameters());
 
@@ -358,7 +358,7 @@ namespace NuSysApp
 
 
             //clear the render target so we can draw to an empty space (direct2d is an immediate mode API)
-            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.Beige));
+            _viewModel.RenderTarget.Clear(ConvertToColorF(Colors.White));
 
             //eventually we will change the brush for each line according to that line's color
             using (var brush = new SharpDX.Direct2D1.SolidColorBrush(_viewModel.RenderTarget, ConvertToColorF(Windows.UI.Colors.Black)))
