@@ -23,7 +23,7 @@ namespace NuSysApp
     public sealed partial class ChatPopupView : UserControl
     {
         private ObservableCollection<DialogBlock> _texts = new ObservableCollection<DialogBlock>();
-        private Dictionary<DialogBlock,long> _textTimes = new Dictionary<DialogBlock, long>(); 
+        //private Dictionary<DialogBlock,long> _textTimes = new Dictionary<DialogBlock, long>(); 
         public ChatPopupView()
         {
             this.InitializeComponent();
@@ -50,6 +50,7 @@ namespace NuSysApp
             {
                 block.HorizontalAlignment = HorizontalAlignment.Left;
             }
+            /*
             var index = _texts.Count - 1;
             while (index > -1 && time < _textTimes[_texts[index]])
             {
@@ -57,6 +58,8 @@ namespace NuSysApp
             }
             _texts.Insert(index+1, block);
             _textTimes.Add(block, time);
+            */
+            _texts.Add(block);
         }
     }
 }

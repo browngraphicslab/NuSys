@@ -12,9 +12,11 @@
     <Grid>
         <Grid MaxHeight="600" Width="300" Background="Aquamarine" CornerRadius="12">
             <Grid MaxHeight="420" MinHeight="150" Margin="20,20,20,150" Background="Beige">
-                <StackPanel Height="300" Name="DialogPanel">
-                    <ItemsControl Name="Texts" Height="300"></ItemsControl>
-                </StackPanel>
+                <ScrollViewer>
+                    <StackPanel Height="300" Name="DialogPanel">
+                        <ItemsControl Name="Texts" Height="300"></ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
             <Grid Height="90" Width="260"  Margin="20,0,20,20" VerticalAlignment="Bottom" Background="Azure">
                 <TextBox Name="TextBox" Width ="180" Height="60" Margin="10,10,90,10" Background="Cornsilk" HorizontalAlignment="Left"></TextBox>

@@ -11,6 +11,7 @@ namespace NuSysApp.Network.Requests
         public ChatDialogRequest(string text) : base(RequestType.ChatDialogRequest)
         {
             _message["text"] = text;
+            _message["senderIP"] = SessionController.Instance.NuSysNetworkSession.LocalIP;
         }
 
         public ChatDialogRequest(Message m) : base(RequestType.ChatDialogRequest, m){}
@@ -18,7 +19,7 @@ namespace NuSysApp.Network.Requests
         {
             var session = SessionController.Instance;
             var time = _message.GetLong("system_sent_timestamp");
-            var userip = _message.GetString("system_sender_ip");
+            var userip = _message.GetString("senderIP");
             var user = session.NuSysNetworkSession.NetworkMembers.ContainsKey(userip) ? session.NuSysNetworkSession.NetworkMembers[userip] : null;
             var text = _message.GetString("text");
             if (time != 0 && user != null)
