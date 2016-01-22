@@ -33,6 +33,7 @@ namespace NuSysApp
             Model.LineAdded += OnLineAdded;
             Model.PageChanged +=OnPageChanged;
 
+            CurrentLine = new List<RawVector2>();
             //_source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);
             //_source.BeginDraw();
             //_source.Clear(Windows.UI.Colors.White);
@@ -83,6 +84,8 @@ namespace NuSysApp
             sink.EndFigure(new FigureEnd());
             sink.Close();
             sink.Dispose();
+
+            CurrentLine.Clear();
             _lines.Add(geometry);
 
         }
@@ -96,6 +99,12 @@ namespace NuSysApp
         {
             get; set;
         }
+
+        public List<RawVector2> CurrentLine
+        {
+            get;set;
+        }
+
 
         //transform the draw
         public CompositeTransform Transform
