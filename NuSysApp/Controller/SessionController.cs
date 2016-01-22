@@ -341,6 +341,8 @@ namespace NuSysApp
             var thumbs = await NuSysStorages.Thumbs.GetFilesAsync();
             foreach (var thumbFile in thumbs)
             {
+                if (thumbFile == null)
+                    continue;
                 var buffer = await FileIO.ReadBufferAsync(thumbFile);
                 var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
                 var img = await MediaUtil.ByteArrayToBitmapImage(buffer.ToArray());
