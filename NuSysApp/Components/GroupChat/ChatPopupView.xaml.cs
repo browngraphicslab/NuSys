@@ -63,6 +63,10 @@ namespace NuSysApp
             _textTimes.Add(block, time);
             */
             _texts.Add(block);
+            if(Visibility == Visibility.Collapsed)
+            {
+                Scroller.ScrollToVerticalOffset(Scroller.ScrollableHeight);
+            }
         }
     }
 }
