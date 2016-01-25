@@ -78,11 +78,15 @@ namespace NuSysApp
             _texts.Insert(index+1, block);
             _textTimes.Add(block, time);
             */
-            _texts.Add(block);
-            if(Visibility == Visibility.Collapsed || !_touching)
+            block.Loaded += delegate
             {
-                Scroller.ScrollToVerticalOffset(Scroller.ScrollableHeight);
-            }
+                if (Visibility == Visibility.Collapsed || !_touching)
+                {
+                    Scroller.ScrollToVerticalOffset(Scroller.ScrollableHeight);
+                    //Scroller.sc
+                }
+            };
+            _texts.Add(block);
         }
 
         private void UIElement_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)

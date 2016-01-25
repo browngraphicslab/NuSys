@@ -19,6 +19,9 @@ namespace NuSysApp
         }
         public string Name;
 
+        public delegate void UserBecameHostEventHandler();
+        public event UserBecameHostEventHandler OnBecameHost;
+
         public delegate void UserRemovedEventHandler();
         public event UserRemovedEventHandler OnUserRemoved;
         #endregion Public Variables
