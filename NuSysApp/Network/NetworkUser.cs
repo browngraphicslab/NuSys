@@ -19,8 +19,8 @@ namespace NuSysApp
         }
         public string Name;
 
-        public delegate void UserBecameHostEventHandler();
-        public event UserBecameHostEventHandler OnBecameHost;
+        public delegate void HostStatusChangedEventHandler(bool isHost);
+        public event HostStatusChangedEventHandler OnHostStatusChange;
 
         public delegate void UserRemovedEventHandler();
         public event UserRemovedEventHandler OnUserRemoved;
@@ -44,6 +44,13 @@ namespace NuSysApp
                         atom.LastNetworkUser = null;
                     }
                     _modelsInUse.Clear();
+                }
+            };
+            SessionController.Instance.NuSysNetworkSession.OnHostChange += delegate(NetworkUser newHost, NetworkUser oldHost)
+            {
+                if (IP == newHost?.IP || IP == oldHost?.IP)
+                {
+                    OnHostStatusChange?.Invoke(newHost?.IP == IP);
                 }
             };
         }
