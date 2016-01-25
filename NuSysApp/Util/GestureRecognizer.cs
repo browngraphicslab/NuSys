@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,7 @@ namespace NuSysApp
             var LSE = points.Sum(p => Math.Pow(m * p.X + b - p.Y, 2));
             var mid = new Point((points[0].X + points[points.Count - 1].X) / 2, (points[0].Y + points[points.Count - 1].Y) / 2);
             var linearity = LineLength(new Point(),
-                new Point(points.Sum(p => p.X - mid.X), points.Sum(p => p.Y - mid.Y)));//NOT ACTUAL NAME, I need to find/come up with one
+                new Point(points.Sum(p => p.X - mid.X), points.Sum(p => p.Y - mid.Y))) / StrokeLength(points);//NOT ACTUAL NAME, I need to find/come up with one
             Debug.WriteLine(LSE + " : " + entropy + " : " + linearity);
             // DownScaled Angle averages
             var npoints = new List<Point>();
@@ -54,11 +55,13 @@ namespace NuSysApp
                     / (2 * LineLength(npoints[i + 1], npoints[i]) * LineLength(npoints[i + 1], npoints[i + 2]))));
             }
             nangles.RemoveAll(d => Double.IsNaN(d) | d == 0);
-            var avgAng = nangles.Sum(x => x) / npoints.Count;
+            var avgAng = nangles.Sum(x => x) / nangles.Count;
+            var avgAngfull = angles.Sum(x => x) / angles.Count;
             //
-            //WriteData(LSE + "," + entropy + "," + linearity + "," + avgAng);
+            WriteData(LSE + "," + entropy + "," + linearity + "," + avgAng + "," + avgAngfull);
 
-            if (0.6 * avgAng - 0.6 - entropy < 0)
+            //if (0.6 * avgAng - 0.6 - entropy < 0)
+            if (avgAng < 2)
             {
                 return GestureType.Scribble;
             }
@@ -67,6 +70,16 @@ namespace NuSysApp
         private static double LineLength(Point p1, Point p2)
         {
             return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
+        }
+
+        private static double StrokeLength(ObservableCollection<Point2d> points)
+        {
+            double result = 0;
+           for (var i =0 ; i < points.Count -1; i ++)
+           {
+               result += LineLength(points[i], points[i + 1]);
+           }
+            return result;
         }
 
         private static List<double> DiscretizeAngles(List<double> values, int bins)
@@ -100,13 +113,23 @@ namespace NuSysApp
             return result;
         }
 
+
         public async static void WriteData(string data)
         {
+            var filename = "dataNSFAFUB.txt";
+
             Windows.Storage.StorageFolder storageFolder =
                   Windows.Storage.ApplicationData.Current.LocalFolder;
 
+            
+
+            if (await storageFolder.TryGetItemAsync(filename) == null)
+            {
+                await storageFolder.CreateFileAsync(filename);
+            }
+
             Windows.Storage.StorageFile sampleF =
-                await storageFolder.GetFileAsync("datacwla.txt");
+                await storageFolder.GetFileAsync(filename);
             await Windows.Storage.FileIO.AppendTextAsync(sampleF, data + "\n");
         }
     }
