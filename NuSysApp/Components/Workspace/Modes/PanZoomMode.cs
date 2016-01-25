@@ -84,7 +84,7 @@ namespace NuSysApp
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
 
-            _view.InqCanvas.SetTransform(compositeTransform);
+            _view.InqCanvas.Transform = compositeTransform;
 
         }
 
@@ -170,7 +170,7 @@ namespace NuSysApp
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
 
-            _view.InqCanvas.SetTransform(compositeTransform);
+            _view.InqCanvas.Transform = compositeTransform;
         }
     }
 }

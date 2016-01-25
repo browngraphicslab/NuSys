@@ -41,6 +41,14 @@ namespace NuSysApp
             _inqCanvas.Height = Window.Current.Bounds.Height;
             xOuterWrapper.Children.Add(_inqCanvas);
             Canvas.SetZIndex(_inqCanvas, -5);
+            CompositeTransform ct = new CompositeTransform();
+            ct.CenterX = wsModel.CenterX;
+            ct.CenterY = wsModel.CenterY;
+            ct.ScaleX = wsModel.Zoom;
+            ct.ScaleY = wsModel.Zoom;
+            ct.TranslateX = wsModel.LocationX;
+            ct.TranslateY = wsModel.LocationY;
+            _inqCanvas.Transform = ct;
             //wsModel.InqCanvas = inqCanvasModel;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
@@ -50,7 +58,7 @@ namespace NuSysApp
 
             inqCanvasModel.AppSuspended += delegate()
             {
-                _inqCanvas.DisposeResources();
+                //_inqCanvas.DisposeResources();
             };
 
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
