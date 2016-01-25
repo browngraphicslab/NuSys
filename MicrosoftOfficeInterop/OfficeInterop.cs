@@ -4,7 +4,7 @@ using Word = Microsoft.Office.Interop.Word;
 
 namespace MicrosoftOfficeInterop
 {
-    class OfficeInterop
+    public class OfficeInterop
     {
         /// <summary>
         /// Saves PowerPoint at specified filepath and returns the destination path.

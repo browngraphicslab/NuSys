@@ -10,14 +10,13 @@ namespace NuSysApp
 {
     public class TextNodeModel : NodeModel
     {
-        private string _text;
+        private string _text = string.Empty;
         public delegate void TextChangedEventHandler(object source, TextChangedEventArgs e);
-        public event TextChangedEventHandler OnTextChanged;
+        public event TextChangedEventHandler TextChanged;
 
-        public TextNodeModel(string data, string id): base(id)
+        public TextNodeModel(string id): base(id)
         {
-            ID = id;
-            Text = data;       
+            NodeType = NodeType.Text;
         }
 
         public string Text
@@ -26,53 +25,28 @@ namespace NuSysApp
             set
             {
                 _text = value;
-
-                byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(_text);
-                Content = new ContentModel(newTextBytes, ID); //Update Content
-
-                if (NetworkConnector.Instance.IsSendableBeingUpdated(ID))
-                {
-                    OnTextChanged?.Invoke(this, new TextChangedEventArgs("Text changed", Text));
-                }
-                else
-                {
-                    this.DebounceDict.Add("text", value);
-                }
+                var content = SessionController.Instance.ContentController.Get(ContentId);
+                if (content != null)
+                    content.Data = _text;
+                TextChanged?.Invoke(this, new TextChangedEventArgs(_text));
             } 
         }
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("text"))
-            {
-                Text = props["text"];
-            }
-            base.UnPack(props);
+            await base.UnPack(props);
+
+            var controller = SessionController.Instance.ContentController;
+            var contentId = props.GetString("contentId");
+            if (!string.IsNullOrEmpty(contentId) && controller.Get(contentId) != null)
+                Text = SessionController.Instance.ContentController.Get(ContentId).Data;
+
         }
 
-        public override async Task<Dictionary<string,string>> Pack()
+        public override async Task<Dictionary<string,object>> Pack()
         {
-            Dictionary<string, string> dict = await base.Pack();
-            dict.Add("text", Text);
-            dict.Add("nodeType", NodeType.Text.ToString());
+            var dict = await base.Pack();
             return dict;
-        }
-
-        public override XmlElement WriteXML(XmlDocument doc)
-        {
-            byte[] newTextBytes = System.Text.Encoding.UTF8.GetBytes(Text);
-            Content = new ContentModel(newTextBytes, ID); //Update Content
-            
-            //XmlElement 
-            XmlElement textNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc); //TODO Make his polymorphic
-            foreach(XmlAttribute attr in basicXml)
-            {
-                textNode.SetAttributeNode(attr);
-            }
-            return textNode;       
         }
     }
 }

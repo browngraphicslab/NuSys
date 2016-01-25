@@ -1,3 +1,2 @@
-window.onload = function () {
-    var greeter = new Main();
-};
+/// <reference path="Main.ts"/>
+var greeter = new Main();

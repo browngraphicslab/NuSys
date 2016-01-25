@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>e0200e83-d7f5-4b63-9ca8-3a544d652767</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Class1.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\Document.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\LinkInfoInternal.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\LinkInfoRemote.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\LinkInfoURI.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\LinkInfoVisitor.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\MuPDFDoc.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\OutlineItem.cpp" />
+    <ClCompile Include="..\MuPDF.WinRT\Src\Utilities.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Class1.h" />
+    <ClInclude Include="..\MuPDF.WinRT\Src\Document.h" />
+    <ClInclude Include="..\MuPDF.WinRT\Src\LinkInfo.h" />
+    <ClInclude Include="..\MuPDF.WinRT\Src\MuPDFDoc.h" />
+    <ClInclude Include="..\MuPDF.WinRT\Src\OutlineItem.h" />
+    <ClInclude Include="..\MuPDF.WinRT\Src\RectF.h" />
+    <ClInclude Include="..\MuPDF.WinRT\Src\Utilities.h" />
+  </ItemGroup>
+</Project>

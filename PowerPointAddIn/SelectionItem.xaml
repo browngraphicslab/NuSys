@@ -6,16 +6,19 @@
              xmlns:local="clr-namespace:PowerPointAddIn"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             MouseLeftButtonUp="StackPanel_MouseLeftButtonUp">
-    <Grid>
-        
-        <StackPanel Orientation="Vertical" RenderTransform="{Binding RenderTransform}" Background="#e3e3e3" Margin="15,15,15,15">
-            <StackPanel Orientation="Horizontal">
-                <Label FontSize="14 " FontFamily="Segoe UI Light">On slide</Label>
-                <Label FontSize="14 " FontFamily="Segoe UI Light" Content="{Binding SlideNumber}" />
-            </StackPanel>
-            <Image x:Name="img" Source="{Binding Thumbnail}" Width="Auto" MaxHeight="200" Stretch="Uniform"/>
-        </StackPanel>
-        <Separator VerticalAlignment="Bottom" Height="1"/>
+             MouseLeftButtonUp="StackPanel_MouseLeftButtonUp" Height="94.4" Width="298.8">
+    <Grid Margin="0,0,0.2,0.4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition MinWidth="10" Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <CheckBox x:Name="CheckBox" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="18" Height="16" Margin="2,2,278.2,74" Grid.ColumnSpan="3" Panel.ZIndex="9999"/>
+        <Border x:Name="imgBorder" Grid.Column="1" Margin="0.4,10,0,0" BorderThickness="1" BorderBrush="Black" Visibility="Hidden" MaxWidth="70" MaxHeight="80" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Image x:Name="img" Visibility="Hidden" Stretch="Uniform"/>
+        </Border>
+        <TextBlock Grid.Column="2" x:Name="txtBox" Text="{Binding Text}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" IsHitTestVisible="False"  Margin="5.2,3,5.2,6" FontSize="13" FontFamily="Segoe UI Light" />
+        <RichTextBox Grid.Column="2" x:Name="rtb" Height="94" IsHitTestVisible="False"  Margin="0.4,0,10.2,6" BorderBrush="{x:Null}" Background="{x:Null}" Visibility="Hidden"/>
     </Grid>
 </UserControl>

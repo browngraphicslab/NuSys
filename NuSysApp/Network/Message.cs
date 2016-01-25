@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -9,37 +10,49 @@ namespace NuSysApp
 {
     public class Message
     {
-        private Dictionary<string, string> _dict;
-        private Dictionary<string, Message> _children;
+        private Dictionary<string, object> _dict;
 
-        public Message(string message)
+        public Message()
         {
-            _dict = new Dictionary<string, string>();
-            _children = new Dictionary<string, Message>();
-            Init(message);
+            _dict = new Dictionary<string, object>();
         }
-
-        private async Task Init(string m)
+        public Message(string m)
         {
-            Dictionary<string, string> message = JsonConvert.DeserializeObject<Dictionary<string, string>>(m);
-            foreach (KeyValuePair<string, string> kvp in message)
+            try
             {
-                if (kvp.Key != "children")
+                var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
+                _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings);
+
+            }
+            catch (Exception e)
+            {
+                var matches = Regex.Match(m, "(?:({[^}]+}) *)*");
+                string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
+                try
                 {
-                    _dict.Add(kvp.Key,kvp.Value);
+                    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(miniStrings[0], settings);
                 }
-                else
+                catch (Exception f)
                 {
-                    Dictionary<string, string> children = await JsonConvert.DeserializeObjectAsync<Dictionary<string, string>>(kvp.Value);
-                    foreach (KeyValuePair<string,string> child in children)
-                    {
-                        _children.Add(child.Key,new Message(child.Value));
-                    }
+                    
                 }
             }
         }
 
-        public void Add(string key, string value)//TODO get rid of this
+        public Message(Dictionary<string, string> dict)
+        {
+            _dict = new Dictionary<string, object>();
+            foreach (var kvp in dict)
+            {
+                _dict.Add(kvp.Key, kvp.Value);
+            }
+        }
+        public Message(Dictionary<string, object> dict)
+        {
+            _dict = dict;
+        }
+        public void Add(string key, object value)//TODO get rid of this
         {
             if (_dict.ContainsKey(key))
             {
@@ -56,40 +69,75 @@ namespace NuSysApp
             }
             throw new KeyNotFoundException("Key "+key+" not found when attemped to remove it.");
         }
-        public string this[string key]
+        public object this[string key]
         {
             get { return Get(key); }
+            set { _dict[key] = value; }
         }
         public string Get(string key)
         {
-            if (key == "children")
+            if (_dict.ContainsKey(key) && _dict[key] != null)
             {
-                throw new Exception("Cannot get children as string.  Call Children()");
-            }
-            if (_dict.ContainsKey(key))
-            {
-                return _dict[key];
+                return _dict[key].ToString();
             }
             return null;
         }
 
-        public Dictionary<string, Message> Children()
+        public double GetDouble(string key, double defaultValue = 0)
         {
-            return _children;
+            return ContainsKey(key) ? double.Parse(Get(key)) : defaultValue;
         }
+
+        public int GetInt(string key, int defaultValue = 0)
+        {
+            return ContainsKey(key) ? int.Parse(Get(key)) : defaultValue;
+        }
+
+        public long GetLong(string key, int defaultValue = 0)
+        {
+            return ContainsKey(key) ? long.Parse(Get(key)) : defaultValue;
+        }
+
+        public string GetString(string key, string defaultValue = null)
+        {
+            return ContainsKey(key) ? Get(key) : defaultValue;
+        }
+
+        public bool GetBool(string key, bool defaultValue = false)
+        {
+            return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
+        }
+
+        public byte[] GetByteArray(string key)
+        {
+            return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;
+        }
+
+        public List<T> GetList<T>(string key, List<T> def = null)
+        {
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key), settings) : def;
+        }
+
+        public Dictionary<T, K> GetDict<T, K>(string key)
+        {
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<Dictionary<T, K>>(Get(key)) : new Dictionary<T, K>();
+        }
+
+        public List<List<T>> GetNestedList<T>(string key)
+        {
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<List<List<T>>>(Get(key)) : null;
+        } 
 
         public bool ContainsKey(string key)
         {
-            if (key == "children")
-            {
-                return HasChildren();
-            }
             return _dict.ContainsKey(key);
         }
 
-        public bool HasChildren()
+        public string GetSerialized()
         {
-            return _children.Count > 0;
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            return JsonConvert.SerializeObject(_dict, settings);
         }
     }
 }

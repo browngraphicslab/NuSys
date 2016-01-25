@@ -2,11 +2,11 @@
 
 namespace NuSysApp
 {
-    public class CanEditChangedEventArg: SuperEventArgs
+    public class CanEditChangedEventArg: System.EventArgs
     {
        
 
-        public CanEditChangedEventArg(string text, AtomModel.EditStatus editStatus):base(text)
+        public CanEditChangedEventArg(AtomModel.EditStatus editStatus)
         {
             EditStatus = editStatus;
         }

@@ -2,10 +2,10 @@
 
 namespace NuSysApp
 {
-    public class TextChangedEventArgs: SuperEventArgs
+    public class TextChangedEventArgs: System.EventArgs
     {
 
-        public TextChangedEventArgs(string eventInfo, string text):base(eventInfo)
+        public TextChangedEventArgs(string text)
         {
             Text = text;
         }

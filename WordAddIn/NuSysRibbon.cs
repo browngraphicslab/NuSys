@@ -1,13 +1,11 @@
-﻿using Microsoft.Office.Interop.Word;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Windows;
 using Office = Microsoft.Office.Core;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
@@ -38,6 +36,7 @@ namespace WordAddIn
 
         public NuSysRibbon()
         {
+
         }
 
         #region IRibbonExtensibility Members
@@ -52,6 +51,11 @@ namespace WordAddIn
         #region Ribbon Callbacks
         //Create callback methods here. For more information about adding callback methods, visit http://go.microsoft.com/fwlink/?LinkID=271226
 
+        public Bitmap GetImage(Office.IRibbonControl control)
+        {
+            return Properties.Resources.icon; // resource Bitmap
+        }
+
         public void Ribbon_Load(Office.IRibbonUI ribbonUI)
         {
             this.ribbon = ribbonUI;
@@ -59,28 +63,20 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\WordTransfer";
-            var fileDir = dir + "\\selection.nusys";
-            var s = Globals.ThisAddIn.Application.Selection.FormattedText;
-            s.Copy();
+            try {
+                string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActiveDocument.FullName);
 
-            System.Windows.Forms.IDataObject data = System.Windows.Forms.Clipboard.GetDataObject();
-            if (null != data)
-            {
-                if (data.GetDataPresent(System.Windows.Forms.DataFormats.Rtf))
+                if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
                 {
-                    s.Comments.Add(s, "This region has been added to NuSys");
-                    string text = (string)data.GetData(System.Windows.Forms.DataFormats.Rtf);
-                    File.WriteAllText(fileDir, text);
-                    System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
-                    File.Move(fileDir, fileDir);
+                    MessageBox.Show("Please be advised that the NuSys plugin works best with .docx file types");
                 }
-            }
-        }
 
-        public Bitmap GetImage(Office.IRibbonControl control)
-        {
-            return Properties.Resources.icon; // resource Bitmap
+                Globals.ThisAddIn.BuildSidebar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+            }
         }
 
         #endregion

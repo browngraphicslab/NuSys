@@ -1,0 +1,23 @@
+﻿<local:AnimatableUserControl
+    x:Class="NuSysApp.FullScreenViewerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+    <Grid x:Name="xContainer" Background="#AA000000">
+        <ContentPresenter Content="{Binding View}" Margin="5,5,5,5"></ContentPresenter>
+        <StackPanel x:Name="TagContainer" Margin="5,5,5,5" Width="200"  HorizontalAlignment="Right">
+            <TextBlock Padding="5,5,5,5"  Text="Tags" Foreground="White" FontSize="20.0"  TextAlignment="Right"></TextBlock>
+            <StackPanel Height="35" HorizontalAlignment="Right" Orientation="Horizontal">
+                <TextBox x:Name="NewTagBox" Width="165"></TextBox>
+                <Button x:Name="AddTagButton"  Height="35" Width="35"  Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray"></Button>
+            </StackPanel>
+            <ItemsControl x:Name="Tags" Margin="5,5,5,5"></ItemsControl>
+        </StackPanel>
+            
+    </Grid>
+</local:AnimatableUserControl>

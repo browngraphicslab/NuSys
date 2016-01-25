@@ -12,12 +12,19 @@ namespace NuSysApp
     {
         #region Folders and files
         public const string FolderNusysTemp = "NuSys";
+        public const string FolderSave = "Save";
+        public const string FolderThumbs = "Thumbs";
         public const string FolderChromeTransferName = "ChromeTransfer";
         public const string FolderWordTransferName = "WordTransfer";
         public const string FolderPowerpointTransferName = "PowerPointTransfer";
         public const string FolderMediaName = "Media";
         public const string FileChromeTransferName = "selections.nusys";
         public const string FolderOfficeToPdf = "OfficeToPdf";
+        public const string FolderOpenDocParams = "OpenDocParams";
+        public const string NuSysFALFiles = "NuSysFALFiles.txt";
+        public const string NuSysFALFolders = "NuSysFALFolders.txt";
+        public const string FirstTimeWord = "FirstTimeWord.txt";
+        public const string FirstTimePowerpoint = "FirstTimePowerpoint.txt";
         #endregion Folders and files
 
         #region Node Dimensions
@@ -25,8 +32,8 @@ namespace NuSysApp
         public const double DefaultAnnotationSize = 100;
         public const double ExtraPaddingSpace = 50;
         public const double MinNodeSize = 40;
-        public const double MinNodeSizeX = 250;
-        public const double MinNodeSizeY = 110;
+        public const double MinNodeSizeX = 40;
+        public const double MinNodeSizeY = 40;
 
         public const double DefaultVideoNodeSize = 300;
 
@@ -65,13 +72,21 @@ namespace NuSysApp
         public const double ButtonActivatedOpacity = 1.0;
         public const double ButtonDeactivatedOpacity = 0.5;
 
-        public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg" };
-        public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf", ".pptx", ".docx" };
+        public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg", ".tif", ".tiff" };
+        public static IEnumerable<string> WordFileTypes = new List<string> { ".doc", ".docx" };
+        public static IEnumerable<string> PowerpointFileTypes = new List<string> { ".ppt", ".pptx" };
+
+        public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
         public static IEnumerable<string> VideoFileTypes   = new List<string> { ".mp4"};//TODO add more types
-        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes));
+        public static IEnumerable<string> AudioFileTypes = new List<string> { ".mp3" };
+        public static IEnumerable<string> AllFileTypes   = VideoFileTypes.Concat(ImageFileTypes.Concat(PdfFileTypes).Concat(AudioFileTypes).Concat(WordFileTypes).Concat(PowerpointFileTypes));
 
         #region Cortana
         //public static IEnumerable<string> SpeechCommands = new List<string> { "open document", "create text", "create ink" };
         #endregion
+
+        #region Other
+        public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
+        #endregion Other
     }
 }

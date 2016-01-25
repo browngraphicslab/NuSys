@@ -1,0 +1,34 @@
+﻿<local:AnimatableUserControl
+    x:Class="NuSysApp.AudioNodeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Width="{Binding Width}"
+    Height="{Binding Height}"
+    RenderTransform="{Binding Transform}">
+
+    <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
+        <local:NodeTemplate.Inner>
+            <Grid Width="{Binding Width}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top">
+                    <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_play.png" Height="25"></Image>
+                    </Button>
+                    <Button x:Name="pause" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_pause.png" Height="25"/>
+                    </Button>
+                    <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="25"></Image>
+                    </Button>
+                    <MediaElement x:Name="playbackElement"  Stretch="Fill" AudioCategory="Speech" Source="{Binding AudioSource}"/>
+                </StackPanel>
+            </Grid>
+           
+        </local:NodeTemplate.Inner>
+
+    </local:NodeTemplate>
+
+</local:AnimatableUserControl>

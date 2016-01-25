@@ -5,14 +5,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace NuSysApp
 {
+    public class SelectionItem
+    {
+        public String BookmarkId;
+        public Boolean IsExported;
+        public String RtfContent;
+        public String FilePath;
+        public List<String> ImageNames;
+        public String DateTimeExported;
+        public String Token;
+    }
+
     public class ContentImporter
     {
         public event ContentImportedHandler ContentImported;
@@ -21,7 +36,8 @@ namespace NuSysApp
         public ContentImporter()
         {
             SetupChromeIntermediate();
-            SetupOfficeTransfer();
+            SetupWordTransfer();
+            SetupPowerpointTransfer();
         }
 
         private void SetupChromeIntermediate()
@@ -29,73 +45,188 @@ namespace NuSysApp
             var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
             fw.FilesChanged += async delegate
             {
-                var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync().AsTask();
-                var contents = new List<string>();
+                var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync();
+                if (transferFiles.Count == 0)
+                    return;
+                var file = transferFiles[0];
                 var count = 0;
-                
-                foreach (var file in transferFiles)
-                {
-                    IBuffer buffer = await FileIO.ReadBufferAsync(file);
-                    await file.DeleteAsync();
-                    DataReader reader = DataReader.FromBuffer(buffer);
-                    byte[] fileContent = new byte[reader.UnconsumedBufferLength];
-                    reader.ReadBytes(fileContent);
-                    string text = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-                    text = text.Replace("\n", "");
-                    text = await ContentConverter.HtmlToMd(text);
-                    contents.Add(text);
-                }
 
-                ContentImported?.Invoke(contents.ToList());
+                var text = await FileIO.ReadTextAsync(file);
+                
+                await UITask.Run(async () =>
+                {
+                   // text = await ContentConverter.HtmlToRtf(text);
+                    var m = new Message();
+                    var width = SessionController.Instance.SessionView.ActualWidth;
+                    var height = SessionController.Instance.SessionView.ActualHeight;
+                    var centerpoint =
+                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                            new Point(width / 2, height / 2));
+
+                    var contentId = SessionController.Instance.GenerateId();
+
+                    m["contentId"] = contentId;
+                    m["x"] = centerpoint.X - 200;
+                    m["y"] = centerpoint.Y - 200;
+                    m["width"] = 400;
+                    m["height"] = 400;
+                    m["nodeType"] = NodeType.Text.ToString();
+                    m["autoCreate"] = true;
+                    m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
+
+
+
+                });
+
+                await file.DeleteAsync();
             };
         }
 
-
-        private async void SetupOfficeTransfer()
+        private Message CreateMessage(SelectionItem selectionItem, String contentId, Point centerpoint)
         {
-            var fw = new FolderWatcher(NuSysStorages.PowerPointTransferFolder);
-            fw.FilesChanged += async delegate
+            Message m = new Message();
+            m["contentId"] = contentId;
+            m["x"] = centerpoint.X - 200;
+            m["y"] = centerpoint.Y - 200;
+            m["width"] = 400;
+            m["height"] = 400;
+            m["autoCreate"] = true;
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+
+            var metadata = new Dictionary<string, object>();
+            metadata["BookmarkId"] = selectionItem.BookmarkId;
+            metadata["IsExported"] = selectionItem.IsExported;
+            metadata["FilePath"] = selectionItem.FilePath;
+            metadata["DateTimeExported"] = selectionItem.DateTimeExported;
+            metadata["Token"] = selectionItem.Token?.Trim();
+
+            m["metadata"] = metadata;
+
+            return m;
+        }
+
+        private async Task AddinTransfer(List<SelectionItem> selectionItems)
+        {
+            foreach (SelectionItem selectionItem in selectionItems)
             {
-                var foundUpdate = await NuSysStorages.PowerPointTransferFolder.TryGetItemAsync("update.nusys").AsTask();
-                if (foundUpdate == null)
+                double width, height;
+                Point centerpoint;
+                await UITask.Run(async () =>
                 {
-                    Debug.WriteLine("no update yet!");
-                    return;
-                }
-                await foundUpdate.DeleteAsync();
+                    width = SessionController.Instance.SessionView.ActualWidth;
+                    height = SessionController.Instance.SessionView.ActualHeight;
+                    centerpoint =
+                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                            new Point(width / 2, height / 2));
+                });
+                    var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
 
-                var transferFiles = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync().AsTask();
-                var contents = new List<string>();
-                var count = 0;
-
-                foreach (var file in transferFiles)
-                {
-
-                    var lines = await FileIO.ReadLinesAsync(file);
-                    if (lines[0].EndsWith(".png"))
+                    if (hasRtf)
                     {
-                        var str = lines[0];
-                        var imageFile = await NuSysStorages.Media.GetFileAsync(lines[0]).AsTask();
-                        //var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                        //var nodeVm = CreateNewNode("null", NodeType.Image, p.X, p.Y, imageFile);//TODO make actual Id's
+                        var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
+                        var contentId = SessionController.Instance.GenerateId();
+
+                        Message m = CreateMessage(selectionItem, contentId, centerpoint);
+                        m["nodeType"] = NodeType.Text.ToString();
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+
+                         await
+                            SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                new NewContentSystemRequest(contentId,
+                                    rtfContent),NetworkClient.PacketType.TCP,null,true);
                     }
-                    else
+
+                    var hasImage = selectionItem.ImageNames.Count > 0;
+                    if (hasImage)
                     {
-                        var readFile = await FileIO.ReadTextAsync(file);
-                        //var p = CompositeTransform.Inverse.TransformPoint(new Point(250, 200));
-                        //var nodeVm2 = CreateNewNode("null", NodeType.Richtext, p.X, p.Y, readFile);//TODO make actual Id's
-                        contents.Add(readFile);
+                        foreach (String imageName in selectionItem.ImageNames)
+                        {
+                            var contentId = SessionController.Instance.GenerateId();
+
+                            Message m = CreateMessage(selectionItem, contentId, centerpoint);
+                            m["nodeType"] = NodeType.Image.ToString();
+
+                            StorageFile imgFile;
+                            try {
+                                imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
+                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                                await
+                                    SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                                        new NewContentSystemRequest(contentId,
+                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);
+
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
                     }
-                }
+                
+            }
+        }
 
-                foreach (var file in transferFiles)
+        private async void SetupWordTransfer()
+        {
+            Task.Run(async () =>
+            {
+                while (true) {
+                    await WordTransfer();
+                    await Task.Delay(1000);
+                }
+            });
+        }
+
+        private async void SetupPowerpointTransfer()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
                 {
-                    await file.DeleteAsync();
+                    await PowerpointTransfer();
+                    await Task.Delay(1000);
                 }
+            });
+        }
 
-                ContentImported?.Invoke(contents.ToList());
-            };
-        }       
+        private async Task WordTransfer()
+        {
+            var fileList = await NuSysStorages.WordTransferFolder.GetFilesAsync();
+
+            foreach (var file in fileList)
+            {
+                var text = await FileIO.ReadTextAsync(file);
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+
+                await AddinTransfer(selectionItems);
+
+                await file.DeleteAsync();
+            }
+        }
+
+        private async Task PowerpointTransfer()
+        {
+            var fileList = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync();
+
+            foreach (var file in fileList)
+            {
+                var text = await FileIO.ReadTextAsync(file);
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+
+                await AddinTransfer(selectionItems);
+
+                await file.DeleteAsync();
+            }
+        }
 
     }
 }
