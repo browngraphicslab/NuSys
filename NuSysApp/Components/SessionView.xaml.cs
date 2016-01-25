@@ -250,7 +250,7 @@ namespace NuSysApp
 
         private void UpdateTitle(object sender, object args)
         {
-            var model = (WorkspaceModel) DataContext;
+            var model = ((WorkspaceViewModel)_activeWorkspace.DataContext).Model;
             model.Title = xWorkspaceTitle.Text;
             var m = new Message();
             m["id"] = model.Id;

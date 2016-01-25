@@ -38,8 +38,17 @@
     </UserControl.Resources>
 
     <Grid>
-        <Button x:Name="UserButton" Style="{StaticResource ButtonStyle1}">
+        <Button x:Name="UserButton" Style="{StaticResource ButtonStyle1}" LostFocus="UserButton_OnLostFocus">
             <TextBlock x:Name="UserBubbleText" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
+       
+        <RichTextBlock x:Name="UserInfoBox" HorizontalAlignment="Left" Width="100" Margin="-20,0,-20,70" VerticalAlignment="Bottom" TextAlignment="Center" Opacity="0">
+            <Paragraph>
+                <Run x:Name="UserName" Text="No Name" FontSize="18"/>
+            </Paragraph>
+            <Paragraph>
+                <Run x:Name="UserIP" Text="Unidentified IP" FontSize="12"/>
+            </Paragraph>
+        </RichTextBlock>
     </Grid>
 </UserControl>

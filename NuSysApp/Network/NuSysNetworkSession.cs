@@ -41,6 +41,9 @@ namespace NuSysApp
         public delegate void UserDroppedEventHandler(NetworkUser user);
         public event UserDroppedEventHandler OnNetworkUserDropped;
 
+        public delegate void HostChangeEventHandler(NetworkUser newHost, NetworkUser oldHost);
+        public event HostChangeEventHandler OnHostChange;
+
         #endregion Public Members
         #region Private Members
         private HashSet<string> NetworkMemberIPs
@@ -60,7 +63,7 @@ namespace NuSysApp
 
             if (NetworkMemberIPs.Count <= 1)
             {
-                _hostIP = LocalIP; //just makes this machine the host
+                SetHost(LocalIP); //just makes this machine the host
                 Debug.WriteLine("This machine made to be host");
                 if (NetworkMemberIPs.Count == 0)
                 {
@@ -387,7 +390,13 @@ namespace NuSysApp
 
         public void SetHost(string ip)
         {
+            NetworkUser oldHost = null;
+            if (_hostIP != null && NetworkMembers.ContainsKey(_hostIP))
+            {
+                oldHost = NetworkMembers[_hostIP];
+            }
             _hostIP = ip;
+            OnHostChange?.Invoke(NetworkMembers.ContainsKey(ip) ? NetworkMembers[ip] : null, oldHost);
             Debug.WriteLine("Machine "+ip+" made to be host");
         }
 
@@ -423,7 +432,7 @@ namespace NuSysApp
                 await DropNetworkUser(ip);
                 if (ip == _hostIP)
                 {
-                    _hostIP = LocalIP;
+                    SetHost(LocalIP);
                 }
                 await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
                 await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));

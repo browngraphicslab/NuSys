@@ -29,14 +29,24 @@ namespace NuSysApp
         {
             this.InitializeComponent();
 
+            _factory = new GroupItemThumbFactory();
+
             Loaded += delegate 
             {
                 if (DataContext is GroupNodeViewModel) { 
                     var vm = (GroupNodeViewModel)DataContext;
+
+                    var numRows = 2;
+                    var numCols = 4;
+
+                    foreach (var myItem in vm.AtomViewList)
+                    {
+                        LoadThumbnails(numRows, numCols, myItem);
+                    }
                     vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
                 }
             };
-            _factory = new GroupItemThumbFactory();
+            
 
         }
 
@@ -50,19 +60,22 @@ namespace NuSysApp
 
             foreach (var newItem in e.NewItems)
             {
-                var child = (FrameworkElement) newItem;
-                var childModel = (child.DataContext as GroupItemViewModel).Model;
-                var view = await _factory.CreateFromSendable(childModel, null);
-                var wrappedView = new Border();
-                wrappedView.Padding = new Thickness(10);
-                wrappedView.Child = view;
-                Grid.SetRow(wrappedView, _count / numCols);
-                Grid.SetColumn(wrappedView, _count % numCols);
-                xGrid.Children.Add(wrappedView);
-                _count++;
-
-
+                LoadThumbnails(numRows, numCols, newItem);
             }
+        }
+
+        private async void LoadThumbnails(int numRows, int numCols, object myObj)
+        {
+            var child = (FrameworkElement)myObj;
+            var childModel = (child.DataContext as GroupItemViewModel).Model;
+            var view = await _factory.CreateFromSendable(childModel, null);
+            var wrappedView = new Border();
+            wrappedView.Padding = new Thickness(10);
+            wrappedView.Child = view;
+            Grid.SetRow(wrappedView, _count / numCols);
+            Grid.SetColumn(wrappedView, _count % numCols);
+            xGrid.Children.Add(wrappedView);
+            _count++;
         }
 
         private async  void OnLoaded(object sender, RoutedEventArgs routedEventArgs)

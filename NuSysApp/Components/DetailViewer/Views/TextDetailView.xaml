@@ -22,7 +22,7 @@
                 <Button Visibility="Visible" Name="SourceBttn" Width="auto" Height="30" Content="Go To Source" Foreground="White" HorizontalAlignment="Right" Click="OnGoToSource"></Button>
             </StackPanel>
             <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                     BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
+                                     BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" Height="720" />
         </StackPanel>
     </Border>
 </UserControl>
