@@ -175,24 +175,28 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
 
-            var settings = mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
-            if (settings.Count > 0)
+            if (type == NodeType.Video)
             {
-                var maxX = 0;
-                var maxY = 0;
-                foreach (var settingInst in settings)
+                var settings =
+                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
+                if (settings.Count > 0)
                 {
-                    if ((settingInst as VideoEncodingProperties).Width > maxX)
+                    var maxX = 0;
+                    var maxY = 0;
+                    foreach (var settingInst in settings)
                     {
-                        maxX = (int) (settingInst as VideoEncodingProperties).Width;
+                        if ((settingInst as VideoEncodingProperties).Width > maxX)
+                        {
+                            maxX = (int) (settingInst as VideoEncodingProperties).Width;
+                        }
+                        if ((settingInst as VideoEncodingProperties).Height > maxY)
+                        {
+                            maxY = (int) (settingInst as VideoEncodingProperties).Height;
+                        }
                     }
-                    if ((settingInst as VideoEncodingProperties).Height > maxY)
-                    {
-                        maxY = (int) (settingInst as VideoEncodingProperties).Height;
-                    }
-                }
                     m["resolutionX"] = maxX;
                     m["resolutionY"] = maxY;
+                }
             }
 
 
