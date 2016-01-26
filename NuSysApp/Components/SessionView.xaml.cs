@@ -224,6 +224,7 @@ namespace NuSysApp
                 xWorkspaceTitle.Text = model.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
@@ -257,6 +258,7 @@ namespace NuSysApp
             m["title"] = model.Title;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
                 NetworkClient.PacketType.UDP);
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
         private void TitleChanged(object source, string title)
         {
