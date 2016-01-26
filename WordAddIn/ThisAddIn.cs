@@ -37,7 +37,6 @@ namespace WordAddIn
                 }
 
                 Microsoft.Office.Interop.Word.Document curDoc = this.Application.ActiveDocument;
-                var temp = this.Application.ActiveDocument.Path;
 
                 var standardUC = new UserControl();
                 SidePane _sidePane = new SidePane(curDoc, token, selectionId);

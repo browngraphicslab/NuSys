@@ -32,13 +32,15 @@
                 </Grid.ColumnDefinitions>
                 <Label Width="240" Name="noSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections to export</Label>
             </Grid>
-            <ItemsControl Name="ic" ItemsSource="{Binding UnexportedSelections}">
+
+            <StackPanel Name="ic"></StackPanel>
+            <!--<ItemsControl Name="ic" ItemsSource="{Binding UnexportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel></StackPanel>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            </ItemsControl>-->
             <Grid Width="328" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -55,13 +57,15 @@
                 </Grid.ColumnDefinitions>
                 <Label Width="293" Name="noExpSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections exported to NuSys</Label>
             </Grid>
-            <ItemsControl Name="ic2" ItemsSource="{Binding ExportedSelections}">
+
+            <StackPanel Name="ic2"></StackPanel>
+            <!--<ItemsControl Name="ic2" ItemsSource="{Binding ExportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel></StackPanel>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            </ItemsControl>-->
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -19,7 +19,7 @@ namespace WordAddIn
     /// <summary>
     /// Interaction logic for SidePane.xaml
     /// </summary>
-    public partial class SidePane : UserControl, INotifyPropertyChanged
+    public partial class SidePane : UserControl
     {
 
         private static string mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
@@ -58,8 +58,6 @@ namespace WordAddIn
             UnexportedSelections = new ObservableCollection<SelectionItem>();
             ExportedSelections = new ObservableCollection<SelectionItem>();
             CheckedSelections = new ObservableCollection<SelectionItem>();
-
-            //LoadSelectionData();
 
 
             Microsoft.Office.Tools.Word.Document vstoDoc = Globals.Factory.GetVstoObject(this.CurDoc);
@@ -430,18 +428,6 @@ namespace WordAddIn
                 //TODO exception handling
             }
 
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            var handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
         }
     }
 }

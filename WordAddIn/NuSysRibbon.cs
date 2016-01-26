@@ -64,7 +64,6 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            var temp = Globals.ThisAddIn.Application.ActiveDocument.Path;
             if (!Globals.ThisAddIn.NuSysTaskPanes.Contains(Globals.ThisAddIn.Application.ActiveDocument))
             {
                 try

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Interop.PowerPoint;
+using MicrosoftOfficeInterop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,17 +32,48 @@ namespace PowerPointAddIn
 
         private string commentExported = "Exported to NuSys";
 
-        public SidePane()
+        public string Token { get; set; }
+
+        public Microsoft.Office.Interop.PowerPoint.DocumentWindow CurWin { get; set; }
+
+        public Microsoft.Office.Interop.PowerPoint.Presentation CurPres { get; set; }
+
+        public SidePane(Microsoft.Office.Interop.PowerPoint.Presentation curPres, Microsoft.Office.Interop.PowerPoint.DocumentWindow curWin, string token)
         {
             InitializeComponent();
-            ic.DataContext = this;
-            ic2.DataContext = this;
+            this.DataContext = this;
+
+            this.Token = token;
+            this.CurWin = curWin;
+            this.CurPres = curPres;
+
+            ConvertToPdf();
 
             UnexportedSelections = new ObservableCollection<SelectionItem>();
             ExportedSelections = new ObservableCollection<SelectionItem>();
             CheckedSelections = new ObservableCollection<SelectionItem>();
 
             CheckSelectionLabels();
+        }
+
+        private void ConvertToPdf()
+        {
+            try
+            {
+                if (this.CurPres != null && !String.IsNullOrEmpty(this.CurPres.FullName))
+                {
+                    MessageBox.Show("Converting to pdf for NuSys");
+                    String path = this.CurPres.FullName;
+                    String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+                    string pdfPath = mediaFolderPath + "\\" + this.Token + ".pdf";
+
+                    OfficeInterop.SavePresentationAsPdf(path, pdfPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling
+            }
         }
 
         private void UnexpOnClick(object sender, RoutedEventArgs e)
@@ -136,10 +168,12 @@ namespace PowerPointAddIn
                 if (UnexportedSelections.Contains(selection))
                 {
                     UnexportedSelections.Remove(selection);
+                    ic.Children.Remove(selection);
                 }
                 else if (ExportedSelections.Contains(selection))
                 {
                     ExportedSelections.Remove(selection);
+                    ic2.Children.Remove(selection);
                 }
             }
 
@@ -178,7 +212,7 @@ namespace PowerPointAddIn
                         {
                             var posX = selection.ThisSelection.ShapeRange.Left;
                             var posY = selection.ThisSelection.ShapeRange.Top;
-                            var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+                            var currentSlide = (Slide)this.CurWin.View.Slide;
                             var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, commentExported + " " + DateTime.Now.ToString());
 
                             selection.Comment.Delete();
@@ -192,7 +226,10 @@ namespace PowerPointAddIn
                     }
 
                     UnexportedSelections.Remove(selection);
+                    ic.Children.Remove(selection);
+
                     ExportedSelections.Add(selection);
+                    ic2.Children.Add(selection);
 
                     hasNewSelection = true;
                     count++;
@@ -224,23 +261,20 @@ namespace PowerPointAddIn
             try {
                 Clipboard.Clear();
 
-                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                var selection = this.CurWin.Selection;
 
                 selection.Copy();
 
-                if (Clipboard.ContainsData(System.Windows.DataFormats.Rtf) ||
-                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Html) ||
-                    Clipboard.ContainsData(System.Windows.Forms.DataFormats.Bitmap))
-                {
-                    var posX = selection.ShapeRange.Left;
-                    var posY = selection.ShapeRange.Top;
-                    var currentSlide = (Slide)Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
-                    var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, "");
+                var posX = selection.ShapeRange.Left;
+                var posY = selection.ShapeRange.Top;
+                var currentSlide = (Slide)this.CurWin.View.Slide;
+                var c = currentSlide.Comments.Add(posX, posY, commentAuthor, commentAuthor, "");
 
-                    var ns = new SelectionItem { Comment = c, ThisSelection = selection, IsExported = false };
-                    ns.AddSelection();
-                    UnexportedSelections.Add(ns);
-                }
+                var ns = new SelectionItem(this) { Comment = c, ThisSelection = selection, IsExported = false };
+                ns.AddSelection();
+                UnexportedSelections.Add(ns);
+                ic.Children.Add(ns);
+                
             }
             catch (Exception ex)
             {

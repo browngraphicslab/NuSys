@@ -29,20 +29,23 @@ namespace PowerPointAddIn
         private string _rtfContent;
         private MemoryStream _ms;
         private List<Bitmap> _imageContent;
+        private SidePane SidePane;
 
-        public SelectionItem()
+        public SelectionItem(SidePane sidePane)
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
             DataContext = this;
+
+            this.SidePane = sidePane;
         }
 
         public SelectionItemView GetView()
         {
             String path = null;
-            if (Globals.ThisAddIn.Application.ActivePresentation != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActivePresentation.FullName))
+            if (this.SidePane.CurPres != null && !String.IsNullOrEmpty(this.SidePane.CurPres.FullName))
             {
-                path = Globals.ThisAddIn.Application.ActivePresentation.FullName;
+                path = this.SidePane.CurPres.FullName;
             }
 
             List<string> ImageNames = new List<string>();
@@ -51,7 +54,7 @@ namespace PowerPointAddIn
                 ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
             }
 
-            return new SelectionItemView(IsExported, RtfContent, path, DateTime.Now.ToString(), ImageNames, Globals.ThisAddIn._fileToken);
+            return new SelectionItemView(IsExported, RtfContent, path, DateTime.Now.ToString(), ImageNames, this.SidePane.Token);
         }
 
         private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -60,12 +63,11 @@ namespace PowerPointAddIn
                 return;
 
             var selectionItem = (SelectionItem)sender;
-            //Globals.ThisAddIn.Application.ActiveWindow.View.GotoSlide(selectionItem.SlideNumber);
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            ObservableCollection<SelectionItem> CheckedSelections = Globals.ThisAddIn.SidePane.CheckedSelections;
+            ObservableCollection<SelectionItem> CheckedSelections = this.SidePane.CheckedSelections;
             if (!CheckedSelections.Contains(this))
             {
                 CheckedSelections.Add(this);
@@ -74,7 +76,7 @@ namespace PowerPointAddIn
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            ObservableCollection<SelectionItem> CheckedSelections = Globals.ThisAddIn.SidePane.CheckedSelections;
+            ObservableCollection<SelectionItem> CheckedSelections = this.SidePane.CheckedSelections;
             if (CheckedSelections.Contains(this))
             {
                 CheckedSelections.Remove(this);

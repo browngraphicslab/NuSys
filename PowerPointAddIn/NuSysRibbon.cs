@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Office.Tools;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -59,19 +60,27 @@ namespace PowerPointAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            try {
-                string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActivePresentation.FullName);
-
-                if (docExt != ".pptx" || String.IsNullOrEmpty(docExt))
-                {
-                    MessageBox.Show("Please be advised that the NuSys plugin works best with .pptx file types");
-                }
-
-                Globals.ThisAddIn.BuildSidebar();
-            }
-            catch (Exception ex)
+            if (!Globals.ThisAddIn.NuSysTaskPanes.Contains(Globals.ThisAddIn.Application.ActivePresentation))
             {
-                MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+                try
+                {
+                    string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActivePresentation.FullName);
+
+                    if (docExt != ".pptx" || String.IsNullOrEmpty(docExt))
+                    {
+                        MessageBox.Show("Please be advised that the NuSys plugin works best with .pptx file types");
+                    }
+
+                    Globals.ThisAddIn.BuildSidebar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+                }
+            }else
+            {
+                CustomTaskPane pane = (CustomTaskPane)Globals.ThisAddIn.NuSysTaskPanes[Globals.ThisAddIn.Application.ActivePresentation];
+                pane.Visible = !pane.Visible;
             }
         }
 

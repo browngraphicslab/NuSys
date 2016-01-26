@@ -32,7 +32,6 @@ namespace WordAddIn
         private List<Bitmap> _imageContent;
         private Bookmark _bookmark;
         private String _dateTimeExported;
-        private double _dropShadowOpac;
         private SidePane SidePane;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -41,7 +40,6 @@ namespace WordAddIn
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
-            DropShadowOpac = 0;
             DataContext = this;
 
             this.SidePane = sidePane;
