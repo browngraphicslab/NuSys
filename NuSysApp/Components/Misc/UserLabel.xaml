@@ -28,8 +28,6 @@
 		                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
 		                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 		                        Margin="{TemplateBinding Padding}"/>
-                            <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
-                            <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>

@@ -10,15 +10,11 @@
     >
 
     <Page.Resources>
-        <Style x:Key="ChatButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#B3B3B3"/>
+        <Style x:Key="CircleButton" TargetType="Button">
             <Setter Property="Foreground" Value="#FFFFFF"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Bottom"/>
-            <Setter Property="Margin" Value="5,10,5,10"/>
-            <Setter Property="Width" Value="50"/>
-            <Setter Property="Height" Value="50"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -31,8 +27,6 @@
 		                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
 		                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 		                        Margin="{TemplateBinding Padding}"/>
-                            <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
-                            <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -47,8 +41,11 @@
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
             <Image Source="/Assets/icon_record.png"></Image>
         </Button>
-        <Button x:Name="ChatButton" Style="{StaticResource ChatButtonStyle}" Click="ChatButton_OnClick">
+        <Button x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
             <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Button>
+        <Button x:Name="ChatNotifs" Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="0" VerticalAlignment="Bottom">
+            <TextBlock x:Name="NotifNumber" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>

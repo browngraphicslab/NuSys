@@ -48,6 +48,8 @@ namespace NuSysApp
 
         #endregion Private Members
 
+        private int initChatNotifs;
+
         public SessionView()
         {
             this.InitializeComponent();
@@ -106,6 +108,20 @@ namespace NuSysApp
                 await SessionController.Instance.InitializeRecog();
                
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
+
+                ChatPopup.OnNewTextsChanged += delegate(int newTexts)
+                {
+                    if (newTexts > 0)
+                    {
+                        ChatNotifs.Opacity = 1;
+                        NotifNumber.Text = newTexts.ToString();
+                    }
+                    else
+                    {
+                        ChatNotifs.Opacity = 0;
+                    }
+                    
+                };
             };
         }
 
@@ -241,6 +257,8 @@ namespace NuSysApp
             Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
+            Canvas.SetLeft(ChatNotifs, 37);
+            Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             //overlayCanvas.Width = mainCanvas.ActualWidth;
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
@@ -379,11 +397,13 @@ namespace NuSysApp
 
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)
         {
+            initChatNotifs = ChatPopup.getTexts().Count;
             ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
             if (ChatPopup.Visibility == Visibility.Visible)
             {
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
                 Canvas.SetLeft(ChatPopup, 5);
+                ChatPopup.ClearNewTexts();
             }
         }
     }
