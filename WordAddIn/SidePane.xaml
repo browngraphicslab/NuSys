@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:wordAddIn="clr-namespace:WordAddIn"
-             mc:Ignorable="d" d:DesignWidth="400" Height="439" Background="White">
+             mc:Ignorable="d" d:DesignWidth="400" Height="439" Background="White"
+             Loaded="LoadSelectionData">
     <ScrollViewer>
         <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="woo">
             <StackPanel Orientation="Horizontal" Height="54">
@@ -32,13 +33,18 @@
                 </Grid.ColumnDefinitions>
                 <Label Width="240" Name="noSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections to export</Label>
             </Grid>
-            <ItemsControl Name="ic" ItemsSource="{Binding UnexportedSelections}">
+
+            <StackPanel x:Name="ic"></StackPanel>
+            
+            <!--<ItemsControl x:Name="ic" ItemsSource="{Binding UnexportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel></StackPanel>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            </ItemsControl>-->
+            
+            
             <Grid Width="328" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -55,13 +61,16 @@
                 </Grid.ColumnDefinitions>
                 <Label Width="293" Name="noExpSelectionsLabel" FontSize="13" FontFamily="Segoe UI Light" HorizontalAlignment="Center">There are currently no selections exported to NuSys</Label>
             </Grid>
-            <ItemsControl Name="ic2" ItemsSource="{Binding ExportedSelections}">
+
+            <StackPanel x:Name="ic2"></StackPanel>
+
+            <!--<ItemsControl x:Name="ic2" ItemsSource="{Binding ExportedSelections}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel></StackPanel>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            </ItemsControl>-->
         </StackPanel>
     </ScrollViewer>
 </UserControl>

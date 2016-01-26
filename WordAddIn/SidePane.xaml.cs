@@ -1,9 +1,11 @@
 ﻿using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Word;
+using MicrosoftOfficeInterop;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -17,7 +19,7 @@ namespace WordAddIn
     /// <summary>
     /// Interaction logic for SidePane.xaml
     /// </summary>
-    public partial class SidePane : UserControl
+    public partial class SidePane : UserControl, INotifyPropertyChanged
     {
 
         private static string mediaDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
@@ -28,22 +30,65 @@ namespace WordAddIn
 
         public ObservableCollection<SelectionItem> ExportedSelections { get; set; }
 
-        public ObservableCollection<SelectionItem> CheckedSelections { get; set;}
+        public ObservableCollection<SelectionItem> CheckedSelections { get; set; }
+
+        public SelectionItem SelectedSelection { get; set; }
 
         private string commentAuthor = "NuSys";
 
         private string commentExported = "Exported to NuSys";
 
-        public SelectionItem SelectedSelection { get; set;}
+        public string Token { get; set; }
 
-        public SidePane()
+        public string NuSysSelectionId { get; set; }
+
+        public Microsoft.Office.Interop.Word.Document CurDoc { get; set; }
+
+        public SidePane(Microsoft.Office.Interop.Word.Document curDoc, string token, string selectionId)
         {
             InitializeComponent();
-            ic.DataContext = this;
-            ic2.DataContext = this;
+            this.DataContext = this;
 
-            LoadSelectionData();
-            CheckSelectionLabels();
+            this.Token = token;
+            this.CurDoc = curDoc;
+            this.NuSysSelectionId = selectionId;
+
+            ConvertToPdf();
+
+            UnexportedSelections = new ObservableCollection<SelectionItem>();
+            ExportedSelections = new ObservableCollection<SelectionItem>();
+            CheckedSelections = new ObservableCollection<SelectionItem>();
+
+            //LoadSelectionData();
+
+
+            Microsoft.Office.Tools.Word.Document vstoDoc = Globals.Factory.GetVstoObject(this.CurDoc);
+            vstoDoc.BeforeClose += new System.ComponentModel.CancelEventHandler(ThisDocument_BeforeClose);
+        }
+
+        private void ConvertToPdf()
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(this.Token) && this.CurDoc != null && !String.IsNullOrEmpty(this.CurDoc.FullName))
+                {
+                    MessageBox.Show("Converting to pdf for NuSys");
+                    String path = this.CurDoc.FullName;
+                    String mediaFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media";
+                    string pdfPath = mediaFolderPath + "\\" + this.Token + ".pdf";
+
+                    OfficeInterop.SaveWordAsPdf(path, pdfPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handling
+            }
+        }
+
+        private void ThisDocument_BeforeClose(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            saveSelectionData();
         }
 
         private void UnexpOnClick(object sender, RoutedEventArgs e)
@@ -92,6 +137,72 @@ namespace WordAddIn
             CheckSelectionLabels();
         }
 
+
+        private List<SelectionItemIdView> readSelectionData()
+        {
+            List<SelectionItemIdView> selectionItemIdViews = new List<SelectionItemIdView>();
+
+            try
+            {
+                Microsoft.Office.Core.DocumentProperties properties = (Microsoft.Office.Core.DocumentProperties)this.CurDoc.CustomDocumentProperties;
+
+                foreach (Microsoft.Office.Core.DocumentProperty prop in properties)
+                {
+                    if (prop.Name.Contains("NuSysSelection"))
+                    {
+                        string json = prop.Value.ToString();
+                        selectionItemIdViews.Add(JsonConvert.DeserializeObject<SelectionItemIdView>(json));
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
+
+            return selectionItemIdViews;
+        }
+
+        private void saveSelectionData()
+        {
+            try
+            {
+                Microsoft.Office.Core.DocumentProperties properties = (Microsoft.Office.Core.DocumentProperties)this.CurDoc.CustomDocumentProperties;
+
+                foreach (Microsoft.Office.Core.DocumentProperty prop in properties)
+                {
+                    if (prop.Name.StartsWith("NuSysSelection"))
+                    {
+                        prop.Delete();
+                    }
+                }
+
+                int count = 0;
+                foreach (SelectionItem expSel in ExportedSelections)
+                {
+                    SelectionItemIdView view = expSel.GetIdView();
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(view);
+
+                    properties.Add("NuSysSelection" + count, false, 4, json);
+                    count++;
+                }
+
+                foreach (SelectionItem unexpSel in UnexportedSelections)
+                {
+                    SelectionItemIdView view = unexpSel.GetIdView();
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(view);
+
+                    properties.Add("NuSysSelection" + count, false, 4, json);
+                    count++;
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO error handing
+            }
+        }
+
         private void CheckSelectionLabels()
         {
             if (ExportedSelections.Count == 0)
@@ -117,14 +228,12 @@ namespace WordAddIn
             }
         }
 
-        private void LoadSelectionData()
+        private void LoadSelectionData(object sender, RoutedEventArgs e)
         {
-            UnexportedSelections = new ObservableCollection<SelectionItem>();
-            ExportedSelections = new ObservableCollection<SelectionItem>();
-            CheckedSelections = new ObservableCollection<SelectionItem>();
+            List<SelectionItemIdView> selectionItemIdViews = readSelectionData();
 
             //delete all NuSys comments
-            var comments = Globals.ThisAddIn.Application.ActiveDocument.Comments;
+            var comments = this.CurDoc.Comments;
             foreach (var commentObj in comments)
             {
                 Comment comment = ((Comment)commentObj);
@@ -135,10 +244,9 @@ namespace WordAddIn
                 }
             }
 
-            var allSelections = Globals.ThisAddIn._allSelectionItems;
-            var bookmarks = Globals.ThisAddIn.Application.ActiveDocument.Bookmarks;
+            var bookmarks = this.CurDoc.Bookmarks;
 
-            foreach (var selection in allSelections)
+            foreach (SelectionItemIdView selection in selectionItemIdViews)
             {
                 if (bookmarks.Exists(selection.BookmarkId)){
                     var docSelection = bookmarks[selection.BookmarkId].Range;
@@ -146,24 +254,26 @@ namespace WordAddIn
 
                     if (!selection.IsExported)
                     {
-                        Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, "");
+                        Comment c = this.CurDoc.Comments.Add(docSelection, "");
                         c.Author = commentAuthor;
 
-                        ns = new SelectionItem { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = false };
+                        ns = new SelectionItem(this) { Comment = c, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = false };
                         ns.AddSelection();
                         UnexportedSelections.Add(ns);
+                        ic.Children.Add(ns);
                     }
                     else
                     {
-                        Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(docSelection, commentExported + " " + selection.DateTimeExported);
+                        Comment c = this.CurDoc.Comments.Add(docSelection, commentExported + " " + selection.DateTimeExported);
                         c.Author = commentAuthor;
 
-                        ns = new SelectionItem { Comment = c, DateTimeExported = selection.DateTimeExported, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
+                        ns = new SelectionItem(this) { Comment = c, DateTimeExported = selection.DateTimeExported, Bookmark = bookmarks[selection.BookmarkId], Range = docSelection, IsExported = true };
                         ns.AddSelection();
                         ExportedSelections.Add(ns);
+                        ic2.Children.Add(ns);
                     }
 
-                    if (selection.BookmarkId == Globals.ThisAddIn.SelectionId)
+                    if (selection.BookmarkId == this.NuSysSelectionId)
                     {
                         ns.DropShadow.Opacity = 1.0;
 
@@ -176,6 +286,8 @@ namespace WordAddIn
                     }
                 }
             }
+
+            CheckSelectionLabels();
         }
 
         //delete all checked selections
@@ -205,10 +317,12 @@ namespace WordAddIn
                 if (UnexportedSelections.Contains(selection))
                 {
                     UnexportedSelections.Remove(selection);
+                    ic.Children.Remove(selection);
                 }
                 else if (ExportedSelections.Contains(selection))
                 {
                     ExportedSelections.Remove(selection);
+                    ic2.Children.Remove(selection);
                 }
             }
 
@@ -257,7 +371,10 @@ namespace WordAddIn
                     }
 
                     UnexportedSelections.Remove(selection);
+                    ic.Children.Remove(selection);
+
                     ExportedSelections.Add(selection);
+                    ic2.Children.Add(selection);
 
                     hasNewSelection = true;
                     count++;
@@ -287,12 +404,13 @@ namespace WordAddIn
         private void OnSelectionAdded()
         {
             try {
-                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                var temp = this.CurDoc.Path;
+                Selection selection = this.CurDoc.ActiveWindow.Selection;
 
-                var ns = new SelectionItem { Range = selection.Range, IsExported = false };
+                var ns = new SelectionItem(this) { Range = selection.Range, IsExported = false };
                 ns.AddSelection();
 
-                Comment c = Globals.ThisAddIn.Application.ActiveDocument.Comments.Add(selection.Range, "");
+                Comment c = this.CurDoc.Comments.Add(selection.Range, "");
                 c.Author = commentAuthor;
                 ns.Comment = c;
 
@@ -303,6 +421,7 @@ namespace WordAddIn
 
                 if (ns.ImageContent.Count > 0 || !String.IsNullOrEmpty(ns.RtfContent))
                 {
+                    ic.Children.Add(ns);
                     UnexportedSelections.Add(ns);
                 }
             }
@@ -311,6 +430,18 @@ namespace WordAddIn
                 //TODO exception handling
             }
 
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

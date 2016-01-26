@@ -33,23 +33,26 @@ namespace WordAddIn
         private Bookmark _bookmark;
         private String _dateTimeExported;
         private double _dropShadowOpac;
+        private SidePane SidePane;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public SelectionItem()
+        public SelectionItem(SidePane sidePane)
         {
             InitializeComponent();
             _renderTransform = new ScaleTransform(1, 1);
             DropShadowOpac = 0;
             DataContext = this;
+
+            this.SidePane = sidePane;
         }
 
         public SelectionItemView GetView()
         {
             String path = null;
-            if (Globals.ThisAddIn.Application.ActiveDocument != null && !String.IsNullOrEmpty(Globals.ThisAddIn.Application.ActiveDocument.FullName))
+            if (this.SidePane.CurDoc != null && !String.IsNullOrEmpty(this.SidePane.CurDoc.FullName))
             {
-                path = Globals.ThisAddIn.Application.ActiveDocument.FullName;
+                path = this.SidePane.CurDoc.FullName;
             }
 
             List<string> ImageNames = new List<string>();
@@ -58,7 +61,7 @@ namespace WordAddIn
                 ImageNames.Add(string.Format(@"{0}", Guid.NewGuid()) + ".png");
             }
 
-            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported, Globals.ThisAddIn._fileToken);
+            return new SelectionItemView(this.Bookmark.Name, IsExported, RtfContent, path, ImageNames, DateTimeExported, this.SidePane.Token);
         }
 
         public SelectionItemIdView GetIdView()
@@ -74,20 +77,19 @@ namespace WordAddIn
             var selectionItem = (SelectionItem)sender;
             selectionItem.Range.Select();
 
-            //this.DropShadowOpac = 1.0;
             DropShadow.Opacity = 1.0;
 
-            if (Globals.ThisAddIn.SidePane.SelectedSelection != null && Globals.ThisAddIn.SidePane.SelectedSelection != this)
+            if (this.SidePane.SelectedSelection != null && this.SidePane.SelectedSelection != this)
             {
-                Globals.ThisAddIn.SidePane.SelectedSelection.DropShadow.Opacity = 0.0;
+                this.SidePane.SelectedSelection.DropShadow.Opacity = 0.0;
             }
 
-            Globals.ThisAddIn.SidePane.SelectedSelection = this;
+            this.SidePane.SelectedSelection = this;
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            ObservableCollection<SelectionItem> CheckedSelections = Globals.ThisAddIn.SidePane.CheckedSelections;
+            ObservableCollection<SelectionItem> CheckedSelections = this.SidePane.CheckedSelections;
             if (!CheckedSelections.Contains(this))
             {
                 CheckedSelections.Add(this);
@@ -96,7 +98,7 @@ namespace WordAddIn
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            ObservableCollection<SelectionItem> CheckedSelections = Globals.ThisAddIn.SidePane.CheckedSelections;
+            ObservableCollection<SelectionItem> CheckedSelections = this.SidePane.CheckedSelections;
             if (CheckedSelections.Contains(this))
             {
                 CheckedSelections.Remove(this);
@@ -112,16 +114,16 @@ namespace WordAddIn
                 foreach (Shape shape in this.Range.ShapeRange)
                 {
                     shape.Select();
-                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    Selection selection = this.SidePane.CurDoc.ActiveWindow.Selection;
                     selection.Copy();
                     parseImg();
                 }
 
                 if (this.Range.Text != null)
                 {
-                    Range textRange = Globals.ThisAddIn.Application.ActiveDocument.Range(this.Range.Start, this.Range.End);
+                    Range textRange = this.SidePane.CurDoc.Range(this.Range.Start, this.Range.End);
                     textRange.Select();
-                    Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    Selection selection = this.SidePane.CurDoc.ActiveWindow.Selection;
                     selection.Copy();
                     fromClipboard();
                 }
@@ -129,7 +131,7 @@ namespace WordAddIn
             else
             {
                 this.Range.Select();
-                Selection selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                Selection selection = this.SidePane.CurDoc.ActiveWindow.Selection;
                 selection.Copy();
                 fromClipboard();
             }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Office.Tools;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -63,19 +64,28 @@ namespace WordAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            try {
-                string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActiveDocument.FullName);
-
-                if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
-                {
-                    MessageBox.Show("Please be advised that the NuSys plugin works best with .docx file types");
-                }
-
-                Globals.ThisAddIn.BuildSidebar();
-            }
-            catch (Exception ex)
+            var temp = Globals.ThisAddIn.Application.ActiveDocument.Path;
+            if (!Globals.ThisAddIn.NuSysTaskPanes.Contains(Globals.ThisAddIn.Application.ActiveDocument))
             {
-                MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+                try
+                {
+                    string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActiveDocument.FullName);
+
+                    if (docExt != ".docx" || String.IsNullOrEmpty(docExt))
+                    {
+                        MessageBox.Show("Please be advised that the NuSys plugin works best with .docx file types");
+                    }
+
+                    Globals.ThisAddIn.BuildSidebar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+                }
+            }else
+            {
+                CustomTaskPane pane = (CustomTaskPane)Globals.ThisAddIn.NuSysTaskPanes[Globals.ThisAddIn.Application.ActiveDocument];
+                pane.Visible = !pane.Visible;
             }
         }
 
