@@ -21,6 +21,7 @@ namespace NuSysApp
         public const string FileChromeTransferName = "selections.nusys";
         public const string FolderOfficeToPdf = "OfficeToPdf";
         public const string FolderOpenDocParams = "OpenDocParams";
+        public const string TempNuSys = "TempNuSys.nusys";
         public const string NuSysFALFiles = "NuSysFALFiles.txt";
         public const string NuSysFALFolders = "NuSysFALFolders.txt";
         public const string FirstTimeWord = "FirstTimeWord.txt";

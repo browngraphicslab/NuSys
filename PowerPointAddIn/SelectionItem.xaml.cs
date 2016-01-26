@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -55,6 +56,31 @@ namespace PowerPointAddIn
             }
 
             return new SelectionItemView(IsExported, RtfContent, path, DateTime.Now.ToString(), ImageNames, this.SidePane.Token);
+        }
+
+        private void SelectionItem_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!(sender is SelectionItem))
+                return;
+
+            if (!String.IsNullOrEmpty(this.SidePane.Token))
+            {
+                var selectionItem = (SelectionItem)sender;
+
+                string tempNusysFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\Media\\tempNuSys.nusys";
+
+                // Prepare the process to run
+                ProcessStartInfo start = new ProcessStartInfo();
+                // Enter in the command line arguments, everything you would enter after the executable name itself
+                start.Arguments = this.SidePane.Token;
+                // Enter the executable to run, including the complete path
+                start.FileName = tempNusysFile;
+                // Do you want to show a console window?
+                start.WindowStyle = ProcessWindowStyle.Hidden;
+                start.CreateNoWindow = true;
+
+                Process proc = Process.Start(start);
+            }
         }
 
         private void StackPanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

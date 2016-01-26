@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PowerPointAddIn"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="300" MouseDoubleClick="SelectionItem_DoubleClick" 
              MouseLeftButtonUp="StackPanel_MouseLeftButtonUp" Height="94.4" Width="298.8">
     <Grid Margin="0,0,0.2,0.4">
         <Grid.ColumnDefinitions>

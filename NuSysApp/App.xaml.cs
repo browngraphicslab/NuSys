@@ -45,6 +45,32 @@ namespace NuSysApp
             this.Suspending += OnSuspending;
         }
 
+        protected override async void OnFileActivated(FileActivatedEventArgs e)
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context and navigate to the first page
+                rootFrame = new Frame();
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                // Place the frame in the current Window
+                Window.Current.Content = rootFrame;
+            }
+
+            if (rootFrame.Content == null)
+            {
+            }
+            // Ensure the current window is active
+            Window.Current.Activate();
+
+            await SetupDirectories();
+        }
+
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
@@ -83,7 +109,6 @@ namespace NuSysApp
             Window.Current.Activate();
 
             await SetupDirectories();
-            //await AccessList.ReadFileTokens();
         }
 
         private static async Task<bool> SetupDirectories()
@@ -99,6 +124,9 @@ namespace NuSysApp
             NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderWordTransferName);
             NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderPowerpointTransferName);
             NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
+            NuSysStorages.TempNuSysFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.NuSysTempFolder, Constants.TempNuSys);
+
+
             NuSysStorages.OfficeToPdfFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
 
             NuSysStorages.FirstTimeWord = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimeWord);

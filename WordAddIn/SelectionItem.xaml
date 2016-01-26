@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WordAddIn"
              mc:Ignorable="d"
-             Height="94.4" Width="298.8" MouseLeftButtonUp="SelectionItem_MouseLeftButtonUp" Background="White" Margin="0,0,0,10">
+             Height="94.4" Width="298.8" MouseDoubleClick="SelectionItem_DoubleClick" MouseLeftButtonUp="SelectionItem_MouseLeftButtonUp" Background="White" Margin="0,0,0,10">
     <UserControl.Effect>
         <DropShadowEffect x:Name="DropShadow" Opacity="0" Color="#FFD6D6D6" BlurRadius="6" Direction="-75" ShadowDepth="1"/>
     </UserControl.Effect>
