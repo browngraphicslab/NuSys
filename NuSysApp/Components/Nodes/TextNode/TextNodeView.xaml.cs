@@ -34,15 +34,15 @@ namespace NuSysApp
 
         public TextNodeView(TextNodeViewModel vm)
         {
-
             InitializeComponent();
             DataContext = vm;
-
 
             var contentId = (vm.Model as NodeModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
+            {
                 rtfTextBox.SetRtfText(content.Data);
+            }
 
             (vm.Model as TextNodeModel).TextChanged += delegate(object source, TextChangedEventArgs args)
             {
@@ -50,7 +50,6 @@ namespace NuSysApp
                // rtfTextBox.SetRtfText();
             };
 
-            
             /*
             grid.IsDoubleTapEnabled = true;
             grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
@@ -336,7 +335,14 @@ namespace NuSysApp
 
         private void borderRect_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-            borderRect.Opacity = 0;
+            if (rtfTextBox.GetNonRtfText() == null || rtfTextBox.GetNonRtfText() == "" || rtfTextBox.GetNonRtfText().Trim() == "")
+            {
+                borderRect.Opacity = 1;
+            }
+            else
+            {
+                borderRect.Opacity = 0;
+            }
         }
     }
 }

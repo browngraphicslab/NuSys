@@ -44,6 +44,13 @@ namespace NuSysApp
             return str;
         }
 
+        public string GetNonRtfText()
+        {
+            string str;
+            Document.GetText(TextGetOptions.None, out str);
+            return str;
+        }
+
         public void SetRtfText(string text)
         {
             Document.SetText(TextSetOptions.FormatRtf, text);
