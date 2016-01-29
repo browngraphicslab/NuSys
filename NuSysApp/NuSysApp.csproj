@@ -160,7 +160,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\AtomCreator.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\DetailViewer\DetailNodeViewFactory.cs" />
     <Compile Include="Components\DetailViewer\FullScreenViewerView.xaml.cs">
