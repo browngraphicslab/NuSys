@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8"/>
+    <script src="http://cdn.ckeditor.com/4.5.6/full/ckeditor.js"> </script>
+    <title></title>
+</head>
+<body>
+    <form>
+        <textarea name="editor1" id="editor1"></textarea>
+
+        <script type="text/javascript">
+            function InsertText(text) { // function to update text in the editor
+                document.getElementById("editor1").innerHTML = text;
+            }
+
+            function Init() { //initializing the text editor
+                var editor = CKEDITOR.replace('editor1');
+                editor.config.height = '420';
+
+                editor.on('change', function (evt) { //listening for change events
+                    //if ((typeof (window.external) !== "undefined") && (typeof (window.external.notify) !== "undefined")) {
+                    //window.external.notify(evt.editor.getData()); // getData() returns CKEditor's HTML content.
+                    //}
+					GetText();
+                });
+            }
+
+			function GetText(){
+				window.external.notify(evt.editor.getData()); // getData() returns CKEditor's HTML content.
+			}
+        </script>
+    </form>
+</body>
+</html>

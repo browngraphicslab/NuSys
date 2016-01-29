@@ -30,63 +30,126 @@ namespace NuSysApp
     public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable
     {
 
-        private List<Image> _images = new List<Image>();
+            private List<Image> _images = new List<Image>();
 
-        public TextNodeView(TextNodeViewModel vm)
-        {
-
-            InitializeComponent();
-            DataContext = vm;
-
-
-            var contentId = (vm.Model as NodeModel).ContentId;
-            var content = SessionController.Instance.ContentController.Get(contentId);
-            if (content != null)
-                rtfTextBox.SetRtfText(content.Data);
-
-            (vm.Model as TextNodeModel).TextChanged += delegate(object source, TextChangedEventArgs args)
+            public TextNodeView(TextNodeViewModel vm)
             {
-                rtfTextBox.SetRtfText(args.Text);
-               // rtfTextBox.SetRtfText();
-            };
 
-            
-            /*
-            grid.IsDoubleTapEnabled = true;
-            grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
+                InitializeComponent();
+
+                TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+                DataContext = vm;
+
+
+                var contentId = (vm.Model as NodeModel).ContentId;
+                var content = SessionController.Instance.ContentController.Get(contentId);
+                if (content != null)
+                    //rtfTextBox.SetRtfText(content.Data);
+                    UpdateText(content.Data);
+
+                (vm.Model as TextNodeModel).TextChanged += delegate (object source, TextChangedEventArgs args)
+                {
+                    // rtfTextBox.SetRtfText(args.Text);
+                    // rtfTextBox.SetRtfText();
+                    UpdateText(args.Text);
+                };
+
+                TextNodeWebView.ScriptNotify += WebView_ScriptNotify;
+
+
+
+                /*
+                grid.IsDoubleTapEnabled = true;
+                grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
+                {
+                    var pos = e.GetPosition(rtfTextBox);
+                    var range = rtfTextBox.Document.GetRangeFromPoint(pos, PointOptions.ClientCoordinates);
+                    range.StartOf(TextRangeUnit.Link, true);
+                    var str = string.Empty;
+                    range.GetText(TextGetOptions.UseCrlf, out str);
+
+
+                    if (!str.StartsWith("HYPERLINK"))
+                        return;
+
+                    var groups = Regex.Match(str, "\"(.*?)\"").Groups;
+                    var url = groups[1].Value;
+                    Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
+                    e.Handled = true;
+                };
+                */
+            }
+
+            async private void WebView_ScriptNotify(object sender, NotifyEventArgs e)
             {
-                var pos = e.GetPosition(rtfTextBox);
-                var range = rtfTextBox.Document.GetRangeFromPoint(pos, PointOptions.ClientCoordinates);
-                range.StartOf(TextRangeUnit.Link, true);
-                var str = string.Empty;
-                range.GetText(TextGetOptions.UseCrlf, out str);
+                try
+                {
+                    string data = e.Value;
+                    // if (data.ToLower().StartsWith("launchlink:"))
+                    //{
+                    //await Launcher.LaunchUriAsync(new Uri(data.Substring("launchlink:".Length), UriKind.Absolute));
+                    NavigateToLink(data);
+                    //}
+                }
+                catch (Exception)
+                {
+                    // Could not build a proper Uri. 
+                }
+            }
+
+            private async void UpdateText(String str)
+            {
+                String[] myString = { str };
+                IEnumerable<String> s = myString;
+                TextNodeWebView.InvokeScriptAsync("InsertText", s);
+            }
+
+            public async Task NavigateToLink(string url)
+            {
+                Message m = new Message();
+
+                var width = SessionController.Instance.SessionView.ActualWidth;
+                var height = SessionController.Instance.SessionView.ActualHeight;
+                var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+
+                var contentId = SessionController.Instance.GenerateId();
+                var nodeid = SessionController.Instance.GenerateId();
+
+                m["contentId"] = contentId;
+                m["x"] = centerpoint.X - 200;
+                m["y"] = centerpoint.Y - 200;
+                m["width"] = 400;
+                m["height"] = 400;
+                m["url"] = url;
+                m["nodeType"] = NodeType.Web;
+                m["autoCreate"] = true;
+                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                m["id"] = nodeid;
+
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                await
+                    SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, ""),
+                        NetworkClient.PacketType.TCP, null, true);
 
 
-                if (!str.StartsWith("HYPERLINK"))
-                    return;
+            }
 
-                var groups = Regex.Match(str, "\"(.*?)\"").Groups;
-                var url = groups[1].Value;
-                Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
-                e.Handled = true;
-            };
-            */
-        }
 
-        
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
+
+
+            private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel) DataContext;
             return;
-            var oldColor = this.RecordVoice.Background;
+           // var oldColor = this.RecordVoice.Background;
             Color c = new Color();
             c.A = 255;
             c.R = 199;
             c.G = 84;
             c.B = 82;
-            this.RecordVoice.Background = new SolidColorBrush(c);
+           // this.RecordVoice.Background = new SolidColorBrush(c);
             await TranscribeVoice();
-            this.RecordVoice.Background = oldColor;
+           // this.RecordVoice.Background = oldColor;
         }
 
         private async Task TranscribeVoice()
@@ -119,66 +182,66 @@ namespace NuSysApp
             vm.Init();
         }
 
-        private async void OnEditClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (TextNodeViewModel)this.DataContext;
+        //private async void OnEditClick(object sender, RoutedEventArgs e)
+        //{
+        //    var vm = (TextNodeViewModel)this.DataContext;
 
-            if (vm.IsEditingInk == true)
-            {
-                nodeTpl.ToggleInkMode();
-            }
+        //    if (vm.IsEditingInk == true)
+        //    {
+        //        nodeTpl.ToggleInkMode();
+        //    }
 
-            vm.ToggleEditing();
+        //    vm.ToggleEditing();
             
-            if (!vm.IsEditing)
-            {
-                await vm.Init();
-                RearrangeImagePlaceHolders();
-            }
+        //    if (!vm.IsEditing)
+        //    {
+        //        await vm.Init();
+        //        RearrangeImagePlaceHolders();
+        //    }
 
            
-            AdjustScrollHeight();        
-        }
+        //    AdjustScrollHeight();        
+        //}
 
-        private void OnInkClick(object sender, RoutedEventArgs e)
-        {
-            nodeTpl.ToggleInkMode();
-        }
+        //private void OnInkClick(object sender, RoutedEventArgs e)
+        //{
+        //    nodeTpl.ToggleInkMode();
+        //}
 
-        private void RearrangeImagePlaceHolders()
-        {
-            var currentSelectionStart = rtfTextBox.Document.Selection.StartPosition;
-            var currentSelectionEnd = rtfTextBox.Document.Selection.EndPosition;
+        //private void RearrangeImagePlaceHolders()
+        //{
+        //    var currentSelectionStart = rtfTextBox.Document.Selection.StartPosition;
+        //    var currentSelectionEnd = rtfTextBox.Document.Selection.EndPosition;
 
-            var vm = (TextNodeViewModel)this.DataContext;
+        //    var vm = (TextNodeViewModel)this.DataContext;
 
-            var objPos = 0;
-            var startPos = 0;
-            for (var i = 0; i < _images.Count; i++)
-            {
-                string str;
-                rtfTextBox.Document.GetText(TextGetOptions.None, out str);
-                rtfTextBox.Document.Selection.SetRange(startPos, str.Length);
-                var findPos = rtfTextBox.Document.Selection.FindText("￼", TextConstants.MaxUnitCount, FindOptions.Word);
+        //    var objPos = 0;
+        //    var startPos = 0;
+        //    for (var i = 0; i < _images.Count; i++)
+        //    {
+        //        string str;
+        //        rtfTextBox.Document.GetText(TextGetOptions.None, out str);
+        //        rtfTextBox.Document.Selection.SetRange(startPos, str.Length);
+        //        var findPos = rtfTextBox.Document.Selection.FindText("￼", TextConstants.MaxUnitCount, FindOptions.Word);
 
-                if (findPos == 0)
-                    throw new Exception("Couldn't find image in RichText");
+        //        if (findPos == 0)
+        //            throw new Exception("Couldn't find image in RichText");
 
-                objPos = GetNthIndex(str, '￼', i + 1);
+        //        objPos = GetNthIndex(str, '￼', i + 1);
 
-                int hit;
-                Rect rect;
-                rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect, out hit);
+        //        int hit;
+        //        Rect rect;
+        //        rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect, out hit);
 
-                var posX = rect.Left + rtfTextBox.Padding.Left;
-                var posY = rect.Top + rtfTextBox.Padding.Top;
-                Canvas.SetLeft(_images[i], posX);
-                Canvas.SetTop(_images[i], posY);
+        //        var posX = rect.Left + rtfTextBox.Padding.Left;
+        //        var posY = rect.Top + rtfTextBox.Padding.Top;
+        //        Canvas.SetLeft(_images[i], posX);
+        //        Canvas.SetTop(_images[i], posY);
 
-                startPos = objPos + 1;
-            }
-            rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
-        }
+        //        startPos = objPos + 1;
+        //    }
+        //    rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
+        //}
 
         private void AdjustScrollHeight()
         {
@@ -325,7 +388,7 @@ namespace NuSysApp
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
-            await r.RenderAsync(rtfTextBox, width, height);
+            await r.RenderAsync(TextNodeWebView, width, height);
             return r;
         }
 

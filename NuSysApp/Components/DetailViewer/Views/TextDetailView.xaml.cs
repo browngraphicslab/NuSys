@@ -39,56 +39,62 @@ namespace NuSysApp
         private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
         private string _modelContentId;
         private string _modelId;
+        private string _modelText="";
         public TextDetailView(TextNodeViewModel vm)
         {
 
             InitializeComponent();
+
             DataContext = vm;
 
             var model = (TextNodeModel)vm.Model;
+            
 
-            var token = model.GetMetaData("Token");
-            if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
-            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
+            List<Uri> AllowedUris = new List<Uri>();
+            AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
+            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            var txt = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
-            if (txt != "") { 
-                rtfTextBox.SetRtfText(txt);
-            }
 
-            model.TextChanged += delegate
+
+            Loaded += async delegate (object sender, RoutedEventArgs args)
             {
-                var text = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
-                rtfTextBox.SetRtfText(text);
+                await SessionController.Instance.InitializeRecog();
             };
+            //rtfTextBox.KeyUp += delegate
+            //{
+            //    UpdateText();
+            //};
+            MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
+            MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
+            {
+                if (model.Text != "")
+                {
+                    //rtfTextBox.SetRtfText(model.Text);
+                    UpdateText(model.Text);
+                }
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
-            {
-              //  await SessionController.Instance.InitializeRecog();
-            };
-            rtfTextBox.KeyUp += delegate
-            {
-                UpdateText();
+                model.TextChanged += delegate
+                {
+                    //rtfTextBox.SetRtfText(model.Text);     
+                    UpdateText(model.Text);
+                };
+
+                OpenTextBox();
+
             };
 
             _modelContentId = model.ContentId;
             _modelId = model.Id;
-            sizes.Add("8");
-            sizes.Add("12");
-            sizes.Add("16");
-            sizes.Add("20");
-            sizes.Add("24");
+            //sizes.Add("8");
+            //sizes.Add("12");
+            //sizes.Add("16");
+            //sizes.Add("20");
+            //sizes.Add("24");
 
-            fonts.Add(new FontFamily("Arial"));
-            fonts.Add(new FontFamily("Courier New"));
-            fonts.Add(new FontFamily("Times New Roman"));
-            fonts.Add(new FontFamily("Verdana"));
+            //fonts.Add(new FontFamily("Arial"));
+            //fonts.Add(new FontFamily("Courier New"));
+            //fonts.Add(new FontFamily("Times New Roman"));
+            //fonts.Add(new FontFamily("Verdana"));
         }
 
         //private async Task InitializeRecog()
@@ -101,13 +107,45 @@ namespace NuSysApp
         //    });
         //}
 
+        private void WebView_OnNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            string url = sender.Source.AbsoluteUri;
+
+        }
+
+
+        private async void UpdateText(String str)
+        {
+            String[] myString = { str };
+            IEnumerable<String> s = myString;
+            MyWebView.InvokeScriptAsync("InsertText", s);
+        }
+
+        private async void OpenTextBox()
+        {
+            MyWebView.InvokeScriptAsync("Init", null);
+        }
+
+
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found 
+            // in e.Value
+            _modelText = e.Value;
+            UpdateModelText(e.Value);
+        }
+
+        private void UpdateModelText(String s)
+        {
+            var vm = DataContext as TextNodeViewModel;
+            var model = (TextNodeModel)vm.Model;
+            model.Text = s;
+        }
 
 
         public void Dispose()
         {
-            var vm = DataContext as TextNodeViewModel;
-            var model = (TextNodeModel)vm.Model;
-            model.Text = rtfTextBox.GetRtfText();
+            UpdateModelText(_modelText);
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
@@ -192,85 +230,85 @@ namespace NuSysApp
         //   // this.RecordVoice.Click -= stopTranscribing;
         //}
 
-        private void BoldButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                format.Bold = FormatEffect.Toggle;
-                selectedText.CharacterFormat = format;
-            }
-            UpdateText();
-        }
+        //private void BoldButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
+        //    if (selectedText != null)
+        //    {
+        //        ITextCharacterFormat format = selectedText.CharacterFormat;
+        //        format.Bold = FormatEffect.Toggle;
+        //        selectedText.CharacterFormat = format;
+        //    }
+        //    UpdateText();
+        //}
 
-        private void ItalicButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                format.Italic = FormatEffect.Toggle;
-                selectedText.CharacterFormat = format;
-            }
-            UpdateText();
-        }
+        //private void ItalicButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
+        //    if (selectedText != null)
+        //    {
+        //        ITextCharacterFormat format = selectedText.CharacterFormat;
+        //        format.Italic = FormatEffect.Toggle;
+        //        selectedText.CharacterFormat = format;
+        //    }
+        //    UpdateText();
+        //}
 
-        private void UnderlineButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                if (format.Underline == UnderlineType.None)
-                {
-                    format.Underline = UnderlineType.Single;
-                }
-                else
-                {
-                    format.Underline = UnderlineType.None;
-                }
-                selectedText.CharacterFormat = format;
-            }
-            UpdateText();
-        }
+        //private void UnderlineButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
+        //    if (selectedText != null)
+        //    {
+        //        ITextCharacterFormat format = selectedText.CharacterFormat;
+        //        if (format.Underline == UnderlineType.None)
+        //        {
+        //            format.Underline = UnderlineType.Single;
+        //        }
+        //        else
+        //        {
+        //            format.Underline = UnderlineType.None;
+        //        }
+        //        selectedText.CharacterFormat = format;
+        //    }
+        //    UpdateText();
+        //}
 
-        private void SizeChanged(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                if (SizeBox.SelectedItem != null)
-                {
-                    float size = (float)Convert.ToDouble(SizeBox.SelectedItem);
-                    ITextCharacterFormat format = selectedText.CharacterFormat;
-                    format.Size = size;
-                    selectedText.CharacterFormat = format;
-                }
+        //private void SizeChanged(object sender, RoutedEventArgs e)
+        //{
+        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
+        //    if (selectedText != null)
+        //    {
+        //        if (SizeBox.SelectedItem != null)
+        //        {
+        //            float size = (float)Convert.ToDouble(SizeBox.SelectedItem);
+        //            ITextCharacterFormat format = selectedText.CharacterFormat;
+        //            format.Size = size;
+        //            selectedText.CharacterFormat = format;
+        //        }
                 
-            }
-            UpdateText();
-        }
+        //    }
+        //    UpdateText();
+        //}
 
-        private void FontChanged(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                if (FontBox.SelectedItem != null)
-                {
-                    FontFamily font = (FontFamily)FontBox.SelectedItem;
-                    ITextCharacterFormat format = selectedText.CharacterFormat;
-                    format.Name = font.Source;
-                    selectedText.CharacterFormat = format;
-                }
-            }
-            UpdateText();
-        }
+        //private void FontChanged(object sender, RoutedEventArgs e)
+        //{
+        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
+        //    if (selectedText != null)
+        //    {
+        //        if (FontBox.SelectedItem != null)
+        //        {
+        //            FontFamily font = (FontFamily)FontBox.SelectedItem;
+        //            ITextCharacterFormat format = selectedText.CharacterFormat;
+        //            format.Name = font.Source;
+        //            selectedText.CharacterFormat = format;
+        //        }
+        //    }
+        //    UpdateText();
+        //}
 
         private void UpdateText()
         {
-            var request = new ChangeContentRequest(_modelId, _modelContentId, rtfTextBox.GetRtfText());
+            var request = new ChangeContentRequest(_modelId, _modelContentId, _modelText);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
         }
 
