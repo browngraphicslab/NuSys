@@ -11,7 +11,7 @@ namespace NuSysApp.Network.Requests.SystemRequests
         public RequestClientInfoSystemRequest() : base(SystemRequestType.RequestClientInfo){}
 
         public RequestClientInfoSystemRequest(Message m) : base(SystemRequestType.RequestClientInfo, m){}
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient, string senderIP)
         {
             await
                 nusysSession.ExecuteSystemRequest(new SendClientInfoSystemRequest(), NetworkClient.PacketType.TCP,

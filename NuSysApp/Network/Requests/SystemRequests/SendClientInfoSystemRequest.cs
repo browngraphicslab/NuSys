@@ -69,7 +69,7 @@ namespace NuSysApp
             _message["name"] = trimmed;
             base.CheckOutgoingRequest();
         }
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient, string senderIP)
         {
             await UITask.Run(async delegate
             {

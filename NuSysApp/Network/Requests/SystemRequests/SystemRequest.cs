@@ -16,9 +16,7 @@ namespace NuSysApp
             SendWorkspace,
             SendClientInfo,
             RequestClientInfo,
-            NewContent,
             ContentAvailableNotification,
-            FetchContent
         }
 
         private SystemRequestType _systemRequestType;
@@ -38,7 +36,7 @@ namespace NuSysApp
         {
             _message["system_request_type"] = _systemRequestType.ToString();
         }
-        public virtual async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP) { }
+        public virtual async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient, string senderIP) { }
 
     }
 }

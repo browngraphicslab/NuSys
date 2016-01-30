@@ -77,7 +77,8 @@ namespace NuSysApp
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
+                    await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, text,NodeType.Text.ToString());
+                    //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
 
 
 
@@ -135,11 +136,11 @@ namespace NuSysApp
                         m["nodeType"] = NodeType.Text.ToString();
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-
-                         await
-                            SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                    await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, rtfContent, NodeType.Text.ToString());
+                    /*
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
-                                    rtfContent),NetworkClient.PacketType.TCP,null,true);
+                                    rtfContent),NetworkClient.PacketType.TCP,null,true);*/
                     }
 
                     var hasImage = selectionItem.ImageNames.Count > 0;
@@ -157,10 +158,12 @@ namespace NuSysApp
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                                await
+                                await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, Convert.ToBase64String(ba), NodeType.Image.ToString());
+                            /*
+                            await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                         new NewContentSystemRequest(contentId,
-                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);
+                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);*/
 
                             }
                             catch (Exception ex)

@@ -202,8 +202,9 @@ namespace NuSysApp
 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, Convert.ToBase64String(data), type.ToString());
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, Convert.ToBase64String(data)), NetworkClient.PacketType.TCP, null, true);
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, Convert.ToBase64String(data)), NetworkClient.PacketType.TCP, null, true);
             this.Hide();
         }
 

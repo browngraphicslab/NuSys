@@ -316,6 +316,7 @@
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />

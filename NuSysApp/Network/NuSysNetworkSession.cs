@@ -5,14 +5,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
+using Windows.Networking.Sockets;
+using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
+using Buffer = System.Buffer;
 
 namespace NuSysApp
 {
@@ -53,6 +57,7 @@ namespace NuSysApp
         private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
         private NetworkSession _networkSession;
         private string _hostIP;
+        private ServerClient _serverClient;
         #endregion Private Members
 
         public async Task Init()
@@ -99,6 +104,35 @@ namespace NuSysApp
             };
 
             _networkSession.OnClientDrop += ClientDrop;
+            /*
+            HttpClientHandler handler = new HttpClientHandler();
+            HttpClient hclient = new HttpClient();
+            //hclient.BaseAddress = new Uri("http://localhost:8080/");
+            //var uri = new Uri("GET:test");
+
+            //var htp = await hclient.PutAsync(new Uri("http://localhost:44584/api/values/1"), new StringContent("testinsert"));
+
+            //var response = await hclient.GetAsync(new Uri("http://nurepo6916.azurewebsites.net/api/values/1"));
+            var response = await hclient.GetAsync(new Uri("http://localhost:54764/api/values/"+SessionController.Instance.GenerateId()));
+            using (var content = response.Content)
+            {
+                var s = await content.ReadAsStringAsync();
+                Debug.WriteLine(s);
+            }
+            */
+            //WebSocket socket = new 
+
+
+
+
+            //var s = "trent test";
+            //byte[] bytes = Convert.FromBase64String(s);
+            //var buff = bytes.AsBuffer();
+            //await socket.OutputStream.WriteAsync(buff);
+            _serverClient = new ServerClient();
+            await _serverClient.Init();
+
+
         }
         #region Requests
 
@@ -165,7 +199,13 @@ namespace NuSysApp
             {
                 await SendSystemRequest(request.GetFinalMessage(), recieverIPs);
             }
-        } 
+        }
+
+        public async Task ExecuteSystemRequestLocally(SystemRequest request)
+        {
+            await request.CheckOutgoingRequest();
+            await ProcessIncomingSystemRequest(request.GetFinalMessage(), LocalIP);
+        }
 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
         {
@@ -315,17 +355,11 @@ namespace NuSysApp
                 case SystemRequest.SystemRequestType.SendWorkspace:
                     request = new SendWorkspaceRequest(message);
                     break;
-                case SystemRequest.SystemRequestType.NewContent:
-                    request = new NewContentSystemRequest(message);
-                    break;
                 case SystemRequest.SystemRequestType.SendClientInfo:
                     request = new SendClientInfoSystemRequest(message);
                     break;
                 case SystemRequest.SystemRequestType.ContentAvailableNotification:
                     request = new ContentAvailableNotificationSystemRequest(message);
-                    break;
-                case SystemRequest.SystemRequestType.FetchContent:
-                    request = new FetchContentSystemRequest(message);
                     break;
                 case SystemRequest.SystemRequestType.RequestClientInfo:
                     request = new RequestClientInfoSystemRequest(message);
@@ -333,7 +367,7 @@ namespace NuSysApp
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }
-            await request.ExecuteSystemRequestFunction(this,_networkSession, ip);
+            await request.ExecuteSystemRequestFunction(this,_networkSession, _serverClient, ip);
         }
         #endregion Requests
         private async Task SendMessageToHost(Message message, NetworkClient.PacketType packetType, string ip = null)
@@ -437,6 +471,26 @@ namespace NuSysApp
                 await ExecuteSystemRequest(new SetHostSystemRequest(LocalIP));
                 await ExecuteSystemRequest(new RemoveClientSystemRequest(ip));
             }
+        }
+
+        public async Task FetchContent(string id)
+        {
+               
+        }
+
+        public async Task AddContent(Dictionary<string, string> dict)
+        {
+            await _serverClient.CreateOrUpdateContent(dict);
+        }
+
+        public async Task AddContent(string id, string data, string type = null, string title = null)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict["id"] = id;
+            dict["data"] = data;
+            dict["type"] = type;
+            dict["title"] = title;
+            await AddContent(dict);
         }
     }
     public class NoRequestTypeException : Exception

@@ -119,5 +119,6 @@
         <Button x:Name="fixButton" Height="30"  Margin="646,555,514,135" Click="clear_OnClick" Foreground="#9cc5c2" FontWeight="Bold" FontSize="18" Style="{StaticResource WaitingRoomButton}" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
             CLICK THIS
         </Button>
+        <TextBox Name="ServerNameText" Text="nusysrepo.azurewebsites.net" Width="150" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top"></TextBox>
     </Grid>
 </Page>

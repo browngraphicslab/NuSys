@@ -22,7 +22,9 @@ namespace NuSysApp
 
             
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
-           
+
+            ServerName = ServerNameText.Text;
+            ServerNameText.TextChanged += delegate { ServerName = ServerNameText.Text; };
 
             ellipse.Begin();
         }
@@ -41,10 +43,10 @@ namespace NuSysApp
             const string URL = "http://aint.ch/nusys/clients.php";
             var urlParameters = "?action=clear";
             var client = new HttpClient { BaseAddress = new Uri(URL) };
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response = client.GetAsync(urlParameters).Result;
         }
         public static bool IsLocal { get; set; }
+        public static string ServerName { get; private set; }
     }
 }

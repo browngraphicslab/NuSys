@@ -48,6 +48,10 @@ namespace NuSysApp
             SessionController.Instance.RecursiveCreate(node, addedModels);
             
         }
+        public override async Task UndoTaskFunction()
+        {
+            
+        }
     }
 
     public class NewNodeRequestException : Exception

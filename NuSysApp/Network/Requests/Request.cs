@@ -80,6 +80,8 @@ namespace NuSysApp
 
         public virtual async Task ExecuteRequestFunction(){}//the function to be executed per the request
 
+        public virtual async Task UndoTaskFunction(){}//The function to be called to undo a previous request call
+
         public class InvalidRequestTypeException : Exception
         {
             public InvalidRequestTypeException(string message) : base(message) { }

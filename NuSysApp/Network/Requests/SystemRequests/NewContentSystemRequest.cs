@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Controls;
 using NuSysApp.Network.Requests.SystemRequests;
 
 namespace NuSysApp
-{
+{/*
     public class NewContentSystemRequest : SystemRequest
     {
         public NewContentSystemRequest(Message m) : base(SystemRequestType.NewContent, m) { }
@@ -26,7 +26,7 @@ namespace NuSysApp
             }
             await base.CheckOutgoingRequest();
         }
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient, string senderIP)
         {
             await UITask.Run(async delegate
             {
@@ -52,5 +52,5 @@ namespace NuSysApp
                 }
             });
         }
-    }
+    }*/
 }

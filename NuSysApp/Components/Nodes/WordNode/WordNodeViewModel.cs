@@ -113,11 +113,12 @@ namespace NuSysApp
 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-
+            await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, pdfContent, NodeType.PDF.ToString());
+            /*
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                     new NewContentSystemRequest(contentId,
-                        pdfContent), NetworkClient.PacketType.TCP, null, true);
+                        pdfContent), NetworkClient.PacketType.TCP, null, true);*/
 
             Request deleteRequest = new DeleteSendableRequest(wordId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(deleteRequest);
