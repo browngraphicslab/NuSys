@@ -209,14 +209,20 @@ namespace NuSysApp
         private List<Point> _currentLine = new List<Point>();
         public void DrawContinuousLine(Point next)
         {
-            _currentLine.Add(next);
+            _currentLine.Add(Transform.Inverse.TransformPoint(next));
             win2dCanvas.Invalidate();
         }
 
 
         private void CanvasControl_Draw(CanvasControl control, CanvasDrawEventArgs args)
         {
-            if(_currentLine.Count > 1)
+
+            Matrix3x2 translation = Matrix3x2.CreateTranslation((float)_trans.TranslateX, (float)_trans.TranslateY);
+            Matrix3x2 scale = Matrix3x2.CreateScale((float)_trans.ScaleX, (float)_trans.ScaleY);
+            Matrix3x2 toOrigin = Matrix3x2.CreateTranslation((float)(_trans.CenterX + _trans.TranslateX), (float)(_trans.CenterY + _trans.TranslateY));
+            Matrix3x2 fromOrigin = Matrix3x2.CreateTranslation((float)-(_trans.CenterX + _trans.TranslateX), (float)-(_trans.CenterY + _trans.TranslateY));
+            args.DrawingSession.Transform = fromOrigin * translation * scale * toOrigin;
+            if (_currentLine.Count > 1)
             {
                 Point prev = _currentLine.First();
                 foreach (Point p in _currentLine.Skip(1))
@@ -225,12 +231,6 @@ namespace NuSysApp
                     prev = p;
                 }
             }
-
-            Matrix3x2 translation = Matrix3x2.CreateTranslation((float)_trans.TranslateX, (float)_trans.TranslateY);
-            Matrix3x2 scale = Matrix3x2.CreateScale((float)_trans.ScaleX, (float)_trans.ScaleY);
-            Matrix3x2 toOrigin = Matrix3x2.CreateTranslation((float)(_trans.CenterX + _trans.TranslateX), (float)(_trans.CenterY + _trans.TranslateY));
-            Matrix3x2 fromOrigin = Matrix3x2.CreateTranslation((float)-(_trans.CenterX + _trans.TranslateX), (float)-(_trans.CenterY + _trans.TranslateY));
-            args.DrawingSession.Transform = fromOrigin * translation * scale * toOrigin;
             foreach (CanvasGeometry line in _inqLines)
             {
                 args.DrawingSession.DrawGeometry(line, Colors.Black, 2);
