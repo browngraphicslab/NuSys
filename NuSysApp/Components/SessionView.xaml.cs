@@ -137,10 +137,7 @@ namespace NuSysApp
 
         public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )
         {
-            //await LoadEmptyWorkspace();
-            SessionController.Instance.Locks.Clear();
             SessionController.Instance.IdToSendables.Clear();
-
             
             createdModels = new List<AtomModel>();
             var l = nodeStrings.ToList();
@@ -168,12 +165,11 @@ namespace NuSysApp
                 }
             }
 
-            var addedModels = new List<AtomModel>();
             foreach (var model in createdModels)
             {
                 if (!(model is InqCanvasModel))
                 {
-                    await SessionController.Instance.RecursiveCreate(model, addedModels);  
+                    await SessionController.Instance.RecursiveCreate(model);  
                 }
             }
         }
@@ -277,7 +273,6 @@ namespace NuSysApp
 
         public void SearchView()
         {
-            //xSearchWindowView.Visibility = Visibility.Visible;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
         }

@@ -32,20 +32,14 @@ namespace NuSysApp
             var id = _message.GetString("id");
             if (SessionController.Instance.IdToSendables.ContainsKey(id1) && (SessionController.Instance.IdToSendables.ContainsKey(id2)))
             {
-                SessionController.Instance.CreateLink((AtomModel)SessionController.Instance.IdToSendables[id1], (AtomModel)SessionController.Instance.IdToSendables[id2], id);
-                var link = (LinkModel)SessionController.Instance.IdToSendables[id];
+                var link = new LinkModel((AtomModel)SessionController.Instance.IdToSendables[id1], (AtomModel)SessionController.Instance.IdToSendables[id2], id);
+                SessionController.Instance.IdToSendables.Add(id, link);
                 await link.UnPack(_message);
 
-                var creators = link.Creators;
                 if (!_message.GetBool("autoCreate"))
                     return;
 
-                foreach (var creator in creators)
-                {
-                    await (SessionController.Instance.IdToSendables[creator] as NodeContainerModel).AddChild(link);
-                }
-                
-
+                SessionController.Instance.RecursiveCreate(link);
             }
         }
     }
