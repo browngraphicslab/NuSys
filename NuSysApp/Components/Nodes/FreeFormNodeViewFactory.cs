@@ -95,17 +95,6 @@ namespace NuSysApp
             }
             await ((AtomViewModel) view.DataContext).Init();
 
-            var tpl = view.FindName("nodeTpl") as NodeTemplate;
-            if (tpl != null)
-            {
-                tpl.OnTemplateReady += async delegate {
-                    var inqVm = new InqCanvasViewModel(model.InqCanvas, new Size(model.Width, model.Height));
-                    //if (tpl.inkCanvas != null) { 
-                    ////    tpl.inkCanvas.ViewModel = inqVm;
-                    //}
-                };
-            }
-
             return view;
         }
     }

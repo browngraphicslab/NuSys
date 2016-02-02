@@ -179,6 +179,7 @@ namespace NuSysApp
                     }
                 }
             });
+            await _serverClient.GetRepo();
         }
 
         public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendOnlyToHost = false)

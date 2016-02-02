@@ -75,7 +75,7 @@ namespace NuSysApp
                     UITask.Run(() =>
                     {
                         var newGroupTagModel = (NodeContainerModel)SessionController.Instance.IdToSendables[s];
-                        _generatedLabel = (LabelNodeView)SessionController.Instance.GetUserControlById(s);
+                        //_generatedLabel = (LabelNodeView)SessionController.Instance.GetUserControlById(s);
                         _generatedLabel.Loaded += delegate(object sender, RoutedEventArgs args)
                         {
                             newGroupTagModel.X -= _generatedLabel.GetTagSize().Width/2.0;

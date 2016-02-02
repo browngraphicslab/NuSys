@@ -23,7 +23,9 @@ namespace NuSysApp
             
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
-            ServerName = ServerNameText.Text;
+            ServerName = "localhost:54764";
+            //ServerName = "nusysrepo.azurewebsites.net";
+            ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate { ServerName = ServerNameText.Text; };
 
             ellipse.Begin();

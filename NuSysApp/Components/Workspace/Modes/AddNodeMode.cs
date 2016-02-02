@@ -230,7 +230,7 @@ namespace NuSysApp
 
             var request = new NewNodeRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, data == null ? "" : data.ToString(), nodeType.ToString(), dict["title"].ToString());
+            await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, data == null ? "" : data.ToString(), nodeType.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null);
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
             vm.ClearSelection();

@@ -129,5 +129,25 @@ namespace NuSysApp
                 
             }
         }
+
+        public async Task<Dictionary<string,Dictionary<string,string>>> GetRepo()
+        {
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(GetUri("contents"));
+
+            string data;
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsStringAsync();
+            }
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            var deserialized = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
+            var final = new Dictionary<string,Dictionary<string,string>>();
+            foreach (var kvp in deserialized)
+            {
+                final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, string>>(kvp.Value, settings);
+            }
+            return final;
+        }
     }
 }

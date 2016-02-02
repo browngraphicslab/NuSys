@@ -17,7 +17,7 @@ namespace NuSysApp
         public ImageNodeViewModel(ImageNodeModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-
+            InkScale = new CompositeTransform();
         }
 
 
@@ -27,12 +27,22 @@ namespace NuSysApp
         public override async Task Init()
         {
             byte[] data = null;
+<<<<<<< HEAD
             var contentId = ((NodeModel) Model).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             data = Convert.FromBase64String(content.Data); //Converts to Byte Array
             Image = await MediaUtil.ByteArrayToBitmapImage(data);
             SetSize(Width, Height);
             InkScale = new CompositeTransform();
+=======
+            var content = SessionController.Instance.ContentController.Get(((NodeModel) Model).ContentId);
+
+            if (content != null) { 
+                data = Convert.FromBase64String(content.Data);
+                Image = await MediaUtil.ByteArrayToBitmapImage(data);
+                SetSize(Width, Height);
+            }
+>>>>>>> origin/dev
         }
 
 
