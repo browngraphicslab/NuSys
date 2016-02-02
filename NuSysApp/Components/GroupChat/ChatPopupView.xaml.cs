@@ -26,6 +26,11 @@ namespace NuSysApp
     {
         private ObservableCollection<DialogBlock> _texts = new ObservableCollection<DialogBlock>();
         private bool _touching = false;
+        private int _newTextNum;
+
+        public delegate void NewTextsChangedHandler(int newTextNumber);
+        public event NewTextsChangedHandler OnNewTextsChanged;
+
         //private Dictionary<DialogBlock,long> _textTimes = new Dictionary<DialogBlock, long>(); 
         public ChatPopupView()
         {
@@ -54,6 +59,11 @@ namespace NuSysApp
             TextBox.Text = "";
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
+
+        public ObservableCollection<DialogBlock> getTexts()
+        {
+            return _texts;
+        } 
 
         public void AddText(string text, long time, NetworkUser user)
         {
@@ -87,6 +97,8 @@ namespace NuSysApp
                 }
             };
             _texts.Add(block);
+            _newTextNum = Visibility == Visibility.Visible ? 0 : _newTextNum + 1;
+            OnNewTextsChanged.Invoke(_newTextNum);
         }
 
         private void UIElement_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -99,6 +111,12 @@ namespace NuSysApp
         {
             _touching = true;
             e.Handled = true;
+        }
+
+        public void ClearNewTexts()
+        {
+            _newTextNum = 0;
+            OnNewTextsChanged?.Invoke(0);
         }
     }
 }
