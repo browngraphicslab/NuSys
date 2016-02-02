@@ -10,9 +10,6 @@ namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
-
-        private bool _isPinAnimating;
-
         public PanZoomMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
@@ -84,38 +81,17 @@ namespace NuSysApp
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
 
-            _view.InqCanvas.SetTransform(compositeTransform);
+            _view.InqCanvas.Transform = compositeTransform;
 
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
-           
             e.Container = _view;
-          //  e.Handled = true;
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (e.IsInertial)
-            {
-                // TODO: Re-add
-                /*
-                if (_view.PinAnimationStoryboard.GetCurrentState() == ClockState.Active)
-                {
-                    _isPinAnimating = true;
-                    return;
-                }
-                */
-            }
-            else
-            {
-                _isPinAnimating = false;
-            }
-
-            if ( _isPinAnimating) {
-                return;
-            }
 
             var vm = (WorkspaceViewModel)_view.DataContext;
 
@@ -170,7 +146,7 @@ namespace NuSysApp
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
 
-            _view.InqCanvas.SetTransform(compositeTransform);
+            _view.InqCanvas.Transform = compositeTransform;
         }
     }
 }

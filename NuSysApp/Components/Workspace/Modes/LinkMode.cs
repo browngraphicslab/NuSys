@@ -20,12 +20,12 @@ namespace NuSysApp {
 
         public async override Task Activate()
         {
-            //_view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;   
+            _view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;   
         }
 
         public async override Task Deactivate()
         {
-            //_view.InqCanvas.ViewModel.Model.LineFinalized -= OnLineFinalized;
+            _view.InqCanvas.ViewModel.Model.LineFinalized -= OnLineFinalized;
         }
 
         private async void OnLineFinalized(InqLineModel lineModel)

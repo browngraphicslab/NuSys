@@ -33,7 +33,7 @@ namespace NuSysApp
             Model.LineAdded += OnLineAdded;
             Model.PageChanged +=OnPageChanged;
 
-            CurrentLine = new List<RawVector2>();
+            //CurrentLine = new List<RawVector2>();
             //_source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);
             //_source.BeginDraw();
             //_source.Clear(Windows.UI.Colors.White);
@@ -65,46 +65,8 @@ namespace NuSysApp
         private async void OnLineFinalized(InqLineModel lineModel)
         {
 
-            SharpDX.Direct2D1.PathGeometry geometry = new SharpDX.Direct2D1.PathGeometry(RenderTarget.Factory);
-            GeometrySink sink = geometry.Open();
-            RawVector2 start = new RawVector2();
-            Windows.Foundation.Point first = Transform.Inverse.TransformPoint(new Point(lineModel.Points.First().X * Constants.MaxCanvasSize, lineModel.Points.First().Y * Constants.MaxCanvasSize));
-            start.X = (float)(first.X);
-            start.Y = (float)(first.Y);
-            sink.BeginFigure(start, new FigureBegin());
-            foreach (Point2d p in lineModel.Points.Skip(1))
-            {
-                Point transformed = new Point(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize);
-                transformed = Transform.Inverse.TransformPoint(transformed);
-                RawVector2 vec = new RawVector2();
-                vec.X = (float)(transformed.X);
-                vec.Y = (float)(transformed.Y);
-                sink.AddLine(vec);
-            }
-            sink.EndFigure(new FigureEnd());
-            sink.Close();
-            sink.Dispose();
-
-            CurrentLine.Clear();
-            _lines.Add(geometry);
 
         }
-
-        public List<SharpDX.Direct2D1.PathGeometry> Lines
-        {
-            get { return _lines; }
-        }
-
-        public SharpDX.Direct2D1.RenderTarget RenderTarget
-        {
-            get; set;
-        }
-
-        public List<RawVector2> CurrentLine
-        {
-            get;set;
-        }
-
 
         //transform the draw
         public CompositeTransform Transform
