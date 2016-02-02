@@ -157,8 +157,6 @@ namespace NuSysApp
             return true;
         }
 
-
-
         public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }
@@ -204,10 +202,7 @@ namespace NuSysApp
                     SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
-                  
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this)));
-                    // TODO: delegate to workspaceview
-                    //InqCanvas.SetErasing(false);
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));
                     break;
                 case Options.AddTextNode:
                     await

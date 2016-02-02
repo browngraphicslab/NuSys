@@ -82,7 +82,6 @@ namespace NuSysApp
 
             vm.Model.LineRemoved += delegate(InqLineModel model)
             {
-                Debug.WriteLine("line removed");
                 _inqLines.Remove(_modelToGeometries[model]);
                 _modelToGeometries.Remove(model);
                 win2dCanvas.Invalidate();
