@@ -179,7 +179,6 @@ namespace NuSysApp
                     }
                 }
             });
-            await _serverClient.GetRepo();
         }
 
         public async Task ExecuteSystemRequest(SystemRequest request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP, ICollection < string> recieverIPs = null, bool sendOnlyToHost = false)
@@ -476,7 +475,7 @@ namespace NuSysApp
 
         public async Task FetchContent(string id)
         {
-               
+            await _serverClient.GetContent(id);
         }
 
         public async Task AddContent(Dictionary<string, string> dict)

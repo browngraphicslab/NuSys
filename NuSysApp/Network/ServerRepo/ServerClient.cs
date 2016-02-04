@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
@@ -18,6 +19,8 @@ namespace NuSysApp
     {
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
+        private ManualResetEvent _manualResetEvent;
+        private bool _waiting = false;
 
         public string ServerBaseURI { get; private set; }
 
@@ -28,6 +31,7 @@ namespace NuSysApp
             _socket.MessageReceived += MessageRecieved;
             _socket.Closed += SocketClosed;
             _dataMessageWriter = new DataWriter(_socket.OutputStream);
+            _manualResetEvent = new ManualResetEvent(false);
         }
 
         public async Task Init()
@@ -50,6 +54,7 @@ namespace NuSysApp
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
         {
+            Debug.WriteLine("Message recieved");
             using (DataReader reader = args.GetDataReader())
             {
                 reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
@@ -122,7 +127,9 @@ namespace NuSysApp
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var serialized = JsonConvert.SerializeObject(dict,settings);
                 _dataMessageWriter.WriteString(serialized);
+                Debug.WriteLine("about to store");
                 await _dataMessageWriter.StoreAsync();
+                Debug.WriteLine("done storing");
             }
             catch (Exception e)
             {
@@ -148,6 +155,25 @@ namespace NuSysApp
                 final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, string>>(kvp.Value, settings);
             }
             return final;
+        }
+
+        public async Task DeleteAllRepoFiles()
+        {
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(GetUri("delete"));
+        }
+
+        public async Task<bool> DeleteContent(string id)
+        {
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(GetUri("delete/"+id));
+            string data;
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsStringAsync();
+            }
+            bool success = bool.Parse(data.Substring(1,data.Length-2));
+            return success;
         }
     }
 }

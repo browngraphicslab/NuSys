@@ -51,6 +51,7 @@ namespace NuSysApp
         private DatagramSocket _UDPlistener;
         private StreamSocketListener _TCPlistener;
         private Dictionary<string, Tuple<DatagramSocket, DataWriter>> _outgoingUdpDictionary;
+        private StreamSocket _TCPsocket = new StreamSocket();
 
         #endregion Private Members
 
@@ -144,16 +145,16 @@ namespace NuSysApp
         {
             try
             {
-                var TCPsocket = new StreamSocket();
-                await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPPort);
-                var writer = new DataWriter(TCPsocket.OutputStream);
+                //var TCPsocket = new StreamSocket();
+                //await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPPort);
+                var writer = new DataWriter(_TCPsocket.OutputStream);
 
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
 
                 await writer.StoreAsync();//awaiting recieve
                 writer.Dispose();//disposes writer and socket after sending message
-                TCPsocket.Dispose();
+                //TCPsocket.Dispose();
             }
             catch (Exception e)
             {
