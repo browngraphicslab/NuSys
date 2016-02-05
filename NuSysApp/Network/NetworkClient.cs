@@ -44,14 +44,15 @@ namespace NuSysApp
         #region Private Members
 
         private const string _UDPPort = "2156";
-        private const string _TCPPort = "302";
+        private int _TCPPort = 302;
 
         private string _localIP;
 
         private DatagramSocket _UDPlistener;
         private StreamSocketListener _TCPlistener;
+
         private Dictionary<string, Tuple<DatagramSocket, DataWriter>> _outgoingUdpDictionary;
-        private StreamSocket _TCPsocket = new StreamSocket();
+        private Dictionary<string, Tuple<StreamSocket, DataWriter>> _outgoingTcpDictionary;
 
         #endregion Private Members
 
@@ -62,10 +63,11 @@ namespace NuSysApp
                     .FirstOrDefault(h => h.IPInformation != null && h.IPInformation.NetworkAdapter != null)
                     .RawName;
             _outgoingUdpDictionary = new Dictionary<string, Tuple<DatagramSocket, DataWriter>>();
+            _outgoingTcpDictionary = new Dictionary<string, Tuple<StreamSocket, DataWriter>>();
 
             _TCPlistener = new StreamSocketListener();
             _TCPlistener.ConnectionReceived += TCPConnectionRecieved;
-            await _TCPlistener.BindEndpointAsync(new HostName(_localIP), _TCPPort);
+            await _TCPlistener.BindEndpointAsync(new HostName(_localIP), _TCPPort.ToString());
 
             _UDPlistener = new DatagramSocket();
             await _UDPlistener.BindServiceNameAsync(_UDPPort);
@@ -74,10 +76,17 @@ namespace NuSysApp
 
         private async Task AddIP(string ip)
         {
+            var hostName = new HostName(ip);
+
             DatagramSocket socket = new DatagramSocket();
-            await socket.ConnectAsync(new HostName(ip), _UDPPort);
+            await socket.ConnectAsync(hostName, _UDPPort);
             DataWriter writer = new DataWriter(socket.OutputStream);
             _outgoingUdpDictionary[ip] = new Tuple<DatagramSocket, DataWriter>(socket,writer);
+
+            StreamSocket tcpSocket = new StreamSocket();
+            await tcpSocket.ConnectAsync(hostName,tcpSocket.ToString());
+            DataWriter tcpwriter = new DataWriter(tcpSocket.OutputStream);
+            _outgoingTcpDictionary[ip] = new Tuple<StreamSocket, DataWriter>(tcpSocket,tcpwriter);
         }
 
         private string GetSerializedMessage(Message m)
@@ -147,13 +156,16 @@ namespace NuSysApp
             {
                 //var TCPsocket = new StreamSocket();
                 //await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPPort);
-                var writer = new DataWriter(_TCPsocket.OutputStream);
+                if (!_outgoingTcpDictionary.ContainsKey(recievingIP))
+                {
+                    await AddIP(recievingIP);
+                }
+                var writer = _outgoingTcpDictionary[recievingIP].Item2;
 
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
 
                 await writer.StoreAsync();//awaiting recieve
-                writer.Dispose();//disposes writer and socket after sending message
                 //TCPsocket.Dispose();
             }
             catch (Exception e)
