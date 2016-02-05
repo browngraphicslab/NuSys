@@ -492,6 +492,12 @@ namespace NuSysApp
             dict["title"] = title;
             await AddContent(dict);
         }
+
+        public async Task GetAllLibraryElements()
+        {
+            var dict = await _serverClient.GetRepo();
+            
+        }
     }
     public class NoRequestTypeException : Exception
     {
