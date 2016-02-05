@@ -44,7 +44,7 @@ namespace NuSysApp
         #region Private Members
 
         private const string _UDPPort = "2156";
-        private int _TCPPort = 302;
+        private string _TCPPort = "302";
 
         private string _localIP;
 
@@ -67,7 +67,7 @@ namespace NuSysApp
 
             _TCPlistener = new StreamSocketListener();
             _TCPlistener.ConnectionReceived += TCPConnectionRecieved;
-            await _TCPlistener.BindEndpointAsync(new HostName(_localIP), _TCPPort.ToString());
+            await _TCPlistener.BindEndpointAsync(new HostName(_localIP), _TCPPort);
 
             _UDPlistener = new DatagramSocket();
             await _UDPlistener.BindServiceNameAsync(_UDPPort);
@@ -87,6 +87,8 @@ namespace NuSysApp
             await tcpSocket.ConnectAsync(hostName,tcpSocket.ToString());
             DataWriter tcpwriter = new DataWriter(tcpSocket.OutputStream);
             _outgoingTcpDictionary[ip] = new Tuple<StreamSocket, DataWriter>(tcpSocket,tcpwriter);
+            //var stream = tcpSocket.InputStream;
+            //stream.ReadAsync().GetResults().
         }
 
         private string GetSerializedMessage(Message m)
@@ -154,19 +156,22 @@ namespace NuSysApp
         {
             try
             {
-                //var TCPsocket = new StreamSocket();
-                //await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPPort);
+                var TCPsocket = new StreamSocket();
+                await TCPsocket.ConnectAsync(new HostName(recievingIP), _TCPPort);
+                /*
                 if (!_outgoingTcpDictionary.ContainsKey(recievingIP))
                 {
                     await AddIP(recievingIP);
                 }
                 var writer = _outgoingTcpDictionary[recievingIP].Item2;
-
+                */
+                var writer = new DataWriter(TCPsocket.OutputStream);
                 writer.WriteUInt32(writer.MeasureString(message));
                 writer.WriteString(message);
 
                 await writer.StoreAsync();//awaiting recieve
-                //TCPsocket.Dispose();
+                writer.Dispose();
+                TCPsocket.Dispose();
             }
             catch (Exception e)
             {
