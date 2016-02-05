@@ -240,6 +240,11 @@ namespace NuSysApp
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
+            Canvas.SetTop(LibraryView, 55);
+            Canvas.SetLeft(LibraryView, 900);
+            Canvas.SetTop(LibraryMaximizer, 350);
+            Canvas.SetLeft(LibraryMaximizer,1300);
+            LibraryView.Visibility = Visibility.Collapsed;
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
@@ -379,6 +384,19 @@ namespace NuSysApp
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
                 Canvas.SetLeft(ChatPopup, 5);
             }
+        }
+
+        private void LibraryMaximizer_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (LibraryView.Visibility == Visibility.Collapsed)
+            {
+                LibraryView.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                LibraryView.Visibility = Visibility.Collapsed;
+            }
+           
         }
     }
 }
