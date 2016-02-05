@@ -1,0 +1,50 @@
+﻿<UserControl
+    x:Class="NuSysApp.LibraryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid x:Name="Container" Height="720" Width="450">
+        <Pivot x:Name="Pivot" Background="Aquamarine" FontFamily="Cambria" Height="720" Width="450">
+
+            <PivotItem Background="CadetBlue" Margin="10,50,10,12" >
+                <PivotItem.Header>
+                    <Grid>
+                        <TextBlock Text="Workspace"/>
+                    </Grid>
+                </PivotItem.Header>
+            </PivotItem>
+            <PivotItem Background="CadetBlue" Margin="10,50,10,10">
+                <PivotItem.Header>
+                    <Grid>
+                        <TextBlock Text="Files"/>
+                    </Grid>
+                </PivotItem.Header>
+            </PivotItem>
+            <PivotItem Background="CadetBlue" Margin="10,50,10,11">
+                <PivotItem.Header>
+                    <Grid>
+                        <TextBlock Text="Web"/>
+                    </Grid>
+                </PivotItem.Header>
+            </PivotItem>
+            <PivotItem Background="CadetBlue" Margin="10,50,10,11">
+                <PivotItem.Header>
+                    <Grid>
+                        <TextBlock Text="Office"/>
+                    </Grid>
+                </PivotItem.Header>
+            </PivotItem>
+        </Pivot>
+        <TextBlock Text="Search" FontSize="16" Margin="10,51,291,217" IsTapEnabled="False" ManipulationMode="None" RenderTransformOrigin="0.542,0.626"></TextBlock>
+        <TextBox x:Name="Searchfield" PlaceholderText="..." FontSize="16" BorderBrush="Black" BorderThickness="3" Background="Black" Margin="70,45,199,638"></TextBox>
+        <Button Background="Transparent" Margin="410,0,0,683" Height="36" Width="36">
+            <Image Tapped="UIElement_OnTapped" Source="http://www.clker.com/cliparts/1/e/f/1/11954239071227223603kuba_arrow_button_set_4.svg.hi.png" Margin="-6,-5.667,-10,-6.333"/>
+        </Button>
+    </Grid>
+</UserControl>
