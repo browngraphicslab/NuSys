@@ -12,28 +12,29 @@
     <Grid x:Name="Container" Height="720" Width="450">
         <Pivot x:Name="Pivot" Background="Aquamarine" FontFamily="Cambria" Height="720" Width="450">
 
-            <PivotItem Background="CadetBlue" Margin="10,50,10,12" >
+            <PivotItem x:Name="WorkspacePivot" Background="CadetBlue" Margin="10,50,10,12" >
                 <PivotItem.Header>
                     <Grid>
-                        <TextBlock Text="Workspace"/>
+                        <TextBlock Text="Library"/>
                     </Grid>
                 </PivotItem.Header>
+                
             </PivotItem>
-            <PivotItem Background="CadetBlue" Margin="10,50,10,10">
+            <PivotItem x:Name="FilesPivot" Background="CadetBlue" Margin="10,50,10,10">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Files"/>
                     </Grid>
                 </PivotItem.Header>
             </PivotItem>
-            <PivotItem Background="CadetBlue" Margin="10,50,10,11">
+            <PivotItem x:Name="WebPivot" Background="CadetBlue" Margin="10,50,10,11">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Web"/>
                     </Grid>
                 </PivotItem.Header>
             </PivotItem>
-            <PivotItem Background="CadetBlue" Margin="10,50,10,11">
+            <PivotItem x:Name="OfficePivot" Background="CadetBlue" Margin="10,50,10,11">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Office"/>
