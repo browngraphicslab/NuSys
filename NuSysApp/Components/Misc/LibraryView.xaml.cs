@@ -33,8 +33,8 @@ namespace NuSysApp
 
         public async void ToggleVisiblity()
         {
-            Container.Visibility = Container.Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
-            if (Container.Visibility == Visibility.Visible)
+            Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
+            if (Visibility == Visibility.Visible)
             {
                 await Reload();
             }
