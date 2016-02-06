@@ -20,10 +20,14 @@ namespace NuSysApp
 {
     public sealed partial class LibraryView : UserControl
     {
+        public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
+        public event NewContentsEventHandler OnNewContents;
+
         private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView()
         {
             this.InitializeComponent();
+            this.makeViews();
         }
 
         private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -73,6 +77,18 @@ namespace NuSysApp
                     }
                 }
             });
+            OnNewContents?.Invoke(_elements.Values);
+        }
+
+        public void makeViews()
+        {
+            var workspaceGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
+            var workspaceList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
+            WorkspacePivot.Content = workspaceList;
+
+            //var filesGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
+            //var filesList = new LibraryList(new ObservableCollection<LibraryElement>(_elements.Values));
+            //FilesPivot.Content = filesList;
         }
     }
 }

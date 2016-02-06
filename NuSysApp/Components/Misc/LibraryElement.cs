@@ -8,9 +8,9 @@ namespace NuSysApp
 {
     public class LibraryElement
     {
-        public string ContentID;
-        public string Title;
-        public NodeType NodeType;
+        public string ContentID { get; set; }
+        public string Title { get; set; }
+        public NodeType NodeType { get; set; }
 
         public LibraryElement(string id, string title, NodeType type)
         {

@@ -215,6 +215,12 @@
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\LibraryElement.cs" />
+    <Compile Include="Components\Misc\LibraryGrid.xaml.cs">
+      <DependentUpon>LibraryGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\LibraryList.xaml.cs">
+      <DependentUpon>LibraryList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\LibraryView.xaml.cs">
       <DependentUpon>LibraryView.xaml</DependentUpon>
     </Compile>
@@ -592,9 +598,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Misc\LibraryView.xaml">
+    <Page Include="Components\Misc\LibraryGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\LibraryList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\LibraryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Misc\LoadingBar.xaml">
       <SubType>Designer</SubType>
