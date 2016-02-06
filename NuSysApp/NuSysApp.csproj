@@ -220,13 +220,23 @@
       <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml.cs">
+      <DependentUpon>GroupNodeExpandedDefaultView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeTimelineView.xaml.cs">
+      <DependentUpon>GroupNodeTimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeTimelineViewModel.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupNodeView.xaml.cs">
       <DependentUpon>GroupNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupNode\TimelineItemView.xaml.cs">
+      <DependentUpon>TimelineItemView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\LoadNode\LoadNodeView.xaml.cs">
       <DependentUpon>LoadNodeView.xaml</DependentUpon>
     </Compile>
@@ -585,11 +595,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeTimelineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\TimelineItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

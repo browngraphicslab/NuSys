@@ -188,6 +188,10 @@ namespace NuSysApp
             }
             var contentId = SessionController.Instance.GenerateId();
 
+            var metadata = new Dictionary<string,object>();
+            metadata["node_creation_date"] = DateTime.Now;
+            metadata["node_type"] = nodeType + "Node";
+
             var dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
@@ -195,6 +199,7 @@ namespace NuSysApp
             dict["x"] = p.X;
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
+            dict["metadata"] = metadata;
             dict["autoCreate"] = true;
             dict["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
 

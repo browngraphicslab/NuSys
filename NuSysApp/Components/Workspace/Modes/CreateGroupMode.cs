@@ -34,9 +34,15 @@ namespace NuSysApp
 
             foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
             {
+                userControl.ManipulationStarting += UserControlOnManipulationStarting;
                 userControl.ManipulationDelta += UserControlOnManipulationDelta;
                 userControl.ManipulationCompleted += UserControlOnManipulationCompleted;
             }
+        }
+
+        private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
+        {
+            manipulationStartingRoutedEventArgs.Container = _view;
         }
 
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
@@ -91,7 +97,11 @@ namespace NuSysApp
                         _timer.Stop();
                         _isHovering = true;
                         _hoveredNode = (result.First() as FrameworkElement).DataContext as NodeViewModel;
-                        _hoveredNodeView = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode).First() as IThumbnailable;
+                        Debug.WriteLine("atomviewlist count: " + wvm.AtomViewList.Count);
+                        var atoms = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode);
+
+                        if (atoms.Any())
+                            _hoveredNodeView = atoms.First() as IThumbnailable;
 
                     };
                     _timer.Interval = TimeSpan.FromMilliseconds(400);
@@ -121,6 +131,7 @@ namespace NuSysApp
             {
                 userControl.ManipulationDelta -= UserControlOnManipulationDelta;
                 userControl.ManipulationCompleted -= UserControlOnManipulationCompleted;
+                userControl.ManipulationStarting += UserControlOnManipulationStarting;
             }
         }
     }

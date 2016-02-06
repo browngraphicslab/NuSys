@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -20,18 +21,8 @@ namespace NuSysApp
     {
         public GroupNodeDataGridView(GroupNodeDataGridViewModel viewModel)
         {
-            this.InitializeComponent();
-            DataContext = viewModel;
-
-            //DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
-            //{
-            //    if (args.NewValue is GroupNodeViewModel)
-            //    {
-            //        var vm = args.NewValue as NodeContainerViewModel;
-            //        DataContext = new GroupNodeDataGridViewModel((NodeContainerModel)vm.Model);
-            //        Debug.WriteLine("DataContext: " + DataContext);
-            //    }
-            //};
+           DataContext = viewModel;
+           this.InitializeComponent();
         }
     }
 }
