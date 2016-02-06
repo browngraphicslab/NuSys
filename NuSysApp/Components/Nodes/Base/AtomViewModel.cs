@@ -128,7 +128,7 @@ namespace NuSysApp
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);
                 tagBlock.Foreground = new SolidColorBrush(Colors.White);
-                tagBlock.Margin = new Thickness(2, 2, 2, 2);
+                tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
 

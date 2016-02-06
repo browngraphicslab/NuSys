@@ -27,10 +27,8 @@ namespace NuSysApp
             Opacity = 0;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-
+           
             };
-
-
 
           DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
           {
@@ -42,14 +40,14 @@ namespace NuSysApp
               Tags.ItemsSource = vm.Tags;
               vm.MakeTagList();
           };
-
             IsHitTestVisible = false;
-            PointerReleased += OnPointerReleased;
+            //PointerReleased += OnPointerReleased;
         }
 
+        /*
         private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
-            if ((pointerRoutedEventArgs.OriginalSource as FrameworkElement).DataContext is FullScreenViewerViewModel) { 
+            if (!((pointerRoutedEventArgs.OriginalSource as FrameworkElement).DataContext is FullScreenViewerViewModel)) { 
                 Anim.To(this, "Alpha", 0, 400);
                 IsHitTestVisible = false;
                 var vm = (FullScreenViewerViewModel)DataContext;
@@ -57,13 +55,20 @@ namespace NuSysApp
                 textview?.Dispose();
             }
         }
+        */
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             if (propertyChangedEventArgs.PropertyName == "View")
             {
                 Anim.To(this, "Alpha", 1, 400, null, (a,i) => { IsHitTestVisible = true; });
-                Width = SessionController.Instance.SessionView.ActualWidth;
+                Width = SessionController.Instance.SessionView.ActualWidth / 2;
+                Properties.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 20;
+                TagContainer.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 20;
+                propLine.X2 = SessionController.Instance.SessionView.ActualWidth / 2 - 40;
+                tagLine.X2 = SessionController.Instance.SessionView.ActualWidth / 2 - 40;
+                NewTagBox.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 163;
+                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth / 4);
                 Height = SessionController.Instance.SessionView.ActualHeight;
             }
             var vm = (FullScreenViewerViewModel) DataContext;
@@ -72,6 +77,8 @@ namespace NuSysApp
 
         private void AddTagButton_OnClick(object sender, RoutedEventArgs e)
         {
+            tagLine.Opacity = 1;
+
             var vm = (FullScreenViewerViewModel)DataContext;
             string newTag = NewTagBox.Text.Trim();
             if (newTag != "")
@@ -80,6 +87,15 @@ namespace NuSysApp
                 Tags.ItemsSource = vm.Tags;
             }
             NewTagBox.Text = "";
+        }
+
+        private void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Anim.To(this, "Alpha", 0, 400);
+            IsHitTestVisible = false;
+            var vm = (FullScreenViewerViewModel)DataContext;
+            var textview = (vm.View as TextDetailView);
+            textview?.Dispose();
         }
     }
 }
