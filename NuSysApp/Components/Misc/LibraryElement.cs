@@ -4,19 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp.Components.Misc
+namespace NuSysApp
 {
     public class LibraryElement
     {
         public string ContentID;
         public string Title;
-        public string NodeType;
+        public NodeType NodeType;
 
-        public LibraryElement(string id, string title, string type)
+        public LibraryElement(string id, string title, NodeType type)
         {
             ContentID = id;
             Title = title;
             NodeType = type;
+        }
+
+        public LibraryElement(string id)
+        {
+            ContentID = id;
         }
     }
 }
