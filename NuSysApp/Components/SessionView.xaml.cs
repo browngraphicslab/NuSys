@@ -408,15 +408,7 @@ namespace NuSysApp
 
         private void LibraryMaximizer_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (LibraryView.Visibility == Visibility.Collapsed)
-            {
-                LibraryView.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                LibraryView.Visibility = Visibility.Collapsed;
-            }
-           
+            LibraryView.ToggleVisiblity();
         }
     }
 }
