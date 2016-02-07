@@ -43,11 +43,14 @@
             </PivotItem>
         </Pivot>
         <TextBox x:Name="Searchfield" PlaceholderText="Search" FontSize="16" BorderBrush="Black" BorderThickness="3" Background="Black" Margin="10,45,159,638"></TextBox>
-        <Button Background="Transparent" Margin="410,0,0,683" Height="36" Width="36">
-            <Image Tapped="UIElement_OnTapped" Source="http://www.clker.com/cliparts/1/e/f/1/11954239071227223603kuba_arrow_button_set_4.svg.hi.png" Margin="-6,-5.667,-10,-6.333"/>
-        </Button>
+       
         <Image Source="http://www.clker.com/cliparts/z/1/T/u/9/2/search-icon-hi.png" Margin="250,51,168,646"></Image>
-        <Image Source="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/128/View_Details.png" Margin="304,45,95,638"></Image>
-        <Image Source="https://cdn4.iconfinder.com/data/icons/miu/24/editor-grid-view-block-glyph-128.png" Margin="355,45,62,638"></Image>
+        <Image Source="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/128/View_Details.png" Margin="341,10,58,675"></Image>
+        <Image Source="https://cdn4.iconfinder.com/data/icons/miu/24/editor-grid-view-block-glyph-128.png" Margin="397,8,20,675"></Image>
+        <ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0">
+            <x:String>Title</x:String>
+            <x:String>Node type</x:String>
+            <x:String>Creator</x:String>
+        </ComboBox>
     </Grid>
 </UserControl>

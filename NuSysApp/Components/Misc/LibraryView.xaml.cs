@@ -30,11 +30,6 @@ namespace NuSysApp
             this.makeViews();
         }
 
-        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            Container.Visibility = Visibility.Collapsed;
-        }
-
         public async void ToggleVisiblity()
         {
             Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
@@ -89,6 +84,11 @@ namespace NuSysApp
             //var filesGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
             //var filesList = new LibraryList(new ObservableCollection<LibraryElement>(_elements.Values));
             //FilesPivot.Content = filesList;
+        }
+
+        private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
