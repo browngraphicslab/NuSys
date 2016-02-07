@@ -35,13 +35,19 @@ namespace NuSysApp
 
             var inqCanvasModel = wsModel.InqCanvas;
             var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
-            //SessionController.Instance.IdToSendables[inqCanvasModel.Id] = inqCanvasModel;
             _inqCanvas = new InqCanvasView(inqCanvasViewModel);
             _inqCanvas.Width = Window.Current.Bounds.Width;
             _inqCanvas.Height = Window.Current.Bounds.Height;
             xOuterWrapper.Children.Add(_inqCanvas);
-            Canvas.SetZIndex(_inqCanvas, -5);
-            //wsModel.InqCanvas = inqCanvasModel;
+            CompositeTransform ct = new CompositeTransform();
+            ct.CenterX = wsModel.CenterX;
+            ct.CenterY = wsModel.CenterY;
+            ct.ScaleX = wsModel.Zoom;
+            ct.ScaleY = wsModel.Zoom;
+            ct.TranslateX = wsModel.LocationX;
+            ct.TranslateY = wsModel.LocationY;
+            _inqCanvas.Transform = ct;
+
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -50,13 +56,18 @@ namespace NuSysApp
 
             inqCanvasModel.AppSuspended += delegate()
             {
-                _inqCanvas.DisposeResources();
+                //_inqCanvas.DisposeResources();
             };
 
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
                 if (!model.IsGesture)
                 {
+                    var createdTag = await CheckForTagCreation(model);
+                    if (createdTag)
+                    {
+                        model.Delete();
+                    }
                     return;
                 }
 
@@ -70,9 +81,7 @@ namespace NuSysApp
                         if (deletedSome)
                             model.Delete();
                         break;
-                }
-
-         //       await CheckForTagCreation(model);
+                } 
             };
         }
 
@@ -111,7 +120,7 @@ namespace NuSysApp
                 }
             }
 
-            //line.Delete();
+            
 
             var first = line.Points.First();
             var last = line.Points.Last();
@@ -145,35 +154,8 @@ namespace NuSysApp
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
-            /*
-            await NetworkConnector.Instance.RequestNewGroupTag(tagNodePos.X.ToString(), tagNodePos.Y.ToString(), title, dict, addCallback);
-
-            Action<string> addCallback = delegate (string s)
-            {
-                NetworkConnector.Instance.RequestDeleteSendable(line.Id);
-                var v = SessionController.Instance.IdToSendables[s] as TextNodeModel;
-                if (v != null)
-                {
-                    Debug.Assert(encompassedLines.Count > 0);
-                    foreach (var model in encompassedLines)
-                    {
-                        UITask.Run(async () =>
-                        {
-                            //NetworkConnector.Instance.RequestLock(v.ID);
-                            NetworkConnector.Instance.RequestFinalizeGlobalInk(model.Id, v.InqCanvas.ID, model.GetString());
-                            //is the model being deleted and then trying to be added? is the canvas fully there when we try to add?
-                        });
-
-                    }
-                }
-            };
-            */
             return true;
-             
-            return false;
         }
-
-
 
         public MultiSelectMenuView MultiMenu
         {
@@ -202,8 +184,7 @@ namespace NuSysApp
         public async void SwitchMode(Options mode, bool isFixed)
         {
             SessionController.Instance.SessionView.HideRecorder();
-            IC.IsHitTestVisible = true;
-            //SessionController.Instance.SessionView.FloatingMenu.Reset();
+
             switch (mode)
             {
                 case Options.SelectNode:
@@ -221,10 +202,7 @@ namespace NuSysApp
                     SessionController.Instance.SessionView.SearchView();
                     break;
                 case Options.PenGlobalInk:
-                    IC.IsHitTestVisible = false;
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this)));
-                    // TODO: delegate to workspaceview
-                    //InqCanvas.SetErasing(false);
                     break;
                 case Options.AddTextNode:
                     await

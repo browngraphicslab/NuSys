@@ -5,12 +5,14 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d"
     Background="Transparent"
     d:DesignHeight="300"
     d:DesignWidth="400"
     x:Name="Parent">
 
-    <SwapChainPanel x:Name="SwapChainPanel" Loaded="SwapChainPanel_Loaded"/>
-
+    <Grid>
+        <canvas:CanvasControl x:Name="win2dCanvas" Draw="CanvasControl_Draw" ClearColor="Transparent"/>
+    </Grid>
 </UserControl>

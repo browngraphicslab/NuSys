@@ -23,11 +23,24 @@
                     //if ((typeof (window.external) !== "undefined") && (typeof (window.external.notify) !== "undefined")) {
                     //window.external.notify(evt.editor.getData()); // getData() returns CKEditor's HTML content.
                     //}
-					GetText();
+                    GetText(evt);
+                    InsertLink(evt);
                 });
             }
 
-			function GetText(){
+            function InsertLink(text) {
+                document.getElementById("editor1").innerHTML = text;
+
+                for (var i = 0; i < document.links.length; i++) {
+                    document.links[i].onclick = function () {
+                        //window.external.notify('LaunchLink:' + this.href);
+                        window.external.notify('LaunchMyLink:' + this.href);
+                        return false;
+                    }
+                }
+            }
+
+			function GetText(evt){
 				window.external.notify(evt.editor.getData()); // getData() returns CKEditor's HTML content.
 			}
         </script>

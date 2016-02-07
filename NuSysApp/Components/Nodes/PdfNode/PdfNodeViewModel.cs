@@ -39,7 +39,11 @@ namespace NuSysApp
 
         public async Task InitPdfViewer()
         {
-            var data = SessionController.Instance.ContentController.Get(ContentId).Data;
+            var content = SessionController.Instance.ContentController.Get(ContentId);
+            if (content == null)
+                return;
+
+            var data = content.Data;
             var dataBytes = Convert.FromBase64String(data);
             var ms = new MemoryStream(dataBytes);
             using (IInputStream inputStreamAt = ms.AsInputStream())

@@ -160,7 +160,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\AtomCreator.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\DetailViewer\DetailNodeViewFactory.cs" />
     <Compile Include="Components\DetailViewer\FullScreenViewerView.xaml.cs">
@@ -348,8 +347,6 @@
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="EventArgs\AddLineEventArgs.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
-    <Compile Include="EventArgs\DeleteEventArgs.cs" />
-    <Compile Include="EventArgs\LinkedEventArgs.cs" />
     <Compile Include="EventArgs\PositionChangeEventArgs.cs" />
     <Compile Include="EventArgs\TextChangedEventArgs.cs" />
     <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
@@ -727,7 +724,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj">
+    <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
