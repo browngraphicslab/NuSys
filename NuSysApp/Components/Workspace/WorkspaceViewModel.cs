@@ -117,7 +117,6 @@ namespace NuSysApp
             {
                 Action checkLines = delegate
                 {
-
                     var nodeRect = Geometry.NodeToBoudingRect(node);
                     for (int i = 0; i < inq.Points.Count - 1; i++)
                     {
@@ -139,8 +138,6 @@ namespace NuSysApp
             }
             return true;
         }
-
-
         public void DeleteLink(LinkViewModel link)
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(link.Id));
@@ -149,6 +146,9 @@ namespace NuSysApp
         public void DeleteNode(NodeViewModel node)
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(node.Id));
+            Debug.WriteLine("deleting node");
+            var uc = AtomViewList.Where(a => a.DataContext == node).First();
+            AtomViewList.Remove(uc);
         }
 
 
