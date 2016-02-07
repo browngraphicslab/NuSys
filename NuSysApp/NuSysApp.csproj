@@ -214,6 +214,7 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
     </Compile>
@@ -227,6 +228,10 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Nodes\AreaNode\AreaNodeView.xaml.cs">
+      <DependentUpon>AreaNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\AreaNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
@@ -265,6 +270,7 @@
     </Compile>
     <Compile Include="Components\Nodes\WordNode\WordNodeViewModel.cs" />
     <Compile Include="Components\Workspace\Modes\CreateGroupMode.cs" />
+    <Compile Include="Components\Workspace\Modes\GestureMode.cs" />
     <Compile Include="Components\Workspace\Modes\LinkMode.cs" />
     <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
     <Compile Include="Controller\ContentController.cs" />
@@ -274,7 +280,9 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
+    <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
+    <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
@@ -600,6 +608,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\AreaNode\AreaNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

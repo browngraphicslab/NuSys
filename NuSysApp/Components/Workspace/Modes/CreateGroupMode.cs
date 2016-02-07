@@ -58,12 +58,16 @@ namespace NuSysApp
 
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-
             if (!_isHovering)
+                return;
+            
+            if (((FrameworkElement)sender).DataContext is AreaNodeViewModel)
                 return;
 
             var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
+
+   
 
             if (id1 == id2)
                 return;
@@ -92,7 +96,7 @@ namespace NuSysApp
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
-            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel));
+            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel) && !((uiElem as FrameworkElement).DataContext is AreaNodeViewModel));
             var draggedItem = (AnimatableUserControl) sender;   
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
             

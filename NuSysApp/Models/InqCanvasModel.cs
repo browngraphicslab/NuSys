@@ -19,6 +19,7 @@ namespace NuSysApp
  
         public event AddPartialLineEventHandler PartialLineAdded;
         public event LineHandler LineFinalized;
+        public event LineHandler LineFinalizedLocally;
         public event LineHandler LineRemoved;
         public event LineHandler LineAdded;
         public event PageChangeHandler PageChanged;
@@ -51,9 +52,23 @@ namespace NuSysApp
             LineAdded?.Invoke(line);
         }
 
+        public void RemoveLine(InqLineModel line)
+        {
+            var lines = _lines.Where(l => l.Id == line.Id);
+            if (!lines.Any()) return;
+            var ln = lines.First();
+            ln.Delete();
+            _lines.Remove(ln);
+        }
+
         public HashSet<InqLineModel> Lines {
             get { return _lines; }
          
+        }
+
+        public void FinalizeLineLocally(InqLineModel line)
+        {
+            LineFinalizedLocally?.Invoke(line);
         }
 
         public void FinalizeLine(InqLineModel line)

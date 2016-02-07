@@ -65,6 +65,7 @@ namespace NuSysApp
 
         public FloatingMenuView()
         {
+            DataContext = new FloatingMenuViewModel();
             this.InitializeComponent();
 
             _buttons = new BiDictionary<FloatingMenuButtonView, Options>();
