@@ -113,6 +113,7 @@ namespace NuSysApp
                
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
 
+                await Library.Reload();
                 ChatPopup.OnNewTextsChanged += delegate(int newTexts)
                 {
                     if (newTexts > 0)

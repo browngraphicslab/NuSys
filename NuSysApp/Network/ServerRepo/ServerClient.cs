@@ -54,7 +54,6 @@ namespace NuSysApp
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
         {
-            Debug.WriteLine("Message recieved");
             using (DataReader reader = args.GetDataReader())
             {
                 reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
@@ -67,7 +66,7 @@ namespace NuSysApp
                     if (dict.ContainsKey("id"))
                     {
                         var id = dict["id"];
-                        LibraryElement element = new LibraryElement(id);
+                        LibraryElement element = new LibraryElement(dict);
                         UITask.Run(delegate {
                              SessionController.Instance.Library.AddNewElement(element);
                         });
@@ -82,7 +81,7 @@ namespace NuSysApp
             try
             {
                 HttpClient client = new HttpClient();
-                var response = await client.GetAsync(GetUri("contents/"+contentId));
+                var response = await client.GetAsync(GetUri("getcontents/"+contentId));
 
                 string data;
                 using (var content = response.Content)
@@ -128,9 +127,7 @@ namespace NuSysApp
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var serialized = JsonConvert.SerializeObject(dict,settings);
                 _dataMessageWriter.WriteString(serialized);
-                Debug.WriteLine("about to store");
                 await _dataMessageWriter.StoreAsync();
-                Debug.WriteLine("done storing");
             }
             catch (Exception e)
             {
@@ -141,7 +138,7 @@ namespace NuSysApp
         public async Task<Dictionary<string,Dictionary<string,string>>> GetRepo()
         {
             HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("contents"));
+            var response = await client.GetAsync(GetUri("getcontents"));
 
             string data;
             using (var content = response.Content)
