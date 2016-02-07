@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromeExtension", "ChromeExtension\ChromeExtension.csproj", "{F63CD448-F845-40DF-B792-2EE5ACDFF3E2}"
 EndProject
@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Performance1.psess = Performance1.psess
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestureCreator", "GestureCreator\GestureCreator.csproj", "{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -186,6 +188,26 @@ Global
 		{CE644D88-9A6C-4C13-8C76-0785655DB4BA}.Release|x64.Build.0 = Release|x64
 		{CE644D88-9A6C-4C13-8C76-0785655DB4BA}.Release|x86.ActiveCfg = Release|Win32
 		{CE644D88-9A6C-4C13-8C76-0785655DB4BA}.Release|x86.Build.0 = Release|Win32
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|ARM.ActiveCfg = Debug|ARM
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|ARM.Build.0 = Debug|ARM
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|ARM.Deploy.0 = Debug|ARM
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|x64.ActiveCfg = Debug|x64
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|x64.Build.0 = Debug|x64
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|x64.Deploy.0 = Debug|x64
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|x86.ActiveCfg = Debug|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|x86.Build.0 = Debug|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Debug|x86.Deploy.0 = Debug|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|Any CPU.ActiveCfg = Release|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|ARM.ActiveCfg = Release|ARM
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|ARM.Build.0 = Release|ARM
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|ARM.Deploy.0 = Release|ARM
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|x64.ActiveCfg = Release|x64
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|x64.Build.0 = Release|x64
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|x64.Deploy.0 = Release|x64
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|x86.ActiveCfg = Release|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|x86.Build.0 = Release|x86
+		{CEAE0F29-C6CF-457A-A93F-25F18E6EF888}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 
 namespace NuSysApp
 {
@@ -15,7 +17,7 @@ namespace NuSysApp
         {
             None, Scribble
         }
-        public static GestureType testGesture(InqLineModel currentStroke)
+        public static async Task<GestureType> testGesture(InqLineModel currentStroke)
         {
             List<double> angles = new List<double>();
             var points = currentStroke.Points;
@@ -61,6 +63,8 @@ namespace NuSysApp
             WriteData(LSE + "," + entropy + "," + linearity + "," + avgAng + "," + avgAngfull);
 
             //if (0.6 * avgAng - 0.6 - entropy < 0)
+            var match = await recognize(points);
+            Debug.WriteLine(match.StrokeTemplate.ToString());
             if (avgAng < 2)
             {
                 return GestureType.Scribble;
@@ -75,10 +79,10 @@ namespace NuSysApp
         private static double StrokeLength(ObservableCollection<Point2d> points)
         {
             double result = 0;
-           for (var i =0 ; i < points.Count -1; i ++)
-           {
-               result += LineLength(points[i], points[i + 1]);
-           }
+            for (var i = 0; i < points.Count - 1; i++)
+            {
+                result += LineLength(points[i], points[i + 1]);
+            }
             return result;
         }
 
@@ -121,7 +125,7 @@ namespace NuSysApp
             Windows.Storage.StorageFolder storageFolder =
                   Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            
+
 
             if (await storageFolder.TryGetItemAsync(filename) == null)
             {
@@ -132,36 +136,62 @@ namespace NuSysApp
                 await storageFolder.GetFileAsync(filename);
             await Windows.Storage.FileIO.AppendTextAsync(sampleF, data + "\n");
         }
-        public Match recognize(ObservableCollection<Point2d> stroke)
+        public async static Task<Match> recognize(ObservableCollection<Point2d> stroke)
         {
 
-            /** Convert the input stroke into a one dimensional time-series */
             stroke = resample(stroke, 32);
-            List<Double> candidateSeries = new OneDimensionalRepresentation(stroke).getSeries();
+            List<Double> candidateSeries = znormalize(cDistance(stroke));
 
-            /** Find the closest matching training template */
-            double minMatch = Double.MaxValue;
-            LabeledStroke strokeMatch = null;
-            for (NNRTemplate trainingTemplate : this.trainingTemplates)
+            var filedict = new Dictionary<StrokeTemplate, string>()
             {
-                /** Convert the template into a one dimensional time-series */
-                ArrayList<Double> trainSeries = trainingTemplate.getSeries();
+                {StrokeTemplate.Circle, "Circle" },
+                {StrokeTemplate.Square, "Square" }
+            };
 
-                /** Compute the distance between the input stroke and the training template */
+            double minMatch = Double.MaxValue;
+            StrokeTemplate strokeMatch = StrokeTemplate.Null;
+            foreach (var trainingTemplate in filedict.Keys)
+            {
+                string filepath = @"Assets\gestureTemplates\" + filedict[trainingTemplate] + @".stroke";
+                StorageFolder InstallationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+
+                StorageFile file = await InstallationFolder.GetFileAsync(filepath);
+                var stream = await file.OpenStreamForReadAsync();
+                var templatePoints = new ObservableCollection<Point2d>();
+                try
+                {
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        while(sr.Peek() >= 0)
+                        {
+                            var input = sr.ReadLine();
+                            var splitInput = input.Split(',');
+                            templatePoints.Add(new Point2d(Double.Parse(splitInput[0]),Double.Parse(splitInput[1])));
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+                templatePoints = resample(templatePoints, 32);
+                List<Double> trainSeries = znormalize(cDistance(templatePoints));
+
                 double distance = l2(candidateSeries, trainSeries);
 
                 if (distance < minMatch)
                 {
                     minMatch = distance;
-                    strokeMatch = trainingTemplate.ls;
+                    strokeMatch = trainingTemplate;
                 }
             }
 
-            return new Match(strokeMatch, minMatch, strokeMatch.getLabel());
+            return new Match(strokeMatch, minMatch);
         }
 
 
-        private double l2(List<Double> s, List<Double> t)
+        private static double l2(List<Double> s, List<Double> t)
         {
             int N = s.Count() < t.Count() ? s.Count() : t.Count();
 
@@ -175,7 +205,7 @@ namespace NuSysApp
             return diff;
         }
 
-        private List<Double> cDistance(ObservableCollection<Point2d> stroke)
+        private static List<Double> cDistance(ObservableCollection<Point2d> stroke)
         {
             List<Double> distances = new List<Double>();
 
@@ -196,7 +226,7 @@ namespace NuSysApp
          * @param stroke
          * @return
          */
-        public Point centroid(ObservableCollection<Point2d> stroke)
+        public static Point  centroid(ObservableCollection<Point2d> stroke)
         {
 
             double sumX = 0, sumY = 0;
@@ -216,7 +246,7 @@ namespace NuSysApp
 
 
 
-        private ObservableCollection<Point2d> resample(ObservableCollection<Point2d> s, int n)
+        private static ObservableCollection<Point2d> resample(ObservableCollection<Point2d> s, int n)
         {
             ObservableCollection<Point2d> points = new ObservableCollection<Point2d>();
             for (int i = 0; i < s.Count(); i++)
@@ -238,11 +268,11 @@ namespace NuSysApp
 
                 if (D + d >= I)
                 {
-                    double qx = pim1.X + ((I - D)/d)*(pi.X - pim1.X);
-                    double qy = pim1.Y + ((I - D)/d)*(pi.Y - pim1.Y);
+                    double qx = pim1.X + ((I - D) / d) * (pi.X - pim1.X);
+                    double qy = pim1.Y + ((I - D) / d) * (pi.Y - pim1.Y);
                     Point q = new Point(qx, qy);
-                    newPoints.Add(new Point2d(q.X,q.Y));
-                    points.Insert(i, new Point2d(q.X,q.Y));
+                    newPoints.Add(new Point2d(q.X, q.Y));
+                    points.Insert(i, new Point2d(q.X, q.Y));
                     D = 0;
                 }
                 else
@@ -255,7 +285,7 @@ namespace NuSysApp
         }
 
 
-        private List<Double> znormalize(List<Double> numbers)
+        private static List<Double> znormalize(List<Double> numbers)
         {
             List<Double> normalized = new List<Double>();
 
@@ -276,11 +306,11 @@ namespace NuSysApp
          * @param numbers
          * @return
          */
-        private double avg(List<Double> numbers)
+        private static double avg(List<Double> numbers)
         {
             double sum = 0;
 
-            foreach (var  d in numbers) sum += d;
+            foreach (var d in numbers) sum += d;
 
             return sum / numbers.Count();
         }
@@ -291,7 +321,7 @@ namespace NuSysApp
          * @param avg
          * @return
          */
-        private double std(List<Double> numbers, double avg)
+        private static double std(List<Double> numbers, double avg)
         {
             var sum = 0.0;
 
@@ -302,23 +332,23 @@ namespace NuSysApp
             return Math.Sqrt(sum / numbers.Count());
         }
 
-        enum StrokeTemplate
+        public enum StrokeTemplate
         {
-            Square, Circle
+            Null, Square, Circle
         }
 
-        class Match
+        public class Match
         {
 
             private StrokeTemplate _st;
             private double _score;
-            public Match (StrokeTemplate st, double score)
+            public Match(StrokeTemplate st, double score)
             {
                 _st = st;
                 _score = score;
             }
-            public StrokeTemplate StrokeTemplate{get { return _st; } }
-            public double Score {get { return _score; } }
+            public StrokeTemplate StrokeTemplate { get { return _st; } }
+            public double Score { get { return _score; } }
         }
 
 

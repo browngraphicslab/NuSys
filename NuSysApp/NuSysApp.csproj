@@ -151,6 +151,12 @@
     <Content Include="Assets\fonts\FiraSans-LightItalic.otf" />
     <Content Include="Assets\fonts\FiraSans-UltraLight.otf" />
     <Content Include="Assets\fonts\FiraSans-UltraLightItalic.otf" />
+    <Content Include="Assets\gestureTemplates\Circle.stroke">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\gestureTemplates\Square.stroke">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />

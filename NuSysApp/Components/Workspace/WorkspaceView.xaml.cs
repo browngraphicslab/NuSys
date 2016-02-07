@@ -71,7 +71,7 @@ namespace NuSysApp
                     return;
                 }
 
-                var gestureType = GestureRecognizer.testGesture(model);
+                var gestureType =  await GestureRecognizer.testGesture(model);
                 switch (gestureType)
                 {
                     case GestureRecognizer.GestureType.None:

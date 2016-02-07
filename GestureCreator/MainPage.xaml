@@ -5,9 +5,19 @@
     xmlns:local="using:GestureCreator"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Width="10000"
+    Height="10000"
+   
+    >
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    </Grid>
+    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <InkCanvas x:Name="Canvas" Height="400" IsHitTestVisible="False"/>
+            <TextBox x:Name="fileInput"></TextBox>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="Save" Tapped="Save_OnTapped">Save Template</Button>
+            <Button x:Name="Delete" Tapped="Delete_OnTapped">Delete Template</Button>
+            </StackPanel>
+        
+    </StackPanel>
 </Page>
