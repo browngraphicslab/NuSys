@@ -23,11 +23,15 @@ namespace NuSysApp
         public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
         public event NewContentsEventHandler OnNewContents;
 
+        public delegate void NewElementAvailableEventHandler(LibraryElement element);
+        public event NewElementAvailableEventHandler OnNewElementAvailable;
+
         private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView()
         {
             this.InitializeComponent();
             this.makeViews();
+            Reload();
         }
 
         private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -38,10 +42,6 @@ namespace NuSysApp
         public async void ToggleVisiblity()
         {
             Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
-            if (Visibility == Visibility.Visible)
-            {
-                await Reload();
-            }
         }
 
         private async Task Reload()
@@ -51,26 +51,8 @@ namespace NuSysApp
                 var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                 foreach (var kvp in dictionaries)
                 {
-                    //id, data, type, title
-                    var dict = kvp.Value;
-                    var id = dict["id"];
-                    var element = new LibraryElement(id);
-                    if (dict.ContainsKey("title"))
-                    {
-                        element.Title = dict["title"];
-                    }
-                    try
-                    {
-                        if (dict.ContainsKey("type"))
-                        {
-                            element.NodeType = (NodeType)Enum.Parse(typeof(NodeType), dict["type"]);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-
-
-                    }
+                    var id = kvp.Value["id"];
+                    var element = new LibraryElement(kvp.Value);
                     if (!_elements.ContainsKey(id))
                     {
                         _elements.Add(id, element);
@@ -80,6 +62,10 @@ namespace NuSysApp
             OnNewContents?.Invoke(_elements.Values);
         }
 
+        public void AddNewElement(LibraryElement element)
+        {
+            OnNewElementAvailable?.Invoke(element);
+        }
         public void makeViews()
         {
             var workspaceGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));

@@ -66,11 +66,12 @@ namespace NuSysApp
                 {
                     if (dict.ContainsKey("id"))
                     {
-
                         var id = dict["id"];
-                        var request = new ContentAvailableNotificationSystemRequest(id);
-                        var network = SessionController.Instance.NuSysNetworkSession;
-                        await network.ExecuteSystemRequestLocally(request);
+                        LibraryElement element = new LibraryElement(id);
+                        UITask.Run(delegate {
+                             SessionController.Instance.Library.AddNewElement(element);
+                        });
+                        await GetContent(id);
                     }
                 }
             }

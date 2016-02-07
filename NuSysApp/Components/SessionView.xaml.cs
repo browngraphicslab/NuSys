@@ -45,6 +45,11 @@ namespace NuSysApp
             get { return ChatPopup; }
         }
 
+        public LibraryView Library
+        {
+            get { return LibraryView; }
+        }
+
         #endregion Private Members
 
         private int initChatNotifs;

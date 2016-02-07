@@ -66,6 +66,10 @@ namespace NuSysApp
             }
         }
 
+        public LibraryView Library
+        {
+            get { return SessionView.Library; }
+        }
         public static SessionController Instance
         {
             get

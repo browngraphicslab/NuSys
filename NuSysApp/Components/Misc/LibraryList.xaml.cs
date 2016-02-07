@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -20,12 +21,13 @@ namespace NuSysApp
 {
     public sealed partial class LibraryList : UserControl
     {
-        private ObservableCollection<StackPanel> _items;
+        private ObservableCollection<LibraryElement> _items;
         public LibraryList(List<LibraryElement> items, LibraryView library)
         {
             this.InitializeComponent();
-            ListBox.ItemsSource = items;
+            ListView.ItemsSource = items;
             library.OnNewContents += Refresh;
+            library.OnNewElementAvailable += AddNewElement;
         }
 
         private void Refresh(ICollection<LibraryElement> elements)
@@ -47,9 +49,18 @@ namespace NuSysApp
             
             ListBox.ItemsSource = _items;
             */
-            ListBox.ItemsSource = new ObservableCollection<LibraryElement>(elements);
+            _items = new ObservableCollection<LibraryElement>(elements);
+            ListView.ItemsSource = _items;
         }
 
+        private void AddNewElement(LibraryElement element)
+        {
+            _items.Add(element);
+        }
+        private async Task Sort()
+        {
+            var g = _items.OrderBy(l => Int32.Parse(((LibraryElement)l).ContentID));
+        }
 
     }
 }

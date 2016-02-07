@@ -10,7 +10,7 @@
     d:DesignWidth="400">
 
     <Grid>
-        <ListView x:Name="ListBox" >
+        <ListView x:Name="ListView" >
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical" Background="WhiteSmoke" >
