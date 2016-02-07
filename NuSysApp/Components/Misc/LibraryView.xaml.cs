@@ -22,6 +22,8 @@ namespace NuSysApp
     {
         public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
         public event NewContentsEventHandler OnNewContents;
+        private LibraryGrid workspaceGrid;
+        private LibraryList workspaceList;
 
         private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView()
@@ -77,8 +79,8 @@ namespace NuSysApp
 
         public void makeViews()
         {
-            var workspaceGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
-            var workspaceList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
+            workspaceGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values), this);
+            workspaceList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
             WorkspacePivot.Content = workspaceList;
 
             //var filesGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
@@ -89,6 +91,22 @@ namespace NuSysApp
         private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (WorkspacePivot.Content != workspaceList)
+            {
+                WorkspacePivot.Content = workspaceList;
+            }
+        }
+
+        private void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (WorkspacePivot.Content != workspaceGrid)
+            {
+                WorkspacePivot.Content = workspaceGrid;
+            }
         }
     }
 }

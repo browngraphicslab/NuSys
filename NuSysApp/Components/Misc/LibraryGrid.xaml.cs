@@ -20,11 +20,34 @@ namespace NuSysApp
 {
     public sealed partial class LibraryGrid : UserControl
     {
-        public ObservableCollection<LibraryElement> _items; 
-        public LibraryGrid(ObservableCollection<LibraryElement> items)
+        public ObservableCollection<LibraryElement> _items;
+        private int _count = 0;
+        public LibraryGrid(ObservableCollection<LibraryElement> items, LibraryView library)
         {
             this.InitializeComponent();
+
             _items = items;
+
+            var numRows = 2;
+            var numCols = 4;
+
+            foreach (var item in _items)
+            {
+                LoadThumbnails(numRows, numCols, item);
+            }
+            library.OnNewContents += Library_OnNewContents;
+            
+        }
+
+        private void Library_OnNewContents(ICollection<LibraryElement> elements)
+        {
+            var numRows = 2;
+            var numCols = 4;
+
+            foreach (var newItem in elements)
+            {
+                LoadThumbnails(numRows, numCols, newItem);
+            }
         }
 
         //public void addItems()
@@ -33,7 +56,7 @@ namespace NuSysApp
         //    {
         //        Border wrapping = new Border();
         //        wrapping.Padding = new Thickness(10);
-               
+
         //        wrapping.Child = ;
 
         //    }
@@ -55,5 +78,31 @@ namespace NuSysApp
         //        }
         //    }
         //}
+
+        private async void LoadThumbnails(int numRows, int numCols, LibraryElement newItem)
+        {
+
+            StackPanel itemPanel = new StackPanel();
+            itemPanel.Orientation = Orientation.Vertical;
+
+            TextBlock title = new TextBlock();
+            title.Text = newItem.Title;
+            TextBlock nodeType = new TextBlock();
+            nodeType.Text = newItem.NodeType.ToString();
+            TextBlock contentID = new TextBlock();
+            contentID.Text = newItem.ContentID;
+
+            itemPanel.Children.Add(title);
+            itemPanel.Children.Add(nodeType);
+            itemPanel.Children.Add(contentID);
+
+            var wrappedView = new Border();
+            wrappedView.Padding = new Thickness(10);
+            wrappedView.Child = itemPanel;
+            Grid.SetRow(wrappedView, _count / numCols);
+            Grid.SetColumn(wrappedView, _count % numCols);
+            xGrid.Children.Add(wrappedView);
+            _count++;
+        }
     }
 }
