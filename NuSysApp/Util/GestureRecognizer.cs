@@ -132,5 +132,149 @@ namespace NuSysApp
                 await storageFolder.GetFileAsync(filename);
             await Windows.Storage.FileIO.AppendTextAsync(sampleF, data + "\n");
         }
+
+        private double l2(List<Double> s, List<Double> t)
+        {
+            int N = s.Count() < t.Count() ? s.Count() : t.Count();
+
+            double diff = 0;
+
+            for (int i = 0; i < N; i++)
+            {
+                diff += Math.Pow(s[i] - t[i], 2);
+            }
+
+            return diff;
+        }
+
+        private List<Double> cDistance(ObservableCollection<Point2d> stroke)
+        {
+            List<Double> distances = new List<Double>();
+
+            Point c = centroid(stroke);
+
+            foreach (var p in stroke)
+            {
+                double distance = LineLength(c, p);
+                distances.Add(distance);
+            }
+
+            return distances;
+        }
+
+        /**
+         * Computes the centroid of the points of the stroke, defined as
+         * <avg_x, avg_y>
+         * @param stroke
+         * @return
+         */
+        public Point centroid(ObservableCollection<Point2d> stroke)
+        {
+
+            double sumX = 0, sumY = 0;
+
+            for (int i = 0; i < stroke.Count(); i++)
+            {
+                Point p = stroke[i];
+                sumX += p.X;
+                sumY += p.Y;
+            }
+
+            double mx = sumX / stroke.Count();
+            double my = sumY / stroke.Count();
+
+            return new Point(mx, my);
+        }
+
+
+
+        private ObservableCollection<Point2d> resample(ObservableCollection<Point2d> s, int n)
+        {
+            ObservableCollection<Point2d> points = new ObservableCollection<Point2d>();
+            for (int i = 0; i < s.Count(); i++)
+            {
+                points.Add(s[i]);
+            }
+            var I = 1.0 * StrokeLength(points) / (n - 1);
+            var D = 0.0;
+
+            ObservableCollection<Point2d> newPoints = new ObservableCollection<Point2d>();
+            newPoints.Add(points[0]);
+
+            for (int i = 1; i < points.Count(); i++)
+            {
+                var d = LineLength(points[i - 1], points[i]);
+
+                Point pi = points[i];
+                Point pim1 = points[i - 1];
+
+                if (D + d >= I)
+                {
+                    double qx = pim1.X + ((I - D)/d)*(pi.X - pim1.X);
+                    double qy = pim1.Y + ((I - D)/d)*(pi.Y - pim1.Y);
+                    Point q = new Point(qx, qy);
+                    newPoints.Add(new Point2d(q.X,q.Y));
+                    points.Insert(i, new Point2d(q.X,q.Y));
+                    D = 0;
+                }
+                else
+                {
+                    D = D + d;
+                }
+            }
+
+            return newPoints;
+        }
+
+
+        private List<Double> znormalize(List<Double> numbers)
+        {
+            List<Double> normalized = new List<Double>();
+
+            double average = avg(numbers);
+            double stdev = std(numbers, average);
+
+            foreach (var d in numbers)
+            {
+                double z = (d - average) / stdev;
+                normalized.Add(z);
+            }
+
+            return normalized;
+        }
+
+        /**
+         * Returns the average of the list of numbers.
+         * @param numbers
+         * @return
+         */
+        private double avg(List<Double> numbers)
+        {
+            double sum = 0;
+
+            foreach (var  d in numbers) sum += d;
+
+            return sum / numbers.Count();
+        }
+
+        /**
+         * Returns the standard deviation of the list of numbers.
+         * @param numbers
+         * @param avg
+         * @return
+         */
+        private double std(List<Double> numbers, double avg)
+        {
+            var sum = 0.0;
+
+            foreach (var d in numbers)
+            {
+                sum += Math.Pow(d - avg, 2);
+            }
+            return Math.Sqrt(sum / numbers.Count());
+        }
+
+
+
     }
 }

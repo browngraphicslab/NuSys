@@ -248,6 +248,7 @@
     <Compile Include="Network\Requests\TestClass.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="Util\Data\KMeans.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
