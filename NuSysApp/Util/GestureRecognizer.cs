@@ -132,6 +132,34 @@ namespace NuSysApp
                 await storageFolder.GetFileAsync(filename);
             await Windows.Storage.FileIO.AppendTextAsync(sampleF, data + "\n");
         }
+        public Match recognize(ObservableCollection<Point2d> stroke)
+        {
+
+            /** Convert the input stroke into a one dimensional time-series */
+            stroke = resample(stroke, 32);
+            List<Double> candidateSeries = new OneDimensionalRepresentation(stroke).getSeries();
+
+            /** Find the closest matching training template */
+            double minMatch = Double.MaxValue;
+            LabeledStroke strokeMatch = null;
+            for (NNRTemplate trainingTemplate : this.trainingTemplates)
+            {
+                /** Convert the template into a one dimensional time-series */
+                ArrayList<Double> trainSeries = trainingTemplate.getSeries();
+
+                /** Compute the distance between the input stroke and the training template */
+                double distance = l2(candidateSeries, trainSeries);
+
+                if (distance < minMatch)
+                {
+                    minMatch = distance;
+                    strokeMatch = trainingTemplate.ls;
+                }
+            }
+
+            return new Match(strokeMatch, minMatch, strokeMatch.getLabel());
+        }
+
 
         private double l2(List<Double> s, List<Double> t)
         {
@@ -274,6 +302,24 @@ namespace NuSysApp
             return Math.Sqrt(sum / numbers.Count());
         }
 
+        enum StrokeTemplate
+        {
+            Square, Circle
+        }
+
+        class Match
+        {
+
+            private StrokeTemplate _st;
+            private double _score;
+            public Match (StrokeTemplate st, double score)
+            {
+                _st = st;
+                _score = score;
+            }
+            public StrokeTemplate StrokeTemplate{get { return _st; } }
+            public double Score {get { return _score; } }
+        }
 
 
     }
