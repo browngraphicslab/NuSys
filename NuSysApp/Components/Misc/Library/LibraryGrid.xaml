@@ -44,10 +44,17 @@
     </Grid>
     </ScrollViewer>-->
     <Border Background="AliceBlue" BorderBrush="#62bcd5" BorderThickness="5" CornerRadius="20">
+        <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
         <StackPanel>
             
             <Grid x:Name="xGrid" >
                 <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                     <RowDefinition ></RowDefinition>
                 </Grid.RowDefinitions>
@@ -55,9 +62,9 @@
                     <ColumnDefinition ></ColumnDefinition>
                     <ColumnDefinition ></ColumnDefinition>
                     <ColumnDefinition ></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
             </Grid>
         </StackPanel>
+        </ScrollViewer>
     </Border>
 </UserControl>

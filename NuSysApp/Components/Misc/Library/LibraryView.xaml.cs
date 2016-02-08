@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,79 +26,73 @@ namespace NuSysApp
         private LibraryGrid workspaceGrid;
         private LibraryList workspaceList;
 
+        public delegate void NewElementAvailableEventHandler(LibraryElement element);
+        public event NewElementAvailableEventHandler OnNewElementAvailable;
+
+        private LibraryList _libraryList;
+        private LibraryGrid _libraryGrid;
+
         private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView()
         {
             this.InitializeComponent();
-            this.makeViews();
+            this.MakeViews();
+            WorkspacePivot.Content = _libraryList;
         }
 
         public async void ToggleVisiblity()
         {
             Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
-            if (Visibility == Visibility.Visible)
-            {
-                await Reload();
-            }
         }
 
-        private async Task Reload()
+        public async Task Reload()
         {
             Task.Run(async delegate
             {
                 var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                 foreach (var kvp in dictionaries)
                 {
-                    //id, data, type, title
-                    var dict = kvp.Value;
-                    var id = dict["id"];
-                    var element = new LibraryElement(id);
-                    if (dict.ContainsKey("title"))
-                    {
-                        element.Title = dict["title"];
-                    }
-                    try
-                    {
-                        if (dict.ContainsKey("type"))
-                        {
-                            element.NodeType = (NodeType)Enum.Parse(typeof(NodeType), dict["type"]);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-
-
-                    }
+                    var id = kvp.Value["id"];
+                    var element = new LibraryElement(kvp.Value);
                     if (!_elements.ContainsKey(id))
                     {
                         _elements.Add(id, element);
                     }
                 }
+                UITask.Run(delegate {
+                    OnNewContents?.Invoke(_elements.Values);
+                });
             });
-            OnNewContents?.Invoke(_elements.Values);
         }
 
-        public void makeViews()
+        public void AddNewElement(LibraryElement element)
         {
-            workspaceGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values), this);
-            workspaceList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
-            WorkspacePivot.Content = workspaceList;
-
-            //var filesGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
-            //var filesList = new LibraryList(new ObservableCollection<LibraryElement>(_elements.Values));
-            //FilesPivot.Content = filesList;
+            _elements.Add(element.ContentID, element);
+            OnNewElementAvailable?.Invoke(element);
+        }
+        public void MakeViews()
+        {
+            _libraryGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values),this);
+            _libraryList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
+   
         }
 
         private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            throw new NotImplementedException();
+            ((LibraryViewable) (WorkspacePivot?.Content)).Sort(((ComboBox) sender)?.SelectedItem.ToString());
+        }
+
+        private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        {
+            ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(_elements.Values);
+            ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
         }
 
         private void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             if (WorkspacePivot.Content != workspaceList)
             {
-                WorkspacePivot.Content = workspaceList;
+                WorkspacePivot.Content = _libraryList;
             }
         }
 
@@ -105,7 +100,7 @@ namespace NuSysApp
         {
             if (WorkspacePivot.Content != workspaceGrid)
             {
-                WorkspacePivot.Content = workspaceGrid;
+                WorkspacePivot.Content = _libraryGrid;
             }
         }
     }

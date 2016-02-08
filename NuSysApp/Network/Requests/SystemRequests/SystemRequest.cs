@@ -15,8 +15,7 @@ namespace NuSysApp
             SetHost,
             SendWorkspace,
             SendClientInfo,
-            RequestClientInfo,
-            ContentAvailableNotification,
+            RequestClientInfo
         }
 
         private SystemRequestType _systemRequestType;

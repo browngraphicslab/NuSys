@@ -358,9 +358,6 @@ namespace NuSysApp
                 case SystemRequest.SystemRequestType.SendClientInfo:
                     request = new SendClientInfoSystemRequest(message);
                     break;
-                case SystemRequest.SystemRequestType.ContentAvailableNotification:
-                    request = new ContentAvailableNotificationSystemRequest(message);
-                    break;
                 case SystemRequest.SystemRequestType.RequestClientInfo:
                     request = new RequestClientInfoSystemRequest(message);
                     break;

@@ -10,64 +10,60 @@
     d:DesignWidth="400">
 
     <Grid>
-      
-        <ListView>
+ 
+        <!--<ListView Background="DarkCyan" x:Name="Header">
+            --><!--<ListView.Header>
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="250" />
                     <ColumnDefinition Width="125" />
                     <ColumnDefinition Width="125" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0"  BorderThickness="1" BorderBrush="White">
-                    <TextBlock  Text="Title" />
-                </Border>
-
-                <Border Grid.Column="1" BorderThickness="1" BorderBrush="White" >
-                    <TextBlock Text="Node Type" />
-                </Border>
-                <Border Grid.Column="2" BorderThickness="1" BorderBrush="White" >
-                    <TextBlock Text="Content ID" />
-                </Border>
+               
+                <TextBlock HorizontalAlignment="Center" Grid.Column="0"  Text="Title" FontSize="18" />
+                <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="Node Type" FontSize="18" />
+              --><!--<TextBlock Grid.Column="2" Text="Timestamp" />--><!--
+              
               
 
             </Grid>
-        </ListView>
+            </ListView.Header>--><!--
+        </ListView>-->
 
-        <ListView  x:Name="ListBox">
-
+        <ListView  x:Name="ListView">
             <ListView.Header>
-                <Grid>
+                <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="250" />
                         <ColumnDefinition Width="125" />
                         <ColumnDefinition Width="125" />
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Height="20"/>
-                    <Border Grid.Column="1" Height="20"/>
-                    <Border Grid.Column="2" Height="20"/>
+
+
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="0"  Text="Title" FontSize="18" />
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="Node Type" FontSize="18" />
+                    <!--<TextBlock Grid.Column="2" Text="Timestamp" />-->
+
+
 
                 </Grid>
             </ListView.Header>
+
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid VerticalAlignment="Center" Padding="1" Margin="0">
+                    <Grid VerticalAlignment="Center" Padding="0" Margin="0">
                         <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="125" />
                     <ColumnDefinition Width="125" />
                 </Grid.ColumnDefinitions>
                         
-                        <Border Grid.Column="0"  BorderThickness="1" BorderBrush="White">
-                            <TextBlock  Text="{Binding Title}" />
-                        </Border>
-
-                        <Border Grid.Column="1" BorderThickness="1" BorderBrush="White" >
-                            <TextBlock Text="{Binding NodeType}" />
-                        </Border>
-                        <Border Grid.Column="2" BorderThickness="1" BorderBrush="White" >
-                            <TextBlock Text="{Binding ContentID}" />
-                        </Border>
+                      
+                        <TextBlock  Grid.Column="0"  Text="{Binding Title}" FontSize="16" />
+                        <TextBlock  Grid.Column="1"  Text="{Binding NodeType}" FontSize="16"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Timestamp}" FontSize="16"/>
+                     
 
                     </Grid>
                     </DataTemplate>
@@ -81,6 +77,8 @@
                     </StackPanel>
                 </DataTemplate>-->
             </ListView.ItemTemplate>
+            
         </ListView>
+       
     </Grid>
 </UserControl>

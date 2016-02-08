@@ -214,16 +214,17 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Misc\LibraryElement.cs" />
-    <Compile Include="Components\Misc\LibraryGrid.xaml.cs">
+    <Compile Include="Components\Misc\Library\LibraryElement.cs" />
+    <Compile Include="Components\Misc\Library\LibraryGrid.xaml.cs">
       <DependentUpon>LibraryGrid.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Misc\LibraryList.xaml.cs">
+    <Compile Include="Components\Misc\Library\LibraryList.xaml.cs">
       <DependentUpon>LibraryList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Misc\LibraryView.xaml.cs">
+    <Compile Include="Components\Misc\Library\LibraryView.xaml.cs">
       <DependentUpon>LibraryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
     </Compile>
@@ -303,9 +304,6 @@
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
-    <Compile Include="Network\Requests\SystemRequests\ContentAvailableNotificationSystemRequest.cs" />
-    <Compile Include="Network\Requests\SystemRequests\FetchContentSystemRequest.cs" />
-    <Compile Include="Network\Requests\SystemRequests\NewContentSystemRequest.cs" />
     <Compile Include="Network\Requests\NewGroupRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
@@ -598,15 +596,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Misc\LibraryGrid.xaml">
+    <Page Include="Components\Misc\Library\LibraryGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Misc\LibraryList.xaml">
+    <Page Include="Components\Misc\Library\LibraryList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Misc\LibraryView.xaml">
+    <Page Include="Components\Misc\Library\LibraryView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

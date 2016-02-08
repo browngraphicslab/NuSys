@@ -87,6 +87,21 @@ namespace NuSysApp
             await tcpSocket.ConnectAsync(hostName,tcpSocket.ToString());
             DataWriter tcpwriter = new DataWriter(tcpSocket.OutputStream);
             _outgoingTcpDictionary[ip] = new Tuple<StreamSocket, DataWriter>(tcpSocket,tcpwriter);
+            Task.Run(async delegate
+            {
+                var stream = tcpSocket.InputStream;
+                var reader = new DataReader(stream);
+                while (true)
+                {
+                    var stringLength = reader.ReadUInt32();
+                    var actualLength = await reader.LoadAsync(stringLength);//Read the incoming message
+                    var message = reader.ReadString(actualLength);
+                    if (!String.IsNullOrEmpty(message))
+                    {
+                        OnNewMessage?.Invoke(ip,new Message(message),PacketType.TCP);
+                    }
+                }
+            });
             //var stream = tcpSocket.InputStream;
             //stream.ReadAsync().GetResults().
         }

@@ -45,6 +45,11 @@ namespace NuSysApp
             get { return ChatPopup; }
         }
 
+        public LibraryView Library
+        {
+            get { return LibraryView; }
+        }
+
         #endregion Private Members
 
         private int initChatNotifs;
@@ -108,6 +113,7 @@ namespace NuSysApp
                
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
 
+                await Library.Reload();
                 ChatPopup.OnNewTextsChanged += delegate(int newTexts)
                 {
                     if (newTexts > 0)
