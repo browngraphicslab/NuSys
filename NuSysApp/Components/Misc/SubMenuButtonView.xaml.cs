@@ -15,9 +15,11 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+   
 namespace NuSysApp
 {
-    public sealed partial class FloatingMenuButtonView : UserControl
+    public sealed partial class SubMenuButtonView : UserControl
     {
         public static readonly DependencyProperty WindowProperty = DependencyProperty.RegisterAttached("Window", typeof(UserControl), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty IconProperty = DependencyProperty.RegisterAttached("Icon", typeof(string), typeof(FloatingMenuButtonView), null);
@@ -27,25 +29,20 @@ namespace NuSysApp
 
         private static readonly SolidColorBrush ColoredBorder = new SolidColorBrush(Color.FromArgb(255, 215, 231, 230));
 
-        public Image ButtonIcon;
-
-        public FloatingMenuButtonView()
+        public SubMenuButtonView()
         {
             this.InitializeComponent();
-            btn.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
-
-            ButtonIcon = icon;
         }
 
         public bool Active
         {
             set
             {
-                btn.BorderBrush = value ? btn.BorderBrush = ColoredBorder : btn.BorderBrush = null;
+                ParentButton.BorderBrush = value ? ParentButton.BorderBrush = ColoredBorder : ParentButton.BorderBrush = null;
 
                 if (value && ParentButton != null)
                 {
-                    ParentButton.icon.Source = icon.Source;
+                    ParentButton.ButtonIcon.Source = icon.Source;
                 }
             }
         }
@@ -53,7 +50,8 @@ namespace NuSysApp
         public string Icon
         {
             get { return (string)GetValue(IconProperty); }
-            set {
+            set
+            {
                 SetValue(IconProperty, value);
                 icon.Source = new BitmapImage(new Uri(value)); ;
             }
@@ -65,7 +63,7 @@ namespace NuSysApp
             set
             {
                 SetValue(CaptionProperty, value);
-                btnCaption.Text = value; ;
+                btn.Content = value;
             }
         }
 

@@ -101,6 +101,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\icon_chat.png" />
+    <Content Include="Assets\icon_folder.png" />
+    <Content Include="Assets\icon_ink.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_webnode.png" />
@@ -238,6 +240,9 @@
     </Compile>
     <Compile Include="Components\Misc\MediaRecorderView.xaml.cs">
       <DependentUpon>MediaRecorderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SubMenuButtonView.xaml.cs">
+      <DependentUpon>SubMenuButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\UserLabel.xaml.cs">
       <DependentUpon>UserLabel.xaml</DependentUpon>
@@ -537,6 +542,7 @@
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
     <Content Include="Assets\wordIcon.png" />
+    <Content Include="Components\Misc\icon_folder.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -615,6 +621,10 @@
     <Page Include="Components\Misc\MediaRecorderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\SubMenuButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\UserLabel.xaml">
       <SubType>Designer</SubType>

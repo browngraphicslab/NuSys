@@ -77,7 +77,7 @@ namespace NuSysApp
             _buttons[btnInkErase] = Options.PenErase;
           //  _buttons[btnHighlight] = Options.PenHighlight;    
 
-            _buttons[btnSearch] = Options.MainSearch;
+            //_buttons[btnSearch] = Options.MainSearch;
 
             _buttons[btnAdd] = Options.MainAdd;
             _buttons[btnNewNode] = Options.AddTextNode;
@@ -88,11 +88,11 @@ namespace NuSysApp
             _buttons[btnBucket] = Options.AddBucket;
             _buttons[btnVideo] = Options.AddVideo;
 
-            _buttons[btnMisc] = Options.MainMisc;
+            _buttons[btnSaveLoad] = Options.MainMisc;
             _buttons[btnLoad] = Options.MiscLoad;
             _buttons[btnExport] = Options.MiscSave;
             _buttons[btnPin] = Options.MiscPin;
-            _buttons[btnMisc] = Options.MainMisc;
+            _buttons[btnSaveLoad] = Options.MainMisc;
             _buttons[btnUsers] = Options.MiscUsers;
 
             pinWindow.setFloatingMenu(this);
@@ -106,23 +106,23 @@ namespace NuSysApp
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 0), new Tuple<Storyboard, string>(windowClose, "pinWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 1), new Tuple<Storyboard, string>(windowOpen, "pinWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 0), new Tuple<Storyboard, string>(windowClose, "bucketWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 1), new Tuple<Storyboard, string>(windowOpen, "bucketWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 0), new Tuple<Storyboard, string>(windowClose, "userWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 1), new Tuple<Storyboard, string>(windowOpen, "userWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 0), new Tuple<Storyboard, string>(windowClose, "searchWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 1), new Tuple<Storyboard, string>(windowOpen, "searchWindow"));
+            //_storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 0), new Tuple<Storyboard, string>(windowClose, "searchWindow"));
+            //_storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 1), new Tuple<Storyboard, string>(windowOpen, "searchWindow"));
 
 
             _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
             _activeSubMenuButtons[btnSelect] = btnSelectNode;
             _activeSubMenuButtons[btnPen] = btnGlobalInk;
             _activeSubMenuButtons[btnAdd] = btnNewNode;
-            _activeSubMenuButtons[btnMisc] = btnLoad;
+            _activeSubMenuButtons[btnSaveLoad] = btnLoad;
 
 
             // Register tap listeners
@@ -159,7 +159,7 @@ namespace NuSysApp
         {
             btnAdd.Icon = btnNewNode.Icon;
             btnSelect.Icon = btnSelectNode.Icon;
-            btnMisc.Icon = btnExport.Icon;
+            btnSaveLoad.Icon = btnExport.Icon;
             SetActive(Options.SelectNode);
         }
 
