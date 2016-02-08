@@ -15,7 +15,7 @@
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas  HorizontalAlignment="Left" Background="Transparent" Width="100000" Height="100000" />
+                        <Canvas  HorizontalAlignment="Left" Background="Transparent" Width="100000" Height="100000"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
