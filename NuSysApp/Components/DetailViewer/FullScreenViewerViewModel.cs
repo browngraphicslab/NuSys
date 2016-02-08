@@ -19,11 +19,13 @@ namespace NuSysApp
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
         private String TagToDelete;
         public Boolean DeleteOnFocus;
+        //public String Title = (String)_nodeModel.GetMetaData("title");
 
         public UserControl View { get; set; }
             
         public ObservableCollection<Button> Tags { get; set; }
- 
+        public string Title { get; set; }
+        public string Date { get; set; }
         public FullScreenViewerViewModel()
         {
 
@@ -32,7 +34,13 @@ namespace NuSysApp
         public async void SetNodeModel(AtomModel model)
         {
             _nodeModel = model;
+            model.TitleChanged += (value, title) =>
+            {
+                Title = title;
+                RaisePropertyChanged("Title");
+            };
             View = await _viewFactory.CreateFromSendable(_nodeModel);
+            View.DataContext = this;
             RaisePropertyChanged("View");
         }
 
@@ -50,7 +58,7 @@ namespace NuSysApp
             }
         }
 
-        public async void AddTag(string tag)
+    public async void AddTag(string tag)
         {
             //add to model
 

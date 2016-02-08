@@ -43,6 +43,9 @@ namespace NuSysApp
         {
 
             InitializeComponent();
+
+            rtfTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
+
             DataContext = vm;
 
             var model = (TextNodeModel)vm.Model;
