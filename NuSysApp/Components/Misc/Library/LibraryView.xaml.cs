@@ -23,6 +23,8 @@ namespace NuSysApp
     {
         public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
         public event NewContentsEventHandler OnNewContents;
+        private LibraryGrid workspaceGrid;
+        private LibraryList workspaceList;
 
         public delegate void NewElementAvailableEventHandler(LibraryElement element);
         public event NewElementAvailableEventHandler OnNewElementAvailable;
@@ -35,6 +37,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.MakeViews();
+            WorkspacePivot.Content = _libraryList;
         }
 
         public async void ToggleVisiblity()
@@ -69,13 +72,9 @@ namespace NuSysApp
         }
         public void MakeViews()
         {
-            _libraryGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
+            _libraryGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values),this);
             _libraryList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
-            WorkspacePivot.Content = _libraryList;
-
-            //var filesGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values));
-            //var filesList = new LibraryList(new ObservableCollection<LibraryElement>(_elements.Values));
-            //FilesPivot.Content = filesList;
+   
         }
 
         private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -87,6 +86,22 @@ namespace NuSysApp
         {
             ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(_elements.Values);
             ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
+        }
+
+        private void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (WorkspacePivot.Content != workspaceList)
+            {
+                WorkspacePivot.Content = _libraryList;
+            }
+        }
+
+        private void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (WorkspacePivot.Content != workspaceGrid)
+            {
+                WorkspacePivot.Content = _libraryGrid;
+            }
         }
     }
 }

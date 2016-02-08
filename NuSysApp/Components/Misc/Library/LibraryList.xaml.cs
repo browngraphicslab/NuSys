@@ -37,6 +37,7 @@ namespace NuSysApp
                 library.OnNewElementAvailable += AddNewElement;
             };
 
+            //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1);
         }
 
         public ObservableCollection<LibraryElement> GetItems()
