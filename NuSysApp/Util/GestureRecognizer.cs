@@ -142,17 +142,18 @@ namespace NuSysApp
             stroke = resample(stroke, 32);
             List<Double> candidateSeries = znormalize(cDistance(stroke));
 
-            var filedict = new Dictionary<StrokeTemplate, string>()
+            var filedict = new Dictionary<string,StrokeTemplate >()
             {
-                {StrokeTemplate.Circle, "Circle" },
-                {StrokeTemplate.Square, "Square" }
+                { "Circle",StrokeTemplate.Circle },
+                { "Square",StrokeTemplate.Square },
+                { "Scribble" ,StrokeTemplate.Scribble}
             };
 
             double minMatch = Double.MaxValue;
             StrokeTemplate strokeMatch = StrokeTemplate.Null;
             foreach (var trainingTemplate in filedict.Keys)
             {
-                string filepath = @"Assets\gestureTemplates\" + filedict[trainingTemplate] + @".stroke";
+                string filepath = @"Assets\gestureTemplates\" +trainingTemplate + @".stroke";
                 StorageFolder InstallationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
 
                 StorageFile file = await InstallationFolder.GetFileAsync(filepath);
@@ -183,7 +184,7 @@ namespace NuSysApp
                 if (distance < minMatch)
                 {
                     minMatch = distance;
-                    strokeMatch = trainingTemplate;
+                    strokeMatch = filedict[trainingTemplate];
                 }
             }
 
@@ -334,7 +335,7 @@ namespace NuSysApp
 
         public enum StrokeTemplate
         {
-            Null, Square, Circle
+            Null, Square, Circle, Scribble
         }
 
         public class Match
