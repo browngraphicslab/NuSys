@@ -50,10 +50,9 @@ namespace NuSysApp
                 userControl.ManipulationStarting -= UserControlOnManipulationStarting;
             }
         }
-
-        private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
-            e.Container = _view;
+            manipulationStartingRoutedEventArgs.Container = _view;
         }
 
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -113,7 +112,11 @@ namespace NuSysApp
                         _timer.Stop();
                         _isHovering = true;
                         _hoveredNode = (result.First() as FrameworkElement).DataContext as NodeViewModel;
-                        _hoveredNodeView = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode).First() as IThumbnailable;
+                        Debug.WriteLine("atomviewlist count: " + wvm.AtomViewList.Count);
+                        var atoms = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode);
+
+                        if (atoms.Any())
+                            _hoveredNodeView = atoms.First() as IThumbnailable;
 
                     };
                     _timer.Interval = TimeSpan.FromMilliseconds(200);
