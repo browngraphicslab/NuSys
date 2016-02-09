@@ -57,6 +57,9 @@ namespace NuSysApp
             
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
+
+            var text = _document.GetAllTexts(0);
+            Debug.WriteLine(text);
         }
 
         public async Task FlipRight()
