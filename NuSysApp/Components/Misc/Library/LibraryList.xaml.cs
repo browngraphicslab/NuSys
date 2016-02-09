@@ -27,6 +27,8 @@ namespace NuSysApp
 {
     public sealed partial class LibraryList : UserControl, LibraryViewable
     {
+        public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
+        public event LibraryElementDragEventHandler OnLibraryElementDrag;
         public LibraryList(List<LibraryElement> items, LibraryView library)
         {
             this.InitializeComponent();
@@ -100,58 +102,24 @@ namespace NuSysApp
             ListView.ItemsSource = new ObservableCollection<LibraryElement>(elements);
         }
 
+
         private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-            List<LibraryElement> elements = new List<LibraryElement>();
-            foreach (var element in e.Items)
-            {
-                var id = ((LibraryElement) element).ContentID;
-                elements.Add((LibraryElement)element);
-                if (SessionController.Instance.ContentController.Get(id) == null)
-                {
-                    Task.Run(async delegate
-                    {
-                        SessionController.Instance.NuSysNetworkSession.FetchContent(id);
-                    });
-                }
-            }
-            e.Data.OperationCompleted += DataOnOperationCompleted;
-            e.Data.Properties.Add("LibraryElements",elements);
-            var title = ((LibraryElement) e.Items[0]).Title ?? "";
-            var type = ((LibraryElement) e.Items[0]).NodeType.ToString();
-            e.Data.SetText(type+"  :  "+title);
-            e.Cancel = false;
+             //OnLibraryElementDrag?.Invoke(sender,e);
+            var element = (LibraryElement) e.Items[0];
+            e.Cancel = true;
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+            rect.Width = 200;
+            rect.Height = 200;
+            view.ManipulationDelta += DraggingElementManipulation;
         }
 
-        private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
+        private void DraggingElementManipulation(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
         {
-            UITask.Run(delegate
-            {
-                var ids = (List<LibraryElement>) sender.Properties["LibraryElements"];
-
-                var width = SessionController.Instance.SessionView.ActualWidth;
-                var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint =
-                    SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
-                        new Point(width/2, height/2));
-                Task.Run(delegate
-                {
-                    foreach (var element in ids)
-                    {
-                        Message m = new Message();
-                        m["contentId"] = element.ContentID;
-                        m["x"] = centerpoint.X - 200;
-                        m["y"] = centerpoint.Y - 200;
-                        m["width"] = 400;
-                        m["height"] = 400;
-                        m["nodeType"] = element.NodeType.ToString();
-                        m["autoCreate"] = true;
-                        m["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
-
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                    }
-                });
-            });
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetTop();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
@@ -74,7 +75,8 @@ namespace NuSysApp
         {
             _libraryGrid = new LibraryGrid(new ObservableCollection<LibraryElement>(_elements.Values),this);
             _libraryList = new LibraryList(new List<LibraryElement>(_elements.Values),this);
-   
+            _libraryList.OnLibraryElementDrag += ListViewBase_OnDragItemsStarting;
+            _libraryGrid.OnLibraryElementDrag += GridViewDragStarting;
         }
 
         private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -102,6 +104,63 @@ namespace NuSysApp
             {
                 WorkspacePivot.Content = _libraryGrid;
             }
+        }
+        
+        private void GridViewDragStarting(object sender, DragStartingEventArgs e)
+        {
+            //e.Data.Properties.
+        }
+        private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            List<LibraryElement> elements = new List<LibraryElement>();
+            foreach (var element in e.Items)
+            {
+                var id = ((LibraryElement)element).ContentID;
+                elements.Add((LibraryElement)element);
+                if (SessionController.Instance.ContentController.Get(id) == null)
+                {
+                    Task.Run(async delegate
+                    {
+                        SessionController.Instance.NuSysNetworkSession.FetchContent(id);
+                    });
+                }
+            }
+            e.Data.OperationCompleted += DataOnOperationCompleted;
+            e.Data.Properties.Add("LibraryElements", elements);
+            var title = ((LibraryElement)e.Items[0]).Title ?? "";
+            var type = ((LibraryElement)e.Items[0]).NodeType.ToString();
+            e.Data.SetText(type + "  :  " + title);
+            e.Cancel = false;
+        }
+        private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
+        {
+            UITask.Run(delegate
+            {
+                var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
+
+                var width = SessionController.Instance.SessionView.ActualWidth;
+                var height = SessionController.Instance.SessionView.ActualHeight;
+                var centerpoint =
+                    SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                        new Point(width / 2, height / 2));
+                Task.Run(delegate
+                {
+                    foreach (var element in ids)
+                    {
+                        Message m = new Message();
+                        m["contentId"] = element.ContentID;
+                        m["x"] = centerpoint.X - 200;
+                        m["y"] = centerpoint.Y - 200;
+                        m["width"] = 400;
+                        m["height"] = 400;
+                        m["nodeType"] = element.NodeType.ToString();
+                        m["autoCreate"] = true;
+                        m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                    }
+                });
+            });
         }
     }
 }

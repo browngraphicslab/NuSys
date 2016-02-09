@@ -49,6 +49,7 @@
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
+        <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="DeepPink"></Rectangle>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
         <local:LibraryView x:Name="LibraryView"></local:LibraryView>

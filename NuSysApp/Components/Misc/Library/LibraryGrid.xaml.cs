@@ -22,6 +22,9 @@ namespace NuSysApp
 {
     public sealed partial class LibraryGrid : UserControl, LibraryViewable
     {
+        public delegate void LibraryElementDragEventHandler(object sender, DragStartingEventArgs e);
+        public event LibraryElementDragEventHandler OnLibraryElementDrag;
+
         public ObservableCollection<LibraryElement> _items;
         private int _count = 0;
         public LibraryGrid(ObservableCollection<LibraryElement> items, LibraryView library)
@@ -157,6 +160,9 @@ namespace NuSysApp
 
             StackPanel itemPanel = new StackPanel();
             itemPanel.Orientation = Orientation.Vertical;
+
+            itemPanel.CanDrag = true;
+            itemPanel.DragStarting += delegate(UIElement a, DragStartingEventArgs b) { OnLibraryElementDrag?.Invoke(a, b); };
 
             if (newItem.NodeType == NodeType.Image)
             {
