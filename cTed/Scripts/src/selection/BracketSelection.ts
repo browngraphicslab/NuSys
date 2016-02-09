@@ -177,7 +177,7 @@ class BracketSelection extends AbstractSelection {
     //    this._clientRects = new Array<ClientRect>();
         var result = "";
         selectedElements.forEach((el) => {
-
+     //       console.log(
             $(el).find("img")["andSelf"]().each((i, e: any) => {
                 $(e).attr("src", e.src);
                 $(e).removeAttr("srcset");
@@ -187,8 +187,12 @@ class BracketSelection extends AbstractSelection {
             var rects = range.getClientRects();
      //       this._clientRects = this._clientRects.concat.apply([], rects);
             var index = $(el.tagName).index(el);
-            selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
+            this.selectedElements.push({ type: "bracket", tagName: el.tagName, index: index });
+            console.log("selected element: " + el.tagName + "." + index);
             result += el.outerHTML;
+            console.log(el);
+            $(el).css("background-color", "yellow");
+
         });
 
 

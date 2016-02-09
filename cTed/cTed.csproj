@@ -48,6 +48,7 @@
     <TypeScriptCompile Include="Scripts\src\MarqueeBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\AbstractSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\MarqueeSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\Selectable.ts" />
     <TypeScriptCompile Include="Scripts\src\StrokeClassifier.ts" />

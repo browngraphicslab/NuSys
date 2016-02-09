@@ -1,6 +1,7 @@
 var Background = (function () {
     function Background() {
         this._isOpen = false;
+        this._isEnabled = false;
         console.log("starting background");
         this.initAllTabs();
         this.setExtensionClick();
@@ -18,11 +19,13 @@ var Background = (function () {
             if (_this._isOpen) {
                 _this.msgAllTabs({ msg: "hide_menu" });
                 _this._isOpen = false;
+                chrome.browserAction.setIcon({ path: { 19: "assets/icon.png", 38: "assets/icon.png" } });
             }
             else {
                 console.log("=========showMenu==================");
                 _this.msgAllTabs({ msg: "show_menu" });
                 _this._isOpen = true;
+                chrome.browserAction.setIcon({ path: { 19: "assets/icon_active.png", 38: "assets/icon_active.png" } });
             }
         });
     };
@@ -57,8 +60,12 @@ var Background = (function () {
             }
             $.get(chrome.extension.getURL("menu.html"), function (menuData) {
                 chrome.tabs.sendMessage(tabId, { msg: "init", data: menuData });
+                console.log(_this._isEnabled);
                 if (_this._isOpen) {
                     chrome.tabs.sendMessage(tabId, { msg: "show_menu" });
+                }
+                if (_this._isEnabled) {
+                    chrome.tabs.sendMessage(tabId, { msg: "enable_selection" });
                 }
             });
         });
@@ -86,8 +93,22 @@ var Background = (function () {
                     });
                 });
             }
+            if (request.msg == "set_active") {
+                _this._isEnabled = request.data;
+                console.log(_this._isEnabled);
+                if (_this._isEnabled) {
+                    _this.msgAllTabs({ msg: "enable_selection" });
+                }
+                else {
+                    _this.msgAllTabs({ msg: "disable_selection" });
+                }
+            }
             if (request.msg == "view_all")
                 chrome.tabs.create({ 'url': chrome.extension.getURL('allselections/index.html') });
+            if (request.msg == "tags_changed") {
+                _this._tags = request.data;
+                _this.msgAllTabs({ msg: "tags_changed", data: request.data });
+            }
         });
     };
     return Background;

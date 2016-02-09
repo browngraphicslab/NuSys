@@ -21,6 +21,7 @@ class Main {
     _startX: number;
     _startY: number;
     _url: any;
+    _tag: any;
     _parsedTextNodes = {};
     
     
@@ -62,6 +63,12 @@ class Main {
                     if (s.type == StrokeType.Marquee) {
                         this.highlightPrevious(s);
                     }
+                    if (s.type == StrokeType.Bracket) {
+                        this.highlightPrevious(s);
+                    }
+                    if (s.type == StrokeType.Line) {
+                        this.highlightPrevious(s);
+                    }
                 }
             });
         });
@@ -96,7 +103,7 @@ class Main {
                 }
                     
                 //if (parElement != el.par || parIndex != el.parIndex) {
-                //    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+                //    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</worn d>") + "</words>");
                 //    parElement = el.par;
                 //    parIndex = el.parIndex;
                 //}
@@ -135,9 +142,11 @@ class Main {
                         break;
                     case "show_menu":
                         $(this.menuIframe).css("display", "block");
+                        if (this.isSelecting) { document.body.appendChild(this.canvas) };
                         break;
                     case "hide_menu":
                         $(this.menuIframe).css("display", "none");
+                        document.body.removeChild(this.canvas);
                         break;
                     case "enable_selection":
                         this.toggleEnabled(true);
@@ -146,6 +155,10 @@ class Main {
                         this.toggleEnabled(false);
                         break;
                     case "set_selections":
+                        break;
+                    case "tags_changed":
+                        console.log("tags_changed");
+                        $(this.menuIframe).contents().find("#tagfield").val(request.data);
                         break;
                 }
             }
@@ -176,7 +189,8 @@ class Main {
         });
 
         $(this.menuIframe).contents().find("#tagfield").change(() => {
-       //     chrome.runtime.sendMessage({ msg: "tags_changed", data: $(this.menuIframe).contents().find("#tagfield").val() });
+            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(this.menuIframe).contents().find("#tagfield").val() });
+            this._tag = $(this.menuIframe).contents().find("#tagfield").val();
         });
 
         $(this.menuIframe).contents().find("#btnViewAll").click(() => {
@@ -220,8 +234,11 @@ class Main {
         this.selection.id = Date.now(); //assign contents of the selection 
         this.selection.type = this.currentStrokeType;
         this.selection.url = this._url;
-        this.selection.tags = $(this.menuIframe).contents().find("#tag").val();
-        this.selections.push(this.selection); //add selection to selections array 
+        this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
+        console.log(this.selection.tags);
+        if (this.selection.getContent() != "" && this.selection.getContent() != " ") {
+            this.selections.push(this.selection); //add selection to selections array 
+        }
         this.updateSelectedList();
         chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         this.inkCanvas.clear();
@@ -240,7 +257,7 @@ class Main {
     //mousedown action
     mouseDown = (e): void => {
         console.log("mouse down");
-        this.selection = new BracketSelection();
+        this.selection = new LineSelection();
    //     this.inkCanvas.switchBrush(this.currentStrokeType);
         try {
             document.body.removeChild(this.canvas);
@@ -275,6 +292,9 @@ class Main {
                 break;
             case StrokeType.Bracket:
                 this.selection = new BracketSelection();
+                break;
+            case StrokeType.Line:
+                this.selection = new LineSelection();
                 break;
         }
         this.selection.start(this._startX, this._startY);

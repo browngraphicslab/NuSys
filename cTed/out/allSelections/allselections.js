@@ -9,7 +9,7 @@
     // Define our render data (to be put into the "rc" variable).
 
 
-    
+
 
 
     var $grid = $('#grid'),
@@ -17,7 +17,7 @@
         $sizer = $grid.find('.shuffle__sizer'),
 
     init = function () {
-        
+
 
         // None of these need to be executed synchronously
         setTimeout(function () {
@@ -171,25 +171,27 @@ $(document).ready(function () {
         var allTags = {};
 
         cTedStorage.selections.forEach(function (val, index) {
-
+            console.log(val);
             var item = {
                 url: val.url,
                 displayUrl: val.url.split("//")[1],
                 groups: ["group1", "group2"],
                 timestamp: val.id,
                 title: "title",
-            //    tagArray: val.tags.split(","),
-            //    tags: null,
+                tagArray: val.tags.split(","),
+                tags: null,
                 html: val._content
             };
 
-            //var tagString = "[";
-            //val.tags.split(",").forEach(function (tag) {
-            //    allTags[tag] = true;
-            //    tagString += '"' + tag + '",';
-            //});
-            //tagString = tagString.substring(0, tagString.length - 1) + ']';
-            //item.tags = tagString;
+            var tagString = "[";
+            console.log("tag");
+            val.tags.split(",").forEach(function (tag) {
+                allTags[tag] = true;
+                tagString += '"' + tag + '",';
+            });
+            console.log("tag1");
+            tagString = tagString.substring(0, tagString.length - 1) + ']';
+            item.tags = tagString;
 
 
 
@@ -208,16 +210,16 @@ $(document).ready(function () {
             $("#grid").append(tpl);
         });
 
-        //for (var t in allTags) {
-        //    if (allTags.hasOwnProperty(t)) {
-        //        $(".filter-options").append(
-        //            $('<button class="btn btn--warning" data-group="' + t + '">' + t +  '</button>')
-        //        );
-        //    }
-        //}
+        for (var t in allTags) {
+            if (allTags.hasOwnProperty(t)) {
+                $(".filter-options").append(
+                    $('<button class="btn btn--warning" data-group="' + t + '">' + t + '</button>')
+                );
+            }
+        }
 
-        
-   
+
+
         DEMO.init();
 
     });
