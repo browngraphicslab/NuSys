@@ -14,7 +14,7 @@
     Width="{Binding Width}" Height="{Binding Height}"
     Background="#99000000">
 
-    <Canvas>
+    <Canvas x:Name="GroupNodeCanvas">
         <local:GroupCircleView x:Name="xCircleView"></local:GroupCircleView>
         <local:GroupNodeExpandedView x:Name="xExpandedView" Opacity="0"></local:GroupNodeExpandedView>
         <Path x:Name="Resizer" Fill="Black" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
