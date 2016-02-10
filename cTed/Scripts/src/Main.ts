@@ -80,37 +80,43 @@ class Main {
 
         s.selectedElements.forEach((el) => {
             if (el.tagName == "WORD") {
-                console.log("TAG NAME WORD");
-                console.log(el);
-                var txtElement = $(el.par).get(el.parIndex).childNodes[el.txtnIndx];
-                if (!this._parsedTextNodes.hasOwnProperty(el.par)) {
-                    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-                    var paridx = {};
-                    var txtidx = {};
-                    txtidx[el.txtnIndx] = true;
-                    paridx[el.parIndex] = txtidx;
-                    this._parsedTextNodes[el.par] = paridx;
-                    console.log("change");
-                } else if (!this._parsedTextNodes[el.par].hasOwnProperty(el.parIndex)) {
-                    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-                    var txtidx = {};
-                    txtidx[el.txtnIndx] = true;
-                    this._parsedTextNodes[el.par][el.parIndex] = txtidx;
-                    console.log("change1");
-                } else if (!this._parsedTextNodes[el.par][el.parIndex].hasOwnProperty(el.txtnIndx)) {
-                    this._parsedTextNodes[el.par][el.parIndex][el.txtnIndx] = true;
-                    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-                }
+                if (el.wordIndx == -1) {
+                    $('WORD').get(el.index)["style"].backgroundColor = "yellow";
+                } else {
+                    console.log("TAG NAME WORD");
+                    console.log(el);
+                    var txtElement = $(el.par).get(el.parIndex).childNodes[el.txtnIndx];
+                    if (!this._parsedTextNodes.hasOwnProperty(el.par)) {
+                        $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+                        var paridx = {};
+                        var txtidx = {};
+                        txtidx[el.txtnIndx] = true;
+                        paridx[el.parIndex] = txtidx;
+                        this._parsedTextNodes[el.par] = paridx;
+                        console.log("change");
+                    } else if (!this._parsedTextNodes[el.par].hasOwnProperty(el.parIndex)) {
+                        $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+                        var txtidx = {};
+                        txtidx[el.txtnIndx] = true;
+                        this._parsedTextNodes[el.par][el.parIndex] = txtidx;
+                        console.log("change1");
+                    } else if (!this._parsedTextNodes[el.par][el.parIndex].hasOwnProperty(el.txtnIndx)) {
+                        console.log(txtElement);
+                        this._parsedTextNodes[el.par][el.parIndex][el.txtnIndx] = true;
+                        $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+                        console.log("change2");
+                    }
                     
-                //if (parElement != el.par || parIndex != el.parIndex) {
-                //    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</worn d>") + "</words>");
-                //    parElement = el.par;
-                //    parIndex = el.parIndex;
-                //}
-                var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
-                console.log(el);
-                console.log(ele);
-                ele["style"].backgroundColor = "yellow";
+                    //if (parElement != el.par || parIndex != el.parIndex) {
+                    //    $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</worn d>") + "</words>");
+                    //    parElement = el.par;
+                    //    parIndex = el.parIndex;
+                    //}
+                    var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
+                    console.log(el);
+                    console.log(ele);
+                    ele["style"].backgroundColor = "yellow";
+                }
             } else if (el.tagName == "HILIGHT") {
                 console.log(el);
                 console.log(el.tagName);
