@@ -168,11 +168,11 @@ namespace NuSysApp
                     // TODO: delegate to workspaceview
                     //                    InqCanvas.SetHighlighting(true);
                     break;
-                case Options.MiscSave:
+                case Options.Save:
                     SessionController.Instance.SaveWorkspace();
                     SessionController.Instance.SessionView.FloatingMenu.Reset();
                     break;
-                case Options.MiscLoad:
+                case Options.Load:
                     SessionController.Instance.LoadWorkspace();
                     SessionController.Instance.SessionView.FloatingMenu.Reset();
                     break;

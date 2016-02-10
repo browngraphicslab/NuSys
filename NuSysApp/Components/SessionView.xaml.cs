@@ -390,5 +390,25 @@ namespace NuSysApp
                 Canvas.SetLeft(ChatPopup, 5);
             }
         }
+
+        private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (FloatingMenu.Visibility == Visibility.Collapsed)
+            {
+                Point pos = e.GetPosition(mainCanvas);
+                Canvas.SetTop(FloatingMenu, pos.Y);
+                Canvas.SetLeft(FloatingMenu, pos.X);
+                FloatingMenu.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FloatingMenu.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void UIElement_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            
+        }
     }
 }

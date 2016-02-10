@@ -128,7 +128,7 @@ namespace NuSysApp
             _activeSubMenuButtons[btnSelect] = btnSelectNode;
             _activeSubMenuButtons[btnPen] = btnGlobalInk;
             _activeSubMenuButtons[btnAdd] = btnNewNode;
-            _activeSubMenuButtons[btnSaveLoad] = btnLoad;
+            _activeSubMenuButtons[btnSaveLoad] = btnSaveLoad;
 
 
             // Register tap listeners
