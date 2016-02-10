@@ -3457,6 +3457,11 @@ var MarqueeSelection = (function (_super) {
         var parent = this._parentList[0].cloneNode(true);
         this.rmChildNodes(parent, this._parentList[0]);
         console.log(this._parentList[0]);
+        $(parent).find("img")["andSelf"]().each(function (i, e) {
+            console.log(e.src);
+            $(e).attr("src", e.src);
+            $(e).removeAttr("srcset");
+        });
         this._content = parent.innerHTML;
     };
     MarqueeSelection.prototype.rmChildNodes = function (el, trueEl) {

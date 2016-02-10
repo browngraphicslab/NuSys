@@ -49,7 +49,13 @@
         var parent = this._parentList[0].cloneNode(true);
         this.rmChildNodes(parent, this._parentList[0]);   
         console.log(this._parentList[0]);
+        $(parent).find("img")["andSelf"]().each((i, e: any) => {
+            console.log(e.src);
+            $(e).attr("src", e.src);
+            $(e).removeAttr("srcset");
+        });
         this._content = parent.innerHTML;
+
     }
 
     rmChildNodes(el, trueEl): void {
