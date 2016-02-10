@@ -99,7 +99,6 @@
             <local:FloatingMenuButtonView x:Name="btnSelect" Icon="ms-appx:///Assets/icon_mainmenu_select.png" Caption="Select" />
             <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="Nodes" />
             <local:FloatingMenuButtonView x:Name="btnPen" Icon="ms-appx:///Assets/icon_ink.png" Caption="Pen"/>           
-            <!--<local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/icon_mainmenu_search.png" Caption="Search"  Window="{Binding ElementName=bucketWindow}"/>-->
             <local:FloatingMenuButtonView x:Name="btnNewMedia" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="Media" />
             <local:FloatingMenuButtonView x:Name="btnSaveLoad" Icon="ms-appx:///Assets/icon_folder.png" Caption="Save/Load" />
             <local:FloatingMenuButtonView x:Name="btnMisc" Icon="ms-appx:///Assets/icon_mainmenu_additional.png" Caption="More"/>
@@ -110,8 +109,6 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <!--<local:FloatingMenuButtonView x:Name="btnSelectNode" Visibility="Collapsed"  IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Select / Move"  />-->
-            <!--<local:FloatingMenuButtonView x:Name="btnPen" Visibility="Collapsed"  IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Ink" />-->
             
             <!--new stuff-->
             <local:FloatingMenuButtonView x:Name="btnSelectNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Select"></local:FloatingMenuButtonView>
@@ -122,7 +119,6 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <!--<local:FloatingMenuButtonView x:Name="btnGlobalInk" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_global_ink.png" ParentButton="{Binding ElementName=btnPen}" Caption="Ink" />-->
             <local:FloatingMenuButtonView x:Name="btnInkErase" Visibility="Collapsed"  IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" Caption="Erase" />
         
               <!--new stuff-->
@@ -135,10 +131,6 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <!--<local:FloatingMenuButtonView Visibility="Collapsed"  x:Name="btnNewNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Text" />-->
-            <!--<local:FloatingMenuButtonView Visibility="Collapsed"  x:Name="btnNewMedia" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_media.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Import" />-->
-            <!--<local:FloatingMenuButtonView Visibility="Collapsed"  x:Name="btnNewWebNode" IsMode="True" Icon="ms-appx:///Assets/icon_webnode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Web" />-->
-            <!--<local:FloatingMenuButtonView Visibility="Collapsed"  x:Name="btnNewRecordNode" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Record" />-->
             <local:FloatingMenuButtonView x:Name="btnNewAudioCapture" Visibility="Collapsed"  IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Record" />
             <local:FloatingMenuButtonView x:Name="btnBucket" Visibility="Collapsed" Icon="ms-appx:///Assets/icon_mainmenu_bucket.png" Window="{Binding ElementName=bucketWindow}" ParentButton="{Binding ElementName=btnAdd}" />
             <local:FloatingMenuButtonView x:Name="btnVideo" Visibility="Collapsed" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />
@@ -147,10 +139,6 @@
             <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Text"></local:FloatingMenuButtonView>
             <local:FloatingMenuButtonView x:Name="btnNewWebNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_webnode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Web"></local:FloatingMenuButtonView>
             <local:FloatingMenuButtonView x:Name="btnNewRecordNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Record"></local:FloatingMenuButtonView>
-
-            <!--<Button Background="Transparent" Foreground="DarkGray" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight">Media</Button>
-            <Button Background="Transparent" Foreground="DarkGray" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight">Web</Button>
-            <Button Background="Transparent" Foreground="DarkGray" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight">Record</Button>-->
         </StackPanel>
 
         <StackPanel x:Name="SubMenuSaveLoad" VerticalAlignment="Top" Margin="170, 100, 0, 0" Opacity ="0" IsHitTestVisible="False">
@@ -168,13 +156,11 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <!--<local:FloatingMenuButtonView x:Name="btnLoad" Visibility="Collapsed"  Caption="Load" Icon="ms-appx:///Assets/icon_mainmenu_open icon.png" ParentButton="{Binding ElementName=btnMisc}" />-->
-            <!--<local:FloatingMenuButtonView x:Name="btnExport" Visibility="Collapsed"  Caption="Save" Icon="ms-appx:///Assets/icon_mainmenu_export.png" ParentButton="{Binding ElementName=btnMisc}" />-->
+            
+            <local:FloatingMenuButtonView x:Name="btnSearch" IsSubButton="True"  Icon="ms-appx:///Assets/icon_mainmenu_search.png" Caption="Search"  Window="{Binding ElementName=bucketWindow}"/>
             <local:FloatingMenuButtonView x:Name="btnPin" Visibility="Collapsed" IsMode="True"  Icon="ms-appx:///Assets/icon_mainmenu_pin.png" Window="{Binding ElementName=pinWindow}" ParentButton="{Binding ElementName=btnMisc}" />
             <local:FloatingMenuButtonView x:Name="btnUsers" Visibility="Collapsed" Icon="ms-appx:///Assets/icon_users.png" Window="{Binding ElementName=userWindow}" ParentButton="{Binding ElementName=btnMisc}" />
 
-            <!--<Button Background="Transparent" Foreground="DarkGray" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight">Save</Button>
-            <Button Background="Transparent" Foreground="DarkGray" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight">Load</Button>-->
         </StackPanel>
 
         <!-- Bucket Window -->
@@ -199,7 +185,7 @@
             </local:UserWindowView.RenderTransform>
         </local:UserWindowView>
 
-        <local:SearchWindowView x:Name="searchWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
+        <local:SearchWindowView x:Name="searchWindow" Margin="40,120,0,0" Opacity="0" IsHitTestVisible="False">
             <local:SearchWindowView.RenderTransform>
                 <CompositeTransform />
             </local:SearchWindowView.RenderTransform>
