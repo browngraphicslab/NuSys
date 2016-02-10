@@ -33,6 +33,9 @@ namespace NuSysApp
             AddRecord,
             AddBucket,
             AddVideo,
+        MainSaveLoad,
+            Load,
+            Save,
         MainMisc,
             MiscLoad,
             MiscSave,
@@ -88,12 +91,12 @@ namespace NuSysApp
             _buttons[btnNewWebNode] = Options.AddWeb;
             _buttons[btnBucket] = Options.AddBucket;
             _buttons[btnVideo] = Options.AddVideo;
-
-            _buttons[btnSaveLoad] = Options.MainMisc;
-            _buttons[btnLoad] = Options.MiscLoad;
-            _buttons[btnExport] = Options.MiscSave;
+            
+            _buttons[btnSaveLoad] = Options.MainSaveLoad;
+            _buttons[btnLoad] = Options.Load;
+            _buttons[btnExport] = Options.Save;
             _buttons[btnPin] = Options.MiscPin;
-            _buttons[btnSaveLoad] = Options.MainMisc;
+            //_buttons[btnSaveLoad] = Options.MainMisc;
             _buttons[btnUsers] = Options.MiscUsers;
 
             pinWindow.setFloatingMenu(this);

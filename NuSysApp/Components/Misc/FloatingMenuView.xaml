@@ -153,7 +153,7 @@
             <Button Background="Transparent" Foreground="DarkGray" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight">Record</Button>-->
         </StackPanel>
 
-        <StackPanel x:Name="SubMenuSaveLoad" VerticalAlignment="Top" Margin="240, 100, 0, 0" Opacity ="0" IsHitTestVisible="False">
+        <StackPanel x:Name="SubMenuSaveLoad" VerticalAlignment="Top" Margin="170, 100, 0, 0" Opacity ="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>

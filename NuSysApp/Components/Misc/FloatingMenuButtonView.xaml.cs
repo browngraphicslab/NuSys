@@ -59,6 +59,7 @@ namespace NuSysApp
                 if (value && ParentButton != null)
                 {
                     ParentButton.icon.Source = icon.Source;
+                    ParentButton.Caption = btnCaption.Text;
                 }
             }
         }
