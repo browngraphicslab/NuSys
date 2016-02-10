@@ -12,11 +12,14 @@ namespace NuSysApp
     public class LabelNodeViewModel : NodeContainerViewModel
     {
        
-        public LabelNodeViewModel(NodeContainerModel model) : base(model)
+        public List<string> TitleSuggestions { get; set; } 
+
+        public LabelNodeViewModel(TagNodeModel model) : base(model)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             EnableChildMove = true;
             ChildAdded += OnChildAddedToLabel;
+            TitleSuggestions = model.TitleSuggestions.ToList();
         }
 
         private async Task OnChildAddedToLabel(object source, FrameworkElement node)

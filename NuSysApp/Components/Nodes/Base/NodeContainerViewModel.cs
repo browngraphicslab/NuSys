@@ -73,6 +73,12 @@ namespace NuSysApp
             
                 Children.Add(nodeModel.Id, view);
                 AtomViewList.Add(view);
+
+                if (view is AreaNodeView)
+                {
+                    Canvas.SetZIndex(view, -1);
+                }
+
                 var handler = ChildAdded;
                 if (handler != null)
                 {

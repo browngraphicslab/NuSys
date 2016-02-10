@@ -66,7 +66,7 @@ namespace NuSysApp
                     view = new GroupNodeView(new GroupNodeViewModel((NodeContainerModel)model));
                     break;
                 case NodeType.Tag:
-                    view = new LabelNodeView(new LabelNodeViewModel((NodeContainerModel)model));
+                    view = new LabelNodeView(new LabelNodeViewModel((TagNodeModel)model));
                     break;
                 case NodeType.Image:
                     view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));
@@ -92,19 +92,11 @@ namespace NuSysApp
                 case NodeType.Web:
                     view = new WebNodeView(new WebNodeViewModel((WebNodeModel)model));
                     break;
+                case NodeType.Area:
+                    view = new AreaNodeView(new AreaNodeViewModel((AreaModel)model));
+                    break;
             }
             await ((AtomViewModel) view.DataContext).Init();
-
-            var tpl = view.FindName("nodeTpl") as NodeTemplate;
-            if (tpl != null)
-            {
-                tpl.OnTemplateReady += async delegate {
-                    var inqVm = new InqCanvasViewModel(model.InqCanvas, new Size(model.Width, model.Height));
-                    //if (tpl.inkCanvas != null) { 
-                    ////    tpl.inkCanvas.ViewModel = inqVm;
-                    //}
-                };
-            }
 
             return view;
         }

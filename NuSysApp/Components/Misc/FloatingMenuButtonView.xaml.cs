@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class FloatingMenuButtonView : UserControl
+    public partial class FloatingMenuButtonView : UserControl
     {
         public static readonly DependencyProperty WindowProperty = DependencyProperty.RegisterAttached("Window", typeof(UserControl), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty IconProperty = DependencyProperty.RegisterAttached("Icon", typeof(string), typeof(FloatingMenuButtonView), null);
@@ -25,19 +25,32 @@ namespace NuSysApp
         public static readonly DependencyProperty ParentButtonProperty = DependencyProperty.RegisterAttached("ParentButton", typeof(FloatingMenuButtonView), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty IsModeProperty = DependencyProperty.RegisterAttached("IsMode", typeof(bool), typeof(FloatingMenuButtonView), null);
 
-        private static readonly SolidColorBrush ColoredBorder = new SolidColorBrush(Color.FromArgb(255, 215, 231, 230));
+        public static readonly DependencyProperty IsSubButtonProperty =
+            DependencyProperty.RegisterAttached("IsSubButton", typeof (bool), typeof (FloatingMenuButtonView), null);
 
-        public Image ButtonIcon;
+        private static readonly SolidColorBrush ColoredBorder = new SolidColorBrush(Color.FromArgb(255, 215, 231, 230));
 
         public FloatingMenuButtonView()
         {
             this.InitializeComponent();
-            btn.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
-
-            ButtonIcon = icon;
         }
 
-        public bool Active
+        public bool IsSubButton
+        {
+            get { return (bool)GetValue(IsSubButtonProperty); }
+            set
+            {
+                SetValue(IsSubButtonProperty, value);
+                if (value)
+                {
+                    Style style = this.Resources["SubButton"] as Style;
+                    btn.Style = style;
+                    icon.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        public virtual bool Active
         {
             set
             {
@@ -50,7 +63,7 @@ namespace NuSysApp
             }
         }
 
-        public string Icon
+        public virtual string Icon
         {
             get { return (string)GetValue(IconProperty); }
             set {
@@ -59,7 +72,12 @@ namespace NuSysApp
             }
         }
 
-        public string Caption
+        public void SetIcon(ImageSource src)
+        {
+            icon.Source = src;
+        }
+
+        public virtual string Caption
         {
             get { return (string)GetValue(CaptionProperty); }
             set

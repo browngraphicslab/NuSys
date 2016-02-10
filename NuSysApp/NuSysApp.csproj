@@ -180,7 +180,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\AtomCreator.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\DetailViewer\DetailNodeViewFactory.cs" />
     <Compile Include="Components\DetailViewer\FullScreenViewerView.xaml.cs">
@@ -235,14 +234,12 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\MediaRecorderView.xaml.cs">
       <DependentUpon>MediaRecorderView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Misc\SubMenuButtonView.xaml.cs">
-      <DependentUpon>SubMenuButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\UserLabel.xaml.cs">
       <DependentUpon>UserLabel.xaml</DependentUpon>
@@ -251,6 +248,10 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Nodes\AreaNode\AreaNodeView.xaml.cs">
+      <DependentUpon>AreaNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\AreaNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
@@ -289,6 +290,7 @@
     </Compile>
     <Compile Include="Components\Nodes\WordNode\WordNodeViewModel.cs" />
     <Compile Include="Components\Workspace\Modes\CreateGroupMode.cs" />
+    <Compile Include="Components\Workspace\Modes\GestureMode.cs" />
     <Compile Include="Components\Workspace\Modes\LinkMode.cs" />
     <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
     <Compile Include="Controller\ContentController.cs" />
@@ -298,7 +300,9 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
+    <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
+    <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
@@ -371,8 +375,6 @@
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="EventArgs\AddLineEventArgs.cs" />
     <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
-    <Compile Include="EventArgs\DeleteEventArgs.cs" />
-    <Compile Include="EventArgs\LinkedEventArgs.cs" />
     <Compile Include="EventArgs\PositionChangeEventArgs.cs" />
     <Compile Include="EventArgs\TextChangedEventArgs.cs" />
     <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
@@ -622,15 +624,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Misc\SubMenuButtonView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Misc\UserLabel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\AreaNode\AreaNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -753,7 +755,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MuPDF.WinRT\Win8\MuPDFWinRT.vcxproj">
+    <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
     </ProjectReference>

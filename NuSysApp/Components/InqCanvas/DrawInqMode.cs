@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
@@ -48,9 +49,9 @@ namespace NuSysApp
             //_inqLineModel.Page = _view.ViewModel.Page;
             
             var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
-            _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y/ _canvasSize.Height));
-
-            inqCanvas.BeginContinuousLine(currentPoint.X, currentPoint.Y);
+            var transformedPoint = inqCanvas.Transform.Inverse.TransformPoint(new Point(currentPoint.X, currentPoint.Y));
+            _inqLineModel.AddPoint(new Point2d((transformedPoint.X) / Constants.MaxCanvasSize, (transformedPoint.Y) / Constants.MaxCanvasSize));
+            inqCanvas.DrawContinuousLine(currentPoint);
 
         }
 
@@ -58,9 +59,10 @@ namespace NuSysApp
         {
 
             var currentPoint = e.GetCurrentPoint(inqCanvas).Position;
-            _inqLineModel.AddPoint(new Point2d(currentPoint.X / _canvasSize.Width, currentPoint.Y / _canvasSize.Height));
+            var transformedPoint = inqCanvas.Transform.Inverse.TransformPoint(new Point(currentPoint.X, currentPoint.Y));
+            _inqLineModel.AddPoint(new Point2d((transformedPoint.X ) / Constants.MaxCanvasSize, (transformedPoint.Y ) / Constants.MaxCanvasSize));
             //var vv = vm.Transform.TransformPoint();
-            inqCanvas.DrawContinuousLine(currentPoint.X, currentPoint.Y);
+            inqCanvas.DrawContinuousLine(currentPoint);
         }
 
         public async void OnPointerReleased(InqCanvasView inqCanvas, PointerRoutedEventArgs e)
@@ -68,9 +70,16 @@ namespace NuSysApp
 
             var currentPoint = e.GetCurrentPoint(inqCanvas);
 
-            //_inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _view.Width, currentPoint.Position.Y / _view.Height));
+            var transformedPoint = inqCanvas.Transform.Inverse.TransformPoint(new Point(currentPoint.Position.X, currentPoint.Position.Y));
+            _inqLineModel.AddPoint(new Point2d((transformedPoint.X) / Constants.MaxCanvasSize, (transformedPoint.Y) / Constants.MaxCanvasSize));
+
             _inqLineModel.IsGesture = currentPoint.Properties.IsBarrelButtonPressed || currentPoint.Properties.IsRightButtonPressed;
-            _inqLineModel.AddPoint(new Point2d(currentPoint.Position.X / _canvasSize.Width, currentPoint.Position.Y / _canvasSize.Height));
+
+            var inqCanvasModel = inqCanvas.ViewModel.Model;
+
+         //   var m = new InqLineModel(_inqLineModel.Id);
+          //  m.Points = new ObservableCollection<Point2d>(_inqLineModel.Points);
+            inqCanvasModel.FinalizeLineLocally(_inqLineModel);
 
             var request = new FinalizeInkRequest( new Message(await _inqLineModel.Pack()));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);

@@ -20,7 +20,6 @@ using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
-using NuSysApp.Components;
 using NuSysApp.Util;
 using System.IO;
 
@@ -59,6 +58,10 @@ namespace NuSysApp
             {
                 if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen &&_prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
                 {
+                    var source = (FrameworkElement)eventArgs.OriginalSource;
+                    if (source.DataContext is FloatingMenuViewModel)
+                        return;
+
                     xFloatingMenu.SetActive(Options.PenGlobalInk);
                     _prevOptions = Options.PenGlobalInk;
                     IsPenMode = true;
@@ -69,6 +72,10 @@ namespace NuSysApp
             {
                 if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
                 {
+                    var source = (FrameworkElement)eventArgs.OriginalSource;
+                    if (source.DataContext is FloatingMenuViewModel)
+                        return;
+
                     xFloatingMenu.SetActive(Options.SelectNode);
                     _prevOptions = Options.SelectNode;
                     IsPenMode = false;
@@ -138,10 +145,7 @@ namespace NuSysApp
 
         public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )
         {
-            //await LoadEmptyWorkspace();
-            SessionController.Instance.Locks.Clear();
             SessionController.Instance.IdToSendables.Clear();
-
             
             createdModels = new List<AtomModel>();
             var l = nodeStrings.ToList();
@@ -169,12 +173,11 @@ namespace NuSysApp
                 }
             }
 
-            var addedModels = new List<AtomModel>();
             foreach (var model in createdModels)
             {
                 if (!(model is InqCanvasModel))
                 {
-                    await SessionController.Instance.RecursiveCreate(model, addedModels);  
+                    await SessionController.Instance.RecursiveCreate(model);  
                 }
             }
         }
@@ -280,7 +283,6 @@ namespace NuSysApp
 
         public void SearchView()
         {
-            //xSearchWindowView.Visibility = Visibility.Visible;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
         }

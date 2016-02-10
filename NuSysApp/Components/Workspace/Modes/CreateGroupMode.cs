@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Security.Credentials.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -26,41 +27,59 @@ namespace NuSysApp
             _nodeManipulationMode = nodeManipulationMode;
         }
 
-
-
         public async override Task Activate()
         {
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
 
             foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
             {
+                userControl.ManipulationStarting += UserControlOnManipulationStarting;
                 userControl.ManipulationDelta += UserControlOnManipulationDelta;
                 userControl.ManipulationCompleted += UserControlOnManipulationCompleted;
             }
         }
 
-        private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
+        public async override Task Deactivate()
         {
+            WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
 
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
+            {
+                userControl.ManipulationDelta -= UserControlOnManipulationDelta;
+                userControl.ManipulationCompleted -= UserControlOnManipulationCompleted;
+                userControl.ManipulationStarting -= UserControlOnManipulationStarting;
+            }
+        }
+
+        private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        {
+            e.Container = _view;
+        }
+
+        private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
             if (!_isHovering)
+                return;
+            
+            if (((FrameworkElement)sender).DataContext is AreaNodeViewModel)
                 return;
 
             var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
 
+   
+
             if (id1 == id2)
                 return;
 
             var p = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
-                            manipulationCompletedRoutedEventArgs.Position);
+                            e.Position);
             p.X -= 150;
             p.Y -= 150;
 
-          
-
             
             await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
-             await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
+            await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
 
             var msg = new Message();
             msg["id1"] = id1;
@@ -74,12 +93,11 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewGroupRequest(msg));
         }
 
-        private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
+        private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var hits = VisualTreeHelper.FindElementsInHostCoordinates(args.Position,_view);
-            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel));
-            var draggedItem = (AnimatableUserControl) sender;
-
+            var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
+            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel) && !((uiElem as FrameworkElement).DataContext is AreaNodeViewModel));
+            var draggedItem = (AnimatableUserControl) sender;   
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
             
 
@@ -109,18 +127,6 @@ namespace NuSysApp
                 _timer = null;
                 _isHovering = false;
                 _hoveredNode = null;
-            }
-        }
-
-
-        public async override Task Deactivate()
-        {
-            WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
-
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is NodeViewModel))
-            {
-                userControl.ManipulationDelta -= UserControlOnManipulationDelta;
-                userControl.ManipulationCompleted -= UserControlOnManipulationCompleted;
             }
         }
     }

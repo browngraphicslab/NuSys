@@ -59,7 +59,7 @@ namespace NuSysApp
         private void OnGroupTagDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var groupTagNode = (LabelNodeView) sender;
-            groupTagNode.ToggleExpand();
+        //    groupTagNode.ToggleExpand();
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)

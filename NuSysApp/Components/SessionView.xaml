@@ -54,10 +54,6 @@
         </StackPanel>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
-
-        <!--<Grid Name ="overlayCanvas" Tapped="SearchHide" Visibility ="Collapsed">-->
-        <local:SearchWindowView x:Name="xSearchWindowView" FontFamily="/Assets/fonts/FiraSans-UltraLight.ttf" Visibility="Collapsed"></local:SearchWindowView>
-        <!--</Grid>-->
-
+        <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
     </Canvas>
 </Page>

@@ -65,6 +65,7 @@ namespace NuSysApp
 
         public FloatingMenuView()
         {
+            DataContext = new FloatingMenuViewModel();
             this.InitializeComponent();
 
             _buttons = new BiDictionary<FloatingMenuButtonView, Options>();
@@ -106,8 +107,8 @@ namespace NuSysApp
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSaveLoad"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSaveLoad"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 0), new Tuple<Storyboard, string>(windowClose, "pinWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 1), new Tuple<Storyboard, string>(windowOpen, "pinWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 0), new Tuple<Storyboard, string>(windowClose, "bucketWindow"));
