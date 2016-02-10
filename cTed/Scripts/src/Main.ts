@@ -244,9 +244,9 @@ class Main {
         console.log(this.selection.tags);
         if (this.selection.getContent() != "" && this.selection.getContent() != " ") {
             this.selections.push(this.selection); //add selection to selections array 
+            this.updateSelectedList();
+            chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         }
-        this.updateSelectedList();
-        chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         this.inkCanvas.clear();
         document.body.appendChild(this.canvas);
     }

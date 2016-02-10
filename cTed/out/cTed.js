@@ -2617,9 +2617,9 @@ var Main = (function () {
             console.log(_this.selection.tags);
             if (_this.selection.getContent() != "" && _this.selection.getContent() != " ") {
                 _this.selections.push(_this.selection); //add selection to selections array 
+                _this.updateSelectedList();
+                chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             }
-            _this.updateSelectedList();
-            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             _this.inkCanvas.clear();
             document.body.appendChild(_this.canvas);
         };
