@@ -105,7 +105,8 @@ namespace NuSysApp
 
         private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-             //OnLibraryElementDrag?.Invoke(sender,e);
+             OnLibraryElementDrag?.Invoke(sender,e);
+            /*
             var element = (LibraryElement) e.Items[0];
             e.Cancel = true;
             var view = SessionController.Instance.SessionView;
@@ -113,6 +114,7 @@ namespace NuSysApp
             rect.Width = 200;
             rect.Height = 200;
             view.ManipulationDelta += DraggingElementManipulation;
+            */
         }
 
         private void DraggingElementManipulation(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)

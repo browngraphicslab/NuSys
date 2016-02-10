@@ -148,6 +148,15 @@ namespace NuSysApp
 
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
+
+                if (request.GetRequestType() == Request.RequestType.SendableUpdateRequest)
+                {
+                    string id = message.GetString("id");
+                    var d = new Dictionary<string, string>();
+                    d["test"] = "test value";
+                    await _serverClient.UpdateContent(id, d);
+                }
+
                 if (packetType == NetworkClient.PacketType.TCP)
                 {
                     ManualResetEvent mre = new ManualResetEvent(false);
@@ -165,7 +174,9 @@ namespace NuSysApp
                         await SendRequest(message, packetType);
                     }
                     if (_requestEventDictionary.ContainsKey(requestID))
+                    {
                         mre.WaitOne();
+                    }
                 }
                 else
                 {
