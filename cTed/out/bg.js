@@ -64,7 +64,7 @@ var Background = (function () {
                 if (_this._isOpen) {
                     chrome.tabs.sendMessage(tabId, { msg: "show_menu" });
                 }
-                if (_this._isEnabled) {
+                if (_this._isEnabled && _this._isOpen) {
                     chrome.tabs.sendMessage(tabId, { msg: "enable_selection" });
                 }
             });
