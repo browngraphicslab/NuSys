@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -44,41 +46,44 @@ namespace NuSysApp
             //PointerReleased += OnPointerReleased;
         }
 
-        /*
-        private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
-        {
-            if (!((pointerRoutedEventArgs.OriginalSource as FrameworkElement).DataContext is FullScreenViewerViewModel)) { 
-                Anim.To(this, "Alpha", 0, 400);
-                IsHitTestVisible = false;
-                var vm = (FullScreenViewerViewModel)DataContext;
-                var textview = (vm.View as TextDetailView);
-                textview?.Dispose();
-            }
-        }
-        */
-
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             if (propertyChangedEventArgs.PropertyName == "View")
             {
-                Anim.To(this, "Alpha", 1, 400, null, (a,i) => { IsHitTestVisible = true; });
+                Anim.To(this, "Alpha", 1, 400, null, (a, i) => { IsHitTestVisible = true; });
                 Width = SessionController.Instance.SessionView.ActualWidth / 2;
+                Height = SessionController.Instance.SessionView.ActualHeight;
                 Properties.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 20;
                 TagContainer.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 20;
                 propLine.X2 = SessionController.Instance.SessionView.ActualWidth / 2 - 40;
                 tagLine.X2 = SessionController.Instance.SessionView.ActualWidth / 2 - 40;
                 NewTagBox.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 163;
-                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth / 4);
-                Height = SessionController.Instance.SessionView.ActualHeight;
+                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
+            }
+            if (propertyChangedEventArgs.PropertyName == "Title")
+            {
+                TitleEnter.Text = ((FullScreenViewerViewModel)DataContext).Title;
             }
             var vm = (FullScreenViewerViewModel) DataContext;
             Tags.ItemsSource = vm.Tags;
         }
 
-        private void AddTagButton_OnClick(object sender, RoutedEventArgs e)
+        private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.OriginalKey == VirtualKey.Enter)
+            {
+                await AddTag();
+            }
+        }
+
+        private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            await AddTag();
+        }
+
+        private async Task AddTag()
         {
             tagLine.Opacity = 1;
-
             var vm = (FullScreenViewerViewModel)DataContext;
             string newTag = NewTagBox.Text.Trim();
             if (newTag != "")
@@ -89,13 +94,30 @@ namespace NuSysApp
             NewTagBox.Text = "";
         }
 
-        private void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void topBar_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            /*
+            if ((e.OriginalSource as UIElement) == (UIElement)exitButton)
+            {
+                return;
+            }
+            Canvas.SetLeft(xContainer, Canvas.GetLeft(xContainer) + e.Delta.Translation.X);
+            Canvas.SetTop(xContainer, Canvas.GetTop(xContainer) + e.Delta.Translation.Y);
+            */
+        }
+
+        private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             Anim.To(this, "Alpha", 0, 400);
             IsHitTestVisible = false;
             var vm = (FullScreenViewerViewModel)DataContext;
             var textview = (vm.View as TextDetailView);
             textview?.Dispose();
+        }
+
+        private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
+        {
+            ((NodeViewModel) ((FullScreenViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
     }
 }

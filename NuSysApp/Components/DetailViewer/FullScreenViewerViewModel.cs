@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,8 @@ namespace NuSysApp
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
         private String TagToDelete;
         public Boolean DeleteOnFocus;
+        public string Title { get; set; }
+        public string Date { get; set; }
 
         public UserControl View { get; set; }
             
@@ -33,9 +36,24 @@ namespace NuSysApp
         {
             _nodeModel = model;
             View = await _viewFactory.CreateFromSendable(_nodeModel);
+            var tempvm = (AtomViewModel) View.DataContext;
+            tempvm.PropertyChanged += NodeVMPropertChanged;
             RaisePropertyChanged("View");
         }
 
+        private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var tempvm = (AtomViewModel)View.DataContext;
+            switch (e.PropertyName.ToLower())
+            {
+                case "title":
+                    Title = tempvm.Title;
+                    RaisePropertyChanged("Title");
+                    break;
+                default:
+                    break;
+            }
+        }
         public void MakeTagList()
         {
             Tags = new ObservableCollection<Button>();
