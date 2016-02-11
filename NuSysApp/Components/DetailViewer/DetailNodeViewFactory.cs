@@ -12,8 +12,6 @@ namespace NuSysApp
 {
     public class DetailNodeViewFactory
     {
-        public string Title { get; set; }
-
         public async Task<UserControl> CreateFromSendable(Sendable model)
         {
             UserControl view = null;
@@ -40,7 +38,6 @@ namespace NuSysApp
 
         private UserControl CreateLinkView(LinkModel model, List<UserControl> AtomViewList)
         {
-            Title = model.Title;
 
             var atom1Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom1).DataContext;
             var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
@@ -56,7 +53,6 @@ namespace NuSysApp
 
         private async Task<List<UserControl>> CreateLinkAtomList(LinkModel model)
         {
-            Title = model.Title;
             AtomModel atom1 = model.Atom1;
             AtomModel atom2 = model.Atom2;
             var factory = new FreeFormNodeViewFactory();
@@ -71,7 +67,6 @@ namespace NuSysApp
         private async Task<UserControl> CreateFromNodeType(NodeModel model)
         {
             UserControl view = null;
-            Title = model.Title;
 
             switch (model.NodeType)
             {
