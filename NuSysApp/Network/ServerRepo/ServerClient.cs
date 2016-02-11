@@ -192,8 +192,17 @@ namespace NuSysApp
             {
                 data = await content.ReadAsStringAsync();
             }
-            bool success = bool.Parse(data.Substring(1, data.Length - 2));
-            return success;
+            try
+            {
+                bool success = bool.Parse(data);
+                return success;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+
         }
     }
 }
