@@ -18,7 +18,7 @@ namespace NuSysApp
     {
         private AtomModel _nodeModel;
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
-        private String TagToDelete;
+        private String _tagToDelete;
         public Boolean DeleteOnFocus;
         public string Title { get; set; }
         public string Date { get; set; }
@@ -91,9 +91,9 @@ namespace NuSysApp
             deleteButton.FontSize = 15;
             deleteButton.FontWeight = FontWeights.Bold;
             deleteButton.Margin = new Thickness(0,0,3,0);
-            deleteButton.Tapped += DeleteButton_Tapped;
             deleteButton.PointerExited += DeleteButton_PointerExited;
-            TagToDelete = text;
+            deleteButton.PointerEntered += DeleteButton_PointerEntered;
+            deleteButton.Name = text;
             
             var tagContent = new TextBlock() { Text = text };
             tagContent.Foreground = new SolidColorBrush(Colors.White);
@@ -116,13 +116,19 @@ namespace NuSysApp
             return tagBlock;
         }
 
-        private void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        
+
+        private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             if (DeleteOnFocus)
             {
                 List<string> tags = (List<string>)_nodeModel.GetMetaData("tags");
-                tags.Remove(TagToDelete);
+                Debug.WriteLine("Tag removed in metadata: " + _tagToDelete);
+                tags.Remove(_tagToDelete);
+                //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
                 _nodeModel.SetMetaData("tags", tags);
+
+                //Debug.WriteLine("Tag removed in DV);
                 Tags.Remove((Button)sender);
                 RaisePropertyChanged("Tags");
             }
@@ -132,10 +138,11 @@ namespace NuSysApp
         {
             DeleteOnFocus = false;
         }
-
-        private void DeleteButton_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void DeleteButton_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             DeleteOnFocus = true;
+            _tagToDelete = ((TextBlock)sender).Name;
+            Debug.WriteLine(((TextBlock)sender).Name);
         }
     }
 }

@@ -131,6 +131,7 @@ namespace NuSysApp
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
+                tagBlock.IsHitTestVisible = false;
 
                 Tags.Add(tagBlock);
             }
