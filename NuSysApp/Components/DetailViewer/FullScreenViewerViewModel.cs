@@ -116,8 +116,6 @@ namespace NuSysApp
             return tagBlock;
         }
 
-        
-
         private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             if (DeleteOnFocus)

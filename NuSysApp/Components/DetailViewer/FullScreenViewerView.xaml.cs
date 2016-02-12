@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -42,7 +43,8 @@ namespace NuSysApp
               Tags.ItemsSource = vm.Tags;
               vm.MakeTagList();
           };
-            IsHitTestVisible = false;
+            //IsHitTestVisible = false;
+            IsHitTestVisible = true;
             //PointerReleased += OnPointerReleased;
         }
 
@@ -96,14 +98,13 @@ namespace NuSysApp
 
         private void topBar_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            /*
+            Debug.WriteLine("it's moving it's moving");
             if ((e.OriginalSource as UIElement) == (UIElement)exitButton)
             {
                 return;
             }
-            Canvas.SetLeft(xContainer, Canvas.GetLeft(xContainer) + e.Delta.Translation.X);
-            Canvas.SetTop(xContainer, Canvas.GetTop(xContainer) + e.Delta.Translation.Y);
-            */
+            Canvas.SetLeft(this, Canvas.GetLeft(this) + e.Delta.Translation.X);
+            Canvas.SetTop(this, Canvas.GetTop(this) + e.Delta.Translation.Y);
         }
 
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
