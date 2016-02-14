@@ -145,6 +145,7 @@ namespace NuSysApp
             var filedict = new Dictionary<string,StrokeTemplate >()
             {
                 { "Circle",StrokeTemplate.Circle },
+                { "Circle2",StrokeTemplate.Circle },
                 { "Square",StrokeTemplate.Square },
                 { "Scribble" ,StrokeTemplate.Scribble}
             };
