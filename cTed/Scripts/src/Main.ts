@@ -328,14 +328,6 @@ class Main {
         //called to add or remove canvas when toggle has been changed
         this.is_active = flag;
 
-        //this.selections.forEach((selection) => {
-        //    if (flag) {
-        //        selection.select();
-
-        //    } else
-        //        selection.deselect();
-        //});
-
         if (this.is_active) {
             try {
                 document.body.appendChild(this.canvas);
