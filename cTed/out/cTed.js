@@ -2521,6 +2521,32 @@ var HighlightBrush = (function () {
     };
     return HighlightBrush;
 })();
+var MarqueeBrush = (function () {
+    function MarqueeBrush() {
+        this._img = new Image();
+        this._img.src = chrome.extension.getURL("assets/brush.png");
+    }
+    MarqueeBrush.prototype.draw = function (x, y, inkCanvas) {
+        inkCanvas.removeStroke();
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "rgb(222,214,0)";
+        ctx.setLineDash([6]);
+        ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
+        ctx.stroke();
+    };
+    MarqueeBrush.prototype.redraw = function (stroke, inkCanvas) {
+        var firstPoint = stroke.points[0];
+        var lastPoint = stroke.points[stroke.points.length - 1];
+        this._startX = firstPoint.x;
+        this._startY = firstPoint.y;
+        this.draw(lastPoint.x, lastPoint.y, inkCanvas);
+    };
+    return MarqueeBrush;
+})();
 var Stroke = (function () {
     function Stroke() {
         console.log("new Stroke in Inkcanvas");
@@ -2907,32 +2933,6 @@ var Main = (function () {
     return Main;
 })();
 var main = new Main();
-var MarqueeBrush = (function () {
-    function MarqueeBrush() {
-        this._img = new Image();
-        this._img.src = chrome.extension.getURL("assets/brush.png");
-    }
-    MarqueeBrush.prototype.draw = function (x, y, inkCanvas) {
-        inkCanvas.removeStroke();
-        var canvas = inkCanvas._canvas;
-        var ctx = inkCanvas._context;
-        ctx.globalCompositeOperation = "source-over";
-        ctx.beginPath();
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "rgb(222,214,0)";
-        ctx.setLineDash([6]);
-        ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
-        ctx.stroke();
-    };
-    MarqueeBrush.prototype.redraw = function (stroke, inkCanvas) {
-        var firstPoint = stroke.points[0];
-        var lastPoint = stroke.points[stroke.points.length - 1];
-        this._startX = firstPoint.x;
-        this._startY = firstPoint.y;
-        this.draw(lastPoint.x, lastPoint.y, inkCanvas);
-    };
-    return MarqueeBrush;
-})();
 var AbstractSelection = (function () {
     function AbstractSelection() {
         this.selectedElements = new Array();
@@ -3738,6 +3738,12 @@ var MarqueeSelection = (function (_super) {
     };
     return MarqueeSelection;
 })(AbstractSelection);
+//var range = window.getSelection().getRangeAt(0),
+//    content = range.extractContents(),
+//    span = document.createElement('SPAN');
+//span.appendChild(content);
+//var htmlContent = span.innerHTML;
+//range.insertNode(span); 
 var StrokeClassifier = (function () {
     function StrokeClassifier() {
     }
