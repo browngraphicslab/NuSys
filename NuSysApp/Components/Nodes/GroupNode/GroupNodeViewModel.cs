@@ -30,9 +30,6 @@ namespace NuSysApp
             _nodeViewFactory = new GroupItemThumbFactory(); 
         }
 
-        public override void SetSize(double width, double height)
-        {
-            base.SetSize(width, width);
-        }
+  
     }
 }
