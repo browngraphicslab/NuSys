@@ -315,5 +315,15 @@ namespace NuSysApp
 
             await AccessList.OpenFile(token);
         }
+
+        /*
+        private void RtfTextBox_OnKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            Dispose();
+            String cont = (String)(rtfTextBox.GetRtfText());
+            var newPos = cont.Length - 1;
+            rtfTextBox.Document.Selection.SetRange(newPos, newPos);
+            rtfTextBox.Focus(FocusState.Keyboard);
+        }*/
     }
 }

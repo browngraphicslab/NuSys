@@ -43,7 +43,6 @@ namespace NuSysApp
               Tags.ItemsSource = vm.Tags;
               vm.MakeTagList();
           };
-            //IsHitTestVisible = false;
             IsHitTestVisible = true;
             //PointerReleased += OnPointerReleased;
         }
@@ -53,14 +52,19 @@ namespace NuSysApp
             if (propertyChangedEventArgs.PropertyName == "View")
             {
                 Anim.To(this, "Alpha", 1, 400, null, (a, i) => { IsHitTestVisible = true; });
-                Width = SessionController.Instance.SessionView.ActualWidth / 2;
-                Height = SessionController.Instance.SessionView.ActualHeight;
-                Properties.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 20;
-                TagContainer.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 20;
-                propLine.X2 = SessionController.Instance.SessionView.ActualWidth / 2 - 40;
-                tagLine.X2 = SessionController.Instance.SessionView.ActualWidth / 2 - 40;
-                NewTagBox.Width = SessionController.Instance.SessionView.ActualWidth / 2 - 163;
+                this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
+                this.Height = SessionController.Instance.SessionView.ActualHeight;
+                xContainer.Height = this.Height;
+                xContainer.Width = this.Width - 30;
+                resizer.Height = Height;
+                exitButtonContainer.Width = xContainer.Width;
+                Properties.Width = xContainer.Width - 15;
+                TagContainer.Width = xContainer.Width - 15;
+                propLine.X2 = Properties.Width - 15;
+                tagLine.X2 = TagContainer.Width - 15;
+                NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
+                Canvas.SetLeft(nodeContent, Canvas.GetLeft(xContainer) + 0.5 * (xContainer.ActualWidth - nodeContent.ActualWidth));
             }
             if (propertyChangedEventArgs.PropertyName == "Title")
             {
@@ -98,13 +102,14 @@ namespace NuSysApp
 
         private void topBar_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            Debug.WriteLine("it's moving it's moving");
             if ((e.OriginalSource as UIElement) == (UIElement)exitButton)
             {
                 return;
             }
             Canvas.SetLeft(this, Canvas.GetLeft(this) + e.Delta.Translation.X);
-            Canvas.SetTop(this, Canvas.GetTop(this) + e.Delta.Translation.Y);
+            //Canvas.SetTop(this, Canvas.GetTop(this) + e.Delta.Translation.Y);
+
+            e.Handled = true;
         }
 
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -120,5 +125,27 @@ namespace NuSysApp
         {
             ((NodeViewModel) ((FullScreenViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
+
+        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            double rightCoord = Canvas.GetLeft(this) + this.Width;
+
+            if (this.Width > 250 || e.Delta.Translation.X < 0)
+            {
+                this.Width -= e.Delta.Translation.X;
+                xContainer.Width = this.Width - 30;
+                exitButtonContainer.Width = xContainer.Width;
+                Properties.Width = xContainer.Width - 15;
+                TagContainer.Width = xContainer.Width - 15;
+                propLine.X2 = Properties.Width - 15;
+                tagLine.X2 = TagContainer.Width - 15;
+                NewTagBox.Width = TagContainer.Width - 163;
+                Canvas.SetLeft(nodeContent, Canvas.GetLeft(xContainer) + 0.5 * (xContainer.ActualWidth - nodeContent.ActualWidth));
+                Canvas.SetLeft(this, rightCoord - this.Width);
+
+                e.Handled = true;
+            }
+        }
+        
     }
 }

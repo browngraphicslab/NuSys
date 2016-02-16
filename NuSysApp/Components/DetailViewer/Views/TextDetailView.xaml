@@ -21,7 +21,7 @@
             <ComboBox x:Name="FontBox" Height="30" PlaceholderText="Font" ItemsSource="{x:Bind fonts}" SelectionChanged="FontChanged" DisplayMemberPath="Source"></ComboBox>
             <Button Name="SourceBttn" Height="30" Content="Go To Source" Foreground="White" HorizontalAlignment="Right" Click="OnGoToSource" Background="Transparent"></Button>
         </StackPanel>
-        <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                    BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch" />
+        <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" 
+                               FontSize="20" FontFamily="Calibri" BorderBrush="Transparent" AcceptsReturn="True" Visibility="Visible" VerticalAlignment="Stretch"/>
     </StackPanel>
 </UserControl>
