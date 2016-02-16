@@ -316,11 +316,7 @@ namespace NuSysApp
 
         #region Event Handlers
 
-        private void PartialLineAdditionHandler(object source, AddLineEventArgs e)
-        {
-            LastPartialLineModel = e.AddedLineModel;
-            RaisePropertyChanged("PartialLineAdded");
-        }
+
 
         #endregion Event Handlers
         #region Public Members

@@ -74,17 +74,17 @@ namespace NuSysApp
             RaisePropertyChanged("Title");
         }
 
-        protected virtual void OnPositionChanged(object source, PositionChangeEventArgs e)
+        protected virtual void OnPositionChanged(object source, double x, double y)
         {
-            SetPosition(Model.X, Model.Y);
+            SetPosition(x, y);
             UpdateAnchor();
         }
 
-        protected virtual void OnSizeChanged(object source, WidthHeightUpdateEventArgs e)
+        protected virtual void OnSizeChanged(object source, double width, double height)
         {
 
-            _width = Model.Width;
-            _height = Model.Height;
+            _width = width;
+            _height = height;
             UpdateAnchor();
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
@@ -97,7 +97,7 @@ namespace NuSysApp
             RaisePropertyChanged("Transform");
         }
 
-        protected virtual void OnCanEditChange(object source, CanEditChangedEventArg e)
+        protected virtual void OnCanEditChange(object source, AtomModel.EditStatus status)
         {
             CanEdit = Model.CanEdit;
         }
