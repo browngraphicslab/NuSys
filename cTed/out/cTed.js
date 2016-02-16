@@ -2521,6 +2521,81 @@ var HighlightBrush = (function () {
     };
     return HighlightBrush;
 })();
+var Stroke = (function () {
+    function Stroke() {
+        console.log("new Stroke in Inkcanvas");
+        this.points = new Array();
+    }
+    Stroke.prototype.push = function (x, y) {
+        this.points.push({ x: x, y: y });
+    };
+    Stroke.prototype.getBoundingRect = function () {
+        var minX = 1000000;
+        var maxX = -1000000;
+        var minY = 1000000;
+        var maxY = -1000000;
+        for (var i = 0; i < this.points.length; i++) {
+            var p = this.points[i];
+            maxY = p.y > maxY ? p.y : maxY;
+            maxX = p.x > maxX ? p.x : maxX;
+            minX = p.x < minX ? p.x : minX;
+            minY = p.y < minY ? p.y : minY;
+        }
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+    };
+    return Stroke;
+})();
+var StrokeType;
+(function (StrokeType) {
+    StrokeType[StrokeType["Null"] = 0] = "Null";
+    StrokeType[StrokeType["Line"] = 1] = "Line";
+    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
+    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
+    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
+    StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
+})(StrokeType || (StrokeType = {}));
+/// <reference path="Stroke.ts"/>
+/// <reference path="StrokeType.ts"/>
+var InkCanvas = (function () {
+    function InkCanvas(canvas) {
+        this._canvas = canvas;
+        this._context = canvas.getContext("2d");
+        this._brush = new HighlightBrush();
+        this._activeStroke = new Stroke();
+        console.log("new Canvas!!!!!");
+    }
+    InkCanvas.prototype.draw = function (x, y) {
+        this._activeStroke.push(x, y);
+        this._brush.draw(x, y, this);
+        console.log("draw ................... at " + x + ":" + y);
+    };
+    InkCanvas.prototype.removeStroke = function () {
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        //   this.update();
+    };
+    InkCanvas.prototype.switchBrush = function (strokeType) {
+        console.log("INKCANVAS brush switched to : " + strokeType);
+        switch (strokeType) {
+            //////STROKE TYPE CHANGE 
+            case StrokeType.Marquee:
+                this._brush = new MarqueeBrush();
+                break;
+            case StrokeType.Line:
+                this._brush = new HighlightBrush();
+                break;
+            default:
+                this._brush = new HighlightBrush();
+        }
+        this._brush.redraw(this._activeStroke, this);
+    };
+    InkCanvas.prototype.clear = function () {
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this._activeStroke = new Stroke();
+        this._brush = new HighlightBrush();
+    };
+    return InkCanvas;
+})();
+/// <reference path="../InkCanvas.ts" />
 var MarqueeBrush = (function () {
     function MarqueeBrush() {
         this._img = new Image();
@@ -2547,79 +2622,6 @@ var MarqueeBrush = (function () {
     };
     return MarqueeBrush;
 })();
-var Stroke = (function () {
-    function Stroke() {
-        console.log("new Stroke in Inkcanvas");
-        this.points = new Array();
-    }
-    Stroke.prototype.push = function (x, y) {
-        this.points.push({ x: x, y: y });
-    };
-    Stroke.prototype.getBoundingRect = function () {
-        var minX = 1000000;
-        var maxX = -1000000;
-        var minY = 1000000;
-        var maxY = -1000000;
-        for (var i = 0; i < this.points.length; i++) {
-            var p = this.points[i];
-            maxY = p.y > maxY ? p.y : maxY;
-            maxX = p.x > maxX ? p.x : maxX;
-            minX = p.x < minX ? p.x : minX;
-            minY = p.y < minY ? p.y : minY;
-        }
-        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-    };
-    return Stroke;
-})();
-/// <reference path="Stroke.ts"/>
-var InkCanvas = (function () {
-    function InkCanvas(canvas) {
-        this._canvas = canvas;
-        this._context = canvas.getContext("2d");
-        this._brush = new HighlightBrush();
-        this._activeStroke = new Stroke();
-        console.log("new Canvas!!!!!");
-    }
-    InkCanvas.prototype.draw = function (x, y) {
-        this._activeStroke.push(x, y);
-        this._brush.draw(x, y, this);
-        console.log("draw ................... at " + x + ":" + y);
-    };
-    InkCanvas.prototype.removeStroke = function () {
-        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        //   this.update();
-    };
-    InkCanvas.prototype.switchBrush = function (strokeType) {
-        console.log("INKCANVAS brush switched to : " + strokeType);
-        switch (strokeType) {
-            //////STROKE TYPE CHANGE
-            case StrokeType.Marquee:
-                this._brush = new MarqueeBrush();
-                break;
-            case StrokeType.Line:
-                this._brush = new HighlightBrush();
-                break;
-            default:
-                this._brush = new HighlightBrush();
-        }
-        this._brush.redraw(this._activeStroke, this);
-    };
-    InkCanvas.prototype.clear = function () {
-        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        this._activeStroke = new Stroke();
-        this._brush = new HighlightBrush();
-    };
-    return InkCanvas;
-})();
-var StrokeType;
-(function (StrokeType) {
-    StrokeType[StrokeType["Null"] = 0] = "Null";
-    StrokeType[StrokeType["Line"] = 1] = "Line";
-    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
-    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
-    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
-    StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
-})(StrokeType || (StrokeType = {}));
 /// <reference path="StrokeType.ts"/>
 var Main = (function () {
     function Main() {
@@ -2640,7 +2642,7 @@ var Main = (function () {
             _this.selection.type = _this.currentStrokeType;
             _this.selection.url = _this._url;
             _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
-            console.log(_this.selection.tags);
+            console.log(_this.selection);
             if (_this.selection.getContent() != "" && _this.selection.getContent() != " ") {
                 _this.selections.push(_this.selection); //add selection to selections array 
                 _this.updateSelectedList();
@@ -2652,7 +2654,7 @@ var Main = (function () {
         //mousedown action
         this.mouseDown = function (e) {
             console.log("mouse down");
-            _this.selection = new LineSelection();
+            _this.selection = new NullSelection();
             //     this.inkCanvas.switchBrush(this.currentStrokeType);
             try {
                 document.body.removeChild(_this.canvas);
@@ -2694,7 +2696,7 @@ var Main = (function () {
         var body = document.body, html = document.documentElement;
         Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
         Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-        console.log("Starting Nusys.....");
+        console.log("Starting Nusys.....!!");
         this.canvas = document.createElement("canvas");
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -2721,6 +2723,9 @@ var Main = (function () {
                         _this.highlightPrevious(s);
                     }
                     if (s.type == StrokeType.Line) {
+                        _this.highlightPrevious(s);
+                    }
+                    if (s.type == StrokeType.Null) {
                         _this.highlightPrevious(s);
                     }
                 }
@@ -2782,8 +2787,16 @@ var Main = (function () {
                 console.log(el);
             }
             else {
-                console.log(el);
-                $(el.tagName).get(el.index).style.backgroundColor = "yellow";
+                if (el.tagName == "IMG") {
+                    var label = $("<span class='wow'>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", ($($(el.tagName).get(el.index)).offset().top - 5) + "px");
+                    label.css("left", ($($(el.tagName).get(el.index)).offset().left - 5) + "px");
+                }
+                else {
+                    $(el.tagName).get(el.index).style.backgroundColor = "yellow";
+                }
             }
         });
     };
@@ -2806,8 +2819,9 @@ var Main = (function () {
                     ;
                     break;
                 case "hide_menu":
+                    if (document.body.contains(_this.canvas))
+                        document.body.removeChild(_this.canvas);
                     $(_this.menuIframe).css("display", "none");
-                    document.body.removeChild(_this.canvas);
                     break;
                 case "enable_selection":
                     _this.toggleEnabled(true);
@@ -2910,7 +2924,7 @@ var Main = (function () {
             catch (ex) {
                 console.log("could't add canvas");
             }
-            this.currentStrokeType = StrokeType.Bracket;
+            this.currentStrokeType = StrokeType.Null;
             this.canvas.addEventListener("mousedown", this.mouseDown);
             this.canvas.addEventListener("mouseup", this.mouseUp);
             this.canvas.addEventListener("mousemove", this.mouseMove);
@@ -2926,7 +2940,10 @@ var Main = (function () {
     };
     return Main;
 })();
-var main = new Main();
+$(document).ready(function () {
+    console.log("REQDT");
+    var main = new Main();
+});
 var AbstractSelection = (function () {
     function AbstractSelection() {
         this.selectedElements = new Array();
@@ -3731,6 +3748,52 @@ var MarqueeSelection = (function (_super) {
         }
     };
     return MarqueeSelection;
+})(AbstractSelection);
+var NullSelection = (function (_super) {
+    __extends(NullSelection, _super);
+    function NullSelection() {
+        _super.call(this);
+        this._startX = 0;
+        this._startY = 0;
+        this._endX = 0;
+        this._endY = 0;
+        this._content = "";
+        console.log("Line SELECTION");
+    }
+    NullSelection.prototype.start = function (x, y) {
+        this._startX = x;
+        this._startY = y;
+        console.log("line start" + x + ":" + y);
+    };
+    NullSelection.prototype.end = function (x, y) {
+        this._endX = x;
+        this._endY = y;
+        this.analyzeContent();
+    };
+    NullSelection.prototype.getContent = function () {
+        return this._content;
+    };
+    NullSelection.prototype.analyzeContent = function () {
+        console.log("null selection... only for image");
+        var img = document.elementFromPoint(this._startX, this._startY);
+        console.info(img);
+        console.log(img.tagName);
+        if (img.tagName == "IMG") {
+            console.log("IMAGE SELECTED!");
+            var index = $(img.tagName).index(img);
+            var obj = { type: "null", tagName: img.tagName, index: index };
+            $(img).attr("src", $(img).prop('src'));
+            $(img).removeAttr("srcset");
+            this._content = $(img).prop('outerHTML');
+            var label = $("<span class='wow'>Selected</span>");
+            label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+            $("body").append(label);
+            label.css("top", ($(img).offset().top - 5) + "px");
+            label.css("left", ($(img).offset().left - 5) + "px");
+            this.selectedElements.push(obj);
+        }
+    };
+    return NullSelection;
 })(AbstractSelection);
 //var range = window.getSelection().getRangeAt(0),
 //    content = range.extractContents(),

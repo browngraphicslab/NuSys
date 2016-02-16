@@ -1,4 +1,6 @@
 ﻿/// <reference path="Stroke.ts"/>
+/// <reference path="StrokeType.ts"/>
+
 
 class InkCanvas {
 
@@ -29,7 +31,7 @@ class InkCanvas {
     switchBrush(strokeType) {
         console.log("INKCANVAS brush switched to : " + strokeType);
         switch (strokeType) {
-            //////STROKE TYPE CHANGE
+            //////STROKE TYPE CHANGE 
             case StrokeType.Marquee:
                 this._brush = new MarqueeBrush();
                 break;

@@ -36,8 +36,7 @@ class Main {
 
         Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight,
             html.clientHeight, html.scrollHeight, html.offsetHeight);
-
-        console.log("Starting Nusys.....");
+        console.log("Starting Nusys.....!!");
 
         this.canvas = document.createElement("canvas");
         this.canvas.width = window.innerWidth;
@@ -49,9 +48,7 @@ class Main {
         this.inkCanvas = new InkCanvas(this.canvas);
         this._url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.set_message_listener();
-
         this.showPreviousSelections();
-
     }
 
     showPreviousSelections(): void {
@@ -67,6 +64,9 @@ class Main {
                         this.highlightPrevious(s);
                     }
                     if (s.type == StrokeType.Line) {
+                        this.highlightPrevious(s);
+                    }
+                    if (s.type == StrokeType.Null) {
                         this.highlightPrevious(s);
                     }
                 }
@@ -127,14 +127,19 @@ class Main {
                 console.log(el);
 
             } else {
-                console.log(el);
-                $(el.tagName).get(el.index).style.backgroundColor = "yellow";
-                //ele["style"].backgroundColor = "yellow";
+                if (el.tagName == "IMG") {
+                    var label = $("<span class='wow'>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", ($($(el.tagName).get(el.index)).offset().top - 5) + "px");
+                    label.css("left", ($($(el.tagName).get(el.index)).offset().left - 5) + "px");
+                } else {
+                    $(el.tagName).get(el.index).style.backgroundColor = "yellow";
+                }
             }
         });
 
     }
-
     //adds listener to chrome, specifying actions in relation to different incoming messages. 
     set_message_listener() {
         chrome.runtime.onMessage.addListener(
@@ -151,8 +156,9 @@ class Main {
                         if (this.isSelecting) { document.body.appendChild(this.canvas) };
                         break;
                     case "hide_menu":
+                        if (document.body.contains(this.canvas))
+                            document.body.removeChild(this.canvas);
                         $(this.menuIframe).css("display", "none");
-                        document.body.removeChild(this.canvas);
                         break;
                     case "enable_selection":
                         this.toggleEnabled(true);
@@ -241,7 +247,7 @@ class Main {
         this.selection.type = this.currentStrokeType;
         this.selection.url = this._url;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
-        console.log(this.selection.tags);
+        console.log(this.selection);
         if (this.selection.getContent() != "" && this.selection.getContent() != " ") {
             this.selections.push(this.selection); //add selection to selections array 
             this.updateSelectedList();
@@ -263,7 +269,7 @@ class Main {
     //mousedown action
     mouseDown = (e): void => {
         console.log("mouse down");
-        this.selection = new LineSelection();
+        this.selection = new NullSelection();
    //     this.inkCanvas.switchBrush(this.currentStrokeType);
         try {
             document.body.removeChild(this.canvas);
@@ -336,7 +342,7 @@ class Main {
             } catch (ex) {
                 console.log("could't add canvas");
             }
-            this.currentStrokeType = StrokeType.Bracket;
+            this.currentStrokeType = StrokeType.Null;
             this.canvas.addEventListener("mousedown", this.mouseDown);
             this.canvas.addEventListener("mouseup", this.mouseUp);
             this.canvas.addEventListener("mousemove", this.mouseMove);
@@ -350,5 +356,7 @@ class Main {
     }
 
 }
-
-var main = new Main();
+$(document).ready(function () {
+    console.log("REQDT");
+    var main = new Main();
+});

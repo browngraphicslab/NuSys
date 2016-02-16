@@ -41,11 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\lib\collections.ts" />
-    <TypeScriptCompile Include="Scripts\src\HighlightBrush.ts" />
-    <TypeScriptCompile Include="Scripts\src\IBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\brush\HighlightBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\brush\IBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\brush\MarqueeBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\InkCanvas.ts" />
     <TypeScriptCompile Include="Scripts\src\Main.ts" />
-    <TypeScriptCompile Include="Scripts\src\MarqueeBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\AbstractSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />

@@ -1,4 +1,5 @@
-﻿class MarqueeBrush implements IBrush {
+﻿
+class MarqueeBrush implements IBrush {
 
     _img: HTMLImageElement;
     _startX: number;
