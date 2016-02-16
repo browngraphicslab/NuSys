@@ -227,6 +227,7 @@ namespace NuSysApp
                 xWorkspaceTitle.Text = model.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
@@ -260,6 +261,7 @@ namespace NuSysApp
             m["title"] = model.Title;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
                 NetworkClient.PacketType.UDP);
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
         private void TitleChanged(object source, string title)
         {
@@ -387,6 +389,26 @@ namespace NuSysApp
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
                 Canvas.SetLeft(ChatPopup, 5);
             }
+        }
+
+        private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (FloatingMenu.Visibility == Visibility.Collapsed)
+            {
+                Point pos = e.GetPosition(mainCanvas);
+                Canvas.SetTop(FloatingMenu, pos.Y);
+                Canvas.SetLeft(FloatingMenu, pos.X);
+                FloatingMenu.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FloatingMenu.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void UIElement_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            
         }
     }
 }
