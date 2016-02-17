@@ -61,7 +61,7 @@ namespace NuSysApp
 
 
                 await vm.InitPdfViewer();
-
+                /*
 
                 _inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
                 xWrapper.Children.Insert(1, _inqCanvasView);
@@ -79,6 +79,8 @@ namespace NuSysApp
                     Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
                 };
 
+    */
+
             };
         }
 
@@ -86,7 +88,7 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             await vm.FlipLeft();
-            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+          //  (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //  nodeTpl.inkCanvas.ReRenderLines();
 
@@ -96,7 +98,7 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             await vm.FlipRight();
-            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+         //   (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
            // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //   nodeTpl.inkCanvas.ReRenderLines();
