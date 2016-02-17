@@ -20,22 +20,21 @@ namespace NuSysApp
 {
     public sealed partial class WebDetailView : UserControl
     {
-       public WebDetailView(WebNodeViewModel vm)
+        public WebDetailView(WebNodeViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
-          
-            Loaded += delegate(object sender, RoutedEventArgs args)
-            {
-                var sw = SessionController.Instance.SessionView.ActualWidth/1.5;
-                var sh = SessionController.Instance.SessionView.ActualHeight/2;
 
-                var ratio = xWebView.Width > xWebView.Height ? xWebView.Width/sw : xWebView.Height/sh;
-                //xWebView.Width = (xWebView.Width/ratio);
-                xWebView.Height = (xWebView.Height/ratio);
-                //xWebView.Height = xWebView.Height/ratio;
-                xBorder.Width = xWebView.Width + 5;
-                xBorder.Height = xWebView.Height + 5;
+            Loaded += delegate (object sender, RoutedEventArgs args)
+            {
+                var sw = SessionController.Instance.SessionView.ActualWidth / 1.5;
+                var sh = SessionController.Instance.SessionView.ActualHeight / 2;
+
+                var ratio = xWebView.Width > xWebView.Height ? xWebView.Width / sw : xWebView.Height / sh;
+                xWebView.Width = (xWebView.Width / ratio);
+                xWebView.Height = (xWebView.Height / ratio);
+                webViewPanel.Width = xWebView.Width;
+                webViewPanel.Height = xWebView.Height;
                 xScrollViewer.Width = xWebView.Width;
                 xScrollViewer.Height = xWebView.Height;
 
@@ -168,7 +167,7 @@ namespace NuSysApp
             {
                 Forward.IsEnabled = false;
             }
-            
+
         }
 
         private void Refresh_OnClick(object sender, RoutedEventArgs e)
@@ -177,3 +176,4 @@ namespace NuSysApp
         }
     }
 }
+

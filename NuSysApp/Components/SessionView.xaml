@@ -41,7 +41,6 @@
     </Page.Resources>
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
-        <local:FloatingMenuView x:Name="xFloatingMenu"/>
         <local:MediaRecorderView x:Name="xMediaRecorder" VerticalAlignment="Top"/>
         <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
@@ -55,5 +54,6 @@
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
+        <local:FloatingMenuView x:Name="xFloatingMenu"/>
     </Canvas>
 </Page>

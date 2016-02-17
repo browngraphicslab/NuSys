@@ -43,6 +43,9 @@ namespace NuSysApp
         {
 
             InitializeComponent();
+
+            rtfTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
+
             DataContext = vm;
 
             var model = (TextNodeModel)vm.Model;
@@ -89,6 +92,8 @@ namespace NuSysApp
             fonts.Add(new FontFamily("Courier New"));
             fonts.Add(new FontFamily("Times New Roman"));
             fonts.Add(new FontFamily("Verdana"));
+
+            controlPanel.Width = grid.Width;
         }
 
         //private async Task InitializeRecog()
@@ -312,5 +317,15 @@ namespace NuSysApp
 
             await AccessList.OpenFile(token);
         }
+
+        /*
+        private void RtfTextBox_OnKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            Dispose();
+            String cont = (String)(rtfTextBox.GetRtfText());
+            var newPos = cont.Length - 1;
+            rtfTextBox.Document.Selection.SetRange(newPos, newPos);
+            rtfTextBox.Focus(FocusState.Keyboard);
+        }*/
     }
 }

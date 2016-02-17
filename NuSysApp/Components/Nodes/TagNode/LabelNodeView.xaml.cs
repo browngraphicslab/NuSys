@@ -30,7 +30,6 @@ namespace NuSysApp
          
             Loaded += delegate
             {
-                Canvas.SetLeft(NumBorder, Title.ActualWidth - 10);
                 Anim.FromTo(this, "Alpha", 0, 1, 350, new QuinticEase() { EasingMode = EasingMode.EaseIn });
             };
             
