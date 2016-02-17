@@ -56,6 +56,7 @@ namespace NuSysApp
                 this.Height = SessionController.Instance.SessionView.ActualHeight;
                 xContainer.Height = this.Height;
                 xContainer.Width = this.Width - 30;
+                nodeContent.Width = xContainer.Width - 75;
                 resizer.Height = Height;
                 exitButtonContainer.Width = xContainer.Width;
                 Properties.Width = xContainer.Width - 15;
@@ -135,6 +136,7 @@ namespace NuSysApp
                 this.Width -= e.Delta.Translation.X;
                 xContainer.Width = this.Width - 30;
                 exitButtonContainer.Width = xContainer.Width;
+                nodeContent.Width = xContainer.Width - 75;
                 Properties.Width = xContainer.Width - 15;
                 TagContainer.Width = xContainer.Width - 15;
                 propLine.X2 = Properties.Width - 15;

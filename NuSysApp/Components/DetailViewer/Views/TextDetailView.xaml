@@ -9,8 +9,8 @@
     d:DesignHeight="750"
     d:DesignWidth="600">
     
-    <StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Width="500" Height="620" Margin="0,200,0,0">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Background="#565F6D" Width="500">
+    <StackPanel x:Name="grid" Background="White" VerticalAlignment="Top" Height="620" Margin="0,200,0,0">
+        <StackPanel x:Name="controlPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="#565F6D">
             <Button Height="30" Width="30" Tapped="OnRecordClick" Background="Transparent">
                 <Image Source="/Assets/icon_record.png" Height="15"></Image>
             </Button>

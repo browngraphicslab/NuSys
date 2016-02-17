@@ -92,6 +92,8 @@ namespace NuSysApp
             fonts.Add(new FontFamily("Courier New"));
             fonts.Add(new FontFamily("Times New Roman"));
             fonts.Add(new FontFamily("Verdana"));
+
+            controlPanel.Width = grid.Width;
         }
 
         //private async Task InitializeRecog()
