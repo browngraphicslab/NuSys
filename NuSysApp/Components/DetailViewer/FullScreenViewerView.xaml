@@ -10,8 +10,10 @@
     d:DesignWidth="400">
     <StackPanel Orientation="Horizontal">
         <StackPanel>
-            <StackPanel Orientation="Vertical" x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Top" Background="LightGray" Width="30" Height="50"
-                        ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All"/>
+            <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Top" Background="LightGray" Width="30"
+                        ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
+                <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            </Grid>
         </StackPanel>
         <StackPanel>
             <Grid x:Name="xContainer" Background="#95A7B8" HorizontalAlignment="Right">

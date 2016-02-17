@@ -66,6 +66,7 @@ namespace NuSysApp
                 NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                 Canvas.SetLeft(nodeContent, Canvas.GetLeft(xContainer) + 0.5 * (xContainer.ActualWidth - nodeContent.ActualWidth));
+                Canvas.SetTop(resizerImage, (resizer.Height / 2) - (resizerImage.Height / 2));
             }
             if (propertyChangedEventArgs.PropertyName == "Title")
             {
