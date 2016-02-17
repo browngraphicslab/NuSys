@@ -22,6 +22,7 @@ namespace NuSysApp
         public int Page { get; set; }
         public SolidColorBrush Stroke { get; set; }
         public bool IsGesture { get; set; }
+        public DoubleCollection StrokeDashArray { get; set; }
 
         public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
         public event DeleteInqLineEventHandler OnDeleteInqLine;

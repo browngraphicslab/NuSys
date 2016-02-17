@@ -10,6 +10,7 @@ namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
+        public static bool TestDisable = false;
         public PanZoomMode(WorkspaceView view) : base(view) { }
 
         public override async Task Activate()
@@ -92,7 +93,11 @@ namespace NuSysApp
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-
+            if (TestDisable)
+            {
+                e.Handled = true;
+                return;
+            }
             var vm = (WorkspaceViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;

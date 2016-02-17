@@ -40,7 +40,7 @@
         </Style>
     </Page.Resources>
 
-    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop">
+    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" PointerPressed="mainCanvas_PointerPressed" PointerMoved="mainCanvas_PointerMoved" PointerReleased="mainCanvas_PointerReleased">
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
         <local:MediaRecorderView x:Name="xMediaRecorder" VerticalAlignment="Top"/>
         <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>

@@ -161,6 +161,17 @@ namespace NuSysApp
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             }
+            if(e.PropertyName == "Selected")
+            {
+                if (vm.Selected)
+                {
+                    title.Background = new SolidColorBrush(Windows.UI.Colors.Yellow);
+                }
+                else
+                {
+                    title.Background = null;
+                }
+            }
             //if (e.PropertyName == "UserColor")
             //{
             //    highlight.BorderBrush = vm.UserColor;

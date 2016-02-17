@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Newtonsoft.Json;
 using NuSysApp.Util;
 using System.IO;
+using NuSysApp.Components;
 
 namespace NuSysApp
 {
@@ -35,6 +36,10 @@ namespace NuSysApp
         private CortanaMode _cortanaModeInstance;
         private WorkspaceView _activeWorkspace;
         private Options _prevOptions = Options.SelectNode;
+        private bool _lassoAllowed = false;
+        private bool _lassoStarted = false;
+        
+        private Polyline _lasso;
 
     //    private static List<AtomModel> addedModels;
         private static List<AtomModel> createdModels;
@@ -378,6 +383,65 @@ namespace NuSysApp
             {
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
                 Canvas.SetLeft(ChatPopup, 5);
+            }
+        }
+
+        public bool AllowLasso
+        {
+            get { return _lassoAllowed; }
+            set {
+                _lassoAllowed = value;
+                if (value)
+                    Debug.WriteLine("LASSO IS ON");
+                else
+                    Debug.WriteLine("LASSO IS OFF");
+            }
+        }
+
+        private void mainCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (_lassoAllowed)
+            {
+                _lasso = new Polyline()
+                {
+                    Stroke = new SolidColorBrush(Colors.Blue),
+                    StrokeDashArray = new DoubleCollection() { 5, 2 },
+                };
+                double x = e.GetCurrentPoint(mainCanvas).RawPosition.X;
+                double y = e.GetCurrentPoint(mainCanvas).RawPosition.Y;
+                _lasso.Points.Add(new Point(x,y));
+                mainCanvas.Children.Add(_lasso);
+
+                _lassoStarted = true;
+            }
+        }
+
+        private void mainCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (_lassoAllowed&&_lassoStarted)
+            {
+               // mainCanvas.TransformToVisual(null).TransformPoint(new Point(0, 0));
+                double x = e.GetCurrentPoint(mainCanvas).RawPosition.X;
+                double y = e.GetCurrentPoint(mainCanvas).RawPosition.Y;
+               
+                _lasso.Points.Add(new Point(x,y));
+                
+            }
+        }
+
+        private void mainCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (_lassoAllowed&&_lassoStarted&&_lasso.Points.Count>1)
+            {
+                double x = e.GetCurrentPoint(mainCanvas).Position.X;
+                double y = e.GetCurrentPoint(mainCanvas).Position.Y;
+                _lasso.Points.Add(new Point(x, y));
+             
+
+
+                //_lasso.TransformToVisual(null).TransformPoint(new Point(0, 0));
+                new SelectionHull(_lasso, mainCanvas);
+                _lassoStarted = false;
             }
         }
     }

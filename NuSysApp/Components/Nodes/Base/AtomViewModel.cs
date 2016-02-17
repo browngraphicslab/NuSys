@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Components;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class AtomViewModel : BaseINPC
+    public abstract class AtomViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
         private double _x, _y, _height, _width, _alpha;
@@ -255,6 +256,55 @@ namespace NuSysApp
             RaisePropertyChanged("IsSelected");
         }
 
+        public void select()
+        {
+            _isSelected = true;
+            Color = new SolidColorBrush(Colors.Yellow);
+            
+        }
+
+        public void deselect()
+        {
+            _isSelected = false;
+            Color =  new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+        }
+
+        public bool isSelected()
+        {
+            return _isSelected;
+        }
+
+        public bool Selected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (value)
+                {
+                    if (!_isSelected)
+                    {
+                        SessionController.Instance.ActiveWorkspace.SelectedContent.Add(this);
+                        Debug.WriteLine("A node has been selected!");
+                        select();
+                    }
+                }
+                else
+                {
+                    if (_isSelected)
+                    {
+                        if (SessionController.Instance.ActiveWorkspace.SelectedContent.Contains(this))
+                        {
+                            SessionController.Instance.ActiveWorkspace.SelectedContent.Remove(this);
+                            deselect();
+                        }
+                    }
+                }
+                RaisePropertyChanged("Selected");
+               // _isSelected = value;
+            }
+
+        }
+
         public bool IsMultiSelected
         {
             get { return _isMultiSelected; }
@@ -410,6 +460,32 @@ namespace NuSysApp
         //public string Tags { get; set; }
 
         public ObservableCollection<Button> Tags { get; set; }
+
+        public virtual PointCollection ReferencePoints
+        {
+            get
+            {
+                PointCollection pts = new PointCollection();
+                pts.Add(new Point(_x, _y));
+                pts.Add(new Point(_x + Width, _y));
+                pts.Add(new Point(_x, _y + Height));
+                pts.Add(new Point(_x + Width, _y + Height));
+
+               
+
+                return pts;
+               
+            }
+        }
+
+        public bool ContainsLink
+        {
+            get
+            {
+                return LinkList.Count > 0;
+            }
+        }
+
         #endregion Public Properties
     }
 }

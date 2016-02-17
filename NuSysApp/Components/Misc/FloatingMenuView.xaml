@@ -91,7 +91,7 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Canvas RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
+    <Canvas RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible"  >
         <StackPanel x:Name="FloatingMenuPanel" Margin="0,20,0,0">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
@@ -100,6 +100,8 @@
             <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" />
             <local:FloatingMenuButtonView x:Name="btnMisc" Icon="ms-appx:///Assets/icon_mainmenu_additional.png" />
             <local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/icon_mainmenu_search.png"  Window="{Binding ElementName=bucketWindow}"/>
+            <local:FloatingMenuButtonView x:Name="btnLasso" Icon="ms-appx:///Assets/icon_mainmenu_multiselect.png"  Window="{Binding ElementName=bucketWindow}"/>
+            <Button Name="lassoButton" Background="Crimson" Width="75" Height="75" Content="Lasso" Click="lassoButton_Click"/>
 
         </StackPanel>
 
@@ -160,7 +162,7 @@
         <!--PinList="{Binding PinViewModelList}"-->
 
         <!--UserWindow-->
-        <local:UserWindowView x:Name="userWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
+        <local:UserWindowView x:Name="userWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False" >
             <local:UserWindowView.RenderTransform>
                 <CompositeTransform />
             </local:UserWindowView.RenderTransform>

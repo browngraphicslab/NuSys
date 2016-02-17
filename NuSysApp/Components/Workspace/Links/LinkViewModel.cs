@@ -100,6 +100,21 @@ namespace NuSysApp
             RaisePropertyChanged("IsSelected");
         }
 
+        public override PointCollection ReferencePoints
+        {
+            get
+            {
+                PointCollection pts = new PointCollection();
+                pts.Add(new Point2d(Anchor.X,Anchor.Y));
+
+
+
+                return pts;
+
+            }
+        }
+
+
         #region Private Members
 
         private AtomViewModel _atom1, _atom2;

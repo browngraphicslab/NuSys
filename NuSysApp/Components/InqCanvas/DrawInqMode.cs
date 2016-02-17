@@ -41,6 +41,7 @@ namespace NuSysApp
             _inqLineModel = new InqLineModel(SessionController.Instance.GenerateId());
             _inqLineModel.InqCanvasId = _canvasId;
             _inqLineModel.Stroke = new SolidColorBrush(Colors.Black);
+           // _inqLineModel.StrokeDashArray = new DoubleCollection() { 5, 2 };
             _inqLineModel.StrokeThickness = Math.Max(4.0 * e.GetCurrentPoint(inqCanvas).Properties.Pressure, 2);
 
 

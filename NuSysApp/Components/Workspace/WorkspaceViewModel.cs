@@ -13,6 +13,8 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -25,6 +27,7 @@ namespace NuSysApp
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private AtomViewModel _preparedAtomVm;
+        private List<ISelectable> _selectedContent = new List<ISelectable>();
 
         #endregion Private Members
 
@@ -310,6 +313,40 @@ namespace NuSysApp
 
             var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
             //  //await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
+        }
+
+        public List<ISelectable> AllContent
+        {
+            get
+            {
+               
+                List<ISelectable> list = new List<ISelectable>();
+                foreach (FrameworkElement e in AtomViewList)
+                {
+                    list.Add((ISelectable)e.DataContext);
+                }
+                return list;
+
+            }
+        }
+
+        public void DeselectAll()
+        {
+            while (SelectedContent.Count() > 0)
+            {
+                SelectedContent[0].Selected = false;
+                
+                
+        }
+    }
+
+        public List<ISelectable> SelectedContent
+        {
+            get
+            {
+                return _selectedContent;
+            }
+
         }
 
 

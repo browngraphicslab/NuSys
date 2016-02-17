@@ -160,6 +160,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\SelectionHull.cs" />
+    <Compile Include="Components\ISelectable.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\DetailViewer\DetailNodeViewFactory.cs" />
     <Compile Include="Components\DetailViewer\FullScreenViewerView.xaml.cs">
@@ -208,10 +210,10 @@
     <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Links\BezierLinkView.xaml.cs">
+    <Compile Include="Components\Workspace\Links\BezierLinkView.xaml.cs">
       <DependentUpon>BezierLinkView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Links\LineLinkView.xaml.cs">
+    <Compile Include="Components\Workspace\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
@@ -444,7 +446,7 @@
     <Compile Include="Components\Nodes\AudioNode\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Links\LinkViewModel.cs" />
+    <Compile Include="Components\Workspace\Links\LinkViewModel.cs" />
     <Compile Include="Components\Nodes\Base\NodeViewModel.cs" />
     <Compile Include="Components\Nodes\PdfNode\PdfNodeViewModel.cs" />
     <Compile Include="Components\Nodes\TextNode\TextNodeViewModel.cs" />
@@ -579,11 +581,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Links\BezierLinkView.xaml">
+    <Page Include="Components\Workspace\Links\BezierLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Links\LineLinkView.xaml">
+    <Page Include="Components\Workspace\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

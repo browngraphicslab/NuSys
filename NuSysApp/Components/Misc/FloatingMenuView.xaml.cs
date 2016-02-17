@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
+
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -37,7 +38,8 @@ namespace NuSysApp
             MiscLoad,
             MiscSave,
             MiscPin,
-            MiscUsers
+            MiscUsers,
+     
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -46,6 +48,7 @@ namespace NuSysApp
         public delegate void OnModeChangeHandler(Options mode, bool isFixed);
         private Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>> _storyboards;
         private WorkspaceView _workspaceView;
+       
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.
@@ -117,12 +120,15 @@ namespace NuSysApp
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 0), new Tuple<Storyboard, string>(windowClose, "searchWindow"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 1), new Tuple<Storyboard, string>(windowOpen, "searchWindow"));
 
+           
 
             _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
             _activeSubMenuButtons[btnSelect] = btnSelectNode;
             _activeSubMenuButtons[btnPen] = btnGlobalInk;
             _activeSubMenuButtons[btnAdd] = btnNewNode;
             _activeSubMenuButtons[btnMisc] = btnLoad;
+
+            
 
 
             // Register tap listeners
@@ -275,5 +281,22 @@ namespace NuSysApp
         {
             get;set;
         }
+
+        private void lassoButton_Click(object sender, RoutedEventArgs e)
+        {
+            SessionView.AllowLasso = !SessionView.AllowLasso;
+            if (SessionView.AllowLasso)
+            {
+                lassoButton.Content = "Lasso\nOn";
+                lassoButton.Background = new SolidColorBrush(Colors.Yellow);
+                PanZoomMode.TestDisable = true ;
+            }
+            else
+            {
+                lassoButton.Content = "Lasso\nOff";
+                lassoButton.Background = new SolidColorBrush(Colors.Crimson);
+            }
+        }
+       
     }
 }

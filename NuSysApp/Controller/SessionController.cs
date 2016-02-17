@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NuSysApp.Components;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -29,6 +31,8 @@ namespace NuSysApp
             new Dictionary<string, Tuple<AtomModel, LoadNodeView>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
+
+        
 
         private SessionController()
         {
@@ -178,6 +182,8 @@ namespace NuSysApp
         {
             return Guid.NewGuid().ToString("N");
         }
+
+        
 
         #region Speech Recognition
 

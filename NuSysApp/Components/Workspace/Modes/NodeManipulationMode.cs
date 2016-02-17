@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuSysApp.Components;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -89,12 +90,29 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
 
-           // Debug.WriteLine("delta");
+            // Debug.WriteLine("delta");
+
+          
+
 
             var s = (UserControl) sender;
 
             var vm = s.DataContext as AtomViewModel;
-            vm?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+
+            if (SessionController.Instance.ActiveWorkspace.SelectedContent.Contains(vm))
+            {
+                //move all selected content if a selected node is moved
+                foreach (var vmodel in SessionController.Instance.ActiveWorkspace.SelectedContent)
+                {
+                    if(!vmodel.ContainsLink)
+                        vmodel?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+                }
+            }
+            else {
+                SessionController.Instance.ActiveWorkspace.DeselectAll();
+                vm?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+            }
         }
+       
     }
 }
