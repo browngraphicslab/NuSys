@@ -14,7 +14,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
-                        
+                    
                         <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                             <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#606d7a" BorderBrush="#606d7a" BorderThickness="2" Width="{Binding Width}"  />
                             <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="White" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>

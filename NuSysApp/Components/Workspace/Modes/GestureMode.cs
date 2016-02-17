@@ -67,7 +67,9 @@ namespace NuSysApp
                         
                         if (!isTag)
                         {
-                            CreateAreaNode(model);
+                           // CreateAreaNode(model);
+
+
                         }
 
                         _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
@@ -120,7 +122,6 @@ namespace NuSysApp
         {
             _view.InqCanvas.IsEnabled = false;
             _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
-
         }
 
         private async Task<bool> CheckForTagCreation(InqLineModel line)

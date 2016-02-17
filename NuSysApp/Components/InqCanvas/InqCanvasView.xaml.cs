@@ -42,8 +42,7 @@ namespace NuSysApp
         private PointerEventHandler _pointerReleasedHandler;
         private PointerEventHandler _pointerEnteredHandler;
         private List<CanvasGeometry> _inqLines;
-        private Dictionary<InqLineModel, CanvasGeometry> _modelToGeometries = new Dictionary<InqLineModel, CanvasGeometry>(); 
-
+        private BiDictionary<InqLineModel, CanvasGeometry> _modelToGeometries = new BiDictionary<InqLineModel, CanvasGeometry>();
         public InqCanvasView(InqCanvasViewModel vm)
         {
             this.InitializeComponent();
@@ -76,8 +75,8 @@ namespace NuSysApp
                 CanvasGeometry geom = CanvasGeometry.CreatePath(line);
                 _inqLines.Add(geom);
                 _currentLine.Clear();
-                win2dCanvas.Invalidate();
                 _modelToGeometries.Add(lineModel, geom);
+                win2dCanvas.Invalidate();
             };
 
             vm.Model.LineRemoved += delegate(InqLineModel model)
@@ -243,7 +242,7 @@ namespace NuSysApp
             }
             foreach (CanvasGeometry line in _inqLines)
             {
-                args.DrawingSession.DrawGeometry(line, Colors.Black, 2);
+                args.DrawingSession.DrawGeometry(line, Colors.Black, 2);    
             }
         }
     }
