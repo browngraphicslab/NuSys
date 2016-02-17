@@ -140,15 +140,13 @@ namespace NuSysApp
                 data = data + _document.GetAllTexts(currPage);
                 currPage++;
             }
-            //StorageFolder folder = await KnownFolders.PicturesLibrary.GetFolderAsync("bla");
-            //StorageFile file = await TagExtractor.CreateFileIfNotExists(folder, model.Title + ".txt");
-            //string data = await FileIO.ReadTextAsync(file);
-
 
             DieStopWords ds = new DieStopWords();
             data = await ds.removeStopWords(data);
             List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
+            this.Model.SetMetaData("tags", topics);
 
+            RaisePropertyChanged("Tags");
         }
 
         public WriteableBitmap ImageSource
