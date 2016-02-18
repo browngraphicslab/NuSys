@@ -121,8 +121,8 @@ namespace NuSysApp
                             }
 
                             _generatedLabel.SetNum(numChildren/2);
-                            _initialGroupNode.ShowChildren();
-                            _intersectedGroupNode.ShowChildren();
+                //            _initialGroupNode.ShowChildren();
+                //            _intersectedGroupNode.ShowChildren();
                         };
 
                         
@@ -222,10 +222,10 @@ namespace NuSysApp
 
                         ((LabelNodeViewModel) _initialGroupNode.DataContext).EnableChildMove = true;
                         ((LabelNodeViewModel)_intersectedGroupNode.DataContext).EnableChildMove = true;
-                        _initialGroupNode.UnIntersect();
-                        _initialGroupNode.ShowChildren();
-                        _intersectedGroupNode.UnIntersect();
-                        _intersectedGroupNode.ShowChildren();
+                       // _initialGroupNode.UnIntersect();
+                       // _initialGroupNode.ShowChildren();
+                       // _intersectedGroupNode.UnIntersect();
+                       // _intersectedGroupNode.ShowChildren();
                     }
                     _intersectedGroupNode = null;
                     return;

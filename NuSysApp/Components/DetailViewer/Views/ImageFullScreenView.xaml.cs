@@ -45,21 +45,19 @@ namespace NuSysApp
                 var sw = SessionController.Instance.SessionView.ActualWidth /2;
                 var sh = SessionController.Instance.SessionView.ActualHeight /2;
 
-
                 var ratio = vm.Width > vm.Height ? vm.Width/sw : vm.Height/sh;
                 xImg.Width = vm.Width/ratio;
                 xImg.Height = vm.Height/ratio;
                 //  xBorder.Width = xImg.Width + 5;
                 // xBorder.Height = xImg.Height +5;
 
+
                 //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
                 //xWrapper.Children.Add(_inqCanvasView);
                 //_inqCanvasView.IsEnabled = true;
                 //_inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
                 //_inqCanvasView.Width = xImg.Width;
-                //_inqCanvasView.Height = xImg.Height;
-         
-
+                //_inqCanvasView.Height = xImg.Height;   
             };
         }
 

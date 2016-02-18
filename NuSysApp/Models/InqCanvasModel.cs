@@ -10,22 +10,20 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
-using NuSysApp.EventArgs;
 
 namespace NuSysApp
 {
     public class InqCanvasModel : Sendable
     {
  
-        public event AddPartialLineEventHandler PartialLineAdded;
         public event LineHandler LineFinalized;
+        public event LineHandler LineFinalizedLocally;
         public event LineHandler LineRemoved;
         public event LineHandler LineAdded;
         public event PageChangeHandler PageChanged;
         public event DisposeInqHandler AppSuspended;
         public delegate void PageChangeHandler(int page);
         public delegate void LineHandler(InqLineModel lineModel);
-        public delegate void AddPartialLineEventHandler(object source, AddLineEventArgs e);
         public delegate void DisposeInqHandler();
         
         private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
@@ -51,9 +49,23 @@ namespace NuSysApp
             LineAdded?.Invoke(line);
         }
 
+        public void RemoveLine(InqLineModel line)
+        {
+            var lines = _lines.Where(l => l.Id == line.Id);
+            if (!lines.Any()) return;
+            var ln = lines.First();
+            ln.Delete();
+            _lines.Remove(ln);
+        }
+
         public HashSet<InqLineModel> Lines {
             get { return _lines; }
          
+        }
+
+        public void FinalizeLineLocally(InqLineModel line)
+        {
+            LineFinalizedLocally?.Invoke(line);
         }
 
         public void FinalizeLine(InqLineModel line)
@@ -69,10 +81,10 @@ namespace NuSysApp
             AppSuspended?.Invoke();
         }
 
-        private void LineOnDeleteInqLine(object source, DeleteInqLineEventArgs deleteInqLineEventArgs)
+        private void LineOnDeleteInqLine(object source, InqLineModel inqLine)
         {
-            _lines.Remove(deleteInqLineEventArgs.LineModelToDelete);
-            LineRemoved?.Invoke(deleteInqLineEventArgs.LineModelToDelete);
+            _lines.Remove(inqLine);
+            LineRemoved?.Invoke(inqLine);
         }
 
         public Dictionary<string, HashSet<InqLineModel>> PartialLines
@@ -87,7 +99,6 @@ namespace NuSysApp
                 _partialLines.Add(temporaryID, new HashSet<InqLineModel>());
             }
             _partialLines[temporaryID].Add(lineModel);
-            PartialLineAdded?.Invoke(this, new AddLineEventArgs(lineModel));
         }
 
         public void RemovePartialLines(string oldID)

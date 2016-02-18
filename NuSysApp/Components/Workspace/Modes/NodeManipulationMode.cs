@@ -92,9 +92,10 @@ namespace NuSysApp
            // Debug.WriteLine("delta");
 
             var s = (UserControl) sender;
-
             var vm = s.DataContext as AtomViewModel;
+
             vm?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+                  
         }
     }
 }

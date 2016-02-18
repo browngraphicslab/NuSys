@@ -31,11 +31,11 @@ namespace NuSysApp
             model.OnLocationUpdate += OnLocationUpdate;
         }
 
-        private void OnLocationUpdate(object source, PositionChangeEventArgs args)
+        private void OnLocationUpdate(object source, double x, double y)
         {
             var transMat = ((MatrixTransform)View.RenderTransform).Matrix;
-            transMat.OffsetX = args.X;
-            transMat.OffsetY = args.Y;
+            transMat.OffsetX = x;
+            transMat.OffsetY = y;
             Transform = new MatrixTransform
             {
                 Matrix = transMat

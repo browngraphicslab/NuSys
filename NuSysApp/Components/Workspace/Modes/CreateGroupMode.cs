@@ -50,20 +50,23 @@ namespace NuSysApp
                 userControl.ManipulationStarting -= UserControlOnManipulationStarting;
             }
         }
-
-        private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
-            e.Container = _view;
+            manipulationStartingRoutedEventArgs.Container = _view;
         }
 
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-
             if (!_isHovering)
+                return;
+            
+            if (((FrameworkElement)sender).DataContext is AreaNodeViewModel)
                 return;
 
             var id1 = (((FrameworkElement)sender).DataContext as NodeViewModel).Id;
             var id2 = _hoveredNode.Id;
+
+   
 
             if (id1 == id2)
                 return;
@@ -92,7 +95,7 @@ namespace NuSysApp
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
-            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel));
+            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is NodeViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is WorkspaceViewModel) && !((uiElem as FrameworkElement).DataContext is AreaNodeViewModel));
             var draggedItem = (AnimatableUserControl) sender;   
             WorkspaceViewModel wvm = (WorkspaceViewModel)_view.DataContext;
             
@@ -109,7 +112,11 @@ namespace NuSysApp
                         _timer.Stop();
                         _isHovering = true;
                         _hoveredNode = (result.First() as FrameworkElement).DataContext as NodeViewModel;
-                        _hoveredNodeView = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode).First() as IThumbnailable;
+                        Debug.WriteLine("atomviewlist count: " + wvm.AtomViewList.Count);
+                        var atoms = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode);
+
+                        if (atoms.Any())
+                            _hoveredNodeView = atoms.First() as IThumbnailable;
 
                     };
                     _timer.Interval = TimeSpan.FromMilliseconds(200);

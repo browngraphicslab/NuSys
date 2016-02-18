@@ -64,7 +64,6 @@ namespace NuSysApp
 
         public bool CheckForInkNodeIntersection(InqLineModel inq)
         {
-            return false;
             var nodes = new List<NodeViewModel>();
             var links = new List<LinkViewModel>();
             foreach (var node2 in AtomViewList.Where(a => a.DataContext is NodeViewModel))
@@ -317,11 +316,7 @@ namespace NuSysApp
 
         #region Event Handlers
 
-        private void PartialLineAdditionHandler(object source, AddLineEventArgs e)
-        {
-            LastPartialLineModel = e.AddedLineModel;
-            RaisePropertyChanged("PartialLineAdded");
-        }
+
 
         #endregion Event Handlers
         #region Public Members

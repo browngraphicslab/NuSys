@@ -112,6 +112,7 @@ namespace NuSysApp
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
             var dict = new Message();
+            Dictionary<string, object> metadata;
             if (nodeType == NodeType.Document || nodeType == NodeType.Word || nodeType == NodeType.Powerpoint || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
@@ -142,7 +143,7 @@ namespace NuSysApp
 
                 if (Constants.WordFileTypes.Contains(fileType))
                 {
-                    var metadata = new Dictionary<string, object>();
+                    metadata = new Dictionary<string, object>();
                     metadata["FilePath"] = storageFile.Path;
                     metadata["Token"] = token.Trim();
 
@@ -155,7 +156,7 @@ namespace NuSysApp
 
                 if (Constants.PowerpointFileTypes.Contains(fileType))
                 {
-                    var metadata = new Dictionary<string, object>();
+                    metadata = new Dictionary<string, object>();
                     metadata["FilePath"] = storageFile.Path;
                     metadata["Token"] = token.Trim();
 
@@ -219,12 +220,18 @@ namespace NuSysApp
             }
             var contentId = SessionController.Instance.GenerateId();
 
+            metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+            metadata["node_type"] = nodeType + "Node";
+
+            dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = nodeType.ToString();
             dict["x"] = p.X;
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
+            dict["metadata"] = metadata;
             dict["autoCreate"] = true;
             dict["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 

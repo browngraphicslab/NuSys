@@ -14,6 +14,7 @@ namespace NuSysApp
     {
         public GroupNodeViewModel(NodeContainerModel model) : base(model)
         {
+            
             var count = 0;
             base.ChildAdded += async delegate(object source, FrameworkElement node)
             {
@@ -25,13 +26,10 @@ namespace NuSysApp
                 //node.VerticalAlignment = VerticalAlignment.Center;
                 count++;
             };
-
+            
             _nodeViewFactory = new GroupItemThumbFactory(); 
         }
 
-        public override void SetSize(double width, double height)
-        {
-            base.SetSize(width, width);
-        }
+  
     }
 }
