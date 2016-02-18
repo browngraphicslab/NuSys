@@ -92,9 +92,6 @@ namespace NuSysApp
                 case NodeType.Web:
                     view = new WebNodeView(new WebNodeViewModel((WebNodeModel)model));
                     break;
-                case NodeType.Area:
-                    view = new AreaNodeView(new AreaNodeViewModel((AreaModel)model));
-                    break;
             }
             await ((AtomViewModel) view.DataContext).Init();
 
@@ -102,3 +99,4 @@ namespace NuSysApp
         }
     }
 }
+    

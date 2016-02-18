@@ -57,6 +57,8 @@ namespace NuSysApp
             TimelineGrid.PointerWheelChanged += TimelineGrid_PointerWheelChanged;
         }
 
+
+
         public void ClearTimelineChild()
         {
             foreach (var view in TimelinePanel.Children)
@@ -67,21 +69,18 @@ namespace NuSysApp
             TimelinePanel.Children.Clear();
         }
 
-        private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public void Update()
         {
-            if (e.NewItems == null)
-                return;
-
             ClearTimelineChild(); // clear children
 
             foreach (var atom in _vm.AtomViewList)
             {
                 var vm = (AtomViewModel)atom.DataContext; //access viewmodel
-                vm.X = 0;
-                vm.Y = 0;
+                vm.LocalX = 0;
+                vm.LocalY = 0;
                 vm.CanEdit = Sendable.EditStatus.No;
-                vm.Height = 80;
-                vm.Width = 130;
+                vm.LocalHeight = 80;
+                vm.LocalWidth = 130;
                 _nodeModel = (AtomModel)vm.Model; // access model
 
                 DateTime timeStamp = (DateTime)_nodeModel.GetMetaData("node_creation_date");
@@ -96,9 +95,18 @@ namespace NuSysApp
                 _view = new TimelineItemView(tuple.Item1, tuple.Item2);
                 _view.Margin = new Thickness(20, 0, 20, 50);
                 _view.VerticalAlignment = VerticalAlignment.Center;
+                _view.HorizontalAlignment = HorizontalAlignment.Left;
                 TimelinePanel.Children.Add(_view);
             }
             _atomList.Clear();
+        }
+
+        private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems == null)
+                return;
+
+            Update();
         }
 
         private void TimelineGrid_PointerWheelChanged(object sender, PointerRoutedEventArgs e)

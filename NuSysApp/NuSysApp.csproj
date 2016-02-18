@@ -248,10 +248,10 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
-    <Compile Include="Components\Nodes\AreaNode\AreaNodeView.xaml.cs">
+    <Compile Include="Components\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Nodes\AreaNode\AreaNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
@@ -314,7 +314,6 @@
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
-    <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
@@ -334,6 +333,7 @@
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
+    <Compile Include="Network\Requests\NewNookRequest.cs" />
     <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\ContentAvailableNotificationSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\FetchContentSystemRequest.cs" />
@@ -358,6 +358,7 @@
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\AccessList.cs" />
+    <Compile Include="Util\BezierSpline.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
@@ -642,7 +643,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Nodes\AreaNode\AreaNodeView.xaml">
+    <Page Include="Components\Nodes\GroupNode\AreaNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -790,7 +791,9 @@
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Components\Nodes\AreaNode\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

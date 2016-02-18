@@ -48,7 +48,7 @@ namespace NuSysApp
 
             // create expanded view
             xExpandedDefaultView = new GroupNodeExpandedDefaultView((NodeContainerModel)vm.Model); // create default view
-            xExpandedDefaultView.Opacity = 0;
+            xExpandedDefaultView.Opacity = 1;
             GroupNodeCanvas.Children.Add(xExpandedDefaultView);
         }
 
@@ -57,24 +57,7 @@ namespace NuSysApp
             var vm = (GroupNodeViewModel) DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             
-            if (vm.Height > 400 && !_isExpanded)
-            {
-                _expandedAnim?.Stop();
-                _circleAnim?.Stop();
-
-                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 1, 450);
-                _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
-                _isExpanded = true;
-            }
-            else if (vm.Height < 400 && _isExpanded)
-            {
-                _expandedAnim?.Stop();
-                _circleAnim?.Stop();
-
-                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 0, 450);
-                _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
-                _isExpanded = false;         
-            }
+      
             PositionResizer();
             e.Handled = true;
         }

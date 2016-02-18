@@ -28,11 +28,6 @@ namespace NuSysApp
             //((TextNodeModel) Model).TextChanged += TextChangedHandler;
         }
         
-        public override async Task Init()       
-        {
-
-        }
-
         private static async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
         {
             if (byteArray != null)

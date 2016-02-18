@@ -181,10 +181,30 @@ namespace NuSysApp
                 }
             }
         }
-        
+
+        public async Task LoadWorksapce(IEnumerable<AtomModel> atoms)
+        {
+
+            await LoadEmptyWorkspace();
+            foreach (var model in atoms)
+            {
+                model.Creators.Clear();
+                model.Creators.Add(SessionController.Instance.ActiveWorkspace.Id);
+                model.X = (Constants.MaxCanvasSize + 300) /2 + model.X;
+                model.Y = (Constants.MaxCanvasSize + 300) /2 + model.Y;
+
+
+                if (!(model is InqCanvasModel))
+                {
+                    await SessionController.Instance.RecursiveCreate(model);
+                }
+            }
+        }
+
+
         public async Task LoadEmptyWorkspace()
         {
-            SessionController.Instance.IdToSendables.Clear();
+          //  SessionController.Instance.IdToSendables.Clear();
             
             if (_activeWorkspace != null)
             {
@@ -378,7 +398,7 @@ namespace NuSysApp
 
         private async Task DisposeWorspace(WorkspaceView oldWorkspaceView)
         {
-            
+            _activeWorkspace?.Dispose();
         }
 
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)

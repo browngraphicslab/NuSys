@@ -179,6 +179,23 @@ namespace NuSysApp
             };
         }
 
+        public static bool PointInPolygon(Point2d point, List<Point2d> polygon)
+        {
+            var points = polygon;
+            int i, j, nvert = points.Count;
+            var c = false;
+
+            for (i = 0, j = nvert - 1; i < nvert; j = i++)
+            {
+                if (((points[i].Y >= point.Y) != (points[j].Y >= point.Y)) &&
+                    (point.X <= (points[j].X - points[i].X) * (point.Y - points[i].Y) / (points[j].Y - points[i].Y) + points[i].X)
+                  )
+                    c = !c;
+            }
+
+            return c;
+        }
+
         public static Rect PointCollecionToBoundingRect(List<Point2d> pc)
         {
             var minX = double.MaxValue;
@@ -222,8 +239,8 @@ namespace NuSysApp
 
             return new Rect()
             {
-                Height = (max.X - min.X) * ((double)Constants.MaxCanvasSize),
-                Width = (max.Y - min.Y) * ((double)Constants.MaxCanvasSize),
+                Width = (max.X - min.X) * ((double)Constants.MaxCanvasSize),
+                Height = (max.Y - min.Y) * ((double)Constants.MaxCanvasSize),
                 X = min.X * ((double)Constants.MaxCanvasSize),
                 Y = min.Y *((double)Constants.MaxCanvasSize) 
             };

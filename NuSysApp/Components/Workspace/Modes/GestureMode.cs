@@ -67,9 +67,7 @@ namespace NuSysApp
                         
                         if (!isTag)
                         {
-                           // CreateAreaNode(model);
-
-
+                            CreateNookNode(model);
                         }
 
                         _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
@@ -98,23 +96,37 @@ namespace NuSysApp
             _tFirstPress = DateTime.Now;
         }
 
-        private async void CreateAreaNode(InqLineModel line)
+        private async void CreateNookNode(InqLineModel line)
         {
+            // closed polygon
             line.Points.Add(line.Points.First());
+
             var bb = Geometry.InqToBoudingRect(line);
+            var polygon = line.Points.Select(p => new Point2d(p.X * Constants.MaxCanvasSize, p.Y * Constants.MaxCanvasSize)).ToList();
+            var enclosedAtomsIds = new List<string>();
+            foreach (var frameworkElement in SessionController.Instance.ActiveWorkspace.AtomViewList)
+            {
+                var avm = (AtomViewModel) frameworkElement.DataContext;
+                var center = new Point2d(avm.X + avm.Width / 2.0, avm.Y + avm.Height / 2.0);
+                if (Geometry.PointInPolygon(center, polygon))
+                    enclosedAtomsIds.Add(avm.Id);
+            }
+            
+            
             var transPoints = line.Points.Select(p => new Point2d(p.X * Constants.MaxCanvasSize - bb.X, p.Y * Constants.MaxCanvasSize - bb.Y ));
           
             var m = new Message();
             m["x"] = bb.X;
             m["y"] = bb.Y;
-            m["width"] = 400;
-            m["height"] = 400;
+            m["width"] = bb.Width;
+            m["height"] = bb.Height;
             m["nodeType"] = NodeType.Area.ToString();
             m["points"] = transPoints;
             m["autoCreate"] = true;
+            m["enclosedAtoms"] = enclosedAtomsIds;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNookRequest(m));
 
         }
 
@@ -127,7 +139,6 @@ namespace NuSysApp
         private async Task<bool> CheckForTagCreation(InqLineModel line)
         {
             var wsmodel = (_view.DataContext as WorkspaceViewModel).Model as WorkspaceModel;
-            var Model = wsmodel.InqCanvas;
             var outerRect = Geometry.PointCollecionToBoundingRect(line.Points.ToList());
             outerRect.X *= Constants.MaxCanvasSize;
             outerRect.Y *= Constants.MaxCanvasSize;

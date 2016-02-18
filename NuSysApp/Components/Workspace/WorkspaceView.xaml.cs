@@ -59,8 +59,19 @@ namespace NuSysApp
                 //_inqCanvas.DisposeResources();
             };
 
-            wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
-            {
+            wsModel.InqCanvas.LineFinalized += OnInqFinalized;
+        }
+
+        public void Dispose()
+        {
+            var dc = (WorkspaceViewModel) DataContext;
+            var model = (WorkspaceModel)dc.Model;
+            model.InqCanvas.LineFinalized -= OnInqFinalized;
+        }
+
+        private async void OnInqFinalized (InqLineModel model)
+        {
+            var vm = (WorkspaceViewModel) DataContext;
                 if (!model.IsGesture)
                 {
                     //var createdTag = await CheckForTagCreation(model);
@@ -81,11 +92,10 @@ namespace NuSysApp
                         if (deletedSome)
                             model.Delete();
                         break;
-                } 
-            };
-        }
+                }
+}
 
-        public MultiSelectMenuView MultiMenu
+public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }
         }
@@ -120,7 +130,7 @@ namespace NuSysApp
                     await
                         SetViewMode(new MultiMode(this, nodeManipulationMode, new DuplicateNodeMode(this),
                             new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this),
-                            new FloatingMenuMode(this), new CreateGroupMode(this, nodeManipulationMode)));
+                            new FloatingMenuMode(this)));
                     break;
                 case Options.SelectMarquee:
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));

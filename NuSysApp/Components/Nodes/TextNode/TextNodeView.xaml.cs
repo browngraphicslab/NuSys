@@ -34,9 +34,10 @@ namespace NuSysApp
 
         public TextNodeView(TextNodeViewModel vm)
         {
-
-            InitializeComponent();
             DataContext = vm;
+            var x = vm.X;
+            InitializeComponent();
+            
 
 
             var contentId = (vm.Model as NodeModel).ContentId;

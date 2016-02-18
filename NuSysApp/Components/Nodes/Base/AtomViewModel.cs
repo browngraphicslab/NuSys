@@ -346,6 +346,26 @@ namespace NuSysApp
             }
         }
 
+        public double LocalX
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                _transform.TranslateX = value;
+            }
+        }
+
+        public double LocalY
+        {
+            get { return _y; }
+            set
+            {
+                _y = value;
+                _transform.TranslateY = value;
+            }
+        }
+
         public double Width
         {
             get { return _width; }
@@ -369,6 +389,31 @@ namespace NuSysApp
 
                 _height = value;
                 Model.Height = value;
+                RaisePropertyChanged("Height");
+            }
+        }
+
+        public double LocalWidth
+        {
+            get { return _width; }
+            set
+            {
+                if (value < Constants.MinNodeSize) //prevent atom from getting too small
+                    return;
+                _width = value;
+                RaisePropertyChanged("Width");
+            }
+        }
+
+        public double LocalHeight
+        {
+            get { return _height; }
+            set
+            {
+                if (value < Constants.MinNodeSize)
+                    return;
+
+                _height = value;
                 RaisePropertyChanged("Height");
             }
         }

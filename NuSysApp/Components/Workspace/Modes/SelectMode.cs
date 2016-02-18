@@ -82,6 +82,17 @@ namespace NuSysApp
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if ((dc is NodeViewModel || dc is LinkViewModel) && !(dc is WorkspaceViewModel) )
             {
+
+                if (dc is AreaNodeViewModel)
+                {
+                    var gvm = (AreaNodeViewModel)dc;
+                    var models = gvm.AtomViewList.Select(a => ((AtomViewModel)a.DataContext).Model);
+
+
+                    SessionController.Instance.SessionView.LoadWorksapce(models);
+                    return;
+                }
+
                 if (dc is NodeViewModel)
                 {
                     var vm = (NodeViewModel)dc;

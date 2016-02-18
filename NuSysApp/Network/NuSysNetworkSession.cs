@@ -228,6 +228,9 @@ namespace NuSysApp
                 case Request.RequestType.NewThumbnailRequest:
                     request = new NewThumbnailRequest(message);
                     break;
+                case Request.RequestType.NewNookRequest:
+                    request = new NewNookRequest(message);
+                    break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;

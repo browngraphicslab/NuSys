@@ -64,9 +64,6 @@ namespace NuSysApp
                 case NodeType.Group:
                     node = new NodeContainerModel(id);
                     break;
-                case NodeType.Area:
-                    node = new AreaModel(id);
-                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }
@@ -86,7 +83,7 @@ namespace NuSysApp
             if (!_message.GetBool("autoCreate"))
                 return;
 
-            SessionController.Instance.RecursiveCreate(node);
+            await SessionController.Instance.RecursiveCreate(node);
         }
     }
 

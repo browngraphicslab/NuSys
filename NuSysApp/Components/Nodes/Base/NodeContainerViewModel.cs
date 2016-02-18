@@ -90,6 +90,13 @@ namespace NuSysApp
                 var atomModel = (AtomModel) nodeModel;
                 atomModel.Deleted += OnChildDeleted;
             }
+
+            Added(nodeModel);
+        }
+
+        protected virtual void Added(Sendable atom)
+        {
+            
         }
 
         private void OnChildDeleted(object source)

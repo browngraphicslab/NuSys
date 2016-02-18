@@ -38,7 +38,7 @@ namespace NuSysApp
 
         }
 
-        public async Task InitPdfViewer()
+        public override async Task Init()
         {
             var content = SessionController.Instance.ContentController.Get(ContentId);
             if (content == null)
@@ -58,10 +58,7 @@ namespace NuSysApp
             
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
-            LaunchLDA((PdfNodeModel)this.Model);
-
-            var text = _document.GetAllTexts(0);
-            Debug.WriteLine(text);
+            await LaunchLDA((PdfNodeModel)this.Model);
         }
 
         public async Task FlipRight()
@@ -85,6 +82,9 @@ namespace NuSysApp
 
         private async Task RenderPage(int pageNumber)
         {
+            if (_document == null)
+                return;
+
             var pageSize = _document.GetPageSize(pageNumber);
             var width = pageSize.X;
             var height = pageSize.Y;

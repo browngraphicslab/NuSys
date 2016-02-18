@@ -12,11 +12,14 @@ namespace NuSysApp
         public delegate void NodeChangeHandler(object source, Sendable node);
         public delegate Task NodeChangeHandler2(object source, Sendable node);
 
+        public List<Point2d> Points { get; set; }
+
         //public ObservableDictionary<string, Sendable> Children { set; get; }
 
         public NodeContainerModel(string id) : base(id)
         {
-         //   Children = new ObservableDictionary<string, Sendable>();
+            Points = new List<Point2d>();
+            //   Children = new ObservableDictionary<string, Sendable>();
         }
 
         public bool IsTemporary
@@ -60,12 +63,15 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict["isTemporary"] = IsTemporary.ToString();
+            dict["points"] = Points;
             return dict;
         }
 
         public override async Task UnPack(Message props)
         {
-            base.UnPack(props);
+            await base.UnPack(props);
+
+            Points = props.GetList("points", new List<Point2d>());
 
             if (props.ContainsKey("isTemporary"))
             {
