@@ -47,7 +47,7 @@ namespace NuSysApp
         {
             CanEdit = EditStatus.Maybe;
 
-            Creators = new List<string>();
+            Creator = null;
 
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
@@ -83,7 +83,7 @@ namespace NuSysApp
             }
         }
 
-        public List<string> Creators { get; set; }
+        public string Creator { get; set; }
 
         public double X
         {
@@ -196,7 +196,7 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict.Add("metadata", Metadata);
-            dict.Add("creators", Creators);
+            dict.Add("creator", Creator);
             dict.Add("x", X);
             dict.Add("y", Y);
             dict.Add("width", Width);
@@ -233,7 +233,7 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creators = props.GetList("creators", Creators);
+            Creator = props.GetString("creator", Creator);
             Title = props.GetString("title", "");
             if (props.ContainsKey("system_sender_ip") &&
                 SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(

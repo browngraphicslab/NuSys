@@ -98,9 +98,9 @@ namespace NuSysApp
 
         private async Task RecursiveCreateInner(AtomModel atom, List<AtomModel> addedModels)
         {
-            foreach (var creator in atom.Creators)
+            if (!String.IsNullOrEmpty(atom.Creator))
             {
-                var creatorModel = (NodeContainerModel)IdToSendables[creator];
+                var creatorModel = (NodeContainerModel) IdToSendables[atom.Creator];
                 if (!addedModels.Contains(creatorModel))
                 {
                     await RecursiveCreateInner(creatorModel, addedModels);

@@ -24,8 +24,7 @@ namespace NuSysApp
 
             if (node2 is NodeContainerModel)
             {
-                node1.Creators.Add(node2.Id);
-                node1.Creators.Remove(SessionController.Instance.ActiveWorkspace.Id);
+                node1.Creator = node2.Id;
                 var prevGroups1 = (List<string>)node1.GetMetaData("groups");
                 prevGroups1.Add(node2.Id);
                 node1.SetMetaData("groups", prevGroups1);
@@ -42,23 +41,21 @@ namespace NuSysApp
                 msg["x"] = _message.GetDouble("x");
                 msg["y"] = _message.GetDouble("y");
                 msg["autoCreate"] = true;
-                msg["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
+                msg["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
 
                 var group = SessionController.Instance.IdToSendables[msg.GetString("id")];
                 
-                node1.Creators.Add(group.Id);
+                node1.Creator = group.Id;
                 var prevGroups1 = (List<string>)node1.GetMetaData("groups");
                 prevGroups1.Add(group.Id);
                 node1.SetMetaData("groups", prevGroups1);
-                node1.Creators.Remove(SessionController.Instance.ActiveWorkspace.Id);
 
-                node2.Creators.Add(group.Id);
+                node2.Creator = group.Id;
                 var prevGroups2 = (List<string>)node2.GetMetaData("groups");
                 prevGroups2.Add(group.Id);
                 node2.SetMetaData("groups", prevGroups2);
-                node2.Creators.Remove(SessionController.Instance.ActiveWorkspace.Id);
                 var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == group.Id);
                 
                 NodeContainerModel groupModel;

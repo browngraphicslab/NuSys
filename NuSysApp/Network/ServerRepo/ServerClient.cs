@@ -50,7 +50,7 @@ namespace NuSysApp
 
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
-            //TODO
+            //TODO add in closing handler 
         }
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
@@ -82,20 +82,25 @@ namespace NuSysApp
             try
             {
                 HttpClient client = new HttpClient();
-                var response = await client.GetAsync(GetUri("getcontents/"+contentId));
-
+                //client.
+                var response = await client.GetAsync(GetUri("getcontent/" + contentId));
+                
                 string data;
                 using (var content = response.Content)
                 {
                     data = await content.ReadAsStringAsync();
                 }
-                if (data.Length >= 2)
-                {
-                    data = data.Substring(1, data.Length - 2);
-                }
                 await UITask.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.Add(data, contentId);
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
+
+                    var contentData = dict["data"] ?? "";
+                    var contentTitle = dict.ContainsKey("title") ? dict["title"] : null;
+                    var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"]) : new List<string>();
+                    var content = new NodeContentModel(contentData, contentId, contentTitle, contentAliases);
+
+                    SessionController.Instance.ContentController.Add(content);
                     if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(contentId))
                     {
                         var tuple = SessionController.Instance.LoadingNodeDictionary[contentId];
@@ -117,29 +122,40 @@ namespace NuSysApp
             }
         }
 
-        public async Task CreateOrUpdateContent(Dictionary<string, string> dict)
+        private async Task SendMessageToServer(Message m)
+        {
+            var message = m.GetSerialized();
+            await SendToServer(message);
+        }
+        public async Task SendDictionaryToServer(Dictionary<string, string> dict)
+        {
+            if (!dict.ContainsKey("id") || !dict.ContainsKey("data"))
+            {
+                throw new Exception("Adding content must contain and id, data");
+            }
+            dict["server_request_type"] = "add";
+            dict["server_item_type"] = "content";
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            var serialized = JsonConvert.SerializeObject(dict,settings);
+            await SendToServer(serialized);
+        }
+
+        private async Task SendToServer(string message)
         {
             try
             {
-                if (!dict.ContainsKey("id") || !dict.ContainsKey("data"))
-                {
-                    throw new Exception("Adding content must contain and id, data, and type");
-                }
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                var serialized = JsonConvert.SerializeObject(dict,settings);
-                _dataMessageWriter.WriteString(serialized);
+                _dataMessageWriter.WriteString(message);
                 await _dataMessageWriter.StoreAsync();
             }
             catch (Exception e)
             {
-                
+                throw new Exception("Exception caught during writing to server data writer");
             }
         }
-
         public async Task<Dictionary<string,Dictionary<string,string>>> GetRepo()
         {
             HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("getcontents"));
+            var response = await client.GetAsync(GetUri("getcontent"));
 
             string data;
             using (var content = response.Content)

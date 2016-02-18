@@ -289,6 +289,9 @@ namespace NuSysApp
                 case Request.RequestType.ChatDialogRequest:
                     request = new ChatDialogRequest(message);
                     break;
+                case Request.RequestType.CreateNewContentRequest:
+                    request = new CreateNewContentRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
@@ -476,21 +479,6 @@ namespace NuSysApp
         public async Task FetchContent(string id)
         {
             await _serverClient.GetContent(id);
-        }
-
-        public async Task AddContent(Dictionary<string, string> dict)
-        {
-            await _serverClient.CreateOrUpdateContent(dict);
-        }
-
-        public async Task AddContent(string id, string data, string type = null, string title = null)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict["id"] = id;
-            dict["data"] = data;
-            dict["type"] = type;
-            dict["title"] = title;
-            await AddContent(dict);
         }
 
         public async Task<Dictionary<string,Dictionary<string,string>>> GetAllLibraryElements()

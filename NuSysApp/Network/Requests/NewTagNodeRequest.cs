@@ -42,7 +42,7 @@ namespace NuSysApp
             if (!_message.GetBool("autoCreate"))
                 return;
 
-            var creators = node.Creators;
+            var creators = node.Creator;
             var addedModels = new List<AtomModel>();
             SessionController.Instance.RecursiveCreate(node, addedModels);
             */

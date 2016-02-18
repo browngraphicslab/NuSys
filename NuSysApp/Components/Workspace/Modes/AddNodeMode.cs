@@ -226,11 +226,11 @@ namespace NuSysApp
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
             dict["autoCreate"] = true;
-            dict["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
+            dict["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
             var request = new NewNodeRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, data == null ? "" : data.ToString(), nodeType.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, data == null ? "" : data.ToString(), nodeType.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null));
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
             vm.ClearSelection();

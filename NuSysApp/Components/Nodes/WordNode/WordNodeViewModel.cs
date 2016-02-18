@@ -87,7 +87,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["creator"] = SessionController.Instance.ActiveWorkspace.Id ;
             m["nodeType"] = NodeType.PDF.ToString();
 
             var metadata = new Dictionary<string, object>();
@@ -113,7 +113,7 @@ namespace NuSysApp
 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, pdfContent, NodeType.PDF.ToString());
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, pdfContent, NodeType.PDF.ToString()));
             /*
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

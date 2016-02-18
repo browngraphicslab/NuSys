@@ -14,7 +14,7 @@ namespace NuSysApp
             _message["id1"] = id1;
             _message["id2"] = id2;
             _message["id"] = SessionController.Instance.GenerateId();
-            _message["creators"] = new List<string>() {creator};
+            _message["creator"] = creator;
             _message["autoCreate"] = autoCreate;
         }
         public override async Task CheckOutgoingRequest()

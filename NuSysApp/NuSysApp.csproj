@@ -301,6 +301,7 @@
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewTagNodeRequest.cs" />

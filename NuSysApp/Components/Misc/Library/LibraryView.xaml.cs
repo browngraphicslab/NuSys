@@ -131,6 +131,27 @@ namespace NuSysApp
             var type = ((LibraryElement)e.Items[0]).NodeType.ToString();
             e.Data.SetText(type + "  :  " + title);
             e.Cancel = false;
+
+
+            var width = SessionController.Instance.SessionView.ActualWidth;
+            var height = SessionController.Instance.SessionView.ActualHeight;
+            var centerpoint =
+                SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                    new Point(width / 2, height / 2));
+            foreach (var element in elements)
+            {
+                Message m = new Message();
+                m["contentId"] = element.ContentID;
+                m["x"] = centerpoint.X - 200;
+                m["y"] = centerpoint.Y - 200;
+                m["width"] = 400;
+                m["height"] = 400;
+                m["nodeType"] = element.NodeType.ToString();
+                m["autoCreate"] = true;
+                m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            }
         }
         private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
         {
@@ -155,7 +176,7 @@ namespace NuSysApp
                         m["height"] = 400;
                         m["nodeType"] = element.NodeType.ToString();
                         m["autoCreate"] = true;
-                        m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                        m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
                     }

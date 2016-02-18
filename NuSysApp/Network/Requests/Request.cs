@@ -24,9 +24,36 @@ namespace NuSysApp
             NewContentRequest,
             ChangeContentRequest,
             SetTagsRequest,
-            ChatDialogRequest
+            ChatDialogRequest,
+            CreateNewContentRequest
+        }
+
+        public enum ServerItemType
+        {
+            Content,
+            Alias
+        }
+
+        public enum ServerRequestType
+        {
+            Add,
+            Remove,
+            Update
+        }
+
+        public enum ServerEchoType
+        {
+            None,
+            Everyone,
+            EveryoneButSender
         }
         protected Message _message;
+        protected bool _serverIgnore = true;
+        private ServerItemType _serverItemType;
+        private ServerRequestType _serverRequestType;
+        private ServerEchoType _serverEchoType = ServerEchoType.None;
+        private bool _serverItemTypeSet = false;
+        private bool _serverRequestTypeSet = false;
         private RequestType _requestType;
         public Request(RequestType request, Message message = null)
         {
@@ -56,9 +83,46 @@ namespace NuSysApp
 
         }
 
+        public void SetServerIgnore(bool ignore = true)
+        {
+            _serverIgnore = ignore;
+        }
+
+        protected void SetServerRequestType(ServerRequestType requestType)
+        {
+            _serverRequestTypeSet = true;
+            _serverRequestType = requestType;
+        }
+        protected void SetServerItemType(ServerItemType itemType)
+        {
+            _serverItemTypeSet = true;
+            _serverItemType = itemType;
+        }
+
+        public void SetServerEchoType(ServerEchoType echoType)
+        {
+            _serverEchoType = echoType;
+        }
         public Message GetFinalMessage()
         {
             _message["request_type"] = _requestType.ToString();
+            if (_serverIgnore)
+            {
+                _message["server_ignore_request"] = ""; //having the key present will act as the boolean
+            }
+            else
+            {
+                if (!_serverItemTypeSet || !_serverRequestTypeSet)
+                {
+                    throw new Exception("Request tried to be sent to server without specifying request and item type");
+                }
+                else
+                {
+                    _message["server_request_type"] = _serverRequestType.ToString();
+                    _message["server_item_type"] = _serverItemType.ToString();
+                }
+            }
+            _message["server_echo_type"] = _serverEchoType;
             _message["system_sent_timestamp"] = DateTime.UtcNow.Ticks;
             return _message;
         }
@@ -78,9 +142,9 @@ namespace NuSysApp
 
         public virtual async Task CheckOutgoingRequest(){}//for anything you want to check right before execution
 
-        public virtual async Task ExecuteRequestFunction(){}//the function to be executed per the request
-
-        public virtual async Task UndoTaskFunction(){}//The function to be called to undo a previous request call
+        //the function to be executed per the request
+        public virtual async Task ExecuteRequestFunction(){}
+       
 
         public class InvalidRequestTypeException : Exception
         {
