@@ -54,7 +54,6 @@ namespace NuSysApp
                     UpdateText(args.Text);
                 };
 
-                TextNodeWebView.ScriptNotify += WebView_ScriptNotify;
 
 
 
@@ -80,59 +79,17 @@ namespace NuSysApp
                 */
             }
 
-            async private void WebView_ScriptNotify(object sender, NotifyEventArgs e)
-            {
-                try
-                {
-                    string data = e.Value;
-                    // if (data.ToLower().StartsWith("launchlink:"))
-                    //{
-                    //await Launcher.LaunchUriAsync(new Uri(data.Substring("launchlink:".Length), UriKind.Absolute));
-                    NavigateToLink(data);
-                    //}
-                }
-                catch (Exception)
-                {
-                    // Could not build a proper Uri. 
-                }
-            }
 
             private async void UpdateText(String str)
             {
                 String[] myString = { str };
                 IEnumerable<String> s = myString;
+                Debug.WriteLine("TRYING TO UPDATE TEXT IN NODE TO: " + str);
+
+
                 TextNodeWebView.InvokeScriptAsync("InsertText", s);
             }
 
-            public async Task NavigateToLink(string url)
-            {
-                Message m = new Message();
-
-                var width = SessionController.Instance.SessionView.ActualWidth;
-                var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
-
-                var contentId = SessionController.Instance.GenerateId();
-                var nodeid = SessionController.Instance.GenerateId();
-
-                m["contentId"] = contentId;
-                m["x"] = centerpoint.X - 200;
-                m["y"] = centerpoint.Y - 200;
-                m["width"] = 400;
-                m["height"] = 400;
-                m["url"] = url;
-                m["nodeType"] = NodeType.Web;
-                m["autoCreate"] = true;
-                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
-                m["id"] = nodeid;
-
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                await
-                    SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, ""),
-                        NetworkClient.PacketType.TCP, null, true);
-
-
-            }
 
 
 

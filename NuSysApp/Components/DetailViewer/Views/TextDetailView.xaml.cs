@@ -54,8 +54,6 @@ namespace NuSysApp
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-
-
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 await SessionController.Instance.InitializeRecog();
@@ -79,7 +77,7 @@ namespace NuSysApp
                     UpdateText(model.Text);
                 };
 
-                OpenTextBox();
+                OpenTextBox(model.Text);
 
             };
 
@@ -121,25 +119,33 @@ namespace NuSysApp
             MyWebView.InvokeScriptAsync("InsertText", s);
         }
 
-        private async void OpenTextBox()
+        private async void OpenTextBox(String str)
         {
-            MyWebView.InvokeScriptAsync("Init", null);
+
+            String[] myString = { str };
+            IEnumerable<String> s = myString;
+            Debug.WriteLine("OPEN TEXT BOX: " + str);
+            MyWebView.InvokeScriptAsync("InsertText", s);
+
         }
+
+
 
 
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
         {
             // The string received from the JavaScript code can be found 
             // in e.Value
+            Debug.WriteLine("WEBSCRIPTNOTIFY WORKS");
             string data = e.Value;
-            if (data.ToLower().StartsWith("launchlink:"))
+            Debug.WriteLine(data);
+
+            if (data.ToLower().StartsWith("launchmylink:"))
             {
-                NavigateToLink(data);
-            }
-            else
+                NavigateToLink(data.Substring("LaunchMylink:".Length));
+            } else
             {
-                _modelText = e.Value;
-                UpdateModelText(e.Value);
+                UpdateModelText(data);
             }
 
         }
@@ -175,10 +181,9 @@ namespace NuSysApp
         }
 
 
-
-
         private void UpdateModelText(String s)
         {
+            Debug.WriteLine("FRom javascript:" + s);
             var vm = DataContext as TextNodeViewModel;
             var model = (TextNodeModel)vm.Model;
             model.Text = s;

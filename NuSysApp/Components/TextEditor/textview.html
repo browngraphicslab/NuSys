@@ -8,19 +8,17 @@
 <body>
     <script type="text/javascript" language="javascript">
       
-        ////TODO: if click goes to link, then open link, otherwise default select behavior
+        function InsertText(text) {
+            document.getElementById("textbox").innerHTML = text;
 
-        //function InsertText(text) {
-        //    document.getElementById("textbox").innerHTML = text;
-
-        //    for (var i = 0; i < document.links.length; i++) {
-        //        document.links[i].onclick = function () {
-        //            //window.external.notify('LaunchLink:' + this.href);
-        //            window.external.notify(this.href);
-        //            return false;
-        //        }
-        //    }
-        //}
+            //for (var i = 0; i < document.links.length; i++) {
+            //    document.links[i].onclick = function () {
+            //        //window.external.notify('LaunchLink:' + this.href);
+            //        window.external.notify(this.href);
+            //        return false;
+            //    }
+            //}
+        }
     </script>
     <div id="textbox"></div>
 </body>

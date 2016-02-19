@@ -516,6 +516,8 @@
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
     <Content Include="Assets\wordIcon.png" />
+    <Content Include="Components\TextEditor\app.css" />
+    <Content Include="Components\TextEditor\app.js" />
     <Content Include="Components\TextEditor\texteditor.html" />
     <Content Include="Components\TextEditor\textview.html" />
     <Content Include="Properties\Default.rd.xml" />
@@ -764,6 +766,7 @@
       <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

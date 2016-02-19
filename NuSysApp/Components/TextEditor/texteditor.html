@@ -1,49 +1,130 @@
 ﻿<!DOCTYPE html>
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <script src="http://cdn.ckeditor.com/4.5.6/full/ckeditor.js"> </script>
-    <title></title>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--   <meta name="keywords" content="opensource rich wysiwyg text editor jquery bootstrap execCommand html5" />
+      <meta name="description" content="This tiny jQuery Bootstrap WYSIWYG plugin turns any DIV into a HTML5 rich text editor" />
+      <link rel="apple-touch-icon" href="//mindmup.s3.amazonaws.com/lib/img/apple-touch-icon.png" />
+      <link rel="shortcut icon" href="http://mindmup.s3.amazonaws.com/lib/img/favicon.ico" > -->
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="app.js"></script>
 </head>
 <body>
-    <form>
-        <textarea name="editor1" id="editor1"></textarea>
 
-        <script type="text/javascript">
-            function InsertText(text) { // function to update text in the editor
-                document.getElementById("editor1").innerHTML = text;
-            }
 
-            function Init() { //initializing the text editor
-                var editor = CKEDITOR.replace('editor1');
-                editor.config.height = '420';
+<script type="text/javascript">
+   
+    $(function(){
+        function initToolbarHints() {
+            $('a[title]').tooltip({container:'body'});
+            $('[data-role=magic-overlay]').each(function () {
+                var overlay = $(this), target = $(overlay.data('target'));
+                overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
+            });
+        };
+        initToolbarHints();
+    });
+</script>
 
-                editor.on('change', function (evt) { //listening for change events
-                    //if ((typeof (window.external) !== "undefined") && (typeof (window.external.notify) !== "undefined")) {
-                    //window.external.notify(evt.editor.getData()); // getData() returns CKEditor's HTML content.
-                    //}
-                    GetText(evt);
-                    InsertLink(evt);
-                });
-            }
+    <div id="content">
 
-            function InsertLink(text) {
-                document.getElementById("editor1").innerHTML = text;
+        <div class="container">
+            <div id="background">
+                <div id="alerts"></div>
+                <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
 
-                for (var i = 0; i < document.links.length; i++) {
-                    document.links[i].onclick = function () {
-                        //window.external.notify('LaunchLink:' + this.href);
-                        window.external.notify('LaunchMyLink:' + this.href);
-                        return false;
-                    }
-                }
-            }
+                    <div class="btn-group">
+                        <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+                        <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
+                        <a class="btn" data-edit="removeFormat" title="Remove Formatting"><i class="icon-font"></i></a>
 
-			function GetText(evt){
-				window.external.notify(evt.editor.getData()); // getData() returns CKEditor's HTML content.
-			}
-        </script>
-    </form>
+                        <!-- <a class="btn" data-edit="inserttext" title="voiceBtn" id="voiceBtn" x-webkit-speech=""></a> -->
+                        <!-- <input type="text" data-edit="inserttext" id="voiceBtn" x-webkit-speech=""> -->
+                    </div>
+              
+                    <div class="btn-group">
+                        <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
+                        <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
+                        <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="icon-strikethrough"></i></a>
+                        <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font">Font<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a data-edit="fontName" data-value="Arial" style="font-family: 'Arial'">Arial</a></li>
+                            <li><a data-edit="fontName" data-value="Arial Black" style="font-family: 'Arial Black'">Arial Black</a></li>
+                            <li><a data-edit="fontName" data-value="Courier New" style="font-family: 'Courier New'">Courier New</a></li>
+                            <li><a data-edit="fontName" data-value="Comic Sans MS" style="font-family: 'Comic Sans MS'">Comic Sans MS</a></li>
+                            <li><a data-edit="fontName" data-value="Georgia" style="font-family: 'Georgia'">Georgia</a></li>
+                            <li><a data-edit="fontName" data-value="Helvetica" style="font-family: 'Helvetica'">Helvetica</a></li>
+                            <li><a data-edit="fontName" data-value="Lucida Grande" style="font-family: 'Lucida Grande'">Lucida Grande</a></li>
+                            <li><a data-edit="fontName" data-value="Palatino Linotype" style="font-family: 'Palatino Linotype'">Palatino Linotype</a></li>
+                            <li><a data-edit="fontName" data-value="Tahoma" style="font-family: 'Tahoma'">Tahoma</a></li>
+                            <li><a data-edit="fontName" data-value="Times New Roman" style="font-family: 'Times New Roman'">Times New Roman</a></li>
+                            <li><a data-edit="fontName" data-value="Verdana" style="font-family: 'Verdana'">Verdana</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a data-edit="fontSize" data-value="5"><font size="5">Huge</font></a></li>
+                            <li><a data-edit="fontSize" data-value="4"><font size="4">Large</font></a></li>
+                            <li><a data-edit="fontSize" data-value="3"><font size="3">Normal</font></a></li>
+                            <li><a data-edit="fontSize" data-value="2"><font size="2">Small</font></a></li>
+                            <li><a data-edit="fontSize" data-value="1"><font size="1">Tiny</font></a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="icon-list-ul"></i></a>
+                        <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="icon-list-ol"></i></a>
+                        <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
+                        <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="icon-indent-right"></i></a>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="icon-align-left"></i></a>
+                        <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="icon-align-center"></i></a>
+                        <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="icon-align-right"></i></a>
+                        <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
+                    </div>
+
+                    <div class="btn-group">
+                        <a class="btn" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a> <!--dropdown-toggle was removed-->
+                        <div class="dropdown-menu input-append" id="linkBoxOuter">
+                            <input class="span2" id="linkBox" tabindex="-1" placeholder="URL" type="text" data-edit="createLink" />
+                            <!--<button class="btn" type="button">Add</button>-->
+                        </div>
+                        <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>
+
+                    </div>
+
+                    <!--<div class="btn-group">
+                        <a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="icon-picture"></i></a>
+                        <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage"/>
+                    </div>-->
+
+
+                </div>
+
+                <div id="editor">
+                    Hello!
+                </div>
+                <div id="editorPreview"></div>
+            </div>
+        </div>
+
+
+    </div>
+
 </body>
 </html>
