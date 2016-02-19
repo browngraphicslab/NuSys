@@ -142,11 +142,7 @@ var Editor = (function () {
     Editor.prototype.updateNodeView = function () {
         //this.preview.innerHTML = "<p> HI there!</p>";
 
-        //this.addEventListener("mousemove", function(e) {
-            //this.preview.innerHTML = this.element.innerHTML;
-
-            // window.external.notify(this.cleanHtml());
-       // });
+    
         var editor = this;
         //this.element.addEventListener("keyup", function () {
         //    editor.preview.innerHTML = editor.cleanHtml();
@@ -166,7 +162,11 @@ var Editor = (function () {
             window.external.notify(editor.cleanHtml());
         });
        // this.preview.innerHTML = "hey";
+        this.element.addEventListener("mousemove", function () {
+            editor.preview.innerHTML = editor.cleanHtml();
 
+            window.external.notify(editor.cleanHtml());
+        });
     };
 
     return Editor;

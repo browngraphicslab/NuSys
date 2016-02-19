@@ -26,7 +26,14 @@
 <script type="text/javascript">
     function InsertText(text) {
         document.getElementById("editor").innerHTML = text;
-        clickableLinks();
+        var links = document.querySelectorAll("#editor a");
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener("click", function (e) {
+                var currlink = this.getAttribute("href");
+                window.external.notify('LaunchMyLink:' + currlink);
+                return false;
+            });
+        }
     }
 
     $(function(){

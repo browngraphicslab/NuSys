@@ -129,6 +129,7 @@ namespace NuSysApp
             IEnumerable<String> s = myString;
             Debug.WriteLine("OPEN TEXT BOX: " + str);
             MyWebView.InvokeScriptAsync("InsertText", s);
+            MyWebView.InvokeScriptAsync("clickableLinks", null);
 
         }
 
