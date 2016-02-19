@@ -1,17 +1,23 @@
 var Editor = (function () {
-    function Editor(document, element, preview) {
-        this.preview = preview;
-        this.document = document;
-        this.element = element;
-        this.element.setAttribute("contenteditable", "true");
-        this.activateButtons(".btn");
-        this.activateButtons(".dropdown-menu li a");
-        this.activateLinkCreator();
-        this.clickableLinks();
-       // this.updateText();
-        this.updateNodeView();
-
+    function Editor(document, element) {
+        this.document = document; // entire document
+        this.element = element; // div containing text editor
+        this.element.setAttribute("contenteditable", "true"); //makes text editor editable
+        this.activateButtons(".btn"); // toolbar push buttons 
+        this.activateButtons(".dropdown-menu li a"); // toolbar dropdown menus 
+        this.activateLinkCreator(); // creating links
+        this.clickableLinks(); // making links clickable in detail view
+        this.updateNodeView(); // updating text node as changes are made in text detail editor
     }
+
+    /**
+     * Activating toolbar buttons for the text editor.
+     * Calls execCommand, which takes in "data-edit" (a command, such as Bold, Underline, etc)
+     * and "data-value"if applicable (a font family, a font size, or link href)
+     * 
+     * @param {} s 
+     * @returns {} false: to maintain focus in the text editor
+     */
     Editor.prototype.activateButtons = function (s) {
         var buttons = document.querySelectorAll(s);
         var editor = this;
@@ -27,29 +33,38 @@ var Editor = (function () {
             });
             buttons[i].addEventListener("click", function(e) {
                 e.preventDefault();
-                return false;
+                return false; //prevents text editor box from losing focus
             });
         }
     };
+
+    /**
+     * Functionality for Linking button/box
+     * Various event ilsteners:
+     * mouseenter: highlights text selection (will be lost as focus shifts to link box)
+     * mouseleave: unhighlights text selection
+     * click: focuses on linkBox
+     * change: calls createLink, which calls the execCommand link function
+     * 
+     * @returns {} 
+     */
     Editor.prototype.activateLinkCreator = function () {
         var linkBox = document.getElementById("linkBox");
         var linkBoxOuter = document.getElementById("linkBoxOuter");
         var marked = false;
         var editor = this;
-        //linkBoxOuter.addEventListener("mouseenter", function (e) {
-        //    editor.markSelection("#c6d9ec");
-        //}, true);
-        //linkBoxOuter.addEventListener("mouseleave", function (e) {
-        //    editor.markSelection("transparent");
-        //});
+        linkBoxOuter.addEventListener("mouseenter", function (e) {
+            editor.markSelection("#c6d9ec");
+        }, true);
+        linkBoxOuter.addEventListener("mouseleave", function (e) {
+            editor.markSelection("transparent");
+        });
         linkBox.addEventListener("click", function (e) {
             e.preventDefault();//
             e.stopImmediatePropagation();//
             linkBox.focus();//
-            console.log("CLICK IN BOX");
         }, true);
         linkBox.addEventListener("focus", function (e) {
-            console.log("FOCUS");
            // e.stopImmediatePropagation();//
             input.focus();
             if (!marked) {
@@ -58,7 +73,6 @@ var Editor = (function () {
             }
         });
         linkBox.addEventListener("change", function (e) {
-            console.log("Change");
            // editor.focus();
             editor.createLink(this);//
         });
@@ -69,6 +83,13 @@ var Editor = (function () {
            }
         });
     };
+
+    /**
+     * Creates link after link is entered in link box
+     * 
+     * @param {} el 
+     * @returns {} 
+     */
     Editor.prototype.createLink = function (el) {
         var editor = this;
         var element = el;
@@ -78,13 +99,19 @@ var Editor = (function () {
         editor.restoreSelection();
         if (newValue) {
             editor.element.focus();
-            // linkBox.focus();
             editor.markSelection("white");
             var tag = el.getAttribute("data-edit");
             document.execCommand(tag, false, newValue);
             this.clickableLinks();
         }
     };
+
+    /**
+     * Parses entire document to add click event listeners to links
+     * window.external.notify sends click event to C#, to open links in detail view
+     * 
+     * @returns {} 
+     */
     Editor.prototype.clickableLinks = function () {
         var links = document.querySelectorAll("#editor a");
         for (var i = 0; i < links.length; i++) {
@@ -92,10 +119,16 @@ var Editor = (function () {
                 var currlink = this.getAttribute("href");
                 window.external.notify('LaunchMyLink:' + currlink);
                 return false;
-                //window.open(l, null, "height=500,width=500,status=no,toolbar=no,menubar=no,location=no");
             });
         }
     };
+
+    /**
+     * Highlights selection during text link creation
+     * 
+     * @param {} color 
+     * @returns {} 
+     */
     Editor.prototype.markSelection = function (color) {
         this.restoreSelection();
         if (document.queryCommandSupported('hiliteColor')) {
@@ -103,68 +136,75 @@ var Editor = (function () {
         }
         this.saveSelection();
     };
+
+    /**
+     * Saves current text selection during various functions 
+     * 
+     * @returns {} 
+     */
     Editor.prototype.saveSelection = function () {
         this.selectedRange = this.getCurrentRange();
     };
+
+    /**
+     * Gets current text selection from editable text region
+     * @returns {} 
+     */
     Editor.prototype.getCurrentRange = function () {
         var sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
             return sel.getRangeAt(0);
         }
     };
+
+    /**
+     * Restores current text selection in editor: important as text editor loses focus/regains focus
+     * @returns {} 
+     */
     Editor.prototype.restoreSelection = function () {
         var editor = this;
         var selection = window.getSelection();
-        console.log("trying to restore");
         if (editor.selectedRange) {
-            console.log("restoring");
             selection.removeAllRanges();
             selection.addRange(this.selectedRange);
         }
     };
+
+    /**
+     * Returns clean HTML to update Text Model
+     * 
+     * @returns {} 
+     */
     Editor.prototype.cleanHtml = function () {
         var html = this.element.innerHTML;
         return html && html.replace(/(<br>|\s|<div><br><\/div>|&nbsp;)*$/, "");
     };
-    //Editor.prototype.updateText = function () {
-    //    var editor = this;
-    //    this.element.addEventListener("keyup", function () {
-    //        var prev = document.getElementById("editorPreview");
-    //        prev.innerHTML = editor.cleanHtml();
-    //    });
-    //};
 
-
+    /**
+     * Inserts Model text when text editor is reopened
+     * 
+     * @param {} text 
+     * @returns {} 
+     */
     Editor.prototype.InsertText = function (text) { // function to update text in the editor
         this.element.innerHTML = text;
     };
 
-    Editor.prototype.updateNodeView = function () {
-        //this.preview.innerHTML = "<p> HI there!</p>";
-
-    
+    /**
+     * Updates text node view in real-time with current text in editor
+     * Current events: keyup, change, mousemove
+     * 
+     * @returns {} 
+     */
+    Editor.prototype.updateNodeView = function () {    
         var editor = this;
-        //this.element.addEventListener("keyup", function () {
-        //    editor.preview.innerHTML = editor.cleanHtml();
-        //});
-
-        //this.preview.innerHTML = "hi";
-        
         this.element.addEventListener("keyup", function() {
-            editor.preview.innerHTML = editor.cleanHtml();
             window.external.notify(editor.cleanHtml());
         });
-
-       // this.preview.innerHTML = "ho";
-
         this.element.addEventListener("change", function() {
-            editor.preview.innerHTML = editor.cleanHtml();
             window.external.notify(editor.cleanHtml());
         });
-       // this.preview.innerHTML = "hey";
         this.element.addEventListener("mousemove", function () {
-            editor.preview.innerHTML = editor.cleanHtml();
-
             window.external.notify(editor.cleanHtml());
         });
     };
@@ -173,8 +213,7 @@ var Editor = (function () {
 })();
 
 window.onload = function () {
-    var el = document.getElementById('editor');
-    var prev = document.getElementById('editorPreview');
-    new Editor(document, el, prev);
+    var el = document.getElementById("editor");
+    new Editor(document, el);
 };
 //# sourceMappingURL=app.js.map

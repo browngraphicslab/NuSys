@@ -44,49 +44,26 @@ namespace NuSysApp
                 var contentId = (vm.Model as NodeModel).ContentId;
                 var content = SessionController.Instance.ContentController.Get(contentId);
                 if (content != null)
-                    //rtfTextBox.SetRtfText(content.Data);
+                {
                     UpdateText(content.Data);
-
+                }
                 (vm.Model as TextNodeModel).TextChanged += delegate (object source, TextChangedEventArgs args)
                 {
-                    // rtfTextBox.SetRtfText(args.Text);
-                    // rtfTextBox.SetRtfText();
                     UpdateText(args.Text);
                 };
 
 
 
-
-                /*
-                grid.IsDoubleTapEnabled = true;
-                grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
-                {
-                    var pos = e.GetPosition(rtfTextBox);
-                    var range = rtfTextBox.Document.GetRangeFromPoint(pos, PointOptions.ClientCoordinates);
-                    range.StartOf(TextRangeUnit.Link, true);
-                    var str = string.Empty;
-                    range.GetText(TextGetOptions.UseCrlf, out str);
-
-
-                    if (!str.StartsWith("HYPERLINK"))
-                        return;
-
-                    var groups = Regex.Match(str, "\"(.*?)\"").Groups;
-                    var url = groups[1].Value;
-                    Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
-                    e.Handled = true;
-                };
-                */
             }
 
-
+            
+            // Updates text in text node view as text is added/edited in Text Detail Editor
             private async void UpdateText(String str)
             {
                 if (str != "")
                 {
                     String[] myString = {str};
                     IEnumerable<String> s = myString;
-                    Debug.WriteLine("TRYING TO UPDATE TEXT IN NODEVIEW TO: " + str);
                     TextNodeWebView.InvokeScriptAsync("InsertText", s);
                 }
             }

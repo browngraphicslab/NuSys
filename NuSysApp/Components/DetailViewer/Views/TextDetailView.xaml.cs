@@ -58,52 +58,22 @@ namespace NuSysApp
             {
                 await SessionController.Instance.InitializeRecog();
             };
-            //rtfTextBox.KeyUp += delegate
-            //{
-            //    UpdateText();
-            //};
+
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
             {
                 if (model.Text != "")
                 {
-                    //rtfTextBox.SetRtfText(model.Text);
                     UpdateText(model.Text);
                 }
-
-               // model.TextChanged += delegate
-               // {
-                    //rtfTextBox.SetRtfText(model.Text);     
-                   // UpdateText(model.Text);
-              //  };
-
                 OpenTextBox(model.Text);
 
             };
 
             _modelContentId = model.ContentId;
             _modelId = model.Id;
-            //sizes.Add("8");
-            //sizes.Add("12");
-            //sizes.Add("16");
-            //sizes.Add("20");
-            //sizes.Add("24");
 
-            //fonts.Add(new FontFamily("Arial"));
-            //fonts.Add(new FontFamily("Courier New"));
-            //fonts.Add(new FontFamily("Times New Roman"));
-            //fonts.Add(new FontFamily("Verdana"));
         }
-
-        //private async Task InitializeRecog()
-        //{
-        //    await Task.Run( async () =>
-        //    {
-        //        _recognizer = new SpeechRecognizer();
-        //        // Compile the dictation grammar that is loaded by default. = ""; 
-        //        await _recognizer.CompileConstraintsAsync();
-        //    });
-        //}
 
         private void WebView_OnNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
         {
@@ -111,23 +81,27 @@ namespace NuSysApp
 
         }
 
-
+        /*
+        Updates text in editor when necessary
+        */
         private async void UpdateText(String str)
         {
             if (str != "")
             {
-                String[] myString = {str};
+                String[] myString = { str };
                 IEnumerable<String> s = myString;
                 MyWebView.InvokeScriptAsync("InsertText", s);
             }
         }
 
+        /*
+        When text detail view is reopened, must be populated with text from model, and click listeners must be re-enabled
+        */
         private async void OpenTextBox(String str)
         {
 
             String[] myString = { str };
             IEnumerable<String> s = myString;
-            Debug.WriteLine("OPEN TEXT BOX: " + str);
             MyWebView.InvokeScriptAsync("InsertText", s);
             MyWebView.InvokeScriptAsync("clickableLinks", null);
 
@@ -135,12 +109,13 @@ namespace NuSysApp
 
 
 
-
+        /* 
+        Two values are received from JS: link clicks and entire document HTML updates
+        Method parses these options, calls other methods accordingly
+         */
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
         {
-            // The string received from the JavaScript code can be found 
-            // in e.Value
-            Debug.WriteLine("WEBSCRIPTNOTIFY WORKS");
+            // The string received from the JavaScript code can be found in e.Value
             string data = e.Value;
             Debug.WriteLine(data);
 
@@ -161,6 +136,9 @@ namespace NuSysApp
 
         }
 
+        /*
+        Opens up link from Text Detail View in new web node, in the network 
+        */
         public async Task NavigateToLink(string url)
         {
             Message m = new Message();
@@ -191,18 +169,18 @@ namespace NuSysApp
 
         }
 
-
+        /*
+        Updates text value (in HTML) in Model as text is added and edited in Text Editor
+        */
         private void UpdateModelText(String s)
         {
             if (s != "")
             {
-                Debug.WriteLine("Updating model text in TextDetailView:" + s);
                 var vm = DataContext as TextNodeViewModel;
                 var model = (TextNodeModel) vm.Model;
                 model.Text = s;
             }
         }
-
 
         public void Dispose()
         {
@@ -289,82 +267,6 @@ namespace NuSysApp
         //    _recognizer.StopRecognitionAsync();
         //    _isRecording = false;
         //   // this.RecordVoice.Click -= stopTranscribing;
-        //}
-
-        //private void BoldButton_OnClick(object sender, RoutedEventArgs e)
-        //{
-        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
-        //    if (selectedText != null)
-        //    {
-        //        ITextCharacterFormat format = selectedText.CharacterFormat;
-        //        format.Bold = FormatEffect.Toggle;
-        //        selectedText.CharacterFormat = format;
-        //    }
-        //    UpdateText();
-        //}
-
-        //private void ItalicButton_OnClick(object sender, RoutedEventArgs e)
-        //{
-        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
-        //    if (selectedText != null)
-        //    {
-        //        ITextCharacterFormat format = selectedText.CharacterFormat;
-        //        format.Italic = FormatEffect.Toggle;
-        //        selectedText.CharacterFormat = format;
-        //    }
-        //    UpdateText();
-        //}
-
-        //private void UnderlineButton_OnClick(object sender, RoutedEventArgs e)
-        //{
-        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
-        //    if (selectedText != null)
-        //    {
-        //        ITextCharacterFormat format = selectedText.CharacterFormat;
-        //        if (format.Underline == UnderlineType.None)
-        //        {
-        //            format.Underline = UnderlineType.Single;
-        //        }
-        //        else
-        //        {
-        //            format.Underline = UnderlineType.None;
-        //        }
-        //        selectedText.CharacterFormat = format;
-        //    }
-        //    UpdateText();
-        //}
-
-        //private void SizeChanged(object sender, RoutedEventArgs e)
-        //{
-        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
-        //    if (selectedText != null)
-        //    {
-        //        if (SizeBox.SelectedItem != null)
-        //        {
-        //            float size = (float)Convert.ToDouble(SizeBox.SelectedItem);
-        //            ITextCharacterFormat format = selectedText.CharacterFormat;
-        //            format.Size = size;
-        //            selectedText.CharacterFormat = format;
-        //        }
-                
-        //    }
-        //    UpdateText();
-        //}
-
-        //private void FontChanged(object sender, RoutedEventArgs e)
-        //{
-        //    ITextSelection selectedText = rtfTextBox.Document.Selection;
-        //    if (selectedText != null)
-        //    {
-        //        if (FontBox.SelectedItem != null)
-        //        {
-        //            FontFamily font = (FontFamily)FontBox.SelectedItem;
-        //            ITextCharacterFormat format = selectedText.CharacterFormat;
-        //            format.Name = font.Source;
-        //            selectedText.CharacterFormat = format;
-        //        }
-        //    }
-        //    UpdateText();
         //}
 
         private void UpdateText()
