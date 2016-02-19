@@ -71,11 +71,11 @@ namespace NuSysApp
                     UpdateText(model.Text);
                 }
 
-                model.TextChanged += delegate
-                {
+               // model.TextChanged += delegate
+               // {
                     //rtfTextBox.SetRtfText(model.Text);     
-                    UpdateText(model.Text);
-                };
+                   // UpdateText(model.Text);
+              //  };
 
                 OpenTextBox(model.Text);
 
@@ -114,9 +114,12 @@ namespace NuSysApp
 
         private async void UpdateText(String str)
         {
-            String[] myString = { str };
-            IEnumerable<String> s = myString;
-            MyWebView.InvokeScriptAsync("InsertText", s);
+            if (str != "")
+            {
+                String[] myString = {str};
+                IEnumerable<String> s = myString;
+                MyWebView.InvokeScriptAsync("InsertText", s);
+            }
         }
 
         private async void OpenTextBox(String str)
@@ -142,10 +145,17 @@ namespace NuSysApp
 
             if (data.ToLower().StartsWith("launchmylink:"))
             {
-                NavigateToLink(data.Substring("LaunchMylink:".Length));
+                String potentialLink = data.Substring("LaunchMylink:".Length);
+                if (potentialLink.StartsWith("http://"))
+                {
+                    NavigateToLink(potentialLink);
+                }
             } else
             {
-                UpdateModelText(data);
+                if (data != "")
+                {
+                    UpdateModelText(data);
+                }
             }
 
         }
@@ -183,10 +193,13 @@ namespace NuSysApp
 
         private void UpdateModelText(String s)
         {
-            Debug.WriteLine("FRom javascript:" + s);
-            var vm = DataContext as TextNodeViewModel;
-            var model = (TextNodeModel)vm.Model;
-            model.Text = s;
+            if (s != "")
+            {
+                Debug.WriteLine("Updating model text in TextDetailView:" + s);
+                var vm = DataContext as TextNodeViewModel;
+                var model = (TextNodeModel) vm.Model;
+                model.Text = s;
+            }
         }
 
 

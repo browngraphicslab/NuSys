@@ -82,12 +82,13 @@ namespace NuSysApp
 
             private async void UpdateText(String str)
             {
-                String[] myString = { str };
-                IEnumerable<String> s = myString;
-                Debug.WriteLine("TRYING TO UPDATE TEXT IN NODE TO: " + str);
-
-
-                TextNodeWebView.InvokeScriptAsync("InsertText", s);
+                if (str != "")
+                {
+                    String[] myString = {str};
+                    IEnumerable<String> s = myString;
+                    Debug.WriteLine("TRYING TO UPDATE TEXT IN NODEVIEW TO: " + str);
+                    TextNodeWebView.InvokeScriptAsync("InsertText", s);
+                }
             }
 
 

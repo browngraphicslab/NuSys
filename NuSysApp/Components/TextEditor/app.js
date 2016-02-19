@@ -8,18 +8,21 @@ var Editor = (function () {
         this.activateButtons(".dropdown-menu li a");
         this.activateLinkCreator();
         this.clickableLinks();
-        this.updateText();
+       // this.updateText();
         this.updateNodeView();
+
     }
     Editor.prototype.activateButtons = function (s) {
         var buttons = document.querySelectorAll(s);
         var editor = this;
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].addEventListener("mousedown", function (e) {
+                e.preventDefault();
                 editor.saveSelection();
                 var tag = this.getAttribute("data-edit");
                 document.execCommand(tag, false, this.getAttribute("data-value"));
                 editor.restoreSelection();
+                return false;
 
             });
             buttons[i].addEventListener("click", function(e) {
@@ -31,26 +34,39 @@ var Editor = (function () {
     Editor.prototype.activateLinkCreator = function () {
         var linkBox = document.getElementById("linkBox");
         var linkBoxOuter = document.getElementById("linkBoxOuter");
+        var marked = false;
         var editor = this;
-        linkBoxOuter.addEventListener("mouseenter", function (e) {
-            editor.markSelection("#c6d9ec");
-        }, true);
-        linkBoxOuter.addEventListener("mouseleave", function (e) {
-            editor.markSelection("transparent");
-        });
+        //linkBoxOuter.addEventListener("mouseenter", function (e) {
+        //    editor.markSelection("#c6d9ec");
+        //}, true);
+        //linkBoxOuter.addEventListener("mouseleave", function (e) {
+        //    editor.markSelection("transparent");
+        //});
         linkBox.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            linkBox.focus();
+            e.preventDefault();//
+            e.stopImmediatePropagation();//
+            linkBox.focus();//
             console.log("CLICK IN BOX");
         }, true);
         linkBox.addEventListener("focus", function (e) {
             console.log("FOCUS");
-            e.stopImmediatePropagation();
+           // e.stopImmediatePropagation();//
+            input.focus();
+            if (!marked) {
+                editor.markSelection("#c6d9ec");
+                marked = true;
+            }
         });
         linkBox.addEventListener("change", function (e) {
             console.log("Change");
-            editor.createLink(this);
+           // editor.focus();
+            editor.createLink(this);//
+        });
+        linkBox.addEventListener("blur", function (e) {
+           if (marked) {
+                editor.markSelection("transparent");
+                marked = false;
+           }
         });
     };
     Editor.prototype.createLink = function (el) {
@@ -119,29 +135,38 @@ var Editor = (function () {
     //};
 
 
-    Editor.prototype.InsertText = function(text) { // function to update text in the editor
+    Editor.prototype.InsertText = function (text) { // function to update text in the editor
         this.element.innerHTML = text;
     };
 
-    Editor.prototype.updateNodeView = function() {
-        this.preview.innerHTML = "<p> HELLO!</p>";
+    Editor.prototype.updateNodeView = function () {
+        //this.preview.innerHTML = "<p> HI there!</p>";
 
-        this.addEventListener("mousemove", function(e) {
-            this.preview.innerHTML = this.cleanHtml();
+        //this.addEventListener("mousemove", function(e) {
+            //this.preview.innerHTML = this.element.innerHTML;
 
-            window.external.notify(this.cleanHtml());
+            // window.external.notify(this.cleanHtml());
+       // });
+        var editor = this;
+        //this.element.addEventListener("keyup", function () {
+        //    editor.preview.innerHTML = editor.cleanHtml();
+        //});
+
+        //this.preview.innerHTML = "hi";
+        
+        this.element.addEventListener("keyup", function() {
+            editor.preview.innerHTML = editor.cleanHtml();
+            window.external.notify(editor.cleanHtml());
         });
-        this.element.addEventListener("keyup", function(e) {
-            this.preview.innerHTML = this.cleanHtml();
 
-            window.external.notify(this.cleanHtml());
+       // this.preview.innerHTML = "ho";
+
+        this.element.addEventListener("change", function() {
+            editor.preview.innerHTML = editor.cleanHtml();
+            window.external.notify(editor.cleanHtml());
         });
-        this.element.addEventListener("change", function(e) {
-            this.preview.innerHTML = this.cleanHtml();
+       // this.preview.innerHTML = "hey";
 
-            window.external.notify(this.cleanHtml());
-
-        });
     };
 
     return Editor;
