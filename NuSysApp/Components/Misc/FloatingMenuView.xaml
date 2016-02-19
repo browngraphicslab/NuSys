@@ -100,7 +100,6 @@
             <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" />
             <local:FloatingMenuButtonView x:Name="btnMisc" Icon="ms-appx:///Assets/icon_mainmenu_additional.png" />
             <local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/icon_mainmenu_search.png"  Window="{Binding ElementName=bucketWindow}"/>
-            <local:FloatingMenuButtonView x:Name="btnLasso" Icon="ms-appx:///Assets/icon_mainmenu_multiselect.png"  Window="{Binding ElementName=bucketWindow}"/>
             <Button Name="lassoButton" Background="Crimson" Width="75" Height="75" Content="Lasso" Click="lassoButton_Click"/>
 
         </StackPanel>

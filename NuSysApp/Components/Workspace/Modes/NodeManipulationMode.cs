@@ -104,7 +104,7 @@ namespace NuSysApp
                 //move all selected content if a selected node is moved
                 foreach (var vmodel in SessionController.Instance.ActiveWorkspace.SelectedContent)
                 {
-                    if(!vmodel.ContainsLink)
+                    if(!vmodel.ContainsSelectedLink)
                         vmodel?.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
                 }
             }

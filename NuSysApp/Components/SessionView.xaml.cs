@@ -398,6 +398,11 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Will start adding a lasso to the main canavs when lasso mode is enabled
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mainCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (_lassoAllowed)
@@ -416,19 +421,27 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Continue to add points to the lasso if lasso is allowed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mainCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
             if (_lassoAllowed&&_lassoStarted)
-            {
-               // mainCanvas.TransformToVisual(null).TransformPoint(new Point(0, 0));
+            {           
                 double x = e.GetCurrentPoint(mainCanvas).RawPosition.X;
-                double y = e.GetCurrentPoint(mainCanvas).RawPosition.Y;
-               
+                double y = e.GetCurrentPoint(mainCanvas).RawPosition.Y;         
                 _lasso.Points.Add(new Point(x,y));
                 
             }
         }
 
+        /// <summary>
+        /// Create a multiselection hull based on the points in the lasso.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mainCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             if (_lassoAllowed&&_lassoStarted&&_lasso.Points.Count>1)
@@ -436,10 +449,6 @@ namespace NuSysApp
                 double x = e.GetCurrentPoint(mainCanvas).Position.X;
                 double y = e.GetCurrentPoint(mainCanvas).Position.Y;
                 _lasso.Points.Add(new Point(x, y));
-             
-
-
-                //_lasso.TransformToVisual(null).TransformPoint(new Point(0, 0));
                 new SelectionHull(_lasso, mainCanvas);
                 _lassoStarted = false;
             }

@@ -100,17 +100,14 @@ namespace NuSysApp
             RaisePropertyChanged("IsSelected");
         }
 
+        // returns the anchor point to be used as the reference point in multi select
         public override PointCollection ReferencePoints
         {
             get
             {
                 PointCollection pts = new PointCollection();
                 pts.Add(new Point2d(Anchor.X,Anchor.Y));
-
-
-
                 return pts;
-
             }
         }
 

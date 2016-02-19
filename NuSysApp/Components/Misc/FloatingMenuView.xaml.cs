@@ -282,6 +282,11 @@ namespace NuSysApp
             get;set;
         }
 
+        /// <summary>
+        /// Temporary lasso button. Note: When the lasso is on, pan zoom mode is disabled.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lassoButton_Click(object sender, RoutedEventArgs e)
         {
             SessionView.AllowLasso = !SessionView.AllowLasso;
@@ -295,6 +300,7 @@ namespace NuSysApp
             {
                 lassoButton.Content = "Lasso\nOff";
                 lassoButton.Background = new SolidColorBrush(Colors.Crimson);
+                PanZoomMode.TestDisable = false;
             }
         }
        

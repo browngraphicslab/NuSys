@@ -15,7 +15,7 @@ namespace NuSysApp.Components
         bool isSelected();
         PointCollection ReferencePoints { get; }
         bool Selected { get; set; }
-        bool ContainsLink { get; }
+        bool ContainsSelectedLink { get; }
 
         void Translate(double x, double y);
     }

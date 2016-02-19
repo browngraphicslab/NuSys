@@ -26,7 +26,7 @@ namespace NuSysApp
         private UserControl _view;
         private CompositeTransform _transform = new CompositeTransform();
         private DebouncingDictionary _debouncingDictionary;
-        
+
         #endregion Private Members
 
         protected AtomViewModel(AtomModel model)
@@ -67,7 +67,7 @@ namespace NuSysApp
         }
 
 
-        public virtual async Task Init(){} 
+        public virtual async Task Init() { }
 
         private void OnTitleChanged(object source, string title)
         {
@@ -116,7 +116,7 @@ namespace NuSysApp
         private void CreateTags()
         {
             Tags.Clear();
-            
+
             List<string> tagList = (List<string>)Model.GetMetaData("tags");
 
             foreach (string tag in tagList)
@@ -199,7 +199,7 @@ namespace NuSysApp
             if (IsSelected)
                 SessionController.Instance.ActiveWorkspace.SetSelection(this);
         }
-  
+
         public void AddLink(LinkViewModel linkVm)
         {
             LinkList.Add(linkVm);
@@ -222,11 +222,11 @@ namespace NuSysApp
         }
 
         #endregion Other Methods
-        
+
         #region Public Properties
 
         public ObservableCollection<LinkViewModel> LinkList { get; set; }
-        
+
         private AtomModel.EditStatus _canEdit;
         public AtomModel.EditStatus CanEdit
         {
@@ -235,10 +235,10 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
-                
+
             }
         }
-       
+
         public bool IsSelected
         {
             get { return _isSelected; }
@@ -260,13 +260,13 @@ namespace NuSysApp
         {
             _isSelected = true;
             Color = new SolidColorBrush(Colors.Yellow);
-            
+
         }
 
         public void deselect()
         {
             _isSelected = false;
-            Color =  new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
         }
 
         public bool isSelected()
@@ -300,7 +300,7 @@ namespace NuSysApp
                     }
                 }
                 RaisePropertyChanged("Selected");
-               // _isSelected = value;
+                // _isSelected = value;
             }
 
         }
@@ -331,7 +331,7 @@ namespace NuSysApp
                 }
 
                 Model.Color = value;
-                
+
                 RaisePropertyChanged("Color");
             }
         }
@@ -355,8 +355,8 @@ namespace NuSysApp
                 RaisePropertyChanged("Transform");
             }
         }
-       
-        
+
+
         public Point2d Anchor
         {
             get { return _anchor; }
@@ -371,7 +371,7 @@ namespace NuSysApp
             }
         }
 
-        public AtomModel Model { get;}
+        public AtomModel Model { get; }
 
         public double X
         {
@@ -461,28 +461,47 @@ namespace NuSysApp
 
         public ObservableCollection<Button> Tags { get; set; }
 
+        /// <summary>
+        /// returns the reference points to be used in multiselect. the four corners of the node are used. 
+        /// </summary>
         public virtual PointCollection ReferencePoints
         {
             get
             {
+                // must use the transform's translate x/y values in case the user has moved the node
+                double x = Transform.TranslateX;
+                double y = Transform.TranslateY;
+
+                // add each corner point to the list of reference points
                 PointCollection pts = new PointCollection();
-                pts.Add(new Point(_x, _y));
-                pts.Add(new Point(_x + Width, _y));
-                pts.Add(new Point(_x, _y + Height));
-                pts.Add(new Point(_x + Width, _y + Height));
-
-               
-
+                pts.Add(new Point(x, y));
+                pts.Add(new Point(x + Width, y));
+                pts.Add(new Point(x, y + Height));
+                pts.Add(new Point(x + Width, y + Height));
                 return pts;
-               
             }
         }
 
-        public bool ContainsLink
+        /// <summary>
+        /// Will return if the atom has a link associated with it. This prevents "double-dipping" 
+        /// manipulation events. For example, recall that all selected atoms will move if one selected atoms 
+        /// is moved. If the moved atom is a link, then the two atoms the link is "linking" will be translated from
+        /// (1) the translate method being called in the NodeManipulationMode since it is a selected atom and (2) the 
+        /// translate method being called by the link. This method prevents this "double-dipping" from occuring.
+        /// </summary>
+        public bool ContainsSelectedLink
         {
             get
             {
-                return LinkList.Count > 0;
+                if (LinkList.Count > 0)
+                {
+                    // return true if at least one link is selected
+                    foreach (var link in LinkList)
+                    {
+                        if (link.Selected) return true;
+                    }
+                }
+                return false;
             }
         }
 

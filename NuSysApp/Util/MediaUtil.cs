@@ -21,7 +21,6 @@ namespace NuSysApp
 
         public static  async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
         {
-
             var bitmapImage = new BitmapImage();
             InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
 
