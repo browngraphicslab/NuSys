@@ -8,6 +8,9 @@ namespace NuSysApp
     {
         public NewNodeRequest(Message message) : base(Request.RequestType.NewNodeRequest, message)
         {
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerRequestType(ServerRequestType.Add);
         }
 
         public override async Task CheckOutgoingRequest()

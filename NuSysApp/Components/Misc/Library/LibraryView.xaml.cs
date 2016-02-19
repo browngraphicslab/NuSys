@@ -53,7 +53,7 @@ namespace NuSysApp
                 var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                 foreach (var kvp in dictionaries)
                 {
-                    var id = kvp.Value["id"];
+                    var id = (string)kvp.Value["id"];
                     var element = new LibraryElement(kvp.Value);
                     if (!_elements.ContainsKey(id))
                     {

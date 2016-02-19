@@ -48,7 +48,7 @@ namespace NuSysApp
             EveryoneButSender
         }
         protected Message _message;
-        protected bool _serverIgnore = true;
+        protected bool _serverIgnore = false;
         private ServerItemType _serverItemType;
         private ServerRequestType _serverRequestType;
         private ServerEchoType _serverEchoType = ServerEchoType.None;
@@ -103,6 +103,11 @@ namespace NuSysApp
         {
             _serverEchoType = echoType;
         }
+
+        public bool WaitForRequestReturn()
+        {
+            return _serverEchoType == ServerEchoType.Everyone;
+        }
         public Message GetFinalMessage()
         {
             _message["request_type"] = _requestType.ToString();
@@ -122,8 +127,9 @@ namespace NuSysApp
                     _message["server_item_type"] = _serverItemType.ToString();
                 }
             }
-            _message["server_echo_type"] = _serverEchoType;
+            _message["server_echo_type"] = _serverEchoType.ToString();
             _message["system_sent_timestamp"] = DateTime.UtcNow.Ticks;
+            _message["system_sender_ip"] = SessionController.Instance.NuSysNetworkSession.LocalIP;
             return _message;
         }
 

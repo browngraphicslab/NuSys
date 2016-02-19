@@ -23,6 +23,8 @@ namespace NuSysApp
         private ManualResetEvent _manualResetEvent;
         private bool _waiting = false;
 
+        public delegate void MessageRecievedEventHandler(Message message);
+        public event MessageRecievedEventHandler OnMessageRecieved;
         public string ServerBaseURI { get; private set; }
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
@@ -61,18 +63,25 @@ namespace NuSysApp
                 string read = reader.ReadString(reader.UnconsumedBufferLength);
                 //Debug.WriteLine(read + "\r\n");
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(read, settings);
-                if (dict.ContainsKey("notification_type") && dict["notification_type"] == "content_available")
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
+                if (dict.ContainsKey("server_indication_from_server"))
                 {
-                    if (dict.ContainsKey("id"))
+                    if (dict.ContainsKey("notification_type") && (string)dict["notification_type"] == "content_available")
                     {
-                        var id = dict["id"];
-                        LibraryElement element = new LibraryElement(dict);
-                        UITask.Run(delegate {
-                             SessionController.Instance.Library.AddNewElement(element);
-                        });
-                        await GetContent(id);
+                        if (dict.ContainsKey("id"))
+                        {
+                            var id = dict["id"];
+                            LibraryElement element = new LibraryElement(dict);
+                            UITask.Run(delegate {
+                                                    SessionController.Instance.Library.AddNewElement(element);
+                            });
+                            await GetContent((string) id);
+                        }
                     }
+                }
+                else
+                {
+                    OnMessageRecieved?.Invoke(new Message(dict));
                 }
             }
         }
@@ -93,11 +102,11 @@ namespace NuSysApp
                 await UITask.Run(async delegate
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
+                    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
-                    var contentData = dict["data"] ?? "";
-                    var contentTitle = dict.ContainsKey("title") ? dict["title"] : null;
-                    var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"]) : new List<string>();
+                    var contentData = (string)dict["data"] ?? "";
+                    var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
+                    var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
                     var content = new NodeContentModel(contentData, contentId, contentTitle, contentAliases);
 
                     SessionController.Instance.ContentController.Add(content);
@@ -121,25 +130,17 @@ namespace NuSysApp
                 //TODO add in error handling
             }
         }
-
-        private async Task SendMessageToServer(Message m)
-        {
-            var message = m.GetSerialized();
-            await SendToServer(message);
-        }
         public async Task SendDictionaryToServer(Dictionary<string, string> dict)
         {
-            if (!dict.ContainsKey("id") || !dict.ContainsKey("data"))
-            {
-                throw new Exception("Adding content must contain and id, data");
-            }
-            dict["server_request_type"] = "add";
-            dict["server_item_type"] = "content";
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var serialized = JsonConvert.SerializeObject(dict,settings);
             await SendToServer(serialized);
         }
 
+        public async Task SendMessageToServer(Message message)
+        {
+            await SendToServer(message.GetSerialized());
+        }
         private async Task SendToServer(string message)
         {
             try
@@ -152,7 +153,7 @@ namespace NuSysApp
                 throw new Exception("Exception caught during writing to server data writer");
             }
         }
-        public async Task<Dictionary<string,Dictionary<string,string>>> GetRepo()
+        public async Task<Dictionary<string,Dictionary<string,object>>> GetRepo()
         {
             HttpClient client = new HttpClient();
             var response = await client.GetAsync(GetUri("getcontent"));
@@ -163,11 +164,11 @@ namespace NuSysApp
                 data = await content.ReadAsStringAsync();
             }
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var deserialized = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
-            var final = new Dictionary<string,Dictionary<string,string>>();
+            var deserialized = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
+            var final = new Dictionary<string,Dictionary<string,object>>();
             foreach (var kvp in deserialized)
             {
-                final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, string>>(kvp.Value, settings);
+                final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, object>>(kvp.Value.ToString(), settings);
             }
             return final;
         }

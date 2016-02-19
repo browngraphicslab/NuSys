@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+    /*
     public class AddClientSystemRequest : SystemRequest
     {
         private string _ip;
@@ -12,7 +13,7 @@ namespace NuSysApp
         }
 
         public AddClientSystemRequest(Message m) : base(m){}
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient, string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient)
         {
             session.AddIP(_message.GetString("ip"));
             if (senderIP != null)
@@ -32,5 +33,5 @@ namespace NuSysApp
                 await nusysSession.ExecuteSystemRequest(clientRequest, NetworkClient.PacketType.TCP, list);
             }
         }
-    }
+    }*/
 }
