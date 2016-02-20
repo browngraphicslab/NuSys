@@ -40,6 +40,8 @@ namespace NuSysApp
         private static List<AtomModel> createdModels;
         private ContentImporter _contentImporter = new ContentImporter();
 
+        private LibraryView _library;
+
         public bool IsPenMode { get; private set; }
         public ChatPopupView ChatPopupWindow {
             get { return ChatPopup; }
@@ -51,7 +53,7 @@ namespace NuSysApp
         }
         public LibraryView Library
         {
-            get { return LibraryView; }
+            get { return _library; }
         }
 
         #endregion Private Members
@@ -102,6 +104,8 @@ namespace NuSysApp
                 _cortanaInitialized = false;
                 xFloatingMenu.SessionView = this;
 
+                //_library = new LibraryView(new LibraryBucketViewModel());
+
                 SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user)
                 {
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
@@ -117,7 +121,7 @@ namespace NuSysApp
                
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
 
-                await Library.Reload();
+                await ((LibraryBucketViewModel)_library.DataContext).InitializeLibrary();
                 ChatPopup.OnNewTextsChanged += delegate(int newTexts)
                 {
                     if (newTexts > 0)
@@ -268,12 +272,14 @@ namespace NuSysApp
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
-            Canvas.SetTop(LibraryView, 55);
-            Canvas.SetLeft(LibraryView, 900);
+            _library = new LibraryView(new LibraryBucketViewModel());
+            Canvas.SetTop(_library, 55);
+            Canvas.SetLeft(_library, 900);
             Canvas.SetTop(LibraryMaximizer, 350);
             Canvas.SetLeft(LibraryMaximizer,1300);
-            LibraryView.Visibility = Visibility.Collapsed;
+            _library.Visibility = Visibility.Collapsed;
             ChatPopup.Visibility = Visibility.Collapsed;
+            mainCanvas.Children.Add(_library);
         }
 
         private void UpdateTitle(object sender, object args)
@@ -418,7 +424,7 @@ namespace NuSysApp
 
         private void LibraryMaximizer_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            LibraryView.ToggleVisiblity();
+            _library.ToggleVisiblity();
         }
     }
 }
