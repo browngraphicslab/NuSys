@@ -30,60 +30,62 @@ namespace NuSysApp
     public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable
     {
 
-        private List<Image> _images = new List<Image>();
+            private List<Image> _images = new List<Image>();
 
-        public TextNodeView(TextNodeViewModel vm)
-        {
-
-            InitializeComponent();
-            DataContext = vm;
-
-
-            var contentId = (vm.Model as NodeModel).ContentId;
-            var content = SessionController.Instance.ContentController.Get(contentId);
-            if (content != null)
-                rtfTextBox.SetRtfText(content.Data);
-
-            (vm.Model as TextNodeModel).TextChanged += delegate (object source, string text)
+            public TextNodeView(TextNodeViewModel vm)
             {
-                rtfTextBox.SetRtfText(text);
-                // rtfTextBox.SetRtfText();
-            };
+
+                InitializeComponent();
+
+                TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+                DataContext = vm;
 
 
-            /*
-            grid.IsDoubleTapEnabled = true;
-            grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
+                var contentId = (vm.Model as NodeModel).ContentId;
+                var content = SessionController.Instance.ContentController.Get(contentId);
+                if (content != null)
+                {
+                    UpdateText(content.Data);
+                }
+                (vm.Model as TextNodeModel).TextChanged += delegate (object source, string text)
+                {
+                    UpdateText(text);
+                };
+
+
+
+
+            }
+
+            
+            // Updates text in text node view as text is added/edited in Text Detail Editor
+            private async void UpdateText(String str)
             {
-                var pos = e.GetPosition(rtfTextBox);
-                var range = rtfTextBox.Document.GetRangeFromPoint(pos, PointOptions.ClientCoordinates);
-                range.StartOf(TextRangeUnit.Link, true);
-                var str = string.Empty;
-                range.GetText(TextGetOptions.UseCrlf, out str);
-                if (!str.StartsWith("HYPERLINK"))
-                    return;
-                var groups = Regex.Match(str, "\"(.*?)\"").Groups;
-                var url = groups[1].Value;
-                Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
-                e.Handled = true;
-            };
-            */
-        }
+                if (str != "")
+                {
+                    String[] myString = {str};
+                    IEnumerable<String> s = myString;
+                    TextNodeWebView.InvokeScriptAsync("InsertText", s);
+                }
+            }
 
 
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
+
+
+
+            private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
             TextNodeViewModel vm = (TextNodeViewModel)DataContext;
             return;
-            var oldColor = this.RecordVoice.Background;
+           // var oldColor = this.RecordVoice.Background;
             Color c = new Color();
             c.A = 255;
             c.R = 199;
             c.G = 84;
             c.B = 82;
-            this.RecordVoice.Background = new SolidColorBrush(c);
+           // this.RecordVoice.Background = new SolidColorBrush(c);
             await TranscribeVoice();
-            this.RecordVoice.Background = oldColor;
+           // this.RecordVoice.Background = oldColor;
         }
 
         private async Task TranscribeVoice()
@@ -116,66 +118,68 @@ namespace NuSysApp
             vm.Init();
         }
 
-        private async void OnEditClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (TextNodeViewModel)this.DataContext;
+        //private async void OnEditClick(object sender, RoutedEventArgs e)
+        //{
+        //    var vm = (TextNodeViewModel)this.DataContext;
 
-            if (vm.IsEditingInk == true)
-            {
-                nodeTpl.ToggleInkMode();
-            }
-
-            vm.ToggleEditing();
-
-            if (!vm.IsEditing)
-            {
-                await vm.Init();
-                RearrangeImagePlaceHolders();
-            }
+        //    if (vm.IsEditingInk == true)
+        //    {
+        //        nodeTpl.ToggleInkMode();
+        //    }
 
 
-            AdjustScrollHeight();
-        }
+        //    vm.ToggleEditing();
+            
+        //    if (!vm.IsEditing)
+        //    {
+        //        await vm.Init();
+        //        RearrangeImagePlaceHolders();
+        //    }
 
-        private void OnInkClick(object sender, RoutedEventArgs e)
-        {
-            nodeTpl.ToggleInkMode();
-        }
+           
+        //    AdjustScrollHeight();        
+        //}
 
-        private void RearrangeImagePlaceHolders()
-        {
-            var currentSelectionStart = rtfTextBox.Document.Selection.StartPosition;
-            var currentSelectionEnd = rtfTextBox.Document.Selection.EndPosition;
 
-            var vm = (TextNodeViewModel)this.DataContext;
+        //private void OnInkClick(object sender, RoutedEventArgs e)
+        //{
+        //    nodeTpl.ToggleInkMode();
+        //}
 
-            var objPos = 0;
-            var startPos = 0;
-            for (var i = 0; i < _images.Count; i++)
-            {
-                string str;
-                rtfTextBox.Document.GetText(TextGetOptions.None, out str);
-                rtfTextBox.Document.Selection.SetRange(startPos, str.Length);
-                var findPos = rtfTextBox.Document.Selection.FindText("￼", TextConstants.MaxUnitCount, FindOptions.Word);
+        //private void RearrangeImagePlaceHolders()
+        //{
+        //    var currentSelectionStart = rtfTextBox.Document.Selection.StartPosition;
+        //    var currentSelectionEnd = rtfTextBox.Document.Selection.EndPosition;
 
-                if (findPos == 0)
-                    throw new Exception("Couldn't find image in RichText");
+        //    var vm = (TextNodeViewModel)this.DataContext;
 
-                objPos = GetNthIndex(str, '￼', i + 1);
+        //    var objPos = 0;
+        //    var startPos = 0;
+        //    for (var i = 0; i < _images.Count; i++)
+        //    {
+        //        string str;
+        //        rtfTextBox.Document.GetText(TextGetOptions.None, out str);
+        //        rtfTextBox.Document.Selection.SetRange(startPos, str.Length);
+        //        var findPos = rtfTextBox.Document.Selection.FindText("￼", TextConstants.MaxUnitCount, FindOptions.Word);
 
-                int hit;
-                Rect rect;
-                rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect, out hit);
+        //        if (findPos == 0)
+        //            throw new Exception("Couldn't find image in RichText");
 
-                var posX = rect.Left + rtfTextBox.Padding.Left;
-                var posY = rect.Top + rtfTextBox.Padding.Top;
-                Canvas.SetLeft(_images[i], posX);
-                Canvas.SetTop(_images[i], posY);
+        //        objPos = GetNthIndex(str, '￼', i + 1);
 
-                startPos = objPos + 1;
-            }
-            rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
-        }
+        //        int hit;
+        //        Rect rect;
+        //        rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect, out hit);
+
+        //        var posX = rect.Left + rtfTextBox.Padding.Left;
+        //        var posY = rect.Top + rtfTextBox.Padding.Top;
+        //        Canvas.SetLeft(_images[i], posX);
+        //        Canvas.SetTop(_images[i], posY);
+
+        //        startPos = objPos + 1;
+        //    }
+        //    rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
+        //}
 
         private void AdjustScrollHeight()
         {
@@ -318,7 +322,7 @@ namespace NuSysApp
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
-            await r.RenderAsync(rtfTextBox, width, height);
+            await r.RenderAsync(TextNodeWebView, width, height);
             return r;
         }
 
@@ -331,5 +335,7 @@ namespace NuSysApp
         {
             borderRect.Opacity = 0;
         }
+
+       
     }
 }

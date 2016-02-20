@@ -39,80 +39,153 @@ namespace NuSysApp
         private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
         private string _modelContentId;
         private string _modelId;
+        private string _modelText="";
         public TextDetailView(TextNodeViewModel vm)
         {
 
             InitializeComponent();
 
-            rtfTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
 
             DataContext = vm;
 
             var model = (TextNodeModel)vm.Model;
+            
 
-            var token = model.GetMetaData("Token");
-            if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
-            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
+            List<Uri> AllowedUris = new List<Uri>();
+            AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
+            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            var txt = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
-            if (txt != "") { 
-                rtfTextBox.SetRtfText(txt);
-            }
-
-            model.TextChanged += delegate
+            Loaded += async delegate (object sender, RoutedEventArgs args)
             {
-                var text = SessionController.Instance.ContentController.Get((DataContext as TextNodeViewModel).ContentId).Data;
-                rtfTextBox.SetRtfText(text);
+                await SessionController.Instance.InitializeRecog();
             };
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
+            MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
+            MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
             {
-              //  await SessionController.Instance.InitializeRecog();
-            };
-            rtfTextBox.KeyUp += delegate
-            {
-                UpdateText();
+                if (model.Text != "")
+                {
+                    UpdateText(model.Text);
+                }
+                OpenTextBox(model.Text);
+
             };
 
             _modelContentId = model.ContentId;
             _modelId = model.Id;
-            sizes.Add("8");
-            sizes.Add("12");
-            sizes.Add("16");
-            sizes.Add("20");
-            sizes.Add("24");
 
-            fonts.Add(new FontFamily("Arial"));
-            fonts.Add(new FontFamily("Courier New"));
-            fonts.Add(new FontFamily("Times New Roman"));
-            fonts.Add(new FontFamily("Verdana"));
-
-            controlPanel.Width = grid.Width;
         }
 
-        //private async Task InitializeRecog()
-        //{
-        //    await Task.Run( async () =>
-        //    {
-        //        _recognizer = new SpeechRecognizer();
-        //        // Compile the dictation grammar that is loaded by default. = ""; 
-        //        await _recognizer.CompileConstraintsAsync();
-        //    });
-        //}
+        private void WebView_OnNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            string url = sender.Source.AbsoluteUri;
+
+        }
+
+        /*
+        Updates text in editor when necessary
+        */
+        private async void UpdateText(String str)
+        {
+            if (str != "")
+            {
+                String[] myString = { str };
+                IEnumerable<String> s = myString;
+                MyWebView.InvokeScriptAsync("InsertText", s);
+            }
+        }
+
+        /*
+        When text detail view is reopened, must be populated with text from model, and click listeners must be re-enabled
+        */
+        private async void OpenTextBox(String str)
+        {
+
+            String[] myString = { str };
+            IEnumerable<String> s = myString;
+            MyWebView.InvokeScriptAsync("InsertText", s);
+            MyWebView.InvokeScriptAsync("clickableLinks", null);
+
+        }
 
 
+
+        /* 
+        Two values are received from JS: link clicks and entire document HTML updates
+        Method parses these options, calls other methods accordingly
+         */
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found in e.Value
+            string data = e.Value;
+            Debug.WriteLine(data);
+
+            if (data.ToLower().StartsWith("launchmylink:"))
+            {
+                String potentialLink = data.Substring("LaunchMylink:".Length);
+                if (potentialLink.StartsWith("http://"))
+                {
+                    NavigateToLink(potentialLink);
+                }
+            } else
+            {
+                if (data != "")
+                {
+                    UpdateModelText(data);
+                }
+            }
+
+        }
+
+        /*
+        Opens up link from Text Detail View in new web node, in the network 
+        */
+        public async Task NavigateToLink(string url)
+        {
+            Message m = new Message();
+
+            var width = SessionController.Instance.SessionView.ActualWidth;
+            var height = SessionController.Instance.SessionView.ActualHeight;
+            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+
+            var contentId = SessionController.Instance.GenerateId();
+            var nodeid = SessionController.Instance.GenerateId();
+
+            m["contentId"] = contentId;
+            m["x"] = centerpoint.X - 200;
+            m["y"] = centerpoint.Y - 200;
+            m["width"] = 400;
+            m["height"] = 400;
+            m["url"] = url;
+            m["nodeType"] = NodeType.Web;
+            m["autoCreate"] = true;
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["id"] = nodeid;
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            await
+                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, ""),
+                    NetworkClient.PacketType.TCP, null, true);
+
+
+        }
+
+        /*
+        Updates text value (in HTML) in Model as text is added and edited in Text Editor
+        */
+        private void UpdateModelText(String s)
+        {
+            if (s != "")
+            {
+                var vm = DataContext as TextNodeViewModel;
+                var model = (TextNodeModel) vm.Model;
+                model.Text = s;
+            }
+        }
 
         public void Dispose()
         {
-            var vm = DataContext as TextNodeViewModel;
-            var model = (TextNodeModel)vm.Model;
-            model.Text = rtfTextBox.GetRtfText();
+            UpdateModelText(_modelText);
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
@@ -197,85 +270,9 @@ namespace NuSysApp
         //   // this.RecordVoice.Click -= stopTranscribing;
         //}
 
-        private void BoldButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                format.Bold = FormatEffect.Toggle;
-                selectedText.CharacterFormat = format;
-            }
-            UpdateText();
-        }
-
-        private void ItalicButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                format.Italic = FormatEffect.Toggle;
-                selectedText.CharacterFormat = format;
-            }
-            UpdateText();
-        }
-
-        private void UnderlineButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                ITextCharacterFormat format = selectedText.CharacterFormat;
-                if (format.Underline == UnderlineType.None)
-                {
-                    format.Underline = UnderlineType.Single;
-                }
-                else
-                {
-                    format.Underline = UnderlineType.None;
-                }
-                selectedText.CharacterFormat = format;
-            }
-            UpdateText();
-        }
-
-        private void SizeChanged(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                if (SizeBox.SelectedItem != null)
-                {
-                    float size = (float)Convert.ToDouble(SizeBox.SelectedItem);
-                    ITextCharacterFormat format = selectedText.CharacterFormat;
-                    format.Size = size;
-                    selectedText.CharacterFormat = format;
-                }
-                
-            }
-            UpdateText();
-        }
-
-        private void FontChanged(object sender, RoutedEventArgs e)
-        {
-            ITextSelection selectedText = rtfTextBox.Document.Selection;
-            if (selectedText != null)
-            {
-                if (FontBox.SelectedItem != null)
-                {
-                    FontFamily font = (FontFamily)FontBox.SelectedItem;
-                    ITextCharacterFormat format = selectedText.CharacterFormat;
-                    format.Name = font.Source;
-                    selectedText.CharacterFormat = format;
-                }
-            }
-            UpdateText();
-        }
-
         private void UpdateText()
         {
-            var request = new ChangeContentRequest(_modelId, _modelContentId, rtfTextBox.GetRtfText());
+            var request = new ChangeContentRequest(_modelId, _modelContentId, _modelText);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
         }
 
