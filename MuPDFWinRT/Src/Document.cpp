@@ -504,6 +504,15 @@ Windows::Foundation::Collections::IVector<RectF>^ Document::SearchText(int32 pag
 	return items;
 }
 
+Platform::String^ Document::GetAllTexts(int32 pageNumber)
+{
+	std::lock_guard<std::mutex> lock(m_lock);
+	Utilities::ThrowIfFailed(m_doc->GotoPage(pageNumber));
+	auto text = m_doc->GetAllTexts();
+	auto ca = text.c_str();
+	return ref new Platform::String(ca);
+}
+
 Windows::Foundation::Collections::IVector<OutlineItem^>^ Document::GetOutline()
 {
 	std::lock_guard<std::mutex> lock(m_lock);

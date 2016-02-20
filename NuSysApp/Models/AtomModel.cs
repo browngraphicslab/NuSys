@@ -11,7 +11,7 @@ namespace NuSysApp
 
         public delegate void DeleteEventHandler(object source);
 
-        public delegate void LocationUpdateEventHandler(object source, PositionChangeEventArgs e);
+        public delegate void LocationUpdateEventHandler(object source, double x, double y);
 
         public delegate void MetadataChangeEventHandler(object source, string key);
 
@@ -21,7 +21,7 @@ namespace NuSysApp
 
         public delegate void TitleChangedHandler(object source, string title);
 
-        public delegate void WidthHeightUpdateEventHandler(object source, WidthHeightUpdateEventArgs e);
+        public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
         public enum AtomType
         {
@@ -47,7 +47,7 @@ namespace NuSysApp
         {
             CanEdit = EditStatus.Maybe;
 
-            Creators = new List<string>();
+            Creator = null;
 
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
@@ -83,7 +83,7 @@ namespace NuSysApp
             }
         }
 
-        public List<string> Creators { get; set; }
+        public string Creator { get; set; }
 
         public double X
         {
@@ -91,7 +91,7 @@ namespace NuSysApp
             set
             {
                 _x = value;
-                PositionChanged?.Invoke(this, new PositionChangeEventArgs(X, Y));
+                PositionChanged?.Invoke(this, X, Y);
             }
         }
 
@@ -101,7 +101,7 @@ namespace NuSysApp
             set
             {
                 _y = value;
-                PositionChanged?.Invoke(this, new PositionChangeEventArgs(X, Y));
+                PositionChanged?.Invoke(this, X, Y);
             }
         }
 
@@ -111,7 +111,7 @@ namespace NuSysApp
             set
             {
                 _width = value;
-                SizeChanged?.Invoke(this, new WidthHeightUpdateEventArgs(Width, Height));
+                SizeChanged?.Invoke(this, Width, Height);
             }
         }
 
@@ -121,7 +121,7 @@ namespace NuSysApp
             set
             {
                 _height = value;
-                SizeChanged?.Invoke(this, new WidthHeightUpdateEventArgs(Width, Height));
+                SizeChanged?.Invoke(this, Width, Height);
             }
         }
 
@@ -168,7 +168,7 @@ namespace NuSysApp
         public event MetadataChangeEventHandler MetadataChange;
         public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
-        public event WidthHeightUpdateEventHandler SizeChanged;
+        public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
         public event TitleChangedHandler TitleChanged;
@@ -196,7 +196,7 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict.Add("metadata", Metadata);
-            dict.Add("creators", Creators);
+            dict.Add("creator", Creator);
             dict.Add("x", X);
             dict.Add("y", Y);
             dict.Add("width", Width);
@@ -233,7 +233,7 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-            Creators = props.GetList("creators", Creators);
+            Creator = props.GetString("creator", Creator);
             Title = props.GetString("title", "");
             if (props.ContainsKey("system_sender_ip") &&
                 SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(

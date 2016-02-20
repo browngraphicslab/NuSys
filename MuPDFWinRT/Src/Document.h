@@ -83,6 +83,7 @@ namespace MuPDFWinRT
 		bool IsCached(int32 pageNumber);
 		void CancelDraw();
 		Windows::Foundation::Collections::IVector<RectF>^ SearchText(int32 pageNumber, Platform::String^ text);
+		Platform::String^ GetAllTexts(int32 pageNumber);
 		Windows::Foundation::Collections::IVector<OutlineItem^>^ GetOutline();
 		property int32 PageCount
 		{

@@ -637,7 +637,7 @@
 //                await n.UnPack(props);
 //                if (justCreated && n is AtomModel)
 //                {
-    //                    var creators = (n as AtomModel).Creators;
+    //                    var creators = (n as AtomModel).Creator;
     //                    if (creators.Count > 0)
     //                    {
     //                        foreach (var creator in creators)
@@ -785,7 +785,7 @@
 
 //            var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
 //            var groups = (List<string>)childModel.GetMetaData("groups");
-//            childModel.Creators.Add(id);
+//            childModel.Creator.Add(id);
 //            groups.Add(id);
 //        }
 //    }
@@ -1046,7 +1046,7 @@
 //    {
 //        if (node2 is NodeContainerModel)
 //        {
-//            node1.Creators.Add(node2.Id);
+//            node1.Creator.Add(node2.Id);
 //            var prevGroups1 = (List<string>)node1.GetMetaData("groups");
 //            prevGroups1.Add(node2.Id);
 //            node1.SetMetaData("groups", prevGroups1);

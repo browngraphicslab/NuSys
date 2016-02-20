@@ -63,6 +63,7 @@ namespace NuSysApp
                 var nodeVm = (NodeViewModel)sendable.DataContext;
                 nodeVm.Translate(dx, dy);
             }
+            
         }
 
         protected virtual async Task OnChildAdded(object source, Sendable nodeModel)
@@ -73,6 +74,12 @@ namespace NuSysApp
             
                 Children.Add(nodeModel.Id, view);
                 AtomViewList.Add(view);
+
+                if (view is AreaNodeView)
+                {
+                    Canvas.SetZIndex(view, -1);
+                }
+
                 var handler = ChildAdded;
                 if (handler != null)
                 {

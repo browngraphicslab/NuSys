@@ -71,6 +71,10 @@ namespace NuSysApp
             {
                 if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen &&_prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
                 {
+                    var source = (FrameworkElement)eventArgs.OriginalSource;
+                    if (source.DataContext is FloatingMenuViewModel)
+                        return;
+
                     xFloatingMenu.SetActive(Options.PenGlobalInk);
                     _prevOptions = Options.PenGlobalInk;
                     IsPenMode = true;
@@ -81,6 +85,10 @@ namespace NuSysApp
             {
                 if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
                 {
+                    var source = (FrameworkElement)eventArgs.OriginalSource;
+                    if (source.DataContext is FloatingMenuViewModel)
+                        return;
+
                     xFloatingMenu.SetActive(Options.SelectNode);
                     _prevOptions = Options.SelectNode;
                     IsPenMode = false;
@@ -249,6 +257,7 @@ namespace NuSysApp
                 xWorkspaceTitle.Text = model.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
@@ -273,10 +282,10 @@ namespace NuSysApp
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
             _library = new LibraryView(new LibraryBucketViewModel());
-            Canvas.SetTop(_library, 55);
-            Canvas.SetLeft(_library, 900);
-            Canvas.SetTop(LibraryMaximizer, 350);
-            Canvas.SetLeft(LibraryMaximizer,1300);
+            Canvas.SetTop(_library, 140);
+            Canvas.SetLeft(_library, mainCanvas.ActualWidth - 450);
+            Canvas.SetTop(LibraryMaximizer, 70);
+            Canvas.SetLeft(LibraryMaximizer, mainCanvas.ActualWidth - 50);
             _library.Visibility = Visibility.Collapsed;
             ChatPopup.Visibility = Visibility.Collapsed;
             mainCanvas.Children.Add(_library);
@@ -291,6 +300,7 @@ namespace NuSysApp
             m["title"] = model.Title;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
                 NetworkClient.PacketType.UDP);
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
         private void TitleChanged(object source, string title)
         {
@@ -425,6 +435,25 @@ namespace NuSysApp
         private void LibraryMaximizer_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             _library.ToggleVisiblity();
+        }
+
+        private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (FloatingMenu.Visibility == Visibility.Collapsed)
+            {
+                Point pos = e.GetPosition(mainCanvas);
+                Canvas.SetTop(FloatingMenu, pos.Y);
+                Canvas.SetLeft(FloatingMenu, pos.X);
+                FloatingMenu.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FloatingMenu.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void UIElement_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
         }
     }
 }

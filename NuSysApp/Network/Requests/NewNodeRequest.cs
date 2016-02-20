@@ -8,6 +8,9 @@ namespace NuSysApp
     {
         public NewNodeRequest(Message message) : base(Request.RequestType.NewNodeRequest, message)
         {
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerRequestType(ServerRequestType.Add);
         }
 
         public override async Task CheckOutgoingRequest()
@@ -53,7 +56,7 @@ namespace NuSysApp
                     node = new VideoNodeModel(id);
                     break;
                 case NodeType.Tag:
-                    node = new NodeContainerModel(id);
+                    node = new TagNodeModel(id);
                     break;
                 case NodeType.Web:
                     node = new WebNodeModel(id);
@@ -63,6 +66,9 @@ namespace NuSysApp
                     break;
                 case NodeType.Group:
                     node = new NodeContainerModel(id);
+                    break;
+                case NodeType.Area:
+                    node = new AreaModel(id);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");

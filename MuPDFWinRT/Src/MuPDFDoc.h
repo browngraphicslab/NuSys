@@ -158,6 +158,7 @@ public:
 	int GetPageHeight();
 	std::shared_ptr<std::vector<std::shared_ptr<MuPDFDocLink>>> GetLinks();
 	std::shared_ptr<std::vector<std::shared_ptr<RectFloat>>> SearchText(const char* text);
+	std::wstring GetAllTexts();
 	std::shared_ptr<std::vector<std::shared_ptr<Outlineitem>>> GetOutline();
 
 	HRESULT LoadPage(unsigned char *bitmap, int pageNum, int width, int height, Data **data);

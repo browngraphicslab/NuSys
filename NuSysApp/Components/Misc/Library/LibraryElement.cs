@@ -24,19 +24,36 @@ namespace NuSysApp
             ContentID = id;
         }
 
-        public LibraryElement(Dictionary<string, string> dict)
+        public LibraryElement(Dictionary<string, object> dict)
         {
             //id, data, type, title
-            ContentID = dict["id"];
+            ContentID = (string)dict["id"];
             if (dict.ContainsKey("title"))
             {
-                Title = dict["title"];
+                Title = (string)dict["title"];
             }
             try
             {
                 if (dict.ContainsKey("type"))
                 {
-                    NodeType = (NodeType)Enum.Parse(typeof(NodeType), dict["type"]);
+                    NodeType = (NodeType)Enum.Parse(typeof(NodeType), (string)dict["type"]);
+                }
+            }
+            catch (Exception e) { }
+        }
+        public LibraryElement(Dictionary<string, string> dict)
+        {
+            //id, data, type, title
+            ContentID = (string)dict["id"];
+            if (dict.ContainsKey("title"))
+            {
+                Title = (string)dict["title"];
+            }
+            try
+            {
+                if (dict.ContainsKey("type"))
+                {
+                    NodeType = (NodeType)Enum.Parse(typeof(NodeType), (string)dict["type"]);
                 }
             }
             catch (Exception e) { }

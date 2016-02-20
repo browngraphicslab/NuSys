@@ -11,7 +11,7 @@ namespace NuSysApp
         }
 
         public SetHostSystemRequest(Message m) : base(m) { }
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient, string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient)
         {
             nusysSession.SetHost(_message.GetString("ip"));
         }

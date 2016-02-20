@@ -30,7 +30,7 @@ namespace NuSysApp
         }
         public string LocalIP
         {
-            get { return _networkSession.LocalIP; }
+            get { return _networkSession?.LocalIP; }
         }
 
         public bool IsHostMachine
@@ -62,6 +62,9 @@ namespace NuSysApp
 
         public async Task Init()
         {
+            _serverClient = new ServerClient();
+            await _serverClient.Init();
+
             NetworkMembers = new Dictionary<string, NetworkUser>();
             _networkSession = new NetworkSession(await GetNetworkIPs());
             await _networkSession.Init();
@@ -77,8 +80,8 @@ namespace NuSysApp
             }
             else
             {
-                await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));
-                await ExecuteSystemRequest(new SendClientInfoSystemRequest());
+                //await ExecuteSystemRequest(new AddClientSystemRequest(LocalIP));//TODO FIX
+                //await ExecuteSystemRequest(new SendClientInfoSystemRequest());//TODO FIX
             }
 
             _networkSession.OnPing += async () => {
@@ -100,9 +103,9 @@ namespace NuSysApp
             
             _networkSession.OnMessageRecieved += async (message, type, ip) =>
             {
-                await ProcessIncomingRequest(message, type, ip);
+                //await ProcessIncomingRequest(message, type, ip);
             };
-
+            _serverClient.OnMessageRecieved += async (m) => { ProcessIncomingRequest(m); };
             _networkSession.OnClientDrop += ClientDrop;
             /*
             HttpClientHandler handler = new HttpClientHandler();
@@ -129,8 +132,6 @@ namespace NuSysApp
             //byte[] bytes = Convert.FromBase64String(s);
             //var buff = bytes.AsBuffer();
             //await socket.OutputStream.WriteAsync(buff);
-            _serverClient = new ServerClient();
-            await _serverClient.Init();
 
 
         }
@@ -140,7 +141,7 @@ namespace NuSysApp
         {
             await request.CheckOutgoingRequest();
             var m = new Message(request.GetFinalMessage().GetSerialized());
-            await ProcessIncomingRequest(m, NetworkClient.PacketType.TCP, LocalIP,true);
+            await ProcessIncomingRequest(m, true);
         }
         public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
         {
@@ -149,7 +150,11 @@ namespace NuSysApp
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
 
-                if (packetType == NetworkClient.PacketType.TCP)
+                await _serverClient.SendMessageToServer(message);
+
+                if (true)
+                    return;
+                if (request.WaitForRequestReturn())
                 {
                     ManualResetEvent mre = new ManualResetEvent(false);
                     string requestID = SessionController.Instance.GenerateId();
@@ -191,7 +196,7 @@ namespace NuSysApp
             {
                 if (IsHostMachine)
                 {
-                    await ProcessIncomingRequest(request.GetFinalMessage(), packetType, LocalIP);
+                    await ProcessIncomingRequest(request.GetFinalMessage());
                 }
                 else
                 {
@@ -207,7 +212,7 @@ namespace NuSysApp
         public async Task ExecuteSystemRequestLocally(SystemRequest request)
         {
             await request.CheckOutgoingRequest();
-            await ProcessIncomingSystemRequest(request.GetFinalMessage(), LocalIP);
+            await ProcessIncomingSystemRequest(request.GetFinalMessage());
         }
 
         private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
@@ -233,7 +238,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task ProcessIncomingRequest(Message message, NetworkClient.PacketType packetType, string ip = null, bool local = false)
+        private async Task ProcessIncomingRequest(Message message, bool local = false)
         {
             Request request;
             Request.RequestType requestType;
@@ -251,7 +256,7 @@ namespace NuSysApp
             }
             if (requestType == Request.RequestType.SystemRequest)
             {
-                await ProcessIncomingSystemRequest(message, ip);
+                await ProcessIncomingSystemRequest(message);
                 return;
             }
             switch (requestType)
@@ -289,11 +294,14 @@ namespace NuSysApp
                 case Request.RequestType.ChatDialogRequest:
                     request = new ChatDialogRequest(message);
                     break;
+                case Request.RequestType.CreateNewContentRequest:
+                    request = new CreateNewContentRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
             var systemDict = new Dictionary<string, object>();
-            var systemIP = ip ?? LocalIP;
+            var systemIP = (string)(message.ContainsKey("system_sender_ip") ? message["system_sender_ip"] : LocalIP);
             systemDict["system_sender_ip"] = systemIP;
             if (systemDict.ContainsKey(systemIP))
             {
@@ -304,14 +312,7 @@ namespace NuSysApp
             {
                 await request.ExecuteRequestFunction();//switches to UI thread
             });
-            if (packetType == NetworkClient.PacketType.TCP)
-            {
-                await ResumeWaitingRequestThread(message);
-            }
-            if (IsHostMachine && packetType == NetworkClient.PacketType.TCP && !local)
-            {
-                await _networkSession.SendRequestMessage(message, NetworkMemberIPs, NetworkClient.PacketType.TCP);
-            }
+            await ResumeWaitingRequestThread(message);
         }
 
         private async Task ResumeWaitingRequestThread(Message message)
@@ -328,7 +329,7 @@ namespace NuSysApp
                 }
             }
         }
-        private async Task ProcessIncomingSystemRequest(Message message, string ip)
+        private async Task ProcessIncomingSystemRequest(Message message)
         {
             SystemRequest request;
             SystemRequest.SystemRequestType requestType;
@@ -346,9 +347,6 @@ namespace NuSysApp
             }
             switch (requestType)
             {
-                case SystemRequest.SystemRequestType.AddClient:
-                    request = new AddClientSystemRequest(message);
-                    break;
                 case SystemRequest.SystemRequestType.RemoveClient:
                     request = new RemoveClientSystemRequest(message);
                     break;
@@ -358,23 +356,17 @@ namespace NuSysApp
                 case SystemRequest.SystemRequestType.SendWorkspace:
                     request = new SendWorkspaceRequest(message);
                     break;
-                case SystemRequest.SystemRequestType.SendClientInfo:
-                    request = new SendClientInfoSystemRequest(message);
-                    break;
-                case SystemRequest.SystemRequestType.RequestClientInfo:
-                    request = new RequestClientInfoSystemRequest(message);
-                    break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }
-            await request.ExecuteSystemRequestFunction(this,_networkSession, _serverClient, ip);
+            await request.ExecuteSystemRequestFunction(this,_networkSession, _serverClient);
         }
         #endregion Requests
         private async Task SendMessageToHost(Message message, NetworkClient.PacketType packetType, string ip = null)
         {
             if (IsHostMachine)
             {
-                await ProcessIncomingRequest(new Message(message.GetSerialized()), NetworkClient.PacketType.TCP,ip);
+                await ProcessIncomingRequest(new Message(message.GetSerialized()));
             }
             else
             {
@@ -478,22 +470,7 @@ namespace NuSysApp
             await _serverClient.GetContent(id);
         }
 
-        public async Task AddContent(Dictionary<string, string> dict)
-        {
-            await _serverClient.CreateOrUpdateContent(dict);
-        }
-
-        public async Task AddContent(string id, string data, string type = null, string title = null)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict["id"] = id;
-            dict["data"] = data;
-            dict["type"] = type;
-            dict["title"] = title;
-            await AddContent(dict);
-        }
-
-        public async Task<Dictionary<string,Dictionary<string,string>>> GetAllLibraryElements()
+        public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
         }

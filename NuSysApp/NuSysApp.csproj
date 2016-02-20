@@ -101,6 +101,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\icon_chat.png" />
+    <Content Include="Assets\icon_folder.png" />
+    <Content Include="Assets\icon_ink.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_webnode.png" />
@@ -145,12 +147,30 @@
     <Content Include="Assets\logos\StoreLogo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
-    <Content Include="Assets\fonts\FiraSans-Hair.otf" />
-    <Content Include="Assets\fonts\FiraSans-HairItalic.otf" />
-    <Content Include="Assets\fonts\FiraSans-Light.otf" />
-    <Content Include="Assets\fonts\FiraSans-LightItalic.otf" />
-    <Content Include="Assets\fonts\FiraSans-UltraLight.otf" />
-    <Content Include="Assets\fonts\FiraSans-UltraLightItalic.otf" />
+    <Content Include="Assets\fonts\FiraSans-Book.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-BookItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-LightItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-Thin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-ThinItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-UltraLight.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-UltraLightItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
@@ -227,6 +247,7 @@
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
     <Compile Include="Components\Misc\Library\LibraryPageViewModel.cs" />
+    <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
     </Compile>
@@ -240,19 +261,38 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Nodes\AreaNode\AreaNodeView.xaml.cs">
+      <DependentUpon>AreaNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\AreaNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Nodes\Base\IThumbnailable.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupItemViewModel.cs" />
     <Compile Include="Components\Nodes\GroupItemThumbFactory.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridInfo.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridView.xaml.cs">
+      <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml.cs">
+      <DependentUpon>GroupNodeExpandedDefaultView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeTimelineView.xaml.cs">
+      <DependentUpon>GroupNodeTimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Nodes\GroupNode\GroupNodeTimelineViewModel.cs" />
     <Compile Include="Components\Nodes\GroupNode\GroupNodeView.xaml.cs">
       <DependentUpon>GroupNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Nodes\GroupNode\GroupNodeViewModel.cs" />
+    <Compile Include="Components\Nodes\GroupNode\TimelineItemView.xaml.cs">
+      <DependentUpon>TimelineItemView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Nodes\LoadNode\LoadNodeView.xaml.cs">
       <DependentUpon>LoadNodeView.xaml</DependentUpon>
     </Compile>
@@ -278,6 +318,7 @@
     </Compile>
     <Compile Include="Components\Nodes\WordNode\WordNodeViewModel.cs" />
     <Compile Include="Components\Workspace\Modes\CreateGroupMode.cs" />
+    <Compile Include="Components\Workspace\Modes\GestureMode.cs" />
     <Compile Include="Components\Workspace\Modes\LinkMode.cs" />
     <Compile Include="Components\Workspace\Modes\NodeManipulationMode.cs" />
     <Compile Include="Controller\ContentController.cs" />
@@ -286,8 +327,9 @@
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
-    <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
+    <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
+    <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
@@ -303,6 +345,7 @@
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
@@ -356,11 +399,6 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
-    <Compile Include="EventArgs\AddLineEventArgs.cs" />
-    <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
-    <Compile Include="EventArgs\PositionChangeEventArgs.cs" />
-    <Compile Include="EventArgs\TextChangedEventArgs.cs" />
-    <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
     <Compile Include="Lib\MarkdownDeep\Abbreviation.cs" />
     <Compile Include="Lib\MarkdownDeep\Block.cs" />
     <Compile Include="Lib\MarkdownDeep\BlockProcessor.cs" />
@@ -523,10 +561,12 @@
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\powerpointIcon.png" />
+    <Content Include="Assets\resizer.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
     <Content Include="Assets\wordIcon.png" />
+    <Content Include="Components\Misc\icon_folder.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -626,7 +666,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Nodes\AreaNode\AreaNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Nodes\GroupNode\GroupCircleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeDataGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -634,7 +686,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Nodes\GroupNode\GroupNodeTimelineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Nodes\GroupNode\GroupNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Nodes\GroupNode\TimelineItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -750,41 +810,7 @@
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11.Effects">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.Effects.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D12">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D12.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Mathematics">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Mathematics.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.MediaFoundation">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.MediaFoundation.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XAudio2">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XAudio2.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XInput">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

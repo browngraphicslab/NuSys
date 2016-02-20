@@ -23,6 +23,8 @@ namespace NuSysApp
         private ManualResetEvent _manualResetEvent;
         private bool _waiting = false;
 
+        public delegate void MessageRecievedEventHandler(Message message);
+        public event MessageRecievedEventHandler OnMessageRecieved;
         public string ServerBaseURI { get; private set; }
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
@@ -50,7 +52,7 @@ namespace NuSysApp
 
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
-            //TODO
+            //TODO add in closing handler 
         }
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
@@ -61,18 +63,25 @@ namespace NuSysApp
                 string read = reader.ReadString(reader.UnconsumedBufferLength);
                 //Debug.WriteLine(read + "\r\n");
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(read, settings);
-                if (dict.ContainsKey("notification_type") && dict["notification_type"] == "content_available")
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
+                if (dict.ContainsKey("server_indication_from_server"))
                 {
-                    if (dict.ContainsKey("id"))
+                    if (dict.ContainsKey("notification_type") && (string)dict["notification_type"] == "content_available")
                     {
-                        var id = dict["id"];
-                        LibraryElement element = new LibraryElement(dict);
-                        UITask.Run(delegate {
-                             SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
-                        });
-                        await GetContent(id);
+                        if (dict.ContainsKey("id"))
+                        {
+                            var id = dict["id"];
+                            LibraryElement element = new LibraryElement(dict);
+                            UITask.Run(delegate {
+                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
+                            });
+                            await GetContent((string) id);
+                        }
                     }
+                }
+                else
+                {
+                    OnMessageRecieved?.Invoke(new Message(dict));
                 }
             }
         }
@@ -82,20 +91,25 @@ namespace NuSysApp
             try
             {
                 HttpClient client = new HttpClient();
-                var response = await client.GetAsync(GetUri("getcontents/"+contentId));
-
+                //client.
+                var response = await client.GetAsync(GetUri("getcontent/" + contentId));
+                
                 string data;
                 using (var content = response.Content)
                 {
                     data = await content.ReadAsStringAsync();
                 }
-                if (data.Length >= 2)
-                {
-                    data = data.Substring(1, data.Length - 2);
-                }
                 await UITask.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.Add(data, contentId);
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
+
+                    var contentData = (string)dict["data"] ?? "";
+                    var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
+                    var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
+                    var content = new NodeContentModel(contentData, contentId, contentTitle, contentAliases);
+
+                    SessionController.Instance.ContentController.Add(content);
                     if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(contentId))
                     {
                         var tuple = SessionController.Instance.LoadingNodeDictionary[contentId];
@@ -116,30 +130,33 @@ namespace NuSysApp
                 //TODO add in error handling
             }
         }
+        public async Task SendDictionaryToServer(Dictionary<string, string> dict)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            var serialized = JsonConvert.SerializeObject(dict,settings);
+            await SendToServer(serialized);
+        }
 
-        public async Task CreateOrUpdateContent(Dictionary<string, string> dict)
+        public async Task SendMessageToServer(Message message)
+        {
+            await SendToServer(message.GetSerialized());
+        }
+        private async Task SendToServer(string message)
         {
             try
             {
-                if (!dict.ContainsKey("id") || !dict.ContainsKey("data"))
-                {
-                    throw new Exception("Adding content must contain and id, data, and type");
-                }
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                var serialized = JsonConvert.SerializeObject(dict,settings);
-                _dataMessageWriter.WriteString(serialized);
+                _dataMessageWriter.WriteString(message);
                 await _dataMessageWriter.StoreAsync();
             }
             catch (Exception e)
             {
-                
+                throw new Exception("Exception caught during writing to server data writer");
             }
         }
-
-        public async Task<Dictionary<string,Dictionary<string,string>>> GetRepo()
+        public async Task<Dictionary<string,Dictionary<string,object>>> GetRepo()
         {
             HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("getcontents"));
+            var response = await client.GetAsync(GetUri("getcontent"));
 
             string data;
             using (var content = response.Content)
@@ -147,11 +164,11 @@ namespace NuSysApp
                 data = await content.ReadAsStringAsync();
             }
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var deserialized = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
-            var final = new Dictionary<string,Dictionary<string,string>>();
+            var deserialized = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
+            var final = new Dictionary<string,Dictionary<string,object>>();
             foreach (var kvp in deserialized)
             {
-                final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, string>>(kvp.Value, settings);
+                final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, object>>(kvp.Value.ToString(), settings);
             }
             return final;
         }

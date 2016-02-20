@@ -38,6 +38,7 @@ namespace NuSysApp
 
         private UserControl CreateLinkView(LinkModel model, List<UserControl> AtomViewList)
         {
+
             var atom1Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom1).DataContext;
             var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
 

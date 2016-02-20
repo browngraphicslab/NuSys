@@ -27,7 +27,7 @@ namespace NuSysApp
                 {
                     var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
                     var groups = (List<string>)childModel.GetMetaData("groups");
-                    childModel.Creators.Add(id);
+                    childModel.Creator = id;
                     groups.Add(id);
                 }
             }
@@ -47,7 +47,7 @@ namespace NuSysApp
             if (!(duplicateModel is NodeContainerModel))
                 return;
                 
-            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as AtomModel).Creators.Contains(id)))
+            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as AtomModel).Creator.Contains(id)))
             {
                 ((NodeContainerModel)duplicateModel).AddChild(child);
             }

@@ -72,12 +72,14 @@ namespace NuSysApp
                     m["height"] = 400;
                     m["nodeType"] = NodeType.Text.ToString();
                     m["autoCreate"] = true;
-                    m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                    m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
 
-                    await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, text,NodeType.Text.ToString());
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new CreateNewContentRequest(contentId, text, NodeType.Text.ToString()));
                     //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
 
 
@@ -97,7 +99,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = selectionItem.BookmarkId;
@@ -136,7 +138,7 @@ namespace NuSysApp
                         m["nodeType"] = NodeType.Text.ToString();
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                    await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, rtfContent, NodeType.Text.ToString());
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewContentRequest(contentId, rtfContent, NodeType.Text.ToString()));
                     /*
                     await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
@@ -158,7 +160,7 @@ namespace NuSysApp
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                                await SessionController.Instance.NuSysNetworkSession.AddContent(contentId, Convert.ToBase64String(ba), NodeType.Image.ToString());
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, Convert.ToBase64String(ba), NodeType.Image.ToString()));
                             /*
                             await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

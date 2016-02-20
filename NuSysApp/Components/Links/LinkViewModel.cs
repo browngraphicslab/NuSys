@@ -63,7 +63,7 @@ namespace NuSysApp
             // Position is set through connecting atoms.
         }
 
-        protected override void OnPositionChanged(object source, PositionChangeEventArgs e)
+        protected override void OnPositionChanged(object source, double x, double y)
         {
             // Position is set through connecting atoms.
         }

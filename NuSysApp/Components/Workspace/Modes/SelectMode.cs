@@ -63,28 +63,17 @@ namespace NuSysApp
                 vm.ClearSelection();
                 _selectedAtomVm = null;
             }
-            else if (dc is NodeViewModel)
+            else if (dc is AtomViewModel)
             {
-                var vm = (NodeViewModel) dc;
+                var vm = (AtomViewModel) dc;
                 _selectedAtomVm = vm;
                 vm.SetSelected(true);
-                List<string> locks = new List<string>();
-                locks.Add(vm.Id);
-                //NetworkConnector.Instance.CheckLocks(locks);
-                //NetworkConnector.Instance.RequestLock(vm.Id);
-            }
-            else if (dc is LinkViewModel)
-            {
-                var vm = (LinkViewModel)dc;
-                vm.SetSelected(true);
-                _selectedAtomVm = vm;
             }
         }
 
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _released = true;
-            Debug.WriteLine(_selectedAtomVm);
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

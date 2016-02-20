@@ -12,10 +12,24 @@ namespace NuSysApp
     {
         public enum GestureType
         {
-            None, Scribble
+            None, Scribble, SELECTION
         }
-        public static GestureType testGesture(InqLineModel currentStroke)
+        public static GestureType Classify(InqLineModel currentStroke)
         {
+            var outerRect = Geometry.PointCollecionToBoundingRect(currentStroke.Points.ToList());
+            var area = outerRect.Width * SessionController.Instance.SessionView.ActualWidth * outerRect.Height*SessionController.Instance.SessionView.ActualHeight;
+            if (area < 1.0)
+                return  GestureType.None;
+
+            var first = currentStroke.Points.First();
+            var last = currentStroke.Points.Last();
+            if ((Math.Abs(first.X - last.X) < 0.0005 && Math.Abs(first.Y - last.Y) < 0.0005))
+            {
+                return GestureType.SELECTION;
+            }
+
+
+
             List<double> angles = new List<double>();
             var points = currentStroke.Points;
             for (int i = 0; i < points.Count - 2; i++)

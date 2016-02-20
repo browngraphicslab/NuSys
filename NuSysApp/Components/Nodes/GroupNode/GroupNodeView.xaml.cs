@@ -17,6 +17,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using MyToolkit.Messaging;
+using MyToolkit.UI;
 using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -28,6 +30,9 @@ namespace NuSysApp
         private bool _isExpanded;
         private Storyboard _circleAnim;
         private Storyboard _expandedAnim;
+        private Storyboard _expandedListAnim; // for data grid view
+        private Storyboard _timelineAnim;
+        private GroupNodeExpandedDefaultView xExpandedDefaultView;
 
         public GroupNodeView( GroupNodeViewModel vm)
         {
@@ -35,23 +40,29 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
             Resizer.ManipulationDelta += ResizerOnManipulationDelta;
-           
+
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 PositionResizer();
             };
+
+            // create expanded view
+            xExpandedDefaultView = new GroupNodeExpandedDefaultView((NodeContainerModel)vm.Model); // create default view
+            xExpandedDefaultView.Opacity = 0;
+            GroupNodeCanvas.Children.Add(xExpandedDefaultView);
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (GroupNodeViewModel) DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            
             if (vm.Height > 400 && !_isExpanded)
             {
                 _expandedAnim?.Stop();
                 _circleAnim?.Stop();
 
-                _expandedAnim = Anim.To(xExpandedView, "Alpha", 1, 450);
+                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 1, 450);
                 _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
                 _isExpanded = true;
             }
@@ -60,10 +71,9 @@ namespace NuSysApp
                 _expandedAnim?.Stop();
                 _circleAnim?.Stop();
 
-                _expandedAnim = Anim.To(xExpandedView, "Alpha", 0, 450);
+                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 0, 450);
                 _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
-                _isExpanded = false;
-            
+                _isExpanded = false;         
             }
             PositionResizer();
             e.Handled = true;

@@ -47,7 +47,6 @@ namespace NuSysApp
         {
             Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
         }
-
         //public async Task InitializeLibrary()
         //{
         //    Task.Run(async delegate
