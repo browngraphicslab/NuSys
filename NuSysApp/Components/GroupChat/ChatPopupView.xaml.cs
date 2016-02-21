@@ -69,16 +69,8 @@ namespace NuSysApp
         {
             var block = new DialogBlock(text,user);
             block.MaxWidth = DialogPanel.ActualWidth * .67;
-            if (user.IP == SessionController.Instance.NuSysNetworkSession.LocalIP)
-            {
-                block.HorizontalAlignment = HorizontalAlignment.Right;
-                block.Margin = new Thickness(0, 0, 6, 0);
-            }
-            else
-            {
-                block.HorizontalAlignment = HorizontalAlignment.Left;
-                block.Margin = new Thickness(6, 0, 0, 0);
-            }
+            block.HorizontalAlignment = HorizontalAlignment.Left;
+            block.Margin = new Thickness(6, 0, 0, 0);
             /*
             var index = _texts.Count - 1;
             while (index > -1 && time < _textTimes[_texts[index]])

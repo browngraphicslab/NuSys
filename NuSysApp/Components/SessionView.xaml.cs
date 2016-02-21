@@ -100,16 +100,7 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                await LoadEmptyWorkspace();
-
-                SessionController.Instance.SessionView = this;
-                xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
-
-                //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
-
-                _cortanaInitialized = false;
-                xFloatingMenu.SessionView = this;
-
+                await SessionController.Instance.NuSysNetworkSession.Init();
                 SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user)
                 {
                     var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
@@ -120,10 +111,28 @@ namespace NuSysApp
                         Users.Children.Remove(b);
                     };
                 };
-                await SessionController.Instance.NuSysNetworkSession.Init();
+                //await LoadEmptyWorkspace();
+                var l = WaitingRoomView.GetFirstLoadList();
+                var firstId = WaitingRoomView.InitialWorkspaceId;
+                if (firstId == null)
+                {
+                    await LoadEmptyWorkspace();
+                }
+                else
+                {
+                    await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
+                }
+
+                SessionController.Instance.SessionView = this;
+                xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+
+                //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
+
+                _cortanaInitialized = false;
+                xFloatingMenu.SessionView = this;
                 await SessionController.Instance.InitializeRecog();
                
-                SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
+                SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});//TODO have Trent fix this -trent
 
                 await Library.Reload();
                 ChatPopup.OnNewTextsChanged += delegate(int newTexts)
@@ -168,8 +177,71 @@ namespace NuSysApp
                 IsPenMode = false;
             }
         }
+        public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string workspaceId)
+        {
+            SessionController.Instance.IdToSendables.Clear();
 
-        public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )
+            var workspaceModel = new WorkspaceModel(workspaceId);
+            workspaceModel.Title = "New Workspace";
+            SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
+            OpenWorkspace(workspaceModel);
+
+            xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+
+            createdModels = new List<AtomModel>();
+            var l = nodeStrings.ToList();
+            foreach (var dict in nodeStrings)
+            {
+                var msg = new Message(dict);
+                var id = msg.GetString("id");
+                AtomModel.AtomType type = AtomModel.AtomType.Workspace;
+                if (msg.ContainsKey("type"))
+                {
+                    type = (AtomModel.AtomType)Enum.Parse(typeof(AtomModel.AtomType), msg.GetString("type"));
+                }
+                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
+                {
+                    type = AtomModel.AtomType.Node;
+                }
+                if (type == AtomModel.AtomType.Node)
+                {
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
+                }
+                if (type == AtomModel.AtomType.Link)
+                {
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
+                }
+                var model = SessionController.Instance.IdToSendables[id] as AtomModel;
+                if (model == null)
+                    continue;
+
+                if (type == AtomModel.AtomType.Node && SessionController.Instance.ContentController.Get(((NodeModel)model).ContentId)==null)
+                {
+                    Task.Run(async delegate
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchContent(((NodeModel) model).ContentId);
+                    });
+                }
+
+                createdModels.Add(model);
+                await model.UnPack(msg);
+
+                if (model is WorkspaceModel)
+                {
+                    var wsModel = SessionController.Instance.IdToSendables[id] as AtomModel;
+                    await OpenWorkspace((WorkspaceModel)wsModel);
+                }
+            }
+
+            foreach (var model in createdModels)
+            {
+                if (!(model is InqCanvasModel))
+                {
+                    await SessionController.Instance.RecursiveCreate(model);
+                }
+            }
+        }
+        public async Task LoadWorkspace( IEnumerable<string> nodeStrings  )
         {
             SessionController.Instance.IdToSendables.Clear();
             
@@ -179,7 +251,15 @@ namespace NuSysApp
             {
                 var msg = new Message(dict);
                 var id = msg.GetString("id");
-                var type = (AtomModel.AtomType) Enum.Parse(typeof(AtomModel.AtomType), msg.GetString("type"));
+                AtomModel.AtomType type = AtomModel.AtomType.Workspace;
+                if (msg.ContainsKey("type"))
+                {
+                    type = (AtomModel.AtomType) Enum.Parse(typeof (AtomModel.AtomType), msg.GetString("type"));
+                }
+                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
+                {
+                    type = AtomModel.AtomType.Node;
+                }
                 if (type == AtomModel.AtomType.Node)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
                 if (type == AtomModel.AtomType.Link)

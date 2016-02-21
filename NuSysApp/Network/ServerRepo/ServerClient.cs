@@ -25,6 +25,10 @@ namespace NuSysApp
 
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
+
+        public delegate void ClientDroppedEventHandler(string ip);
+        public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
+
         public string ServerBaseURI { get; private set; }
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
@@ -91,7 +95,6 @@ namespace NuSysApp
             try
             {
                 HttpClient client = new HttpClient();
-                //client.
                 var response = await client.GetAsync(GetUri("getcontent/" + contentId));
                 
                 string data;
@@ -112,16 +115,18 @@ namespace NuSysApp
                     SessionController.Instance.ContentController.Add(content);
                     if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(contentId))
                     {
-                        var tuple = SessionController.Instance.LoadingNodeDictionary[contentId];
-                        LoadNodeView view = tuple.Item2;
-                        AtomModel model = tuple.Item1;
-                        var factory = new FreeFormNodeViewFactory();
-                        FrameworkElement newView;
-                        newView = await factory.CreateFromSendable(model, null);
-                        SessionController.Instance.ActiveWorkspace.Children.Remove(model.Id);
-                        SessionController.Instance.ActiveWorkspace.Children.Add(model.Id, newView);
-                        SessionController.Instance.ActiveWorkspace.AtomViewList.Remove(view);
-                        SessionController.Instance.ActiveWorkspace.AtomViewList.Add(newView);
+                        foreach (var tuple in SessionController.Instance.LoadingNodeDictionary[contentId])
+                        {
+                            LoadNodeView view = tuple.Item2;
+                            AtomModel model = tuple.Item1;
+                            var factory = new FreeFormNodeViewFactory();
+                            FrameworkElement newView;
+                            newView = await factory.CreateFromSendable(model, null);
+                            SessionController.Instance.ActiveWorkspace.Children.Remove(model.Id);
+                            SessionController.Instance.ActiveWorkspace.Children.Add(model.Id, newView);
+                            SessionController.Instance.ActiveWorkspace.AtomViewList.Remove(view);
+                            SessionController.Instance.ActiveWorkspace.AtomViewList.Add(newView);
+                        }
                     }
                 });
             }
@@ -172,7 +177,7 @@ namespace NuSysApp
             }
             return final;
         }
-
+        /*
         public async Task DeleteAllRepoFiles()
         {
             HttpClient client = new HttpClient();
@@ -221,5 +226,6 @@ namespace NuSysApp
 
 
         }
+        */
     }
 }

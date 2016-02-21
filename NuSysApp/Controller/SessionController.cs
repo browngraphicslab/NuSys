@@ -25,8 +25,8 @@ namespace NuSysApp
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, Tuple<AtomModel, LoadNodeView>> LoadingNodeDictionary =
-            new Dictionary<string, Tuple<AtomModel, LoadNodeView>>();
+        public Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>> LoadingNodeDictionary =
+            new Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
@@ -174,7 +174,7 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
             ;
-            await SessionView.LoadWorksapce(lines);
+            await SessionView.LoadWorkspace(lines);
             await _contentController.Load();
         }
 

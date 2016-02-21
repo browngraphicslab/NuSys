@@ -125,8 +125,6 @@ namespace NuSysApp
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var request = new RemoveClientSystemRequest(SessionController.Instance.NuSysNetworkSession.LocalIP);
-            SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(request);
             SessionController.Instance.DisposeInq();
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity

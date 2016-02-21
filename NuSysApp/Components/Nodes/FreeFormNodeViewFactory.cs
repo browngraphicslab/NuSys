@@ -52,7 +52,20 @@ namespace NuSysApp
             if (model.ContentId != null && SessionController.Instance.ContentController.Get(model.ContentId) == null)
             {
                 view = new LoadNodeView(new LoadNodeViewModel(model));
-                SessionController.Instance.LoadingNodeDictionary[model.ContentId] = new Tuple<AtomModel, LoadNodeView>(model,(LoadNodeView)view);
+                if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(model.ContentId))
+                {
+                    SessionController.Instance.LoadingNodeDictionary[model.ContentId]?.Add(
+                        new Tuple<AtomModel, LoadNodeView>(model, (LoadNodeView) view));
+                }
+                else
+                {
+                    SessionController.Instance.LoadingNodeDictionary[model.ContentId] =
+                        new List<Tuple<AtomModel, LoadNodeView>>()
+                        {
+                            new Tuple<AtomModel, LoadNodeView>(model, (LoadNodeView) view)
+                        };
+
+                }
                 ((LoadNodeView)view).StartBar();
                 return view;
             }
