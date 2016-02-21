@@ -109,7 +109,7 @@
         </Grid>
 
         <Button Click="Local_OnClick" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="650,0,0,0" Background="White">
-            PRIVATE WORKSPACE
+            NEW WORKSPACE
         </Button>
 
         <ListBox Name="List" SelectionMode="Single" IsEnabled="True" Foreground="#9cc5c2" FontSize="24"  HorizontalAlignment="Center" VerticalAlignment="Center" Height="400" Width="300" Margin="0,-200,0,0" Background="White">

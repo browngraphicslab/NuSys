@@ -25,8 +25,7 @@ namespace NuSysApp
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>> LoadingNodeDictionary =
-            new Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>>();
+        public Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>> LoadingNodeDictionary = new Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
