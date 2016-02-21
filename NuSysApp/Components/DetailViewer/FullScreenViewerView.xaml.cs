@@ -44,7 +44,6 @@ namespace NuSysApp
               vm.MakeTagList();
           };
             IsHitTestVisible = true;
-            //PointerReleased += OnPointerReleased;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -108,9 +107,11 @@ namespace NuSysApp
             {
                 return;
             }
-            Canvas.SetLeft(this, Canvas.GetLeft(this) + e.Delta.Translation.X);
-            //Canvas.SetTop(this, Canvas.GetTop(this) + e.Delta.Translation.Y);
-
+            if ((Canvas.GetLeft(this) + this.ActualWidth < SessionController.Instance.SessionView.ActualWidth || e.Delta.Translation.X < 0)
+                && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0))
+            {
+                Canvas.SetLeft(this, Canvas.GetLeft(this) + e.Delta.Translation.X);
+            }
             e.Handled = true;
         }
 
@@ -132,7 +133,7 @@ namespace NuSysApp
         {
             double rightCoord = Canvas.GetLeft(this) + this.Width;
 
-            if (this.Width > 250 || e.Delta.Translation.X < 0)
+            if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0))
             {
                 this.Width -= e.Delta.Translation.X;
                 xContainer.Width = this.Width - 30;

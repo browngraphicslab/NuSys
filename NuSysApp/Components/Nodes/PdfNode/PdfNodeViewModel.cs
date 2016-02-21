@@ -13,6 +13,10 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
+using System.Collections.ObjectModel;
+using Windows.UI;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -22,6 +26,8 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private Document _document;
         public int CurrentPageNumber { get;  private set; }
+        public ObservableCollection<Button> SuggestedTags { get; set; }
+        private List<string> _suggestedTags;
 
         public PdfNodeViewModel(PdfNodeModel model) : base(model)
         {
@@ -135,6 +141,31 @@ namespace NuSysApp
                 _inkScale = value;
                 RaisePropertyChanged("InkScale");
             }
+        }
+
+        public void MakeTagList()
+        {
+            _suggestedTags.Add("hello");
+            SuggestedTags = new ObservableCollection<Button>();
+            foreach (string tag in _suggestedTags)
+            {
+                Button tagBlock = this.MakeTagBlock(tag);
+                SuggestedTags.Add(tagBlock);
+            }
+        }
+
+        public Button MakeTagBlock(string text)
+        {
+            Button tagBlock = new Button();
+            tagBlock.Content = text;
+            tagBlock.Foreground = new SolidColorBrush(Colors.White);
+            tagBlock.FontStyle = FontStyle.Italic;
+            tagBlock.Height = 40;
+            tagBlock.Margin = new Thickness(2, 2, 2, 2);
+            tagBlock.Padding = new Thickness(5);
+            tagBlock.Background = new SolidColorBrush(Colors.Transparent);
+
+            return tagBlock;
         }
     }
 }

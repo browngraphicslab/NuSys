@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid Width="400" Height="55" Background="DarkGray" CornerRadius="10">
+    <Grid Width="160" Height="55" Background="DarkGray" CornerRadius="10">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
             <Button x:Name="Play" Tapped="Play_OnTapped" Background="Transparent">
                 <Image Source="/Assets/icon_audionode_play.png" Height="20" Width="20"></Image>
