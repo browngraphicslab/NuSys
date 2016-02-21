@@ -234,7 +234,11 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\LibraryBucketViewModel.cs" />
     <Compile Include="Components\Misc\Library\LibraryElement.cs" />
+    <Compile Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml.cs">
+      <DependentUpon>LibraryElementPropertiesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\Library\LibraryGrid.xaml.cs">
       <DependentUpon>LibraryGrid.xaml</DependentUpon>
     </Compile>
@@ -245,6 +249,7 @@
       <DependentUpon>LibraryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
+    <Compile Include="Components\Misc\Library\LibraryPageViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
@@ -635,6 +640,10 @@
     <Page Include="Components\Links\LineLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\Library\LibraryGrid.xaml">
       <SubType>Designer</SubType>

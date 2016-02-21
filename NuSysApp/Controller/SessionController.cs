@@ -65,9 +65,9 @@ namespace NuSysApp
             }
         }
 
-        public LibraryView Library
+        public LibraryBucketViewModel LibraryBucketViewModel
         {
-            get { return SessionView.Library; }
+            get { return (LibraryBucketViewModel)SessionView.Library.DataContext; }
         }
         public static SessionController Instance
         {

@@ -77,7 +77,7 @@ namespace NuSysApp
                             var id = dict["id"];
                             LibraryElement element = new LibraryElement(dict);
                             UITask.Run(delegate {
-                                                    SessionController.Instance.Library.AddNewElement(element);
+                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
                             });
                             await GetContent((string) id);
                         }

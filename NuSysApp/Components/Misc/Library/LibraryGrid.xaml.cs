@@ -27,11 +27,11 @@ namespace NuSysApp
 
         public ObservableCollection<LibraryElement> _items;
         private int _count = 0;
-        public LibraryGrid(ObservableCollection<LibraryElement> items, LibraryView library)
+        public LibraryGrid(LibraryView library, LibraryPageViewModel vm)
         {
             this.InitializeComponent();
 
-            _items = items;
+            _items = vm._PageElements;
 
             var numRows = 8;
             var numCols = 3;
@@ -40,7 +40,7 @@ namespace NuSysApp
             {
                 LoadThumbnails(numRows, numCols, item);
             }
-            library.OnNewContents += Library_OnNewContents;
+            ((LibraryBucketViewModel)library.DataContext).OnNewContents += Library_OnNewContents;
             
         }
 
