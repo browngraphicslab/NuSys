@@ -124,5 +124,10 @@ namespace NuSysApp
             var rect = view.LibraryDraggingRectangle;
             //Canvas.SetTop();
         }
+
+        private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            Canvas properties 
+        }
     }
 }
