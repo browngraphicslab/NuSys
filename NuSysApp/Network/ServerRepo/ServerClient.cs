@@ -111,8 +111,14 @@ namespace NuSysApp
                     var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
                     var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
                     var content = new NodeContentModel(contentData, contentId, contentTitle, contentAliases);
-
-                    SessionController.Instance.ContentController.Add(content);
+                    if (SessionController.Instance.ContentController.Get(contentId) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(content);
+                    }
+                    else
+                    {
+                        SessionController.Instance.ContentController.OverWrite(content);
+                    }
                     if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(contentId))
                     {
                         foreach (var tuple in SessionController.Instance.LoadingNodeDictionary[contentId])

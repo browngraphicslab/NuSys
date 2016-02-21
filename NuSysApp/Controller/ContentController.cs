@@ -64,6 +64,15 @@ namespace NuSysApp
             _waitingNodeCreations.Add(id, mre);
         }*/
 
+        public string OverWrite(NodeContentModel model)
+        {
+            if (!String.IsNullOrEmpty(model.Id))
+            {
+                _contents[model.Id]= model;
+                return model.Id;
+            }
+            return null;
+        }
         public async Task Load()
         {
             _contents.Clear();
