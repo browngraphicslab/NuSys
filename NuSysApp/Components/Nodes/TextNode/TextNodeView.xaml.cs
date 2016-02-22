@@ -18,7 +18,11 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
 
@@ -51,6 +55,9 @@ namespace NuSysApp
             };
 
 
+            this.PointerEntered += TextNodeView_PointerEntered;
+            this.PointerExited += TextNodeView_PointerExited;
+
             /*
             grid.IsDoubleTapEnabled = true;
             grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
@@ -68,8 +75,40 @@ namespace NuSysApp
                 e.Handled = true;
             };
             */
+
+            //RenderAsBitmap();
+        }
+        private void TextNodeView_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            //RenderAsBitmap();
         }
 
+        private void TextNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            //nodeTpl.Visibility = Visibility.Visible;
+            //nodeTpl.bitmapRendering.Visibility = Visibility.Collapsed;
+        }
+
+        private async void RenderAsBitmap()
+        {
+            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
+            RenderTargetBitmap map = new RenderTargetBitmap();
+            Debug.WriteLine("given width: " + this.Width);
+            Debug.WriteLine("given height: " + ((int)this.Height + 6));
+            await map.RenderAsync(this, (int)this.Width, (int)this.Height);
+            nodeTpl.bitmapRendering.Source = map;
+            var titleTransform = nodeTpl.titleContainer.RenderTransform as TranslateTransform;
+            if (titleTransform != null)
+            {
+                nodeTpl.bitmapRendering.RenderTransform = new CompositeTransform
+                {
+                    ScaleY = this.Height / (this.Height + titleTransform.Y),
+                    TranslateY = titleTransform.Y
+                };
+            }
+            nodeTpl.Visibility = Visibility.Collapsed;
+            nodeTpl.bitmapRendering.Visibility = Visibility.Visible;
+        }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {

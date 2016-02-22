@@ -14,7 +14,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
-                        
+                        <Image x:Name="xBitmapRendering"></Image>
+                        <Rectangle Fill="BlueViolet" Width="300" Height="300"></Rectangle>
                         <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                             <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#606d7a" BorderBrush="#606d7a" BorderThickness="2" Width="{Binding Width}"  />
                             <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="White" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
@@ -45,7 +46,7 @@
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" /> -->
 
-          
+
                             <Path x:Name="Resizer" Fill="#606d7a" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" />
@@ -59,7 +60,7 @@
                             </ItemsControl>
                         </Grid>
                         <Canvas>
-                        <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
+                            <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
                         </Canvas>
                         <Canvas>
                             <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
@@ -70,5 +71,5 @@
         </Setter>
     </Style>
 
-   
+
 </ResourceDictionary>

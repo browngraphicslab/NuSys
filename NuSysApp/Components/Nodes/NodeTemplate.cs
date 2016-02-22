@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvasView))]
+    [TemplatePart(Name = "inkCanvas", Type = typeof(InqCanvasView))]
     [TemplatePart(Name = "btnDelete", Type = typeof(Button))]
     [TemplatePart(Name = "resizer", Type = typeof(Path))]
     [TemplatePart(Name = "bg", Type = typeof(Grid))]
@@ -35,7 +35,7 @@ namespace NuSysApp
         public Border highlight = null;
         public ItemsControl tags = null;
         public TextBlock userName = null;
-
+        public Image bitmapRendering = null;
         public NodeTemplate()
         {
             this.DefaultStyleKey = typeof(NodeTemplate);
@@ -44,10 +44,11 @@ namespace NuSysApp
         }
 
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
-            typeof (object), typeof (NodeTemplate), new PropertyMetadata(null));
+            typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof (object),
-            typeof (NodeTemplate), new PropertyMetadata(null));
+        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object),
+            typeof(NodeTemplate), new PropertyMetadata(null));
+
 
         public object SubMenu
         {
@@ -60,17 +61,16 @@ namespace NuSysApp
             get { return (object)GetValue(InnerProperty); }
             set { SetValue(InnerProperty, value); }
         }
-
         protected override void OnApplyTemplate()
         {
             var vm = (NodeViewModel)this.DataContext;
-            
+
             bg = (Grid)GetTemplateChild("bg");
-            
+
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
-        
+
             //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
- 
+
             //inkCanvas.IsEnabled = false;
             //inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
             //Canvas.SetZIndex(inkCanvas, -5);
@@ -82,26 +82,26 @@ namespace NuSysApp
             resizer.ManipulationDelta += OnResizerManipulationDelta;
 
             highlight = (Border)GetTemplateChild("xHighlight");
-            userName = (TextBlock) GetTemplateChild("xUserName");
+            userName = (TextBlock)GetTemplateChild("xUserName");
 
             //tags = (TextBlock)GetTemplateChild("Tags");
             //var t = new TranslateTransform {X = 0, Y = 25};
             //tags.RenderTransform = t;
 
-            tags = (ItemsControl) GetTemplateChild("Tags");
-            var t = new TranslateTransform {X = 0, Y = 35};
+            tags = (ItemsControl)GetTemplateChild("Tags");
+            var t = new TranslateTransform { X = 0, Y = 35 };
             tags.RenderTransform = t;
 
             title = (TextBox)GetTemplateChild("xTitle");
-            title.TextChanged += delegate(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
+            title.TextChanged += delegate (object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
             {
-                titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
+                titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
-            titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
-
-            title.Loaded += delegate(object sender, RoutedEventArgs args)
+            titleContainer = (Grid)GetTemplateChild("xTitleContainer");
+            bitmapRendering = (Image)GetTemplateChild("xBitmapRendering");
+            title.Loaded += delegate (object sender, RoutedEventArgs args)
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
@@ -115,7 +115,7 @@ namespace NuSysApp
                 userName.Foreground = vm.UserColor;
                 userName.Text = user?.Name ?? "";
             };
-            
+
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
@@ -130,7 +130,7 @@ namespace NuSysApp
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var model = (NodeModel)((NodeViewModel) this.DataContext).Model;
+            var model = (NodeModel)((NodeViewModel)this.DataContext).Model;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
@@ -139,12 +139,12 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
-            
+
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
-         //   inkCanvas.Width = vm.Width;
-         //   inkCanvas.Height = vm.Height;
-            e.Handled = true; 
+            //   inkCanvas.Width = vm.Width;
+            //   inkCanvas.Height = vm.Height;
+            e.Handled = true;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -158,7 +158,7 @@ namespace NuSysApp
             //{
             //    highlight.BorderBrush = vm.UserColor;
             //}
-             
+
         }
     }
 }
