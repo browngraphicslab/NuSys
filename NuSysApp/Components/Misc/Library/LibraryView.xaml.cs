@@ -106,6 +106,7 @@ namespace NuSysApp
                 WorkspacePivot.Content = _libraryGrid;
             }
         }
+
         //private void GridViewDragStarting(object sender, DragStartingEventArgs e)
         //{
         //    //e.Data.Properties.

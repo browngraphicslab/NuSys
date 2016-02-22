@@ -25,20 +25,21 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class LibraryList : UserControl
+    public sealed partial class LibraryList : UserControl, LibraryViewable
     {
         public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
         public event LibraryElementDragEventHandler OnLibraryElementDrag;
         public LibraryList(LibraryView library, LibraryPageViewModel vm)
         {
             this.InitializeComponent();
+            this.DataContext = vm;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 ListView.ItemsSource = vm._PageElements;
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
                 ((LibraryBucketViewModel)library.DataContext).OnNewElementAvailable += AddNewElement;
             };
-            DataContext = vm;
+    
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1);
         }
 
@@ -128,6 +129,18 @@ namespace NuSysApp
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
             
+        }
+
+        public async void Sort(string s)
+        {
+            await ((LibraryPageViewModel)this.DataContext).Sort(s);
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+        }
+
+        public async void Search(string s)
+        {
+            await ((LibraryPageViewModel)this.DataContext).Search(s);
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
     }
 }

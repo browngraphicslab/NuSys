@@ -30,10 +30,10 @@ namespace NuSysApp
         public LibraryGrid(LibraryView library, LibraryPageViewModel vm)
         {
             this.InitializeComponent();
-
+            this.DataContext = vm;
             _items = vm._PageElements;
 
-            var numRows = 8;
+            var numRows = 25;
             var numCols = 3;
 
             foreach (var item in _items)
@@ -46,7 +46,7 @@ namespace NuSysApp
 
         private void Library_OnNewContents(ICollection<LibraryElement> elements)
         {
-            var numRows = 8;
+            var numRows = 25;
             var numCols = 3;
 
             foreach (var newItem in elements)
@@ -57,25 +57,13 @@ namespace NuSysApp
 
         public async void Search(string s)
         {
-            ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-            var coll = _items;
-            await Task.Run(async delegate
-            {
-                foreach (var item in coll)
-                {
-                    if (item.InSearch(s))
-                    {
-                        newCollection.Add(item);
-                    }
-                }
-            });
-            _items = newCollection;
+            await ((LibraryPageViewModel)this.DataContext).Search(s);
 
-            var numRows = 8;
+            var numRows = 25;
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in _items)
+            foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
             {
                 LoadThumbnails(numRows, numCols, item);
             }
@@ -83,44 +71,18 @@ namespace NuSysApp
 
         public void SetItems(ICollection<LibraryElement> elements)
         {
-            _items = new ObservableCollection<LibraryElement>(elements);
+            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
         }
 
         public async void Sort(string s)
         {
-
-            IOrderedEnumerable<LibraryElement> ordered = null;
-            switch (s.ToLower().Replace(" ", string.Empty))
-            {
-                case "title":
-                    ordered = ((ObservableCollection<LibraryElement>)_items).OrderBy(l => l.Title);
-                    break;
-                case "nodetype":
-                    ordered = ((ObservableCollection<LibraryElement>)_items).OrderBy(l => l.NodeType.ToString());
-                    break;
-                case "timestamp":
-                    break;
-                default:
-                    break;
-            }
-            if (ordered != null)
-            {
-                ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-                await Task.Run(async delegate
-                {
-                    foreach (var item in ordered)
-                    {
-                        newCollection.Add(item);
-                    }
-                });
-                _items = newCollection;
-            }
+            await ((LibraryPageViewModel)this.DataContext).Sort(s);
 
             var numRows = 8;
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in _items)
+            foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
             {
                 LoadThumbnails(numRows, numCols, item);
             }

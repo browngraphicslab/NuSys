@@ -19,7 +19,7 @@ namespace NuSysApp
         {
             _PageElements = elements;
         }
-        public async void Sort(string s)
+        public async Task Sort(string s)
         {
             IOrderedEnumerable<LibraryElement> ordered = null;
             switch (s.ToLower().Replace(" ", string.Empty))
@@ -54,7 +54,7 @@ namespace NuSysApp
                 _PageElements = newCollection;
             }
         }
-        public async void Search(string s)
+        public async Task Search(string s)
         {
             ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
             var coll = ((ObservableCollection<LibraryElement>)_PageElements);
