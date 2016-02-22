@@ -27,7 +27,7 @@ namespace NuSysApp
 
         public ObservableCollection<LibraryElement> _items;
         private int _count = 0;
-        public LibraryGrid(LibraryView library, LibraryPageViewModel vm)
+        public LibraryGrid(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
             this.DataContext = vm;

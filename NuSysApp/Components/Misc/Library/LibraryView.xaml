@@ -10,7 +10,7 @@
     d:DesignWidth="400">
 
     <Grid x:Name="Container" Height="720" Width="450">
-        <Pivot x:Name="Pivot" Background="#558C89 " FontFamily="Cambria" Height="720" Width="450" IsLocked="True">
+        <Pivot x:Name="Pivot" Background="#558C89" FontFamily="Cambria" Height="720" Width="450" IsLocked="True">
 
             <PivotItem x:Name="WorkspacePivot" Background="#74AFAD " Margin="10,50,10,12" >
                 <PivotItem.Header>
