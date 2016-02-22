@@ -17,11 +17,11 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private SolidColorBrush _userColor;
 
-        protected NodeViewModel(NodeModel model) : base(model)
+        protected NodeViewModel(ElementInstanceController controller) : base(controller)
         {
             InkScale = new CompositeTransform { ScaleX = 1, ScaleY = 1 };
-            
-            model.UserChanged += delegate (NetworkUser user)
+
+            controller.UserChanged += delegate (NetworkUser user)
             {
                 _userColor = user != null ? new SolidColorBrush(user.Color) : new SolidColorBrush(Colors.Transparent);
             };
@@ -108,14 +108,14 @@ namespace NuSysApp
             }
         }
 
-        public NodeType NodeType
+        public ElementType ElementType
         {
-            get { return ((NodeModel) Model).NodeType; }
+            get { return ((ElementInstanceModel) Model).ElementType; }
         }
 
         public string ContentId
         {
-            get { return ((NodeModel)Model).ContentId; }
+            get { return ((ElementInstanceModel)Model).ContentId; }
         }
 
         public CompositeTransform InkScale

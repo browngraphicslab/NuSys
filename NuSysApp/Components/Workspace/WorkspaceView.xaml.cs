@@ -134,23 +134,23 @@ namespace NuSysApp
                     break;
                 case Options.AddTextNode:
                     await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Text, isFixed),
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Text, isFixed),
                             new FloatingMenuMode(this)));
                     break;
                 case Options.AddWeb:
                     await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Web, isFixed),
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Web, isFixed),
                             new FloatingMenuMode(this)));
                     break;
                 case Options.AddAudioCapture:
                     await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Audio, isFixed),
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Audio, isFixed),
                             new FloatingMenuMode(this)));
                     break;
                 case Options.AddMedia:
                     await
                         SetViewMode(new MultiMode(this, new SelectMode(this),
-                            new AddNodeMode(this, NodeType.Document, isFixed), new FloatingMenuMode(this)));
+                            new AddNodeMode(this, ElementType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddRecord:
                     await SetViewMode(new MultiMode(this, new SelectMode(this), new FloatingMenuMode(this), new DuplicateNodeMode(this),
@@ -184,7 +184,7 @@ namespace NuSysApp
                     break;
                 case Options.AddVideo:
                     await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, NodeType.Video, isFixed),
+                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Video, isFixed),
                             new FloatingMenuMode(this)));
                     break;
             }

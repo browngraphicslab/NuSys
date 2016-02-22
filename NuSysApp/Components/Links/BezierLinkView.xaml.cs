@@ -24,7 +24,7 @@ namespace NuSysApp
             vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
 
             var model = vm.Model;
-            model.TitleChanged += delegate//TODO remove this handler eventually
+            vm.Controller.TitleChanged += delegate//TODO remove this handler eventually
             {
                 Annotation.Text = model.Title;
                 //Annotation.Visibility

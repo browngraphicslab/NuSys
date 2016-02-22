@@ -55,7 +55,7 @@ namespace NuSysApp
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (GroupNodeViewModel) DataContext;
-            vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            vm.Controller.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             
             if (vm.Height > 400 && !_isExpanded)
             {

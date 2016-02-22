@@ -14,9 +14,10 @@ namespace NuSysApp
 
         public PointCollection Points { get; set; }
 
-        public AreaNodeViewModel(AreaModel model):base(model)
+        public AreaNodeViewModel(ElementInstanceController controller):base(controller)
         {
             Points = new PointCollection();
+            var model = (AreaModel)controller.Model;
             model.Points.ForEach((p => Points.Add(p)));
         }
 

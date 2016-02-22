@@ -37,7 +37,7 @@ namespace NuSysApp
         private Options _prevOptions = Options.SelectNode;
 
     //    private static List<AtomModel> addedModels;
-        private static List<AtomModel> createdModels;
+        private static List<ElementInstanceModel> createdModels;
         private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
@@ -188,38 +188,38 @@ namespace NuSysApp
 
             xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
 
-            createdModels = new List<AtomModel>();
+            createdModels = new List<ElementInstanceModel>();
             var l = nodeStrings.ToList();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
                 var id = msg.GetString("id");
-                AtomModel.AtomType type = AtomModel.AtomType.Workspace;
+                var type = ElementType.Workspace;
                 if (msg.ContainsKey("type"))
                 {
-                    type = (AtomModel.AtomType)Enum.Parse(typeof(AtomModel.AtomType), msg.GetString("type"));
+                    type = (ElementType)Enum.Parse(typeof(ElementType), msg.GetString("type"));
                 }
                 else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
                 {
-                    type = AtomModel.AtomType.Node;
+                    type = ElementType.Node;
                 }
-                if (type == AtomModel.AtomType.Node)
+                if (type == ElementType.Node)
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
                 }
-                if (type == AtomModel.AtomType.Link)
+                if (type == ElementType.Link)
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
-                var model = SessionController.Instance.IdToSendables[id] as AtomModel;
+                var model = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                 if (model == null)
                     continue;
 
-                if (type == AtomModel.AtomType.Node && SessionController.Instance.ContentController.Get(((NodeModel)model).ContentId)==null)
+                if (type == ElementType.Node && SessionController.Instance.ContentController.Get(((ElementInstanceModel)model).ContentId)==null)
                 {
                     Task.Run(async delegate
                     {
-                        await SessionController.Instance.NuSysNetworkSession.FetchContent(((NodeModel) model).ContentId);
+                        await SessionController.Instance.NuSysNetworkSession.FetchContent(((ElementInstanceModel) model).ContentId);
                     });
                 }
 
@@ -228,7 +228,7 @@ namespace NuSysApp
 
                 if (model is WorkspaceModel)
                 {
-                    var wsModel = SessionController.Instance.IdToSendables[id] as AtomModel;
+                    var wsModel = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                     await OpenWorkspace((WorkspaceModel)wsModel);
                 }
             }
@@ -245,27 +245,27 @@ namespace NuSysApp
         {
             SessionController.Instance.IdToSendables.Clear();
             
-            createdModels = new List<AtomModel>();
+            createdModels = new List<ElementInstanceModel>();
             var l = nodeStrings.ToList();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
                 var id = msg.GetString("id");
-                AtomModel.AtomType type = AtomModel.AtomType.Workspace;
+                ElementType type = ElementType.Workspace;
                 if (msg.ContainsKey("type"))
                 {
-                    type = (AtomModel.AtomType) Enum.Parse(typeof (AtomModel.AtomType), msg.GetString("type"));
+                    type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
                 }
                 else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
                 {
-                    type = AtomModel.AtomType.Node;
+                    type = ElementType.Node;
                 }
-                if (type == AtomModel.AtomType.Node)
+                if (type == ElementType.Node)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
-                if (type == AtomModel.AtomType.Link)
+                if (type == ElementType.Link)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 
-                var model = SessionController.Instance.IdToSendables[id] as AtomModel;
+                var model = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                 if (model == null)
                     continue;
 
@@ -274,7 +274,7 @@ namespace NuSysApp
 
                 if (model is WorkspaceModel)
                 {
-                    var wsModel = SessionController.Instance.IdToSendables[id] as AtomModel;
+                    var wsModel = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                     await OpenWorkspace((WorkspaceModel)wsModel);
                 }
             }
@@ -318,7 +318,7 @@ namespace NuSysApp
             if (_activeWorkspace != null)
                 xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
 
-            var workspaceViewModel = new WorkspaceViewModel(model);
+            var workspaceViewModel = new WorkspaceViewModel(new ElementInstanceController(model));
 
             _activeWorkspace = new WorkspaceView(workspaceViewModel);
             mainCanvas.Children.Insert(0, _activeWorkspace);
@@ -339,7 +339,7 @@ namespace NuSysApp
             xWorkspaceTitle.DropCompleted += UpdateTitle;
             xWorkspaceTitle.Paste += UpdateTitle;
 
-            model.TitleChanged += TitleChanged;
+            workspaceViewModel.Controller.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
@@ -406,7 +406,7 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(AtomModel model)
+        public void ShowFullScreen(ElementInstanceModel model)
         {
             var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);

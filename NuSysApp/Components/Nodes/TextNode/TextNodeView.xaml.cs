@@ -37,7 +37,7 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
-            var contentId = (vm.Model as NodeModel).ContentId;
+            var contentId = (vm.Model as ElementInstanceModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
             {

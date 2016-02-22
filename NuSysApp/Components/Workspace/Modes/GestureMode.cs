@@ -107,7 +107,7 @@ namespace NuSysApp
             m["y"] = bb.Y;
             m["width"] = 400;
             m["height"] = 400;
-            m["nodeType"] = NodeType.Area.ToString();
+            m["nodeType"] = ElementType.Area.ToString();
             m["points"] = transPoints;
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
@@ -193,7 +193,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["title"] = titles.First();
             m["height"] = 400;
-            m["nodeType"] = NodeType.Tag.ToString();
+            m["nodeType"] = ElementType.Tag.ToString();
             m["titleSuggestions"] = titles;
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };

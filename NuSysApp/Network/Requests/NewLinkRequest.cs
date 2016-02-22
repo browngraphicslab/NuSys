@@ -32,7 +32,7 @@ namespace NuSysApp
             var id = _message.GetString("id");
             if (SessionController.Instance.IdToSendables.ContainsKey(id1) && (SessionController.Instance.IdToSendables.ContainsKey(id2)))
             {
-                var link = new LinkModel((AtomModel)SessionController.Instance.IdToSendables[id1], (AtomModel)SessionController.Instance.IdToSendables[id2], id);
+                var link = new LinkModel((ElementInstanceModel)SessionController.Instance.IdToSendables[id1], (ElementInstanceModel)SessionController.Instance.IdToSendables[id2], id);
                 SessionController.Instance.IdToSendables.Add(id, link);
                 await link.UnPack(_message);
 

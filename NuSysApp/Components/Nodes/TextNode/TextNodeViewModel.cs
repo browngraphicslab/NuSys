@@ -22,7 +22,7 @@ namespace NuSysApp
         private List<byte[]> _imgData = new List<byte[]>();
 
         #endregion Private Members
-        public TextNodeViewModel(TextNodeModel model) : base(model)
+        public TextNodeViewModel(ElementInstanceController controller) : base(controller)
         {           
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
             //((TextNodeModel) Model).TextChanged += TextChangedHandler;

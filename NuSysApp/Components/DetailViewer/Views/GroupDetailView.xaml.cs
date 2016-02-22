@@ -57,10 +57,10 @@ namespace NuSysApp
         {
             var vm = (NodeContainerViewModel) DataContext;
             var allNodes = SessionController.Instance.IdToSendables.Values;
-            var modelList = new ObservableCollection<AtomModel>();
+            var modelList = new ObservableCollection<ElementInstanceModel>();
             foreach (var sendable in allNodes)
             {
-                var node = (AtomModel) sendable;
+                var node = (ElementInstanceModel) sendable;
                 var groups = (List<string>) node.GetMetaData("groups");
                 if (groups.Contains(vm.Id))
                 {

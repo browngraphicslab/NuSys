@@ -25,7 +25,7 @@ namespace NuSysApp
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>> LoadingNodeDictionary = new Dictionary<string, List<Tuple<AtomModel, LoadNodeView>>>();
+        public Dictionary<string, List<Tuple<ElementInstanceModel, LoadNodeView>>> LoadingNodeDictionary = new Dictionary<string, List<Tuple<ElementInstanceModel, LoadNodeView>>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
@@ -89,24 +89,28 @@ namespace NuSysApp
 
         public event WorkspaceChangedHandler WorkspaceChanged;
 
-        public async Task RecursiveCreate(AtomModel atom)
+        public async Task RecursiveCreate(ElementInstanceModel elementInstance)
         {
-            await RecursiveCreateInner(atom, new List<AtomModel>());
+            await RecursiveCreateInner(elementInstance, new List<ElementInstanceModel>());
             
         }
 
-        private async Task RecursiveCreateInner(AtomModel atom, List<AtomModel> addedModels)
+        private async Task RecursiveCreateInner(ElementInstanceModel elementInstance, List<ElementInstanceModel> addedModels)
         {
-            if (!String.IsNullOrEmpty(atom.Creator))
+
+            //TODO: refactor
+            /*
+            if (!String.IsNullOrEmpty(elementInstance.Creator))
             {
-                var creatorModel = (NodeContainerModel) IdToSendables[atom.Creator];
+                var creatorModel = (NodeContainerModel) IdToSendables[elementInstance.Creator];
                 if (!addedModels.Contains(creatorModel))
                 {
                     await RecursiveCreateInner(creatorModel, addedModels);
                 }
-                await creatorModel.AddChild(atom);
-                addedModels.Add(atom);
+                await creatorModel.AddChild(elementInstance);
+                addedModels.Add(elementInstance);
             }
+            */
         }
 
 

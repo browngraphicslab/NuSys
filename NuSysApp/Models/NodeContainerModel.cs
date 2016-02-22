@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class NodeContainerModel : NodeModel
+    public class NodeContainerModel : ElementInstanceModel
     {
         private bool _isTemporary;
 
@@ -79,7 +79,7 @@ namespace NuSysApp
                 var idDict = new Dictionary<string, Sendable>();
                 foreach (var id in idList)
                 {
-                    var tempNode = (NodeModel) SessionController.Instance.IdToSendables[id];
+                    var tempNode = (ElementInstanceModel) SessionController.Instance.IdToSendables[id];
                     idDict.Add(id, tempNode);
                 }
             }

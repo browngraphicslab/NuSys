@@ -28,12 +28,13 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        public WorkspaceViewModel(WorkspaceModel model) : base(model)
+        public WorkspaceViewModel(ElementInstanceController controller) : base(controller)
         {
             GroupDict = new Dictionary<string, NodeContainerViewModel>();
             MultiSelectedAtomViewModels = new List<AtomViewModel>();
             SelectedAtomViewModel = null;
 
+            var model = (WorkspaceModel)controller.Model;
             var c = new CompositeTransform
             {
                 TranslateX = model.LocationX,
@@ -50,7 +51,7 @@ namespace NuSysApp
 
         public void MoveToNode(string id)
         {
-            var node = (AtomModel)SessionController.Instance.IdToSendables[id];
+            var node = (ElementInstanceModel)SessionController.Instance.IdToSendables[id];
             var tp = new Point(-node.X, -node.Y);
             var np = CompositeTransform.Inverse.TransformPoint(tp);
             var ns = new Size(node.Width, node.Height);
@@ -161,10 +162,7 @@ namespace NuSysApp
             List<string> locks = new List<string>();
             locks.Add(selected.Model.Id);
             //NetworkConnector.Instance.CheckLocks(locks);
-            if (selected.Model.CanEdit == AtomModel.EditStatus.Maybe)
-            {
-                //NetworkConnector.Instance.RequestLock(selected.Model.Id);
-            }
+
             if (SelectedAtomViewModel == null)
             {
                 SelectedAtomViewModel = selected;
@@ -195,7 +193,7 @@ namespace NuSysApp
                 if (node != null && atom != sender)
                 {
                     node.IsMultiSelected = false;
-                    node.Translate(x, y);
+                    node.Controller.Translate(x, y);
                     node.IsMultiSelected = true;
                 }
             }
@@ -276,7 +274,7 @@ namespace NuSysApp
 
             foreach (var t in MultiSelectedAtomViewModels)
             {
-                var nodeModel = (NodeModel)t.Model;
+                var nodeModel = (ElementInstanceModel)t.Model;
                 minX = nodeModel.X < minX ? nodeModel.X : minX;
                 minY = nodeModel.Y < minY ? nodeModel.Y : minY;
                 maxX = nodeModel.X + nodeModel.Width > maxX ? nodeModel.X + nodeModel.Width : maxX;
@@ -307,7 +305,7 @@ namespace NuSysApp
             props["width"] = (maxX - minX).ToString();
             props["height"] = (maxY - minY).ToString();
 
-            var node1 = (NodeModel)MultiSelectedAtomViewModels[0].Model;
+            var node1 = (ElementInstanceModel)MultiSelectedAtomViewModels[0].Model;
             //  //await NetworkConnector.Instance.RequestMakeEmptyGroup(minX.ToString(), minY.ToString(),null, props, new Action<string>(del));
         }
 

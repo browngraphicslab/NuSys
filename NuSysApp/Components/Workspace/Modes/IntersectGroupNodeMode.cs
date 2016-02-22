@@ -51,13 +51,13 @@ namespace NuSysApp
                     var v = (NodeViewModel)s.DataContext;
                     return v.Model;
                 });
-                var intersection = new List<NodeModel>();
+                var intersection = new List<ElementInstanceModel>();
                 foreach (var child0 in children0)
                 {
-                    var c0 = (NodeModel) child0;
+                    var c0 = (ElementInstanceModel) child0;
                     foreach (var child1 in children1)
                     {
-                        var c1 = (NodeModel) child1;
+                        var c1 = (ElementInstanceModel) child1;
                         if (c0 == c1 || c0.GetMetaData("visualCopyOf") == c1.GetMetaData("visualCopyOf") ||
                             c1.GetMetaData("visualCopyOf") == c0.GetMetaData("visualCopyOf"))
                         {

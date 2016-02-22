@@ -14,11 +14,12 @@ namespace NuSysApp
        
         public List<string> TitleSuggestions { get; set; } 
 
-        public LabelNodeViewModel(TagNodeModel model) : base(model)
+        public LabelNodeViewModel(ElementInstanceController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             EnableChildMove = true;
             ChildAdded += OnChildAddedToLabel;
+            var model = (TagNodeModel)controller.Model;
             TitleSuggestions = model.TitleSuggestions.ToList();
         }
 

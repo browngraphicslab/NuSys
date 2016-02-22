@@ -11,13 +11,13 @@ using Windows.Storage.Streams;
 
 namespace NuSysApp
 {
-    public class AudioNodeModel : NodeModel
+    public class AudioNodeModel : ElementInstanceModel
     {
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
         private StorageFile _audioFile;
         public AudioNodeModel(string id) : base(id)
         {
-            NodeType = NodeType.Audio;
+            ElementType = ElementType.Audio;
         }
 
         public string FileName { get; set; }

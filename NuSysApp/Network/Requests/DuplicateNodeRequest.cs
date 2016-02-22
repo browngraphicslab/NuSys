@@ -16,18 +16,20 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString("id");
-            var model = (NodeModel)SessionController.Instance.IdToSendables[id];
+            var model = (ElementInstanceModel)SessionController.Instance.IdToSendables[id];
             
-            NodeType type = model.NodeType;
+            ElementType type = model.ElementType;
 
-            if (type == NodeType.Group)
+            if (type == ElementType.Group)
             {
                 var childList = _message.GetList<string>("groupChildren");
                 foreach (var childId in childList)
                 {
-                    var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
+                    var childModel = (ElementInstanceModel)SessionController.Instance.IdToSendables[childId];
                     var groups = (List<string>)childModel.GetMetaData("groups");
-                    childModel.Creator = id;
+
+                    //TODO: refactor
+                   // childModel.Creator = id;
                     groups.Add(id);
                 }
             }
@@ -42,15 +44,19 @@ namespace NuSysApp
             var request = new NewNodeRequest(msg);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
-            var duplicateModel = (AtomModel)SessionController.Instance.IdToSendables[msg.GetString("id")];
+            var duplicateModel = (ElementInstanceModel)SessionController.Instance.IdToSendables[msg.GetString("id")];
 
             if (!(duplicateModel is NodeContainerModel))
                 return;
-                
-            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as AtomModel).Creator.Contains(id)))
+
+
+            //TODO: refactor
+            /*
+            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as ElementInstanceModel).Creator.Contains(id)))
             {
                 ((NodeContainerModel)duplicateModel).AddChild(child);
             }
+            */
         }
     }
 }

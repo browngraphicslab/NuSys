@@ -81,7 +81,7 @@ namespace NuSysApp
         public static Line[] NodeToLineSegment(NodeViewModel node)
         {
             var lines = new Line[4];
-            var nodeModel = (NodeModel) node.Model;
+            var nodeModel = (ElementInstanceModel) node.Model;
             var x = nodeModel.X + node.Transform.TranslateX;
             var y = nodeModel.Y + node.Transform.TranslateY;
 
@@ -172,10 +172,10 @@ namespace NuSysApp
         {
             return new Rect()
             {
-                Height = ((NodeModel)(nodeVm.Model)).Height,
-                Width = ((NodeModel)(nodeVm.Model)).Width,
-                X = ((NodeModel)(nodeVm.Model)).X,
-                Y = ((NodeModel)(nodeVm.Model)).Y
+                Height = ((ElementInstanceModel)(nodeVm.Model)).Height,
+                Width = ((ElementInstanceModel)(nodeVm.Model)).Width,
+                X = ((ElementInstanceModel)(nodeVm.Model)).X,
+                Y = ((ElementInstanceModel)(nodeVm.Model)).Y
             };
         }
 

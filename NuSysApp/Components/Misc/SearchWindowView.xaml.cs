@@ -23,7 +23,7 @@ namespace NuSysApp
 {
     public sealed partial class SearchWindowView : UserControl
     {
-        private Dictionary<string, List<AtomModel>> _searchIndex = new Dictionary<string, List<AtomModel>>();
+        private Dictionary<string, List<ElementInstanceModel>> _searchIndex = new Dictionary<string, List<ElementInstanceModel>>();
 
         private static SearchWindowView _instance;
 

@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public class LoadNodeViewModel : NodeViewModel
     {
-        public LoadNodeViewModel(NodeModel model) : base(model)
+        public LoadNodeViewModel(ElementInstanceController controller) : base(controller)
         {
             
         }

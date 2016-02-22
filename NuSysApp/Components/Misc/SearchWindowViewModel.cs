@@ -21,11 +21,11 @@ namespace NuSysApp
             SearchResults.Clear();
             if (queryString == "")
                 return;
-            var found = new HashSet<AtomModel>();
+            var found = new HashSet<ElementInstanceModel>();
             foreach (var kv in SessionController.Instance.IdToSendables)
             {
                 var kvp = (KeyValuePair<string, Sendable>) kv;
-                var atom = (AtomModel) kvp.Value;
+                var atom = (ElementInstanceModel) kvp.Value;
                 var tags = (List<string>) atom.GetMetaData("tags");
 
                 foreach (var tag in tags)

@@ -37,8 +37,8 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
             // create three different views
-            timelineView = new GroupNodeTimelineView(new GroupNodeTimelineViewModel(model));
-            dataGridView = new GroupNodeDataGridView(new GroupNodeDataGridViewModel(model));
+            timelineView = new GroupNodeTimelineView(new GroupNodeTimelineViewModel(new ElementInstanceController(model)));
+            dataGridView = new GroupNodeDataGridView(new GroupNodeDataGridViewModel(new ElementInstanceController(model)));
             expandedView = new GroupNodeExpandedView();
             timelineView.Opacity = 0;
             dataGridView.Opacity = 0;

@@ -70,7 +70,7 @@ namespace NuSysApp
                     m["y"] = centerpoint.Y - 200;
                     m["width"] = 400;
                     m["height"] = 400;
-                    m["nodeType"] = NodeType.Text.ToString();
+                    m["nodeType"] = ElementType.Text.ToString();
                     m["autoCreate"] = true;
                     m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
@@ -79,7 +79,7 @@ namespace NuSysApp
 
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new CreateNewContentRequest(contentId, text, NodeType.Text.ToString()));
+                            new CreateNewContentRequest(contentId, text, ElementType.Text.ToString()));
                     //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
 
 
@@ -135,10 +135,10 @@ namespace NuSysApp
                         var contentId = SessionController.Instance.GenerateId();
 
                         Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                        m["nodeType"] = NodeType.Text.ToString();
+                        m["nodeType"] = ElementType.Text.ToString();
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewContentRequest(contentId, rtfContent, NodeType.Text.ToString()));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewContentRequest(contentId, rtfContent, ElementType.Text.ToString()));
                     /*
                     await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
@@ -153,14 +153,14 @@ namespace NuSysApp
                             var contentId = SessionController.Instance.GenerateId();
 
                             Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                            m["nodeType"] = NodeType.Image.ToString();
+                            m["nodeType"] = ElementType.Image.ToString();
 
                             StorageFile imgFile;
                             try {
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, Convert.ToBase64String(ba), NodeType.Image.ToString()));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, Convert.ToBase64String(ba), ElementType.Image.ToString()));
                             /*
                             await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

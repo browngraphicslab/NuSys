@@ -14,7 +14,7 @@ namespace NuSysApp
     public class ImageNodeViewModel : NodeViewModel
     {
         
-        public ImageNodeViewModel(ImageNodeModel model) : base(model)
+        public ImageNodeViewModel(ElementInstanceController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             InkScale = new CompositeTransform();
@@ -27,7 +27,7 @@ namespace NuSysApp
         public override async Task Init()
         {
             byte[] data = null;
-            var content = SessionController.Instance.ContentController.Get(((NodeModel) Model).ContentId);
+            var content = SessionController.Instance.ContentController.Get(((ElementInstanceModel) Model).ContentId);
 
             if (content != null) { 
                 data = Convert.FromBase64String(content.Data);

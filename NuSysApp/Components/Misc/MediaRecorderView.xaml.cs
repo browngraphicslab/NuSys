@@ -84,7 +84,7 @@ namespace NuSysApp
                 byte[] fileBytes = new byte[stream.Size];
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
-                await SendRequest(fileBytes, NodeType.Video);
+                await SendRequest(fileBytes, ElementType.Video);
                 _recording = false;
                 mediaCapture.Dispose();
                 this.IsRecordingSwitch(false);
@@ -127,7 +127,7 @@ namespace NuSysApp
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
 
-                await SendRequest(fileBytes, NodeType.Audio);
+                await SendRequest(fileBytes, ElementType.Audio);
 
                 _recording = false;
 
@@ -157,7 +157,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task SendRequest(byte[] data, NodeType type)
+        private async Task SendRequest(byte[] data, ElementType type)
         {
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
@@ -175,7 +175,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 
-            if (type == NodeType.Video)
+            if (type == ElementType.Video)
             {
                 var settings =
                     mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);

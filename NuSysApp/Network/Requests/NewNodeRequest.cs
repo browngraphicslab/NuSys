@@ -27,47 +27,47 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
-            var nodeType = (NodeType) Enum.Parse(typeof (NodeType), _message.GetString("nodeType"));
+            var nodeType = (ElementType) Enum.Parse(typeof (ElementType), _message.GetString("nodeType"));
             var id = _message.GetString("id");
 
-            NodeModel node;
+            ElementInstanceModel node;
             NodeViewModel nodeViewModel;
             switch (nodeType)
             {
-                case NodeType.Text:
+                case ElementType.Text:
                     node = new TextNodeModel(id);
                     break;
-                case NodeType.Image:
+                case ElementType.Image:
                     node = new ImageNodeModel(id);
                     break;
-                case NodeType.Word:
+                case ElementType.Word:
                     node = new WordNodeModel(id);
                     break;
-                case NodeType.Powerpoint:
+                case ElementType.Powerpoint:
                     node = new PowerpointNodeModel(id);
                     break;
-                case NodeType.PDF:
+                case ElementType.PDF:
                     node = new PdfNodeModel(id);
                     break;
-                case NodeType.Audio:
+                case ElementType.Audio:
                     node = new AudioNodeModel(id);
                     break;
-                case NodeType.Video:
+                case ElementType.Video:
                     node = new VideoNodeModel(id);
                     break;
-                case NodeType.Tag:
+                case ElementType.Tag:
                     node = new TagNodeModel(id);
                     break;
-                case NodeType.Web:
+                case ElementType.Web:
                     node = new WebNodeModel(id);
                     break;
-                case NodeType.Workspace:
+                case ElementType.Workspace:
                     node = new WorkspaceModel(id);
                     break;
-                case NodeType.Group:
+                case ElementType.Group:
                     node = new NodeContainerModel(id);
                     break;
-                case NodeType.Area:
+                case ElementType.Area:
                     node = new AreaModel(id);
                     break;
                 default:

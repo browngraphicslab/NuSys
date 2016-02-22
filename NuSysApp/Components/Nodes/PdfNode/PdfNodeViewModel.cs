@@ -23,9 +23,10 @@ namespace NuSysApp
         private MuPDFWinRT.Document _document;
         public int CurrentPageNumber { get;  private set; }
 
-        public PdfNodeViewModel(PdfNodeModel model) : base(model)
+        public PdfNodeViewModel(ElementInstanceController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
         }

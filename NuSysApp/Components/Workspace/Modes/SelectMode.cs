@@ -86,13 +86,13 @@ namespace NuSysApp
                 {
                     var vm = (NodeViewModel)dc;
 
-                    if (vm.NodeType == NodeType.Word || vm.NodeType == NodeType.Powerpoint)
+                    if (vm.ElementType == ElementType.Word || vm.ElementType == ElementType.Powerpoint)
                     {
                         SessionController.Instance.SessionView.OpenFile(vm);
                     }
                     else
                     {
-                        SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);
+                        SessionController.Instance.SessionView.ShowFullScreen((ElementInstanceModel)vm.Model);
                     }
 
                 }

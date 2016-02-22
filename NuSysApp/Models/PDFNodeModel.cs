@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class PdfNodeModel : NodeModel
+    public class PdfNodeModel : ElementInstanceModel
     {
         private int _currentPageNumber;
 
@@ -25,7 +25,7 @@ namespace NuSysApp
 
         public PdfNodeModel(string id) : base(id)
         {
-            NodeType = NodeType.PDF;
+            ElementType = ElementType.PDF;
         }
         
         public override async Task<Dictionary<string, object>> Pack()

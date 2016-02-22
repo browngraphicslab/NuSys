@@ -12,9 +12,9 @@ namespace NuSysApp
     public class GroupNodeDataGridViewModel : NodeContainerViewModel
     {
         private ObservableCollection<GroupNodeDataGridInfo> _atomDataList;
-        private AtomModel _nodeModel;
+        private ElementInstanceModel _nodeModel;
 
-        public GroupNodeDataGridViewModel(NodeContainerModel model) : base(model)
+        public GroupNodeDataGridViewModel(ElementInstanceController model) : base(model)
         {
             _atomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
             AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -29,7 +29,7 @@ namespace NuSysApp
             {
                 var atomTest = (FrameworkElement) atom;
                 var vm = (AtomViewModel)atomTest.DataContext; //access viewmodel
-                _nodeModel = (AtomModel)vm.Model; // access model
+                _nodeModel = (ElementInstanceModel)vm.Model; // access model
 
                 _nodeModel.SetMetaData("creator", "Dummy Data");
 

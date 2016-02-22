@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace NuSysApp
 {
-    public class TextNodeModel : NodeModel
+    public class TextNodeModel : ElementInstanceModel
     {
         private string _text = string.Empty;
         public delegate void TextChangedEventHandler(object source, string text);
@@ -16,7 +16,7 @@ namespace NuSysApp
 
         public TextNodeModel(string id): base(id)
         {
-            NodeType = NodeType.Text;
+            ElementType = ElementType.Text;
         }
 
         public string Text

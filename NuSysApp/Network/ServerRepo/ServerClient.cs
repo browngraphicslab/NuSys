@@ -124,7 +124,7 @@ namespace NuSysApp
                         foreach (var tuple in SessionController.Instance.LoadingNodeDictionary[contentId])
                         {
                             LoadNodeView view = tuple.Item2;
-                            AtomModel model = tuple.Item1;
+                            ElementInstanceModel model = tuple.Item1;
                             var factory = new FreeFormNodeViewFactory();
                             FrameworkElement newView;
                             newView = await factory.CreateFromSendable(model, null);

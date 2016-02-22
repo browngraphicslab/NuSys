@@ -17,8 +17,8 @@ namespace NuSysApp
         {
             UserControl view = null;
 
-            if (model is NodeModel)
-                return await CreateFromNodeType((NodeModel)model);
+            if (model is ElementInstanceModel)
+                return await CreateFromNodeType((ElementInstanceModel)model);
 
             if (model is LinkModel)
                 return CreateLinkView((LinkModel) model, AtomViewList);
@@ -38,31 +38,31 @@ namespace NuSysApp
             var atom1Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom1).DataContext;
             var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
 
-            var viewModel = new LinkViewModel(model, atom1Vm, atom2Vm);
+            var viewModel = new LinkViewModel(new ElementInstanceController(model), atom1Vm, atom2Vm);
             var view = new BezierLinkView(viewModel);
             atom1Vm.AddLink(viewModel);
             atom2Vm.AddLink(viewModel);
             return view;
         }
 
-        private async Task<FrameworkElement> CreateFromNodeType(NodeModel model)
+        private async Task<FrameworkElement> CreateFromNodeType(ElementInstanceModel model)
         {
             UserControl view = null;
 
             if (model.ContentId != null && SessionController.Instance.ContentController.Get(model.ContentId) == null)
             {
-                view = new LoadNodeView(new LoadNodeViewModel(model));
+                view = new LoadNodeView(new LoadNodeViewModel(new ElementInstanceController(model)));
                 if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(model.ContentId))
                 {
                     SessionController.Instance.LoadingNodeDictionary[model.ContentId]?.Add(
-                        new Tuple<AtomModel, LoadNodeView>(model, (LoadNodeView) view));
+                        new Tuple<ElementInstanceModel, LoadNodeView>(model, (LoadNodeView) view));
                 }
                 else
                 {
                     SessionController.Instance.LoadingNodeDictionary[model.ContentId] =
-                        new List<Tuple<AtomModel, LoadNodeView>>()
+                        new List<Tuple<ElementInstanceModel, LoadNodeView>>()
                         {
-                            new Tuple<AtomModel, LoadNodeView>(model, (LoadNodeView) view)
+                            new Tuple<ElementInstanceModel, LoadNodeView>(model, (LoadNodeView) view)
                         };
 
                 }
@@ -70,43 +70,43 @@ namespace NuSysApp
                 return view;
             }
 
-            switch (model.NodeType)
+            switch (model.ElementType)
             {
-                case NodeType.Text:
-                    view = new TextNodeView(new TextNodeViewModel((TextNodeModel)model));
+                case ElementType.Text:
+                    view = new TextNodeView(new TextNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Group:
-                    view = new GroupNodeView(new GroupNodeViewModel((NodeContainerModel)model));
+                case ElementType.Group:
+                    view = new GroupNodeView(new GroupNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Tag:
-                    view = new LabelNodeView(new LabelNodeViewModel((TagNodeModel)model));
+                case ElementType.Tag:
+                    view = new LabelNodeView(new LabelNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Image:
-                    view = new ImageNodeView(new ImageNodeViewModel((ImageNodeModel)model));
+                case ElementType.Image:
+                    view = new ImageNodeView(new ImageNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Word:
-                    view = new WordNodeView(new WordNodeViewModel((WordNodeModel)model));
+                case ElementType.Word:
+                    view = new WordNodeView(new WordNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Powerpoint:
-                    view = new PowerpointNodeView(new PowerpointNodeViewModel((PowerpointNodeModel)model));
+                case ElementType.Powerpoint:
+                    view = new PowerpointNodeView(new PowerpointNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Audio:
-                    view = new AudioNodeView(new AudioNodeViewModel((AudioNodeModel)model));
+                case ElementType.Audio:
+                    view = new AudioNodeView(new AudioNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.PDF:
-                    view = new PdfNodeView(new PdfNodeViewModel((PdfNodeModel)model));
+                case ElementType.PDF:
+                    view = new PdfNodeView(new PdfNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Video:
-                    view = new VideoNodeView(new VideoNodeViewModel((VideoNodeModel)model));
+                case ElementType.Video:
+                    view = new VideoNodeView(new VideoNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Workspace:
-                    view = new WorkspaceView(new WorkspaceViewModel((WorkspaceModel)model));
+                case ElementType.Workspace:
+                    view = new WorkspaceView(new WorkspaceViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Web:
-                    view = new WebNodeView(new WebNodeViewModel((WebNodeModel)model));
+                case ElementType.Web:
+                    view = new WebNodeView(new WebNodeViewModel(new ElementInstanceController(model)));
                     break;
-                case NodeType.Area:
-                    view = new AreaNodeView(new AreaNodeViewModel((AreaModel)model));
+                case ElementType.Area:
+                    view = new AreaNodeView(new AreaNodeViewModel(new ElementInstanceController(model)));
                     break;
             }
             await ((AtomViewModel) view.DataContext).Init();

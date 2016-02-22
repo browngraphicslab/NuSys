@@ -22,12 +22,14 @@ namespace NuSysApp
         public event ChildAddedHandler ChildAdded;
         public bool EnableChildMove { get; set; }
        
-        public NodeContainerViewModel(NodeContainerModel model): base(model)
+        public NodeContainerViewModel(ElementInstanceController controller): base(controller)
         {
             Children = new ObservableDictionary<string, FrameworkElement>();
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            model.ChildAdded += OnChildAdded;
-            model.ChildRemoved += OnChildRemoved;
+
+            // TODO: refactor
+            //model.ChildAdded += OnChildAdded;
+            //model.ChildRemoved += OnChildRemoved;
             AtomViewList = new ObservableCollection<FrameworkElement>();
         }
 
@@ -51,21 +53,6 @@ namespace NuSysApp
             Children.Remove(id);
         }
 
-        public override void Translate(double dx, double dy)
-        {
-            base.Translate(dx, dy);
-
-            if (!EnableChildMove)
-                return;
-
-            foreach (var sendable in Children.Values)
-            {
-                var nodeVm = (NodeViewModel)sendable.DataContext;
-                nodeVm.Translate(dx, dy);
-            }
-            
-        }
-
         protected virtual async Task OnChildAdded(object source, Sendable nodeModel)
         {
             if (!Children.ContainsKey(nodeModel.Id))
@@ -87,16 +74,7 @@ namespace NuSysApp
                     await Task.WhenAll(tasks);
                 }
 
-                var atomModel = (AtomModel) nodeModel;
-                atomModel.Deleted += OnChildDeleted;
             }
-        }
-
-        private void OnChildDeleted(object source)
-        {
-            var atomModel = (AtomModel) source;
-            var atomId = atomModel.Id;
-            RemoveChild(atomId);
         }
 
         protected virtual async Task OnChildRemoved(object source, Sendable sendable)

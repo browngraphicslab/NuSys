@@ -10,7 +10,7 @@ namespace NuSysApp
     public class AudioNodeViewModel: NodeViewModel
     {
         private IRandomAccessStream _stream;
-        public AudioNodeViewModel(AudioNodeModel model) : base(model)
+        public AudioNodeViewModel(ElementInstanceController model) : base(model)
         {
             Width = 200;
             Height = 80;

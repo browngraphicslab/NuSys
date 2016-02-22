@@ -6,7 +6,7 @@ namespace NuSysApp
 {
     public class LinkViewModel : AtomViewModel
     {
-        public LinkViewModel(LinkModel model, AtomViewModel atom1, AtomViewModel atom2) : base(model)
+        public LinkViewModel(ElementInstanceController controller, AtomViewModel atom1, AtomViewModel atom2) : base(controller)
         {
             Atom1 = atom1;
             Atom2 = atom2;
@@ -16,7 +16,7 @@ namespace NuSysApp
             Atom1.AddLink(this);
             Atom2.AddLink(this);
 
-            AnnotationText = model.Title;
+            AnnotationText = controller.Model.Title;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
         }
@@ -58,6 +58,9 @@ namespace NuSysApp
 
         #endregion Link Manipulation Methods
 
+        // TODO: refactor
+        /*
+       
         public override void SetPosition(double x, double y)
         {
             // Position is set through connecting atoms.
@@ -68,11 +71,16 @@ namespace NuSysApp
             // Position is set through connecting atoms.
         }
 
+            */
+
+        //TODO: refactor
+        /*
         public override void Translate(double dx, double dy)
         {
             Atom1.Translate(dx, dy);
             Atom2.Translate(dx, dy);
         }
+        */
 
 
         public override void UpdateAnchor()

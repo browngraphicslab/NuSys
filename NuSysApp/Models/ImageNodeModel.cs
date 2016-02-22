@@ -9,11 +9,11 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageNodeModel : NodeModel
+    public class ImageNodeModel : ElementInstanceModel
     {
         public ImageNodeModel(string id) : base(id)
         {
-            NodeType = NodeType.Image;
+            ElementType = ElementType.Image;
         }
 
         public string FilePath { get; set; }

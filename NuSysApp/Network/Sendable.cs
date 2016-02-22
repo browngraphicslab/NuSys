@@ -7,41 +7,24 @@ namespace NuSysApp
     // TODO: remove BASEINPC
     public abstract class Sendable
     {
-        public delegate void CanEditChangedEventHandler(object source, AtomModel.EditStatus status);
 
         public delegate void UnPackedEventHandler(object source);
         
-        public event CanEditChangedEventHandler CanEditChange;
+
         public event UnPackedEventHandler UnPacked;
 
-        public enum EditStatus { Yes, No, Maybe }
 
-        private EditStatus _editStatus;
 
         protected Sendable(string id)
         {
             Id = id;
-            _editStatus = EditStatus.Maybe;
-            //Children = new ObservableDictionary<string, Sendable>();
         }
 
         public bool IsUnpacked { get; private set; }
 
         public string Id { get; set; }
 
-        public EditStatus CanEdit
-        {
-            get { return _editStatus; }
-            set
-            {
-                if (_editStatus == value)
-                {
-                    return;
-                }
-                _editStatus = value;
-                CanEditChange?.Invoke(this, CanEdit);
-            }
-        }
+
         
         public virtual async Task<Dictionary<string, object>> Pack()
         {

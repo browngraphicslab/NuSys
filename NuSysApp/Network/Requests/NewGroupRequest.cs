@@ -16,15 +16,17 @@ namespace NuSysApp
         {
             var props = _message;
             
-            var node1 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
-            var node2 = (NodeModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
+            var node1 = (ElementInstanceModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
+            var node2 = (ElementInstanceModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
             var groupNodeId = props.GetString("groupNodeId");
 
             var wvm = SessionController.Instance.ActiveWorkspace;
 
             if (node2 is NodeContainerModel)
             {
-                node1.Creator = node2.Id;
+
+                //TODO: refactor
+                //node1.Creator = node2.Id;
                 var prevGroups1 = (List<string>)node1.GetMetaData("groups");
                 prevGroups1.Add(node2.Id);
                 node1.SetMetaData("groups", prevGroups1);
@@ -35,7 +37,7 @@ namespace NuSysApp
             {
                 var msg = new Message();
                 msg["id"] = groupNodeId;
-                msg["nodeType"] = NodeType.Group.ToString();
+                msg["nodeType"] = ElementType.Group.ToString();
                 msg["width"] = _message.GetDouble("width");
                 msg["height"] = _message.GetDouble("height");
                 msg["x"] = _message.GetDouble("x");
@@ -47,12 +49,12 @@ namespace NuSysApp
 
                 var group = SessionController.Instance.IdToSendables[msg.GetString("id")];
                 
-                node1.Creator = group.Id;
+                //node1.Creator = group.Id;
                 var prevGroups1 = (List<string>)node1.GetMetaData("groups");
                 prevGroups1.Add(group.Id);
                 node1.SetMetaData("groups", prevGroups1);
 
-                node2.Creator = group.Id;
+              //  node2.Creator = group.Id;
                 var prevGroups2 = (List<string>)node2.GetMetaData("groups");
                 prevGroups2.Add(group.Id);
                 node2.SetMetaData("groups", prevGroups2);

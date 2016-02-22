@@ -108,7 +108,7 @@ namespace NuSysApp
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
-            vm.Model.UserChanged += delegate (NetworkUser user)
+            vm.Controller.UserChanged += delegate (NetworkUser user)
             {
                 highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
                 highlight.BorderBrush = vm.UserColor;
@@ -130,7 +130,7 @@ namespace NuSysApp
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var model = (NodeModel)((NodeViewModel) this.DataContext).Model;
+            var model = (ElementInstanceModel)((NodeViewModel) this.DataContext).Model;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
@@ -141,7 +141,7 @@ namespace NuSysApp
                 return;
             
             var vm = (NodeViewModel)this.DataContext;
-            vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            vm.Controller.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
          //   inkCanvas.Width = vm.Width;
          //   inkCanvas.Height = vm.Height;
             e.Handled = true; 

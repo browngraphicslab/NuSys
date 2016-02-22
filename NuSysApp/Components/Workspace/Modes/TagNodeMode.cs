@@ -158,7 +158,7 @@ namespace NuSysApp
                 }
             }
 
-            var nodeToTagModel = (NodeModel)nodeToTag.Model;
+            var nodeToTagModel = (ElementInstanceModel)nodeToTag.Model;
             if (!keepOriginal) {
 
               //  nodeToTagModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
@@ -167,7 +167,7 @@ namespace NuSysApp
                 {
                     UITask.Run(() =>
                     {
-                        var newNodeModel = (NodeModel)SessionController.Instance.IdToSendables[s];
+                        var newNodeModel = (ElementInstanceModel)SessionController.Instance.IdToSendables[s];
                         newNodeModel.SetMetaData("visualCopyOf", nodeToTag.Id);
                         //newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });

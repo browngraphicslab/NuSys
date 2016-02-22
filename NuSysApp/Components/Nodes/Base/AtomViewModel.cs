@@ -19,45 +19,56 @@ namespace NuSysApp
         private double _x, _y, _height, _width, _alpha;
         private int _anchorX, _anchorY;
         private Point2d _anchor;
-        private string _title;
+        private string _id, _title;
+        private SolidColorBrush _color;
 
         protected bool _isSelected, _isMultiSelected, _isVisible;
-        private UserControl _view;
         private CompositeTransform _transform = new CompositeTransform();
-        private DebouncingDictionary _debouncingDictionary;
+        private ElementInstanceController _controller;
+        
         
         #endregion Private Members
 
-        protected AtomViewModel(AtomModel model)
+        protected AtomViewModel(ElementInstanceController controller)
         {
+            _controller = controller;
             LinkList = new ObservableCollection<LinkViewModel>();
-            IsVisible = true;
-            Model = model;
-            Model.CanEditChange += OnCanEditChange;
-            Model.MetadataChange += OnMetadataChange;
-            model.PositionChanged += OnPositionChanged;
-            model.SizeChanged += OnSizeChanged;
-            model.ScaleChanged += OnScaleChanged;
-            model.AlphaChanged += OnAlphaChanged;
-            model.MetadataChange += OnMetadataChange;
-            model.TitleChanged += OnTitleChanged;
-            model.Deleted += OnDeleted;
+            controller.CanEditChange += OnCanEditChange;
+            controller.MetadataChange += OnMetadataChange;
+            controller.PositionChanged += OnPositionChanged;
+            controller.Translated += OnTranslated;
+            controller.SizeChanged += OnSizeChanged;
+            controller.Resized += OnResized;
+            controller.ScaleChanged += OnScaleChanged;
+            controller.AlphaChanged += OnAlphaChanged;
+            controller.MetadataChange += OnMetadataChange;
+            controller.TitleChanged += OnTitleChanged;
+            controller.Deleted += OnDeleted;
 
+            var model = controller.Model;
             Transform.TranslateX = model.X;
             Transform.TranslateY = model.Y;
             Transform.ScaleX = model.ScaleX;
             Transform.ScaleY = model.ScaleY;
 
+            Id = model.Id;
             Width = model.Width;
             Height = model.Height;
             Alpha = model.Alpha;
             Title = model.Title;
             X = model.X;
             Y = model.Y;
-            Tags = new ObservableCollection<Button>();
-            _debouncingDictionary = new DebouncingDictionary(model.Id);
 
+            Tags = new ObservableCollection<Button>();
+          
             CreateTags();
+        }
+
+        private void OnTranslated(object source, double tx, double ty)
+        {
+            X += tx;
+            Y += ty;
+            UpdateAnchor();
         }
 
         private void OnDeleted(object source)
@@ -76,13 +87,14 @@ namespace NuSysApp
 
         protected virtual void OnPositionChanged(object source, double x, double y)
         {
-            SetPosition(x, y);
+            Transform.TranslateX = x;
+            Transform.TranslateY = y;
             UpdateAnchor();
+            RaisePropertyChanged("Transform");
         }
 
         protected virtual void OnSizeChanged(object source, double width, double height)
         {
-
             _width = width;
             _height = height;
             UpdateAnchor();
@@ -90,18 +102,34 @@ namespace NuSysApp
             RaisePropertyChanged("Width");
         }
 
-        protected virtual void OnScaleChanged(object source)
+        protected virtual void OnResized(object source, double deltaWidth, double deltaHeight)
         {
-            Transform.ScaleX = Model.ScaleX;
-            Transform.ScaleY = Model.ScaleY;
+            if (Width > Constants.MinNodeSizeX || deltaWidth > 0)
+            {
+                _width = Width + deltaWidth;
+            }
+            if (Height > Constants.MinNodeSizeY || deltaHeight > 0)
+            {
+                _height = Height + deltaHeight;
+            }
+     
+            UpdateAnchor();
+            RaisePropertyChanged("Height");
+            RaisePropertyChanged("Width");
+        }
+
+        protected virtual void OnScaleChanged(object source, double sx, double sy)
+        {
+            Transform.ScaleX = sx;
+            Transform.ScaleY = sy;
             RaisePropertyChanged("Transform");
         }
 
-        protected virtual void OnCanEditChange(object source, AtomModel.EditStatus status)
+        protected virtual void OnCanEditChange(object source, EditStatus status)
         {
-            CanEdit = Model.CanEdit;
+            CanEdit = status;
         }
-        protected virtual void OnAlphaChanged(object source)
+        protected virtual void OnAlphaChanged(object source, double alpha)
         {
             Alpha = Model.Alpha;
         }
@@ -116,6 +144,10 @@ namespace NuSysApp
         {
             Tags.Clear();
             
+            //TODO: refactor
+
+            /*
+
             List<string> tagList = (List<string>)Model.GetMetaData("tags");
 
             foreach (string tag in tagList)
@@ -135,6 +167,7 @@ namespace NuSysApp
 
                 Tags.Add(tagBlock);
             }
+            */
             RaisePropertyChanged("Tags");
         }
 
@@ -142,48 +175,17 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            Model.CanEditChange -= OnCanEditChange;
-            Model.MetadataChange -= OnMetadataChange;
-            Model.PositionChanged -= OnPositionChanged;
-            Model.SizeChanged -= OnSizeChanged;
-            Model.ScaleChanged -= OnScaleChanged;
-            Model.AlphaChanged -= OnAlphaChanged;
-            Model.MetadataChange -= OnMetadataChange;
+            _controller.CanEditChange -= OnCanEditChange;
+            _controller.MetadataChange -= OnMetadataChange;
+            _controller.PositionChanged -= OnPositionChanged;
+            _controller.Translated -= OnTranslated;
+            _controller.SizeChanged -= OnSizeChanged;
+            _controller.ScaleChanged -= OnScaleChanged;
+            _controller.AlphaChanged -= OnAlphaChanged;
+            _controller.MetadataChange -= OnMetadataChange;
         }
 
-        public virtual void Translate(double dx, double dy)
-        {
-            Model.X += dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-            Model.Y += dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
-            UpdateAnchor();
-            _debouncingDictionary?.Add("x", Model.X);
-            _debouncingDictionary?.Add("y", Model.Y);
-        }
 
-        public virtual void SetPosition(double x, double y)
-        {
-            Transform.TranslateX = x;
-            Transform.TranslateY = y;
-
-            UpdateAnchor();
-            RaisePropertyChanged("Transform");
-        }
-
-        public virtual void Resize(double dx, double dy)
-        {
-            var changeX = dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-            var changeY = dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
-            if (Width > Constants.MinNodeSizeX || changeX > 0)
-            {
-                SetSize(Width + changeX, Height);
-            }
-            if (Height > Constants.MinNodeSizeY || changeY > 0)
-            {
-                SetSize(Width, Height + changeY);
-            }
-            _debouncingDictionary?.Add("width", Width);
-            _debouncingDictionary?.Add("height", Height);
-        }
 
         public virtual void SetSize(double width, double height)
         {
@@ -227,8 +229,8 @@ namespace NuSysApp
 
         public ObservableCollection<LinkViewModel> LinkList { get; set; }
         
-        private AtomModel.EditStatus _canEdit;
-        public AtomModel.EditStatus CanEdit
+        private EditStatus _canEdit;
+        public EditStatus CanEdit
         {
             get { return _canEdit; }
             set
@@ -273,24 +275,18 @@ namespace NuSysApp
 
         public SolidColorBrush Color
         {
-            get { return Model.Color; }
+            get { return _color; }
             set
             {
-                if (Model.Color == value)
-                {
-                    return;
-                }
-
-                Model.Color = value;
-                
+                _color = value;
                 RaisePropertyChanged("Color");
             }
         }
 
         public string Id
         {
-            get { return Model.Id; }
-            set { Model.Id = value; }
+            get { return _id; }
+            set { _id = value; }
         }
 
         public CompositeTransform Transform
@@ -322,7 +318,7 @@ namespace NuSysApp
             }
         }
 
-        public AtomModel Model { get;}
+        public ElementInstanceModel Model { get { return _controller.Model; }}
 
         public double X
         {
@@ -330,7 +326,6 @@ namespace NuSysApp
             set
             {
                 _x = value;
-                Model.X = value;
                 RaisePropertyChanged("X");
             }
         }
@@ -341,7 +336,6 @@ namespace NuSysApp
             set
             {
                 _y = value;
-                Model.Y = value;
                 RaisePropertyChanged("Y");
             }
         }
@@ -354,7 +348,6 @@ namespace NuSysApp
                 if (value < Constants.MinNodeSize) //prevent atom from getting too small
                     return;
                 _width = value;
-                Model.Width = value;
                 RaisePropertyChanged("Width");
             }
         }
@@ -368,7 +361,6 @@ namespace NuSysApp
                     return;
 
                 _height = value;
-                Model.Height = value;
                 RaisePropertyChanged("Height");
             }
         }
@@ -379,7 +371,6 @@ namespace NuSysApp
             set
             {
                 _alpha = value;
-                //Model.Alpha = value;
                 RaisePropertyChanged("Alpha");
             }
         }
@@ -398,19 +389,13 @@ namespace NuSysApp
             }
         }
 
-        public string Title
-        {
-            get { return _title; }
-            set
-            {
-                Model.Title = value;
-                _debouncingDictionary?.Add("title", value);
-            }
-        }
+        public string Title { get; set; }
 
         //public string Tags { get; set; }
 
         public ObservableCollection<Button> Tags { get; set; }
+
+        public ElementInstanceController Controller { get { return _controller; } }
         #endregion Public Properties
     }
 }

@@ -128,7 +128,7 @@ namespace NuSysApp
             e.Data.OperationCompleted += DataOnOperationCompleted;
             e.Data.Properties.Add("LibraryElements", elements);
             var title = ((LibraryElement)e.Items[0]).Title ?? "";
-            var type = ((LibraryElement)e.Items[0]).NodeType.ToString();
+            var type = ((LibraryElement)e.Items[0]).ElementType.ToString();
             e.Data.SetText(type + "  :  " + title);
             e.Cancel = false;
         }
@@ -153,7 +153,7 @@ namespace NuSysApp
                         m["y"] = centerpoint.Y - 200;
                         m["width"] = 400;
                         m["height"] = 400;
-                        m["nodeType"] = element.NodeType.ToString();
+                        m["nodeType"] = element.ElementType.ToString();
                         m["autoCreate"] = true;
                         m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
 

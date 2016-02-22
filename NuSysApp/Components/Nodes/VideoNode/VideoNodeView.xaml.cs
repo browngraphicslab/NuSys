@@ -114,7 +114,7 @@ namespace NuSysApp
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (NodeViewModel)this.DataContext;
-            vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+            vm.Controller.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true;
         }
         private void OnDeleteClick(object sender, RoutedEventArgs e)

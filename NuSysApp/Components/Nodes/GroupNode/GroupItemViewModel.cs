@@ -9,13 +9,13 @@ namespace NuSysApp
     public class GroupItemViewModel
     {
 
-        public GroupItemViewModel(AtomModel model )
+        public GroupItemViewModel(ElementInstanceModel model )
         {
             Model = model;
             Id = model.Id;
         }
 
-        public AtomModel Model { get; set; }
+        public ElementInstanceModel Model { get; set; }
         public string Id { get; set; }
 
     }

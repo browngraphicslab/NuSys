@@ -16,7 +16,7 @@ namespace NuSysApp
 {
     public class FullScreenViewerViewModel : BaseINPC
     {
-        private AtomModel _nodeModel;
+        private ElementInstanceModel _nodeModel;
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
         private String _tagToDelete;
         public Boolean DeleteOnFocus;
@@ -32,7 +32,7 @@ namespace NuSysApp
             Tags = new ObservableCollection<Button>();
         }
 
-        public async void SetNodeModel(AtomModel model)
+        public async void SetNodeModel(ElementInstanceModel model)
         {
             _nodeModel = model;
             View = await _viewFactory.CreateFromSendable(_nodeModel);

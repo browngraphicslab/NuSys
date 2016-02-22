@@ -69,8 +69,6 @@ namespace NuSysApp
             }
         }
 
-        public AtomModel.EditStatus CanEdit{get; set; }
-
         public string ID { get; }
 
         public string Text

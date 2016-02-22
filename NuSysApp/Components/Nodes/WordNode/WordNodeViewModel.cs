@@ -17,8 +17,9 @@ namespace NuSysApp
     public class WordNodeViewModel : NodeViewModel
     {
 
-        public WordNodeViewModel(WordNodeModel model) : base(model)
+        public WordNodeViewModel(ElementInstanceController controller) : base(controller)
         {
+            var model = controller.Model;
             String path = model.GetMetaData("FilePath")?.ToString();
 
             if (!String.IsNullOrEmpty(path))
@@ -88,7 +89,7 @@ namespace NuSysApp
             m["height"] = 400;
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveWorkspace.Id ;
-            m["nodeType"] = NodeType.PDF.ToString();
+            m["nodeType"] = ElementType.PDF.ToString();
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = wordModel.GetMetaData("BookmarkId");
@@ -113,7 +114,7 @@ namespace NuSysApp
 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, pdfContent, NodeType.PDF.ToString()));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, pdfContent, ElementType.PDF.ToString()));
             /*
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

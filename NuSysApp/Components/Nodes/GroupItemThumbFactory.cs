@@ -21,14 +21,14 @@ namespace NuSysApp
         public async Task<FrameworkElement> CreateFromSendable(Sendable model, List<FrameworkElement> AtomViewList)
         {
             var rect = new Rectangle();
-            if (!(model is NodeModel)) return null;
+            if (!(model is ElementInstanceModel)) return null;
             
             var img = new Image();
             if (SessionController.Instance.Thumbnails.ContainsKey(model.Id))
                 img.Source = SessionController.Instance.Thumbnails[model.Id];
             else
             {
-                rect.DataContext = new GroupItemViewModel((AtomModel)model);
+                rect.DataContext = new GroupItemViewModel((ElementInstanceModel)model);
                 return rect;
             }
            
@@ -55,7 +55,7 @@ namespace NuSysApp
                               DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
             }
 
-            rect.DataContext = new GroupItemViewModel((AtomModel)model);
+            rect.DataContext = new GroupItemViewModel((ElementInstanceModel)model);
 
             return rect;
         }

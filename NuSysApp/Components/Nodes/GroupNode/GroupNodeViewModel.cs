@@ -12,7 +12,7 @@ namespace NuSysApp
 {
     public class GroupNodeViewModel : NodeContainerViewModel
     {
-        public GroupNodeViewModel(NodeContainerModel model) : base(model)
+        public GroupNodeViewModel(ElementInstanceController controller) : base(controller)
         {
             
             var count = 0;

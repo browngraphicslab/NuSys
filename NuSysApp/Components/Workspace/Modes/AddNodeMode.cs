@@ -14,14 +14,14 @@ namespace NuSysApp
 {
     public class AddNodeMode : AbstractWorkspaceViewMode
     {
-        readonly NodeType _nodeType;
+        readonly ElementType _elementType;
         private bool _isDragging;
         private PseudoNode _tempNode;
         private Point _startPos;
         private bool _isFixed;
 
-        public AddNodeMode(WorkspaceView view, NodeType nodeType, bool isFixed) : base(view) {
-            _nodeType = nodeType;
+        public AddNodeMode(WorkspaceView view, ElementType elementType, bool isFixed) : base(view) {
+            _elementType = elementType;
             _tempNode = new PseudoNode();
             _isFixed = isFixed;
         }
@@ -80,7 +80,7 @@ namespace NuSysApp
 
                 var wvm = (WorkspaceViewModel) _view.DataContext;
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));
-                await AddNode(_view, _startPos, new Size(r.Width, r.Height), _nodeType);
+                await AddNode(_view, _startPos, new Size(r.Width, r.Height), _elementType);
             }
             _isDragging = false;
          //   e.Handled = true;
@@ -107,13 +107,13 @@ namespace NuSysApp
         }
 
         // TODO: this should be refactored!
-        private async Task AddNode(WorkspaceView view, Point pos, Size size, NodeType nodeType, object data = null)    {
+        private async Task AddNode(WorkspaceView view, Point pos, Size size, ElementType elementType, object data = null)    {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
             var dict = new Message();
             Dictionary<string, object> metadata;
-            if (nodeType == NodeType.Document || nodeType == NodeType.Word || nodeType == NodeType.Powerpoint || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
+            if (elementType == ElementType.Document || elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF ||  elementType == ElementType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
@@ -136,7 +136,7 @@ namespace NuSysApp
 
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
-                    nodeType = NodeType.Image;
+                    elementType = ElementType.Image;
                     
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                 }
@@ -149,7 +149,7 @@ namespace NuSysApp
 
                     dict["metadata"] = metadata;
 
-                    nodeType = NodeType.Word;
+                    elementType = ElementType.Word;
 
                     //data = File.ReadAllBytes(storageFile.Path);
                 }
@@ -162,14 +162,14 @@ namespace NuSysApp
 
                     dict["metadata"] = metadata;
 
-                    nodeType = NodeType.Powerpoint;
+                    elementType = ElementType.Powerpoint;
 
                     //data = File.ReadAllBytes(storageFile.Path);
                 }
 
                 if (Constants.PdfFileTypes.Contains(fileType))
                 {
-                    nodeType = NodeType.PDF;
+                    elementType = ElementType.PDF;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;
@@ -185,7 +185,7 @@ namespace NuSysApp
                 }
                 if (Constants.VideoFileTypes.Contains(fileType))
                 {
-                    nodeType = NodeType.Video;
+                    elementType = ElementType.Video;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;
@@ -201,7 +201,7 @@ namespace NuSysApp
                 }
                 if (Constants.AudioFileTypes.Contains(fileType))
                 {
-                    nodeType = NodeType.Audio;
+                    elementType = ElementType.Audio;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;
@@ -222,12 +222,12 @@ namespace NuSysApp
 
             metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
-            metadata["node_type"] = nodeType + "Node";
+            metadata["node_type"] = elementType + "Node";
 
             dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
-            dict["nodeType"] = nodeType.ToString();
+            dict["nodeType"] = elementType.ToString();
             dict["x"] = p.X;
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
@@ -237,7 +237,7 @@ namespace NuSysApp
 
             var request = new NewNodeRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, data == null ? "" : data.ToString(), nodeType.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, data == null ? "" : data.ToString(), elementType.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null));
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
             vm.ClearSelection();

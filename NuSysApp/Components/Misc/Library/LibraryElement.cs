@@ -10,13 +10,13 @@ namespace NuSysApp
     {
         public string ContentID { get; set; }
         public string Title { get; set; }
-        public NodeType NodeType { get; set; }
+        public ElementType ElementType { get; set; }
 
-        public LibraryElement(string id, string title, NodeType type)
+        public LibraryElement(string id, string title, ElementType type)
         {
             ContentID = id;
             Title = title;
-            NodeType = type;
+            ElementType = type;
         }
 
         public LibraryElement(string id)
@@ -36,7 +36,7 @@ namespace NuSysApp
             {
                 if (dict.ContainsKey("type"))
                 {
-                    NodeType = (NodeType)Enum.Parse(typeof(NodeType), (string)dict["type"]);
+                    ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"]);
                 }
             }
             catch (Exception e) { }
@@ -53,7 +53,7 @@ namespace NuSysApp
             {
                 if (dict.ContainsKey("type"))
                 {
-                    NodeType = (NodeType)Enum.Parse(typeof(NodeType), (string)dict["type"]);
+                    ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"]);
                 }
             }
             catch (Exception e) { }
@@ -62,7 +62,7 @@ namespace NuSysApp
         public bool InSearch(string s)
         {
             var title = Title?.ToLower() ?? "";
-            var type = NodeType.ToString().ToLower();
+            var type = ElementType.ToString().ToLower();
             if (title.Contains(s) || type.Contains(s))
             {
                 return true;

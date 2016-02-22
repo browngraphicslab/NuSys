@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     public class VideoNodeViewModel : NodeViewModel
     {
-        public VideoNodeViewModel(VideoNodeModel model) : base(model)
+        public VideoNodeViewModel(ElementInstanceController controller) : base(controller)
         {
             //   this.X = 400;
             //   this.Y = 150;

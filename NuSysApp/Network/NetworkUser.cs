@@ -26,7 +26,7 @@ namespace NuSysApp
         #region Private Variables
         private Color _color;
         private bool _colorSet;
-        private HashSet<AtomModel> _modelsInUse = new HashSet<AtomModel>(); 
+        private HashSet<ElementInstanceModel> _modelsInUse = new HashSet<ElementInstanceModel>(); 
         #endregion Private Variables
         public NetworkUser(string ip)
         {
@@ -38,7 +38,9 @@ namespace NuSysApp
                     OnUserRemoved?.Invoke();
                     foreach (var atom in _modelsInUse)
                     {
-                        atom.LastNetworkUser = null;
+
+                        //TODO: refactor
+                        //atom.LastNetworkUser = null;
                     }
                     _modelsInUse.Clear();
                 }
@@ -67,16 +69,18 @@ namespace NuSysApp
             return _color;
         }
 
-        public void AddAtomInUse(AtomModel model)
+        public void AddAtomInUse(ElementInstanceModel model)
         {
             foreach (var atom in _modelsInUse)
             {
-                atom.LastNetworkUser = null;
+
+                //TODO: refactor
+                //atom.LastNetworkUser = null;
             }
             _modelsInUse.Add(model);
         }
 
-        public void RemoveAtomInUse(AtomModel model)
+        public void RemoveAtomInUse(ElementInstanceModel model)
         {
             _modelsInUse.Remove(model);
         }

@@ -61,7 +61,7 @@ namespace NuSysApp
                     ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
                     break;
                 case "nodetype":
-                    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
+                    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.ElementType.ToString());
                     break;
                 case "timestamp":
                     break;

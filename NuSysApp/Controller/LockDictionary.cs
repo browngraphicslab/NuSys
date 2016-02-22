@@ -53,6 +53,9 @@ namespace NuSysApp
 
         private async Task UpdateAtomLock(string id, string lockHolder)
         {
+
+            //TODO: refactor
+            /*
             if (_workSpaceModel.IdToSendables.ContainsKey(id))
             {
                 await UITask.Run(() => {
@@ -60,20 +63,21 @@ namespace NuSysApp
                     {
                         if (lockHolder == "")
                         {
-                            _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.Maybe;
+                            _workSpaceModel.IdToSendables[id].CanEdit = ElementInstanceModel.EditStatus.Maybe;
                         }
                         else if (lockHolder == "//NetworkConnector.Instance.LocalIP")
                         {
                             var b = _workSpaceModel.IdToSendables[id];
-                            b.CanEdit = AtomModel.EditStatus.Yes;
+                            b.CanEdit = ElementInstanceModel.EditStatus.Yes;
                         }
                         else
                         {
-                            _workSpaceModel.IdToSendables[id].CanEdit = AtomModel.EditStatus.No;
+                            _workSpaceModel.IdToSendables[id].CanEdit = ElementInstanceModel.EditStatus.No;
                         }
                     }
                 });
             }
+            */
         }
 
         public void Clear()
@@ -82,7 +86,9 @@ namespace NuSysApp
             _locals.Clear();
             foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IdToSendables)
             {
-                kvp.Value.CanEdit = AtomModel.EditStatus.Maybe;
+
+                //TODO: refactor
+                //kvp.Value.CanEdit = ElementInstanceModel.EditStatus.Maybe;
             }
         }
 
