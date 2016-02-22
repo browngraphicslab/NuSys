@@ -131,15 +131,20 @@ namespace NuSysApp
             
         }
 
-        public async void Sort(string s)
+        public async Task Sort(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Sort(s);
             this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
 
-        public async void Search(string s)
+        public async Task Search(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Search(s);
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+        }
+
+        public async Task Update()
+        {
             this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
     }

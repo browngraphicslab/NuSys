@@ -91,18 +91,20 @@ namespace NuSysApp
             ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
         }
 
-        private void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             if (WorkspacePivot.Content != _libraryList)
             {
+                await _libraryList.Update();
                 WorkspacePivot.Content = _libraryList;
             }
         }
 
-        private void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             if (WorkspacePivot.Content != _libraryGrid)
             {
+                await _libraryGrid.Update();
                 WorkspacePivot.Content = _libraryGrid;
             }
         }

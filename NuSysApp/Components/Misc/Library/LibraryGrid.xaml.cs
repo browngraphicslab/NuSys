@@ -55,7 +55,7 @@ namespace NuSysApp
             }
         }
 
-        public async void Search(string s)
+        public async Task Search(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Search(s);
 
@@ -74,7 +74,7 @@ namespace NuSysApp
             ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
         }
 
-        public async void Sort(string s)
+        public async Task Sort(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Sort(s);
 
@@ -201,6 +201,11 @@ namespace NuSysApp
             Grid.SetColumn(wrappedView, _count % numCols);
             xGrid.Children.Add(wrappedView);
             _count++;
+        }
+
+        public async Task Update()
+        {
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
     }
 }
