@@ -14,7 +14,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class PowerpointNodeViewModel : AtomViewModel
+    public class PowerpointNodeViewModel : ElementInstanceViewModel
     {
         
         public PowerpointNodeViewModel(ElementInstanceController controller) : base(controller)

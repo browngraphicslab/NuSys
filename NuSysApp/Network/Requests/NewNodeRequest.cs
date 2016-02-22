@@ -31,7 +31,8 @@ namespace NuSysApp
             var id = _message.GetString("id");
 
             ElementInstanceModel node;
-            AtomViewModel nodeViewModel;
+            ElementInstanceController controller;
+            ElementInstanceViewModel nodeViewModel;
             switch (nodeType)
             {
                 case ElementType.Text:
@@ -75,14 +76,7 @@ namespace NuSysApp
             }
 
 
-            if (!SessionController.Instance.IdToSendables.ContainsKey(id))
-            {
-                SessionController.Instance.IdToSendables.Add(id, node);
-            }
-            else
-            {
-                SessionController.Instance.IdToSendables[id] = node;
-            }
+
 
             await node.UnPack(_message);
 

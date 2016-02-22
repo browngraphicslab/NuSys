@@ -16,7 +16,7 @@ using MuPDFWinRT;
 
 namespace NuSysApp
 {
-    public class PdfNodeViewModel : AtomViewModel
+    public class PdfNodeViewModel : ElementInstanceViewModel
     {
         private readonly FreeFormViewerViewModel _freeFormViewerViewModel;
         private CompositeTransform _inkScale;

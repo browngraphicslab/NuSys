@@ -34,7 +34,7 @@ namespace NuSysApp
             var id = _message.GetString("id");
             if (SessionController.Instance.IdToSendables.ContainsKey(id))
             {
-                Sendable sendable = SessionController.Instance.IdToSendables[id];
+                var sendable = SessionController.Instance.IdToSendables[id];
                 await sendable.UnPack(_message);
             }
         }

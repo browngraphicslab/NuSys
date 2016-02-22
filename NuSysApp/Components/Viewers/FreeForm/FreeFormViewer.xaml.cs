@@ -31,14 +31,19 @@ namespace NuSysApp
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
-            var wsModel = (WorkspaceModel)vm.Model;
+ 
 
-            var inqCanvasModel = wsModel.InqCanvas;
+
+
+            var inqCanvasModel = vm.Controller.Model.InqCanvas;
             var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
             _inqCanvas = new InqCanvasView(inqCanvasViewModel);
             _inqCanvas.Width = Window.Current.Bounds.Width;
             _inqCanvas.Height = Window.Current.Bounds.Height;
             xOuterWrapper.Children.Add(_inqCanvas);
+
+            // TODO:refactor
+            /*
             CompositeTransform ct = new CompositeTransform();
             ct.CenterX = wsModel.CenterX;
             ct.CenterY = wsModel.CenterY;
@@ -47,6 +52,9 @@ namespace NuSysApp
             ct.TranslateX = wsModel.LocationX;
             ct.TranslateY = wsModel.LocationY;
             _inqCanvas.Transform = ct;
+            */
+
+            _inqCanvas.Transform = vm.CompositeTransform;
 
 
             Loaded += delegate(object sender, RoutedEventArgs args)
@@ -59,7 +67,7 @@ namespace NuSysApp
                 //_inqCanvas.DisposeResources();
             };
 
-            wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
+            vm.Controller.Model.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
                 if (!model.IsGesture)
                 {

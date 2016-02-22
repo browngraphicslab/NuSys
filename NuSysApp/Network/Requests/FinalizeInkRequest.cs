@@ -23,7 +23,7 @@ namespace NuSysApp
             var props = _message;
             var id = _message.Get("id");
             
-            var canvas = (SessionController.Instance.IdToSendables[props.GetString("canvasNodeID")] as ElementInstanceModel).InqCanvas;
+            var canvas = (SessionController.Instance.IdToSendables[props.GetString("canvasNodeID")]).Model.InqCanvas;
             if (props.ContainsKey("inkType") && props["inkType"] == "partial")
             {
                 var one = new Point2d(Double.Parse(props.GetString("x1")), Double.Parse(props.GetString("y1")));

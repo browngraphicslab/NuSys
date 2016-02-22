@@ -75,7 +75,7 @@ namespace NuSysApp
                 _view.MultiMenu.Delete.Click -= Delete_OnClick;
                 _view.MultiMenu.Group.Click -= Group_OnClick;
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc is AtomViewModel)
+            if (dc is ElementInstanceViewModel)
             {
                 return;
             }
@@ -89,7 +89,7 @@ namespace NuSysApp
         private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            var nvm = dc as AtomViewModel;
+            var nvm = dc as ElementInstanceViewModel;
             if (nvm != null)
             {
                 var vm = (FreeFormViewerViewModel)_view.DataContext;
@@ -160,7 +160,7 @@ namespace NuSysApp
                 atomRect.Intersect(r);
                 if (!Double.IsInfinity(atomRect.Width) || !Double.IsInfinity(atomRect.Height))
                 {
-                    var avm = atom.DataContext as AtomViewModel;
+                    var avm = atom.DataContext as ElementInstanceViewModel;
                     if (!avm.IsSelected)
                     {
                         vm.SetMultiSelection(avm);

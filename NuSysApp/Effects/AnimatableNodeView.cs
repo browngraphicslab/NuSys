@@ -27,31 +27,31 @@ OnAlphaPropertyChanged));
         protected static void OnXPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
         {
             var d = (AnimatableNodeView)dd;
-            ((ElementInstanceModel)((AtomViewModel)d.DataContext).Model).X = (double)e.NewValue;
+            ((ElementInstanceModel)((ElementInstanceViewModel)d.DataContext).Model).X = (double)e.NewValue;
         }
 
         protected static void OnYPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
         {
             var d = (AnimatableNodeView)dd;
-            ((ElementInstanceModel)((AtomViewModel)d.DataContext).Model).Y = (double)e.NewValue;
+            ((ElementInstanceModel)((ElementInstanceViewModel)d.DataContext).Model).Y = (double)e.NewValue;
         }
 
         protected static void OnScaleXPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
         {
             var d = (AnimatableNodeView)dd;
-            ((ElementInstanceModel)((AtomViewModel)d.DataContext).Model).ScaleX = (double)e.NewValue;
+            ((ElementInstanceModel)((ElementInstanceViewModel)d.DataContext).Model).ScaleX = (double)e.NewValue;
         }
 
         protected static void OnScaleYPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
         {
             var d = (AnimatableNodeView)dd;
-            ((ElementInstanceModel)((AtomViewModel)d.DataContext).Model).ScaleY = (double)e.NewValue;
+            ((ElementInstanceModel)((ElementInstanceViewModel)d.DataContext).Model).ScaleY = (double)e.NewValue;
         }
 
         protected static void OnAlphaPropertyChanged(DependencyObject dd, DependencyPropertyChangedEventArgs e)
         {
             var d = (AnimatableNodeView)dd;
-            ((ElementInstanceModel)((AtomViewModel)d.DataContext).Model).Alpha = (double)e.NewValue;
+            ((ElementInstanceModel)((ElementInstanceViewModel)d.DataContext).Model).Alpha = (double)e.NewValue;
         }
 
         public double X

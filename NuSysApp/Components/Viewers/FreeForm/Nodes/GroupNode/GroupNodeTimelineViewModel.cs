@@ -8,7 +8,7 @@ using NuSysApp.Components.Nodes.GroupNode;
 
 namespace NuSysApp
 {
-    public class GroupNodeTimelineViewModel : NodeContainerViewModel
+    public class GroupNodeTimelineViewModel : ElementInstanceCollectionViewModel
     {
         //private List<Tuple<FrameworkElement, DateTime>> _atomList;
         //private AtomModel _nodeModel;

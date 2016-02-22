@@ -84,12 +84,13 @@ namespace NuSysApp
         {
             _dict.Clear();
             _locals.Clear();
+            //TODO: refactor
+            /*
             foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IdToSendables)
             {
-
-                //TODO: refactor
-                //kvp.Value.CanEdit = ElementInstanceModel.EditStatus.Maybe;
+                kvp.Value.CanEdit = ElementInstanceModel.EditStatus.Maybe;
             }
+            */
         }
 
         public bool ContainsID(string id)

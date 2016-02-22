@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class LoadNodeViewModel : AtomViewModel
+    public class LoadNodeViewModel : ElementInstanceViewModel
     {
         public LoadNodeViewModel(ElementInstanceController controller) : base(controller)
         {

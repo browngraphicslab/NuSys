@@ -38,7 +38,7 @@ namespace NuSysApp
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (AtomViewModel)DataContext;
+            var vm = (ElementInstanceViewModel)DataContext;
             vm.Remove();
         }
 

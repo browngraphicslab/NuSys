@@ -36,7 +36,7 @@ namespace NuSysApp
         {
             _nodeModel = model;
             View = await _viewFactory.CreateFromSendable(_nodeModel);
-            var tempvm = (AtomViewModel) View.DataContext;
+            var tempvm = (ElementInstanceViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");
@@ -44,7 +44,7 @@ namespace NuSysApp
 
         private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
         {
-            var tempvm = (AtomViewModel)View.DataContext;
+            var tempvm = (ElementInstanceViewModel)View.DataContext;
             switch (e.PropertyName.ToLower())
             {
                 case "title":

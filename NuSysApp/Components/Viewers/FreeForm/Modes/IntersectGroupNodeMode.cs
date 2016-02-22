@@ -41,14 +41,14 @@ namespace NuSysApp
 
                 var children0 = vm.Children.Values.Select(s =>
                 {
-                    var v = (AtomViewModel)s.DataContext;
+                    var v = (ElementInstanceViewModel)s.DataContext;
                     return v.Model;
                 });
                 //var children0 = ((NodeContainerModel)vm.Model).Children.Values.ToList();
                 //var children1 = ((NodeContainerModel)otherVm.Model).Children.Values.ToList();
                 var children1 = otherVm.Children.Values.Select(s =>
                 {
-                    var v = (AtomViewModel)s.DataContext;
+                    var v = (ElementInstanceViewModel)s.DataContext;
                     return v.Model;
                 });
                 var intersection = new List<ElementInstanceModel>();
@@ -70,65 +70,70 @@ namespace NuSysApp
                 var initialTransform = (CompositeTransform)_initialGroupNode.RenderTransform;
                 var intersectedTransform = (CompositeTransform)_intersectedGroupNode.RenderTransform;
 
-                var callback = new Action<string>(s =>
-                {
-                    UITask.Run(() =>
-                    {
-                        var newGroupTagModel = (NodeContainerModel)SessionController.Instance.IdToSendables[s];
-                        //_generatedLabel = (LabelNodeView)SessionController.Instance.GetUserControlById(s);
-                        _generatedLabel.Loaded += delegate(object sender, RoutedEventArgs args)
-                        {
-                            newGroupTagModel.X -= _generatedLabel.GetTagSize().Width/2.0;
-                            var intersectionNodes = new List<AnimatableNodeView>();
+                //TODO: refactor
 
-                            foreach (var control in SessionController.Instance.ActiveFreeFormViewer.Children.Values)
-                            {
-                                foreach (var nodeModel in intersection)
-                                {
-                                    if (((AtomViewModel)control.DataContext).Model == nodeModel)
-                                    {
-                                        intersectionNodes.Add((AnimatableNodeView)control);
-                                    }
-                                }
-                            }
 
-                            var numChildren = intersectionNodes.Count;
-                            var center = _generatedLabel.GetCenter();
-                            var tagSize = _generatedLabel.GetTagSize();
-                            var targetSize = 80;
-                            var c = -1;
-                            for (var i = 0; i < numChildren; i++)
-                            {
-                                //  Anim.To((AnimatableUserControl) control, "scaleX", 1, 1000);
-                                // Anim.To((AnimatableUserControl) control, "scaleY", 1, 1000);
-                                if (i % 2 == 0)
-                                    c++;
+                /*
+                   var callback = new Action<string>(s =>
+                   {
+                       UITask.Run(() =>
+                       {
+                           var newGroupTagModel = (NodeContainerModel)SessionController.Instance.IdToSendables[s];
+                           //_generatedLabel = (LabelNodeView)SessionController.Instance.GetUserControlById(s);
+                           _generatedLabel.Loaded += delegate(object sender, RoutedEventArgs args)
+                           {
+                               newGroupTagModel.X -= _generatedLabel.GetTagSize().Width/2.0;
+                               var intersectionNodes = new List<AnimatableNodeView>();
 
-                                var control = intersectionNodes[i];
-                                control.Tag = "intersected";
-                                var largerSide = control.Width > control.Height ? control.Height : control.Width;
-                                var scaleRatio = targetSize / largerSide;
-                                var cos = Math.Cos(c * Math.PI * 2.0 / numChildren*2 + Math.PI);
-                                var sin = Math.Sin(c * Math.PI * 2.0 / numChildren*2 + Math.PI);
-                                var tx = center.X + cos * (tagSize.Width / 2 + control.ActualWidth * scaleRatio / 2 + 20) - control.ActualWidth * scaleRatio / 4;
-                                var ty = center.Y + sin * (tagSize.Height / 2 + control.ActualHeight * scaleRatio / 2 + 20);
-                               // var tx = center.X + Math.Sin(i * Math.PI * 2.0 / numChildren) * tagSize.Width/2 ;
-                                //var ty = center.Y + Math.Cos(i * Math.PI * 2.0 / numChildren) * tagSize.Height/2;
-                                Anim.To(control, "X", tx, 600, new QuinticEase());
-                                Anim.To(control, "Y", ty, 600, new QuinticEase());
-                      
+                               foreach (var control in SessionController.Instance.ActiveFreeFormViewer.Children.Values)
+                               {
+                                   foreach (var nodeModel in intersection)
+                                   {
+                                       if (((ElementInstanceViewModel)control.DataContext).Model == nodeModel)
+                                       {
+                                           intersectionNodes.Add((AnimatableNodeView)control);
+                                       }
+                                   }
+                               }
 
-                            }
+                               var numChildren = intersectionNodes.Count;
+                               var center = _generatedLabel.GetCenter();
+                               var tagSize = _generatedLabel.GetTagSize();
+                               var targetSize = 80;
+                               var c = -1;
+                               for (var i = 0; i < numChildren; i++)
+                               {
+                                   //  Anim.To((AnimatableUserControl) control, "scaleX", 1, 1000);
+                                   // Anim.To((AnimatableUserControl) control, "scaleY", 1, 1000);
+                                   if (i % 2 == 0)
+                                       c++;
 
-                            _generatedLabel.SetNum(numChildren/2);
-                //            _initialGroupNode.ShowChildren();
-                //            _intersectedGroupNode.ShowChildren();
-                        };
+                                   var control = intersectionNodes[i];
+                                   control.Tag = "intersected";
+                                   var largerSide = control.Width > control.Height ? control.Height : control.Width;
+                                   var scaleRatio = targetSize / largerSide;
+                                   var cos = Math.Cos(c * Math.PI * 2.0 / numChildren*2 + Math.PI);
+                                   var sin = Math.Sin(c * Math.PI * 2.0 / numChildren*2 + Math.PI);
+                                   var tx = center.X + cos * (tagSize.Width / 2 + control.ActualWidth * scaleRatio / 2 + 20) - control.ActualWidth * scaleRatio / 4;
+                                   var ty = center.Y + sin * (tagSize.Height / 2 + control.ActualHeight * scaleRatio / 2 + 20);
+                                  // var tx = center.X + Math.Sin(i * Math.PI * 2.0 / numChildren) * tagSize.Width/2 ;
+                                   //var ty = center.Y + Math.Cos(i * Math.PI * 2.0 / numChildren) * tagSize.Height/2;
+                                   Anim.To(control, "X", tx, 600, new QuinticEase());
+                                   Anim.To(control, "Y", ty, 600, new QuinticEase());
 
-                        
-                    });
-                });
 
+                               }
+
+                               _generatedLabel.SetNum(numChildren/2);
+                   //            _initialGroupNode.ShowChildren();
+                   //            _intersectedGroupNode.ShowChildren();
+                           };
+
+
+                       });
+
+                   });
+                   */
 
                 var minX = Math.Min(initialTransform.TranslateX, intersectedTransform.TranslateX);
                 var maxX = Math.Max(initialTransform.TranslateX + _initialGroupNode.ActualWidth, intersectedTransform.TranslateX + _intersectedGroupNode.ActualWidth);
@@ -138,6 +143,7 @@ namespace NuSysApp
 
                 //NetworkConnector.Instance.RequestNewGroupTag(avgX.ToString(), (avgY + 450).ToString(), n1 + " ∩ " + n2, props, callback);
             };
+          
         }
 
         

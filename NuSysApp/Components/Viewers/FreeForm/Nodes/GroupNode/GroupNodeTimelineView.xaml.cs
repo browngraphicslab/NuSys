@@ -76,7 +76,7 @@ namespace NuSysApp
 
             foreach (var atom in _vm.AtomViewList)
             {
-                var vm = (AtomViewModel)atom.DataContext; //access viewmodel
+                var vm = (ElementInstanceViewModel)atom.DataContext; //access viewmodel
                 vm.X = 0;
                 vm.Y = 0;
                 vm.CanEdit = EditStatus.No;

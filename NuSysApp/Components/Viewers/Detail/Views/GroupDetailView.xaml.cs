@@ -29,7 +29,7 @@ namespace NuSysApp
         
         private int _count = 0;
 
-        public GroupDetailView(NodeContainerViewModel vm)
+        public GroupDetailView(ElementInstanceCollectionViewModel vm)
         {
             this.InitializeComponent();
             DataContext = vm;
@@ -55,12 +55,12 @@ namespace NuSysApp
 
         public async Task AddChildren()
         {
-            var vm = (NodeContainerViewModel) DataContext;
+            var vm = (ElementInstanceCollectionViewModel) DataContext;
             var allNodes = SessionController.Instance.IdToSendables.Values;
             var modelList = new ObservableCollection<ElementInstanceModel>();
             foreach (var sendable in allNodes)
             {
-                var node = (ElementInstanceModel) sendable;
+                var node = sendable.Model;
                 var groups = (List<string>) node.GetMetaData("groups");
                 if (groups.Contains(vm.Id))
                 {
@@ -70,9 +70,9 @@ namespace NuSysApp
 
             foreach (var model in modelList)
             {
-                Sendable nodeModel = SessionController.Instance.IdToSendables[model.Id];
-                var view = await _factory.CreateFromSendable(nodeModel, null);
-                var viewVm = (AtomViewModel)view.DataContext;
+                var nodeModel = SessionController.Instance.IdToSendables[model.Id];
+                var view = await _factory.CreateFromSendable(nodeModel.Model, null);
+                var viewVm = (ElementInstanceViewModel)view.DataContext;
                 view.RenderTransform = new CompositeTransform();
                 _views.Add(view);
             }

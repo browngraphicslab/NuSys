@@ -31,7 +31,7 @@ namespace NuSysApp
 
         private SessionController()
         {
-            IdToSendables = new ObservableDictionary<string, Sendable>();
+            IdToSendables = new ObservableDictionary<string, ElementInstanceController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
@@ -40,7 +40,7 @@ namespace NuSysApp
             get { return _nuSysNetworkSession; }
         }
 
-        public ObservableDictionary<string, Sendable> IdToSendables { set; get; }
+        public ObservableDictionary<string, ElementInstanceController> IdToSendables { set; get; }
 
         public SessionView SessionView { get; set; }
 
@@ -162,12 +162,15 @@ namespace NuSysApp
 
         public async Task SaveWorkspace()
         {
+            //TODO: refactor
+            /*
             await _contentController.Save();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);
             await FileIO.WriteLinesAsync(file, lines);
+            */
         }
 
         public async Task LoadWorkspace()

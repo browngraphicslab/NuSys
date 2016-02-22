@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class AreaNodeViewModel : NodeContainerViewModel
+    public class AreaNodeViewModel : ElementInstanceCollectionViewModel
     {
 
         public PointCollection Points { get; set; }

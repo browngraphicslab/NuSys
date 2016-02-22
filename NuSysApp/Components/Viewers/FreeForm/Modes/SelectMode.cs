@@ -15,7 +15,7 @@ namespace NuSysApp
     {
         public SelectMode(FreeFormViewer view) : base(view) { }
 
-        private static AtomViewModel _selectedAtomVm;
+        private static ElementInstanceViewModel _selectedElementInstanceVm;
         private bool _released;
 
         public override async Task Activate()
@@ -47,12 +47,12 @@ namespace NuSysApp
             if (!_released)
                 return;
 
-            _selectedAtomVm?.SetSelected(false);
+            _selectedElementInstanceVm?.SetSelected(false);
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc == _selectedAtomVm)
+            if (dc == _selectedElementInstanceVm)
             {
-                _selectedAtomVm = null;
+                _selectedElementInstanceVm = null;
                 return;
             }
 
@@ -61,12 +61,12 @@ namespace NuSysApp
             {
                 var vm = (FreeFormViewerViewModel) _view.DataContext;
                 vm.ClearSelection();
-                _selectedAtomVm = null;
+                _selectedElementInstanceVm = null;
             }
-            else if (dc is AtomViewModel)
+            else if (dc is ElementInstanceViewModel)
             {
-                var vm = (AtomViewModel) dc;
-                _selectedAtomVm = vm;
+                var vm = (ElementInstanceViewModel) dc;
+                _selectedElementInstanceVm = vm;
                 vm.SetSelected(true);
             }
         }
@@ -80,11 +80,11 @@ namespace NuSysApp
         {
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if ((dc is AtomViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
+            if ((dc is ElementInstanceViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {
-                if (dc is AtomViewModel)
+                if (dc is ElementInstanceViewModel)
                 {
-                    var vm = (AtomViewModel)dc;
+                    var vm = (ElementInstanceViewModel)dc;
 
                     if (vm.ElementType == ElementType.Word || vm.ElementType == ElementType.Powerpoint)
                     {

@@ -49,7 +49,8 @@ namespace NuSysApp
         private void UIElement_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (SearchResultItem)((FrameworkElement) sender).DataContext;
-            SessionController.Instance.ActiveFreeFormViewer.MoveToNode(vm.Id);
+            // TODO: refactor
+            //SessionController.Instance.ActiveFreeFormViewer.MoveToNode(vm.Id);
         }
     }
 }

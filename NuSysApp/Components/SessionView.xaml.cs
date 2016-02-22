@@ -183,8 +183,9 @@ namespace NuSysApp
 
             var workspaceModel = new WorkspaceModel(workspaceId);
             workspaceModel.Title = "New Workspace";
-            SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
-            OpenWorkspace(workspaceModel);
+            // TODO: Refactor
+        //    SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
+          //  OpenWorkspace(workspaceModel);
 
             xFullScreenViewer.DataContext = new DetailViewerViewModel();
 
@@ -211,9 +212,13 @@ namespace NuSysApp
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
+
+                // TODO: refactor
+                /*
                 var model = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                 if (model == null)
                     continue;
+                
 
                 if (type == ElementType.Node && SessionController.Instance.ContentController.Get(((ElementInstanceModel)model).ContentId)==null)
                 {
@@ -231,6 +236,7 @@ namespace NuSysApp
                     var wsModel = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                     await OpenWorkspace((WorkspaceModel)wsModel);
                 }
+                */
             }
 
             foreach (var model in createdModels)
@@ -265,6 +271,8 @@ namespace NuSysApp
                 if (type == ElementType.Link)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 
+                //TODO: refactor
+                /*
                 var model = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                 if (model == null)
                     continue;
@@ -277,6 +285,7 @@ namespace NuSysApp
                     var wsModel = SessionController.Instance.IdToSendables[id] as ElementInstanceModel;
                     await OpenWorkspace((WorkspaceModel)wsModel);
                 }
+                */
             }
 
             foreach (var model in createdModels)
@@ -301,15 +310,27 @@ namespace NuSysApp
                 _activeWorkspace = null;
             }
             
-            var workspaceModel = new WorkspaceModel( SessionController.Instance.GenerateId() );
-            workspaceModel.Title = "New Workspace";
-            SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
-            OpenWorkspace(workspaceModel);
+
+            OpenWorkspace(CreateEmptyElementCollectionInstance());
             
             xFullScreenViewer.DataContext = new DetailViewerViewModel();
         }
 
-        public async Task OpenWorkspace(WorkspaceModel model)
+        private ElementCollectionInstanceModel CreateEmptyElementCollectionInstance()
+        {
+            //var workspaceModel = new WorkspaceModel( SessionController.Instance.GenerateId() );
+            var elementCollection = new ElementCollectionModel();
+            var elementCollectionInstance = new ElementCollectionInstanceModel(SessionController.Instance.GenerateId())
+            {
+                ElementCollectionModel = elementCollection
+            };
+            var elementInstanceController = new ElementInstanceController(elementCollectionInstance);
+            //workspaceModel.Title = "New Workspace";
+            SessionController.Instance.IdToSendables[elementCollectionInstance.Id] = elementInstanceController;
+            return elementCollectionInstance;
+        }
+
+        public async Task OpenWorkspace(ElementCollectionInstanceModel model)
         {
             await DisposeWorspace(_activeWorkspace);
             if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
@@ -413,7 +434,7 @@ namespace NuSysApp
             vm.MakeTagList();
         }
 
-        public async void OpenFile(AtomViewModel vm)
+        public async void OpenFile(ElementInstanceViewModel vm)
         {
             String token = vm.Model.GetMetaData("Token")?.ToString();
 

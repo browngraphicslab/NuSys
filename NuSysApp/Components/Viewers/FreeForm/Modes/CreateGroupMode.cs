@@ -18,7 +18,7 @@ namespace NuSysApp
         private NodeManipulationMode _nodeManipulationMode;
         private DispatcherTimer _timer;
         private bool _isHovering;
-        private AtomViewModel _hoveredNode;
+        private ElementInstanceViewModel _hoveredNode;
         private IThumbnailable _hoveredNodeView;
         private string _createdGroupId;
 
@@ -31,7 +31,7 @@ namespace NuSysApp
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is AtomViewModel))
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.ManipulationStarting += UserControlOnManipulationStarting;
                 userControl.ManipulationDelta += UserControlOnManipulationDelta;
@@ -43,7 +43,7 @@ namespace NuSysApp
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is AtomViewModel))
+            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.ManipulationDelta -= UserControlOnManipulationDelta;
                 userControl.ManipulationCompleted -= UserControlOnManipulationCompleted;
@@ -63,7 +63,7 @@ namespace NuSysApp
             if (((FrameworkElement)sender).DataContext is AreaNodeViewModel)
                 return;
 
-            var id1 = (((FrameworkElement)sender).DataContext as AtomViewModel).Id;
+            var id1 = (((FrameworkElement)sender).DataContext as ElementInstanceViewModel).Id;
             var id2 = _hoveredNode.Id;
 
    
@@ -95,7 +95,7 @@ namespace NuSysApp
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
-            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is AtomViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel) && !((uiElem as FrameworkElement).DataContext is AreaNodeViewModel));
+            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementInstanceViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel) && !((uiElem as FrameworkElement).DataContext is AreaNodeViewModel));
             var draggedItem = (AnimatableUserControl) sender;   
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
             
@@ -111,7 +111,7 @@ namespace NuSysApp
                     {
                         _timer.Stop();
                         _isHovering = true;
-                        _hoveredNode = (result.First() as FrameworkElement).DataContext as AtomViewModel;
+                        _hoveredNode = (result.First() as FrameworkElement).DataContext as ElementInstanceViewModel;
                         Debug.WriteLine("atomviewlist count: " + wvm.AtomViewList.Count);
                         var atoms = wvm.AtomViewList.Where(v => v.DataContext == _hoveredNode);
 

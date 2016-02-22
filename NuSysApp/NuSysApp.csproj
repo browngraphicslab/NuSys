@@ -327,7 +327,8 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="Models\AreaModel.cs" />
-    <Compile Include="Models\ElementInstanceCollectionModel.cs" />
+    <Compile Include="Models\ElementCollectionModel.cs" />
+    <Compile Include="Models\ElementCollectionInstanceModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
@@ -497,7 +498,7 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\FreeFormViewerViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\Base\NodeContainerViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\Base\ElementInstanceCollectionViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\NodeTemplate.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeView.xaml.cs">
       <DependentUpon>PdfNodeView.xaml</DependentUpon>

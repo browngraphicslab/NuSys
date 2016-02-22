@@ -35,8 +35,8 @@ namespace NuSysApp
 
         private UserControl CreateLinkView(LinkModel model, List<FrameworkElement> AtomViewList)
         {
-            var atom1Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom1).DataContext;
-            var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
+            var atom1Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom1).DataContext;
+            var atom2Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom2).DataContext;
 
             var viewModel = new LinkViewModel(new ElementInstanceController(model), atom1Vm, atom2Vm);
             var view = new BezierLinkView(viewModel);
@@ -109,7 +109,7 @@ namespace NuSysApp
                     view = new AreaNodeView(new AreaNodeViewModel(new ElementInstanceController(model)));
                     break;
             }
-            await ((AtomViewModel) view.DataContext).Init();
+            await ((ElementInstanceViewModel) view.DataContext).Init();
 
             return view;
         }

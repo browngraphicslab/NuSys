@@ -39,8 +39,8 @@ namespace NuSysApp
         private UserControl CreateLinkView(LinkModel model, List<UserControl> AtomViewList)
         {
 
-            var atom1Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom1).DataContext;
-            var atom2Vm = (AtomViewModel)AtomViewList.First(s => ((AtomViewModel)s.DataContext).Model == model.Atom2).DataContext;
+            var atom1Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom1).DataContext;
+            var atom2Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom2).DataContext;
 
             var viewModel = new LinkViewModel(new ElementInstanceController(model), atom1Vm, atom2Vm);
             //var view = new BezierLinkView(viewModel);
@@ -101,7 +101,7 @@ namespace NuSysApp
                     view = new AudioDetailView(audioVM);
                     break;
                 case ElementType.Group:
-                    view = new GroupDetailView(new NodeContainerViewModel(new ElementInstanceController(model)));
+                    view = new GroupDetailView(new ElementInstanceCollectionViewModel(new ElementInstanceController(model)));
                     break;
             }
 

@@ -16,8 +16,8 @@ namespace NuSysApp
         {
             var props = _message;
             
-            var node1 = (ElementInstanceModel)SessionController.Instance.IdToSendables[props.GetString("id1")];
-            var node2 = (ElementInstanceModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
+            var node1 = SessionController.Instance.IdToSendables[props.GetString("id1")].Model;
+            var node2 = SessionController.Instance.IdToSendables[props.GetString("id2")].Model;
             var groupNodeId = props.GetString("groupNodeId");
 
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
@@ -51,14 +51,14 @@ namespace NuSysApp
                 
                 //node1.Creator = group.Id;
                 var prevGroups1 = (List<string>)node1.GetMetaData("groups");
-                prevGroups1.Add(group.Id);
+                prevGroups1.Add(group.Model.Id);
                 node1.SetMetaData("groups", prevGroups1);
 
               //  node2.Creator = group.Id;
                 var prevGroups2 = (List<string>)node2.GetMetaData("groups");
-                prevGroups2.Add(group.Id);
+                prevGroups2.Add(group.Model.Id);
                 node2.SetMetaData("groups", prevGroups2);
-                var found = wvm.AtomViewList.Where(a => (a.DataContext as AtomViewModel).Id == group.Id);
+                var found = wvm.AtomViewList.Where(a => (a.DataContext as ElementInstanceViewModel).Id == group.Model.Id);
                 
                 NodeContainerModel groupModel;
                 if (!found.Any())
@@ -69,7 +69,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    groupModel = (NodeContainerModel)SessionController.Instance.IdToSendables[group.Id];
+                    groupModel = (NodeContainerModel)SessionController.Instance.IdToSendables[group.Model.Id].Model;
 
                     await groupModel.AddChild(node1);
                     wvm.RemoveChild(node1.Id);

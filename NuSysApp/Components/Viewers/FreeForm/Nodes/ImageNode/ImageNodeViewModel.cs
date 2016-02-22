@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageNodeViewModel : AtomViewModel
+    public class ImageNodeViewModel : ElementInstanceViewModel
     {
         
         public ImageNodeViewModel(ElementInstanceController controller) : base(controller)

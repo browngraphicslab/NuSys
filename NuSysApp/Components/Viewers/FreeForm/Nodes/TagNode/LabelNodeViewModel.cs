@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class LabelNodeViewModel : NodeContainerViewModel
+    public class LabelNodeViewModel : ElementInstanceCollectionViewModel
     {
        
         public List<string> TitleSuggestions { get; set; } 

@@ -14,7 +14,7 @@ using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class TextNodeViewModel : AtomViewModel
+    public class TextNodeViewModel : ElementInstanceViewModel
     {
         #region Private Members
         private string _rtf = string.Empty;

@@ -25,15 +25,12 @@ namespace NuSysApp
         {
             _view.InqCanvas.IsEnabled = true;
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
-            var wm = (WorkspaceModel)wvm.Model;
-            _inqCanvasModel = wm.InqCanvas;
-
+            _inqCanvasModel = wvm.Model.InqCanvas;
             _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
         }
 
         private void OnLineFinalized(InqLineModel inqLine)
         {
-          //  _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
             if (_wasGesture)
             {
                 inqLine.Delete();
@@ -49,7 +46,6 @@ namespace NuSysApp
             var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
             if (s < 0.25)
             {
-
                 if (_lines.Count < 3)
                     return;
                    

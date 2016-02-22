@@ -27,7 +27,8 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             List<string> tags = _message.GetList<string>("tags");
-            ((ElementInstanceModel)SessionController.Instance.IdToSendables[_message.GetString("id")]).SetMetaData("tags", tags);
+            // TODO: refactor
+            //((ElementInstanceModel)SessionController.Instance.IdToSendables[_message.GetString("id")]).SetMetaData("tags", tags);
         }
     }
 }

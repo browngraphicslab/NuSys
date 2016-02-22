@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class AtomViewModel : BaseINPC
+    public abstract class ElementInstanceViewModel : BaseINPC
     {
         #region Private Members      
         private double _x, _y, _height, _width, _alpha;
@@ -31,7 +31,7 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected AtomViewModel(ElementInstanceController controller)
+        protected ElementInstanceViewModel(ElementInstanceController controller)
         {
             _controller = controller;
             LinkList = new ObservableCollection<LinkViewModel>();
@@ -191,9 +191,7 @@ namespace NuSysApp
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
         }
-
-
-
+        
         public virtual void SetSize(double width, double height)
         {
             Width = width;

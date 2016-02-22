@@ -19,38 +19,54 @@ namespace NuSysApp
     /// <summary>
     /// Models the basic Workspace and maintains a list of all atoms. 
     /// </summary>
-    public class FreeFormViewerViewModel : NodeContainerViewModel
+    public class FreeFormViewerViewModel : ElementInstanceCollectionViewModel
     {
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
-        private AtomViewModel _preparedAtomVm;
+        private ElementInstanceViewModel _preparedElementInstanceVm;
 
         #endregion Private Members
 
         public FreeFormViewerViewModel(ElementInstanceController controller) : base(controller)
         {
-            GroupDict = new Dictionary<string, NodeContainerViewModel>();
-            MultiSelectedAtomViewModels = new List<AtomViewModel>();
-            SelectedAtomViewModel = null;
+            GroupDict = new Dictionary<string, ElementInstanceCollectionViewModel>();
+            MultiSelectedAtomViewModels = new List<ElementInstanceViewModel>();
+            SelectedElementInstanceViewModel = null;
 
-            var model = (WorkspaceModel)controller.Model;
-            var c = new CompositeTransform
+            var model = controller.Model;
+
+            if (model.GetMetaData("locationX") == null)
             {
-                TranslateX = model.LocationX,
-                TranslateY = model.LocationY,
-                CenterX = model.CenterX,
-                CenterY = model.CenterY,
-                ScaleX = model.Zoom,
-                ScaleY = model.Zoom
-            };
+                CompositeTransform = new CompositeTransform
+                {
+                    ScaleX = 1,
+                    ScaleY = 1,
+                    TranslateX = -Constants.MaxCanvasSize/2.0,
+                    TranslateY = -Constants.MaxCanvasSize/2.0,
+                    CenterX = -Constants.MaxCanvasSize/2.0,
+                    CenterY = -Constants.MaxCanvasSize/2.0
+                };
 
-            CompositeTransform = c;
+            } else { 
+                CompositeTransform = new CompositeTransform
+                    {
+                        TranslateX = (double)model.GetMetaData("locationX"),
+                        TranslateY = (double)model.GetMetaData("locationY"),
+                        CenterX = (double)model.GetMetaData("centerX"),
+                        CenterY = (double)model.GetMetaData("centerY"),
+                        ScaleX = (double)model.GetMetaData("zoom"),
+                        ScaleY = (double)model.GetMetaData("zoom")
+                    };
+            }
+         
             FMTransform = new CompositeTransform();
         }
 
         public void MoveToNode(string id)
         {
+            // TODO: refactor
+            /*
             var node = (ElementInstanceModel)SessionController.Instance.IdToSendables[id];
             var tp = new Point(-node.X, -node.Y);
             var np = CompositeTransform.Inverse.TransformPoint(tp);
@@ -59,22 +75,23 @@ namespace NuSysApp
             CompositeTransform.ScaleY = 1;
             CompositeTransform.TranslateX = tp.X + (SessionController.Instance.SessionView.ActualWidth - node.Width) / 2;
             CompositeTransform.TranslateY = tp.Y + (SessionController.Instance.SessionView.ActualHeight - node.Height) / 2;
+            */
         }
 
         #region Node Interaction
 
         public bool CheckForInkNodeIntersection(InqLineModel inq)
         {
-            var nodes = new List<AtomViewModel>();
+            var nodes = new List<ElementInstanceViewModel>();
             var links = new List<LinkViewModel>();
-            foreach (var node2 in AtomViewList.Where(a => a.DataContext is AtomViewModel))
+            foreach (var node2 in AtomViewList.Where(a => a.DataContext is ElementInstanceViewModel))
             {
                 var rect1 = Geometry.InqToBoudingRect(inq);
-                var rect2 = Geometry.NodeToBoudingRect(node2.DataContext as AtomViewModel);
+                var rect2 = Geometry.NodeToBoudingRect(node2.DataContext as ElementInstanceViewModel);
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (!rect1.IsEmpty)
                 {
-                    nodes.Add(node2.DataContext as AtomViewModel);
+                    nodes.Add(node2.DataContext as ElementInstanceViewModel);
                 }
             }
             foreach (var link in AtomViewList.Where(a => a.DataContext is LinkViewModel))
@@ -146,7 +163,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(link.Id));
         }
 
-        public void DeleteNode(AtomViewModel node)
+        public void DeleteNode(ElementInstanceViewModel node)
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(node.Id));
         }
@@ -157,25 +174,25 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void SetSelection(AtomViewModel selected)
+        public void SetSelection(ElementInstanceViewModel selected)
         {
             List<string> locks = new List<string>();
             locks.Add(selected.Model.Id);
             //NetworkConnector.Instance.CheckLocks(locks);
 
-            if (SelectedAtomViewModel == null)
+            if (SelectedElementInstanceViewModel == null)
             {
-                SelectedAtomViewModel = selected;
+                SelectedElementInstanceViewModel = selected;
                 return;
             }
             // //NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
             selected.SetSelected(false);
-            SelectedAtomViewModel.SetSelected(false);
-            SelectedAtomViewModel = null;
+            SelectedElementInstanceViewModel.SetSelected(false);
+            SelectedElementInstanceViewModel = null;
             ClearSelection();
         }
 
-        public void SetMultiSelection(AtomViewModel selected)
+        public void SetMultiSelection(ElementInstanceViewModel selected)
         {
             if (!selected.IsMultiSelected)
             {
@@ -185,11 +202,11 @@ namespace NuSysApp
             }
         }
 
-        public void MoveMultiSelection(AtomViewModel sender, double x, double y)
+        public void MoveMultiSelection(ElementInstanceViewModel sender, double x, double y)
         {
             foreach (var atom in MultiSelectedAtomViewModels)
             {
-                var node = atom as AtomViewModel;
+                var node = atom as ElementInstanceViewModel;
                 if (node != null && atom != sender)
                 {
                     node.IsMultiSelected = false;
@@ -205,9 +222,9 @@ namespace NuSysApp
         public void ClearSelection()
         {
             //NetworkConnector.Instance.ReturnAllLocks();
-            if (SelectedAtomViewModel == null) return;
-            SelectedAtomViewModel.SetSelected(false);
-            SelectedAtomViewModel = null;
+            if (SelectedElementInstanceViewModel == null) return;
+            SelectedElementInstanceViewModel.SetSelected(false);
+            SelectedElementInstanceViewModel = null;
         }
 
 
@@ -215,6 +232,10 @@ namespace NuSysApp
 
         public async void PromoteInk(Rect nodeBounds, List<InqLineModel> linesToPromote)
         {
+            //TODO: refactor
+
+            /*
+
             var dict = new Dictionary<string, object>();
             dict["width"] = nodeBounds.Width.ToString();
             dict["height"] = nodeBounds.Height.ToString();
@@ -237,6 +258,8 @@ namespace NuSysApp
             };
             Action<string> a = new Action<string>(add);
             //await NetworkConnector.Instance.RequestMakeNode(nodeBounds.X.ToString(), nodeBounds.Y.ToString(), NodeType.Text.ToString(), null, null, dict, a);
+        
+            */
         }
 
         public void ClearMultiSelection()
@@ -320,9 +343,9 @@ namespace NuSysApp
         #region Public Members
 
 
-        public AtomViewModel SelectedAtomViewModel { get; private set; }
+        public ElementInstanceViewModel SelectedElementInstanceViewModel { get; private set; }
 
-        public List<AtomViewModel> MultiSelectedAtomViewModels { get; private set; }
+        public List<ElementInstanceViewModel> MultiSelectedAtomViewModels { get; private set; }
 
         public CompositeTransform CompositeTransform
         {
@@ -355,7 +378,7 @@ namespace NuSysApp
         public override void Remove() { }
         public override void UpdateAnchor() { }
 
-        public Dictionary<string, NodeContainerViewModel> GroupDict { get; private set; }
+        public Dictionary<string, ElementInstanceCollectionViewModel> GroupDict { get; private set; }
 
         public InqLineModel LastPartialLineModel { get; set; }
         #endregion Public Members

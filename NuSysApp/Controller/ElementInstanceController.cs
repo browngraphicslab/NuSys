@@ -137,5 +137,9 @@ namespace NuSysApp
             get { return _model; }
         }
 
+        public virtual async Task UnPack(Message props)
+        {
+        }
+
     }
 }

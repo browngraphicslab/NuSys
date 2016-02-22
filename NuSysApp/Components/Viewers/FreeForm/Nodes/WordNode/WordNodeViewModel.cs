@@ -14,7 +14,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WordNodeViewModel : AtomViewModel
+    public class WordNodeViewModel : ElementInstanceViewModel
     {
 
         public WordNodeViewModel(ElementInstanceController controller) : base(controller)

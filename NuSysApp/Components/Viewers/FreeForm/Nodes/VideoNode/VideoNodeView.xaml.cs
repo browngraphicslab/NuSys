@@ -113,13 +113,13 @@ namespace NuSysApp
         }
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var vm = (AtomViewModel)this.DataContext;
+            var vm = (ElementInstanceViewModel)this.DataContext;
             vm.Controller.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
             e.Handled = true;
         }
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (AtomViewModel)this.DataContext;
+            var vm = (ElementInstanceViewModel)this.DataContext;
             vm.Remove();
         }
 

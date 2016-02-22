@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WebNodeViewModel : AtomViewModel
+    public class WebNodeViewModel : ElementInstanceViewModel
     {
         private double  _zoom = 1;
        

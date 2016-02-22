@@ -22,6 +22,10 @@ namespace NuSysApp
             if (queryString == "")
                 return;
             var found = new HashSet<ElementInstanceModel>();
+
+            // TODO: refactor
+           /*
+
             foreach (var kv in SessionController.Instance.IdToSendables)
             {
                 var kvp = (KeyValuePair<string, Sendable>) kv;
@@ -47,6 +51,7 @@ namespace NuSysApp
                 var title = atomModel.Title == "" ? "Unnamed Node" : atomModel.Title;
                 SearchResults.Add(new SearchResultItem {Id = atomModel.Id, Name = title});
             }
+            */
         }
 
         public override string ToString()

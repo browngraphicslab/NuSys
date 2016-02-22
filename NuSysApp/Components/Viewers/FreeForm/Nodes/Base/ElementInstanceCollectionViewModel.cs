@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class NodeContainerViewModel: AtomViewModel
+    public class ElementInstanceCollectionViewModel: ElementInstanceViewModel
     {
         public ObservableDictionary<string, FrameworkElement> Children { get; }
         
@@ -22,7 +22,7 @@ namespace NuSysApp
         public event ChildAddedHandler ChildAdded;
         public bool EnableChildMove { get; set; }
        
-        public NodeContainerViewModel(ElementInstanceController controller): base(controller)
+        public ElementInstanceCollectionViewModel(ElementInstanceController controller): base(controller)
         {
             Children = new ObservableDictionary<string, FrameworkElement>();
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));

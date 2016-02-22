@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class GroupNodeViewModel : NodeContainerViewModel
+    public class GroupNodeViewModel : ElementInstanceCollectionViewModel
     {
         public GroupNodeViewModel(ElementInstanceController controller) : base(controller)
         {
