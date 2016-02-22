@@ -19,7 +19,7 @@ namespace NuSysApp
     /// </summary>
     public sealed partial class WaitingRoomView : Page
     {
-        public WorkspaceView _workspaceView;
+        public FreeFormViewer _freeFormViewer;
         private static IEnumerable<string> _firstLoadList;
         public WaitingRoomView()
         {

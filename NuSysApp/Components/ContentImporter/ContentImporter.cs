@@ -60,7 +60,7 @@ namespace NuSysApp
                     var width = SessionController.Instance.SessionView.ActualWidth;
                     var height = SessionController.Instance.SessionView.ActualHeight;
                     var centerpoint =
-                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                        SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
 
                     var contentId = SessionController.Instance.GenerateId();
@@ -72,7 +72,7 @@ namespace NuSysApp
                     m["height"] = 400;
                     m["nodeType"] = ElementType.Text.ToString();
                     m["autoCreate"] = true;
-                    m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+                    m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
@@ -99,7 +99,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = selectionItem.BookmarkId;
@@ -124,7 +124,7 @@ namespace NuSysApp
                     width = SessionController.Instance.SessionView.ActualWidth;
                     height = SessionController.Instance.SessionView.ActualHeight;
                     centerpoint =
-                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                        SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
                 });
                     var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);

@@ -20,7 +20,7 @@ namespace NuSysApp
             var pinvm = this.DataContext as PinViewModel;
             var pinModel = (PinModel) pinvm.Model;
 
-            var vm = SessionController.Instance.ActiveWorkspace;
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             var c = new CompositeTransform
             {

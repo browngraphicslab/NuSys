@@ -20,7 +20,7 @@ namespace NuSysApp
             var node2 = (ElementInstanceModel)SessionController.Instance.IdToSendables[props.GetString("id2")];
             var groupNodeId = props.GetString("groupNodeId");
 
-            var wvm = SessionController.Instance.ActiveWorkspace;
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
 
             if (node2 is NodeContainerModel)
             {
@@ -43,7 +43,7 @@ namespace NuSysApp
                 msg["x"] = _message.GetDouble("x");
                 msg["y"] = _message.GetDouble("y");
                 msg["autoCreate"] = true;
-                msg["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+                msg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
 

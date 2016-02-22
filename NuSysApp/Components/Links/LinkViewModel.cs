@@ -42,7 +42,7 @@ namespace NuSysApp
             if (IsSelected)
             {
                 //TODO: re-add
-                SessionController.Instance.ActiveWorkspace.ClearSelection();
+                SessionController.Instance.ActiveFreeFormViewer.ClearSelection();
             }
             //this.Atom1.LinkList.Remove(this);
             //this.Atom2.LinkList.Remove(this);

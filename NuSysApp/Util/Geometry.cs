@@ -78,7 +78,7 @@ namespace NuSysApp
             public Point Start;
         }
 
-        public static Line[] NodeToLineSegment(NodeViewModel node)
+        public static Line[] NodeToLineSegment(AtomViewModel node)
         {
             var lines = new Line[4];
             var nodeModel = (ElementInstanceModel) node.Model;
@@ -168,7 +168,7 @@ namespace NuSysApp
             return lines;
         }
 
-        public static Rect NodeToBoudingRect(NodeViewModel nodeVm)
+        public static Rect NodeToBoudingRect(AtomViewModel nodeVm)
         {
             return new Rect()
             {

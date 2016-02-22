@@ -48,7 +48,7 @@ namespace NuSysApp
         public event OnModeChangeHandler ModeChange;
         public delegate void OnModeChangeHandler(Options mode, bool isFixed);
         private Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>> _storyboards;
-        private WorkspaceView _workspaceView;
+        private FreeFormViewer _freeFormViewer;
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.

@@ -162,7 +162,7 @@ namespace NuSysApp
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+            var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
 
             var contentId = SessionController.Instance.GenerateId();
 
@@ -173,7 +173,7 @@ namespace NuSysApp
             m["height"] = 400;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
             if (type == ElementType.Video)
             {
@@ -213,7 +213,7 @@ namespace NuSysApp
             MediaGrid.Visibility = Visibility.Collapsed;
         }
 
-        public WorkspaceView WorkspaceView { get; set; }
+        public FreeFormViewer FreeFormViewer { get; set; }
 
     }
 }

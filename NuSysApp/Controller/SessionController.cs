@@ -15,11 +15,11 @@ namespace NuSysApp
 {
     public class SessionController
     {
-        public delegate void WorkspaceChangedHandler(object source, WorkspaceViewModel workspace);
+        public delegate void WorkspaceChangedHandler(object source, FreeFormViewerViewModel freeFormViewer);
 
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
-        private WorkspaceViewModel _activeWorkspace;
+        private FreeFormViewerViewModel _activeFreeFormViewer;
 
         private ContentController _contentController = new ContentController();
 
@@ -55,13 +55,13 @@ namespace NuSysApp
 
         public string SpeechString { get; set; }
 
-        public WorkspaceViewModel ActiveWorkspace
+        public FreeFormViewerViewModel ActiveFreeFormViewer
         {
-            get { return _activeWorkspace; }
+            get { return _activeFreeFormViewer; }
             set
             {
-                _activeWorkspace = value;
-                WorkspaceChanged?.Invoke(this, _activeWorkspace);
+                _activeFreeFormViewer = value;
+                WorkspaceChanged?.Invoke(this, _activeFreeFormViewer);
             }
         }
 
@@ -116,7 +116,7 @@ namespace NuSysApp
 
         public void DisposeInq()
         {
-            var wvm = (WorkspaceModel) Instance.ActiveWorkspace.Model;
+            var wvm = (WorkspaceModel) Instance.ActiveFreeFormViewer.Model;
             var cm = (InqCanvasModel) wvm.InqCanvas;
             cm.DisposeInq();
         }

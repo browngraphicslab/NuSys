@@ -31,7 +31,7 @@ namespace NuSysApp
             var id = _message.GetString("id");
 
             ElementInstanceModel node;
-            NodeViewModel nodeViewModel;
+            AtomViewModel nodeViewModel;
             switch (nodeType)
             {
                 case ElementType.Text:

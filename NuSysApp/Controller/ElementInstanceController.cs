@@ -54,8 +54,8 @@ namespace NuSysApp
 
         public void Resize(double dx, double dy)
         {
-            var changeX = dx / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-            var changeY = dy / SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+            var changeX = dx / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var changeY = dy / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
             Resized?.Invoke(this, changeX, changeY);
 
@@ -73,8 +73,8 @@ namespace NuSysApp
 
         public void Translate(double tx, double ty)
         {
-            tx /= SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleX;
-            ty /= SessionController.Instance.ActiveWorkspace.CompositeTransform.ScaleY;
+            tx /= SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            ty /= SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
             Translated?.Invoke(this, tx, ty);
 
             _debouncingDictionary?.Add("translateX", tx);

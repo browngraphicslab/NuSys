@@ -141,7 +141,7 @@ namespace NuSysApp
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
                 var centerpoint =
-                    SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                    SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
                         new Point(width / 2, height / 2));
                 Task.Run(delegate
                 {
@@ -155,7 +155,7 @@ namespace NuSysApp
                         m["height"] = 400;
                         m["nodeType"] = element.ElementType.ToString();
                         m["autoCreate"] = true;
-                        m["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
                     }

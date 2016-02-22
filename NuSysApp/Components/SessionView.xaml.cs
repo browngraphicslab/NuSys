@@ -33,7 +33,7 @@ namespace NuSysApp
         private int _penSize = Constants.InitialPenSize;
         private bool _cortanaInitialized;
         private CortanaMode _cortanaModeInstance;
-        private WorkspaceView _activeWorkspace;
+        private FreeFormViewer _activeWorkspace;
         private Options _prevOptions = Options.SelectNode;
 
     //    private static List<AtomModel> addedModels;
@@ -124,7 +124,7 @@ namespace NuSysApp
                 }
 
                 SessionController.Instance.SessionView = this;
-                xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+                xFullScreenViewer.DataContext = new DetailViewerViewModel();
 
                 //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
 
@@ -186,7 +186,7 @@ namespace NuSysApp
             SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
             OpenWorkspace(workspaceModel);
 
-            xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+            xFullScreenViewer.DataContext = new DetailViewerViewModel();
 
             createdModels = new List<ElementInstanceModel>();
             var l = nodeStrings.ToList();
@@ -295,7 +295,7 @@ namespace NuSysApp
             if (_activeWorkspace != null)
             {
                 xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
-                var wsvm = (WorkspaceViewModel)_activeWorkspace.DataContext;
+                var wsvm = (FreeFormViewerViewModel)_activeWorkspace.DataContext;
                 wsvm.Dispose();
                 mainCanvas.Children.Remove(_activeWorkspace);
                 _activeWorkspace = null;
@@ -306,7 +306,7 @@ namespace NuSysApp
             SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
             OpenWorkspace(workspaceModel);
             
-            xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+            xFullScreenViewer.DataContext = new DetailViewerViewModel();
         }
 
         public async Task OpenWorkspace(WorkspaceModel model)
@@ -318,15 +318,15 @@ namespace NuSysApp
             if (_activeWorkspace != null)
                 xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
 
-            var workspaceViewModel = new WorkspaceViewModel(new ElementInstanceController(model));
+            var workspaceViewModel = new FreeFormViewerViewModel(new ElementInstanceController(model));
 
-            _activeWorkspace = new WorkspaceView(workspaceViewModel);
+            _activeWorkspace = new FreeFormViewer(workspaceViewModel);
             mainCanvas.Children.Insert(0, _activeWorkspace);
 
             _activeWorkspace.DataContext = workspaceViewModel;
             xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
 
-            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
+            SessionController.Instance.ActiveFreeFormViewer = workspaceViewModel;
             SessionController.Instance.SessionView = this;
 
             if (model.Title != null)
@@ -367,7 +367,7 @@ namespace NuSysApp
 
         private void UpdateTitle(object sender, object args)
         {
-            var model = ((WorkspaceViewModel)_activeWorkspace.DataContext).Model;
+            var model = ((FreeFormViewerViewModel)_activeWorkspace.DataContext).Model;
             model.Title = xWorkspaceTitle.Text;
             var m = new Message();
             m["id"] = model.Id;
@@ -408,12 +408,12 @@ namespace NuSysApp
 
         public void ShowFullScreen(ElementInstanceModel model)
         {
-            var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
+            var vm = (DetailViewerViewModel)xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);
             vm.MakeTagList();
         }
 
-        public async void OpenFile(NodeViewModel vm)
+        public async void OpenFile(AtomViewModel vm)
         {
             String token = vm.Model.GetMetaData("Token")?.ToString();
 
@@ -489,7 +489,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task DisposeWorspace(WorkspaceView oldWorkspaceView)
+        private async Task DisposeWorspace(FreeFormViewer oldFreeFormViewer)
         {
             
         }
