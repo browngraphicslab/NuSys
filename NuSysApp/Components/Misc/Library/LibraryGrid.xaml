@@ -47,7 +47,7 @@
         <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
         <StackPanel>
             
-            <Grid x:Name="xGrid" >
+            <Grid x:Name="xGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>

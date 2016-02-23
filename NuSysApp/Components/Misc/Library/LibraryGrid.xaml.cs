@@ -27,12 +27,15 @@ namespace NuSysApp
 
         public ObservableCollection<LibraryElement> _items;
         private int _count = 0;
+
+        private LibraryElementPropertiesWindow _propertiesWindow;
         public LibraryGrid(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
             this.DataContext = vm;
             _items = vm._PageElements;
 
+            _propertiesWindow = propertiesWindow;
             var numRows = 25;
             var numCols = 3;
 
@@ -121,7 +124,9 @@ namespace NuSysApp
         {
 
             StackPanel itemPanel = new StackPanel();
+            itemPanel.DoubleTapped += ItemPanel_DoubleTapped;
             itemPanel.Orientation = Orientation.Vertical;
+            itemPanel.DataContext = newItem;
 
             itemPanel.CanDrag = true;
             itemPanel.DragStarting += delegate(UIElement a, DragStartingEventArgs b) { OnLibraryElementDrag?.Invoke(a, b); };
@@ -193,7 +198,6 @@ namespace NuSysApp
 
             //}
            
-            
             var wrappedView = new Border();
             wrappedView.Padding = new Thickness(10);
             wrappedView.Child = itemPanel;
@@ -201,6 +205,14 @@ namespace NuSysApp
             Grid.SetColumn(wrappedView, _count % numCols);
             xGrid.Children.Add(wrappedView);
             _count++;
+        }
+
+        private void ItemPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            LibraryElement clickedElement = (LibraryElement)((StackPanel)sender).DataContext;
+            _propertiesWindow.setTitle(clickedElement.Title);
+            _propertiesWindow.setType(clickedElement.NodeType.ToString());
+            _propertiesWindow.Visibility = Visibility.Visible;
         }
 
         public async Task Update()
