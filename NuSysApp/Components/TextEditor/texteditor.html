@@ -48,7 +48,7 @@
     });
 </script>
 
-    <div id="content">
+    <div id="content" contenteditable ="false">
 
         <div class="container">
             <div id="background">
@@ -96,6 +96,18 @@
                             <li><a data-edit="fontSize" data-value="1"><font size="1">Tiny</font></a></li>-->
                         </ul>
                     </div>
+
+                    <div class="btn-group">
+                        <a class="btn" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a> <!--dropdown-toggle was removed-->
+                        <div class="dropdown-menu input-append" id="linkBoxOuter">
+                            <p>http://</p> <input class="span2" id="linkBox" tabindex="-1" placeholder="URL" type="text" data-edit="createLink" />
+                            <!--<button class="btn" type="button">Add</button>-->
+                            
+                        </div>
+                        <!--<a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>-->
+
+                    </div>
+
                     <div class="btn-group">
                         <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="icon-list-ul"></i></a>
                         <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="icon-list-ol"></i></a>
@@ -109,20 +121,13 @@
                         <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
                     </div>-->
 
-                    <div class="btn-group">
-                        <a class="btn" data-toggle="dropdown" title="Hyperlink"><i class="icon-link"></i></a> <!--dropdown-toggle was removed-->
-                        <div class="dropdown-menu input-append" id="linkBoxOuter">
-                            <input class="span2" id="linkBox" tabindex="-1" placeholder="URL" type="text" data-edit="createLink" />
-                            <!--<button class="btn" type="button">Add</button>-->
-                        </div>
-                        <!--<a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>-->
 
-                    </div>
                 </div>
 
                 <div id="editor">
                     Hello!
                 </div>
+                <div id ="preview"></div>
             </div>
         </div>
 

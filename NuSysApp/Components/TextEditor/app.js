@@ -1,7 +1,8 @@
 var Editor = (function () {
-    function Editor(document, element) {
+    function Editor(document, element, preview) {
         this.document = document; // entire document
         this.element = element; // div containing text editor
+        this.preview = preview;
         this.element.setAttribute("contenteditable", "true"); //makes text editor editable
         this.activateButtons(".btn"); // toolbar push buttons 
         this.activateButtons(".dropdown-menu li a"); // toolbar dropdown menus 
@@ -115,12 +116,45 @@ var Editor = (function () {
     Editor.prototype.clickableLinks = function () {
         var links = document.querySelectorAll("#editor a");
         for (var i = 0; i < links.length; i++) {
+
+            $(links[i]).popover({
+                html: true,
+                placement: 'bottom',
+                content: "<input type = 'button' value = 'Nusys' id = 'nusys'><input type = 'button' value = 'Browser' id = 'browser'>"
+            }).attr("contenteditable", "false");
+
+            //var currlink = this.getAttribute("href");
+
             links[i].addEventListener("click", function (e) {
-                var currlink = this.getAttribute("href");
-                window.external.notify('LaunchMyLink:' + currlink);
+                var link = this.getAttribute("href");
+                preview.innerHTML = "click link";
+
+                e.preventDefault();
+
+                var nusys = document.getElementById("nusys");
+                nusys.setAttribute("contenteditable", "false");
+
+                nusys.addEventListener("click", function (e) {
+                    preview.innerHTML = "click nusys";
+                    e.preventDefault();
+                    window.external.notify('LaunchMyLink:' + link );
+                });
+
+                var browser = document.getElementById("browser");
+                browser.setAttribute("contenteditable", "false");
+
+                browser.addEventListener("click", function (e) {
+                    preview.innerHTML = "click browser";
+
+                    e.preventDefault();
+                    window.open(link);
+                });
+
                 return false;
             });
+
         }
+
     };
 
     /**
@@ -214,6 +248,7 @@ var Editor = (function () {
 
 window.onload = function () {
     var el = document.getElementById("editor");
-    new Editor(document, el);
+    var prev = document.getElementById("preview");
+    new Editor(document, el, prev);
 };
 //# sourceMappingURL=app.js.map

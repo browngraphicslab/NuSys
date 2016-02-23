@@ -41,3 +41,22 @@ div[data-role="editor-toolbar"] {
 .dropdown-menu a {
   cursor: pointer;
 }
+
+#linkBoxOuter {
+    padding: 3px;
+}
+
+#linkBoxOuter p{
+    padding-top: 4px;
+    display: inline-block;
+}
+
+/*button {
+    background:none!important;
+     border:none; 
+     padding:0!important;
+     font-family:arial,sans-serif;
+     color:#069;
+     text-decoration:underline;
+     cursor:pointer;
+}*/

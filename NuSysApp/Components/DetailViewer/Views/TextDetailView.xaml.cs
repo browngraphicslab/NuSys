@@ -122,11 +122,9 @@ namespace NuSysApp
 
             if (data.ToLower().StartsWith("launchmylink:"))
             {
-                String potentialLink = data.Substring("LaunchMylink:".Length);
-                if (potentialLink.StartsWith("http://"))
-                {
-                    NavigateToLink(potentialLink);
-                }
+                String potentialLink = "http://" + data.Substring("LaunchMylink:".Length);
+                NavigateToLink(potentialLink);
+                
             } else
             {
                 if (data != "")
