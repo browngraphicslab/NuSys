@@ -51,12 +51,12 @@ div[data-role="editor-toolbar"] {
     display: inline-block;
 }
 
-/*button {
+#editor input {
     background:none!important;
      border:none; 
-     padding:0!important;
+     padding:5px;
      font-family:arial,sans-serif;
      color:#069;
      text-decoration:underline;
      cursor:pointer;
-}*/
+}

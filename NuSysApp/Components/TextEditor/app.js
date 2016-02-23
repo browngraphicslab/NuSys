@@ -127,15 +127,12 @@ var Editor = (function () {
 
             links[i].addEventListener("click", function (e) {
                 var link = this.getAttribute("href");
-                preview.innerHTML = "click link";
-
                 e.preventDefault();
 
                 var nusys = document.getElementById("nusys");
                 nusys.setAttribute("contenteditable", "false");
 
                 nusys.addEventListener("click", function (e) {
-                    preview.innerHTML = "click nusys";
                     e.preventDefault();
                     window.external.notify('LaunchMyLink:' + link );
                 });
@@ -144,8 +141,6 @@ var Editor = (function () {
                 browser.setAttribute("contenteditable", "false");
 
                 browser.addEventListener("click", function (e) {
-                    preview.innerHTML = "click browser";
-
                     e.preventDefault();
                     window.open(link);
                 });
