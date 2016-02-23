@@ -121,7 +121,7 @@ var Editor = (function () {
                 html: true,
                 placement: 'bottom',
                 content: "<input type = 'button' value = 'Nusys' id = 'nusys'><input type = 'button' value = 'Browser' id = 'browser'>"
-            }).attr("contenteditable", "false");
+            });
 
             //var currlink = this.getAttribute("href");
 
@@ -206,7 +206,7 @@ var Editor = (function () {
      */
     Editor.prototype.cleanHtml = function () {
         var html = this.element.innerHTML;
-        return html && html.replace(/(<br>|\s|<div><br><\/div>|&nbsp;)*$/, "");
+        return html && html.replace(/(<br>|\s|<div><br><\/div>|&nbsp;|)*$/, "");
     };
 
     /**
@@ -228,13 +228,24 @@ var Editor = (function () {
     Editor.prototype.updateNodeView = function () {    
         var editor = this;
         this.element.addEventListener("keyup", function() {
-            window.external.notify(editor.cleanHtml());
+            if (!editor.cleanHtml().includes("popover")) {
+                window.external.notify(editor.cleanHtml());
+            }
         });
         this.element.addEventListener("change", function() {
-            window.external.notify(editor.cleanHtml());
+            if (!editor.cleanHtml().includes("popover")) {
+                window.external.notify(editor.cleanHtml());
+            }
         });
-        this.element.addEventListener("mousemove", function () {
-            window.external.notify(editor.cleanHtml());
+        this.element.addEventListener("mouseover", function () {
+            if (!editor.cleanHtml().includes("popover")) {
+                window.external.notify(editor.cleanHtml());
+            }
+        });
+        this.document.addEventListener("click", function () {
+            if (!editor.cleanHtml().includes("popover")) {
+                window.external.notify(editor.cleanHtml());
+            }
         });
     };
 

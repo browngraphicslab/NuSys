@@ -28,14 +28,61 @@
         document.getElementById("editor").innerHTML = text;
         var links = document.querySelectorAll("#editor a");
         for (var i = 0; i < links.length; i++) {
+
+            $(links[i]).popover({
+                html: true,
+                placement: 'bottom',
+                content: "<input type = 'button' value = 'Nusys' id = 'nusys'><input type = 'button' value = 'Browser' id = 'browser'>"
+            }).attr("contenteditable", "false");
+
+            //var currlink = this.getAttribute("href");
+
             links[i].addEventListener("click", function (e) {
-                var currlink = this.getAttribute("href");
-                window.external.notify('LaunchMyLink:' + currlink);
+                var link = this.getAttribute("href");
+                e.preventDefault();
+
+                var nusys = document.getElementById("nusys");
+                nusys.setAttribute("contenteditable", "false");
+
+                nusys.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    window.external.notify('LaunchMyLink:' + link);
+                });
+
+                var browser = document.getElementById("browser");
+                browser.setAttribute("contenteditable", "false");
+
+                browser.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    window.open(link);
+                });
+
                 return false;
             });
+
         }
+        //var links = document.querySelectorAll("#editor a");
+        //for (var i = 0; i < links.length; i++) {
+        //    links[i].addEventListener("click", function (e) {
+        //        var currlink = this.getAttribute("href");
+        //        window.external.notify('LaunchMyLink:' + currlink);
+        //        return false;
+        //    });
+        //}
     }
 
+    //$(function(){
+    //    function initToolbarHints() {
+    //        $('a[title]').tooltip({container:'body'});
+    //        $('[data-role=magic-overlay]').each(function () {
+    //            var overlay = $(this), target = $(overlay.data('target'));
+    //            overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
+    //        });
+    //    };
+    //    initToolbarHints();
+    //});
+
+    
     $('body').on('click', function (e) {
         $('[data-original-title]').each(function () {
             //the 'is' for buttons that trigger popups
@@ -46,15 +93,10 @@
         });
     });
 
-    $(function(){
-        function initToolbarHints() {
-            $('a[title]').tooltip({container:'body'});
-            $('[data-role=magic-overlay]').each(function () {
-                var overlay = $(this), target = $(overlay.data('target'));
-                overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
-            });
-        };
-        initToolbarHints();
+    $('body').on('mouseleave', function() {
+        $('[data-original-title]').each(function () {
+                $(this).popover('hide');
+        });
     });
 </script>
 
