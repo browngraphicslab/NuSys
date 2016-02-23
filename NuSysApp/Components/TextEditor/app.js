@@ -222,6 +222,7 @@ var Editor = (function () {
     /**
      * Updates text node view in real-time with current text in editor
      * Current events: keyup, change, mousemove
+     * Checks for link popover so that it does not appear in nodeview on link click.
      * 
      * @returns {} 
      */
