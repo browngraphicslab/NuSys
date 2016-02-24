@@ -191,6 +191,8 @@ namespace NuSysApp
 
             xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
 
+            var usedContentIDs = new HashSet<string>();
+
             createdModels = new List<AtomModel>();
             var l = nodeStrings.ToList();
             foreach (var dict in nodeStrings)
@@ -218,12 +220,13 @@ namespace NuSysApp
                 if (model == null)
                     continue;
 
-                if (type == AtomModel.AtomType.Node && SessionController.Instance.ContentController.Get(((NodeModel)model).ContentId)==null)
+                if (type == AtomModel.AtomType.Node && !usedContentIDs.Contains(((NodeModel)model).ContentId))
                 {
                     Task.Run(async delegate
                     {
                         await SessionController.Instance.NuSysNetworkSession.FetchContent(((NodeModel) model).ContentId);
                     });
+                    usedContentIDs.Add(((NodeModel) model).ContentId);
                 }
 
                 createdModels.Add(model);
