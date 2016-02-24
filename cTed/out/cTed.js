@@ -2519,6 +2519,7 @@ var HighlightBrush = (function () {
     };
     HighlightBrush.prototype.redraw = function (stroke, inkCanvas) {
     };
+    HighlightBrush.prototype.drawPrevious = function (stroke, inkCanvas) { };
     return HighlightBrush;
 })();
 var Stroke = (function () {
@@ -2588,6 +2589,11 @@ var InkCanvas = (function () {
         }
         this._brush.redraw(this._activeStroke, this);
     };
+    InkCanvas.prototype.drawPreviousGestureM = function (stroke) {
+        console.log("======================redraw==");
+        this._prevBrush = new MarqueeBrush();
+        this._prevBrush.drawPrevious(stroke, this);
+    };
     InkCanvas.prototype.clear = function () {
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this._activeStroke = new Stroke();
@@ -2620,6 +2626,21 @@ var MarqueeBrush = (function () {
         this._startY = firstPoint.y;
         this.draw(lastPoint.x, lastPoint.y, inkCanvas);
     };
+    //draw previous on hover
+    MarqueeBrush.prototype.drawPrevious = function (stroke, inkCanvas) {
+        console.log("======DRAWPREV");
+        var firstPoint = stroke.points[0];
+        var lastPoint = stroke.points[stroke.points.length - 1];
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "rgb(255,70,70)";
+        ctx.setLineDash([5]);
+        ctx.rect(firstPoint.x, firstPoint.y - $(window).scrollTop(), lastPoint.x - firstPoint.x, lastPoint.y - firstPoint.y);
+        ctx.stroke();
+    };
     return MarqueeBrush;
 })();
 /// <reference path="StrokeType.ts"/>
@@ -2633,6 +2654,18 @@ var Main = (function () {
         this._parsedTextNodes = {};
         this.mouseUp = function (e) {
             console.log("mouseUp");
+            if (_this.is_above_previous) {
+                $(_this.bubble).show();
+                $(_this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
+                $(_this.bubble).css("left", e.clientX - 30);
+                $(_this.bubble).css("border", "8px solid #666");
+                document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+                $(_this.bubble).click(function () {
+                });
+            }
+            else {
+            }
+            console.log("======================================");
             document.body.removeChild(_this.canvas);
             _this.isSelecting = false;
             _this.selection.stroke = _this.inkCanvas._activeStroke;
@@ -2645,6 +2678,7 @@ var Main = (function () {
             console.log(_this.selection);
             if (_this.selection.getContent() != "" && _this.selection.getContent() != " ") {
                 _this.selections.push(_this.selection); //add selection to selections array 
+                _this.previousSelections.push(_this.selection);
                 _this.updateSelectedList();
                 chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             }
@@ -2678,9 +2712,19 @@ var Main = (function () {
                     _this.inkCanvas.switchBrush(_this.currentStrokeType);
                 }
             }
+            else {
+                if (_this.is_above_previous) {
+                    _this.checkStillOnHover(e);
+                }
+                else
+                    _this.showGestureOnHover(e);
+            }
+        };
+        this.checkNoteBubble = function (e) {
         };
         this.checkAtag = function (e) {
             var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+            console.log(hitElem);
             if (hitElem.nodeName == "A") {
                 var link = hitElem.getAttribute("href").toString();
                 if (link.indexOf("http") == -1) {
@@ -2688,6 +2732,10 @@ var Main = (function () {
                 }
                 console.log(link);
                 window.open(link, "_self");
+            }
+            else if (hitElem.nodeName == "INPUT") {
+                _this.bubble_focused = true;
+                $(_this.bubble).css("border", "8px solid red");
             }
             else {
                 document.body.appendChild(_this.canvas);
@@ -2704,10 +2752,28 @@ var Main = (function () {
         this.canvas.style.top = "0";
         this.canvas.style.left = "0";
         this.canvas.style.zIndex = "998";
+        this.bubble = document.createElement("p");
+        this.bubble.innerHTML = "<input style=' width: 200px; height: 90px; text-align: center; line-height: 100px;  -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; border: none; outline: none; '>";
+        $(this.bubble).addClass("noteBubble");
+        document.body.appendChild(this.bubble);
+        document.styleSheets[0]["insertRule"]('p.noteBubble {position: absolute; width: 200px; height: 100px; text - align: center; line - height: 100px; background: #fff; border: 8px solid #666; -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; -moz -box-shadow: 2px 2px 4px #888; -webkit-box-shadow: 2px 2px 4px #888; box-shadow: 2px 2px 4px #888; }', 0);
+        document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+        document.styleSheets[0]["insertRule"]('p.noteBubble:after { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 38px; border: 15px solid #fff; border-color: #fff transparent transparent #fff; }', 0);
+        $(this.bubble).css("display", "none");
         this.inkCanvas = new InkCanvas(this.canvas);
         this._url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.set_message_listener();
         this.showPreviousSelections();
+        this.body.addEventListener("mousedown", function (e) {
+            if (_this.bubble_focused && !_this.isAbove(e, _this.selectionOnHover) && !_this.isAboveBubble(e)) {
+                //set Bubble Speech.... 
+                $(_this.bubble).css("display", "none");
+                _this.body.appendChild(_this.canvas);
+                _this.is_above_previous = false;
+                _this.bubble_focused = false;
+                _this.mouseDown(e);
+            }
+        });
     }
     Main.prototype.showPreviousSelections = function () {
         var _this = this;
@@ -2716,10 +2782,12 @@ var Main = (function () {
             console.info(cTedStorage);
             cTedStorage["selections"].forEach(function (s) {
                 if (s.url == _this._url) {
+                    _this.previousSelections.push(s);
                     if (s.type == StrokeType.Marquee) {
                         _this.highlightPrevious(s);
                     }
                     if (s.type == StrokeType.Bracket) {
+                        console.log(s);
                         _this.highlightPrevious(s);
                     }
                     if (s.type == StrokeType.Line) {
@@ -2773,18 +2841,17 @@ var Main = (function () {
                     //    parIndex = el.parIndex;
                     //}
                     var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
-                    console.log(el);
-                    console.log(ele);
+                    //console.log(el);
+                    //console.log(ele);
                     ele["style"].backgroundColor = "yellow";
                 }
             }
             else if (el.tagName == "HILIGHT") {
-                console.log(el);
-                console.log(el.tagName);
+                //console.log(el);
+                //console.log(el.tagName);
                 $($(el.par).get(el.parIndex).childNodes[el.txtnIndx]).replaceWith("<hilight>" + $($(el.par).get(el.parIndex).childNodes[el.txtnIndx]).text() + "</hilight>");
-                console.log(el.par);
+                //console.log(el.par);
                 $(el.par).get(el.parIndex).childNodes[el.txtnIndx]["style"].backgroundColor = "yellow";
-                console.log(el);
             }
             else {
                 if (el.tagName == "IMG") {
@@ -2813,7 +2880,7 @@ var Main = (function () {
                     break;
                 case "show_menu":
                     $(_this.menuIframe).css("display", "block");
-                    if (_this.isSelecting) {
+                    if (_this.is_active) {
                         document.body.appendChild(_this.canvas);
                     }
                     ;
@@ -2895,6 +2962,34 @@ var Main = (function () {
             list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
         });
     };
+    Main.prototype.checkStillOnHover = function (e) {
+        if (!this.isAbove(e, this.selectionOnHover)) {
+            this.inkCanvas.clear();
+            this.is_above_previous = false;
+        }
+    };
+    Main.prototype.showGestureOnHover = function (e) {
+        var _this = this;
+        this.previousSelections.forEach(function (sel, indx) {
+            if (_this.isAbove(e, sel)) {
+                console.log("isAbove " + sel);
+                _this.selectionOnHover = sel;
+                _this.is_above_previous = true;
+                _this.inkCanvas.drawPreviousGestureM(sel.stroke);
+            }
+        });
+    };
+    // checks if current mouse is above previous, must consider scrollTop
+    Main.prototype.isAbove = function (e, sel) {
+        var firstPoint = sel.stroke.points[0];
+        var lastPoint = sel.stroke.points[sel.stroke.points.length - 1];
+        return (e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
+        //return bool
+    };
+    Main.prototype.isAboveBubble = function (e) {
+        return (e.clientX > this.bubble.offsetLeft && e.clientX < this.bubble.offsetLeft + 200) && (e.clientY > this.bubble.offsetTop - $(window).scrollTop() && e.clientY < this.bubble.offsetTop + 200 - $(window).scrollTop());
+        //return bool
+    };
     Main.prototype.switchSelection = function (strokeType) {
         console.log("Iselection switched to : " + strokeType);
         switch (strokeType) {
@@ -2910,6 +3005,9 @@ var Main = (function () {
                 break;
         }
         this.selection.start(this._startX, this._startY);
+    };
+    Main.prototype.showBubble = function () {
+        $(this.bubble).show();
     };
     Main.prototype.toggleEnabled = function (flag) {
         console.log("toggle state changed");
@@ -3547,32 +3645,28 @@ var MarqueeSelection = (function (_super) {
         }
     };
     MarqueeSelection.prototype.addToHighLights = function (el, txtindx, wordindx) {
-        console.log("ADD TO HIGHLIGHTS====================");
-        console.info(el.tagName);
-        console.log(el.attributes);
+        //console.log("ADD TO HIGHLIGHTS====================");
+        //console.info(el.tagName);
+        //console.log(el.attributes);
         var index = $(el.tagName).index(el);
-        console.log(index);
+        //console.log(index);
         var obj = { type: "marquee", tagName: el.tagName, index: index };
         if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
-            console.log("-------------DIFFICULT--------------");
-            console.log(el.attributes);
+            //console.log("-------------DIFFICULT--------------");
+            //console.log(el.attributes);
             var par = el.attributes[0]["ownerElement"].parentElement;
             if (el.tagName == "WORD") {
                 var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
                 par = par.parentElement;
                 obj["wordIndx"] = wordindx;
-                console.log(par);
             }
             var parIndex = $(par.tagName).index(par);
             obj["par"] = par.tagName;
             obj["parIndex"] = parIndex;
             obj["txtnIndx"] = txtindx;
             obj["val"] = el;
-            console.log(el.attributes[0]["ownerElement"].parentElement);
-            console.log(obj);
         }
         this.selectedElements.push(obj);
-        console.log(this.selectedElements);
     };
     MarqueeSelection.prototype.intersectWith = function (el) {
         //checks if element is intersecting with selection range 

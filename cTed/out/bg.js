@@ -19,7 +19,6 @@ var Background = (function () {
             if (_this._isOpen) {
                 _this.msgAllTabs({ msg: "hide_menu" });
                 _this._isOpen = false;
-                chrome.browserAction.setIcon({ path: { 19: "assets/icon.png", 38: "assets/icon.png" } });
             }
             else {
                 console.log("=========showMenu==================");

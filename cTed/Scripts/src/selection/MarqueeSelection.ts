@@ -143,22 +143,21 @@
     }
 
     addToHighLights(el: Element, txtindx: Number, wordindx): void {
-        console.log("ADD TO HIGHLIGHTS====================");
-        console.info(el.tagName);
-        console.log(el.attributes);
+        //console.log("ADD TO HIGHLIGHTS====================");
+        //console.info(el.tagName);
+        //console.log(el.attributes);
         var index = $(el.tagName).index(el);
-        console.log(index);
+        //console.log(index);
         var obj = { type: "marquee", tagName: el.tagName, index: index };
         if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
-            console.log("-------------DIFFICULT--------------");
-            console.log(el.attributes);
+            //console.log("-------------DIFFICULT--------------");
+            //console.log(el.attributes);
             var par = el.attributes[0]["ownerElement"].parentElement;
             if (el.tagName == "WORD") {
 
                 var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
                 par = par.parentElement;
                 obj["wordIndx"] = wordindx;
-                console.log(par);
             }
             var parIndex = $(par.tagName).index(par);
             obj["par"] = par.tagName;
@@ -166,12 +165,10 @@
             obj["txtnIndx"] = txtindx;
             obj["val"] = el;
 
-            console.log(el.attributes[0]["ownerElement"].parentElement);
-            console.log(obj);
+            //console.log(el.attributes[0]["ownerElement"].parentElement);
+            //console.log(obj);
         } 
-        this.selectedElements.push(obj);
-        console.log(this.selectedElements);
-        
+        this.selectedElements.push(obj);        
     }
     intersectWith(el): boolean {
 

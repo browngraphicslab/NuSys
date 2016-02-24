@@ -10,10 +10,14 @@ class Main {
     html: HTMLElement = document.documentElement;
     canvas: HTMLCanvasElement;
     menuIframe: HTMLIFrameElement;
+    bubble: HTMLElement;
     menu: any;
     inkCanvas: InkCanvas;
     currentStrokeType: StrokeType;
     isSelecting: boolean;
+    bubble_focused: boolean;
+    selectionOnHover: AbstractSelection;
+    is_above_previous: boolean;
     selection: AbstractSelection;
     selections: Array<AbstractSelection> = new Array<AbstractSelection>();
     previousSelections: Array<AbstractSelection> = new Array<AbstractSelection>();
@@ -45,10 +49,33 @@ class Main {
         this.canvas.style.top = "0";
         this.canvas.style.left = "0";
         this.canvas.style.zIndex = "998";
+
+        this.bubble = document.createElement("p");
+        this.bubble.innerHTML ="<input style=' width: 200px; height: 90px; text-align: center; line-height: 100px;  -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; border: none; outline: none; '>";
+        $(this.bubble).addClass("noteBubble");
+        document.body.appendChild(this.bubble);
+        document.styleSheets[0]["insertRule"]('p.noteBubble {position: absolute; width: 200px; height: 100px; text - align: center; line - height: 100px; background: #fff; border: 8px solid #666; -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; -moz -box-shadow: 2px 2px 4px #888; -webkit-box-shadow: 2px 2px 4px #888; box-shadow: 2px 2px 4px #888; }', 0);
+        document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+        document.styleSheets[0]["insertRule"]('p.noteBubble:after { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 38px; border: 15px solid #fff; border-color: #fff transparent transparent #fff; }',0);
+        $(this.bubble).css("display", "none");
+
         this.inkCanvas = new InkCanvas(this.canvas);
         this._url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.set_message_listener();
         this.showPreviousSelections();
+
+        this.body.addEventListener("mousedown", (e) => {
+            if (this.bubble_focused && !this.isAbove(e, this.selectionOnHover) && !this.isAboveBubble(e)) {
+                //set Bubble Speech.... 
+                
+
+                $(this.bubble).css("display", "none");
+                this.body.appendChild(this.canvas);
+                this.is_above_previous = false;
+                this.bubble_focused = false;
+                this.mouseDown(e);
+            }
+        });
     }
 
     showPreviousSelections(): void {
@@ -57,10 +84,12 @@ class Main {
             console.info(cTedStorage);
             cTedStorage["selections"].forEach((s) => {
                 if (s.url == this._url) {
+                    this.previousSelections.push(s);
                     if (s.type == StrokeType.Marquee) {
                         this.highlightPrevious(s);
                     }
                     if (s.type == StrokeType.Bracket) {
+                        console.log(s);
                         this.highlightPrevious(s);
                     }
                     if (s.type == StrokeType.Line) {
@@ -73,6 +102,8 @@ class Main {
             });
         });
     }
+
+    
 
     highlightPrevious(s: AbstractSelection): void {
         var parElement;
@@ -113,18 +144,18 @@ class Main {
                     //    parIndex = el.parIndex;
                     //}
                     var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
-                    console.log(el);
-                    console.log(ele);
+                    //console.log(el);
+                    //console.log(ele);
                     ele["style"].backgroundColor = "yellow";
                 }
             } else if (el.tagName == "HILIGHT") {
-                console.log(el);
-                console.log(el.tagName);
+                //console.log(el);
+                //console.log(el.tagName);
                 
                 $($(el.par).get(el.parIndex).childNodes[el.txtnIndx]).replaceWith("<hilight>" + $($(el.par).get(el.parIndex).childNodes[el.txtnIndx]).text() + "</hilight>");
-                console.log(el.par);
+                //console.log(el.par);
                 $(el.par).get(el.parIndex).childNodes[el.txtnIndx]["style"].backgroundColor = "yellow";
-                console.log(el);
+                //console.log(el);
 
             } else {
                 if (el.tagName == "IMG") {
@@ -153,7 +184,7 @@ class Main {
                         break;
                     case "show_menu":
                         $(this.menuIframe).css("display", "block");
-                        if (this.isSelecting) { document.body.appendChild(this.canvas) };
+                        if (this.is_active) { document.body.appendChild(this.canvas) };
                         break;
                     case "hide_menu":
                         if (document.body.contains(this.canvas))
@@ -238,6 +269,20 @@ class Main {
     }
     mouseUp = (e): void => {
         console.log("mouseUp");
+        if (this.is_above_previous) {
+            $(this.bubble).show();
+            $(this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
+            $(this.bubble).css("left", e.clientX - 30);
+            $(this.bubble).css("border", "8px solid #666");
+            document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+
+            $(this.bubble).click(function () {
+
+            });
+        } else {
+      //      $(this.bubble).css("display", "none");
+        }
+        console.log("======================================");
         document.body.removeChild(this.canvas);
         this.isSelecting = false;
         this.selection.stroke = this.inkCanvas._activeStroke;
@@ -250,6 +295,7 @@ class Main {
         console.log(this.selection);
         if (this.selection.getContent() != "" && this.selection.getContent() != " ") {
             this.selections.push(this.selection); //add selection to selections array 
+            this.previousSelections.push(this.selection);
             this.updateSelectedList();
             chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         }
@@ -292,7 +338,53 @@ class Main {
                 this.switchSelection(this.currentStrokeType);
                 this.inkCanvas.switchBrush(this.currentStrokeType);
             }
+        } else {
+            if (this.is_above_previous) {
+                this.checkStillOnHover(e);
+            } else 
+                this.showGestureOnHover(e);
+            
         }
+    }
+
+    checkStillOnHover(e): void {
+        if (!this.isAbove(e, this.selectionOnHover)) {
+            this.inkCanvas.clear();
+            this.is_above_previous = false;
+        }
+    }
+
+    showGestureOnHover(e): void {
+            this.previousSelections.forEach((sel, indx) => {
+                if (this.isAbove(e, sel)) {
+                    console.log("isAbove " + sel);
+                    this.selectionOnHover = sel;
+                    this.is_above_previous = true;
+                    this.inkCanvas.drawPreviousGestureM(sel.stroke);
+
+                    //draw red 
+                    //onHover
+                    //clickable-remember variable(selection Current PRev);tu
+                }
+        });
+
+    }
+
+    // checks if current mouse is above previous, must consider scrollTop
+    isAbove(e, sel: AbstractSelection): Boolean {
+        var firstPoint = sel.stroke.points[0];
+        var lastPoint = sel.stroke.points[sel.stroke.points.length - 1];
+        
+        return (e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
+        //return bool
+         
+    }
+
+    isAboveBubble(e): Boolean {
+
+        return (e.clientX > this.bubble.offsetLeft && e.clientX < this.bubble.offsetLeft + 200) && (e.clientY > this.bubble.offsetTop - $(window).scrollTop() && e.clientY < this.bubble.offsetTop+200 - $(window).scrollTop());
+        //return bool
+         
     }
 
     switchSelection(strokeType) {
@@ -311,9 +403,16 @@ class Main {
         }
         this.selection.start(this._startX, this._startY);
     }
+    checkNoteBubble = (e): void => {
 
+    }
+    showBubble(){
+        $(this.bubble).show();
+    }
     checkAtag = (e): void => {
         var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+        console.log(hitElem);
+
         if (hitElem.nodeName == "A") {
             var link = hitElem.getAttribute("href").toString();
 
@@ -322,6 +421,9 @@ class Main {
             }
             console.log(link);
             window.open(link, "_self");
+        } else if (hitElem.nodeName == "INPUT") {
+            this.bubble_focused = true;
+            $(this.bubble).css("border", "8px solid red");
         }
         else {
             document.body.appendChild(this.canvas);

@@ -50,6 +50,7 @@
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\MarqueeSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\NullSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\RegularSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\Selectable.ts" />
     <TypeScriptCompile Include="Scripts\src\StrokeClassifier.ts" />

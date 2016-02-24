@@ -16,4 +16,7 @@
     redraw(stroke: Stroke, inkCanvas: InkCanvas) {
 
     }
+
+    drawPrevious(stroke: Stroke, inkCanvas: InkCanvas): void { }
+
 }

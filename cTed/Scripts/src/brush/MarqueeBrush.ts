@@ -22,7 +22,7 @@ class MarqueeBrush implements IBrush {
         ctx.setLineDash([6]);
         ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
         ctx.stroke();
-        }
+    }
 
     redraw(stroke: Stroke, inkCanvas: InkCanvas) {
         var firstPoint = stroke.points[0];
@@ -30,6 +30,25 @@ class MarqueeBrush implements IBrush {
 
         this._startX = firstPoint.x;
         this._startY = firstPoint.y;
-        this.draw(lastPoint.x, lastPoint.y, inkCanvas); 
+        this.draw(lastPoint.x, lastPoint.y, inkCanvas);
     }
+
+    //draw previous on hover
+    drawPrevious(stroke: Stroke, inkCanvas: InkCanvas) {
+        console.log("======DRAWPREV");
+        var firstPoint = stroke.points[0];
+        var lastPoint = stroke.points[stroke.points.length - 1];
+
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "rgb(255,70,70)";
+        ctx.setLineDash([5]);
+        ctx.rect(firstPoint.x, firstPoint.y - $(window).scrollTop(), lastPoint.x - firstPoint.x, lastPoint.y - firstPoint.y);
+        ctx.stroke();
+    }
+
 }

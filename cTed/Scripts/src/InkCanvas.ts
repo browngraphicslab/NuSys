@@ -8,6 +8,7 @@ class InkCanvas {
     _brush: IBrush;
     _context: CanvasRenderingContext2D;
     _activeStroke: Stroke; 
+    _prevBrush: IBrush; 
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
@@ -16,6 +17,7 @@ class InkCanvas {
         this._activeStroke = new Stroke();
         console.log("new Canvas!!!!!");
     }
+
 
     draw(x: number, y: number) {
         this._activeStroke.push(x,y);
@@ -42,6 +44,12 @@ class InkCanvas {
                 this._brush = new HighlightBrush();
         }
         this._brush.redraw(this._activeStroke, this);
+    }
+
+    drawPreviousGestureM(stroke: Stroke) {
+        console.log("======================redraw==");
+        this._prevBrush = new MarqueeBrush();
+        this._prevBrush.drawPrevious(stroke, this);
     }
 
     clear(): void {
