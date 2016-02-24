@@ -34,13 +34,17 @@ namespace NuSysApp
         private LibraryGrid _libraryGrid;
 
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
-        public LibraryView(LibraryBucketViewModel vm)
+        public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties)
         {
             this.DataContext = vm;
             this.InitializeComponent();
             LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElement>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
-            this.MakeViews(pageViewModel);
+            this.MakeViews(pageViewModel, properties);
             WorkspacePivot.Content = _libraryList;
+            //this.Loaded += async delegate
+            //{
+            //    vm.InitializeLibrary();
+            //};
         }
 
         public async void ToggleVisiblity()
@@ -72,10 +76,10 @@ namespace NuSysApp
         //    _elements.Add(element.ContentID, element);
         //    OnNewElementAvailable?.Invoke(element);
         //}
-        public void MakeViews(LibraryPageViewModel pageViewModel)
+        public void MakeViews(LibraryPageViewModel pageViewModel, LibraryElementPropertiesWindow properties)
         {
-            _libraryGrid = new LibraryGrid(this, pageViewModel);
-            _libraryList = new LibraryList(this, pageViewModel);
+            _libraryGrid = new LibraryGrid(this, pageViewModel, properties);
+            _libraryList = new LibraryList(this, pageViewModel, properties);
             _libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
             _libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
         }

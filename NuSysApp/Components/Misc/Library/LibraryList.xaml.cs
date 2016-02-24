@@ -29,7 +29,8 @@ namespace NuSysApp
     {
         public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
         public event LibraryElementDragEventHandler OnLibraryElementDrag;
-        public LibraryList(LibraryView library, LibraryPageViewModel vm)
+        private LibraryElementPropertiesWindow _propertiesWindow;
+        public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
             this.DataContext = vm;
@@ -39,7 +40,7 @@ namespace NuSysApp
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
                 ((LibraryBucketViewModel)library.DataContext).OnNewElementAvailable += AddNewElement;
             };
-    
+            _propertiesWindow = propertiesWindow;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1);
         }
 
@@ -128,7 +129,9 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            
+            _propertiesWindow.setTitle(((LibraryElement)e.ClickedItem).Title);
+            _propertiesWindow.setType(((LibraryElement)e.ClickedItem).NodeType.ToString());
+            _propertiesWindow.Visibility = Visibility.Visible;
         }
 
         public async Task Sort(string s)

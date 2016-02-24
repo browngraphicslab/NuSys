@@ -31,7 +31,7 @@
             </ListView.Header>--><!--
         </ListView>-->
 
-        <ListView  x:Name="ListView" DragItemsStarting="ListViewBase_OnDragItemsStarting" ItemClick="ListView_OnItemClick" CanDragItems="True">
+        <ListView  x:Name="ListView" DragItemsStarting="ListViewBase_OnDragItemsStarting" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" CanDragItems="True">
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="#ECECEA ">
                     <Grid.ColumnDefinitions>

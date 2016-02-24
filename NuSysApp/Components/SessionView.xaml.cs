@@ -137,7 +137,7 @@ namespace NuSysApp
                
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});//TODO have Trent fix this -trent
 
-                await ((LibraryBucketViewModel)_library.DataContext).InitializeLibrary();
+                await ((LibraryBucketViewModel)_library.DataContext).InitializeLibrary(); //This was it
                 ChatPopup.OnNewTextsChanged += delegate(int newTexts)
                 {
                     if (newTexts > 0)
@@ -363,14 +363,19 @@ namespace NuSysApp
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
-            _library = new LibraryView(new LibraryBucketViewModel());
+            LibraryElementPropertiesWindow libraryPropertiesWindow = new LibraryElementPropertiesWindow();
+            Canvas.SetTop(libraryPropertiesWindow, 140);
+            Canvas.SetLeft(libraryPropertiesWindow, mainCanvas.ActualWidth - 900);
+            _library = new LibraryView(new LibraryBucketViewModel(), libraryPropertiesWindow);
             Canvas.SetTop(_library, 140);
             Canvas.SetLeft(_library, mainCanvas.ActualWidth - 450);
             Canvas.SetTop(LibraryMaximizer, 70);
             Canvas.SetLeft(LibraryMaximizer, mainCanvas.ActualWidth - 50);
             _library.Visibility = Visibility.Collapsed;
+            libraryPropertiesWindow.Visibility = Visibility.Collapsed;
             ChatPopup.Visibility = Visibility.Collapsed;
             mainCanvas.Children.Add(_library);
+            mainCanvas.Children.Add(libraryPropertiesWindow);
         }
 
         private void UpdateTitle(object sender, object args)
