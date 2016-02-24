@@ -29,7 +29,7 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
-            vm.MakeTagList();
+            vm.MakeTagList(); 
 
             var model = (PdfNodeModel)vm.Model;
             var token = model.GetMetaData("Token");

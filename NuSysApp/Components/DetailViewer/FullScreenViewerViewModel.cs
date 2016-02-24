@@ -26,8 +26,10 @@ namespace NuSysApp
         public UserControl View { get; set; }
             
         public ObservableCollection<Button> Tags { get; set; }
-
-        public FullScreenViewerViewModel() {}
+        public FullScreenViewerViewModel()
+        {
+            Tags = new ObservableCollection<Button>();
+        }
 
         public async void SetNodeModel(AtomModel model)
         {
@@ -36,6 +38,7 @@ namespace NuSysApp
             var tempvm = (AtomViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
             RaisePropertyChanged("View");
+            RaisePropertyChanged("Tags");
         }
 
         private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
@@ -53,7 +56,7 @@ namespace NuSysApp
         }
         public void MakeTagList()
         {
-            Tags = new ObservableCollection<Button>();
+            Tags.Clear();
             if (_nodeModel != null)
             {
                 List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");

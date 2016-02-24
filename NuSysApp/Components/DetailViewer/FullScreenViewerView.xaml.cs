@@ -55,7 +55,6 @@ namespace NuSysApp
                 this.Height = SessionController.Instance.SessionView.ActualHeight;
                 xContainer.Height = this.Height;
                 xContainer.Width = this.Width - 30;
-                nodeContent.Width = xContainer.Width - 75;
                 resizer.Height = Height;
                 exitButtonContainer.Width = xContainer.Width;
                 Properties.Width = xContainer.Width - 15;
@@ -64,7 +63,6 @@ namespace NuSysApp
                 tagLine.X2 = TagContainer.Width - 15;
                 NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
-                Canvas.SetLeft(nodeContent, Canvas.GetLeft(xContainer) + 0.5 * (xContainer.ActualWidth - nodeContent.ActualWidth));
                 Canvas.SetTop(resizerImage, (resizer.Height / 2) - (resizerImage.Height / 2));
             }
             if (propertyChangedEventArgs.PropertyName == "Title")
@@ -138,13 +136,18 @@ namespace NuSysApp
                 this.Width -= e.Delta.Translation.X;
                 xContainer.Width = this.Width - 30;
                 exitButtonContainer.Width = xContainer.Width;
-                nodeContent.Width = xContainer.Width - 75;
+                if (nodeContent.Content is ImageFullScreenView)
+                {
+                    ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                } else if (nodeContent.Content is TextDetailView)
+                {
+                    ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                } 
                 Properties.Width = xContainer.Width - 15;
                 TagContainer.Width = xContainer.Width - 15;
                 propLine.X2 = Properties.Width - 15;
                 tagLine.X2 = TagContainer.Width - 15;
                 NewTagBox.Width = TagContainer.Width - 163;
-                Canvas.SetLeft(nodeContent, Canvas.GetLeft(xContainer) + 0.5 * (xContainer.ActualWidth - nodeContent.ActualWidth));
                 Canvas.SetLeft(this, rightCoord - this.Width);
 
                 e.Handled = true;

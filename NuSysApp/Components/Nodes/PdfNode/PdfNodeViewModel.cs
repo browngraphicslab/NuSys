@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+//using LdaLibrary;
 
 namespace NuSysApp
 {
@@ -24,7 +25,7 @@ namespace NuSysApp
     {
         private readonly WorkspaceViewModel _workspaceViewModel;
         private CompositeTransform _inkScale;
-        private Document _document;
+        private MuPDFWinRT.Document _document;
         public int CurrentPageNumber { get;  private set; }
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags;
@@ -57,12 +58,13 @@ namespace NuSysApp
             {
                 uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
                 IBuffer readBuffer = dataReader.ReadBuffer(u);
-                _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+                _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
             }
 
             
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
+            LaunchLDA((PdfNodeModel)this.Model);
 
             var text = _document.GetAllTexts(0);
             Debug.WriteLine(text);
@@ -121,7 +123,37 @@ namespace NuSysApp
             }
         }
 
-       
+        public async Task LaunchLDA(PdfNodeModel model)
+        {
+            //var test = new List<string>();
+            //// here we hard code our starting parameters
+            //string filename = model.Title;
+            //test.Add(filename);
+            //test.Add("niters 10");
+            //test.Add("ntopics 1");
+            //test.Add("twords 10");
+            //test.Add("dir ");
+            //test.Add("est true");
+            //test.Add("alpha 12.5");
+            //test.Add("beta .1");
+            //test.Add("model model-final");
+
+            //string data = "";
+            //int numPages = _document.PageCount;
+            //int currPage = 0;
+            //while (currPage < numPages)
+            //{
+            //    data = data + _document.GetAllTexts(currPage);
+            //    currPage++;
+            //}
+
+            //DieStopWords ds = new DieStopWords();
+            //data = await ds.removeStopWords(data);
+            //List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
+            //this.Model.SetMetaData("tags", topics);
+
+            //RaisePropertyChanged("Tags");
+        }
 
         public WriteableBitmap ImageSource
         {

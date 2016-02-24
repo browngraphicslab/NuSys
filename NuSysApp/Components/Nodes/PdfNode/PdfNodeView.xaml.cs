@@ -25,7 +25,6 @@ namespace NuSysApp
             };
 
             DataContext = vm;
-            
         }
 
 

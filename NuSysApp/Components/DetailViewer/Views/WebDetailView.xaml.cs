@@ -20,10 +20,13 @@ namespace NuSysApp
 {
     public sealed partial class WebDetailView : UserControl
     {
+        private WebNodeViewModel _viewMod;
+
         public WebDetailView(WebNodeViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
+            _viewMod = vm;
 
             Loaded += delegate (object sender, RoutedEventArgs args)
             {
@@ -36,7 +39,8 @@ namespace NuSysApp
                 webViewPanel.Width = xWebView.Width;
                 webViewPanel.Height = xWebView.Height;
                 xScrollViewer.Width = xWebView.Width;
-                xScrollViewer.Height = xWebView.Height;
+                xScrollViewer.Height = SessionController.Instance.SessionView.ActualHeight - 400;
+                webTopBar.Width = xWebView.Width; 
 
                 //(vm.Model as WebNodeModel).Url = "http://www.google.com";
                 (vm.Model as WebNodeModel).Url = vm.Url;

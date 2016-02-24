@@ -14,7 +14,7 @@
     IsDoubleTapEnabled="True">
 
     <local:NodeTemplate x:Name="nodeTpl" Background="Transparent" BorderBrush="Transparent">
-        <local:NodeTemplate.SubMenu>
+        <!--<local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
@@ -46,6 +46,14 @@
                 <Rectangle x:Name="borderRect" Opacity="0"  StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
                     <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
                                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" Padding="20"/>
+            </Grid>
+        </local:NodeTemplate.Inner>-->
+
+        <local:NodeTemplate.Inner>
+            <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
+                <Rectangle x:Name="borderRect" Opacity="0"  StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
+
+                <WebView Name="TextNodeWebView" IsHitTestVisible="True" Width="{Binding Width}" Height="{Binding Height}"></WebView>
             </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>

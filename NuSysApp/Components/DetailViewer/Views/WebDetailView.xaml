@@ -9,8 +9,8 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
-    <StackPanel x:Name="webViewPanel">
-        <StackPanel  Background="#99000000" Width="{Binding ElementName=xWebView, Path=Width}" Orientation="Horizontal">
+    <Grid x:Name="webViewPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel x:Name="webTopBar" Background="#99000000" Width="{Binding ElementName=xWebView, Path=Width}" Orientation="Horizontal" VerticalAlignment="Top">
             <Button x:Name="Back" Height="37" Foreground="White" Click="Back_OnClick">
                 <Image Source="http://www.iconsplace.com/icons/preview/white/left-round-256.png"></Image>
             </Button>
@@ -23,8 +23,8 @@
             </Button>
         </StackPanel>
         <ScrollViewer x:Name="xScrollViewer">
-            <WebView x:Name="xWebView" Height="600" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" />
+            <WebView x:Name="xWebView" Height="600" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" VerticalAlignment="Top" Margin="0,37,0,0"/>
         </ScrollViewer>
-    </StackPanel>
+    </Grid>
 </UserControl>
 
