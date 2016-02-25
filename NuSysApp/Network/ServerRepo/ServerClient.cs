@@ -65,7 +65,6 @@ namespace NuSysApp
             {
                 reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                 string read = reader.ReadString(reader.UnconsumedBufferLength);
-                //Debug.WriteLine(read + "\r\n");
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
                 if (dict.ContainsKey("server_indication_from_server"))

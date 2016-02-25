@@ -48,7 +48,7 @@ namespace NuSysApp
             EveryoneButSender
         }
         protected Message _message;
-        protected bool _serverIgnore = false;
+        private bool _serverIgnore = false;
         private ServerItemType _serverItemType;
         private ServerRequestType _serverRequestType;
         private ServerEchoType _serverEchoType = ServerEchoType.None;

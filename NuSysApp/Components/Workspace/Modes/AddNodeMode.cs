@@ -110,7 +110,7 @@ namespace NuSysApp
         private async Task AddNode(WorkspaceView view, Point pos, Size size, NodeType nodeType, object data = null)    {
             var vm = (WorkspaceViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
-
+            var title = "";
             var dict = new Message();
             Dictionary<string, object> metadata;
             if (nodeType == NodeType.Document || nodeType == NodeType.Word || nodeType == NodeType.Powerpoint || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
@@ -119,7 +119,7 @@ namespace NuSysApp
                 if (storageFile == null) return;
 
                 var fileType = storageFile.FileType.ToLower();
-                dict["title"] = storageFile.DisplayName;
+                title = storageFile.DisplayName;
 
 
                 var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
@@ -234,6 +234,7 @@ namespace NuSysApp
             dict["metadata"] = metadata;
             dict["autoCreate"] = true;
             dict["creator"] = SessionController.Instance.ActiveWorkspace.Id;
+            dict["title"] = title;
 
             var request = new NewNodeRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
