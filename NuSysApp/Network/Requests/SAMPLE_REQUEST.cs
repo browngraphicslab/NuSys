@@ -26,7 +26,7 @@ namespace NuSysApp
             You will also then need to add your RequestType to an enum switch statement in NusysNetworkSession.cs 
             If you fail to do so, nusys will crash with an exception telling you to add it to the switch statement
 
-            This constructor with just a message is a required constructor, although you may have more
+            This constructor with just a message parameter is a required constructor, although you may have more
 
             anything in the passed-in Message m will end up in the protected Dictionary<string,object> _message
         */
