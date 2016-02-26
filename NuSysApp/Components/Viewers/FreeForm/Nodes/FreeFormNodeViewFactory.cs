@@ -13,7 +13,7 @@ namespace NuSysApp
 {
     public class FreeFormNodeViewFactory : INodeViewFactory
     {
-        public async Task<FrameworkElement> CreateFromSendable(ElementInstanceController controller, List<FrameworkElement> AtomViewList)
+        public async Task<FrameworkElement> CreateFromSendable(ElementController controller, List<FrameworkElement> AtomViewList)
         {
             UserControl view = null;
 
@@ -28,13 +28,13 @@ namespace NuSysApp
                     view = new TextNodeView(new TextNodeViewModel(controller));
                     break;
                 case ElementType.Group:
-                    view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionInstanceController)controller));
+                    view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionController)controller));
                     break;
                 case ElementType.Tag:
-                    view = new LabelNodeView(new LabelNodeViewModel((ElementCollectionInstanceController)controller));
+                    view = new LabelNodeView(new LabelNodeViewModel((ElementCollectionController)controller));
                     break;
                 case ElementType.Image:
-                    view = new ImageNodeView(new ImageElementInstanceViewModel(controller));
+                    view = new ImageNodeView(new ImageElementViewModel(controller));
                     break;
                 case ElementType.Word:
                     view = new WordNodeView(new WordNodeViewModel(controller));
@@ -55,10 +55,10 @@ namespace NuSysApp
                     view = new WebNodeView(new WebNodeViewModel(controller));
                     break;
                 case ElementType.Area:
-                    view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionInstanceController)controller));
+                    view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)controller));
                     break;
             }
-            await ((ElementInstanceViewModel)view.DataContext).Init();
+            await ((ElementViewModel)view.DataContext).Init();
 
             return view;
         }
@@ -67,13 +67,13 @@ namespace NuSysApp
         private UserControl CreateLinkView(LinkModel model, List<FrameworkElement> AtomViewList)
         {
             var atom1Vm =
-                (ElementInstanceViewModel)
-                    AtomViewList.First(s => ((ElementInstanceViewModel) s.DataContext).Model == model.Atom1).DataContext;
+                (ElementViewModel)
+                    AtomViewList.First(s => ((ElementViewModel) s.DataContext).Model == model.Atom1).DataContext;
             var atom2Vm =
-                (ElementInstanceViewModel)
-                    AtomViewList.First(s => ((ElementInstanceViewModel) s.DataContext).Model == model.Atom2).DataContext;
+                (ElementViewModel)
+                    AtomViewList.First(s => ((ElementViewModel) s.DataContext).Model == model.Atom2).DataContext;
 
-            var viewModel = new LinkViewModel(new ElementInstanceController(model), atom1Vm, atom2Vm);
+            var viewModel = new LinkViewModel(new ElementController(model), atom1Vm, atom2Vm);
             var view = new BezierLinkView(viewModel);
             atom1Vm.AddLink(viewModel);
             atom2Vm.AddLink(viewModel);

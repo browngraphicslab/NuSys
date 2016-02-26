@@ -11,10 +11,10 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageElementInstanceViewModel : ElementInstanceViewModel
+    public class ImageElementViewModel : ElementViewModel
     {
         
-        public ImageElementInstanceViewModel(ElementInstanceController controller) : base(controller)
+        public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 

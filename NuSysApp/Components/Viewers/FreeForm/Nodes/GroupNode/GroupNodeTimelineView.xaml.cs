@@ -21,7 +21,7 @@ namespace NuSysApp
     public sealed partial class GroupNodeTimelineView : AnimatableUserControl
     {
         private List<Tuple<FrameworkElement, DateTime>> _atomList;
-        private ElementInstanceModel _nodeModel;
+        private ElementModel _nodeModel;
         private TimelineItemView _view;
         private GroupNodeTimelineViewModel _vm;
         private CompositeTransform _compositeTransform;
@@ -76,14 +76,14 @@ namespace NuSysApp
 
             foreach (var atom in _vm.AtomViewList)
             {
-                var vm = (ElementInstanceViewModel)atom.DataContext; //access viewmodel
+                var vm = (ElementViewModel)atom.DataContext; //access viewmodel
                 // TODO: refactor
                // vm.X = 0;
                // vm.Y = 0;
                 vm.CanEdit = EditStatus.No;
                 vm.Height = 80;
                 vm.Width = 130;
-                _nodeModel = (ElementInstanceModel)vm.Model; // access model
+                _nodeModel = (ElementModel)vm.Model; // access model
 
                 DateTime timeStamp = (DateTime)_nodeModel.GetMetaData("node_creation_date");
 

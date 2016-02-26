@@ -8,13 +8,13 @@ using System.Xml;
 
 namespace NuSysApp
 {
-    public class TextElementInstanceModel : ElementInstanceModel
+    public class TextElementModel : ElementModel
     {
         private string _text = string.Empty;
         public delegate void TextChangedEventHandler(object source, string text);
         public event TextChangedEventHandler TextChanged;
 
-        public TextElementInstanceModel(string id): base(id)
+        public TextElementModel(string id): base(id)
         {
             ElementType = ElementType.Text;
         }

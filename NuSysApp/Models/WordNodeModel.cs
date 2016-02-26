@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WordNodeModel : ElementInstanceModel
+    public class WordNodeModel : ElementModel
     {
         public WordNodeModel(string id) : base(id)
         {

@@ -15,9 +15,14 @@ namespace NuSysApp
         public async override Task CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
+            {
                 throw new Exception("FinalizeInkRequest must contain 'id'");
+            }
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerRequestType(ServerRequestType.Update);
+            SetServerIgnore(false);
         }
-
         public override async Task ExecuteRequestFunction()
         {
             var props = _message;

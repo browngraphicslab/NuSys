@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class ElementInstanceViewModel : BaseINPC
+    public abstract class ElementViewModel : BaseINPC
     {
         #region Private Members      
 
@@ -19,19 +19,18 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private SolidColorBrush _userColor;
         private CompositeTransform _transform = new CompositeTransform();
-        private ElementInstanceController _controller;
+        private ElementController _controller;
         protected bool _isSelected, _isMultiSelected, _isVisible;
 
         #endregion Private Members
 
-        protected ElementInstanceViewModel(ElementInstanceController controller)
+        protected ElementViewModel(ElementController controller)
         {
             _controller = controller;
             LinkList = new ObservableCollection<LinkViewModel>();
             controller.CanEditChange += OnCanEditChange;
             controller.MetadataChange += OnMetadataChange;
             controller.PositionChanged += OnPositionChanged;
-            controller.Translated += OnTranslated;
             controller.SizeChanged += OnSizeChanged;
             controller.Resized += OnResized;
             controller.ScaleChanged += OnScaleChanged;
@@ -205,7 +204,6 @@ namespace NuSysApp
             _controller.CanEditChange -= OnCanEditChange;
             _controller.MetadataChange -= OnMetadataChange;
             _controller.PositionChanged -= OnPositionChanged;
-            _controller.Translated -= OnTranslated;
             _controller.SizeChanged -= OnSizeChanged;
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
@@ -347,7 +345,7 @@ namespace NuSysApp
             }
         }
 
-        public ElementInstanceModel Model
+        public ElementModel Model
         {
             get { return _controller.Model; }
         }
@@ -407,7 +405,7 @@ namespace NuSysApp
 
         public ObservableCollection<Button> Tags { get; set; }
 
-        public ElementInstanceController Controller
+        public ElementController Controller
         {
             get { return _controller; }
         }
@@ -442,12 +440,12 @@ namespace NuSysApp
 
         public ElementType ElementType
         {
-            get { return ((ElementInstanceModel) Model).ElementType; }
+            get { return ((ElementModel) Model).ElementType; }
         }
 
         public string ContentId
         {
-            get { return ((ElementInstanceModel) Model).ContentId; }
+            get { return ((ElementModel) Model).ContentId; }
         }
 
         public CompositeTransform InkScale

@@ -108,7 +108,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.Id };
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
         }
 
@@ -192,7 +192,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.Id };
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
             return true;
         }

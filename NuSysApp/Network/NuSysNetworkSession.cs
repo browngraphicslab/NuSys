@@ -140,16 +140,13 @@ namespace NuSysApp
                     request = new DeleteSendableRequest(message);
                     break;
                 case Request.RequestType.NewNodeRequest:
-                    request = new NewElementInstanceRequest(message);
+                    request = new NewElementRequest(message);
                     break;
                 case Request.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
                 case Request.RequestType.NewGroupRequest:
                     request = new NewGroupRequest(message);
-                    break;
-                case Request.RequestType.NewThumbnailRequest:
-                    request = new NewThumbnailRequest(message);
                     break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);

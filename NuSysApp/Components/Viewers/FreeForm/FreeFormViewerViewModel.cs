@@ -7,19 +7,19 @@ namespace NuSysApp
     /// <summary>
     /// Models the basic Workspace and maintains a list of all atoms. 
     /// </summary>
-    public class FreeFormViewerViewModel : ElementCollectionInstanceViewModel
+    public class FreeFormViewerViewModel : ElementCollectionViewModel
     {
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
-        private ElementInstanceViewModel _preparedElementInstanceVm;
+        private ElementViewModel _preparedElementVm;
 
         #endregion Private Members
 
-        public FreeFormViewerViewModel(ElementCollectionInstanceController controller) : base(controller)
+        public FreeFormViewerViewModel(ElementCollectionController controller) : base(controller)
         {
-            MultiSelectedAtomViewModels = new List<ElementInstanceViewModel>();
-            SelectedElementInstanceViewModel = null;
+            MultiSelectedAtomViewModels = new List<ElementViewModel>();
+            SelectedElementViewModel = null;
             FMTransform = new CompositeTransform();
 
             var model = controller.Model;
@@ -56,7 +56,7 @@ namespace NuSysApp
         {
             // TODO: refactor
             /*
-            var node = (ElementInstanceModel)SessionController.Instance.IdToSendables[id];
+            var node = (ElementModel)SessionController.Instance.IdToSendables[id];
             var tp = new Point(-node.X, -node.Y);
             var np = CompositeTransform.Inverse.TransformPoint(tp);
             var ns = new Size(node.Width, node.Height);
@@ -74,16 +74,16 @@ namespace NuSysApp
             return false;
             // TODO: refactor
             /*
-            var nodes = new List<ElementInstanceViewModel>();
+            var nodes = new List<ElementViewModel>();
             var links = new List<LinkViewModel>();
-            foreach (var node2 in AtomViewList.Where(a => a.DataContext is ElementInstanceViewModel))
+            foreach (var node2 in AtomViewList.Where(a => a.DataContext is ElementViewModel))
             {
                 var rect1 = Geometry.InqToBoudingRect(inq);
-                var rect2 = Geometry.NodeToBoudingRect(node2.DataContext as ElementInstanceViewModel);
+                var rect2 = Geometry.NodeToBoudingRect(node2.DataContext as ElementViewModel);
                 rect1.Intersect(rect2);//stores intersection rectangle in rect1
                 if (!rect1.IsEmpty)
                 {
-                    nodes.Add(node2.DataContext as ElementInstanceViewModel);
+                    nodes.Add(node2.DataContext as ElementViewModel);
                 }
             }
             foreach (var link in AtomViewList.Where(a => a.DataContext is LinkViewModel))
@@ -157,7 +157,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(link.Id));
         }
 
-        public void DeleteNode(ElementInstanceViewModel node)
+        public void DeleteNode(ElementViewModel node)
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(node.Id));
         }
@@ -168,21 +168,21 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void SetSelection(ElementInstanceViewModel selected)
+        public void SetSelection(ElementViewModel selected)
         {
             List<string> locks = new List<string>();
             locks.Add(selected.Model.Id);
             //NetworkConnector.Instance.CheckLocks(locks);
 
-            if (SelectedElementInstanceViewModel == null)
+            if (SelectedElementViewModel == null)
             {
-                SelectedElementInstanceViewModel = selected;
+                SelectedElementViewModel = selected;
                 return;
             }
             // //NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
             selected.SetSelected(false);
-            SelectedElementInstanceViewModel.SetSelected(false);
-            SelectedElementInstanceViewModel = null;
+            SelectedElementViewModel.SetSelected(false);
+            SelectedElementViewModel = null;
             ClearSelection();
         }
 
@@ -196,9 +196,9 @@ namespace NuSysApp
         public void ClearSelection()
         {
             //NetworkConnector.Instance.ReturnAllLocks();
-            if (SelectedElementInstanceViewModel == null) return;
-            SelectedElementInstanceViewModel.SetSelected(false);
-            SelectedElementInstanceViewModel = null;
+            if (SelectedElementViewModel == null) return;
+            SelectedElementViewModel.SetSelected(false);
+            SelectedElementViewModel = null;
         }
 
         
@@ -214,9 +214,9 @@ namespace NuSysApp
         #region Public Members
 
 
-        public ElementInstanceViewModel SelectedElementInstanceViewModel { get; private set; }
+        public ElementViewModel SelectedElementViewModel { get; private set; }
 
-        public List<ElementInstanceViewModel> MultiSelectedAtomViewModels { get; private set; }
+        public List<ElementViewModel> MultiSelectedAtomViewModels { get; private set; }
 
         public CompositeTransform CompositeTransform
         {

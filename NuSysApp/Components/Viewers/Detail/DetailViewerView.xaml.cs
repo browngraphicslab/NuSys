@@ -125,7 +125,7 @@ namespace NuSysApp
 
         private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
         {
-            ((ElementInstanceViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
+            ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

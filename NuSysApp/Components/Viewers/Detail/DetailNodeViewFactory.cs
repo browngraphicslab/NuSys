@@ -16,8 +16,8 @@ namespace NuSysApp
         {
             UserControl view = null;
 
-            if (model is ElementInstanceModel)
-                return await CreateFromNodeType((ElementInstanceModel)model);
+            if (model is ElementModel)
+                return await CreateFromNodeType((ElementModel)model);
 
 
             if (model is PinModel)
@@ -39,10 +39,10 @@ namespace NuSysApp
         private UserControl CreateLinkView(LinkModel model, List<UserControl> AtomViewList)
         {
 
-            var atom1Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom1).DataContext;
-            var atom2Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom2).DataContext;
+            var atom1Vm = (ElementViewModel)AtomViewList.First(s => ((ElementViewModel)s.DataContext).Model == model.Atom1).DataContext;
+            var atom2Vm = (ElementViewModel)AtomViewList.First(s => ((ElementViewModel)s.DataContext).Model == model.Atom2).DataContext;
 
-            var viewModel = new LinkViewModel(new ElementInstanceController(model), atom1Vm, atom2Vm);
+            var viewModel = new LinkViewModel(new ElementController(model), atom1Vm, atom2Vm);
             //var view = new BezierLinkView(viewModel);
             atom1Vm.AddLink(viewModel);
             atom2Vm.AddLink(viewModel);
@@ -55,8 +55,8 @@ namespace NuSysApp
         {
             // TODO: refactor
             /*
-            ElementInstanceModel atom1 = model.Atom1;
-            ElementInstanceModel atom2 = model.Atom2;
+            ElementModel atom1 = model.Atom1;
+            ElementModel atom2 = model.Atom2;
             var factory = new FreeFormNodeViewFactory();
             var atomview1 = (UserControl)await factory.CreateFromSendable(atom1, null);
             var atomview2 = (UserControl)await factory.CreateFromSendable(atom2, null);
@@ -67,44 +67,44 @@ namespace NuSysApp
             return new List<UserControl>();
         }
 
-        private async Task<UserControl> CreateFromNodeType(ElementInstanceModel model)
+        private async Task<UserControl> CreateFromNodeType(ElementModel model)
         {
             UserControl view = null;
 
             switch (model.ElementType)
             {
                 case ElementType.Text:
-                    var tvm = new TextNodeViewModel(new ElementInstanceController(model));
+                    var tvm = new TextNodeViewModel(new ElementController(model));
                     view = new TextDetailView(tvm);
                     await tvm.Init();
                     break;
                 case ElementType.Image:
-                    var ivm = new ImageElementInstanceViewModel((new ElementInstanceController(model)));
+                    var ivm = new ImageElementViewModel((new ElementController(model)));
                     await ivm.Init();
                     view = new ImageFullScreenView(ivm);
                     break;
                 case ElementType.Word:
-                    view = new WordDetailView(new WordNodeViewModel(new ElementInstanceController(model)));
+                    view = new WordDetailView(new WordNodeViewModel(new ElementController(model)));
                     break;
                 case ElementType.Powerpoint:
-                    view = new PowerpointDetailView(new PowerpointNodeViewModel(new ElementInstanceController(model)));
+                    view = new PowerpointDetailView(new PowerpointNodeViewModel(new ElementController(model)));
                     break;
                 case ElementType.PDF:
-                    view = new PdfDetailView(new PdfNodeViewModel(new ElementInstanceController(model)));
+                    view = new PdfDetailView(new PdfNodeViewModel(new ElementController(model)));
                     break;
                 case ElementType.Web:
-                    view = new WebDetailView(new WebNodeViewModel(new ElementInstanceController(model)));
+                    view = new WebDetailView(new WebNodeViewModel(new ElementController(model)));
                     break;
                 case ElementType.Video:
-                    view = new VideoDetailView(new VideoNodeViewModel(new ElementInstanceController(model)));
+                    view = new VideoDetailView(new VideoNodeViewModel(new ElementController(model)));
                     break;
                 case ElementType.Audio:
-                    AudioNodeViewModel audioVM = new AudioNodeViewModel(new ElementInstanceController(model));
+                    AudioNodeViewModel audioVM = new AudioNodeViewModel(new ElementController(model));
                     await audioVM.Init();
                     view = new AudioDetailView(audioVM);
                     break;
                 case ElementType.Group:
-                    view = new GroupDetailView(new ElementCollectionInstanceViewModel(new ElementCollectionInstanceController(model)));
+                    view = new GroupDetailView(new ElementCollectionViewModel(new ElementCollectionController(model)));
                     break;
             }
 

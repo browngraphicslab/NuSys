@@ -15,7 +15,7 @@ namespace NuSysApp
     {
         private UserControl _selectedView;
         private LabelNodeView _hoveredGroup;
-        private List<ElementInstanceViewModel> _pressedItems = new List<ElementInstanceViewModel>(); 
+        private List<ElementViewModel> _pressedItems = new List<ElementViewModel>(); 
 
         public TagNodeMode(FreeFormViewer view) : base(view) { }
 
@@ -25,7 +25,7 @@ namespace NuSysApp
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel) _view.DataContext;
 
             wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
             {
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
@@ -42,7 +42,7 @@ namespace NuSysApp
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
@@ -85,7 +85,7 @@ namespace NuSysApp
 
         private async void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
-            var releasedNode = ((FrameworkElement)e.OriginalSource).DataContext as ElementInstanceViewModel;
+            var releasedNode = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
 
             if (releasedNode == null)
                 return;
@@ -104,7 +104,7 @@ namespace NuSysApp
 
                 if (result?.Count() > 0)
                 {
-                    BuildGroup(_pressedItems[0], ((FrameworkElement) result.First()).DataContext as ElementInstanceViewModel);
+                    BuildGroup(_pressedItems[0], ((FrameworkElement) result.First()).DataContext as ElementViewModel);
 
                     _hoveredGroup = null;
                 }
@@ -115,7 +115,7 @@ namespace NuSysApp
             }
         }
 
-        private async void BuildGroup(ElementInstanceViewModel node0, ElementInstanceViewModel node1, bool keepOriginal = false)
+        private async void BuildGroup(ElementViewModel node0, ElementViewModel node1, bool keepOriginal = false)
         {
             if (node1 == null)
                 return;
@@ -148,7 +148,7 @@ namespace NuSysApp
 
             foreach (var userControl in SessionController.Instance.ActiveFreeFormViewer.AtomViewList)
             {
-                var vm = (ElementInstanceViewModel) userControl.DataContext;
+                var vm = (ElementViewModel) userControl.DataContext;
                 var model = vm.Model;
                 if (model.GetMetaData("visualCopyOf") == nodeToTag.Id)
                 {
@@ -158,7 +158,7 @@ namespace NuSysApp
                 }
             }
 
-            var nodeToTagModel = (ElementInstanceModel)nodeToTag.Model;
+            var nodeToTagModel = (ElementModel)nodeToTag.Model;
             if (!keepOriginal) {
 
               //  nodeToTagModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
@@ -189,7 +189,7 @@ namespace NuSysApp
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {   
-            var pressedNode = ((FrameworkElement)e.OriginalSource).DataContext as ElementInstanceViewModel;
+            var pressedNode = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
            
             if (pressedNode == null)
                 return;

@@ -15,7 +15,7 @@ namespace NuSysApp
     {
         public SelectMode(FreeFormViewer view) : base(view) { }
 
-        private static ElementInstanceViewModel _selectedElementInstanceVm;
+        private static ElementViewModel _selectedElementVm;
         private bool _released;
 
         public override async Task Activate()
@@ -47,12 +47,12 @@ namespace NuSysApp
             if (!_released)
                 return;
 
-            _selectedElementInstanceVm?.SetSelected(false);
+            _selectedElementVm?.SetSelected(false);
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc == _selectedElementInstanceVm)
+            if (dc == _selectedElementVm)
             {
-                _selectedElementInstanceVm = null;
+                _selectedElementVm = null;
                 return;
             }
 
@@ -61,12 +61,12 @@ namespace NuSysApp
             {
                 var vm = (FreeFormViewerViewModel) _view.DataContext;
                 vm.ClearSelection();
-                _selectedElementInstanceVm = null;
+                _selectedElementVm = null;
             }
-            else if (dc is ElementInstanceViewModel)
+            else if (dc is ElementViewModel)
             {
-                var vm = (ElementInstanceViewModel) dc;
-                _selectedElementInstanceVm = vm;
+                var vm = (ElementViewModel) dc;
+                _selectedElementVm = vm;
                 vm.SetSelected(true);
             }
         }
@@ -80,11 +80,11 @@ namespace NuSysApp
         {
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if ((dc is ElementInstanceViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
+            if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {
-                if (dc is ElementInstanceViewModel)
+                if (dc is ElementViewModel)
                 {
-                    var vm = (ElementInstanceViewModel)dc;
+                    var vm = (ElementViewModel)dc;
 
                     if (vm.ElementType == ElementType.Word || vm.ElementType == ElementType.Powerpoint)
                     {
@@ -92,7 +92,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        SessionController.Instance.SessionView.ShowFullScreen((ElementInstanceModel)vm.Model);
+                        SessionController.Instance.SessionView.ShowFullScreen((ElementModel)vm.Model);
                     }
 
                 }

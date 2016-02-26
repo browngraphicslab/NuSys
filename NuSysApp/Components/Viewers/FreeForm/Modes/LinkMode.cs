@@ -40,15 +40,15 @@ namespace NuSysApp {
 
             
             var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(pStart, _view);
-            hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementInstanceViewModel && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel));
-            var hitsEnd = VisualTreeHelper.FindElementsInHostCoordinates(pEnd, _view).Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementInstanceViewModel);
-            hitsEnd = hitsEnd.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementInstanceViewModel && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel));
+            hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel));
+            var hitsEnd = VisualTreeHelper.FindElementsInHostCoordinates(pEnd, _view).Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel);
+            hitsEnd = hitsEnd.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel));
 
             if (hitsEnd.Count() == 0 || hitsStart.Count() == 0)
                 return;
 
-            var startVm = (hitsStart.First() as FrameworkElement).DataContext as ElementInstanceViewModel;
-            var endVm = (hitsEnd.First() as FrameworkElement).DataContext as ElementInstanceViewModel;
+            var startVm = (hitsStart.First() as FrameworkElement).DataContext as ElementViewModel;
+            var endVm = (hitsEnd.First() as FrameworkElement).DataContext as ElementViewModel;
 
             // Don't allow links where the start and end atom are identical
             if (startVm == endVm)

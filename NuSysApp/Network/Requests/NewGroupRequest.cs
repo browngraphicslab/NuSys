@@ -11,6 +11,13 @@ namespace NuSysApp
     public class NewGroupRequest : Request
     {
         public NewGroupRequest(Message message) : base(RequestType.NewGroupRequest, message){}
+        public async override Task CheckOutgoingRequest()
+        {
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerRequestType(ServerRequestType.Add);
+            SetServerItemType(ServerItemType.Content);
+        }
+
         public async override Task ExecuteRequestFunction()
         {
             var props = _message;
@@ -20,10 +27,10 @@ namespace NuSysApp
             var eic1Parent = SessionController.Instance.IdToControllers[eic1.Model.Creator];
             var eic2Parent = SessionController.Instance.IdToControllers[eic2.Model.Creator];
 
-            if (eic2 is ElementCollectionInstanceController)
+            if (eic2 is ElementCollectionController)
             {
-                (eic1Parent as ElementCollectionInstanceController).RemoveChild(eic1);
-                (eic2 as ElementCollectionInstanceController).AddChild(eic1);
+                (eic1Parent as ElementCollectionController).RemoveChild(eic1);
+                (eic2 as ElementCollectionController).AddChild(eic1);
                 eic1.SetCreator(eic2.Model.Id);
             }
             else
@@ -39,7 +46,7 @@ namespace NuSysApp
                 msg["autoCreate"] = true;
                 msg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementInstanceRequest(msg));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(msg));
 
                 var group = SessionController.Instance.IdToControllers[msg.GetString("id")];
                 

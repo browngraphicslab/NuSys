@@ -11,13 +11,13 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class ElementCollectionInstanceViewModel: ElementInstanceViewModel
+    public class ElementCollectionViewModel: ElementViewModel
     {
         
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
        
-        public ElementCollectionInstanceViewModel(ElementCollectionInstanceController controller): base(controller)
+        public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
@@ -30,7 +30,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            var controller = (ElementCollectionInstanceController) Controller;
+            var controller = (ElementCollectionController) Controller;
             controller.ChildAdded -= OnChildAdded;
             controller.ChildRemoved -= OnChildRemoved;
             base.Dispose();
@@ -41,12 +41,12 @@ namespace NuSysApp
             // TODO: refactor remove this method
         }
 
-        private async void OnChildAdded(object source, ElementInstanceController elementInstanceController)
+        private async void OnChildAdded(object source, ElementController elementController)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(elementInstanceController, AtomViewList.ToList());   
+            var view = await _nodeViewFactory.CreateFromSendable(elementController, AtomViewList.ToList());   
             AtomViewList.Add(view);
 
-            var model = elementInstanceController.Model;
+            var model = elementController.Model;
             if (model.ContentId != null )
             {
                 if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
@@ -54,25 +54,25 @@ namespace NuSysApp
 
                     if (SessionController.Instance.LoadingDictionary.ContainsKey(model.ContentId))
                     {
-                        SessionController.Instance.LoadingDictionary[model.ContentId]?.Add(elementInstanceController);
+                        SessionController.Instance.LoadingDictionary[model.ContentId]?.Add(elementController);
                     }
                     else
                     {
                         SessionController.Instance.LoadingDictionary[model.ContentId] =
-                            new List<ElementInstanceController>() {elementInstanceController};
+                            new List<ElementController>() {elementController};
                     }
                 }
                 else
                 {
-                    elementInstanceController.FireContentLoaded(
+                    elementController.FireContentLoaded(
                         SessionController.Instance.ContentController.Get(model.ContentId));
                 }
             }
         }
 
-        private void OnChildRemoved(object source, ElementInstanceController elementInstanceController)
+        private void OnChildRemoved(object source, ElementController elementController)
         {
-            AtomViewList.Remove(AtomViewList.Where(a => ((ElementInstanceViewModel)a.DataContext).Id == elementInstanceController.Model.Id).First());
+            AtomViewList.Remove(AtomViewList.Where(a => ((ElementViewModel)a.DataContext).Id == elementController.Model.Id).First());
         }
     }
 }

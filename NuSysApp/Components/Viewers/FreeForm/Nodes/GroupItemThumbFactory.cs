@@ -18,17 +18,17 @@ namespace NuSysApp
 {
     public class GroupItemThumbFactory : INodeViewFactory
     {
-        public async Task<FrameworkElement> CreateFromSendable(ElementInstanceController controller, List<FrameworkElement> AtomViewList)
+        public async Task<FrameworkElement> CreateFromSendable(ElementController controller, List<FrameworkElement> AtomViewList)
         {
             var rect = new Rectangle();
-            if (!(controller.Model is ElementInstanceModel)) return null;
+            if (!(controller.Model is ElementModel)) return null;
             
             var img = new Image();
             if (SessionController.Instance.Thumbnails.ContainsKey(controller.Model.Id))
                 img.Source = SessionController.Instance.Thumbnails[controller.Model.Id];
             else
             {
-                rect.DataContext = new GroupItemViewModel((ElementInstanceModel)controller.Model);
+                rect.DataContext = new GroupItemViewModel((ElementModel)controller.Model);
                 return rect;
             }
            
@@ -55,7 +55,7 @@ namespace NuSysApp
                               DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
             }
 
-            rect.DataContext = new GroupItemViewModel((ElementInstanceModel)controller.Model);
+            rect.DataContext = new GroupItemViewModel((ElementModel)controller.Model);
 
             return rect;
         }

@@ -9,12 +9,12 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class AreaNodeViewModel : ElementCollectionInstanceViewModel
+    public class AreaNodeViewModel : ElementCollectionViewModel
     {
 
         public PointCollection Points { get; set; }
 
-        public AreaNodeViewModel(ElementCollectionInstanceController controller):base(controller)
+        public AreaNodeViewModel(ElementCollectionController controller):base(controller)
         {
             Points = new PointCollection();
             var model = (AreaModel)controller.Model;

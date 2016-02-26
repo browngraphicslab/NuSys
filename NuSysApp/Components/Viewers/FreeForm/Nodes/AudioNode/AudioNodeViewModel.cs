@@ -7,10 +7,10 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class AudioNodeViewModel: ElementInstanceViewModel
+    public class AudioNodeViewModel: ElementViewModel
     {
         private IRandomAccessStream _stream;
-        public AudioNodeViewModel(ElementInstanceController model) : base(model)
+        public AudioNodeViewModel(ElementController model) : base(model)
         {
             Width = 200;
             Height = 80;

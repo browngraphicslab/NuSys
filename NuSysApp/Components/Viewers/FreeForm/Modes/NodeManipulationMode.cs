@@ -45,7 +45,7 @@ namespace NuSysApp
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
             var userControl = (UserControl)sender;
-            if (userControl.DataContext is ElementInstanceViewModel)
+            if (userControl.DataContext is ElementViewModel)
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
             
             ActiveNodes.Add((UserControl)sender);
@@ -61,7 +61,7 @@ namespace NuSysApp
             foreach (var n in newNodes)
             {
                 var userControl = (UserControl) n;
-                if (userControl.DataContext is ElementInstanceViewModel) { 
+                if (userControl.DataContext is ElementViewModel) { 
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
                     userControl.ManipulationStarted += ManipulationStarting;
@@ -90,8 +90,10 @@ namespace NuSysApp
                 return;
 
             var s = (UserControl) sender;
-            var vm = (ElementInstanceViewModel)s.DataContext;
-            vm.Controller.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);                  
+            var vm = (ElementViewModel)s.DataContext;
+            var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
+            vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);       
         }
     }
 }

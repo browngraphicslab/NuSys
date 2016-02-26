@@ -308,7 +308,7 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageNodeView.xaml.cs">
       <DependentUpon>ImageNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementInstanceViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementViewModel.cs" />
     <Compile Include="Components\ContextMenuView.xaml.cs">
       <DependentUpon>ContextMenuView.xaml</DependentUpon>
     </Compile>
@@ -321,16 +321,16 @@
     <Compile Include="Components\Viewers\FreeForm\Modes\LinkMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\NodeManipulationMode.cs" />
     <Compile Include="Controller\ContentController.cs" />
-    <Compile Include="Controller\ElementCollectionInstanceController.cs" />
-    <Compile Include="Controller\ElementInstanceController.cs" />
+    <Compile Include="Controller\ElementCollectionController.cs" />
+    <Compile Include="Controller\ElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="Models\AreaModel.cs" />
+    <Compile Include="Models\LibraryElementCollectionModel.cs" />
     <Compile Include="Models\ElementCollectionModel.cs" />
-    <Compile Include="Models\ElementCollectionInstanceModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
@@ -352,12 +352,10 @@
     <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
-    <Compile Include="Network\Requests\NewTagNodeRequest.cs" />
     <Compile Include="Network\Requests\NewGroupRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
-    <Compile Include="Network\Requests\NewElementInstanceRequest.cs" />
-    <Compile Include="Network\Requests\NewThumbnailRequest.cs" />
+    <Compile Include="Network\Requests\NewElementRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
@@ -368,7 +366,6 @@
     <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />
-    <Compile Include="Network\Requests\TestClass.cs" />
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
@@ -464,21 +461,21 @@
     <Compile Include="Util\OfficeIntermediate.cs" />
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
-    <Compile Include="Models\ElementInstanceModel.cs" />
+    <Compile Include="Models\ElementModel.cs" />
     <Compile Include="Models\AudioNodeModel.cs" />
     <Compile Include="Models\NodeContentModel.cs" />
-    <Compile Include="Models\ImageElementInstanceModel.cs" />
+    <Compile Include="Models\ImageElementModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PinModel.cs" />
-    <Compile Include="Models\TextElementInstanceModel.cs" />
+    <Compile Include="Models\TextElementModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
     <Compile Include="Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Components\Viewers\ElementInstanceViewModel.cs" />
+    <Compile Include="Components\Viewers\ElementViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeViewModel.cs" />
     <Compile Include="Components\Misc\PinViewModel.cs" />
     <Compile Include="Components\Misc\BucketWindowView.xaml.cs">
@@ -500,7 +497,7 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\FreeFormViewerViewModel.cs" />
-    <Compile Include="Components\Viewers\ElementCollectionInstanceViewModel.cs" />
+    <Compile Include="Components\Viewers\ElementCollectionViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\NodeTemplate.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeView.xaml.cs">
       <DependentUpon>PdfNodeView.xaml</DependentUpon>

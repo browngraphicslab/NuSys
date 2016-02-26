@@ -75,7 +75,7 @@ namespace NuSysApp
                     m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
@@ -137,7 +137,7 @@ namespace NuSysApp
                         Message m = CreateMessage(selectionItem, contentId, centerpoint);
                         m["nodeType"] = ElementType.Text.ToString();
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewContentRequest(contentId, rtfContent, ElementType.Text.ToString()));
                     /*
                     await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
@@ -159,7 +159,7 @@ namespace NuSysApp
                             try {
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, Convert.ToBase64String(ba), ElementType.Image.ToString()));
                             /*
                             await

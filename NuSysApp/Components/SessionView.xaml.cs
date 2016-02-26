@@ -26,7 +26,7 @@ namespace NuSysApp
         private FreeFormViewer _activeWorkspace;
         private Options _prevOptions = Options.SelectNode;
 
-        private static List<ElementInstanceModel> createdModels;
+        private static List<ElementModel> createdModels;
         private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
@@ -177,20 +177,20 @@ namespace NuSysApp
         {
             SessionController.Instance.IdToControllers.Clear();
 
-            var elementCollection = new ElementCollectionModel();
-            var elementCollectionInstance = new ElementCollectionInstanceModel(collectionId)
+            var elementCollection = new LibraryElementCollectionModel();
+            var elementCollectionInstance = new ElementCollectionModel(collectionId)
             {
-                ElementCollectionModel = elementCollection,
+                LibraryElementCollectionModel = elementCollection,
                 Title = "Instance title"
             };
-            var elementCollectionInstanceController = new ElementCollectionInstanceController(elementCollectionInstance);
+            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
 
             await OpenCollection(elementCollectionInstanceController);
 
             xFullScreenViewer.DataContext = new DetailViewerViewModel();
 
-            createdModels = new List<ElementInstanceModel>();
+            createdModels = new List<ElementModel>();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
@@ -208,7 +208,7 @@ namespace NuSysApp
                 {
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
-                            new NewElementInstanceRequest(msg));
+                            new NewElementRequest(msg));
                 }
                 if (type == ElementType.Link)
                 {
@@ -249,7 +249,7 @@ namespace NuSysApp
                 if (type == ElementType.Node)
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
-                            new NewElementInstanceRequest(msg));
+                            new NewElementRequest(msg));
                 if (type == ElementType.Link)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
             }
@@ -274,22 +274,22 @@ namespace NuSysApp
             xFullScreenViewer.DataContext = new DetailViewerViewModel();
         }
 
-        private ElementCollectionInstanceController CreateEmptyElementCollectionInstanceController()
+        private ElementCollectionController CreateEmptyElementCollectionInstanceController()
         {
-            var elementCollection = new ElementCollectionModel();
+            var elementCollection = new LibraryElementCollectionModel();
 
-            var elementCollectionInstance = new ElementCollectionInstanceModel(SessionController.Instance.GenerateId())
+            var elementCollectionInstance = new ElementCollectionModel(SessionController.Instance.GenerateId())
             {
-                ElementCollectionModel = elementCollection,
+                LibraryElementCollectionModel = elementCollection,
                 Title = "Instance title"
             };
-            var elementCollectionInstanceController = new ElementCollectionInstanceController(elementCollectionInstance);
+            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] =
                 elementCollectionInstanceController;
             return elementCollectionInstanceController;
         }
 
-        public async Task OpenCollection(ElementCollectionInstanceController collectionController)
+        public async Task OpenCollection(ElementCollectionController collectionController)
         {
             await DisposeCollectionView(_activeWorkspace);
             if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
@@ -387,14 +387,14 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(ElementInstanceModel model)
+        public void ShowFullScreen(ElementModel model)
         {
             var vm = (DetailViewerViewModel) xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);
             vm.MakeTagList();
         }
 
-        public async void OpenFile(ElementInstanceViewModel vm)
+        public async void OpenFile(ElementViewModel vm)
         {
             String token = vm.Model.GetMetaData("Token")?.ToString();
 

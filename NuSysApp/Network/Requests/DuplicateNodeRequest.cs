@@ -41,7 +41,7 @@ namespace NuSysApp
             modelToDuplicate["autoCreate"] = true;
 
             var msg = new Message( modelToDuplicate );
-            var request = new NewElementInstanceRequest(msg);
+            var request = new NewElementRequest(msg);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
             var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
@@ -52,7 +52,7 @@ namespace NuSysApp
 
             //TODO: refactor
             /*
-            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as ElementInstanceModel).Creator.Contains(id)))
+            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as ElementModel).Creator.Contains(id)))
             {
                 ((NodeContainerModel)duplicateModel).AddChild(child);
             }

@@ -63,7 +63,7 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
-            var vm = (ElementInstanceViewModel)this.DataContext;
+            var vm = (ElementViewModel)this.DataContext;
             
             bg = (Grid)GetTemplateChild("bg");
             
@@ -123,14 +123,14 @@ namespace NuSysApp
 
         public void ToggleInkMode()
         {
-            var vm = (ElementInstanceViewModel)this.DataContext;
+            var vm = (ElementViewModel)this.DataContext;
             //vm.ToggleEditingInk();
             //inkCanvas.IsEnabled = vm.IsEditingInk;
         }
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var model = (ElementInstanceModel)((ElementInstanceViewModel) this.DataContext).Model;
+            var model = (ElementModel)((ElementViewModel) this.DataContext).Model;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
@@ -140,7 +140,7 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
             
-            var vm = (ElementInstanceViewModel)this.DataContext;
+            var vm = (ElementViewModel)this.DataContext;
             vm.Controller.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
          //   inkCanvas.Width = vm.Width;
          //   inkCanvas.Height = vm.Height;
@@ -149,7 +149,7 @@ namespace NuSysApp
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var vm = (ElementInstanceViewModel)this.DataContext;
+            var vm = (ElementViewModel)this.DataContext;
             if (e.PropertyName == "Height")
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;

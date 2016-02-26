@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class ElementCollectionModel
+    public class ElementCollectionModel : ElementModel
     {
-        public List<ElementInstanceModel> Children { get; set; } 
+        public LibraryElementCollectionModel LibraryElementCollectionModel { get; set; }
 
-        public ElementCollectionModel()
+        public ElementCollectionModel(string id):base(id)
         {
-            Children = new List<ElementInstanceModel>();
+
         }
     }
 }

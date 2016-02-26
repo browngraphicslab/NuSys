@@ -37,14 +37,14 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
-            var contentId = (vm.Model as ElementInstanceModel).ContentId;
+            var contentId = (vm.Model as ElementModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
             {
                 rtfTextBox.SetRtfText(content.Data);
             }
 
-            (vm.Model as TextElementInstanceModel).TextChanged += delegate (object source, string text)
+            (vm.Model as TextElementModel).TextChanged += delegate (object source, string text)
             {
                 rtfTextBox.SetRtfText(text);
                 // rtfTextBox.SetRtfText();
@@ -301,7 +301,7 @@ namespace NuSysApp
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementInstanceViewModel)this.DataContext;
+            var vm = (ElementViewModel)this.DataContext;
             vm.Remove();
         }
 

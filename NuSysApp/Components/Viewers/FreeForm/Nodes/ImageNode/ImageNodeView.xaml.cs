@@ -17,7 +17,7 @@ namespace NuSysApp
 {
     public sealed partial class ImageNodeView : AnimatableUserControl, IThumbnailable
     {
-        public ImageNodeView(ImageElementInstanceViewModel vm)
+        public ImageNodeView(ImageElementViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
@@ -43,7 +43,7 @@ namespace NuSysApp
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementInstanceViewModel)DataContext;
+            var vm = (ElementViewModel)DataContext;
             vm.Remove();
         }
 

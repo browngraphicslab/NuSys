@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class ElementInstanceController
+    public class ElementController
     {
         private NetworkUser _lastNetworkUser;
-        private ElementInstanceModel _model;
+        private ElementModel _model;
         private DebouncingDictionary _debouncingDictionary;
 
         public delegate void AlphaChangedEventHandler(object source, double alpha);
@@ -26,7 +26,6 @@ namespace NuSysApp
         public event MetadataChangeEventHandler MetadataChange;
         public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
-        public event LocationUpdateEventHandler Translated;
         public event SizeUpdateEventHandler SizeChanged;
         public event SizeUpdateEventHandler Resized;
         public event ScaleChangedEventHandler ScaleChanged;
@@ -37,7 +36,7 @@ namespace NuSysApp
 
         private EditStatus _editStatus;
 
-        public ElementInstanceController(ElementInstanceModel model)
+        public ElementController(ElementModel model)
         {
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
@@ -80,18 +79,8 @@ namespace NuSysApp
         {
             PositionChanged?.Invoke(this, x, y);
 
-            _debouncingDictionary?.Add("x", Model.X);
-            _debouncingDictionary?.Add("y", Model.Y);
-        }
-
-        public void Translate(double tx, double ty)
-        {
-            tx /= SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            ty /= SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
-            Translated?.Invoke(this, tx, ty);
-
-            _debouncingDictionary?.Add("translateX", tx);
-            _debouncingDictionary?.Add("translateY", ty);
+            _debouncingDictionary?.Add("x", x);
+            _debouncingDictionary?.Add("y", y);
         }
 
         public void SetAlpha(double alpha)
@@ -145,7 +134,7 @@ namespace NuSysApp
             }
         }
 
-        public ElementInstanceModel Model
+        public ElementModel Model
         {
             get { return _model; }
         }

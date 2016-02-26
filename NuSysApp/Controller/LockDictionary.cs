@@ -63,16 +63,16 @@ namespace NuSysApp
                     {
                         if (lockHolder == "")
                         {
-                            _workSpaceModel.IdToSendables[id].CanEdit = ElementInstanceModel.EditStatus.Maybe;
+                            _workSpaceModel.IdToSendables[id].CanEdit = ElementModel.EditStatus.Maybe;
                         }
                         else if (lockHolder == "//NetworkConnector.Instance.LocalIP")
                         {
                             var b = _workSpaceModel.IdToSendables[id];
-                            b.CanEdit = ElementInstanceModel.EditStatus.Yes;
+                            b.CanEdit = ElementModel.EditStatus.Yes;
                         }
                         else
                         {
-                            _workSpaceModel.IdToSendables[id].CanEdit = ElementInstanceModel.EditStatus.No;
+                            _workSpaceModel.IdToSendables[id].CanEdit = ElementModel.EditStatus.No;
                         }
                     }
                 });
@@ -88,7 +88,7 @@ namespace NuSysApp
             /*
             foreach (KeyValuePair<string, Sendable> kvp in _workSpaceModel.IdToSendables)
             {
-                kvp.Value.CanEdit = ElementInstanceModel.EditStatus.Maybe;
+                kvp.Value.CanEdit = ElementModel.EditStatus.Maybe;
             }
             */
         }

@@ -14,13 +14,13 @@ using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class TextNodeViewModel : ElementInstanceViewModel
+    public class TextNodeViewModel : ElementViewModel
     {
         #region Private Members
         private string _rtf = string.Empty;
 
         #endregion Private Members
-        public TextNodeViewModel(ElementInstanceController controller) : base(controller)
+        public TextNodeViewModel(ElementController controller) : base(controller)
         {           
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
         }

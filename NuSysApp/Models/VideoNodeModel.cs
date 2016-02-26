@@ -7,7 +7,7 @@ using Windows.Storage.Streams;
 
 namespace NuSysApp
 {
-    public class VideoNodeModel : ElementInstanceModel
+    public class VideoNodeModel : ElementModel
     {
         private byte[] _byteArray;
         private InMemoryRandomAccessStream _recording;

@@ -16,7 +16,7 @@ namespace NuSysApp
 {
     public class DetailViewerViewModel : BaseINPC
     {
-        private ElementInstanceModel _nodeModel;
+        private ElementModel _nodeModel;
         private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
         private String _tagToDelete;
         public Boolean DeleteOnFocus;
@@ -32,11 +32,11 @@ namespace NuSysApp
             Tags = new ObservableCollection<Button>();
         }
 
-        public async void SetNodeModel(ElementInstanceModel model)
+        public async void SetNodeModel(ElementModel model)
         {
             _nodeModel = model;
             View = await _viewFactory.CreateFromSendable(_nodeModel);
-            var tempvm = (ElementInstanceViewModel) View.DataContext;
+            var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");
@@ -44,7 +44,7 @@ namespace NuSysApp
 
         private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
         {
-            var tempvm = (ElementInstanceViewModel)View.DataContext;
+            var tempvm = (ElementViewModel)View.DataContext;
             switch (e.PropertyName.ToLower())
             {
                 case "title":

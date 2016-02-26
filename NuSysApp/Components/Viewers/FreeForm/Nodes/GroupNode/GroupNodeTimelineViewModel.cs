@@ -8,12 +8,12 @@ using NuSysApp.Components.Nodes.GroupNode;
 
 namespace NuSysApp
 {
-    public class GroupNodeTimelineViewModel : ElementCollectionInstanceViewModel
+    public class GroupNodeTimelineViewModel : ElementCollectionViewModel
     {
         //private List<Tuple<FrameworkElement, DateTime>> _atomList;
         //private AtomModel _nodeModel;
 
-        public GroupNodeTimelineViewModel(ElementCollectionInstanceController model) : base(model)
+        public GroupNodeTimelineViewModel(ElementCollectionController model) : base(model)
         {
             
         }

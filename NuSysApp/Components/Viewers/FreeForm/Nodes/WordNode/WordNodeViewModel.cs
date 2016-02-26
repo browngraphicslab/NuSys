@@ -14,10 +14,10 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WordNodeViewModel : ElementInstanceViewModel
+    public class WordNodeViewModel : ElementViewModel
     {
 
-        public WordNodeViewModel(ElementInstanceController controller) : base(controller)
+        public WordNodeViewModel(ElementController controller) : base(controller)
         {
             var model = controller.Model;
             String path = model.GetMetaData("FilePath")?.ToString();
@@ -113,7 +113,7 @@ namespace NuSysApp
             var pdfContent = Convert.ToBase64String(fileBytes);
 
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, pdfContent, ElementType.PDF.ToString()));
             /*
             await

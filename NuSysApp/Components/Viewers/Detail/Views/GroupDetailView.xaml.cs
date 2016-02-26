@@ -29,7 +29,7 @@ namespace NuSysApp
         
         private int _count = 0;
 
-        public GroupDetailView(ElementCollectionInstanceViewModel vm)
+        public GroupDetailView(ElementCollectionViewModel vm)
         {
             this.InitializeComponent();
             DataContext = vm;
@@ -57,9 +57,9 @@ namespace NuSysApp
         {
             // TODO: Refactor
             /*
-            var vm = (ElementCollectionInstanceViewModel) DataContext;
+            var vm = (ElementCollectionViewModel) DataContext;
             var allNodes = SessionController.Instance.IdToSendables.Values;
-            var modelList = new ObservableCollection<ElementInstanceModel>();
+            var modelList = new ObservableCollection<ElementModel>();
             foreach (var sendable in allNodes)
             {
                 var node = sendable.Model;
@@ -74,7 +74,7 @@ namespace NuSysApp
             {
                 var nodeModel = SessionController.Instance.IdToSendables[model.Id];
                 var view = await _factory.CreateFromSendable(nodeModel.Model, null);
-                var viewVm = (ElementInstanceViewModel)view.DataContext;
+                var viewVm = (ElementViewModel)view.DataContext;
                 view.RenderTransform = new CompositeTransform();
                 _views.Add(view);
             }

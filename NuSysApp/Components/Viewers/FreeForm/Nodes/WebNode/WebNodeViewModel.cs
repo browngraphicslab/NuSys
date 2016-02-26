@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WebNodeViewModel : ElementInstanceViewModel
+    public class WebNodeViewModel : ElementViewModel
     {
         private double  _zoom = 1;
        
@@ -29,7 +29,7 @@ namespace NuSysApp
             }
         }
 
-        public WebNodeViewModel(ElementInstanceController controller) : base(controller)
+        public WebNodeViewModel(ElementController controller) : base(controller)
         {
             ClipRect = new Rect(0,0, controller.Model.Width, controller.Model.Height);
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));

@@ -25,13 +25,13 @@ namespace NuSysApp
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, List<ElementInstanceController>> LoadingDictionary = new Dictionary<string, List<ElementInstanceController>>();
+        public Dictionary<string, List<ElementController>> LoadingDictionary = new Dictionary<string, List<ElementController>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
         private SessionController()
         {
-            IdToControllers = new ObservableDictionary<string, ElementInstanceController>();
+            IdToControllers = new ObservableDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
@@ -40,7 +40,7 @@ namespace NuSysApp
             get { return _nuSysNetworkSession; }
         }
 
-        public ObservableDictionary<string, ElementInstanceController> IdToControllers { set; get; }
+        public ObservableDictionary<string, ElementController> IdToControllers { set; get; }
 
         public SessionView SessionView { get; set; }
 
@@ -89,26 +89,26 @@ namespace NuSysApp
 
         public event WorkspaceChangedHandler WorkspaceChanged;
 
-        public async Task RecursiveCreate(ElementInstanceModel elementInstance)
+        public async Task RecursiveCreate(ElementModel element)
         {
-            await RecursiveCreateInner(elementInstance, new List<ElementInstanceModel>());
+            await RecursiveCreateInner(element, new List<ElementModel>());
             
         }
 
-        private async Task RecursiveCreateInner(ElementInstanceModel elementInstance, List<ElementInstanceModel> addedModels)
+        private async Task RecursiveCreateInner(ElementModel element, List<ElementModel> addedModels)
         {
 
             //TODO: refactor
             /*
-            if (!String.IsNullOrEmpty(elementInstance.Creator))
+            if (!String.IsNullOrEmpty(element.Creator))
             {
-                var creatorModel = (NodeContainerModel) IdToSendables[elementInstance.Creator];
+                var creatorModel = (NodeContainerModel) IdToSendables[element.Creator];
                 if (!addedModels.Contains(creatorModel))
                 {
                     await RecursiveCreateInner(creatorModel, addedModels);
                 }
-                await creatorModel.AddChild(elementInstance);
-                addedModels.Add(elementInstance);
+                await creatorModel.AddChild(element);
+                addedModels.Add(element);
             }
             */
         }
@@ -133,7 +133,6 @@ namespace NuSysApp
                 var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
                 var img = await MediaUtil.ByteArrayToBitmapImage(buffer.ToArray());
                 Thumbnails[id] = img;
-                await SendThumbnail(thumbFile, id);
             }
         }
 
@@ -152,14 +151,6 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
             FileIO.WriteBytesAsync(file, byteArray);
         }
-
-        private async Task SendThumbnail(StorageFile storageFile, string id)
-        {
-            var fileBytes = await MediaUtil.StorageFileToByteArray(storageFile);
-            var s = Convert.ToBase64String(fileBytes);
-            var request = new NewThumbnailRequest(s, id);
-        }
-
         public async Task SaveWorkspace()
         {
             //TODO: refactor

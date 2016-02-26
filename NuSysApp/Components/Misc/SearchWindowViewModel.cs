@@ -21,7 +21,7 @@ namespace NuSysApp
             SearchResults.Clear();
             if (queryString == "")
                 return;
-            var found = new HashSet<ElementInstanceModel>();
+            var found = new HashSet<ElementModel>();
 
             // TODO: refactor
            /*
@@ -29,7 +29,7 @@ namespace NuSysApp
             foreach (var kv in SessionController.Instance.IdToSendables)
             {
                 var kvp = (KeyValuePair<string, Sendable>) kv;
-                var atom = (ElementInstanceModel) kvp.Value;
+                var atom = (ElementModel) kvp.Value;
                 var tags = (List<string>) atom.GetMetaData("tags");
 
                 foreach (var tag in tags)

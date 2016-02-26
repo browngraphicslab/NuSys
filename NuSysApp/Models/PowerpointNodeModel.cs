@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class PowerpointNodeModel : ElementInstanceModel
+    public class PowerpointNodeModel : ElementModel
     {
         public PowerpointNodeModel(string id) : base(id)
         {

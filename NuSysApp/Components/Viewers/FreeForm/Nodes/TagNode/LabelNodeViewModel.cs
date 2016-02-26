@@ -9,12 +9,12 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class LabelNodeViewModel : ElementCollectionInstanceViewModel
+    public class LabelNodeViewModel : ElementCollectionViewModel
     {
        
         public List<string> TitleSuggestions { get; set; } 
 
-        public LabelNodeViewModel(ElementCollectionInstanceController controller) : base(controller)
+        public LabelNodeViewModel(ElementCollectionController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class PdfNodeModel : ElementInstanceModel
+    public class PdfNodeModel : ElementModel
     {
         private int _currentPageNumber;
 

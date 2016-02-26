@@ -11,10 +11,10 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageElementIntanceController : ElementInstanceController
+    public class ImageElementIntanceController : ElementController
     {
         
-        public ImageElementIntanceController(ElementInstanceModel model) : base(model)
+        public ImageElementIntanceController(ElementModel model) : base(model)
         {
 
         }

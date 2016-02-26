@@ -157,7 +157,7 @@ namespace NuSysApp
                         m["autoCreate"] = true;
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
                     }
                 });
             });

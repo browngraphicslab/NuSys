@@ -4,9 +4,9 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class LinkViewModel : ElementInstanceViewModel
+    public class LinkViewModel : ElementViewModel
     {
-        public LinkViewModel(ElementInstanceController controller, ElementInstanceViewModel atom1, ElementInstanceViewModel atom2) : base(controller)
+        public LinkViewModel(ElementController controller, ElementViewModel atom1, ElementViewModel atom2) : base(controller)
         {
             Atom1 = atom1;
             Atom2 = atom2;
@@ -110,14 +110,14 @@ namespace NuSysApp
 
         #region Private Members
 
-        private ElementInstanceViewModel _atom1, _atom2;
+        private ElementViewModel _atom1, _atom2;
         private string _annotationText;
 
         #endregion Private members
 
         #region Public Properties
 
-        public ElementInstanceViewModel Atom1
+        public ElementViewModel Atom1
         {
             get { return _atom1; }
             set
@@ -127,7 +127,7 @@ namespace NuSysApp
             }
         }
 
-        public ElementInstanceViewModel Atom2
+        public ElementViewModel Atom2
         {
             get { return _atom2; }
             set

@@ -111,15 +111,10 @@ namespace NuSysApp
             playbackElement.Pause();
             //    pause.Opacity = .3;
         }
-        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            var vm = (ElementInstanceViewModel)this.DataContext;
-            vm.Controller.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
-            e.Handled = true;
-        }
+
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementInstanceViewModel)this.DataContext;
+            var vm = (ElementViewModel)this.DataContext;
             vm.Remove();
         }
 

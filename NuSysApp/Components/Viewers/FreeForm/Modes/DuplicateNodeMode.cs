@@ -13,7 +13,7 @@ namespace NuSysApp
 {
     public class DuplicateNodeMode : AbstractWorkspaceViewMode
     {
-        private ElementInstanceViewModel _selectedNode;
+        private ElementViewModel _selectedNode;
 
         public DuplicateNodeMode(FreeFormViewer view) : base(view) { }
 
@@ -23,7 +23,7 @@ namespace NuSysApp
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel) _view.DataContext;
 
             wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
             {
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
@@ -39,7 +39,7 @@ namespace NuSysApp
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
                 var item = (FrameworkElement) newItem;
-                if (item.DataContext is ElementInstanceViewModel) { 
+                if (item.DataContext is ElementViewModel) { 
                    item.PointerPressed += OnAtomPressed;
                    item.PointerReleased += OnAtomReleased;
                 }
@@ -50,7 +50,7 @@ namespace NuSysApp
         public override async Task Deactivate()
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
-            foreach (var userControl in wvm.AtomViewList.Where( s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where( s => s.DataContext is ElementViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
@@ -77,10 +77,10 @@ namespace NuSysApp
                 msg["targetY"] = p.Y;
 
                 // TODO: factor this out to the DuplicateNodeRequest
-                if (_selectedNode is ElementCollectionInstanceViewModel)
+                if (_selectedNode is ElementCollectionViewModel)
                 {
                     var children = new List<string>(); ;
-                    foreach (var child in (_selectedNode as ElementCollectionInstanceViewModel).AtomViewList)
+                    foreach (var child in (_selectedNode as ElementCollectionViewModel).AtomViewList)
                     {
                         children.Add((child.DataContext as GroupItemViewModel).Id);
                     }
@@ -99,7 +99,7 @@ namespace NuSysApp
 
         private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
         {
-            _selectedNode = (ElementInstanceViewModel)((FrameworkElement)sender).DataContext;
+            _selectedNode = (ElementViewModel)((FrameworkElement)sender).DataContext;
         }
     }
 }

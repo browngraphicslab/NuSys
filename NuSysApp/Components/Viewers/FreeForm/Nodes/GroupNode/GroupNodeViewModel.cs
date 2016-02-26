@@ -10,9 +10,9 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class GroupNodeViewModel : ElementCollectionInstanceViewModel
+    public class GroupNodeViewModel : ElementCollectionViewModel
     {
-        public GroupNodeViewModel(ElementCollectionInstanceController controller) : base(controller)
+        public GroupNodeViewModel(ElementCollectionController controller) : base(controller)
         {
 
             _nodeViewFactory = new GroupItemThumbFactory(); 

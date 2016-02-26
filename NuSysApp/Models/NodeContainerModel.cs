@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class NodeContainerModel : ElementInstanceModel
+    public class NodeContainerModel : ElementModel
     {
         private bool _isTemporary;
 

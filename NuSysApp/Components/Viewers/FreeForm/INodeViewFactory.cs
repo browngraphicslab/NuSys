@@ -10,6 +10,6 @@ namespace NuSysApp
 {
     public interface INodeViewFactory
     {
-        Task<FrameworkElement> CreateFromSendable(ElementInstanceController model, List<FrameworkElement> atomLists );
+        Task<FrameworkElement> CreateFromSendable(ElementController model, List<FrameworkElement> atomLists );
     }
 }

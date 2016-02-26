@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class ElementInstanceModel : Sendable
+    public class ElementModel : Sendable
     {       
         private double _alpha = 1;
         private SolidColorBrush _color;
@@ -20,7 +20,7 @@ namespace NuSysApp
 
         protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
-        protected ElementInstanceModel(string id) : base(id)
+        protected ElementModel(string id) : base(id)
         {
 
             SetMetaData("tags", new List<string>());

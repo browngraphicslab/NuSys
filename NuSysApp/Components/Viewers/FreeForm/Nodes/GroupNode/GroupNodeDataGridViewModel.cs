@@ -9,12 +9,12 @@ using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public class GroupNodeDataGridViewModel : ElementCollectionInstanceViewModel
+    public class GroupNodeDataGridViewModel : ElementCollectionViewModel
     {
         private ObservableCollection<GroupNodeDataGridInfo> _atomDataList;
-        private ElementInstanceModel _nodeModel;
+        private ElementModel _nodeModel;
 
-        public GroupNodeDataGridViewModel(ElementCollectionInstanceController model) : base(model)
+        public GroupNodeDataGridViewModel(ElementCollectionController model) : base(model)
         {
             _atomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
             AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -28,8 +28,8 @@ namespace NuSysApp
             foreach (var atom in e.NewItems)
             {
                 var atomTest = (FrameworkElement) atom;
-                var vm = (ElementInstanceViewModel)atomTest.DataContext; //access viewmodel
-                _nodeModel = (ElementInstanceModel)vm.Model; // access model
+                var vm = (ElementViewModel)atomTest.DataContext; //access viewmodel
+                _nodeModel = (ElementModel)vm.Model; // access model
 
                 _nodeModel.SetMetaData("creator", "Dummy Data");
 

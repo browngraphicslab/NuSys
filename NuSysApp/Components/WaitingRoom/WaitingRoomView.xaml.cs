@@ -45,20 +45,27 @@ namespace NuSysApp
         private async void Init()
         {
             List?.Items?.Clear();
-            var url = "http://"+ServerName + "/api/getworkspace";
-            HttpClient client = new HttpClient();
-            var response = await client.GetAsync(new Uri(url));
-            string data;
-            using (var content = response.Content)
+            try
             {
-                data = await content.ReadAsStringAsync();
+                var url = "http://" + ServerName + "/api/getworkspace";
+                HttpClient client = new HttpClient();
+                var response = await client.GetAsync(new Uri(url));
+                string data;
+                using (var content = response.Content)
+                {
+                    data = await content.ReadAsStringAsync();
+                }
+                var list = JsonConvert.DeserializeObject<List<string>>(data);
+                foreach (var s in list)
+                {
+                    var box = new TextBlock();
+                    box.Text = s;
+                    List.Items.Add(box);
+                }
             }
-            var list = JsonConvert.DeserializeObject<List<string>>(data);
-            foreach (var s in list)
+            catch (Exception e)
             {
-                var box = new TextBlock();
-                box.Text = s;
-                List.Items.Add(box);
+                
             }
         }
 

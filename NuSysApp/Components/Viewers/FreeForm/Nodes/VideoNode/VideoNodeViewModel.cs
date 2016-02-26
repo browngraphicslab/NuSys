@@ -9,9 +9,9 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class VideoNodeViewModel : ElementInstanceViewModel
+    public class VideoNodeViewModel : ElementViewModel
     {
-        public VideoNodeViewModel(ElementInstanceController controller) : base(controller)
+        public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             //   this.X = 400;
             //   this.Y = 150;

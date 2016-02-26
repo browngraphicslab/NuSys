@@ -23,6 +23,9 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Content);
+            SetServerRequestType(ServerRequestType.Add);
         }
 
         public override async Task ExecuteRequestFunction()
@@ -32,8 +35,8 @@ namespace NuSysApp
             var id = _message.GetString("id");
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
-                var link = new LinkModel((ElementInstanceModel)SessionController.Instance.IdToControllers[id1].Model, (ElementInstanceModel)SessionController.Instance.IdToControllers[id2].Model, id);
-                var linkController = new ElementInstanceController(link);
+                var link = new LinkModel((ElementModel)SessionController.Instance.IdToControllers[id1].Model, (ElementModel)SessionController.Instance.IdToControllers[id2].Model, id);
+                var linkController = new ElementController(link);
                 SessionController.Instance.IdToControllers.Add(id, linkController);
                 await link.UnPack(_message);
 

@@ -41,23 +41,23 @@ namespace NuSysApp
 
                 var children0 = vm.AtomViewList.Select(s =>
                 {
-                    var v = (ElementInstanceViewModel)s.DataContext;
+                    var v = (ElementViewModel)s.DataContext;
                     return v.Model;
                 });
                 //var children0 = ((NodeContainerModel)vm.Model).Children.Values.ToList();
                 //var children1 = ((NodeContainerModel)otherVm.Model).Children.Values.ToList();
                 var children1 = otherVm.AtomViewList.Select(s =>
                 {
-                    var v = (ElementInstanceViewModel)s.DataContext;
+                    var v = (ElementViewModel)s.DataContext;
                     return v.Model;
                 });
-                var intersection = new List<ElementInstanceModel>();
+                var intersection = new List<ElementModel>();
                 foreach (var child0 in children0)
                 {
-                    var c0 = (ElementInstanceModel) child0;
+                    var c0 = (ElementModel) child0;
                     foreach (var child1 in children1)
                     {
-                        var c1 = (ElementInstanceModel) child1;
+                        var c1 = (ElementModel) child1;
                         if (c0 == c1 || c0.GetMetaData("visualCopyOf") == c1.GetMetaData("visualCopyOf") ||
                             c1.GetMetaData("visualCopyOf") == c0.GetMetaData("visualCopyOf"))
                         {
@@ -89,7 +89,7 @@ namespace NuSysApp
                                {
                                    foreach (var nodeModel in intersection)
                                    {
-                                       if (((ElementInstanceViewModel)control.DataContext).Model == nodeModel)
+                                       if (((ElementViewModel)control.DataContext).Model == nodeModel)
                                        {
                                            intersectionNodes.Add((AnimatableNodeView)control);
                                        }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +9,9 @@ namespace NuSysApp
 {
     public class SendableUpdateRequest : Request
     {
-        public SendableUpdateRequest(Message m) : base(RequestType.SendableUpdateRequest, m)
+        public SendableUpdateRequest(Message m, bool saveToServer = false) : base(RequestType.SendableUpdateRequest, m)
         {
-            SetServerSettings();
+            SetServerSettings(saveToServer);
         }
         public override async Task CheckOutgoingRequest()
         {
@@ -18,14 +19,13 @@ namespace NuSysApp
             {
                 throw new Exception("The Sendable update must have a key labeled 'id'");
             }
-            SetServerSettings();
         }
 
-        private void SetServerSettings()
+        private void SetServerSettings(bool saveToServer = false)
         {
             SetServerEchoType(ServerEchoType.EveryoneButSender);
             SetServerItemType(ServerItemType.Alias);
-            SetServerIgnore(true);
+            SetServerIgnore(!saveToServer);
             SetServerRequestType(ServerRequestType.Update);
         }
 
