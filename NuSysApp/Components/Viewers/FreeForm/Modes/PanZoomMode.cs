@@ -74,12 +74,15 @@ namespace NuSysApp
             compositeTransform.CenterY = cent.Y;
             vm.CompositeTransform = compositeTransform;
 
+            // TODO: refactor
+            /*
             var model = (WorkspaceModel)vm.Model;
             model.LocationX = compositeTransform.TranslateX;
             model.LocationY = compositeTransform.TranslateY;
             model.CenterX = compositeTransform.CenterX;
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
+            */
 
             _view.InqCanvas.Transform = compositeTransform;
 
@@ -139,12 +142,15 @@ namespace NuSysApp
 
             vm.CompositeTransform = compositeTransform;
 
+            // TODO: refactor
+            /*
             var model = (WorkspaceModel)vm.Model;
             model.LocationX = compositeTransform.TranslateX;
             model.LocationY = compositeTransform.TranslateY;
             model.CenterX = compositeTransform.CenterX;
             model.CenterY = compositeTransform.CenterY;
             model.Zoom = compositeTransform.ScaleX;
+            */
 
             _view.InqCanvas.Transform = compositeTransform;
         }

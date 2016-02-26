@@ -42,7 +42,7 @@ namespace NuSysApp
         public void Delete()
         {
             OnDeleteInqLine?.Invoke(this, this);
-            SessionController.Instance.IdToSendables.Remove(Id);
+            SessionController.Instance.IdToControllers.Remove(Id);
         }
 
         public override Task UnPack(Message props)

@@ -25,13 +25,13 @@ namespace NuSysApp
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, List<Tuple<ElementInstanceModel, LoadNodeView>>> LoadingNodeDictionary = new Dictionary<string, List<Tuple<ElementInstanceModel, LoadNodeView>>>();
+        public Dictionary<string, List<ElementInstanceController>> LoadingDictionary = new Dictionary<string, List<ElementInstanceController>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
         private SessionController()
         {
-            IdToSendables = new ObservableDictionary<string, ElementInstanceController>();
+            IdToControllers = new ObservableDictionary<string, ElementInstanceController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
@@ -40,7 +40,7 @@ namespace NuSysApp
             get { return _nuSysNetworkSession; }
         }
 
-        public ObservableDictionary<string, ElementInstanceController> IdToSendables { set; get; }
+        public ObservableDictionary<string, ElementInstanceController> IdToControllers { set; get; }
 
         public SessionView SessionView { get; set; }
 

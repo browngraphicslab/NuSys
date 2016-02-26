@@ -44,7 +44,7 @@ namespace NuSysApp
                 rtfTextBox.SetRtfText(content.Data);
             }
 
-            (vm.Model as TextNodeModel).TextChanged += delegate (object source, string text)
+            (vm.Model as TextElementInstanceModel).TextChanged += delegate (object source, string text)
             {
                 rtfTextBox.SetRtfText(text);
                 // rtfTextBox.SetRtfText();

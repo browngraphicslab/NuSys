@@ -48,7 +48,7 @@ namespace NuSysApp
 
             DataContext = vm;
 
-            var model = (TextNodeModel)vm.Model;
+            var model = (TextElementInstanceModel)vm.Model;
 
             var token = model.GetMetaData("Token");
             if (token == null || String.IsNullOrEmpty(token?.ToString()))
@@ -111,7 +111,7 @@ namespace NuSysApp
         public void Dispose()
         {
             var vm = DataContext as TextNodeViewModel;
-            var model = (TextNodeModel)vm.Model;
+            var model = (TextElementInstanceModel)vm.Model;
             model.Text = rtfTextBox.GetRtfText();
         }
 
@@ -133,7 +133,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextNodeViewModel) DataContext;
-                ((TextNodeModel) vm.Model).Text = session.SpeechString;
+                ((TextElementInstanceModel) vm.Model).Text = session.SpeechString;
             }
             else
             {
@@ -281,7 +281,7 @@ namespace NuSysApp
 
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
-            var model = (TextNodeModel)((TextNodeViewModel)DataContext).Model;
+            var model = (TextElementInstanceModel)((TextNodeViewModel)DataContext).Model;
             string token = model.GetMetaData("Token")?.ToString();
 
             if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))

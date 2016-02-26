@@ -29,8 +29,8 @@ namespace NuSysApp
             {
                 _timer.Stop();
 
-                ((LabelNodeViewModel)_initialGroupNode.DataContext).EnableChildMove = false;
-                ((LabelNodeViewModel)_intersectedGroupNode.DataContext).EnableChildMove = false;
+           //     ((LabelNodeViewModel)_initialGroupNode.DataContext).EnableChildMove = false;
+        //        ((LabelNodeViewModel)_intersectedGroupNode.DataContext).EnableChildMove = false;
 
                 var vm = (LabelNodeViewModel)_initialGroupNode.DataContext;
                 var n1 = vm.Title;
@@ -39,14 +39,14 @@ namespace NuSysApp
                 var props = new Dictionary<string, object>();
                 props["isTemporary"] = "True";
 
-                var children0 = vm.Children.Values.Select(s =>
+                var children0 = vm.AtomViewList.Select(s =>
                 {
                     var v = (ElementInstanceViewModel)s.DataContext;
                     return v.Model;
                 });
                 //var children0 = ((NodeContainerModel)vm.Model).Children.Values.ToList();
                 //var children1 = ((NodeContainerModel)otherVm.Model).Children.Values.ToList();
-                var children1 = otherVm.Children.Values.Select(s =>
+                var children1 = otherVm.AtomViewList.Select(s =>
                 {
                     var v = (ElementInstanceViewModel)s.DataContext;
                     return v.Model;
@@ -151,8 +151,8 @@ namespace NuSysApp
         public override async Task Activate()
         {
             var wvm = (FreeFormViewerViewModel) _view.DataContext;
-            wvm.Children.CollectionChanged += OnWorkspaceChildrenChanged;
-            foreach (var userControl in wvm.Children.Values.Where(s => s is LabelNodeView))
+            wvm.AtomViewList.CollectionChanged += OnWorkspaceChildrenChanged;
+            foreach (var userControl in wvm.AtomViewList.Where(s => s is LabelNodeView))
             {
                 userControl.PointerEntered += OnAtomPressed;
                 userControl.PointerMoved += OnPointerMoved;
@@ -163,8 +163,8 @@ namespace NuSysApp
         public override async Task Deactivate()
         {
             var wvm = (FreeFormViewerViewModel) _view.DataContext;
-            wvm.Children.CollectionChanged -= OnWorkspaceChildrenChanged;
-            foreach (var userControl in wvm.Children.Values.Where(s => s is LabelNodeView))
+            wvm.AtomViewList.CollectionChanged -= OnWorkspaceChildrenChanged;
+            foreach (var userControl in wvm.AtomViewList.Where(s => s is LabelNodeView))
             {
                 userControl.PointerEntered -= OnAtomPressed;
                 userControl.PointerMoved -= OnPointerMoved;
@@ -226,8 +226,8 @@ namespace NuSysApp
                     {
                         Anim.To(_generatedLabel, "Alpha", 0, 800);
 
-                        ((LabelNodeViewModel) _initialGroupNode.DataContext).EnableChildMove = true;
-                        ((LabelNodeViewModel)_intersectedGroupNode.DataContext).EnableChildMove = true;
+                  //      ((LabelNodeViewModel) _initialGroupNode.DataContext).EnableChildMove = true;
+                 //       ((LabelNodeViewModel)_intersectedGroupNode.DataContext).EnableChildMove = true;
                        // _initialGroupNode.UnIntersect();
                        // _initialGroupNode.ShowChildren();
                        // _intersectedGroupNode.UnIntersect();
@@ -265,7 +265,7 @@ namespace NuSysApp
         {
             _initialGroupNode = (LabelNodeView)sender;
             var wvm = (FreeFormViewerViewModel) _view.DataContext;
-            _searchList = wvm.Children.Values.Where(s => s is LabelNodeView).ToList();
+            _searchList = wvm.AtomViewList.Where(s => s is LabelNodeView).ToList();
         }
     }
 }

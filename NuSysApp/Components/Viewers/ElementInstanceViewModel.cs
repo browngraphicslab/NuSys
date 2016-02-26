@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Text;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -16,10 +9,11 @@ namespace NuSysApp
     public abstract class ElementInstanceViewModel : BaseINPC
     {
         #region Private Members      
+
         private double _x, _y, _height, _width, _alpha;
         private int _anchorX, _anchorY;
         private Point2d _anchor;
-        private string _id, _title;
+        private string _id;
         private SolidColorBrush _color;
         private bool _isEditing, _isEditingInk;
         private CompositeTransform _inkScale;
@@ -27,7 +21,6 @@ namespace NuSysApp
         private CompositeTransform _transform = new CompositeTransform();
         private ElementInstanceController _controller;
         protected bool _isSelected, _isMultiSelected, _isVisible;
-
 
         #endregion Private Members
 
@@ -47,35 +40,23 @@ namespace NuSysApp
             controller.TitleChanged += OnTitleChanged;
             controller.Deleted += OnDeleted;
 
-            var model = controller.Model;
-            Transform.TranslateX = model.X;
-            Transform.TranslateY = model.Y;
-            Transform.ScaleX = model.ScaleX;
-            Transform.ScaleY = model.ScaleY;
-
-            Id = model.Id;
-            Width = model.Width;
-            Height = model.Height;
-            Alpha = model.Alpha;
-            Title = model.Title;
-            X = model.X;
-            Y = model.Y;
-
             Tags = new ObservableCollection<Button>();
-          
-            CreateTags();
 
-            controller.UserChanged += delegate (NetworkUser user)
-            {
-                _userColor = user != null ? new SolidColorBrush(user.Color) : new SolidColorBrush(Colors.Transparent);
-            };
+            controller.UserChanged +=
+                delegate(NetworkUser user)
+                {
+                    _userColor = user != null ? new SolidColorBrush(user.Color) : new SolidColorBrush(Colors.Transparent);
+                };
+
+            ReadFromModel();
         }
 
         private void OnTranslated(object source, double tx, double ty)
         {
-            X += tx;
-            Y += ty;
+            Transform.TranslateX += tx;
+            Transform.TranslateY += ty;
             UpdateAnchor();
+            RaisePropertyChanged("Transform");
         }
 
         private void OnDeleted(object source)
@@ -84,11 +65,13 @@ namespace NuSysApp
         }
 
 
-        public virtual async Task Init(){} 
+        public virtual async Task Init()
+        {
+        }
 
         private void OnTitleChanged(object source, string title)
         {
-            _title = title;
+            Title = title;
             RaisePropertyChanged("Title");
         }
 
@@ -119,7 +102,7 @@ namespace NuSysApp
             {
                 _height = Height + deltaHeight;
             }
-     
+
             UpdateAnchor();
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
@@ -136,21 +119,22 @@ namespace NuSysApp
         {
             CanEdit = status;
         }
+
         protected virtual void OnAlphaChanged(object source, double alpha)
         {
             Alpha = Model.Alpha;
         }
+
         protected virtual void OnMetadataChange(object source, string key)
         {
             if (key == "tags")
                 CreateTags();
-
         }
 
         private void CreateTags()
         {
             Tags.Clear();
-            
+
             //TODO: refactor
 
             /*
@@ -180,6 +164,42 @@ namespace NuSysApp
 
         #region Atom Manipulations
 
+        public virtual void ReadFromModel()
+        {
+            var model = Controller.Model;
+            Transform.TranslateX = model.X;
+            Transform.TranslateY = model.Y;
+            Transform.ScaleX = model.ScaleX;
+            Transform.ScaleY = model.ScaleY;
+
+            Id = model.Id;
+            Width = model.Width;
+            Height = model.Height;
+            Alpha = model.Alpha;
+            Title = model.Title;
+            IsVisible = true;
+            Transform.TranslateX = model.X;
+            Transform.TranslateY = model.Y;
+
+            CreateTags();
+        }
+
+        public virtual void WriteToModel()
+        {
+            var model = Controller.Model;
+            model.Id = Id;
+            model.X = Transform.TranslateX;
+            model.Y = Transform.TranslateY;
+            model.ScaleX = Transform.ScaleX;
+            model.ScaleY = Transform.ScaleY;
+            model.Width = Width;
+            model.Height = Height;
+            model.Alpha = Alpha;
+            model.Title = Title;
+            model.X = Transform.TranslateX;
+            model.Y = Transform.TranslateY;
+        }
+
         public virtual void Dispose()
         {
             _controller.CanEditChange -= OnCanEditChange;
@@ -190,8 +210,11 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
+
+            Tags = null;
+            _transform = null;
         }
-        
+
         public virtual void SetSize(double width, double height)
         {
             Width = width;
@@ -206,7 +229,7 @@ namespace NuSysApp
             if (IsSelected)
                 SessionController.Instance.ActiveFreeFormViewer.SetSelection(this);
         }
-  
+
         public void AddLink(LinkViewModel linkVm)
         {
             LinkList.Add(linkVm);
@@ -223,7 +246,7 @@ namespace NuSysApp
 
         public virtual void UpdateAnchor()
         {
-            Anchor = new Point2d(Transform.TranslateX + Width / 2, Transform.TranslateY + Height / 2);
+            Anchor = new Point2d(Transform.TranslateX + Width/2, Transform.TranslateY + Height/2);
             foreach (var link in LinkList)
             {
                 link.UpdateAnchor();
@@ -231,12 +254,13 @@ namespace NuSysApp
         }
 
         #endregion Other Methods
-        
+
         #region Public Properties
 
         public ObservableCollection<LinkViewModel> LinkList { get; set; }
-        
+
         private EditStatus _canEdit;
+
         public EditStatus CanEdit
         {
             get { return _canEdit; }
@@ -244,14 +268,12 @@ namespace NuSysApp
             {
                 _canEdit = value;
                 RaisePropertyChanged("CanEdit");
-                
             }
         }
-       
+
         public bool IsSelected
         {
             get { return _isSelected; }
-
         }
 
         public virtual void SetSelected(bool val)
@@ -309,8 +331,8 @@ namespace NuSysApp
                 RaisePropertyChanged("Transform");
             }
         }
-       
-        
+
+
         public Point2d Anchor
         {
             get { return _anchor; }
@@ -325,26 +347,9 @@ namespace NuSysApp
             }
         }
 
-        public ElementInstanceModel Model { get { return _controller.Model; }}
-
-        public double X
+        public ElementInstanceModel Model
         {
-            get { return _x; }
-            set
-            {
-                _x = value;
-                RaisePropertyChanged("X");
-            }
-        }
-
-        public double Y
-        {
-            get { return _y; }
-            set
-            {
-                _y = value;
-                RaisePropertyChanged("Y");
-            }
+            get { return _controller.Model; }
         }
 
         public double Width
@@ -402,7 +407,10 @@ namespace NuSysApp
 
         public ObservableCollection<Button> Tags { get; set; }
 
-        public ElementInstanceController Controller { get { return _controller; } }
+        public ElementInstanceController Controller
+        {
+            get { return _controller; }
+        }
 
         public bool IsEditing
         {
@@ -434,12 +442,12 @@ namespace NuSysApp
 
         public ElementType ElementType
         {
-            get { return ((ElementInstanceModel)Model).ElementType; }
+            get { return ((ElementInstanceModel) Model).ElementType; }
         }
 
         public string ContentId
         {
-            get { return ((ElementInstanceModel)Model).ContentId; }
+            get { return ((ElementInstanceModel) Model).ContentId; }
         }
 
         public CompositeTransform InkScale
@@ -464,8 +472,8 @@ namespace NuSysApp
 
                 RaisePropertyChanged("UserColor");
             }
-
         }
+
         #endregion Public Properties
     }
 }

@@ -13,104 +13,70 @@ namespace NuSysApp
 {
     public class FreeFormNodeViewFactory : INodeViewFactory
     {
-        public async Task<FrameworkElement> CreateFromSendable(Sendable model, List<FrameworkElement> AtomViewList)
+        public async Task<FrameworkElement> CreateFromSendable(ElementInstanceController controller, List<FrameworkElement> AtomViewList)
         {
             UserControl view = null;
 
-            if (model is ElementInstanceModel)
-                return await CreateFromNodeType((ElementInstanceModel)model);
+            if (controller.Model is LinkModel)
+                return CreateLinkView((LinkModel)controller.Model, AtomViewList);
 
-            if (model is LinkModel)
-                return CreateLinkView((LinkModel) model, AtomViewList);
+            var model = controller.Model;
 
-            if (model is PinModel)
+            switch (model.ElementType)
             {
-                var vm = new PinViewModel((PinModel)model);
-                return vm.View;
-            }   
+                case ElementType.Text:
+                    view = new TextNodeView(new TextNodeViewModel(controller));
+                    break;
+                case ElementType.Group:
+                    view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionInstanceController)controller));
+                    break;
+                case ElementType.Tag:
+                    view = new LabelNodeView(new LabelNodeViewModel((ElementCollectionInstanceController)controller));
+                    break;
+                case ElementType.Image:
+                    view = new ImageNodeView(new ImageElementInstanceViewModel(controller));
+                    break;
+                case ElementType.Word:
+                    view = new WordNodeView(new WordNodeViewModel(controller));
+                    break;
+                case ElementType.Powerpoint:
+                    view = new PowerpointNodeView(new PowerpointNodeViewModel(controller));
+                    break;
+                case ElementType.Audio:
+                    view = new AudioNodeView(new AudioNodeViewModel(controller));
+                    break;
+                case ElementType.PDF:
+                    view = new PdfNodeView(new PdfNodeViewModel(controller));
+                    break;
+                case ElementType.Video:
+                    view = new VideoNodeView(new VideoNodeViewModel(controller));
+                    break;
+                case ElementType.Web:
+                    view = new WebNodeView(new WebNodeViewModel(controller));
+                    break;
+                case ElementType.Area:
+                    view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionInstanceController)controller));
+                    break;
+            }
+            await ((ElementInstanceViewModel)view.DataContext).Init();
 
-            return null;
+            return view;
         }
 
 
         private UserControl CreateLinkView(LinkModel model, List<FrameworkElement> AtomViewList)
         {
-            var atom1Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom1).DataContext;
-            var atom2Vm = (ElementInstanceViewModel)AtomViewList.First(s => ((ElementInstanceViewModel)s.DataContext).Model == model.Atom2).DataContext;
+            var atom1Vm =
+                (ElementInstanceViewModel)
+                    AtomViewList.First(s => ((ElementInstanceViewModel) s.DataContext).Model == model.Atom1).DataContext;
+            var atom2Vm =
+                (ElementInstanceViewModel)
+                    AtomViewList.First(s => ((ElementInstanceViewModel) s.DataContext).Model == model.Atom2).DataContext;
 
             var viewModel = new LinkViewModel(new ElementInstanceController(model), atom1Vm, atom2Vm);
             var view = new BezierLinkView(viewModel);
             atom1Vm.AddLink(viewModel);
             atom2Vm.AddLink(viewModel);
-            return view;
-        }
-
-        private async Task<FrameworkElement> CreateFromNodeType(ElementInstanceModel model)
-        {
-            UserControl view = null;
-
-            if (model.ContentId != null && SessionController.Instance.ContentController.Get(model.ContentId) == null)
-            {
-                view = new LoadNodeView(new LoadNodeViewModel(new ElementInstanceController(model)));
-                if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(model.ContentId))
-                {
-                    SessionController.Instance.LoadingNodeDictionary[model.ContentId]?.Add(
-                        new Tuple<ElementInstanceModel, LoadNodeView>(model, (LoadNodeView) view));
-                }
-                else
-                {
-                    SessionController.Instance.LoadingNodeDictionary[model.ContentId] =
-                        new List<Tuple<ElementInstanceModel, LoadNodeView>>()
-                        {
-                            new Tuple<ElementInstanceModel, LoadNodeView>(model, (LoadNodeView) view)
-                        };
-
-                }
-                ((LoadNodeView)view).StartBar();
-                return view;
-            }
-
-            switch (model.ElementType)
-            {
-                case ElementType.Text:
-                    view = new TextNodeView(new TextNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Group:
-                    view = new GroupNodeView(new GroupNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Tag:
-                    view = new LabelNodeView(new LabelNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Image:
-                    view = new ImageNodeView(new ImageNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Word:
-                    view = new WordNodeView(new WordNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Powerpoint:
-                    view = new PowerpointNodeView(new PowerpointNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Audio:
-                    view = new AudioNodeView(new AudioNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.PDF:
-                    view = new PdfNodeView(new PdfNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Video:
-                    view = new VideoNodeView(new VideoNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Workspace:
-                    view = new FreeFormViewer(new FreeFormViewerViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Web:
-                    view = new WebNodeView(new WebNodeViewModel(new ElementInstanceController(model)));
-                    break;
-                case ElementType.Area:
-                    view = new AreaNodeView(new AreaNodeViewModel(new ElementInstanceController(model)));
-                    break;
-            }
-            await ((ElementInstanceViewModel) view.DataContext).Init();
-
             return view;
         }
     }

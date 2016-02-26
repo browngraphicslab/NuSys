@@ -36,6 +36,8 @@ namespace NuSysApp
 
         public string ContentId { set; get; }
 
+        public string Creator { get; set; }
+
         public ElementType Type { get; set; }
 
         // TODO: Move color to higher level type
@@ -208,6 +210,12 @@ namespace NuSysApp
             {
                 ContentId = props.GetString("contentId", "");
             }
+            if (props.ContainsKey("creator"))
+            {
+                Creator = props.GetString("creator", "");
+            }
+
+
             InqCanvas.UnPack(props);
 
             await base.UnPack(props);

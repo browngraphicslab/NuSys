@@ -108,7 +108,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.Id };
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
 
         }
 
@@ -121,8 +121,6 @@ namespace NuSysApp
 
         private async Task<bool> CheckForTagCreation(InqLineModel line)
         {
-            var wsmodel = (_view.DataContext as FreeFormViewerViewModel).Model as WorkspaceModel;
-            var Model = wsmodel.InqCanvas;
             var outerRect = Geometry.PointCollecionToBoundingRect(line.Points.ToList());
             outerRect.X *= Constants.MaxCanvasSize;
             outerRect.Y *= Constants.MaxCanvasSize;
@@ -194,7 +192,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.Id };
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
 
             return true;
         }

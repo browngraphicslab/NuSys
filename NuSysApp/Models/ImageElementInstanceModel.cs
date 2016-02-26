@@ -9,9 +9,9 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageNodeModel : ElementInstanceModel
+    public class ImageElementInstanceModel : ElementInstanceModel
     {
-        public ImageNodeModel(string id) : base(id)
+        public ImageElementInstanceModel(string id) : base(id)
         {
             ElementType = ElementType.Image;
         }

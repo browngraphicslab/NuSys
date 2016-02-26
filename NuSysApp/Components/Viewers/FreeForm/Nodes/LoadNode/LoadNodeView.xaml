@@ -7,14 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     RenderTransform="{Binding Transform}"
-    Height="{Binding Height}"
-    Width="{Binding Width}">
+    Height="100"
+    Width="100">
 
-    <local:NodeTemplate x:Name="nodeTpl">
-        <local:NodeTemplate.Inner>
-            <Grid Height="{Binding Height}" Width="{Binding Width}"  HorizontalAlignment="Center" VerticalAlignment="Center">
-                <local:LoadingBar x:Name="Bar" HorizontalAlignment="Center" VerticalAlignment="Center"></local:LoadingBar>
-            </Grid>
-        </local:NodeTemplate.Inner>
-    </local:NodeTemplate>
+    <Grid></Grid>
 </local:AnimatableUserControl>

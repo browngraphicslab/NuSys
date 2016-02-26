@@ -10,23 +10,11 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class GroupNodeViewModel : ElementInstanceCollectionViewModel
+    public class GroupNodeViewModel : ElementCollectionInstanceViewModel
     {
-        public GroupNodeViewModel(ElementInstanceController controller) : base(controller)
+        public GroupNodeViewModel(ElementCollectionInstanceController controller) : base(controller)
         {
-            
-            var count = 0;
-            base.ChildAdded += async delegate(object source, FrameworkElement node)
-            {
-                node.Margin = new Thickness(0, -35 * Math.Max(0,Math.Min(count,1)), 0, 0);
-                node.VerticalAlignment = VerticalAlignment.Center;
-                
-                //node.RenderTransform = new TranslateTransform {Y = -70*Math.Min(count,1)};
-                //node.HorizontalAlignment = HorizontalAlignment.Center;
-                //node.VerticalAlignment = VerticalAlignment.Center;
-                count++;
-            };
-            
+
             _nodeViewFactory = new GroupItemThumbFactory(); 
         }
 

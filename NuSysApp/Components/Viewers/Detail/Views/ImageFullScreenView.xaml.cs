@@ -24,12 +24,12 @@ namespace NuSysApp
     {
         private InqCanvasView _inqCanvasView;
 
-        public ImageFullScreenView(ImageNodeViewModel vm)
+        public ImageFullScreenView(ImageElementInstanceViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
 
-            var model = (ImageNodeModel)vm.Model;
+            var model = (ImageElementInstanceModel)vm.Model;
             var token = model.GetMetaData("Token");
             if (token == null || String.IsNullOrEmpty(token?.ToString()))
             {
@@ -68,7 +68,7 @@ namespace NuSysApp
 
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
-            var model = (ImageNodeModel)((ImageNodeViewModel)DataContext).Model;
+            var model = (ImageElementInstanceModel)((ImageElementInstanceViewModel)DataContext).Model;
 
             string token = model.GetMetaData("Token")?.ToString();
 

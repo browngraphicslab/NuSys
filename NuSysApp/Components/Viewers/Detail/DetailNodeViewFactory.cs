@@ -53,6 +53,8 @@ namespace NuSysApp
 
         private async Task<List<UserControl>> CreateLinkAtomList(LinkModel model)
         {
+            // TODO: refactor
+            /*
             ElementInstanceModel atom1 = model.Atom1;
             ElementInstanceModel atom2 = model.Atom2;
             var factory = new FreeFormNodeViewFactory();
@@ -61,7 +63,8 @@ namespace NuSysApp
             List<UserControl> list = new List<UserControl>();
             list.Add(atomview1);
             list.Add(atomview2);
-            return list;
+            */
+            return new List<UserControl>();
         }
 
         private async Task<UserControl> CreateFromNodeType(ElementInstanceModel model)
@@ -76,7 +79,7 @@ namespace NuSysApp
                     await tvm.Init();
                     break;
                 case ElementType.Image:
-                    var ivm = new ImageNodeViewModel((new ElementInstanceController(model)));
+                    var ivm = new ImageElementInstanceViewModel((new ElementInstanceController(model)));
                     await ivm.Init();
                     view = new ImageFullScreenView(ivm);
                     break;
@@ -101,7 +104,7 @@ namespace NuSysApp
                     view = new AudioDetailView(audioVM);
                     break;
                 case ElementType.Group:
-                    view = new GroupDetailView(new ElementInstanceCollectionViewModel(new ElementInstanceController(model)));
+                    view = new GroupDetailView(new ElementCollectionInstanceViewModel(new ElementCollectionInstanceController(model)));
                     break;
             }
 

@@ -9,12 +9,12 @@ using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public class GroupNodeDataGridViewModel : ElementInstanceCollectionViewModel
+    public class GroupNodeDataGridViewModel : ElementCollectionInstanceViewModel
     {
         private ObservableCollection<GroupNodeDataGridInfo> _atomDataList;
         private ElementInstanceModel _nodeModel;
 
-        public GroupNodeDataGridViewModel(ElementInstanceController model) : base(model)
+        public GroupNodeDataGridViewModel(ElementCollectionInstanceController model) : base(model)
         {
             _atomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
             AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;

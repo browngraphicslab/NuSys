@@ -31,7 +31,7 @@ namespace NuSysApp
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.ManipulationStarting += UserControlOnManipulationStarting;
                 userControl.ManipulationDelta += UserControlOnManipulationDelta;
@@ -43,7 +43,7 @@ namespace NuSysApp
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.ManipulationDelta -= UserControlOnManipulationDelta;
                 userControl.ManipulationCompleted -= UserControlOnManipulationCompleted;

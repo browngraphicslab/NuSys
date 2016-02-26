@@ -17,7 +17,7 @@ namespace NuSysApp
 {
     public sealed partial class ImageNodeView : AnimatableUserControl, IThumbnailable
     {
-        public ImageNodeView(ImageNodeViewModel vm)
+        public ImageNodeView(ImageElementInstanceViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
@@ -38,7 +38,7 @@ namespace NuSysApp
 
         private void OnEditInk(object sender, RoutedEventArgs e)
         {
-            nodeTpl.ToggleInkMode();
+            //nodeTpl.ToggleInkMode();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
@@ -53,5 +53,7 @@ namespace NuSysApp
             await r.RenderAsync(xImage, width, height);
             return r;
         }
+
+
     }
 }

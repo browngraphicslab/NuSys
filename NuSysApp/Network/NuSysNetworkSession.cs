@@ -140,7 +140,7 @@ namespace NuSysApp
                     request = new DeleteSendableRequest(message);
                     break;
                 case Request.RequestType.NewNodeRequest:
-                    request = new NewNodeRequest(message);
+                    request = new NewElementInstanceRequest(message);
                     break;
                 case Request.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);

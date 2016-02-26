@@ -231,17 +231,17 @@ namespace NuSysApp
             dict["x"] = p.X;
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
+            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
             dict["metadata"] = metadata;
             dict["autoCreate"] = true;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
-            var request = new NewNodeRequest(dict);
+            var request = new NewElementInstanceRequest(dict);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, data == null ? "" : data.ToString(), elementType.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null));
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
             vm.ClearSelection();
-            vm.ClearMultiSelection();
+         //   vm.ClearMultiSelection();
 
             if (!_isFixed) { 
                 SessionController.Instance.SessionView.FloatingMenu.Reset();

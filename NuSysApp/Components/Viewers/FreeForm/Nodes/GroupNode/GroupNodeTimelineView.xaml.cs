@@ -77,8 +77,9 @@ namespace NuSysApp
             foreach (var atom in _vm.AtomViewList)
             {
                 var vm = (ElementInstanceViewModel)atom.DataContext; //access viewmodel
-                vm.X = 0;
-                vm.Y = 0;
+                // TODO: refactor
+               // vm.X = 0;
+               // vm.Y = 0;
                 vm.CanEdit = EditStatus.No;
                 vm.Height = 80;
                 vm.Width = 130;

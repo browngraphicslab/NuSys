@@ -11,31 +11,28 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class ImageNodeViewModel : ElementInstanceViewModel
+    public class ImageElementInstanceViewModel : ElementInstanceViewModel
     {
         
-        public ImageNodeViewModel(ElementInstanceController controller) : base(controller)
+        public ImageElementInstanceViewModel(ElementInstanceController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            InkScale = new CompositeTransform();
+
+            controller.ContentLoaded += async delegate(object source, NodeContentModel content)
+            {
+                Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(content.Data));
+                SetSize(Image.PixelWidth, Image.PixelHeight);
+                RaisePropertyChanged("Image");
+            };
         }
 
 
-        public BitmapImage Image { get;
-            set; }
+        public BitmapImage Image { get; set; }
 
         public override async Task Init()
         {
-            byte[] data = null;
-            var content = SessionController.Instance.ContentController.Get(((ElementInstanceModel) Model).ContentId);
-
-            if (content != null) { 
-                data = Convert.FromBase64String(content.Data);
-                Image = await MediaUtil.ByteArrayToBitmapImage(data);
-                SetSize(Width, Height);
-            }
+            RaisePropertyChanged("Image");
         }
-
 
         public override void SetSize(double width, double height)
         {
@@ -50,6 +47,5 @@ namespace NuSysApp
                 base.SetSize(height * r, height);
             }
         }
-
     }
 }

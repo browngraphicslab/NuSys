@@ -32,9 +32,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
  
-
-
-
             var inqCanvasModel = vm.Controller.Model.InqCanvas;
             var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
             _inqCanvas = new InqCanvasView(inqCanvasViewModel);
@@ -102,7 +99,6 @@ namespace NuSysApp
         {
             get { return xWrapper; }
         }
-
 
         public InqCanvasView InqCanvas
         {

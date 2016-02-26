@@ -52,6 +52,8 @@ namespace NuSysApp
 
         private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            // TODO: refactor
+            /*
             if (e.NewItems == null)
                 return;
 
@@ -71,10 +73,13 @@ namespace NuSysApp
                 xGrid.Children.Add(wrappedView);
                 _count++;
             }
+            */
         }
 
         private async void LoadThumbnails(int numRows, int numCols, object myObj)
         {
+            // TODO: Refactor
+            /*
             var child = (FrameworkElement)myObj;
             var childModel = (child.DataContext as GroupItemViewModel).Model;
             var view = await _factory.CreateFromSendable(childModel, null);
@@ -85,6 +90,7 @@ namespace NuSysApp
             Grid.SetColumn(wrappedView, _count % numCols);
             xGrid.Children.Add(wrappedView);
             _count++;
+            */
         }
 
         private async  void OnLoaded(object sender, RoutedEventArgs routedEventArgs)

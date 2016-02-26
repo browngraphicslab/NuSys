@@ -24,14 +24,14 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = true;
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel) _view.DataContext;
 
-            wvm.Children.CollectionChanged += AtomViewListOnCollectionChanged;
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
+            wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
             }
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is LabelNodeViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is LabelNodeViewModel))
             {
                 userControl.DoubleTapped += OnGroupTagDoubleTapped;
             }
@@ -42,14 +42,14 @@ namespace NuSysApp
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
             }
-            wvm.Children.CollectionChanged -= AtomViewListOnCollectionChanged;
+            wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
 
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is LabelNodeViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is LabelNodeViewModel))
             {
                 userControl.DoubleTapped -= OnGroupTagDoubleTapped;
                 Canvas.SetZIndex(userControl, 100);
@@ -69,14 +69,14 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var kv = (KeyValuePair<string, FrameworkElement>)newItem;
+                var kv = (FrameworkElement)newItem;
                 
-                if (((FrameworkElement)kv.Value).DataContext is LabelNodeViewModel) {
-                    Canvas.SetZIndex((UserControl)kv.Value, 100);
+                if (kv.DataContext is LabelNodeViewModel) {
+                    Canvas.SetZIndex((UserControl)kv, 100);
                     continue;
                 }
 
-                var item = (UserControl)kv.Value;
+                var item = (UserControl)kv;
                item.PointerPressed += OnAtomPressed;
                item.PointerReleased += OnAtomReleased;
             }
@@ -146,7 +146,7 @@ namespace NuSysApp
             
             // tag all visual copies
 
-            foreach (var userControl in SessionController.Instance.ActiveFreeFormViewer.Children.Values)
+            foreach (var userControl in SessionController.Instance.ActiveFreeFormViewer.AtomViewList)
             {
                 var vm = (ElementInstanceViewModel) userControl.DataContext;
                 var model = vm.Model;
@@ -167,7 +167,7 @@ namespace NuSysApp
                 {
                     UITask.Run(() =>
                     {
-                        var newNodeModel = SessionController.Instance.IdToSendables[s].Model;
+                        var newNodeModel = SessionController.Instance.IdToControllers[s].Model;
                         newNodeModel.SetMetaData("visualCopyOf", nodeToTag.Id);
                         //newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });

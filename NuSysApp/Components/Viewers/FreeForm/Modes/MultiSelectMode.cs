@@ -35,7 +35,7 @@ namespace NuSysApp
         {
             
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            vm.ClearMultiSelection();
+         //   vm.ClearMultiSelection();
             _view.PointerPressed += View_PointerPressed;
             _view.PointerMoved += View_PointerMoved;
             _view.PointerReleased += View_PointerReleased;
@@ -59,14 +59,14 @@ namespace NuSysApp
         private void Delete_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            vm.DeleteMultiSelecttion();
+         //   vm.DeleteMultiSelecttion();
             _view.SwitchMode(Options.SelectNode, false);
         }
 
         private void Group_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            vm.GroupFromMultiSelection();
+         //   vm.GroupFromMultiSelection();
             _view.SwitchMode(Options.SelectNode, false);
         }
 
@@ -93,7 +93,7 @@ namespace NuSysApp
             if (nvm != null)
             {
                 var vm = (FreeFormViewerViewModel)_view.DataContext;
-                vm.SetMultiSelection(nvm);
+      
                 _view.MultiMenu.Visibility = Visibility.Visible;
                 _view.MultiMenu.Delete.Click += Delete_OnClick;
                 _view.MultiMenu.Group.Click += Group_OnClick;
@@ -147,13 +147,13 @@ namespace NuSysApp
         private async void SelectContainedComponents()
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            vm.ClearMultiSelection();
+    
             if (_currentRect == null)
                 return;
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
 
 
-            foreach (var atom in vm.Children.Values)
+            foreach (var atom in vm.AtomViewList)
             {
                 var atomPoint = atom.TransformToVisual(_view.InqCanvas).TransformPoint(new Point(0, 0));
                 var atomRect = new Rect(atomPoint.X, atomPoint.Y, atom.Width, atom.Height);
@@ -163,7 +163,7 @@ namespace NuSysApp
                     var avm = atom.DataContext as ElementInstanceViewModel;
                     if (!avm.IsSelected)
                     {
-                        vm.SetMultiSelection(avm);
+                   //     vm.SetMultiSelection(avm);
                     }
                 }
             }

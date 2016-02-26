@@ -29,7 +29,7 @@ namespace NuSysApp
         
         private int _count = 0;
 
-        public GroupDetailView(ElementInstanceCollectionViewModel vm)
+        public GroupDetailView(ElementCollectionInstanceViewModel vm)
         {
             this.InitializeComponent();
             DataContext = vm;
@@ -55,7 +55,9 @@ namespace NuSysApp
 
         public async Task AddChildren()
         {
-            var vm = (ElementInstanceCollectionViewModel) DataContext;
+            // TODO: Refactor
+            /*
+            var vm = (ElementCollectionInstanceViewModel) DataContext;
             var allNodes = SessionController.Instance.IdToSendables.Values;
             var modelList = new ObservableCollection<ElementInstanceModel>();
             foreach (var sendable in allNodes)
@@ -104,7 +106,9 @@ namespace NuSysApp
                     count++;
                 }
             }
+             */
         }
+
 
     }
 }

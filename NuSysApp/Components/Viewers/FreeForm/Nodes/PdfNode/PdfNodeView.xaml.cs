@@ -18,12 +18,6 @@ namespace NuSysApp
         {
             InitializeComponent();
           //  IsDoubleTapEnabled = true;
-
-            Loaded += async delegate
-            {
-                await vm.InitPdfViewer();
-            };
-
             DataContext = vm;
             
         }

@@ -79,7 +79,7 @@ namespace NuSysApp
                 var idDict = new Dictionary<string, Sendable>();
                 foreach (var id in idList)
                 {
-                    var tempNode = SessionController.Instance.IdToSendables[id].Model;
+                    var tempNode = SessionController.Instance.IdToControllers[id].Model;
                     idDict.Add(id, tempNode);
                 }
             }

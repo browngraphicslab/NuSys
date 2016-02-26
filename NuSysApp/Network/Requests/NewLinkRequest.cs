@@ -30,11 +30,11 @@ namespace NuSysApp
             var id1 = _message.GetString("id1");
             var id2 = _message.GetString("id2");
             var id = _message.GetString("id");
-            if (SessionController.Instance.IdToSendables.ContainsKey(id1) && (SessionController.Instance.IdToSendables.ContainsKey(id2)))
+            if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
-                var link = new LinkModel((ElementInstanceModel)SessionController.Instance.IdToSendables[id1].Model, (ElementInstanceModel)SessionController.Instance.IdToSendables[id2].Model, id);
+                var link = new LinkModel((ElementInstanceModel)SessionController.Instance.IdToControllers[id1].Model, (ElementInstanceModel)SessionController.Instance.IdToControllers[id2].Model, id);
                 var linkController = new ElementInstanceController(link);
-                SessionController.Instance.IdToSendables.Add(id, linkController);
+                SessionController.Instance.IdToControllers.Add(id, linkController);
                 await link.UnPack(_message);
 
                 if (!_message.GetBool("autoCreate"))

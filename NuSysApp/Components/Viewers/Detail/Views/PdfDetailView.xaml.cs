@@ -59,8 +59,6 @@ namespace NuSysApp
                     
                 };
 
-
-                await vm.InitPdfViewer();
                 /*
 
                 _inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));

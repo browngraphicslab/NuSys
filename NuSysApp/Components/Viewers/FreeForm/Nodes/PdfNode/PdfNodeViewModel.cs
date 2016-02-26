@@ -29,6 +29,25 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
+
+            controller.ContentLoaded += async delegate (object source, NodeContentModel content)
+            {
+                var data = content.Data;
+                var dataBytes = Convert.FromBase64String(data);
+                var ms = new MemoryStream(dataBytes);
+                using (IInputStream inputStreamAt = ms.AsInputStream())
+                using (var dataReader = new DataReader(inputStreamAt))
+                {
+                    uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
+                    IBuffer readBuffer = dataReader.ReadBuffer(u);
+                    _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+                }
+                
+                await Goto(CurrentPageNumber);
+                SetSize(Width, Height);
+                LaunchLDA((PdfNodeModel)this.Model);
+
+            };
         }
 
         private async void OnPageChange(int page)
@@ -36,32 +55,6 @@ namespace NuSysApp
             CurrentPageNumber = page;
             await RenderPage(page);
 
-        }
-
-        public async Task InitPdfViewer()
-        {
-            var content = SessionController.Instance.ContentController.Get(ContentId);
-            if (content == null)
-                return;
-
-            var data = content.Data;
-            var dataBytes = Convert.FromBase64String(data);
-            var ms = new MemoryStream(dataBytes);
-            using (IInputStream inputStreamAt = ms.AsInputStream())
-            using (var dataReader = new DataReader(inputStreamAt))
-            {
-                uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                IBuffer readBuffer = dataReader.ReadBuffer(u);
-                _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
-            }
-
-            
-            await Goto(CurrentPageNumber);
-            SetSize(Width, Height);
-            LaunchLDA((PdfNodeModel)this.Model);
-
-            var text = _document.GetAllTexts(0);
-            Debug.WriteLine(text);
         }
 
         public async Task FlipRight()

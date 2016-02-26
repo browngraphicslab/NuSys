@@ -16,6 +16,8 @@ namespace NuSysApp
         {
             Pins = new ObservableCollection<PinModel>();
 
+            // TODO: refactor
+            /*
             SessionController.Instance.WorkspaceChanged += delegate(object source, FreeFormViewerViewModel workspace)
             {
 
@@ -33,6 +35,7 @@ namespace NuSysApp
 
               
             };
+            */
         }
  
     }

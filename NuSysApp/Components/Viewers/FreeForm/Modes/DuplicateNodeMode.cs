@@ -22,8 +22,8 @@ namespace NuSysApp
             _view.IsRightTapEnabled = true;
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel) _view.DataContext;
 
-            wvm.Children.CollectionChanged += AtomViewListOnCollectionChanged;
-            foreach (var userControl in wvm.Children.Values.Where(s => s.DataContext is ElementInstanceViewModel))
+            wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
+            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
@@ -38,8 +38,7 @@ namespace NuSysApp
 
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
-                var kv = (KeyValuePair<string, FrameworkElement>) newItem;
-                var item = (FrameworkElement)kv.Value;
+                var item = (FrameworkElement) newItem;
                 if (item.DataContext is ElementInstanceViewModel) { 
                    item.PointerPressed += OnAtomPressed;
                    item.PointerReleased += OnAtomReleased;
@@ -51,13 +50,13 @@ namespace NuSysApp
         public override async Task Deactivate()
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
-            foreach (var userControl in wvm.Children.Values.Where( s => s.DataContext is ElementInstanceViewModel))
+            foreach (var userControl in wvm.AtomViewList.Where( s => s.DataContext is ElementInstanceViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;
                 userControl.PointerReleased -= OnAtomReleased;
             }
             _view.RightTapped -= OnWorkspacePressed;
-            wvm.Children.CollectionChanged -= AtomViewListOnCollectionChanged;
+            wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
         }
 
         private async void OnWorkspacePressed(object sender, RightTappedRoutedEventArgs e)
@@ -78,10 +77,10 @@ namespace NuSysApp
                 msg["targetY"] = p.Y;
 
                 // TODO: factor this out to the DuplicateNodeRequest
-                if (_selectedNode is ElementInstanceCollectionViewModel)
+                if (_selectedNode is ElementCollectionInstanceViewModel)
                 {
                     var children = new List<string>(); ;
-                    foreach (var child in (_selectedNode as ElementInstanceCollectionViewModel).Children.Values)
+                    foreach (var child in (_selectedNode as ElementCollectionInstanceViewModel).AtomViewList)
                     {
                         children.Add((child.DataContext as GroupItemViewModel).Id);
                     }

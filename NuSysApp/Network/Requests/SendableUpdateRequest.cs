@@ -32,9 +32,9 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString("id");
-            if (SessionController.Instance.IdToSendables.ContainsKey(id))
+            if (SessionController.Instance.IdToControllers.ContainsKey(id))
             {
-                var sendable = SessionController.Instance.IdToSendables[id];
+                var sendable = SessionController.Instance.IdToControllers[id];
                 await sendable.UnPack(_message);
             }
         }

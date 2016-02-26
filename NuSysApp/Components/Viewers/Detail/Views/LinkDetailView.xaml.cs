@@ -47,7 +47,8 @@ namespace NuSysApp
         }
 
         public async Task AddChildren()
-        {
+        { // TODO: refactor
+            /*
             var vm = (LinkViewModel) DataContext;
             var atomvm1 = vm.Atom1;
             var atomvm2 = vm.Atom2;
@@ -69,6 +70,7 @@ namespace NuSysApp
             xCanvas.Children.Add(atomview1);
             xCanvas.Children.Add(atomview2);
             //xGrid.Children.Add(linkview);
+            */
 
         }
 

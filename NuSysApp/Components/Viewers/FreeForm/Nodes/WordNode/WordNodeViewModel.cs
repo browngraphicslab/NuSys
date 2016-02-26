@@ -113,7 +113,7 @@ namespace NuSysApp
             var pdfContent = Convert.ToBase64String(fileBytes);
 
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementInstanceRequest(m));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, pdfContent, ElementType.PDF.ToString()));
             /*
             await

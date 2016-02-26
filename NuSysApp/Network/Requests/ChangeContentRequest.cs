@@ -27,7 +27,7 @@ namespace NuSysApp
             NodeContentModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
             content.Data = _message.GetString("data");
 
-            var s = SessionController.Instance.IdToSendables[_message.GetString("id")];
+            var s = SessionController.Instance.IdToControllers[_message.GetString("id")];
             await s.UnPack(_message);
         }
     }

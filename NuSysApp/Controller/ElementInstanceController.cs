@@ -21,6 +21,8 @@ namespace NuSysApp
         public delegate void TitleChangedHandler(object source, string title);
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
         public delegate void CanEditChangedEventHandler(object source, EditStatus status);
+        public delegate void ContentLoadedHandler(object source, NodeContentModel data);
+        public event ContentLoadedHandler ContentLoaded;
         public event MetadataChangeEventHandler MetadataChange;
         public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
@@ -40,6 +42,17 @@ namespace NuSysApp
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
             _editStatus = EditStatus.Maybe;
+        }
+
+        public virtual async Task FireContentLoaded( NodeContentModel content )
+        {
+            // Do nothing by default.
+            ContentLoaded?.Invoke(this, content);
+        }
+
+        public void SetCreator(string parentId)
+        {
+            Model.Creator = parentId;
         }
 
         public void SetScale(double sx, double sy)

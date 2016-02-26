@@ -119,19 +119,11 @@ namespace NuSysApp
                     {
                         SessionController.Instance.ContentController.OverWrite(content);
                     }
-                    if (SessionController.Instance.LoadingNodeDictionary.ContainsKey(contentId))
+                    if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
                     {
-                        foreach (var tuple in SessionController.Instance.LoadingNodeDictionary[contentId])
+                        foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])
                         {
-                            LoadNodeView view = tuple.Item2;
-                            ElementInstanceModel model = tuple.Item1;
-                            var factory = new FreeFormNodeViewFactory();
-                            FrameworkElement newView;
-                            newView = await factory.CreateFromSendable(model, null);
-                            SessionController.Instance.ActiveFreeFormViewer.Children.Remove(model.Id);
-                            SessionController.Instance.ActiveFreeFormViewer.Children.Add(model.Id, newView);
-                            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(view);
-                            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(newView);
+                            await controller.FireContentLoaded(content);
                         }
                     }
                 });
