@@ -121,32 +121,28 @@ var Editor = (function () {
             $(links[i]).popover({
                 html: true,
                 placement: 'bottom',
-                content: "<div id = 'buttons' style = 'margin: 0;'><input type = 'button' value = 'NUSYS' id = 'nusys'><input type = 'button' value = 'BROWSER' id = 'browser'></div>"
+                content: "<div id = 'buttons'><input type = 'button' value = 'NUSYS' id = 'nusys'><input type = 'button' value = 'BROWSER' id = 'browser'></div>"
             });
 
             links[i].addEventListener("click", function (e) {
 
                 var buttons = document.getElementById("buttons");
                 // after countless hours trying every permutation: the line below is the only way to make the popover element unclickable.
-                buttons.parentElement.parentElement.parentElement.setAttribute("contenteditable", "false");
+                buttons.parentElement.parentElement.setAttribute("contenteditable", "false");
 
                 var link = this.getAttribute("href");
                 e.preventDefault();
 
                 var nusys = document.getElementById("nusys");
-                nusys.setAttribute("contenteditable", "false");
-
                 nusys.addEventListener("click", function (e) {
                     e.preventDefault();
-                    window.external.notify('LaunchMyLink:' + link );
+                    window.external.notify('LaunchMyLink:' + link);
                 });
 
                 var browser = document.getElementById("browser");
-                browser.setAttribute("contenteditable", "false");
-
                 browser.addEventListener("click", function (e) {
                     e.preventDefault();
-                    window.open(link);
+                    window.external.notify('BrowserOpen:' + link);
                 });
 
                 return false;

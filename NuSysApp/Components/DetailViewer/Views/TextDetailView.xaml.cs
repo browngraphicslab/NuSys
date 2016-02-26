@@ -125,12 +125,17 @@ namespace NuSysApp
                 String potentialLink = "http://" + data.Substring("LaunchMylink:".Length);
                 NavigateToLink(potentialLink);
                 
-            } else
+            }
+            else if (data.ToLower().StartsWith("browseropen:"))
             {
-                if (data != "")
-                {
+                String potentialLink = "http://" + data.Substring("BrowserOpen:".Length);
+                Launcher.LaunchUriAsync(new Uri(potentialLink));
+
+            }
+            else if (data != "")
+            {
                     UpdateModelText(data);
-                }
+                
             }
 
         }
