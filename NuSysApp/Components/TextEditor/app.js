@@ -1,3 +1,4 @@
+var myEditor;
 var Editor = (function () {
     function Editor(document, element, preview) {
         this.document = document; // entire document
@@ -120,12 +121,15 @@ var Editor = (function () {
             $(links[i]).popover({
                 html: true,
                 placement: 'bottom',
-                content: "<input type = 'button' value = 'Nusys' id = 'nusys'><input type = 'button' value = 'Browser' id = 'browser'>"
+                content: "<div id = 'buttons' style = 'margin: 0;'><input type = 'button' value = 'Nusys' id = 'nusys'><input type = 'button' value = 'Browser' id = 'browser'></div>"
             });
 
-            //var currlink = this.getAttribute("href");
-
             links[i].addEventListener("click", function (e) {
+
+                var buttons = document.getElementById("buttons");
+                // after countless hours trying every permutation: the line below is the only way to make the popover element unclickable.
+                buttons.parentElement.parentElement.parentElement.setAttribute("contenteditable", "false");
+
                 var link = this.getAttribute("href");
                 e.preventDefault();
 
@@ -147,7 +151,6 @@ var Editor = (function () {
 
                 return false;
             });
-
         }
 
     };
@@ -256,6 +259,6 @@ var Editor = (function () {
 window.onload = function () {
     var el = document.getElementById("editor");
     var prev = document.getElementById("preview");
-    new Editor(document, el, prev);
+    myEditor = new Editor(document, el, prev);
 };
 //# sourceMappingURL=app.js.map
