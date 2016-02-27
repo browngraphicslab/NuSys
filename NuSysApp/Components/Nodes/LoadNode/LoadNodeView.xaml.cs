@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class LoadNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class LoadNodeView : AnimatableUserControl///, IThumbnailable
     {
         public LoadNodeView(LoadNodeViewModel vm)
         {

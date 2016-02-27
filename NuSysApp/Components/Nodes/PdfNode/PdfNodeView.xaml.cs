@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class PdfNodeView : AnimatableUserControl//, IThumbnailable
     {
         public PdfNodeView(PdfNodeViewModel vm)
         {

@@ -25,7 +25,7 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public sealed partial class GroupNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class GroupNodeView : AnimatableUserControl//, IThumbnailable
     {
         private bool _isExpanded;
         private Storyboard _circleAnim;

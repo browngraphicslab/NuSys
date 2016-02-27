@@ -35,6 +35,7 @@ namespace NuSysApp
         public Border highlight = null;
         public ItemsControl tags = null;
         public TextBlock userName = null;
+        public Grid contentContainer = null;
         public Image bitmapRendering = null;
         public NodeTemplate()
         {
@@ -101,6 +102,7 @@ namespace NuSysApp
             };
             titleContainer = (Grid)GetTemplateChild("xTitleContainer");
             bitmapRendering = (Image)GetTemplateChild("xBitmapRendering");
+            contentContainer = (Grid) GetTemplateChild("Content");
             title.Loaded += delegate (object sender, RoutedEventArgs args)
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };

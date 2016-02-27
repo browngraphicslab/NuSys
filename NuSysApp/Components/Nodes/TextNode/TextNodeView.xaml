@@ -13,7 +13,7 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
     <Grid>
-        <Image x:Name="Image"></Image>
+        <!--<Image x:Name="Image"></Image>-->
         <local:NodeTemplate x:Name="nodeTpl" Background="Transparent" BorderBrush="Transparent">
             <local:NodeTemplate.SubMenu>
                 <StackPanel Orientation="Horizontal">

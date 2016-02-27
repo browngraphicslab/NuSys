@@ -24,7 +24,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class VideoNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class VideoNodeView : AnimatableUserControl//, IThumbnailable
     {
         private MediaCapture _mediaCapture;
         private bool _isRecording;

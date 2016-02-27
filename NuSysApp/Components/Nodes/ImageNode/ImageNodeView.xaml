@@ -13,7 +13,6 @@
     IsDoubleTapEnabled="True">
 
     <Grid>
-        <Image x:Name="BitmapRendering"></Image>
         <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
             <local:NodeTemplate.SubMenu>
                 <StackPanel Orientation="Horizontal">
@@ -26,7 +25,7 @@
                 </StackPanel>
             </local:NodeTemplate.SubMenu>
             <local:NodeTemplate.Inner>
-                <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform"/>
+                <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform" Visibility="Collapsed"/>
             </local:NodeTemplate.Inner>
         </local:NodeTemplate>
     </Grid>

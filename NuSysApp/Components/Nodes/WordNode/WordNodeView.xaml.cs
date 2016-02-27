@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public sealed partial class WordNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class WordNodeView : AnimatableUserControl//, IThumbnailable
     {
         public WordNodeView(WordNodeViewModel vm)
         {
