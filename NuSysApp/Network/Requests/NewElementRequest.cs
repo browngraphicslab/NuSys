@@ -90,6 +90,8 @@ namespace NuSysApp
 
             await elementModel.UnPack(_message);
 
+            SessionController.Instance.IdToControllers[controller.Model.Id] = controller;
+
             var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[controller.Model.Creator];
             parentController.AddChild(controller);
         }

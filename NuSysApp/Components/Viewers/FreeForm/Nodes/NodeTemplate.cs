@@ -141,7 +141,9 @@ namespace NuSysApp
                 return;
             
             var vm = (ElementViewModel)this.DataContext;
-            vm.Controller.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+
+            var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            vm.Controller.SetSize(vm.Model.Width + e.Delta.Translation.X / zoom, vm.Model.Height + e.Delta.Translation.Y / zoom);
          //   inkCanvas.Width = vm.Width;
          //   inkCanvas.Height = vm.Height;
             e.Handled = true; 

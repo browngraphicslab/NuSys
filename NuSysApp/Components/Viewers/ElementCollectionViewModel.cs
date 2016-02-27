@@ -24,8 +24,6 @@ namespace NuSysApp
             
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();
-
-            
         }
 
         public override void Dispose()
@@ -34,11 +32,6 @@ namespace NuSysApp
             controller.ChildAdded -= OnChildAdded;
             controller.ChildRemoved -= OnChildRemoved;
             base.Dispose();
-        }
-
-        public void RemoveChild(string id)
-        {
-            // TODO: refactor remove this method
         }
 
         private async void OnChildAdded(object source, ElementController elementController)

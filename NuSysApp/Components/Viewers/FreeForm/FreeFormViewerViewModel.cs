@@ -169,21 +169,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="selected"></param>
         public void SetSelection(ElementViewModel selected)
-        {
-            List<string> locks = new List<string>();
-            locks.Add(selected.Model.Id);
-            //NetworkConnector.Instance.CheckLocks(locks);
-
-            if (SelectedElementViewModel == null)
-            {
-                SelectedElementViewModel = selected;
-                return;
-            }
-            // //NetworkConnector.Instance.RequestMakeLinq(SelectedAtomViewModel.ID, selected.ID);
-            selected.SetSelected(false);
-            SelectedElementViewModel.SetSelected(false);
-            SelectedElementViewModel = null;
+        {   
             ClearSelection();
+            selected.SetSelected(true);
+            SelectedElementViewModel = selected;
         }
 
 
@@ -195,7 +184,6 @@ namespace NuSysApp
         /// </summary> 
         public void ClearSelection()
         {
-            //NetworkConnector.Instance.ReturnAllLocks();
             if (SelectedElementViewModel == null) return;
             SelectedElementViewModel.SetSelected(false);
             SelectedElementViewModel = null;

@@ -70,20 +70,6 @@ namespace NuSysApp
         }
 
 
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
-        {
-            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
-            return;
-            var oldColor = this.RecordVoice.Background;
-            Color c = new Color();
-            c.A = 255;
-            c.R = 199;
-            c.G = 84;
-            c.B = 82;
-            this.RecordVoice.Background = new SolidColorBrush(c);
-            await TranscribeVoice();
-            this.RecordVoice.Background = oldColor;
-        }
 
         private async Task TranscribeVoice()
         {
@@ -302,7 +288,7 @@ namespace NuSysApp
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)this.DataContext;
-            vm.Remove();
+            vm.Controller.Delete();
         }
 
         /// <summary>
@@ -337,6 +323,12 @@ namespace NuSysApp
             {
                 borderRect.Opacity = 0;
             }
+        }
+
+        private void OnDuplicateClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (ElementViewModel)DataContext;
+            vm.Controller.Duplicate();
         }
     }
 }

@@ -55,10 +55,14 @@ namespace NuSysApp
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)this.DataContext;
-            vm.Remove();
+            vm.Controller.Delete();
         }
-
-
+        private void OnDuplicateClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (ElementViewModel)DataContext;
+            vm.Controller.Duplicate();
+        }
+        
         private void PageRight_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             e.Handled = true;

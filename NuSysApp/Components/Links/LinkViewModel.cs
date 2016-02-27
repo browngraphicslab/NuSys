@@ -36,25 +36,7 @@ namespace NuSysApp
 
         #region Link Manipulation Methods
 
-        public override void Remove()
-        {
-            //NetworkConnector.Instance.RequestDeleteSendable(Id);
-            if (IsSelected)
-            {
-                //TODO: re-add
-                SessionController.Instance.ActiveFreeFormViewer.ClearSelection();
-            }
-            //this.Atom1.LinkList.Remove(this);
-            //this.Atom2.LinkList.Remove(this);
-            //var toDelete = this.LinkList.ToList();
-            //foreach (var link in toDelete)
-            //{
-            //    link.Remove();
-            //    WorkSpaceViewModel.AtomViewList.Remove(link.View);
-            //}
-            //this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
-            //this.Annotation?.Remove();
-        }
+  
 
         #endregion Link Manipulation Methods
 

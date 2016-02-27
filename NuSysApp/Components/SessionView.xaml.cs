@@ -224,9 +224,6 @@ namespace NuSysApp
                     });
                 }
             }
-
-
-
         }
 
         public async Task LoadWorkspace(IEnumerable<string> nodeStrings)

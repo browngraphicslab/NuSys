@@ -54,7 +54,7 @@ namespace NuSysApp {
             if (startVm == endVm)
                 return;
 
-            var request = new NewLinkRequest(startVm.Id, endVm.Id, SessionController.Instance.ActiveFreeFormViewer.Id ,true);
+            var request = new NewLinkRequest(startVm.Id, endVm.Id, SessionController.Instance.ActiveFreeFormViewer.Id);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             lineModel.Delete();
             

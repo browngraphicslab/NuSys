@@ -113,14 +113,6 @@ namespace NuSysApp
             */
         }
 
-
-        public void DisposeInq()
-        {
-            var wvm = (WorkspaceModel) Instance.ActiveFreeFormViewer.Model;
-            var cm = (InqCanvasModel) wvm.InqCanvas;
-            cm.DisposeInq();
-        }
-
         private async Task LoadThumbs()
         {
             Thumbnails.Clear();

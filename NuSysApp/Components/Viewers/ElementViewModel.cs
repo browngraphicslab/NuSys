@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -11,8 +14,7 @@ namespace NuSysApp
         #region Private Members      
 
         private double _x, _y, _height, _width, _alpha;
-        private int _anchorX, _anchorY;
-        private Point2d _anchor;
+        private Point2d _anchor = new Point2d(0,0);
         private string _id;
         private SolidColorBrush _color;
         private bool _isEditing, _isEditingInk;
@@ -32,7 +34,6 @@ namespace NuSysApp
             controller.MetadataChange += OnMetadataChange;
             controller.PositionChanged += OnPositionChanged;
             controller.SizeChanged += OnSizeChanged;
-            controller.Resized += OnResized;
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
@@ -48,14 +49,6 @@ namespace NuSysApp
                 };
 
             ReadFromModel();
-        }
-
-        private void OnTranslated(object source, double tx, double ty)
-        {
-            Transform.TranslateX += tx;
-            Transform.TranslateY += ty;
-            UpdateAnchor();
-            RaisePropertyChanged("Transform");
         }
 
         private void OnDeleted(object source)
@@ -91,22 +84,6 @@ namespace NuSysApp
             RaisePropertyChanged("Width");
         }
 
-        protected virtual void OnResized(object source, double deltaWidth, double deltaHeight)
-        {
-            if (Width > Constants.MinNodeSizeX || deltaWidth > 0)
-            {
-                _width = Width + deltaWidth;
-            }
-            if (Height > Constants.MinNodeSizeY || deltaHeight > 0)
-            {
-                _height = Height + deltaHeight;
-            }
-
-            UpdateAnchor();
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
-        }
-
         protected virtual void OnScaleChanged(object source, double sx, double sy)
         {
             Transform.ScaleX = sx;
@@ -134,10 +111,6 @@ namespace NuSysApp
         {
             Tags.Clear();
 
-            //TODO: refactor
-
-            /*
-
             List<string> tagList = (List<string>)Model.GetMetaData("tags");
 
             foreach (string tag in tagList)
@@ -157,7 +130,7 @@ namespace NuSysApp
 
                 Tags.Add(tagBlock);
             }
-            */
+            
             RaisePropertyChanged("Tags");
         }
 
@@ -234,9 +207,6 @@ namespace NuSysApp
             UpdateAnchor();
         }
 
-        public virtual void Remove()
-        {
-        }
 
         #endregion
 

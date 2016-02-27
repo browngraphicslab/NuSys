@@ -38,6 +38,7 @@ namespace NuSysApp
                 var msg = new Message();
                 msg["id"] = SessionController.Instance.GenerateId();
                 msg["nodeType"] = ElementType.Group.ToString();
+                msg["data"] = "";
                 msg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                 msg["width"] = _message.GetDouble("width");
                 msg["height"] = _message.GetDouble("height");
@@ -46,12 +47,11 @@ namespace NuSysApp
                 msg["autoCreate"] = true;
                 msg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(msg));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(msg));
 
-                var group = SessionController.Instance.IdToControllers[msg.GetString("id")];
-                
-                //TODO: refactor
                 /*
+                
+           
                 //node1.Creator = group.Id;
                 var prevGroups1 = (List<string>)eic1.GetMetaData("groups");
                 prevGroups1.Add(group.Model.Id);

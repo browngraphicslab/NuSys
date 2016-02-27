@@ -29,7 +29,6 @@ namespace NuSysApp
         {
             var model = (ElementCollectionModel)Model;
             model.LibraryElementCollectionModel.Children.Remove(child.Model);
-
             ChildRemoved?.Invoke(this, child);
         }
     }

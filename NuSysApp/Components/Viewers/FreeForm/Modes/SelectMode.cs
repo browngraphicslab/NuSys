@@ -47,27 +47,20 @@ namespace NuSysApp
             if (!_released)
                 return;
 
-            _selectedElementVm?.SetSelected(false);
-
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc == _selectedElementVm)
             {
-                _selectedElementVm = null;
                 return;
             }
 
+            var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
+            viwerVm.ClearSelection();
 
-            if (dc is FreeFormViewerViewModel)
-            {
-                var vm = (FreeFormViewerViewModel) _view.DataContext;
-                vm.ClearSelection();
-                _selectedElementVm = null;
-            }
-            else if (dc is ElementViewModel)
+            if (dc is ElementViewModel)
             {
                 var vm = (ElementViewModel) dc;
                 _selectedElementVm = vm;
-                vm.SetSelected(true);
+                viwerVm.SetSelection(_selectedElementVm);
             }
         }
 

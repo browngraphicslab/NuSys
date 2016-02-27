@@ -27,7 +27,6 @@ namespace NuSysApp
         public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
-        public event SizeUpdateEventHandler Resized;
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
         public event TitleChangedHandler TitleChanged;
@@ -45,7 +44,6 @@ namespace NuSysApp
 
         public virtual async Task FireContentLoaded( NodeContentModel content )
         {
-            // Do nothing by default.
             ContentLoaded?.Invoke(this, content);
         }
 
@@ -56,41 +54,55 @@ namespace NuSysApp
 
         public void SetScale(double sx, double sy)
         {
+            Model.ScaleX = sx;
+            Model.ScaleY = sy;
+
             ScaleChanged?.Invoke(this, sx, sy);
+
+            _debouncingDictionary.Add("scaleX", sx);
+            _debouncingDictionary.Add("scaleY", sy);
         }
 
         public void SetSize(double width, double height)
         {
+            Model.Width = width;
+            Model.Height = height;
+
             SizeChanged?.Invoke(this, width, height);
+
+            _debouncingDictionary.Add("width", width);
+            _debouncingDictionary.Add("height", height);
         }
 
-        public void Resize(double dx, double dy)
-        {
-            var changeX = dx / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            var changeY = dy / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
-
-            Resized?.Invoke(this, changeX, changeY);
-
-            _debouncingDictionary?.Add("resizeDeltaWidth", dx);
-            _debouncingDictionary?.Add("resizeDeltaHeight", dy);
-        }
+ 
 
         public void SetPosition(double x, double y)
         {
+            Model.X = x;
+            Model.Y = y;
+
             PositionChanged?.Invoke(this, x, y);
 
-            _debouncingDictionary?.Add("x", x);
-            _debouncingDictionary?.Add("y", y);
+            _debouncingDictionary.Add("x", x);
+            _debouncingDictionary.Add("y", y);
         }
 
         public void SetAlpha(double alpha)
         {
+            Model.Alpha = alpha;
+
             AlphaChanged?.Invoke(this, alpha);
+
+            _debouncingDictionary.Add("alpha", alpha);
         }
 
         public void SetTitle(string title)
         {
+            Model.Title = title;
+
             TitleChanged?.Invoke(this, title);
+
+            _debouncingDictionary.Add("title", title);
         }
 
         public void SetMetadata(string key, object val)
@@ -98,9 +110,32 @@ namespace NuSysApp
             MetadataChange?.Invoke(this, key);
         }
 
-        public void Delete()
+        public virtual void Delete()
         {
+            var parent = (ElementCollectionController)SessionController.Instance.IdToControllers[Model.Creator];
+            parent.RemoveChild(this);
             Deleted?.Invoke(this);
+        }
+
+        public virtual void Duplicate()
+        {
+            Message m = new Message();
+            m["contentId"] = Model.ContentId;
+            m["data"] = "";
+            m["x"] = Model.X;
+            m["y"] = Model.Y;
+            m["width"] = 400;
+            m["height"] = 400;
+            m["nodeType"] = Model.ElementType.ToString();
+            m["creator"] = Model.Creator;
+
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+        }
+
+        public virtual void MoveToCollection(ElementCollectionController collection)
+        {
+            Delete();
+            collection.AddChild(this);
         }
 
         public void SetLastNetworkUser( NetworkUser user )

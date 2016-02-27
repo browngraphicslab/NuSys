@@ -25,19 +25,20 @@
                                   IsHitTestVisible="{Binding CanEdit, Converter={StaticResource eConverter}}"  Width="{Binding Width}"  Height="{Binding Height}">
 
                             <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
-                            <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0" IsHitTestVisible="False" Visibility="Collapsed">
-                                <StackPanel.RenderTransform>
-                                    <CompositeTransform/>
-                                </StackPanel.RenderTransform>
-
+                            <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" Background="Red" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="-50"></TranslateTransform>
+                                </Canvas.RenderTransform>
                                 <ContentControl Content="{TemplateBinding SubMenu}" />
-
-                            </StackPanel>
+                            </Canvas>
 
                             <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
 
                             <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="#606d7a" StrokeThickness="3" 
                            Visibility="{Binding IsMultiSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
+
+                            <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Yellow" StrokeThickness="3" 
+                           Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
 
 
                             <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
