@@ -53,5 +53,10 @@ namespace NuSysApp
             await r.RenderAsync(xImage, width, height);
             return r;
         }
+
+        public void RenderAsBitmap()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

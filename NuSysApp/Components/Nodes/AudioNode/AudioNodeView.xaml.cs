@@ -80,5 +80,10 @@ namespace NuSysApp
         {
             return new RenderTargetBitmap();//TODO implement
         }
+
+        public void RenderAsBitmap()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

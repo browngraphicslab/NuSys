@@ -553,6 +553,7 @@
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
+    <Content Include="Assets\testi.jpg" />
     <Content Include="Assets\wordIcon.png" />
     <Content Include="Components\Misc\icon_folder.png" />
     <Content Include="Properties\Default.rd.xml" />

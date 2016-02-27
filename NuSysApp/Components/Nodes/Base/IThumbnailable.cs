@@ -12,5 +12,6 @@ namespace NuSysApp
     {
         Task<RenderTargetBitmap> ToThumbnail(int width, int height);
 
+        void RenderAsBitmap();
     }
 }

@@ -12,41 +12,43 @@
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
-
-    <local:NodeTemplate x:Name="nodeTpl" Background="Transparent" BorderBrush="Transparent">
-        <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
-                </Button>
-                <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_node_text.png" Height="30" Width="30" Stretch="Uniform"></Image>
-                </Button>
-                <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_node_ink.png" Height="30" Width="30"></Image>
-                </Button>
-                <Button x:Name="RecordVoice" Click="OnRecordClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_audionode_record.png" Height="30" Width="30" Stretch="Uniform"></Image>
-                </Button>
-                <Button x:Name="Color"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
-                <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
+    <Grid>
+        <Image x:Name="Image"></Image>
+        <local:NodeTemplate x:Name="nodeTpl" Background="Transparent" BorderBrush="Transparent">
+            <local:NodeTemplate.SubMenu>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                        <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                    </Button>
+                    <Button x:Name="EditText" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_node_text.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                    </Button>
+                    <Button x:Name="EditInk" DoubleTapped="FloatingButton_OnDoubleTapped" Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                        <Image Source="ms-appx:///Assets/icon_node_ink.png" Height="30" Width="30"></Image>
+                    </Button>
+                    <Button x:Name="RecordVoice" Click="OnRecordClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_record.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                    </Button>
+                    <Button x:Name="Color"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}"></Button>
+                    <StackPanel x:Name="Colors" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75"
                         VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Opacity="0" IsHitTestVisible="False">
-                    <StackPanel.RenderTransform>
-                        <CompositeTransform />
-                    </StackPanel.RenderTransform> 
-                    <Button x:Name="Green"  Style="{StaticResource NodeSubMenuItem}" Background="#98C071"></Button>
-                    <Button x:Name="Red" Style="{StaticResource NodeSubMenuItem}" Background="#C75452"></Button>
-                    <Button x:Name="Blue"   Style="{StaticResource NodeSubMenuItem}" Background="#62BDC5"></Button>
-                    <Button x:Name="Parchment"  Style="{StaticResource NodeSubMenuItem}" Background="#eed5b7"></Button>
+                        <StackPanel.RenderTransform>
+                            <CompositeTransform />
+                        </StackPanel.RenderTransform>
+                        <Button x:Name="Green"  Style="{StaticResource NodeSubMenuItem}" Background="#98C071"></Button>
+                        <Button x:Name="Red" Style="{StaticResource NodeSubMenuItem}" Background="#C75452"></Button>
+                        <Button x:Name="Blue"   Style="{StaticResource NodeSubMenuItem}" Background="#62BDC5"></Button>
+                        <Button x:Name="Parchment"  Style="{StaticResource NodeSubMenuItem}" Background="#eed5b7"></Button>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </local:NodeTemplate.SubMenu>
-        <local:NodeTemplate.Inner>
-            <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
-                <Rectangle x:Name="borderRect" Opacity="0"  StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
+            </local:NodeTemplate.SubMenu>
+            <local:NodeTemplate.Inner>
+                <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
+                    <Rectangle x:Name="borderRect" Opacity="0"  StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
                     <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
                                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" Padding="20"/>
-            </Grid>
-        </local:NodeTemplate.Inner>
-    </local:NodeTemplate>
+                </Grid>
+            </local:NodeTemplate.Inner>
+        </local:NodeTemplate>
+    </Grid>
 </local:AnimatableUserControl>

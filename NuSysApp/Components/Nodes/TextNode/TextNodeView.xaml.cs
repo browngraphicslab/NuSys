@@ -80,34 +80,32 @@ namespace NuSysApp
         }
         private void TextNodeView_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            //RenderAsBitmap();
+            RenderAsBitmap();
         }
 
         private void TextNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            //nodeTpl.Visibility = Visibility.Visible;
-            //nodeTpl.bitmapRendering.Visibility = Visibility.Collapsed;
+            nodeTpl.Visibility = Visibility.Visible;
+            Image.Visibility = Visibility.Collapsed;
         }
 
-        private async void RenderAsBitmap()
+        public async void RenderAsBitmap()
         {
             TextNodeViewModel vm = (TextNodeViewModel)DataContext;
             RenderTargetBitmap map = new RenderTargetBitmap();
-            Debug.WriteLine("given width: " + this.Width);
-            Debug.WriteLine("given height: " + ((int)this.Height + 6));
             await map.RenderAsync(this, (int)this.Width, (int)this.Height);
-            nodeTpl.bitmapRendering.Source = map;
+            Image.Source = map;
             var titleTransform = nodeTpl.titleContainer.RenderTransform as TranslateTransform;
             if (titleTransform != null)
             {
-                nodeTpl.bitmapRendering.RenderTransform = new CompositeTransform
+                Image.RenderTransform = new CompositeTransform
                 {
                     ScaleY = this.Height / (this.Height + titleTransform.Y),
                     TranslateY = titleTransform.Y
                 };
             }
             nodeTpl.Visibility = Visibility.Collapsed;
-            nodeTpl.bitmapRendering.Visibility = Visibility.Visible;
+            Image.Visibility = Visibility.Visible;
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
