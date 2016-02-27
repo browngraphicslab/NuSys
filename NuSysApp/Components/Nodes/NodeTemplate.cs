@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
@@ -149,6 +150,34 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        //low quality -- maybe have to swap rendertargetbitmap out for something DX related?
+        public async void RenderAsBitmap(UserControl control)
+        {
+            RenderTargetBitmap map = new RenderTargetBitmap();
+            await map.RenderAsync(control, (int) control.Width, (int) control.Height);
+            bitmapRendering.Source = map;
+            var titleTransform = titleContainer.RenderTransform as TranslateTransform;
+            if (titleTransform != null)
+            {
+                bitmapRendering.RenderTransform = new CompositeTransform
+                {
+                    //gets weird at low heights -- why?
+                    ScaleY = control.Height/(control.Height + titleTransform.Y),
+                    TranslateY = titleTransform.Y
+                };
+            }
+            contentContainer.Visibility = Visibility.Collapsed;
+            titleContainer.Visibility = Visibility.Collapsed;
+            bitmapRendering.Visibility = Visibility.Visible;
+        }
+
+        public void HideBitmapRender()
+        {
+            contentContainer.Visibility = Visibility.Visible;
+            titleContainer.Visibility = Visibility.Visible;
+            bitmapRendering.Visibility = Visibility.Collapsed;
+        }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var vm = (NodeViewModel)this.DataContext;
@@ -156,10 +185,6 @@ namespace NuSysApp
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             }
-            //if (e.PropertyName == "UserColor")
-            //{
-            //    highlight.BorderBrush = vm.UserColor;
-            //}
 
         }
     }

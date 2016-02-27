@@ -11,7 +11,5 @@ namespace NuSysApp
     interface IThumbnailable
     {
         Task<RenderTargetBitmap> ToThumbnail(int width, int height);
-
-        void RenderAsBitmap();
     }
 }

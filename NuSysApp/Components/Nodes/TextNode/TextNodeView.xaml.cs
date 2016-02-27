@@ -80,33 +80,31 @@ namespace NuSysApp
         }
         private void TextNodeView_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            RenderAsBitmap();
+            nodeTpl.RenderAsBitmap(this);
         }
 
         private void TextNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            nodeTpl.contentContainer.Visibility = Visibility.Visible;
-            nodeTpl.bitmapRendering.Visibility = Visibility.Collapsed;
+            nodeTpl.HideBitmapRender();
         }
 
-        public async void RenderAsBitmap()
-        {
-            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
-            RenderTargetBitmap map = new RenderTargetBitmap();
-            await map.RenderAsync(this, (int)this.Width, (int)this.Height);
-            nodeTpl.bitmapRendering.Source = map;
-            var titleTransform = nodeTpl.titleContainer.RenderTransform as TranslateTransform;
-            if (titleTransform != null)
-            {
-                nodeTpl.bitmapRendering.RenderTransform = new CompositeTransform
-                {
-                    ScaleY = this.Height / (this.Height + titleTransform.Y),
-                    TranslateY = titleTransform.Y
-                };
-            }
-            nodeTpl.contentContainer.Visibility = Visibility.Collapsed;
-            nodeTpl.bitmapRendering.Visibility = Visibility.Visible;
-        }
+        //public async void RenderAsBitmap()
+        //{
+        //    RenderTargetBitmap map = new RenderTargetBitmap();
+        //    await map.RenderAsync(this, (int)this.Width, (int)this.Height);
+        //    nodeTpl.bitmapRendering.Source = map;
+        //    var titleTransform = nodeTpl.titleContainer.RenderTransform as TranslateTransform;
+        //    if (titleTransform != null)
+        //    {
+        //        nodeTpl.bitmapRendering.RenderTransform = new CompositeTransform
+        //        {
+        //            ScaleY = this.Height / (this.Height + titleTransform.Y),
+        //            TranslateY = titleTransform.Y
+        //        };
+        //    }
+        //    nodeTpl.contentContainer.Visibility = Visibility.Collapsed;
+        //    nodeTpl.bitmapRendering.Visibility = Visibility.Visible;
+        //}
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {

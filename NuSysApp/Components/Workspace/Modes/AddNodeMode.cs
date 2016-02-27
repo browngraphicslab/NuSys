@@ -35,6 +35,14 @@ namespace NuSysApp
             _view.ManipulationDelta += OnManipulationDelta;
             _view.ManipulationCompleted += OnManipulationCompleted;
             _view.ManipulationInertiaStarting += OnManipulationInertiaStarting;
+
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    for (int j = 0; j < 8; j++)
+            //    {
+            //        await AddNode(_view, new Point(i * 50, j * 50), new Size(45, 45), NodeType.Text);
+            //    }
+            //}
         }
 
         private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
