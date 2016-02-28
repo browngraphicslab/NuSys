@@ -159,10 +159,10 @@ namespace NuSysApp
             var titleTransform = titleContainer.RenderTransform as TranslateTransform;
             if (titleTransform != null)
             {
+                double totalNodeHeight = control.Height - titleTransform.Y;
                 bitmapRendering.RenderTransform = new CompositeTransform
                 {
-                    //gets weird at low heights -- why?
-                    ScaleY = control.Height/(control.Height + titleTransform.Y),
+                    ScaleY = totalNodeHeight/control.Height,
                     TranslateY = titleTransform.Y
                 };
             }
