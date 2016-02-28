@@ -41,13 +41,28 @@ namespace NuSysApp
             var mid = new Point((points[0].X + points[points.Count - 1].X) / 2, (points[0].Y + points[points.Count - 1].Y) / 2);
             var linearity = LineLength(new Point(),
                 new Point(points.Sum(p => p.X - mid.X), points.Sum(p => p.Y - mid.Y))) / StrokeLength(points);//NOT ACTUAL NAME, I need to find/come up with one
-            Debug.WriteLine(LSE + " : " + entropy + " : " + linearity);
-            // DownScaled Angle averages
-            var npoints = new List<Point>();
-            for (int i = 0; i < 10; i++)
+            var centdis = new List<double>();
+            foreach (var p in points)
             {
-                npoints.Add(points[i * (int)(points.Count / 10)]);
+                centdis.Add(LineLength(mid,p));
             }
+            var linlist = znormalize(centdis);
+
+            Debug.WriteLine(LSE + " : " + entropy + " : " + linearity);
+            Debug.WriteLine(linlist.Min() + " : " + linlist.Max() + " : " + linlist.Sum());
+            // DownScaled Angle averages
+            var npoints = resample(points, 32);
+     //       for (int i = 0; i < 10; i++)
+   //         {
+ //               npoints.Add(points[i * (int)(points.Count / 10)]);
+//            }
+            var sampledCentroid = centroid(npoints);
+            var Centroid = centroid(points);
+
+            var CentroidtoMidpoint = LineLength(Centroid, mid) / StrokeLength(points) * Constants.MaxCanvasSize;
+            var FirsttoLastPoint = LineLength(points[0], points[points.Count -1]) / StrokeLength(points) * Constants.MaxCanvasSize; 
+            
+
             List<double> nangles = new List<double>();
             for (int i = 0; i < npoints.Count - 2; i++)
             {
@@ -57,6 +72,20 @@ namespace NuSysApp
                     / (2 * LineLength(npoints[i + 1], npoints[i]) * LineLength(npoints[i + 1], npoints[i + 2]))));
             }
             nangles.RemoveAll(d => Double.IsNaN(d) | d == 0);
+            var ncentdis = new List<double>();
+            foreach (var p in npoints)
+            {
+                ncentdis.Add(LineLength(mid,p));
+            }
+            var nlinlist = znormalize(ncentdis);
+            Debug.WriteLine(nlinlist.Min() + " : " + nlinlist.Max() + " : " + nlinlist.Sum());
+            Debug.WriteLine(CentroidtoMidpoint + " : " + FirsttoLastPoint);
+
+            Debug.WriteLine("diff = " + (CentroidtoMidpoint - FirsttoLastPoint));
+            Debug.WriteLine("quo = " + (CentroidtoMidpoint / FirsttoLastPoint));
+            Debug.WriteLine("mul = " + (CentroidtoMidpoint * FirsttoLastPoint));
+            Debug.WriteLine("sum = " + (CentroidtoMidpoint + FirsttoLastPoint));
+
             var avgAng = nangles.Sum(x => x) / nangles.Count;
             var avgAngfull = angles.Sum(x => x) / angles.Count;
             //
@@ -64,9 +93,10 @@ namespace NuSysApp
 
             //if (0.6 * avgAng - 0.6 - entropy < 0)
             var match = await recognize(points);
-            Debug.WriteLine(match.StrokeTemplate.ToString());
-            if (avgAng < 2)
+            Debug.WriteLine(match.StrokeTemplate.ToString() + ":" + match.Score);
+            if ( CentroidtoMidpoint + FirsttoLastPoint < 70000 | (CentroidtoMidpoint - FirsttoLastPoint > -45000 & CentroidtoMidpoint - FirsttoLastPoint < 20000 ))
             {
+                Debug.WriteLine("this is a scribble");
                 return GestureType.Scribble;
             }
             return GestureType.None;

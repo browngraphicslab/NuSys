@@ -28,6 +28,10 @@ namespace NuSysApp
         private AbstractWorkspaceViewMode _mode;
         private InqCanvasView _inqCanvas;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vm"></param>
         public WorkspaceView(WorkspaceViewModel vm)
         {
             this.InitializeComponent();
@@ -60,7 +64,7 @@ namespace NuSysApp
             };
 
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
-            {
+            {/*
                 if (!model.IsGesture)
                 {
                     var createdTag = await CheckForTagCreation(model);
@@ -69,7 +73,7 @@ namespace NuSysApp
                         model.Delete();
                     }
                     return;
-                }
+                }*/
 
                 var gestureType =  await GestureRecognizer.testGesture(model);
                 switch (gestureType)
