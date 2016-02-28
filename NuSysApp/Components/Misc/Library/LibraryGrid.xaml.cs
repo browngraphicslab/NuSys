@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using MyToolkit.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -29,6 +30,8 @@ namespace NuSysApp
         private int _count = 0;
 
         private LibraryElementPropertiesWindow _propertiesWindow;
+
+        private int _numRows;
         public LibraryGrid(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
@@ -36,12 +39,16 @@ namespace NuSysApp
             _items = vm._PageElements;
 
             _propertiesWindow = propertiesWindow;
-            var numRows = 25;
+            for (int i = 1; i < _items.Count/3 + 1; i++)
+            {
+                 xGrid.RowDefinitions.Add(new RowDefinition());
+            }
+            _numRows = _items.Count/3 + 1;
             var numCols = 3;
-
+            
             foreach (var item in _items)
             {
-                LoadThumbnails(numRows, numCols, item);
+                LoadThumbnails(_numRows, numCols, item);
             }
             ((LibraryBucketViewModel)library.DataContext).OnNewContents += Library_OnNewContents;
             
@@ -49,12 +56,17 @@ namespace NuSysApp
 
         private void Library_OnNewContents(ICollection<LibraryElement> elements)
         {
-            var numRows = 25;
+            xGrid.RowDefinitions.Clear();
+            for (int i = 1; i < elements.Count / 3 + 1; i++)
+            {
+                xGrid.RowDefinitions.Add(new RowDefinition());
+            }
+            _numRows = elements.Count / 3 + 1;
             var numCols = 3;
 
             foreach (var newItem in elements)
             {
-                LoadThumbnails(numRows, numCols, newItem);
+                LoadThumbnails(_numRows, numCols, newItem);
             }
         }
 
@@ -62,13 +74,12 @@ namespace NuSysApp
         {
             await ((LibraryPageViewModel)this.DataContext).Search(s);
 
-            var numRows = 25;
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
             foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
             {
-                LoadThumbnails(numRows, numCols, item);
+                LoadThumbnails(_numRows, numCols, item);
             }
         }
 
@@ -81,13 +92,12 @@ namespace NuSysApp
         {
             await ((LibraryPageViewModel)this.DataContext).Sort(s);
 
-            var numRows = 8;
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
             foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
             {
-                LoadThumbnails(numRows, numCols, item);
+                LoadThumbnails(_numRows, numCols, item);
             }
         }
 
