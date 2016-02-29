@@ -50,9 +50,9 @@ namespace NuSysApp
             xScrollViewer.Height = xWebView.Height;
             xScrollViewer.Width = xWebView.Width;
             webTopBar.Width = xWebView.ActualWidth;
-            xUrlBox.Width = webTopBar.Width*0.8;
             this.Height = xWebView.ActualHeight + 37;
             this.Width = xWebView.ActualWidth;
+            Canvas.SetZIndex(Refresh,20);
         }
 
         private void OnUrlChanged(object source, string url)
