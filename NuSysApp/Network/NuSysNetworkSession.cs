@@ -68,10 +68,6 @@ namespace NuSysApp
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
 
-                await _serverClient.SendMessageToServer(message);
-
-                if (true)
-                    return;
                 if (request.WaitForRequestReturn())
                 {
                     ManualResetEvent mre = new ManualResetEvent(false);
@@ -79,7 +75,8 @@ namespace NuSysApp
                     _requestEventDictionary[requestID] = mre;
 
                     message["system_local_request_id"] = requestID;
-                    await SendRequest(message);
+
+                    await _serverClient.SendMessageToServer(message);
                     if (_requestEventDictionary.ContainsKey(requestID))
                     {
                         mre.WaitOne();
@@ -87,7 +84,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    await SendRequest(message);
+                    await _serverClient.SendMessageToServer(message);
                 }
             });
         }

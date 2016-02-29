@@ -42,7 +42,7 @@
 
 
                     <TextBlock HorizontalAlignment="Center" Grid.Column="0"  Text="Title" FontSize="18" />
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="Node Type" FontSize="18" />
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="Element Type" FontSize="18" />
                     <!--<TextBlock Grid.Column="2" Text="Timestamp" />-->
 
 
@@ -61,7 +61,7 @@
                         
                       
                         <TextBlock  Grid.Column="0"  Text="{Binding Title}" FontSize="16" />
-                        <TextBlock  Grid.Column="1"  Text="{Binding NodeType}" FontSize="16"/>
+                        <TextBlock  Grid.Column="1"  Text="{Binding ElementType}" FontSize="16"/>
                         <TextBlock Grid.Column="2" Text="{Binding Timestamp}" FontSize="16"/>
                      
 

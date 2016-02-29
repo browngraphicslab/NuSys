@@ -40,10 +40,9 @@ namespace NuSysApp
         {
             if (!SessionController.Instance.IdToControllers.ContainsKey(Id))
                 return;
-
-            var atomModel = SessionController.Instance.IdToControllers[Id].Model;
-            atomModel.Delete();
-            SessionController.Instance.IdToControllers.Remove(Id);
+            var elementController = SessionController.Instance.IdToControllers[Id];
+            var parent = (ElementCollectionController)SessionController.Instance.IdToControllers[elementController.Model.Creator];
+            parent.RemoveChild(elementController);
         }
     }
     public class DeleteSendableRequestException : Exception

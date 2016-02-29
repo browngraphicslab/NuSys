@@ -13,7 +13,6 @@ namespace NuSysApp
         private DebouncingDictionary _debouncingDictionary;
 
         public delegate void AlphaChangedEventHandler(object source, double alpha);
-        public delegate void DeleteEventHandler(object source);
         public delegate void LocationUpdateEventHandler(object source, double x, double y);
         public delegate void MetadataChangeEventHandler(object source, string key);
         public delegate void NetworkUserChangedEventHandler(NetworkUser user);
@@ -24,7 +23,6 @@ namespace NuSysApp
         public delegate void ContentLoadedHandler(object source, NodeContentModel data);
         public event ContentLoadedHandler ContentLoaded;
         public event MetadataChangeEventHandler MetadataChange;
-        public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
@@ -112,11 +110,8 @@ namespace NuSysApp
 
         public virtual void Delete()
         {
-            var parent = (ElementCollectionController)SessionController.Instance.IdToControllers[Model.Creator];
-            parent.RemoveChild(this);
-            Deleted?.Invoke(this);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
         }
-
         public virtual void Duplicate()
         {
             Message m = new Message();

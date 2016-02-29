@@ -13,15 +13,12 @@ namespace NuSysApp
             SetServerSettings();
         }
 
-        public CreateNewLibraryElementRequest(string id, string data, string type = null, string title = null)
+        public CreateNewLibraryElementRequest(string id, string data, ElementType type, string title = null)
             : base(RequestType.CreateNewLibrayElementRequest)
         {
             _message["id"] = id;
             _message["data"] = data;
-            if (type != null)
-            {
-                _message["type"] = type;
-            }
+            _message["type"] = type.ToString();
             if (title != null)
             {
                 _message["title"] = title;

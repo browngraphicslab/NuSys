@@ -96,10 +96,6 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLibraryElementCollectionRequest(contentId,"",id1,id2,"NEW GROUP"));
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id2));
-
             var m1 = new Message();
             m1["contentId"] = SessionController.Instance.IdToControllers[id1].Model.ContentId;
             m1["nodeType"] = SessionController.Instance.IdToControllers[id1].Model.ElementType;
@@ -121,6 +117,10 @@ namespace NuSysApp
             m2["autoCreate"] = true;
             m2["creator"] = newElementId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m2));
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id2));
+
 
             //create element collection instance
             //Create library element collection
