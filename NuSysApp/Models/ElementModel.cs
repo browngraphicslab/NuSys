@@ -20,7 +20,7 @@ namespace NuSysApp
 
         protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
-        protected ElementModel(string id) : base(id)
+        public ElementModel(string id) : base(id)
         {
 
             SetMetaData("tags", new List<string>());

@@ -18,6 +18,9 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Media.Capture;
+using Windows.Media.MediaProperties;
+using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
@@ -31,6 +34,8 @@ namespace NuSysApp
     {
 
         private List<Image> _images = new List<Image>();
+        private MediaCapture _mediaCapture;
+        private bool _isRecording;
 
         public TextNodeView(TextNodeViewModel vm)
         {
@@ -49,7 +54,21 @@ namespace NuSysApp
                 rtfTextBox.SetRtfText(text);
                 // rtfTextBox.SetRtfText();
             };
-            
+
+
+            vm.Controller.ContentChanged += delegate(object source, NodeContentModel data)
+            {
+                if (xMediaRecotder.Visibility == Visibility.Collapsed)
+                    return;
+
+                var memoryStream = new InMemoryRandomAccessStream();
+                var byteArray = Convert.FromBase64String(data.Data);
+                memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
+                memoryStream.Seek(0);
+                playbackElement.SetSource(memoryStream, "video/mp4");
+                _isRecording = false;
+            };
+
             /*
             grid.IsDoubleTapEnabled = true;
             grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
@@ -69,6 +88,7 @@ namespace NuSysApp
             */
         }
 
+       
 
 
         private async Task TranscribeVoice()
@@ -329,6 +349,12 @@ namespace NuSysApp
         {
             var vm = (ElementViewModel)DataContext;
             vm.Controller.Duplicate();
+        }
+
+        private void RecordButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            xMediaRecotder.Visibility = Visibility.Visible;
+            rtfTextBox.Visibility = Visibility.Collapsed;
         }
     }
 }

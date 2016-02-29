@@ -53,8 +53,8 @@
         <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="DeepPink"></Rectangle>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
         <local:DetailViewerView x:Name="xFullScreenViewer"></local:DetailViewerView>
-        <local:LibraryView x:Name="LibraryView"></local:LibraryView>
-        <Image x:Name="LibraryMaximizer" Source="http://iconizer.net/files/Sabre/orig/folder_black_library.png" Height="70" Width="70" Tapped="LibraryMaximizer_OnTapped"></Image>
+        
+        <Image x:Name="LibraryMaximizer" Source="http://iconizer.net/files/Sabre/orig/folder_black_library.png" Height="70" Width="70"></Image>
 
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>

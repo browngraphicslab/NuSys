@@ -137,9 +137,7 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this), new GestureMode(this)));
                     break;
                 case Options.AddTextNode:
-                    await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Text, isFixed),
-                            new FloatingMenuMode(this)));
+
                     break;
                 case Options.AddWeb:
                     await
@@ -171,6 +169,12 @@ namespace NuSysApp
                     await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
                     // TODO: delegate to workspaceview
                     //                    InqCanvas.SetHighlighting(true);
+                    break;
+
+                case Options.MainSaveLoad:
+                    await
+    SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Library, isFixed),
+        new FloatingMenuMode(this)));
                     break;
                 case Options.Save:
                     SessionController.Instance.SaveWorkspace();

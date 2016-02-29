@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
+using Windows.Graphics.Display;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.Core;
@@ -41,11 +43,6 @@ namespace NuSysApp
             get { return LibraryDraggingNode; }
         }
 
-        public LibraryView Library
-        {
-            get { return LibraryView; }
-        }
-
         #endregion Private Members
 
         private int initChatNotifs;
@@ -67,6 +64,9 @@ namespace NuSysApp
                 };
 
             Loaded += OnLoaded;
+
+            var v = PointerDevice.GetPointerDevices().ToList();
+            Debug.WriteLine(v);
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -102,7 +102,7 @@ namespace NuSysApp
                 new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name = "Me"});
                 //TODO have Trent fix this -trent
 
-            await Library.Reload();
+
             ChatPopup.OnNewTextsChanged += delegate(int newTexts)
             {
                 if (newTexts > 0)
@@ -128,6 +128,7 @@ namespace NuSysApp
                 xFloatingMenu.SetActive(Options.SelectNode);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
+
             }
         }
 
@@ -334,11 +335,8 @@ namespace NuSysApp
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
-            Canvas.SetTop(LibraryView, 55);
-            Canvas.SetLeft(LibraryView, 900);
             Canvas.SetTop(LibraryMaximizer, 350);
             Canvas.SetLeft(LibraryMaximizer, 1300);
-            LibraryView.Visibility = Visibility.Collapsed;
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
@@ -488,11 +486,6 @@ namespace NuSysApp
                 Canvas.SetLeft(ChatPopup, 5);
                 ChatPopup.ClearNewTexts();
             }
-        }
-
-        private void LibraryMaximizer_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            LibraryView.ToggleVisiblity();
         }
 
         private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)

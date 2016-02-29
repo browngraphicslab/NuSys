@@ -78,9 +78,7 @@ namespace NuSysApp
 
             
             await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
-            await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
-
-
+            await SessionController.Instance.SaveThumb(id2, await ((IThumbnailable)sender).ToThumbnail(210, 100));
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;

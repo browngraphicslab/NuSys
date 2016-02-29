@@ -23,6 +23,7 @@ namespace NuSysApp
         public delegate void CanEditChangedEventHandler(object source, EditStatus status);
         public delegate void ContentLoadedHandler(object source, NodeContentModel data);
         public event ContentLoadedHandler ContentLoaded;
+        public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
         public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
@@ -176,6 +177,12 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
+            if (props.ContainsKey("data"))
+            {
+                var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
+                content.Data = props.GetString("data", "");
+                ContentChanged?.Invoke(this, content);
+            }
         }
 
     }

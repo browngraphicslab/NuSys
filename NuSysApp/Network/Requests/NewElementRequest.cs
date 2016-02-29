@@ -84,6 +84,10 @@ namespace NuSysApp
                     elementModel = new AreaModel(id);
                     controller = new ElementController(elementModel);
                     break;
+                case ElementType.Library:
+                    elementModel = new ElementModel(id);
+                    controller = new ElementController(elementModel);
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }
