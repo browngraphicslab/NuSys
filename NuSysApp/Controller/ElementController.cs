@@ -124,8 +124,8 @@ namespace NuSysApp
             m["data"] = "";
             m["x"] = Model.X;
             m["y"] = Model.Y;
-            m["width"] = 400;
-            m["height"] = 400;
+            m["width"] = Model.Width;
+            m["height"] = Model.Height;
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
 
