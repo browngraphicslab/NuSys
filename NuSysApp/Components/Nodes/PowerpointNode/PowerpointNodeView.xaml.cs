@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public sealed partial class PowerpointNodeView : AnimatableUserControl//, IThumbnailable
+    public sealed partial class PowerpointNodeView : AnimatableUserControl, IThumbnailable
     {
         public PowerpointNodeView(PowerpointNodeViewModel vm)
         {

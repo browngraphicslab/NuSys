@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl//, IThumbnailable
+    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
     {
         public PdfNodeView(PdfNodeViewModel vm)
         {
@@ -24,10 +24,22 @@ namespace NuSysApp
                 await vm.InitPdfViewer();
             };
 
+            this.PointerEntered += PdfNodeView_PointerEntered;
+            this.PointerExited += OnPointerExited;
+
             DataContext = vm;
             
         }
 
+        private void OnPointerExited(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        {
+            nodeTpl.RenderAsBitmap(this);
+        }
+
+        private void PdfNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            nodeTpl.HideBitmapRender();
+        }
 
         private void OnEditInk(object sender, RoutedEventArgs e)
         {
