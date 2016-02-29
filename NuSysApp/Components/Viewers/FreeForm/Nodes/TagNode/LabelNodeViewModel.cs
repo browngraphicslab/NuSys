@@ -28,11 +28,5 @@ namespace NuSysApp
             RaisePropertyChanged("NumChildren");
             RaisePropertyChanged("Title");
         }
-
-        public bool IsTemporary
-        {
-            get { return ((NodeContainerModel) Model).IsTemporary; }
-            set { ((NodeContainerModel) Model).IsTemporary = value; }
-        }
     }
 }

@@ -47,34 +47,19 @@ namespace NuSysApp
             };
 
             // create expanded view
-            xExpandedDefaultView = new GroupNodeExpandedDefaultView((ElementCollectionModel)vm.Model); // create default view
-            xExpandedDefaultView.Opacity = 0;
+            xExpandedDefaultView = new GroupNodeExpandedDefaultView((ElementCollectionController)vm.Controller); // create default view
+            xExpandedDefaultView.Opacity = 1;
             GroupNodeCanvas.Children.Add(xExpandedDefaultView);
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (GroupNodeViewModel) DataContext;
-           // vm.Controller.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
+            vm.SetSize(vm.Width + dx, vm.Height + dy);
             
-            if (vm.Height > 400 && !_isExpanded)
-            {
-                _expandedAnim?.Stop();
-                _circleAnim?.Stop();
 
-                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 1, 450);
-                _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
-                _isExpanded = true;
-            }
-            else if (vm.Height < 400 && _isExpanded)
-            {
-                _expandedAnim?.Stop();
-                _circleAnim?.Stop();
-
-                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 0, 450);
-                _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
-                _isExpanded = false;         
-            }
             PositionResizer();
             e.Handled = true;
         }

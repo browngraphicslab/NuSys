@@ -203,9 +203,6 @@ namespace NuSysApp
             var obj = (LabelNodeView)sender;
             var vm = (LabelNodeViewModel)obj.DataContext;
 
-            if (vm.IsTemporary)
-                return;
-
             const double threshold = 300;
             var x = ((CompositeTransform)obj.RenderTransform).TranslateX;
             var y = ((CompositeTransform)obj.RenderTransform).TranslateY;
@@ -244,8 +241,7 @@ namespace NuSysApp
                     continue;
 
                 var otherVm = (LabelNodeViewModel)userControl.DataContext;
-                if (otherVm.IsTemporary)
-                    continue;
+
 
                 var transform = (CompositeTransform)userControl.RenderTransform;
                 var distX = Math.Abs(x - transform.TranslateX);

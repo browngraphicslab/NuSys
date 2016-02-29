@@ -38,7 +38,6 @@ namespace NuSysApp
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
             controller.TitleChanged += OnTitleChanged;
-            controller.Deleted += OnDeleted;
 
             Tags = new ObservableCollection<Button>();
 
@@ -50,12 +49,6 @@ namespace NuSysApp
 
             ReadFromModel();
         }
-
-        private void OnDeleted(object source)
-        {
-            // TODO: Dispose everything in here.
-        }
-
 
         public virtual async Task Init()
         {

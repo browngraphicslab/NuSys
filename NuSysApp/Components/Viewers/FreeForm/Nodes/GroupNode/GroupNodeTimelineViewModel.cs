@@ -13,7 +13,7 @@ namespace NuSysApp
         //private List<Tuple<FrameworkElement, DateTime>> _atomList;
         //private AtomModel _nodeModel;
 
-        public GroupNodeTimelineViewModel(ElementCollectionController model) : base(model)
+        public GroupNodeTimelineViewModel(ElementCollectionController controller) : base(controller)
         {
             
         }

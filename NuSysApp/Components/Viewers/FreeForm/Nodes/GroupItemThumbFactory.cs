@@ -28,7 +28,7 @@ namespace NuSysApp
                 img.Source = SessionController.Instance.Thumbnails[controller.Model.Id];
             else
             {
-                rect.DataContext = new GroupItemViewModel((ElementModel)controller.Model);
+                rect.DataContext = new GroupItemViewModel(controller);
                 return rect;
             }
            
@@ -55,7 +55,7 @@ namespace NuSysApp
                               DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
             }
 
-            rect.DataContext = new GroupItemViewModel((ElementModel)controller.Model);
+            rect.DataContext = new GroupItemViewModel(controller);
 
             return rect;
         }

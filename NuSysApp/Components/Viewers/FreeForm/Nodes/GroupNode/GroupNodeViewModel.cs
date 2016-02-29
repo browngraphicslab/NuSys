@@ -14,7 +14,6 @@ namespace NuSysApp
     {
         public GroupNodeViewModel(ElementCollectionController controller) : base(controller)
         {
-
             _nodeViewFactory = new GroupItemThumbFactory(); 
         }
 

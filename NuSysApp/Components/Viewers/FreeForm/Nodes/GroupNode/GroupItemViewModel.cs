@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class GroupItemViewModel
+    public class GroupItemViewModel : ElementViewModel
     {
 
-        public GroupItemViewModel(ElementModel model )
+        public GroupItemViewModel(ElementController controller):base(controller)
         {
-            Model = model;
-            Id = model.Id;
+            Model = controller.Model;
+            Id = controller.Model.Id;
         }
 
         public ElementModel Model { get; set; }

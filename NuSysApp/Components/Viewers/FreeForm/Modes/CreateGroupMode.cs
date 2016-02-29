@@ -80,10 +80,16 @@ namespace NuSysApp
             await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
             await SessionController.Instance.SaveThumb(id2, await _hoveredNodeView.ToThumbnail(210, 100));
 
+
+
+            var metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+
             var contentId = SessionController.Instance.GenerateId();
             var newElementId = SessionController.Instance.GenerateId();
 
             var elementMsg = new Message();
+            elementMsg["metadata"] = metadata;
             elementMsg["width"] = 300;
             elementMsg["height"] = 300;
             elementMsg["x"] = p.X;
@@ -97,35 +103,35 @@ namespace NuSysApp
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLibraryElementCollectionRequest(contentId,"",id1,id2,"NEW GROUP"));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id2));
+           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
+           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id2));
+
+            SessionController.Instance.IdToControllers[id1].Delete();
+            SessionController.Instance.IdToControllers[id2].Delete();
 
             var m1 = new Message();
+            m1["metadata"] = metadata;
             m1["contentId"] = SessionController.Instance.IdToControllers[id1].Model.ContentId;
             m1["nodeType"] = SessionController.Instance.IdToControllers[id1].Model.ElementType;
-            m1["x"] = 50000 - 200;
-            m1["y"] = 50000 - 200;
-            m1["width"] = 400;
-            m1["height"] = 400;
+            m1["x"] = 0;
+            m1["y"] = 0;
+            m1["width"] = 200;
+            m1["height"] = 200;
             m1["autoCreate"] = true;
             m1["creator"] = newElementId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
 
             var m2 = new Message();
+            m2["metadata"] = metadata;
             m2["contentId"] = SessionController.Instance.IdToControllers[id2].Model.ContentId;
             m2["nodeType"] = SessionController.Instance.IdToControllers[id2].Model.ElementType;
-            m2["x"] = 50000 - 200;
-            m2["y"] = 50000 - 200;
-            m2["width"] = 400;
-            m2["height"] = 400;
+            m2["x"] = 0;
+            m2["y"] = 0;
+            m2["width"] = 200;
+            m2["height"] = 200;
             m2["autoCreate"] = true;
             m2["creator"] = newElementId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m2));
-
-            //create element collection instance
-            //Create library element collection
-            //remove elements
-            //add elements
 
         }
 

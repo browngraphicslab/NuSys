@@ -14,7 +14,7 @@ namespace NuSysApp
         private ObservableCollection<GroupNodeDataGridInfo> _atomDataList;
         private ElementModel _nodeModel;
 
-        public GroupNodeDataGridViewModel(ElementCollectionController model) : base(model)
+        public GroupNodeDataGridViewModel(ElementCollectionController controller) : base(controller)
         {
             _atomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
             AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -35,7 +35,7 @@ namespace NuSysApp
 
                 string timeStamp = _nodeModel.GetMetaData("node_creation_date").ToString();
                 string creator = _nodeModel.GetMetaData("creator").ToString();
-                string nodeType = _nodeModel.GetMetaData("node_type").ToString();
+                string nodeType = _nodeModel.ElementType.ToString();
                 GroupNodeDataGridInfo atomData = new GroupNodeDataGridInfo(timeStamp, creator, nodeType);
                 _atomDataList.Add(atomData);
             }

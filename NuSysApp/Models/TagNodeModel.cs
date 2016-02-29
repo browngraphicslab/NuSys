@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class TagNodeModel : NodeContainerModel
+    public class TagNodeModel : ElementModel
     {
         public List<string> TitleSuggestions { get; set; } 
 

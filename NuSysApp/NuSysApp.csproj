@@ -259,10 +259,10 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AreaNode\AreaNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AreaNode\AreaNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementInstanceController.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\IThumbnailable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml.cs">
@@ -334,7 +334,6 @@
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
-    <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
@@ -665,9 +664,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AreaNode\AreaNodeView.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml">
       <SubType>Designer</SubType>
