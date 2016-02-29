@@ -64,7 +64,7 @@ namespace NuSysApp
             };
 
             wsModel.InqCanvas.LineFinalized += async delegate (InqLineModel model)
-            {/*
+            {
                 if (!model.IsGesture)
                 {
                     var createdTag = await CheckForTagCreation(model);
@@ -73,7 +73,7 @@ namespace NuSysApp
                         model.Delete();
                     }
                     return;
-                }*/
+                }
 
                 var gestureType =  await GestureRecognizer.testGesture(model);
                 switch (gestureType)

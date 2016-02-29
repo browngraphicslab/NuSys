@@ -15,86 +15,34 @@ namespace NuSysApp
     {
         public enum GestureType
         {
-            None, Scribble
+            None, Scribble,Square,Circle
         }
         public static async Task<GestureType> testGesture(InqLineModel currentStroke)
         {
-            List<double> angles = new List<double>();
             var points = currentStroke.Points;
-            for (int i = 0; i < points.Count - 2; i++)
-            {
-
-                angles.Add(Math.Acos((Math.Pow(LineLength(points[i + 1], points[i]), 2) +
-                    Math.Pow(LineLength(points[i + 1], points[i + 2]), 2) -
-                    Math.Pow(LineLength(points[i], points[i + 2]), 2))
-                    / (2 * LineLength(points[i + 1], points[i]) * LineLength(points[i + 1], points[i + 2]))));
-            }
-            angles.RemoveAll(d => Double.IsNaN(d) | d == 0);//this is to clean up the data and prevent errors
-            var discreteSet = DiscretizeAngles(angles, 6);
-            discreteSet.RemoveAll(d => Double.IsNaN(d) | d == 0);
-            var entropy = -discreteSet.Sum(i => i * Math.Log(i));
-            var xy = points.Sum(p => p.X) * points.Sum(p => p.Y);
-            var m = (points.Count * points.Sum(p => p.X * p.Y) - xy) /
-                (points.Count * points.Sum(p => p.X * p.X) - xy);
-            var b = (points.Sum(p => p.Y) - m * points.Sum(p => p.X)) / points.Count;
-            var LSE = points.Sum(p => Math.Pow(m * p.X + b - p.Y, 2));
             var mid = new Point((points[0].X + points[points.Count - 1].X) / 2, (points[0].Y + points[points.Count - 1].Y) / 2);
-            var linearity = LineLength(new Point(),
-                new Point(points.Sum(p => p.X - mid.X), points.Sum(p => p.Y - mid.Y))) / StrokeLength(points);//NOT ACTUAL NAME, I need to find/come up with one
-            var centdis = new List<double>();
-            foreach (var p in points)
-            {
-                centdis.Add(LineLength(mid,p));
-            }
-            var linlist = znormalize(centdis);
 
-            Debug.WriteLine(LSE + " : " + entropy + " : " + linearity);
-            Debug.WriteLine(linlist.Min() + " : " + linlist.Max() + " : " + linlist.Sum());
             // DownScaled Angle averages
-            var npoints = resample(points, 32);
-     //       for (int i = 0; i < 10; i++)
-   //         {
- //               npoints.Add(points[i * (int)(points.Count / 10)]);
-//            }
-            var sampledCentroid = centroid(npoints);
+            //var npoints = resample(points, 32);
+            //var sampledCentroid = centroid(npoints);
             var Centroid = centroid(points);
 
-            var CentroidtoMidpoint = LineLength(Centroid, mid) / StrokeLength(points) * Constants.MaxCanvasSize;
-            var FirsttoLastPoint = LineLength(points[0], points[points.Count -1]) / StrokeLength(points) * Constants.MaxCanvasSize; 
-            
-
-            List<double> nangles = new List<double>();
-            for (int i = 0; i < npoints.Count - 2; i++)
+            var CentroidtoMidpoint = LineLength(Centroid, mid) / StrokeLength(points) * Constants.MaxCanvasSize; //distance between the centroid and the midpoint
+            var FirsttoLastPoint = LineLength(points[0], points[points.Count -1]) / StrokeLength(points) * Constants.MaxCanvasSize;//the distance between the first and last point
+            var InkStrokeLength = StrokeLength(points);//the length of the whole stroke
+//            Debug.WriteLine("determiner " + ((InkStrokeLength - FirsttoLastPoint)/CentroidtoMidpoint));
+//            Debug.WriteLine("StrokeLinetoFirsttoLastLine difference " + (InkStrokeLength - FirsttoLastPoint));
+            var match = await recognize(points);//tests the stroke against the set of template strokes that are available
+            Debug.WriteLine(match.GestureType.ToString() + ":" + match.Score);
+            if (match.Score < 30)
             {
-                nangles.Add(Math.Acos((Math.Pow(LineLength(npoints[i + 1], npoints[i]), 2) +
-                    Math.Pow(LineLength(npoints[i + 1], npoints[i + 2]), 2) -
-                    Math.Pow(LineLength(npoints[i], npoints[i + 2]), 2))
-                    / (2 * LineLength(npoints[i + 1], npoints[i]) * LineLength(npoints[i + 1], npoints[i + 2]))));
+                return match.GestureType;
             }
-            nangles.RemoveAll(d => Double.IsNaN(d) | d == 0);
-            var ncentdis = new List<double>();
-            foreach (var p in npoints)
-            {
-                ncentdis.Add(LineLength(mid,p));
-            }
-            var nlinlist = znormalize(ncentdis);
-            Debug.WriteLine(nlinlist.Min() + " : " + nlinlist.Max() + " : " + nlinlist.Sum());
-            Debug.WriteLine(CentroidtoMidpoint + " : " + FirsttoLastPoint);
-
-            Debug.WriteLine("diff = " + (CentroidtoMidpoint - FirsttoLastPoint));
-            Debug.WriteLine("quo = " + (CentroidtoMidpoint / FirsttoLastPoint));
-            Debug.WriteLine("mul = " + (CentroidtoMidpoint * FirsttoLastPoint));
-            Debug.WriteLine("sum = " + (CentroidtoMidpoint + FirsttoLastPoint));
-
-            var avgAng = nangles.Sum(x => x) / nangles.Count;
-            var avgAngfull = angles.Sum(x => x) / angles.Count;
-            //
-            WriteData(LSE + "," + entropy + "," + linearity + "," + avgAng + "," + avgAngfull);
-
-            //if (0.6 * avgAng - 0.6 - entropy < 0)
-            var match = await recognize(points);
-            Debug.WriteLine(match.StrokeTemplate.ToString() + ":" + match.Score);
-            if ( CentroidtoMidpoint + FirsttoLastPoint < 70000 | (CentroidtoMidpoint - FirsttoLastPoint > -45000 & CentroidtoMidpoint - FirsttoLastPoint < 20000 ))
+            var determiner = (InkStrokeLength - FirsttoLastPoint)/CentroidtoMidpoint;//used to determine if a stroke is a scribble or not
+            var determinerLowerBounds = -6;
+            var determinerUpperBounds = -1.5;
+            var lDisUpperBounds = -8e4;
+            if (determiner < determinerUpperBounds && determiner > determinerLowerBounds || determiner < determinerLowerBounds && InkStrokeLength - FirsttoLastPoint > lDisUpperBounds)
             {
                 Debug.WriteLine("this is a scribble");
                 return GestureType.Scribble;
@@ -172,16 +120,15 @@ namespace NuSysApp
             stroke = resample(stroke, 32);
             List<Double> candidateSeries = znormalize(cDistance(stroke));
 
-            var filedict = new Dictionary<string,StrokeTemplate >()
+            var filedict = new Dictionary<string,GestureType >()
             {
-                { "Circle",StrokeTemplate.Circle },
-                { "Circle2",StrokeTemplate.Circle },
-                { "Square",StrokeTemplate.Square },
-                { "Scribble" ,StrokeTemplate.Scribble}
+                { "Circle",GestureType.Circle },
+                { "Circle2",GestureType.Circle },
+                { "Square",GestureType.Square }
             };
 
             double minMatch = Double.MaxValue;
-            StrokeTemplate strokeMatch = StrokeTemplate.Null;
+            GestureType strokeMatch = GestureType.None;
             foreach (var trainingTemplate in filedict.Keys)
             {
                 string filepath = @"Assets\gestureTemplates\" +trainingTemplate + @".stroke";
@@ -364,22 +311,18 @@ namespace NuSysApp
             return Math.Sqrt(sum / numbers.Count());
         }
 
-        public enum StrokeTemplate
-        {
-            Null, Square, Circle, Scribble
-        }
 
         public class Match
         {
 
-            private StrokeTemplate _st;
+            private GestureType _st;
             private double _score;
-            public Match(StrokeTemplate st, double score)
+            public Match(GestureType st, double score)
             {
                 _st = st;
                 _score = score;
             }
-            public StrokeTemplate StrokeTemplate { get { return _st; } }
+            public GestureType GestureType { get { return _st; } }
             public double Score { get { return _score; } }
         }
 
