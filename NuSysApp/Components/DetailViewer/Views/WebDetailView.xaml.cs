@@ -49,7 +49,8 @@ namespace NuSysApp
             xWebView.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
             xScrollViewer.Height = xWebView.Height;
             xScrollViewer.Width = xWebView.Width;
-            xUrlBox.Width = webTopBar.ActualWidth*0.8;
+            webTopBar.Width = xWebView.ActualWidth;
+            xUrlBox.Width = webTopBar.Width*0.8;
             this.Height = xWebView.ActualHeight + 37;
             this.Width = xWebView.ActualWidth;
         }
