@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class CreateNewContentRequest : Request
+    public class CreateNewLibraryElementRequest : Request
     {
-        public CreateNewContentRequest(Message m) : base(RequestType.CreateNewContentRequest, m)
+        public CreateNewLibraryElementRequest(Message m) : base(RequestType.CreateNewLibrayElementRequest, m)
         {
             SetServerSettings();
         }
 
-        public CreateNewContentRequest(string id, string data, string type = null, string title = null)
-            : base(RequestType.CreateNewContentRequest)
+        public CreateNewLibraryElementRequest(string id, string data, string type = null, string title = null)
+            : base(RequestType.CreateNewLibrayElementRequest)
         {
             _message["id"] = id;
             _message["data"] = data;

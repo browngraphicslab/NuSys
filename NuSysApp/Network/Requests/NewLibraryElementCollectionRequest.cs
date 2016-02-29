@@ -8,11 +8,25 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace NuSysApp
 {
-    public class NewGroupRequest : Request
+    public class NewLibraryElementCollectionRequest : Request
     {
-        public NewGroupRequest(Message message) : base(RequestType.NewGroupRequest, message){}
+        public NewLibraryElementCollectionRequest(Message message) : base(RequestType.NewLibraryElementCollectionRequest, message){}
+
+        public NewLibraryElementCollectionRequest(string id, string data, string id1, string id2, string title = null) : base(RequestType.NewLibraryElementCollectionRequest)
+        {
+            _message["id"] = id;
+            _message["data"] = data;
+            _message["type"] = "collection";
+            if (title != null)
+            {
+                _message["title"] = title;
+            }
+            _message["id1"] = id1;
+            _message["id2"] = id2;
+        }
         public async override Task CheckOutgoingRequest()
         {
+            if(!_message.ContainsKey("data") || !_message.ContainsKey("id") || !_message.ContainsKey("id1") || !_message.ContainsKey("id2"))
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerRequestType(ServerRequestType.Add);
             SetServerItemType(ServerItemType.Content);
@@ -20,6 +34,7 @@ namespace NuSysApp
 
         public async override Task ExecuteRequestFunction()
         {
+
             var props = _message;
             
             var eic1 = SessionController.Instance.IdToControllers[props.GetString("id1")];
@@ -37,7 +52,7 @@ namespace NuSysApp
             {
                 var msg = new Message();
                 msg["id"] = SessionController.Instance.GenerateId();
-                msg["nodeType"] = ElementType.Group.ToString();
+                msg["nodeType"] = ElementType.Collection.ToString();
                 msg["data"] = "";
                 msg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                 msg["width"] = _message.GetDouble("width");

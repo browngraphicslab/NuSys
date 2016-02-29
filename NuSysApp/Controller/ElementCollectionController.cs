@@ -19,16 +19,13 @@ namespace NuSysApp
 
         public void AddChild( ElementController child )
         {
-            var model = (ElementCollectionModel) Model;
-            model.LibraryElementCollectionModel.Children.Add(child.Model);
+
 
             ChildAdded?.Invoke(this, child);
         }
 
         public void RemoveChild(ElementController child)
         {
-            var model = (ElementCollectionModel)Model;
-            model.LibraryElementCollectionModel.Children.Remove(child.Model);
             ChildRemoved?.Invoke(this, child);
         }
     }

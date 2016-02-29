@@ -76,9 +76,9 @@ namespace NuSysApp
                     elementModel = new WorkspaceModel(id);
                     controller = new ElementController(elementModel);
                     break;
-                case ElementType.Group:
-                    elementModel = new NodeContainerModel(id);
-                    controller = new ElementController(elementModel);
+                case ElementType.Collection:
+                    elementModel = new ElementCollectionModel(id);
+                    controller = new ElementCollectionController(elementModel);
                     break;
                 case ElementType.Area:
                     elementModel = new AreaModel(id);

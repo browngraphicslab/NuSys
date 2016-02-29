@@ -32,14 +32,10 @@ namespace NuSysApp
             {
                 Title = (string)dict["title"];
             }
-            try
+            if (dict.ContainsKey("type"))
             {
-                if (dict.ContainsKey("type"))
-                {
-                    ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"]);
-                }
+                ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
             }
-            catch (Exception e) { }
         }
         public LibraryElement(Dictionary<string, string> dict)
         {
@@ -53,7 +49,7 @@ namespace NuSysApp
             {
                 if (dict.ContainsKey("type"))
                 {
-                    ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"]);
+                    ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
                 }
             }
             catch (Exception e) { }

@@ -20,7 +20,7 @@ namespace NuSysApp
             
             ElementType type = model.ElementType;
 
-            if (type == ElementType.Group)
+            if (type == ElementType.Collection)
             {
                 var childList = _message.GetList<string>("groupChildren");
                 foreach (var childId in childList)

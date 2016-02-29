@@ -25,7 +25,7 @@ namespace NuSysApp
         private GroupNodeExpandedView expandedView;
         private GroupNodeDataGridView dataGridView;
 
-        public GroupNodeExpandedDefaultView(NodeContainerModel model)
+        public GroupNodeExpandedDefaultView(ElementCollectionModel model)
         {
             this.InitializeComponent();
 

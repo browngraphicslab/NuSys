@@ -458,7 +458,7 @@
 ////        }
 
 ////        /*
-////        * PUBLIC general method to create Group
+////        * PUBLIC general method to create Collection
 ////        * TODO factor this into one method with RequestMakeEmptyGroup that takes in a list os ID's to place in that group
 ////        */
 ////        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
@@ -490,7 +490,7 @@
 ////        }
 
 ////        /*
-////       * PUBLIC general method to create Group
+////       * PUBLIC general method to create Collection
 ////       * TODO merge this into one request make group method
 ////       */
 
@@ -776,7 +776,7 @@
 //        type = (NodeType)Enum.Parse(typeof(NodeType), t);
 //    }
 
-//    if (type == NodeType.Group)
+//    if (type == NodeType.Collection)
 //    {
 
 //        var childList = props.GetList<string>("groupChildren");
@@ -984,7 +984,7 @@
 ////                type = (NodeType)Enum.Parse(typeof(NodeType), t);
 ////            }
 
-////            if (type == NodeType.Group) { 
+////            if (type == NodeType.Collection) { 
 
 ////                var childList = props.GetList<string>("groupChildren");
 ////                foreach (var childId in childList)
