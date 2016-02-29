@@ -10,20 +10,20 @@
     d:DesignWidth="400"
 >
     <Grid x:Name="webViewPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <StackPanel x:Name="webTopBar" Background="#99000000" Width="{Binding ElementName=xWebView, Path=Width}" Orientation="Horizontal" VerticalAlignment="Top">
+        <StackPanel x:Name="webTopBar" Background="#99000000" Orientation="Horizontal" VerticalAlignment="Top">
             <Button x:Name="Back" Height="37" Foreground="White" Click="Back_OnClick">
                 <Image Source="http://www.iconsplace.com/icons/preview/white/left-round-256.png"></Image>
             </Button>
             <Button x:Name="Forward" Height="37" Foreground="White" Click="Forward_OnClick">
                 <Image Source="http://www.iconsdb.com/icons/preview/white/right-round-xxl.png"></Image>
             </Button>
-            <TextBox x:Name="xUrlBox" Tag="NoManipulation" Width="890" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
+            <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
             <Button x:Name="Refresh" Height="37" Foreground="White" Click="Refresh_OnClick">
                 <Image Source="http://www.iconsdb.com/icons/preview/white/recurring-appointment-xxl.png"></Image>
             </Button>
         </StackPanel>
-        <ScrollViewer x:Name="xScrollViewer">
-            <WebView x:Name="xWebView" Height="600" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" VerticalAlignment="Top" Margin="0,37,0,0"/>
+        <ScrollViewer x:Name="xScrollViewer" Margin="0,37,0,0">
+            <WebView x:Name="xWebView" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Top" NavigationCompleted="XWebView_OnNavigationCompleted"/>
         </ScrollViewer>
     </Grid>
 </UserControl>

@@ -30,23 +30,28 @@ namespace NuSysApp
 
             Loaded += delegate (object sender, RoutedEventArgs args)
             {
-                var sw = SessionController.Instance.SessionView.ActualWidth / 1.5;
-                var sh = SessionController.Instance.SessionView.ActualHeight / 2;
-
-                var ratio = xWebView.Width > xWebView.Height ? xWebView.Width / sw : xWebView.Height / sh;
-                xWebView.Width = (xWebView.Width / ratio);
-                xWebView.Height = (xWebView.Height / ratio);
-                webViewPanel.Width = xWebView.Width;
-                webViewPanel.Height = xWebView.Height;
-                xScrollViewer.Width = xWebView.Width;
-                xScrollViewer.Height = SessionController.Instance.SessionView.ActualHeight - 400;
-                webTopBar.Width = xWebView.Width; 
+                SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
 
                 //(vm.Model as WebNodeModel).Url = "http://www.google.com";
                 (vm.Model as WebNodeModel).Url = vm.Url;
             };
+            SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
 
             (vm.Model as WebNodeModel).UrlChanged += OnUrlChanged;
+        }
+    
+        public void SetDimension(double parentWidth, double parentHeight)
+        {
+            var ratio = _viewMod.Width > _viewMod.Height ? _viewMod.Width / parentWidth : _viewMod.Height / parentHeight;
+            xWebView.Width = (_viewMod.Width / ratio) - (parentWidth*0.1);
+            xWebView.MaxWidth = parentWidth*0.9;
+            xWebView.Height = _viewMod.Height * 1.5 / ratio;
+            xWebView.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
+            xScrollViewer.Height = xWebView.Height;
+            xScrollViewer.Width = xWebView.Width;
+            xUrlBox.Width = webTopBar.ActualWidth*0.8;
+            this.Height = xWebView.ActualHeight + 37;
+            this.Width = xWebView.ActualWidth;
         }
 
         private void OnUrlChanged(object source, string url)
