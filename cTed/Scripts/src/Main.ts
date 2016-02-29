@@ -264,8 +264,8 @@ class Main {
         });
     }
 
-    sendResponse(bool: Boolean) {
-
+    sendResponse(bool: Boolean) {  
+         
     }
     mouseUp = (e): void => {
         console.log("mouseUp");
@@ -280,7 +280,7 @@ class Main {
 
             });
         } else {
-      //      $(this.bubble).css("display", "none");
+            //      $(this.bubble).css("display", "none");
         }
         console.log("======================================");
         document.body.removeChild(this.canvas);
@@ -300,6 +300,7 @@ class Main {
             chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         }
         this.inkCanvas.clear();
+        this.currentStrokeType = StrokeType.Line;
         document.body.appendChild(this.canvas);
     }
 
@@ -332,7 +333,7 @@ class Main {
     mouseMove = (e): void => {
         if (this.isSelecting) {
             this.inkCanvas.draw(e.clientX, e.clientY);
-            if (this.currentStrokeType != StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke)) {
+            if (this.currentStrokeType != StrokeType.Lasso && this.currentStrokeType != StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke)) {
                 console.log("strokeType changed from " + this.currentStrokeType + " to " + StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke));
                 this.currentStrokeType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke);
                 this.switchSelection(this.currentStrokeType);
@@ -343,7 +344,7 @@ class Main {
                 this.checkStillOnHover(e);
             } else 
                 this.showGestureOnHover(e);
-            
+     
         }
     }
 
@@ -399,6 +400,10 @@ class Main {
                 break;
             case StrokeType.Line:
                 this.selection = new LineSelection();
+                break;
+            case StrokeType.Lasso:
+                console.log("============================!!!!!!!!!!!!!!========================");
+                this.selection = new LassoSelection();
                 break;
         }
         this.selection.start(this._startX, this._startY);

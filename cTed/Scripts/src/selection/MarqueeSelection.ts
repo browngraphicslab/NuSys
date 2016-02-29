@@ -222,6 +222,7 @@
         }
     }
 
+    //does not need myEl
     bound(myEl, el): boolean {
         if (el.nodeName == "#text") {
             var range = document.createRange();

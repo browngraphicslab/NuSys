@@ -40,6 +40,9 @@ class InkCanvas {
             case StrokeType.Line:
                 this._brush = new HighlightBrush();
                 break;
+            case StrokeType.Lasso:
+                this._brush = new LassoBrush();
+                break;
             default:
                 this._brush = new HighlightBrush();
         }

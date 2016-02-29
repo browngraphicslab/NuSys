@@ -5,6 +5,7 @@
     tags: string;
     stroke: Stroke;
     type: StrokeType;
+
     public selectedElements: Array<any> = new Array<any>();
 
     start(x: number, y: number): void { }

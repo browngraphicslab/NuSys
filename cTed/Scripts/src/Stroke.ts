@@ -27,4 +27,40 @@
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
     
+
+    getStrokeMetrics() {
+        var startPoint = Vector2.fromPoint(this.points[0]);
+        var endPoint = Vector2.fromPoint(this.points[this.points.length - 1]);
+        var l = endPoint.subtract(startPoint);
+        var ln = l.getNormalized();
+
+
+
+        var error = 0;
+        var errors = [];
+        for (var i = 0; i < this.points.length; i++) {
+            var a = Vector2.fromPoint(this.points[i]).subtract(startPoint);
+            var b = ln.multiply(a.dot(ln));
+            var c = a.subtract(b);
+            error += Math.abs(c.length());
+            errors.push(Math.abs(c.length()));
+        }
+
+        function median(values) {
+
+            values.sort(function (a, b) { return a - b; });
+
+            var half = Math.floor(values.length / 2);
+
+            if (values.length % 2)
+                return values[half];
+            else
+                return (values[half - 1] + values[half]) / 2.0;
+        }
+
+        var m = median(errors);
+
+        error /= this.points.length;
+        return { length: this.points.length, error: m };
+    }
 }

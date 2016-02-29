@@ -2544,6 +2544,32 @@ var Stroke = (function () {
         }
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     };
+    Stroke.prototype.getStrokeMetrics = function () {
+        var startPoint = Vector2.fromPoint(this.points[0]);
+        var endPoint = Vector2.fromPoint(this.points[this.points.length - 1]);
+        var l = endPoint.subtract(startPoint);
+        var ln = l.getNormalized();
+        var error = 0;
+        var errors = [];
+        for (var i = 0; i < this.points.length; i++) {
+            var a = Vector2.fromPoint(this.points[i]).subtract(startPoint);
+            var b = ln.multiply(a.dot(ln));
+            var c = a.subtract(b);
+            error += Math.abs(c.length());
+            errors.push(Math.abs(c.length()));
+        }
+        function median(values) {
+            values.sort(function (a, b) { return a - b; });
+            var half = Math.floor(values.length / 2);
+            if (values.length % 2)
+                return values[half];
+            else
+                return (values[half - 1] + values[half]) / 2.0;
+        }
+        var m = median(errors);
+        error /= this.points.length;
+        return { length: this.points.length, error: m };
+    };
     return Stroke;
 })();
 var StrokeType;
@@ -2552,7 +2578,7 @@ var StrokeType;
     StrokeType[StrokeType["Line"] = 1] = "Line";
     StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
     StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
-    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
+    StrokeType[StrokeType["Lasso"] = 4] = "Lasso";
     StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
 })(StrokeType || (StrokeType = {}));
 /// <reference path="Stroke.ts"/>
@@ -2584,6 +2610,9 @@ var InkCanvas = (function () {
             case StrokeType.Line:
                 this._brush = new HighlightBrush();
                 break;
+            case StrokeType.Lasso:
+                this._brush = new LassoBrush();
+                break;
             default:
                 this._brush = new HighlightBrush();
         }
@@ -2602,6 +2631,43 @@ var InkCanvas = (function () {
     return InkCanvas;
 })();
 /// <reference path="../InkCanvas.ts" />
+var LassoBrush = (function () {
+    function LassoBrush() {
+    }
+    LassoBrush.prototype.draw = function (x, y, inkCanvas) {
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, 5, 0, Math.PI * 2, false);
+        ctx.fill();
+        console.log("--X HASH KEY: " + Math.floor(x / 3));
+    };
+    LassoBrush.prototype.redraw = function (stroke, inkCanvas) {
+        inkCanvas.removeStroke();
+        for (var i = 0; i < stroke.points.length; i++) {
+            this.draw(stroke.points[i].x, stroke.points[i].y, inkCanvas);
+        }
+    };
+    //draw previous on hover
+    LassoBrush.prototype.drawPrevious = function (stroke, inkCanvas) {
+        console.log("======DRAWPREV");
+        var firstPoint = stroke.points[0];
+        var lastPoint = stroke.points[stroke.points.length - 1];
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgb(255,70,70)";
+        ctx.setLineDash([5]);
+        ctx.rect(firstPoint.x, firstPoint.y - $(window).scrollTop(), lastPoint.x - firstPoint.x, lastPoint.y - firstPoint.y);
+        ctx.stroke();
+    };
+    return LassoBrush;
+})();
 var MarqueeBrush = (function () {
     function MarqueeBrush() {
         this._img = new Image();
@@ -2683,6 +2749,7 @@ var Main = (function () {
                 chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
             }
             _this.inkCanvas.clear();
+            _this.currentStrokeType = StrokeType.Line;
             document.body.appendChild(_this.canvas);
         };
         //mousedown action
@@ -2705,7 +2772,7 @@ var Main = (function () {
         this.mouseMove = function (e) {
             if (_this.isSelecting) {
                 _this.inkCanvas.draw(e.clientX, e.clientY);
-                if (_this.currentStrokeType != StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke)) {
+                if (_this.currentStrokeType != StrokeType.Lasso && _this.currentStrokeType != StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke)) {
                     console.log("strokeType changed from " + _this.currentStrokeType + " to " + StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke));
                     _this.currentStrokeType = StrokeClassifier.getStrokeType(_this.inkCanvas._activeStroke);
                     _this.switchSelection(_this.currentStrokeType);
@@ -3003,6 +3070,10 @@ var Main = (function () {
             case StrokeType.Line:
                 this.selection = new LineSelection();
                 break;
+            case StrokeType.Lasso:
+                console.log("============================!!!!!!!!!!!!!!========================");
+                this.selection = new LassoSelection();
+                break;
         }
         this.selection.start(this._startX, this._startY);
     };
@@ -3217,6 +3288,309 @@ var BracketSelection = (function (_super) {
         this._content = result;
     };
     return BracketSelection;
+})(AbstractSelection);
+var LassoSelection = (function (_super) {
+    __extends(LassoSelection, _super);
+    function LassoSelection() {
+        _super.apply(this, arguments);
+        this._parentList = new Array();
+        this._strokeHash = {};
+        this._minX = 10000;
+        this._minY = 10000;
+        this._maxX = 0;
+        this._maxY = 0;
+        this._content = "";
+    }
+    LassoSelection.prototype.start = function (x, y) {
+    };
+    LassoSelection.prototype.end = function (x, y) {
+        this.analyzeContent();
+    };
+    LassoSelection.prototype.changeMinMax = function (point) {
+        var x = point.x;
+        var y = point.y;
+        if (x < this._minX)
+            this._minX = x;
+        if (x > this._maxX)
+            this._maxX = x;
+        if (y > this._maxY)
+            this._maxY = y;
+        if (y < this._maxY)
+            this._minY = y;
+    };
+    LassoSelection.prototype.analyzeContent = function () {
+        //create a hashtable of y/3 --> x values
+        //create a list of elements overlaying strokes
+        var len = this.stroke.points.length;
+        var element;
+        for (var i = 0; i < len; i++) {
+            var point = this.stroke.points[i];
+            this.changeMinMax(point);
+            if (element != document.elementFromPoint(point.x, point.y)) {
+                element = document.elementFromPoint(point.x, point.y);
+                this._parentList.push(element);
+            }
+            var key = Math.floor(this.stroke.points[i].y / 5);
+            if (this._strokeHash.hasOwnProperty(key.toString())) {
+                this._strokeHash[key].push(this.stroke.points[i].x);
+            }
+            else {
+                this._strokeHash[key] = [this.stroke.points[i].x];
+            }
+        }
+        this.findCommonParent();
+        console.info(this._parentList[0]);
+        console.log(this._strokeHash);
+        console.log("=====rmChildforLasso");
+        var parent = this._parentList[0].cloneNode(true);
+        //     this.rmChildNodes(parent, this._parentList[0]);   
+        this._content = parent.innerHTML;
+    };
+    LassoSelection.prototype.isBound = function (el) {
+        if (el.nodeName == "#text") {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var rects = range.getClientRects();
+            if (rects.length == 0) {
+                return;
+            }
+            for (var i = 0; i < rects.length; i++) {
+                var x1 = rects[i].left;
+                var ax2 = rects[i].left + rects[0].width;
+                var y1 = rects[i].top;
+                var ay2 = rects[i].top + rects[0].height;
+                if (!this.isRectBound(new Rectangle(x1, y1, rects[0].width, rects[0].height))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else if (el.nodeName != "#comment") {
+            var rectX = el.getBoundingClientRect();
+            var realDim = this.getRealHeightWidth(el.getClientRects());
+            var realHeight = realDim[0];
+            var realWidth = realDim[1];
+            if (rectX == null) {
+                return false;
+            }
+            return this.isRectBound(new Rectangle(rectX["left"], rectX["top"], realWidth, realHeight));
+        }
+    };
+    LassoSelection.prototype.intersectWith = function (el) {
+        if (!el)
+            return false;
+        if (el.nodeName == "#text") {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var rects = range.getClientRects();
+            if (rects.length == 0) {
+                return;
+            }
+            for (var i = 0; i < rects.length; i++) {
+                var rect = rects[i];
+                if (this.isRectIntersect(new Rectangle(rect.left, rect.top, rect.width, rect.height))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else if (el.NodeName != "#comment") {
+            var rangeY = document.createRange();
+            rangeY.selectNodeContents(el);
+            var realDim = this.getRealHeightWidth(rangeY.getClientRects());
+            var realHeight = realDim[0];
+            var realWidth = realDim[1];
+            var minX = realDim[2];
+            var minY = realDim[3];
+            /////works weird for Wikipedia. 
+            console.log(el);
+            console.log(minX + "  " + minY + "  " + realHeight + "  " + realWidth);
+            console.log(this._minX + " " + this._minY + " " + this._maxX + " " + this._maxY);
+            if (minX < this._minX && minX + realWidth > this._maxX && minY < this._minY && minY + realHeight > this._maxY)
+                return true;
+            var xValues = this._strokeHash[Math.floor(minY / 5)];
+            if (xValues) {
+                for (var i = 0; i < xValues.length; i++) {
+                    if (xValues[i] > minX && xValues[i] < minX + realWidth) {
+                        return true;
+                    }
+                }
+            }
+            xValues = this._strokeHash[Math.floor((minY + realHeight) / 5)];
+            if (xValues) {
+                for (var i = 0; i < xValues.length; i++) {
+                    if (xValues[i] > minX && xValues[i] < minX + realWidth) {
+                        return true;
+                    }
+                }
+            }
+            return this.isRectIntersect(new Rectangle(minX, minY, realWidth, realHeight));
+        }
+        console.log("in intersect:" + el);
+        return false;
+    };
+    //move to util
+    LassoSelection.prototype.getRealHeightWidth = function (rectsList) {
+        //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
+        var maxH = Number.NEGATIVE_INFINITY;
+        var minH = Number.POSITIVE_INFINITY;
+        var maxW = Number.NEGATIVE_INFINITY;
+        var minW = Number.POSITIVE_INFINITY;
+        $(rectsList).each(function (indx, elem) {
+            if (elem["top"] + elem["height"] > maxH) {
+                maxH = elem["top"] + elem["height"];
+            }
+            if (elem["top"] < minH) {
+                minH = elem["top"];
+            }
+            if (elem["left"] < minW) {
+                minW = elem["left"];
+            }
+            if (elem["left"] + elem["width"] > maxW) {
+                maxW = elem["left"] + elem["width"];
+            }
+        });
+        return [(maxH - minH), (maxW - minW), minW, minH];
+    };
+    LassoSelection.prototype.isRectIntersect = function (rect) {
+        return (this.isPointBound(rect.x, rect.y) || this.isPointBound(rect.x + rect.w, rect.y)
+            || this.isPointBound(rect.x, rect.y + rect.h) || this.isPointBound(rect.x + rect.w, rect.y + rect.h));
+    };
+    LassoSelection.prototype.isRectBound = function (rect) {
+        return (this.isPointBound(rect.x, rect.y) && this.isPointBound(rect.x + rect.w, rect.y)
+            && this.isPointBound(rect.x, rect.y + rect.h) && this.isPointBound(rect.x + rect.w, rect.y + rect.h));
+    };
+    LassoSelection.prototype.isPointBound = function (x, y) {
+        if (x > this._maxX || x < this._minX || y > this._maxY || y < this._minY)
+            return false;
+        var res = false;
+        var yKey = Math.floor(y / 5);
+        var xValues = this._strokeHash[yKey];
+        var delta = 5;
+        while (!xValues) {
+            xValues = this._strokeHash[yKey + delta];
+            delta *= -1;
+            if (delta > 0)
+                delta += 5;
+        }
+        xValues.sort();
+        console.log(xValues);
+        for (var i = 0; i < xValues.length; i++) {
+            res = !res;
+            if (x < xValues[i])
+                return res;
+        }
+        console.log("=============isPointBound======================================");
+        return true;
+    };
+    LassoSelection.prototype.rmChildNodes = function (el, trueEl) {
+        var removed = [];
+        var realNList = [];
+        var indexList = [];
+        //iterate through childNodes and add to list(removed).
+        for (var i = 0; i < el.childNodes.length; i++) {
+            if (!this.intersectWith(trueEl.childNodes[i])) {
+                removed.push(el.childNodes[i]);
+            }
+            else {
+                realNList.push(trueEl.childNodes[i]);
+                indexList.push(i);
+            }
+        }
+        //remove not intersecting elements; 
+        for (var i = 0; i < removed.length; i++) {
+            el.removeChild(removed[i]);
+        }
+        console.log("remove......");
+        console.log(this._strokeHash);
+        console.log(el.childNodes);
+        return;
+        for (var i = 0; i < el.childNodes.length; i++) {
+            console.log(this.isBound(realNList[i]));
+            if (!this.isBound(realNList[i])) {
+                if (el.childNodes[i].nodeName == "#text") {
+                    var index = indexList[i];
+                    $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+                    var result = "";
+                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
+                        if (this.intersectWith(trueEl.childNodes[index].childNodes[j])) {
+                            if (trueEl.childNodes[index].childNodes[j].style) {
+                                trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
+                                console.log(trueEl.childNodes[index]);
+                            }
+                            if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
+                                if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
+                                    result += " ";
+                                }
+                            }
+                            else {
+                                result += trueEl.childNodes[index].childNodes[j]["innerHTML"];
+                            }
+                        }
+                    }
+                    el.childNodes[i].data = result;
+                }
+                else {
+                    this.rmChildNodes(el.childNodes[i], realNList[i]);
+                }
+            }
+            else {
+                console.log("BOUNDEDDDD=====");
+                console.log(trueEl.childNodes[indexList[i]]);
+                var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
+                var foundElement = $(trueEl.childNodes[indexList[i]]).find("img");
+                if (foundElement.length > 0) {
+                    var label = $("<span class='wow'>Selected</span>");
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", ($(foundElement).offset().top - 5) + "px");
+                    label.css("left", ($(foundElement).offset().left - 5) + "px");
+                }
+                if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
+                    console.log("-----------TEXT?-------");
+                    console.log($(trueEl.childNodes[indexList[i]]));
+                    $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
+                }
+                $(realNList[i]).css("background-color", "yellow");
+                trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                console.log(startIndex);
+            }
+        }
+    };
+    LassoSelection.prototype.findCommonParent = function () {
+        if (this._parentList.length != 1) {
+            for (var i = 1; i < this._parentList.length; i++) {
+                var currAn = this.commonParent(this._parentList[0], this._parentList[i]);
+                this._parentList[0] = currAn;
+            }
+        }
+    };
+    LassoSelection.prototype.commonParent = function (node1, node2) {
+        //finds common ancestor between two nodes. 
+        var parents1 = this.parents(node1);
+        var parents2 = this.parents(node2);
+        if (parents1[0] != parents2[0]) {
+            throw "No common ancestor!";
+        }
+        for (var i = 0; i < parents1.length; i++) {
+            if (parents1[i] != parents2[i]) {
+                return parents1[i - 1];
+            }
+        }
+        return parents1[parents1.length - 1];
+    };
+    LassoSelection.prototype.parents = function (node) {
+        var nodes = [node];
+        while (node != null) {
+            node = node.parentNode;
+            nodes.unshift(node);
+        }
+        return nodes;
+    };
+    LassoSelection.prototype.getContent = function () {
+        return this._content;
+    };
+    return LassoSelection;
 })(AbstractSelection);
 var LineSelection = (function (_super) {
     __extends(LineSelection, _super);
@@ -3718,6 +4092,7 @@ var MarqueeSelection = (function (_super) {
             return false;
         }
     };
+    //does not need myEl
     MarqueeSelection.prototype.bound = function (myEl, el) {
         if (el.nodeName == "#text") {
             var range = document.createRange();
@@ -3901,8 +4276,13 @@ var StrokeClassifier = (function () {
     StrokeClassifier.getStrokeType = function (stroke) {
         var p0 = stroke.points[0];
         var p1 = stroke.points[stroke.points.length - 1];
+        var metrics = stroke.getStrokeMetrics();
+        console.log("=====================================" + metrics.error);
         if (Math.abs(p1.x - p0.x) < 5 && Math.abs(p1.y - p0.y) < 5) {
             return StrokeType.Null;
+        }
+        if (metrics.error > 50) {
+            return StrokeType.Lasso;
         }
         if (Math.abs(p1.y - p0.y) < 20) {
             return StrokeType.Line;
@@ -3961,5 +4341,71 @@ var Statistics = (function () {
         return Statistics.getNumWithSetDec(stdDev, numOfDec);
     };
     return Statistics;
+})();
+var Vector2 = (function () {
+    function Vector2(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    Vector2.fromPoint = function (p) {
+        return new Vector2(p.x, p.y);
+    };
+    Vector2.prototype.negative = function () {
+        return new Vector2(-this.x, -this.y);
+    };
+    Vector2.prototype.add = function (v) {
+        if (v instanceof Vector2)
+            return new Vector2(this.x + v.x, this.y + v.y);
+        else
+            return new Vector2(this.x + v, this.y + v);
+    };
+    Vector2.prototype.subtract = function (v) {
+        if (v instanceof Vector2)
+            return new Vector2(this.x - v.x, this.y - v.y);
+        else
+            return new Vector2(this.x - v, this.y - v);
+    };
+    Vector2.prototype.multiply = function (v) {
+        if (v instanceof Vector2)
+            return new Vector2(this.x * v.x, this.y * v.y);
+        else
+            return new Vector2(this.x * v, this.y * v);
+    };
+    Vector2.prototype.divide = function (v) {
+        if (v instanceof Vector2)
+            return new Vector2(this.x / v.x, this.y / v.y);
+        else
+            return new Vector2(this.x / v, this.y / v);
+    };
+    Vector2.prototype.equals = function (v) {
+        return this.x == v.x && this.y == v.y;
+    };
+    Vector2.prototype.dot = function (v) {
+        return this.x * v.x + this.y * v.y;
+    };
+    Vector2.prototype.length = function () {
+        return Math.sqrt(this.dot(this));
+    };
+    Vector2.prototype.getNormalized = function () {
+        return this.divide(this.length());
+    };
+    Vector2.prototype.distanceTo = function (other) {
+        return Math.sqrt((this.x - other.x) * (this.x - other.x) + (this.y - other.y) * (this.y - other.y));
+    };
+    Vector2.prototype.cross = function (other) {
+        return this.x * other.y - this.y * other.x;
+    };
+    Vector2.prototype.clone = function () {
+        return new Vector2(this.x, this.y);
+    };
+    Vector2.prototype.angleTo = function (a) {
+        return Math.acos(this.dot(a) / (this.length() * a.length()));
+    };
+    Vector2.prototype.init = function (x, y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    };
+    return Vector2;
 })();
 //# sourceMappingURL=cTed.js.map

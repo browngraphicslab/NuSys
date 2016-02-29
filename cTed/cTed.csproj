@@ -43,11 +43,13 @@
     <TypeScriptCompile Include="Scripts\lib\collections.ts" />
     <TypeScriptCompile Include="Scripts\src\brush\HighlightBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\brush\IBrush.ts" />
+    <TypeScriptCompile Include="Scripts\src\brush\LassoBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\brush\MarqueeBrush.ts" />
     <TypeScriptCompile Include="Scripts\src\InkCanvas.ts" />
     <TypeScriptCompile Include="Scripts\src\Main.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\AbstractSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\BracketSelection.ts" />
+    <TypeScriptCompile Include="Scripts\src\selection\LassoSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\LineSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\MarqueeSelection.ts" />
     <TypeScriptCompile Include="Scripts\src\selection\NullSelection.ts" />
@@ -58,6 +60,7 @@
     <TypeScriptCompile Include="Scripts\src\StrokeType.ts" />
     <TypeScriptCompile Include="Scripts\src\util\Rectangle.ts" />
     <TypeScriptCompile Include="Scripts\src\util\Statistics.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Vector2.ts" />
     <TypeScriptCompile Include="Scripts\typings\chrome\chrome-app.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\chrome\chrome-cast.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\chrome\chrome.d.ts" />
