@@ -349,10 +349,10 @@
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
-    <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
-    <Compile Include="Network\Requests\NewGroupRequest.cs" />
+    <Compile Include="Network\Requests\NewLibraryElementCollectionRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewElementRequest.cs" />

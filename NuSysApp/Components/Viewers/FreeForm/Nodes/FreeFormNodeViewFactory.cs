@@ -27,7 +27,7 @@ namespace NuSysApp
                 case ElementType.Text:
                     view = new TextNodeView(new TextNodeViewModel(controller));
                     break;
-                case ElementType.Group:
+                case ElementType.Collection:
                     view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionController)controller));
                     break;
                 case ElementType.Tag:

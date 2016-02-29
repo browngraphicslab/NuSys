@@ -103,7 +103,7 @@ namespace NuSysApp
                     await audioVM.Init();
                     view = new AudioDetailView(audioVM);
                     break;
-                case ElementType.Group:
+                case ElementType.Collection:
                     view = new GroupDetailView(new ElementCollectionViewModel(new ElementCollectionController(model)));
                     break;
             }

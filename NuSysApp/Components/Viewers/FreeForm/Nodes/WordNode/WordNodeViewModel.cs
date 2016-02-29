@@ -114,7 +114,7 @@ namespace NuSysApp
 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, pdfContent, ElementType.PDF.ToString()));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, pdfContent, ElementType.PDF.ToString()));
             /*
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

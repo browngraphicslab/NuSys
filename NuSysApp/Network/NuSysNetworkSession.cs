@@ -145,8 +145,8 @@ namespace NuSysApp
                 case Request.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
-                case Request.RequestType.NewGroupRequest:
-                    request = new NewGroupRequest(message);
+                case Request.RequestType.NewLibraryElementCollectionRequest:
+                    request = new NewLibraryElementCollectionRequest(message);
                     break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
@@ -166,8 +166,8 @@ namespace NuSysApp
                 case Request.RequestType.ChatDialogRequest:
                     request = new ChatDialogRequest(message);
                     break;
-                case Request.RequestType.CreateNewContentRequest:
-                    request = new CreateNewContentRequest(message);
+                case Request.RequestType.CreateNewLibrayElementRequest:
+                    request = new CreateNewLibraryElementRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");

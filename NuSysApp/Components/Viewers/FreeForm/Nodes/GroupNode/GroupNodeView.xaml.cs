@@ -47,7 +47,7 @@ namespace NuSysApp
             };
 
             // create expanded view
-            xExpandedDefaultView = new GroupNodeExpandedDefaultView((NodeContainerModel)vm.Model); // create default view
+            xExpandedDefaultView = new GroupNodeExpandedDefaultView((ElementCollectionModel)vm.Model); // create default view
             xExpandedDefaultView.Opacity = 0;
             GroupNodeCanvas.Children.Add(xExpandedDefaultView);
         }

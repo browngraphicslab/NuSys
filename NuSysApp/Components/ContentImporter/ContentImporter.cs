@@ -79,7 +79,7 @@ namespace NuSysApp
 
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new CreateNewContentRequest(contentId, text, ElementType.Text.ToString()));
+                            new CreateNewLibraryElementRequest(contentId, text, ElementType.Text.ToString()));
                     //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
 
 
@@ -138,7 +138,7 @@ namespace NuSysApp
                         m["nodeType"] = ElementType.Text.ToString();
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewContentRequest(contentId, rtfContent, ElementType.Text.ToString()));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewLibraryElementRequest(contentId, rtfContent, ElementType.Text.ToString()));
                     /*
                     await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
@@ -160,7 +160,7 @@ namespace NuSysApp
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewContentRequest(contentId, Convert.ToBase64String(ba), ElementType.Image.ToString()));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(ba), ElementType.Image.ToString()));
                             /*
                             await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

@@ -20,12 +20,12 @@ namespace NuSysApp
             NewLinkRequest,
             SendableUpdateRequest,
             NewThumbnailRequest,
-            NewGroupRequest,
+            NewLibraryElementCollectionRequest,
             NewContentRequest,
             ChangeContentRequest,
             SetTagsRequest,
             ChatDialogRequest,
-            CreateNewContentRequest
+            CreateNewLibrayElementRequest
         }
 
         public enum ServerItemType
