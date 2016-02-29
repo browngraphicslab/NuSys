@@ -88,37 +88,20 @@ namespace NuSysApp
             nodeTpl.HideBitmapRender();
         }
 
-        //public async void RenderAsBitmap()
-        //{
-        //    RenderTargetBitmap map = new RenderTargetBitmap();
-        //    await map.RenderAsync(this, (int)this.Width, (int)this.Height);
-        //    nodeTpl.bitmapRendering.Source = map;
-        //    var titleTransform = nodeTpl.titleContainer.RenderTransform as TranslateTransform;
-        //    if (titleTransform != null)
-        //    {
-        //        nodeTpl.bitmapRendering.RenderTransform = new CompositeTransform
-        //        {
-        //            ScaleY = this.Height / (this.Height + titleTransform.Y),
-        //            TranslateY = titleTransform.Y
-        //        };
-        //    }
-        //    nodeTpl.contentContainer.Visibility = Visibility.Collapsed;
-        //    nodeTpl.bitmapRendering.Visibility = Visibility.Visible;
-        //}
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
-            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
-            return;
-            var oldColor = this.RecordVoice.Background;
-            Color c = new Color();
-            c.A = 255;
-            c.R = 199;
-            c.G = 84;
-            c.B = 82;
-            this.RecordVoice.Background = new SolidColorBrush(c);
-            await TranscribeVoice();
-            this.RecordVoice.Background = oldColor;
+            //TextNodeViewModel vm = (TextNodeViewModel)DataContext;
+            //return;
+            //var oldColor = this.RecordVoice.Background;
+            //Color c = new Color();
+            //c.A = 255;
+            //c.R = 199;
+            //c.G = 84;
+            //c.B = 82;
+            //this.RecordVoice.Background = new SolidColorBrush(c);
+            //await TranscribeVoice();
+            //this.RecordVoice.Background = oldColor;
         }
 
         private async Task TranscribeVoice()
