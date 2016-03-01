@@ -42,10 +42,8 @@ namespace NuSysApp
     
         public void SetDimension(double parentWidth, double parentHeight)
         {
-            var ratio = _viewMod.Width > _viewMod.Height ? _viewMod.Width / parentWidth : _viewMod.Height / parentHeight;
-            xWebView.Width = (_viewMod.Width / ratio) - (parentWidth*0.1);
-            xWebView.MaxWidth = parentWidth*0.9;
-            xWebView.Height = _viewMod.Height * 1.5 / ratio;
+            xWebView.Width = parentWidth*0.8;
+            xWebView.Height = parentWidth*0.6;
             xWebView.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
             xScrollViewer.Height = xWebView.Height;
             xScrollViewer.Width = xWebView.Width;
