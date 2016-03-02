@@ -48,7 +48,6 @@ namespace NuSysApp
             if (userControl.DataContext is ElementViewModel)
             {
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
-                Debug.WriteLine("SEETING IT");
             }
 
             ActiveNodes.Add((UserControl)sender);
@@ -94,12 +93,23 @@ namespace NuSysApp
             
             var s = (UserControl) sender;
             var vm = (ElementViewModel)s.DataContext;
-            if (vm.IsSelected)
-                return;
 
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
-            vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);       
+
+            if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
+            {
+                //move all selected content if a selected node is moved
+                foreach (var vmodel in SessionController.Instance.ActiveFreeFormViewer.Selections)
+                {
+                    if (!vmodel.ContainsSelectedLink)
+                        vmodel.Controller.SetPosition(vmodel.Transform.TranslateX + dx, vmodel.Transform.TranslateY + dy);
+                }
+            }
+            else {
+                vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
+            }
+
         }
     }
 }

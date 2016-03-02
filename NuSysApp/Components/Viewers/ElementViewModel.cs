@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -11,7 +12,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public abstract class ElementViewModel : BaseINPC
+    public abstract class ElementViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
 
@@ -188,13 +189,6 @@ namespace NuSysApp
             UpdateAnchor();
         }
 
-        public void ToggleSelection()
-        {
-            SetSelected(!IsSelected);
-
-            if (IsSelected)
-                SessionController.Instance.ActiveFreeFormViewer.SetSelection(this);
-        }
 
         public void AddLink(LinkViewModel linkVm)
         {
@@ -205,7 +199,7 @@ namespace NuSysApp
 
         #endregion
 
-        #region Other Methods
+
 
         public virtual void UpdateAnchor()
         {
@@ -218,7 +212,7 @@ namespace NuSysApp
             }
         }
 
-        #endregion Other Methods
+
 
         #region Public Properties
 
@@ -236,34 +230,18 @@ namespace NuSysApp
             }
         }
 
-        public bool IsSelected
+        public virtual bool IsSelected
         {
             get { return _isSelected; }
-        }
-
-        public virtual void SetSelected(bool val)
-        {
-            if (_isSelected == val)
-            {
-                return;
-            }
-
-            _isSelected = val;
-            RaisePropertyChanged("IsSelected");
-        }
-
-        public bool IsMultiSelected
-        {
-            get { return _isMultiSelected; }
             set
             {
-                if (_isMultiSelected == value)
+                if (_isSelected == value)
                 {
                     return;
                 }
 
-                _isMultiSelected = value;
-                RaisePropertyChanged("IsMultiSelected");
+                _isSelected = value;
+                RaisePropertyChanged("IsSelected");
             }
         }
 
@@ -436,6 +414,51 @@ namespace NuSysApp
                 }
 
                 RaisePropertyChanged("UserColor");
+            }
+        }
+
+        /// <summary>
+        /// returns the reference points to be used in multiselect. the four corners of the node are used. 
+        /// </summary>
+        public virtual PointCollection ReferencePoints
+        {
+            get
+            {
+                // must use the transform's translate x/y values in case the user has moved the node
+                double x = Transform.TranslateX;
+                double y = Transform.TranslateY;
+
+                // add each corner point to the list of reference points
+                PointCollection pts = new PointCollection();
+                pts.Add(new Point(x, y));
+                pts.Add(new Point(x + Width, y));
+                pts.Add(new Point(x, y + Height));
+                pts.Add(new Point(x + Width, y + Height));
+                return pts;
+            }
+        }
+
+        /// <summary>
+        /// Will return if the atom has a link associated with it. This prevents "double-dipping" 
+        /// manipulation events. For example, recall that all selected atoms will move if one selected atoms 
+        /// is moved. If the moved atom is a link, then the two atoms the link is "linking" will be translated from
+        /// (1) the translate method being called in the NodeManipulationMode since it is a selected atom and (2) the 
+        /// translate method being called by the link. This method prevents this "double-dipping" from occuring.
+        /// </summary>
+        public bool ContainsSelectedLink
+        {
+            get
+            {
+                if (LinkList.Count > 0)
+                {
+                    // return true if at least one link is selected
+                    foreach (var link in LinkList)
+                    {
+                        if (link.IsSelected)
+                            return true;
+                    }
+                }
+                return false;
             }
         }
 

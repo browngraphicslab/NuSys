@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -16,7 +19,7 @@ namespace NuSysApp
         private InqCanvasModel _inqCanvasModel;
         private long _tLineFinalized;
         private DateTime _tFirstPress;
-        private static List<InqLineModel> _lines = new List<InqLineModel>();
+        private InqLineModel _inqLine;
         private bool _wasGesture;
         
         public GestureMode(FreeFormViewer view) : base(view) { }
@@ -27,20 +30,48 @@ namespace NuSysApp
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             _inqCanvasModel = wvm.Model.InqCanvas;
             _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
+            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
+        }
+
+        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
+        {
+            if (SessionController.Instance.SessionView.IsPenMode)
+                return;
+
+            var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
+
+            if (s > 1)
+                return;
+
+            _view.SwitchMode(Options.Idle, false);
+            SelectionByStroke();
+            _view.SwitchMode(Options.SelectNode, false);
+        }
+
+        private void SelectionByStroke()
+        {
+            var screenPoints = new Polyline();
+            var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            foreach (var point in _inqLine.Points)
+            {
+                var np = t.TransformPoint(new Point(point.X * Constants.MaxCanvasSize, point.Y * Constants.MaxCanvasSize));
+                screenPoints.Points.Add(np);
+            }
+
+            new SelectionHull(screenPoints, SessionController.Instance.SessionView.MainCanvas);
+            _inqLine.Delete();
         }
 
         private void OnLineFinalized(InqLineModel inqLine)
         {
-            if (_wasGesture)
-            {
-                inqLine.Delete();
-                _wasGesture = false;
-            } else { 
-                _lines.Add(inqLine);
-                OnPointerPressed();
-            }
+            _inqLine = inqLine;
+            _tFirstPress = DateTime.Now;
+            Debug.WriteLine("INK FINALIZED");
+            
+            
         }
-
+        /*
         private async void OnPointerPressed()
         {
             var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
@@ -58,13 +89,13 @@ namespace NuSysApp
                         break;
                     case GestureRecognizer.GestureType.SELECTION:   
                         //TODO: make sure checkFor TaagCreation ignore gesture lines
-                        var isTag = await CheckForTagCreation(model);
-                        _wasGesture = isTag;
+                       // var isTag = await CheckForTagCreation(model);
+                      //  _wasGesture = isTag;
                         
-                        if (!isTag)
-                        {
-                            CreateAreaNode(model);
-                        }
+                       // if (!isTag)
+                      //  {
+                      //      CreateAreaNode(model);
+                    //    }
 
                         _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
                         _inqCanvasModel.RemoveLine(_lines[_lines.Count - 2]);
@@ -91,6 +122,7 @@ namespace NuSysApp
                 
             _tFirstPress = DateTime.Now;
         }
+        */
 
         private async void CreateAreaNode(InqLineModel line)
         {
@@ -119,6 +151,7 @@ namespace NuSysApp
 
         }
 
+        /*
         private async Task<bool> CheckForTagCreation(InqLineModel line)
         {
             var outerRect = Geometry.PointCollecionToBoundingRect(line.Points.ToList());
@@ -196,7 +229,7 @@ namespace NuSysApp
 
             return true;
         }
-
+        */
        
 
         public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)

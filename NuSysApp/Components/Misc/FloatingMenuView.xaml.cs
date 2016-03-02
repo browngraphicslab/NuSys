@@ -22,6 +22,7 @@ namespace NuSysApp
 
     public enum Options
     {
+        Idle,
         MainSelect,
             SelectNode,
             SelectMarquee,

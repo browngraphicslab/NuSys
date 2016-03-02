@@ -181,6 +181,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
       <DependentUpon>DetailViewerView.xaml</DependentUpon>
@@ -305,10 +307,10 @@
       <DependentUpon>LoadNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\LoadNodeViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PowerpointNode\PowerpointNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeView.xaml.cs">
       <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PowerpointNode\PowerpointNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -717,7 +719,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\PdfNode\PowerpointNode\PowerpointNodeView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

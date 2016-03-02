@@ -65,6 +65,7 @@ namespace NuSysApp
 
         public void FinalizeLineLocally(InqLineModel line)
         {
+            line.OnDeleteInqLine += LineOnDeleteInqLine;
             LineFinalizedLocally?.Invoke(line);
         }
 
@@ -72,7 +73,6 @@ namespace NuSysApp
         {
             line.Page = Page;
             _lines.Add(line);
-            line.OnDeleteInqLine += LineOnDeleteInqLine;
             LineFinalized?.Invoke( line );
         }
 

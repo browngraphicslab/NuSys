@@ -1,20 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using Windows.Foundation;
-using Windows.UI.Xaml.Shapes;
-using Windows.UI.Xaml.Media;
-using Windows.UI;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
-using System.Diagnostics;
-using Windows.UI.Input.Inking;
-using Windows.UI.Xaml.Media.Animation;
+
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -119,6 +107,9 @@ namespace NuSysApp
 
             switch (mode)
             {
+                case Options.Idle:
+                    SetViewMode(new MultiMode(this));
+                    break;
                 case Options.SelectNode:
                     var nodeManipulationMode = new NodeManipulationMode(this);
                     await

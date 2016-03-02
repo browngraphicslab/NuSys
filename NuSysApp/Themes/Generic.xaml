@@ -34,9 +34,6 @@
 
                             <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
 
-                            <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="#606d7a" StrokeThickness="3" 
-                           Visibility="{Binding IsMultiSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
-
                             <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Yellow" StrokeThickness="3" 
                            Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
 

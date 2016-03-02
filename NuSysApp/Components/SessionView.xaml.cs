@@ -23,7 +23,7 @@ namespace NuSysApp
 
         private int _penSize = Constants.InitialPenSize;
         private CortanaMode _cortanaModeInstance;
-        private FreeFormViewer _activeWorkspace;
+        private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
         private static List<ElementModel> createdModels;
@@ -150,7 +150,7 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
                 xFullScreenViewer.Opacity < 0.1)
             {
-                xFloatingMenu.SetActive(Options.PenGlobalInk);
+                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
             }
@@ -252,12 +252,12 @@ namespace NuSysApp
         {
             SessionController.Instance.IdToControllers.Clear();
 
-            if (_activeWorkspace != null)
+            if (_activeFreeFormViewer != null)
             {
-                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
-                var wsvm = (FreeFormViewerViewModel) _activeWorkspace.DataContext;
-                mainCanvas.Children.Remove(_activeWorkspace);
-                _activeWorkspace = null;
+                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
+                var wsvm = (FreeFormViewerViewModel) _activeFreeFormViewer.DataContext;
+                mainCanvas.Children.Remove(_activeFreeFormViewer);
+                _activeFreeFormViewer = null;
             }
 
             var sc = CreateEmptyElementCollectionInstanceController();
@@ -284,20 +284,20 @@ namespace NuSysApp
 
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
-            await DisposeCollectionView(_activeWorkspace);
-            if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
-                mainCanvas.Children.Remove(_activeWorkspace);
+            await DisposeCollectionView(_activeFreeFormViewer);
+            if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
+                mainCanvas.Children.Remove(_activeFreeFormViewer);
 
-            if (_activeWorkspace != null)
-                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
+            if (_activeFreeFormViewer != null)
+                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
 
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
-            _activeWorkspace = new FreeFormViewer(freeFormViewerViewModel);
-            mainCanvas.Children.Insert(0, _activeWorkspace);
+            _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+            mainCanvas.Children.Insert(0, _activeFreeFormViewer);
 
-            _activeWorkspace.DataContext = freeFormViewerViewModel;
-            xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
+            _activeFreeFormViewer.DataContext = freeFormViewerViewModel;
+            xFloatingMenu.ModeChange += _activeFreeFormViewer.SwitchMode;
 
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             SessionController.Instance.SessionView = this;
@@ -337,7 +337,7 @@ namespace NuSysApp
 
         private void UpdateTitle(object sender, object args)
         {
-            var model = ((FreeFormViewerViewModel) _activeWorkspace.DataContext).Model;
+            var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
             model.Title = xWorkspaceTitle.Text;
             var m = new Message();
             m["id"] = model.Id;
