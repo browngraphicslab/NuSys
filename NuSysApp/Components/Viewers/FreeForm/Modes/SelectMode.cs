@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Media;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -21,18 +22,21 @@ namespace NuSysApp
         public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
-            _view.DoubleTapped += OnDoubleTapped;
-            _view.PointerPressed += OnPointerPressed;
-            _view.PointerReleased += OnPointerReleased;
+
             _view.ManipulationMode = ManipulationModes.All;
+
+            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
+            _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true );
+            _view.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true );
         }
 
         public override async Task Deactivate()
         {
             _view.IsDoubleTapEnabled = false;
-            _view.PointerPressed -= OnPointerPressed;
-            _view.DoubleTapped -= OnDoubleTapped;
-            _view.PointerReleased -= OnPointerReleased;
+
+            _view.RemoveHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed));
+            _view.RemoveHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased));
+            _view.RemoveHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped));
 
             _view.ManipulationMode = ManipulationModes.None;
   
@@ -55,8 +59,9 @@ namespace NuSysApp
 
             var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
             viwerVm.ClearSelection();
+            _selectedElementVm = null;
 
-            if (dc is ElementViewModel)
+            if (dc is ElementViewModel && !(dc is FreeFormViewerViewModel))
             {
                 var vm = (ElementViewModel) dc;
                 _selectedElementVm = vm;

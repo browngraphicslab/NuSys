@@ -234,7 +234,11 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\LibraryBucketViewModel.cs" />
     <Compile Include="Components\Misc\Library\LibraryElement.cs" />
+    <Compile Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml.cs">
+      <DependentUpon>LibraryElementPropertiesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\Library\LibraryGrid.xaml.cs">
       <DependentUpon>LibraryGrid.xaml</DependentUpon>
     </Compile>
@@ -245,6 +249,7 @@
       <DependentUpon>LibraryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
+    <Compile Include="Components\Misc\Library\LibraryPageViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
@@ -263,37 +268,37 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml.cs">
       <DependentUpon>LibraryElementView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\AreaNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\AreaNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementInstanceController.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\IThumbnailable.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupCircleView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupItemViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupItemThumbFactory.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeDataGridInfo.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeDataGridView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridInfo.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml.cs">
       <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeDataGridViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeExpandedDefaultView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml.cs">
       <DependentUpon>GroupNodeExpandedDefaultView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeExpandedView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeTimelineView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeTimelineView.xaml.cs">
       <DependentUpon>GroupNodeTimelineView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeTimelineViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeTimelineViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeView.xaml.cs">
       <DependentUpon>GroupNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\TimelineItemView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\TimelineItemView.xaml.cs">
       <DependentUpon>TimelineItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\LoadNodeView.xaml.cs">
@@ -640,6 +645,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Misc\Library\LibraryGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -672,35 +681,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\AreaNodeView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupCircleView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeDataGridView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeExpandedDefaultView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeExpandedView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeTimelineView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeTimelineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\GroupNodeView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\GroupNode\TimelineItemView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\TimelineItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

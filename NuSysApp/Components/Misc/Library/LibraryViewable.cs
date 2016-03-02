@@ -8,8 +8,8 @@ namespace NuSysApp
 {
     public interface LibraryViewable
     {
-        void Sort(string s);
-        void Search(string s);
+        Task Sort(string s);
+        Task Search(string s);
         void SetItems(ICollection<LibraryElement> elements);
     }
 }

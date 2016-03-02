@@ -118,19 +118,25 @@ namespace NuSysApp
             Deleted?.Invoke(this);
         }
 
-        public virtual void Duplicate()
+        public virtual void Duplicate(double x, double y)
         {
             Message m = new Message();
             m["contentId"] = Model.ContentId;
             m["data"] = "";
-            m["x"] = Model.X;
-            m["y"] = Model.Y;
+            m["x"] = x;
+            m["y"] = y;
             m["width"] = Model.Width;
             m["height"] = Model.Height;
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
 
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+        }
+
+        public virtual async void LinkTo(string otherId)
+        {
+            var request = new NewLinkRequest(Model.Id, otherId, Model.Creator);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
         public virtual void MoveToCollection(ElementCollectionController collection)

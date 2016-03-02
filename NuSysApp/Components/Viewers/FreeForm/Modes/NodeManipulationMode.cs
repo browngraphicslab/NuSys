@@ -15,7 +15,7 @@ namespace NuSysApp
 {
     public class NodeManipulationMode : AbstractWorkspaceViewMode
     {
-        private static int _zIndexCounter = 10000;
+        public static int _zIndexCounter = 10000;
         private bool _isPinAnimating;
 
         public List<UserControl> ActiveNodes { get; private set; }
@@ -46,8 +46,11 @@ namespace NuSysApp
         {
             var userControl = (UserControl)sender;
             if (userControl.DataContext is ElementViewModel)
+            {
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
-            
+                Debug.WriteLine("SEETING IT");
+            }
+
             ActiveNodes.Add((UserControl)sender);
         }
 
@@ -88,9 +91,12 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
-
+            
             var s = (UserControl) sender;
             var vm = (ElementViewModel)s.DataContext;
+            if (vm.IsSelected)
+                return;
+
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
             vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);       

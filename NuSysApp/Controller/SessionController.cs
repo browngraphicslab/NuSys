@@ -135,7 +135,7 @@ namespace NuSysApp
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
-            ;
+            
             await SessionView.LoadWorkspace(lines);
             await _contentController.Load();
         }

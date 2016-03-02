@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Security.Credentials.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
@@ -37,6 +39,8 @@ namespace NuSysApp
                 userControl.ManipulationDelta += UserControlOnManipulationDelta;
                 userControl.ManipulationCompleted += UserControlOnManipulationCompleted;
             }
+
+            wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
         }
 
         public async override Task Deactivate()
@@ -49,7 +53,32 @@ namespace NuSysApp
                 userControl.ManipulationCompleted -= UserControlOnManipulationCompleted;
                 userControl.ManipulationStarting -= UserControlOnManipulationStarting;
             }
+
+            wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
         }
+
+
+
+        private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            var newItems = notifyCollectionChangedEventArgs.NewItems;
+            if (newItems == null)
+                return;
+
+            var newNodes = newItems;
+            foreach (var n in newNodes)
+            {
+                var userControl = (UserControl)n;
+                if (userControl.DataContext is ElementViewModel)
+                {
+                    userControl.ManipulationMode = ManipulationModes.All;
+                    userControl.ManipulationDelta += UserControlOnManipulationDelta;
+                    userControl.ManipulationStarting += UserControlOnManipulationStarting;
+                    userControl.ManipulationCompleted += UserControlOnManipulationCompleted;
+                }
+            }
+        }
+
         private void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
             manipulationStartingRoutedEventArgs.Container = _view;
@@ -60,7 +89,7 @@ namespace NuSysApp
             if (!_isHovering)
                 return;
             
-            if (((FrameworkElement)sender).DataContext is AreaNodeViewModel)
+            if (((FrameworkElement)sender).DataContext is ElementCollectionViewModel)
                 return;
 
             var id1 = (((FrameworkElement)sender).DataContext as ElementViewModel).Id;
@@ -77,8 +106,8 @@ namespace NuSysApp
             p.Y -= 150;
 
             
-            await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
-            await SessionController.Instance.SaveThumb(id2, await ((IThumbnailable)sender).ToThumbnail(210, 100));
+         //   await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
+     //       await SessionController.Instance.SaveThumb(id2, await ((IThumbnailable)sender).ToThumbnail(210, 100));
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -136,7 +165,7 @@ namespace NuSysApp
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
-            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel) && !((uiElem as FrameworkElement).DataContext is AreaNodeViewModel));
+            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel) && !((uiElem as FrameworkElement).DataContext is LibraryBucketViewModel));
             var draggedItem = (AnimatableUserControl) sender;   
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
             

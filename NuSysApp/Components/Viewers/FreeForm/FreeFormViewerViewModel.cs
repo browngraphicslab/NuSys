@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 
@@ -173,6 +175,8 @@ namespace NuSysApp
             ClearSelection();
             selected.SetSelected(true);
             SelectedElementViewModel = selected;
+            var f = AtomViewList.Where(a => a.DataContext == selected).First();
+            Canvas.SetZIndex(f, NodeManipulationMode._zIndexCounter++);
         }
 
 

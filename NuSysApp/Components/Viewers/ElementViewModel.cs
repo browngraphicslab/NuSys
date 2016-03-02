@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Text;
@@ -208,6 +210,8 @@ namespace NuSysApp
         public virtual void UpdateAnchor()
         {
             Anchor = new Point2d(Transform.TranslateX + Width/2, Transform.TranslateY + Height/2);
+            if (Double.IsNaN(Anchor.X))
+                Debug.WriteLine("");
             foreach (var link in LinkList)
             {
                 link.UpdateAnchor();

@@ -60,7 +60,7 @@ namespace NuSysApp
         private void OnDuplicateClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)DataContext;
-            vm.Controller.Duplicate();
+            vm.Controller.Duplicate(vm.Model.X, vm.Model.Y);
         }
         
         private void PageRight_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

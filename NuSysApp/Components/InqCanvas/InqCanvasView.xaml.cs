@@ -202,7 +202,7 @@ namespace NuSysApp
         }
 
 
-        CompositeTransform _trans;
+        CompositeTransform _trans = new CompositeTransform();
         public CompositeTransform Transform
         {
             set

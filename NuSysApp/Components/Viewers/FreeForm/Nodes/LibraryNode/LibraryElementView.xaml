@@ -12,6 +12,11 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
+    
+    <UserControl.Resources>
+        <converters:BoolInvertConverter x:Key="iConverter"/>
+    </UserControl.Resources>
+    
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
@@ -24,7 +29,7 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <local:LibraryView x:Name="LibraryView"></local:LibraryView>
+            <Grid x:Name="xLibContainer" Width="{Binding Width}" Height="{Binding Height}" IsHitTestVisible="{Binding IsSelected}"></Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableUserControl>

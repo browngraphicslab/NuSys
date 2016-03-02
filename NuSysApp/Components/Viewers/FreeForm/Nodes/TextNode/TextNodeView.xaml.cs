@@ -36,6 +36,10 @@ namespace NuSysApp
         private List<Image> _images = new List<Image>();
         private MediaCapture _mediaCapture;
         private bool _isRecording;
+        private Image _dragItem;
+
+        private enum DragMode { Duplicate, Tag, Link};
+        private DragMode _currenDragMode = DragMode.Duplicate;
 
         public TextNodeView(TextNodeViewModel vm)
         {
@@ -55,6 +59,12 @@ namespace NuSysApp
                 // rtfTextBox.SetRtfText();
             };
 
+            var inqView = new InqCanvasView(new InqCanvasViewModel(new InqCanvasModel(SessionController.Instance.GenerateId()),
+                new Size(vm.Width, vm.Height)));
+            inqView.IsEnabled = true;
+            rr.Children.Add(inqView);
+
+            
 
             vm.Controller.ContentChanged += delegate(object source, NodeContentModel data)
             {
@@ -69,26 +79,19 @@ namespace NuSysApp
                 _isRecording = false;
             };
 
-            /*
-            grid.IsDoubleTapEnabled = true;
-            grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
-            {
-                var pos = e.GetPosition(rtfTextBox);
-                var range = rtfTextBox.Document.GetRangeFromPoint(pos, PointOptions.ClientCoordinates);
-                range.StartOf(TextRangeUnit.Link, true);
-                var str = string.Empty;
-                range.GetText(TextGetOptions.UseCrlf, out str);
-                if (!str.StartsWith("HYPERLINK"))
-                    return;
-                var groups = Regex.Match(str, "\"(.*?)\"").Groups;
-                var url = groups[1].Value;
-                Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
-                e.Handled = true;
-            };
-            */
+
+            EditText.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            EditText.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+            DuplicateElement.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            DuplicateElement.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+            Link.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            Link.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
         }
 
-       
+
 
 
         private async Task TranscribeVoice()
@@ -121,184 +124,99 @@ namespace NuSysApp
             vm.Init();
         }
 
+
+        private bool _isopen;
+
         private async void OnEditClick(object sender, RoutedEventArgs e)
         {
-            var vm = (TextNodeViewModel)this.DataContext;
-
-            if (vm.IsEditingInk == true)
-            {
-                nodeTpl.ToggleInkMode();
-            }
-
-            // TODO: refactor
-          //  vm.ToggleEditing();
-
-            if (!vm.IsEditing)
-            {
-                await vm.Init();
-                RearrangeImagePlaceHolders();
-            }
-
-
-            AdjustScrollHeight();
+ 
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
         {
-            nodeTpl.ToggleInkMode();
-        }
-
-        private void RearrangeImagePlaceHolders()
-        {
-            var currentSelectionStart = rtfTextBox.Document.Selection.StartPosition;
-            var currentSelectionEnd = rtfTextBox.Document.Selection.EndPosition;
-
-            var vm = (TextNodeViewModel)this.DataContext;
-
-            var objPos = 0;
-            var startPos = 0;
-            for (var i = 0; i < _images.Count; i++)
+            if (!_isopen)
             {
-                string str;
-                rtfTextBox.Document.GetText(TextGetOptions.None, out str);
-                rtfTextBox.Document.Selection.SetRange(startPos, str.Length);
-                var findPos = rtfTextBox.Document.Selection.FindText("￼", TextConstants.MaxUnitCount, FindOptions.Word);
-
-                if (findPos == 0)
-                    throw new Exception("Couldn't find image in RichText");
-
-                objPos = GetNthIndex(str, '￼', i + 1);
-
-                int hit;
-                Rect rect;
-                rtfTextBox.Document.Selection.GetRect(PointOptions.None, out rect, out hit);
-
-                var posX = rect.Left + rtfTextBox.Padding.Left;
-                var posY = rect.Top + rtfTextBox.Padding.Top;
-                Canvas.SetLeft(_images[i], posX);
-                Canvas.SetTop(_images[i], posY);
-
-                startPos = objPos + 1;
+                FlipOpen.Begin();
             }
-            rtfTextBox.Document.Selection.SetRange(currentSelectionStart, currentSelectionEnd);
-        }
-
-        private void AdjustScrollHeight()
-        {
-            /*
-            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
-            if (!vm.IsEditing)
+            else
             {
-                var contentHeight = rtfTextBox.ComputeRtfHeight();
-                grid.Height = contentHeight > this.MinHeight ? contentHeight : this.MinHeight;
-            } else
-            {
-                grid.Height = mdTextBox.ActualHeight;
+                FlipClose.Begin();
             }
-            */
+            _isopen = !_isopen;
         }
 
-        private int GetNthIndex(string s, char t, int n)
+        private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
-            int count = 0;
-            for (int i = 0; i < s.Length; i++)
+            xCanvas.Children.Remove(_dragItem);
+
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var p = args.GetCurrentPoint(null).Position;
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
+
+            if (_currenDragMode == DragMode.Duplicate)
             {
-                if (s[i] == t)
-                {
-                    count++;
-                    if (count == n)
-                    {
-                        return i;
-                    }
+                var vm = (ElementViewModel)DataContext;
+                vm.Controller.Duplicate(r.X, r.Y);
+            }
+
+            if (_currenDragMode == DragMode.Link)
+            {
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
+                if (hitsStart.Any()) { 
+                    var first = (FrameworkElement)hitsStart.First();
+                    var dc = (ElementViewModel) first.DataContext;
+                    var vm = (ElementViewModel)DataContext;
+                    vm.Controller.LinkTo(dc.Id);
                 }
             }
-            return -1;
+            
+            ReleasePointerCaptures();
+            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+
         }
 
-        private void FormatText(object sender, RoutedEventArgs e)
+        private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
-            /*
-            ITextSelection selected = rtfTextBox.Document.Selection;
-            if (selected != null)
+            if (_dragItem == null)
+                return;
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            var p = args.GetCurrentPoint(xCanvas).Position;
+            t.TranslateX = p.X - _dragItem.ActualWidth/2;
+            t.TranslateY = p.Y - _dragItem.ActualHeight / 2;
+        }
+
+
+        private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
+        {
+            CapturePointer(args.Pointer);
+
+            if (sender == DuplicateElement)
             {
-                ITextCharacterFormat characterFormat = selected.CharacterFormat;
-                if (sender == Bold)
-                {
-                    characterFormat.Bold = FormatEffect.Toggle;
-                }
-                if (sender == Italic)
-                {
-                    characterFormat.Italic = FormatEffect.Toggle;
-                }
-                if (sender == Underline)
-                {
-                    if (characterFormat.Underline == UnderlineType.Single)
-                    {
-                        characterFormat.Underline = UnderlineType.None;
-                    }
-                    else
-                    {
-                        characterFormat.Underline = UnderlineType.Single;
-                    }
-                }
-                if (sender == Size8)
-                {
-                    characterFormat.Size = 8;
-                }
-                if (sender == Size12)
-                {
-                    characterFormat.Size = 12;
-                }
-                if (sender == Size14)
-                {
-                    characterFormat.Size = 14;
-                }
-                if (sender == Size18)
-                {
-                    characterFormat.Size = 18;
-                }
-                if (sender == Size24)
-                {
-                    characterFormat.Size = 24;
-                }
-                if (sender == Red)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 255, 0, 0);
-                }
-                if (sender == Orange)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 255, 128, 0);
-                }
-                if (sender == Yellow)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 255, 255, 0);
-                }
-                if (sender == Green)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 0, 255, 0);
-                }
-                if (sender == Blue)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 0, 0, 255);
-                }
-                if (sender == Purple)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 127, 0, 255);
-                }
-                if (sender == Black)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 0, 0, 0);
-                }
-                if (sender == White)
-                {
-                    characterFormat.ForegroundColor = Color.FromArgb(100, 255, 255, 255);
-                }
-    
-                selected.CharacterFormat = characterFormat;
-          
+                _currenDragMode = DragMode.Duplicate;
+            }
+
+            if (sender == EditText)
+            {
+                _currenDragMode = DragMode.Tag;
+            }
+            if (sender == Link)
+            {
+                _currenDragMode = DragMode.Link;
+            }
+
+            var bmp = new RenderTargetBitmap();
+            await bmp.RenderAsync((UIElement)sender);
+            _dragItem = new Image();
+            _dragItem.Source = bmp;
+            _dragItem.Width = 50;
+            _dragItem.Height = 50;
+            xCanvas.Children.Add(_dragItem);
+            _dragItem.RenderTransform = new CompositeTransform();
+            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
         }
-              */
-        }
+
+        
 
         public NodeTemplate NodeTpl
         {
@@ -311,15 +229,6 @@ namespace NuSysApp
             vm.Controller.Delete();
         }
 
-        /// <summary>
-        /// Catches the double-tap event so that the floating menus can't be lost.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
@@ -345,11 +254,6 @@ namespace NuSysApp
             }
         }
 
-        private void OnDuplicateClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (ElementViewModel)DataContext;
-            vm.Controller.Duplicate();
-        }
 
         private void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {

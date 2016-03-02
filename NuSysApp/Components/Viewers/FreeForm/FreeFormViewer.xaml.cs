@@ -123,8 +123,8 @@ namespace NuSysApp
                     var nodeManipulationMode = new NodeManipulationMode(this);
                     await
                         SetViewMode(new MultiMode(this, nodeManipulationMode, new DuplicateNodeMode(this),
-                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this),
-                            new FloatingMenuMode(this), new CreateGroupMode(this, nodeManipulationMode)));
+                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this), new LinkMode(this),
+                            new FloatingMenuMode(this)));
                     break;
                 case Options.SelectMarquee:
                     await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
@@ -140,19 +140,12 @@ namespace NuSysApp
 
                     break;
                 case Options.AddWeb:
-                    await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Web, isFixed),
-                            new FloatingMenuMode(this)));
+
                     break;
                 case Options.AddAudioCapture:
-                    await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Audio, isFixed),
-                            new FloatingMenuMode(this)));
+
                     break;
                 case Options.AddMedia:
-                    await
-                        SetViewMode(new MultiMode(this, new SelectMode(this),
-                            new AddNodeMode(this, ElementType.Document, isFixed), new FloatingMenuMode(this)));
                     break;
                 case Options.AddRecord:
                     await SetViewMode(new MultiMode(this, new SelectMode(this), new FloatingMenuMode(this), new DuplicateNodeMode(this),

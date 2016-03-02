@@ -5,6 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:foundation="using:Windows.Foundation"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -12,38 +13,87 @@
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
+    
+    <local:AnimatableUserControl.Resources>
+        <Storyboard x:Name="FlipOpen">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Projection).(PlaneProjection.RotationY)" Storyboard.TargetName="wee">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="90"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Projection).(PlaneProjection.RotationY)" Storyboard.TargetName="rr">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-90"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="FlipClose">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Projection).(PlaneProjection.RotationY)" Storyboard.TargetName="wee">
+                <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="90"/>
+                <SplineDoubleKeyFrame KeyTime="0:0:0.4" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Projection).(PlaneProjection.RotationY)" Storyboard.TargetName="rr">
+                <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="-90"/>
+                <SplineDoubleKeyFrame KeyTime="0:0:0.4" Value="-90"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </local:AnimatableUserControl.Resources>
 
-    <local:NodeTemplate x:Name="nodeTpl" Background="White" BorderBrush="Transparent">
-        <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Vertical">
-                <Button x:Name="DuplicateElement"  Click="OnDuplicateClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_mainmenu_node.png" Height="30" Width="30" Stretch="Uniform"></Image>
-                </Button>
-                <Button x:Name="EditText"  Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                    <Image Source="ms-appx:///Assets/icon_node_text.png" Height="30" Width="30" Stretch="Uniform"></Image>
-                </Button>
-                <Button x:Name="EditInk"  Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_node_ink.png" Height="30" Width="30"></Image>
-                </Button>
-                <Button x:Name="Record"  Click="RecordButton_OnClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                    <Ellipse Width="20" Height="20" Fill="IndianRed" ></Ellipse>
-                </Button>
-                <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
-                </Button>
-            </StackPanel>
-        </local:NodeTemplate.SubMenu>
-        <local:NodeTemplate.Inner>
-            <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
-                <Rectangle x:Name="borderRect" Opacity="1" StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
-                <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                Background="White" BorderBrush="White" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" Padding="20"/>
-                <Grid x:Name="xMediaRecotder" Visibility="Collapsed">
-                    <CaptureElement Name="preview"  Width="{Binding Width}" Height="{Binding Height}"/>
-                    <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True"  Stretch="Uniform" Width="{Binding Width}" Height="{Binding Height}" />
-                    <local:MediaRecorderView Width="{Binding Width}" Height="{Binding Height}" ></local:MediaRecorderView>
+
+    <Canvas x:Name="xCanvas">
+        <local:NodeTemplate x:Name="nodeTpl" Background="White" BorderBrush="Transparent">
+            <local:NodeTemplate.SubMenu>
+                <StackPanel Orientation="Vertical">
+
+                    <Button x:Name="EditInk"  Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                        <Image Source="ms-appx:///Assets/icon_node_ink.png" Height="30" Width="30"></Image>
+                    </Button>
+                    <Button x:Name="Record"  Click="RecordButton_OnClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
+                        <Ellipse Width="20" Height="20" Fill="IndianRed" ></Ellipse>
+                    </Button>
+                    <Button x:Name="Link"  Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
+                        LNK
+                    </Button>
+                    <Button x:Name="EditText"  Click="OnEditClick" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}" Tag="bla">
+                        <Image Source="ms-appx:///Assets/icon_node_text.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                    </Button>
+                    <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_mainmenu_node.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                    </Button>
+
+                    <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
+                        <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                    </Button>
+                </StackPanel>
+            </local:NodeTemplate.SubMenu>
+            <local:NodeTemplate.Inner>
+                <Grid IsHitTestVisible="{Binding IsSelected}">
+                    <Grid x:Name="rr">
+                        <Grid.Projection>
+                            <PlaneProjection RotationY="0"></PlaneProjection>
+                        </Grid.Projection>
+                        <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="DarkGray" Opacity="0.5" />
+                    </Grid>
+                    <Grid x:Name="wee">
+                        <Grid.Projection>
+                            <PlaneProjection RotationY="0"></PlaneProjection>
+                        </Grid.Projection>
+
+                        <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
+
+                            <Rectangle x:Name="borderRect" Opacity="1" StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
+                            <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
+                                        Background="White" BorderBrush="White" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" Padding="20"/>
+                            <Button HorizontalAlignment="Left" VerticalAlignment="Bottom">Add as Tag</Button>
+                            <Grid x:Name="xMediaRecotder" Visibility="Collapsed">
+                                <CaptureElement Name="preview"  Width="{Binding Width}" Height="{Binding Height}"/>
+                                <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True"  Stretch="Uniform" Width="{Binding Width}" Height="{Binding Height}" />
+                                <local:MediaRecorderView Width="{Binding Width}" Height="{Binding Height}" ></local:MediaRecorderView>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </local:NodeTemplate.Inner>
-    </local:NodeTemplate>
+            </local:NodeTemplate.Inner>
+        </local:NodeTemplate>
+    </Canvas>
+
+
 </local:AnimatableUserControl>

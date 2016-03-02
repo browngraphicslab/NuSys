@@ -17,15 +17,24 @@ namespace NuSysApp
 {
     public sealed partial class LibraryElementView : AnimatableUserControl, IThumbnailable
     {
+        private LibraryBucketViewModel _libVm;
+
         public LibraryElementView(LibraryElementViewModel vm)
         {
             InitializeComponent();
+            _libVm = new LibraryBucketViewModel(vm.Width, vm.Height);
+            xLibContainer.Children.Add(new LibraryView(_libVm, new LibraryElementPropertiesWindow()));
+            vm.Controller.SizeChanged += delegate(object source, double width, double height)
+            {
+                _libVm.Width = width;
+                _libVm.Height = height;
+            };
             DataContext = vm;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
 
-                LibraryView.Reload();
+                //LibraryView.Reload();
                 //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
 
                 //vm.Init();
@@ -33,6 +42,7 @@ namespace NuSysApp
                 //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
                 //nodeTpl.inkCanvas.Width = vm.Width;
                 //nodeTpl.inkCanvas.Height = vm.Height;
+                
 
             };
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
@@ -52,7 +62,7 @@ namespace NuSysApp
         private void OnDuplicateClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)DataContext;
-            vm.Controller.Duplicate();
+            vm.Controller.Duplicate(vm.Model.X, vm.Model.Y);
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)

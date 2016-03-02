@@ -9,55 +9,12 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <!--<ScrollViewer HorizontalScrollMode="Disabled">
-    <Grid x:Name="xGrid">
-        <ContentControl></ContentControl>
-        --><!--<DataGrid ItemsSource="{}" AutoGenerateColumns="False" >
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Image" Width="SizeToCells" IsReadOnly="True">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Image Source="{Binding Image}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>--><!--
-        
-            <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1.5*" />
-            <RowDefinition Height="1.5*" />
-            <RowDefinition Height="1.5*" />
-            <RowDefinition Height="1.5*" />
-            <RowDefinition Height="1.5*" />
-        </Grid.RowDefinitions>
-       
-        --><!--<Button Grid.Row="1">Button 4</Button>--><!--
-   
-    </Grid>
-    </ScrollViewer>-->
     <Border Background="AliceBlue" BorderBrush="#62bcd5" BorderThickness="5" CornerRadius="20">
         <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
         <StackPanel>
             
-            <Grid x:Name="xGrid" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition ></RowDefinition>
-                </Grid.RowDefinitions>
+            <Grid x:Name="xGrid">
+                
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition ></ColumnDefinition>
                     <ColumnDefinition ></ColumnDefinition>
