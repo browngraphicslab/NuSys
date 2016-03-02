@@ -32,7 +32,7 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height)
         {
-            base.SetSize(width, width);
+            base.SetSize(width, height);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
@@ -185,6 +186,11 @@ namespace NuSysApp
         {
             Metadata[key] = value;
             MetadataChange?.Invoke(this, key);
+        }
+
+        public string[] GetMetaDataKeys()
+        {
+            return Metadata.Keys.ToArray();
         }
 
         public virtual void Delete()

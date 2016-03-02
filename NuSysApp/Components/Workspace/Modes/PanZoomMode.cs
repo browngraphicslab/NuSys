@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -42,6 +43,7 @@ namespace NuSysApp
             var mousePoint = e.GetCurrentPoint(_view).Position;
 
             var cent = compositeTransform.Inverse.TransformPoint(mousePoint);
+            Debug.WriteLine("cent: " + cent.X);
 
             var localPoint = tmpTranslate.Inverse.TransformPoint(cent);
 
@@ -96,6 +98,7 @@ namespace NuSysApp
             var vm = (WorkspaceViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
+
             var tmpTranslate = new TranslateTransform
             {
                 X = compositeTransform.CenterX,

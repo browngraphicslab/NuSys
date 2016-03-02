@@ -19,6 +19,7 @@ namespace NuSysApp
         private PseudoNode _tempNode;
         private Point _startPos;
         private bool _isFixed;
+        private int i; // TODO Remove
 
         public AddNodeMode(WorkspaceView view, NodeType nodeType, bool isFixed) : base(view) {
             _nodeType = nodeType;
@@ -222,6 +223,10 @@ namespace NuSysApp
 
             metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
+
+            Random rd = new Random(); //TODO remove
+            metadata["random_id"] = (int)rd.Next(100, 200); 
+            metadata["random_id2"] = (int)rd.Next(1, 100);
             metadata["node_type"] = nodeType + "Node";
 
             dict = new Message();

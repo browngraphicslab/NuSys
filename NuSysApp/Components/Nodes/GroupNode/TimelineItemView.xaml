@@ -9,6 +9,6 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     <StackPanel x:Name="TimelinePanel" Orientation="Vertical">
-        <Grid x:Name="TimelineNode" VerticalAlignment="Top" HorizontalAlignment="Center"></Grid>
+        <Grid x:Name="TimelineNode" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Center"></Grid>
     </StackPanel>
 </UserControl>

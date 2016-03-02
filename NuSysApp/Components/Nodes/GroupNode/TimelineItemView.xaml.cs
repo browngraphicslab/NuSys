@@ -22,12 +22,11 @@ namespace NuSysApp.Components.Nodes.GroupNode
 {
     public sealed partial class TimelineItemView : UserControl
     {
-        public TimelineItemView(FrameworkElement atom, DateTime date)
+        public TimelineItemView(FrameworkElement atom, Object sortElement)
         {
             this.InitializeComponent();
 
             TimelineNode.Children.Add(atom); // add node
-            TimelineNode.Height = 80;
             atom.VerticalAlignment = VerticalAlignment.Bottom;
 
             Line line = new Line()
@@ -41,11 +40,13 @@ namespace NuSysApp.Components.Nodes.GroupNode
             TimelinePanel.Children.Add(line); // add line
 
             TextBlock tb = new TextBlock();
-            tb.Text = date.ToString("MM/dd/yy H:mm:ss");
+            tb.Name = "TextBlock";
+            tb.Text = sortElement.ToString();
+            tb.TextAlignment = TextAlignment.Center;
             tb.FontSize = 15;
             tb.VerticalAlignment = VerticalAlignment.Bottom;
             tb.HorizontalAlignment = HorizontalAlignment.Center;
-            //TimelinePanel.Children.Add(tb); // add label   
+            tb.Width = 130;
 
             Grid tbGrid = new Grid();
             tbGrid.BorderBrush = new SolidColorBrush(Colors.Black);

@@ -119,7 +119,7 @@ namespace NuSysApp
                     var nodeManipulationMode = new NodeManipulationMode(this);
                     await
                         SetViewMode(new MultiMode(this, nodeManipulationMode, new DuplicateNodeMode(this),
-                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this),
+                            /*new PanZoomMode(this),*/ new SelectMode(this), new TagNodeMode(this),
                             new FloatingMenuMode(this), new CreateGroupMode(this, nodeManipulationMode)));
                     break;
                 case Options.SelectMarquee:
