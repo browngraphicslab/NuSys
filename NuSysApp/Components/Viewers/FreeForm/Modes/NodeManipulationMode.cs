@@ -102,12 +102,13 @@ namespace NuSysApp
                 //move all selected content if a selected node is moved
                 foreach (var vmodel in SessionController.Instance.ActiveFreeFormViewer.Selections)
                 {
-                    if (!vmodel.ContainsSelectedLink)
+                    if (!vmodel.IsSelected &&!vmodel.ContainsSelectedLink)
                         vmodel.Controller.SetPosition(vmodel.Transform.TranslateX + dx, vmodel.Transform.TranslateY + dy);
                 }
             }
             else {
-                vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
+                if (!vm.IsSelected)
+                    vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
             }
 
         }
