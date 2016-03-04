@@ -87,5 +87,15 @@ namespace NuSysApp
             }
             return result;
         }
+
+        public InqLineModel GetScaled(double scale)
+        {
+            var nm = new InqLineModel("");
+            foreach (var point in Points)
+            {
+                nm.AddPoint(new Point2d(point.X * scale, point.Y * scale));
+            }
+            return nm;
+        }
     }
 }

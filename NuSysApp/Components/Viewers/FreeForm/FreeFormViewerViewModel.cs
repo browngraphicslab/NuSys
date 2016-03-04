@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -12,6 +13,10 @@ namespace NuSysApp
     /// </summary>
     public class FreeFormViewerViewModel : ElementCollectionViewModel
     {
+        private ElementViewModel _currentlyEditing;
+        public delegate void SelectionChangedHandler(object source);
+        public event SelectionChangedHandler SelectionChanged;
+
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
@@ -24,6 +29,8 @@ namespace NuSysApp
         {
             MultiSelectedAtomViewModels = new List<ElementViewModel>();
             FMTransform = new CompositeTransform();
+
+            SelectionChanged += OnSelectionChanged;
 
             var model = controller.Model;
 
@@ -53,8 +60,20 @@ namespace NuSysApp
             }
         }
 
-        
-        
+        private void OnSelectionChanged(object source)
+        {
+            if (_currentlyEditing != null)
+            {
+                _currentlyEditing.IsEditing = false;
+                _currentlyEditing = null;
+            }
+            if (Selections.Count == 1) { 
+                _currentlyEditing = Selections[0];
+                _currentlyEditing.IsEditing = true;
+            }
+        }
+
+
         public void MoveToNode(string id)
         {
             // TODO: refactor
@@ -181,12 +200,14 @@ namespace NuSysApp
                 _selections.Add(selected);
             var f = AtomViewList.Where(a => a.DataContext == selected).First();
             Canvas.SetZIndex(f, NodeManipulationMode._zIndexCounter++);
+            SelectionChanged?.Invoke(this);
         }
 
         public void RemoveSelection(ElementViewModel selected)
         {
             selected.IsSelected = false;
             _selections.Remove(selected);
+            SelectionChanged?.Invoke(this);
         }
 
         /// <summary>
@@ -199,6 +220,7 @@ namespace NuSysApp
                 selectable.IsSelected = false;
             }
             _selections.Clear();
+            SelectionChanged?.Invoke(this);
         }
         
 

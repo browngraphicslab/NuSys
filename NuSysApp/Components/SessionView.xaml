@@ -57,5 +57,6 @@
         
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
+
     </Canvas>
 </Page>

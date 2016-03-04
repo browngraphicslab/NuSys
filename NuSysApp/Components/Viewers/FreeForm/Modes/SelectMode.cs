@@ -18,6 +18,7 @@ namespace NuSysApp
     {
 
         private bool _released;
+        private bool _doubleTapped;
         private PointerEventHandler _pointerPressedHandler;
         private PointerEventHandler _pointerReleasedHandler;
         private DoubleTappedEventHandler _doubleTappedHandler;
@@ -60,7 +61,17 @@ namespace NuSysApp
             if (!_released)
                 return;
 
-            var dc = (ElementViewModel)((FrameworkElement)e.OriginalSource).DataContext;
+            await Task.Delay(50);
+            if (_doubleTapped)
+            {
+                _doubleTapped = false;
+                return;
+            }
+
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
+            if (dc == null)
+                return;
+            
             var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
             var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
             
@@ -102,7 +113,7 @@ namespace NuSysApp
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-
+            _doubleTapped = true;
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {

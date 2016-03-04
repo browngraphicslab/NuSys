@@ -44,7 +44,7 @@ namespace NuSysApp
         public async Task Init()
         {
             ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
-            var uri = GetUri("values", true);
+            var uri = GetUri("values/{}", true);
             await _socket.ConnectAsync(uri);
         }
 

@@ -67,9 +67,6 @@ namespace NuSysApp
         {
             _inqLine = inqLine;
             _tFirstPress = DateTime.Now;
-            Debug.WriteLine("INK FINALIZED");
-            
-            
         }
         /*
         private async void OnPointerPressed()
@@ -232,29 +229,6 @@ namespace NuSysApp
         */
        
 
-        public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
-        {
-            if (inqLineModels.Count == 0)
-                return new List<string>();
-
-            var im = new InkManager();
-            var b = new InkStrokeBuilder();
-
-            foreach (var inqLineModel in inqLineModels)
-            {
-                var pc = new PointCollection();
-                foreach (var point2D in inqLineModel.Points)
-                {
-                    pc.Add(new Point(point2D.X, point2D.Y));
-                }
-
-                var stroke = b.CreateStroke(pc);
-                im.AddStroke(stroke);
-            }
-            
-            var result = await im.RecognizeAsync(InkRecognitionTarget.All);
-            return result[0].GetTextCandidates().ToList();
-            
-        }
+        
     }
 }

@@ -43,7 +43,7 @@ namespace NuSysApp
             _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
         }
 
-        public void AddLine(InqLineModel line)
+        private void AddLine(InqLineModel line)
         {
             _lines.Add(line);
             LineAdded?.Invoke(line);

@@ -30,11 +30,6 @@ namespace NuSysApp
                 userControl.PointerPressed += OnAtomPressed;
                 userControl.PointerReleased += OnAtomReleased;
             }
-
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is LabelNodeViewModel))
-            {
-                userControl.DoubleTapped += OnGroupTagDoubleTapped;
-            }
         }
 
 
@@ -48,18 +43,6 @@ namespace NuSysApp
                 userControl.PointerReleased -= OnAtomReleased;
             }
             wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
-
-            foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is LabelNodeViewModel))
-            {
-                userControl.DoubleTapped -= OnGroupTagDoubleTapped;
-                Canvas.SetZIndex(userControl, 100);
-            }
-        }
-
-        private void OnGroupTagDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            var groupTagNode = (LabelNodeView) sender;
-        //    groupTagNode.ToggleExpand();
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -70,18 +53,21 @@ namespace NuSysApp
             foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
             {
                 var kv = (FrameworkElement)newItem;
-                
-                if (kv.DataContext is LabelNodeViewModel) {
-                    Canvas.SetZIndex((UserControl)kv, 100);
-                    continue;
-                }
-
                 var item = (UserControl)kv;
                item.PointerPressed += OnAtomPressed;
                item.PointerReleased += OnAtomReleased;
             }
         }
 
+        private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var pressedNode = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
+
+            if (pressedNode == null)
+                return;
+
+            _pressedItems.Add(pressedNode);
+        }
 
         private async void OnAtomReleased(object sender, PointerRoutedEventArgs e)
         {
@@ -99,6 +85,12 @@ namespace NuSysApp
             }
             else if (_pressedItems.Count == 1)
             {
+                _pressedItems.Remove(_pressedItems[0]);
+            }
+
+            /*
+            else if (_pressedItems.Count == 1)
+            {
                 var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.GetCurrentPoint(_view).Position, _view);
                 var result = hits.Where(uiElem => uiElem is LabelNodeView);
 
@@ -113,6 +105,7 @@ namespace NuSysApp
 
                 Debug.WriteLine("didn't removed anything!!!");
             }
+            */
         }
 
         private async void BuildGroup(ElementViewModel node0, ElementViewModel node1, bool keepOriginal = false)
@@ -142,7 +135,7 @@ namespace NuSysApp
 
             tags.Add(inkCaption);
 
-            nodeToTag.Model.SetMetaData("tags", tags);
+            nodeToTag.Controller.SetMetadata("tags", tags);
             
             // tag all visual copies
 
@@ -187,20 +180,6 @@ namespace NuSysApp
             //e.Handled = true;
         }
 
-        private void OnAtomPressed(object sender, PointerRoutedEventArgs e)
-        {   
-            var pressedNode = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
-           
-            if (pressedNode == null)
-                return;
 
-            //_view.CapturePointer(e.Pointer);
-
-            
-            if (!(pressedNode is LabelNodeViewModel))
-                Canvas.SetZIndex((FrameworkElement)sender, 0);
-
-            _pressedItems.Add(pressedNode);
-        }
     }
 }

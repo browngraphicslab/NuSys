@@ -25,7 +25,7 @@ namespace NuSysApp
         private SolidColorBrush _userColor;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
-        protected bool _isSelected, _isMultiSelected, _isVisible;
+        protected bool _isSelected, _isVisible;
 
         #endregion Private Members
 
@@ -43,6 +43,7 @@ namespace NuSysApp
             controller.TitleChanged += OnTitleChanged;
 
             Tags = new ObservableCollection<Button>();
+            
 
             controller.UserChanged +=
                 delegate(NetworkUser user)

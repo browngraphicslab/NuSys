@@ -212,7 +212,6 @@ namespace NuSysApp
                 List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
                 await AddinTransfer(selectionItems);
-
                 await file.DeleteAsync();
             }
         }

@@ -52,6 +52,21 @@ namespace NuSysApp
                 //_inqCanvas.DisposeResources();
             };
 
+            vm.SelectionChanged += delegate(object source)
+            {
+                if (vm.Selections.Count == 0)
+                {
+                    var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                    xOuterWrapper.Children.Move((uint)oldIndex, (uint)(xOuterWrapper.Children.Count-1));
+                }
+                else
+                {
+                    var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                    xOuterWrapper.Children.Move((uint)oldIndex, 0);
+
+                }
+            };
+
             vm.Controller.Model.InqCanvas.LineFinalized += async delegate (InqLineModel model)
             {
                 if (!model.IsGesture)

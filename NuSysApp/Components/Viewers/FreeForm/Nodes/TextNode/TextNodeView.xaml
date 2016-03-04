@@ -15,6 +15,9 @@
     IsDoubleTapEnabled="True">
     
     <local:AnimatableUserControl.Resources>
+
+            <local:BoolInvertConverter x:Key="iConverter"/>
+
         <Storyboard x:Name="FlipOpen">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Projection).(PlaneProjection.RotationY)" Storyboard.TargetName="wee">
                 <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
@@ -65,7 +68,7 @@
                 </StackPanel>
             </local:NodeTemplate.SubMenu>
             <local:NodeTemplate.Inner>
-                <Grid IsHitTestVisible="{Binding IsSelected}">
+                <Grid>
                     <Grid x:Name="rr">
                         <Grid.Projection>
                             <PlaneProjection RotationY="0"></PlaneProjection>
@@ -79,10 +82,8 @@
 
                         <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
 
-                            <Rectangle x:Name="borderRect" Opacity="1" StrokeDashArray="6, 5" Stroke="#606D7A" StrokeThickness="2" Fill="White" PointerEntered="borderRect_OnPointerEntered" PointerExited="borderRect_OnPointerExited"/>
-                            <local:TextBoxExtended x:Name="rtfTextBox" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" Foreground="Black"  TextWrapping="Wrap" BorderThickness="0" FontSize="20" FontFamily="Calibri"
-                                        Background="White" BorderBrush="White" AcceptsReturn="True"  Visibility="Visible" IsHitTestVisible="False" Padding="20"/>
-                            <Button HorizontalAlignment="Left" VerticalAlignment="Bottom">Add as Tag</Button>
+                            
+                            <WebView Name="TextNodeWebView" Width="{Binding Width}" Height="{Binding Height}" IsTapEnabled="True" DefaultBackgroundColor="White"></WebView>
                             <Grid x:Name="xMediaRecotder" Visibility="Collapsed">
                                 <CaptureElement Name="preview"  Width="{Binding Width}" Height="{Binding Height}"/>
                                 <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True"  Stretch="Uniform" Width="{Binding Width}" Height="{Binding Height}" />

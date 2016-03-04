@@ -6,24 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
-using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Media.Capture;
-using Windows.Media.MediaProperties;
 using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Shapes;
+using Windows.UI.Input.Inking;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -32,40 +24,40 @@ namespace NuSysApp
 
     public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable
     {
-
-        private List<Image> _images = new List<Image>();
         private MediaCapture _mediaCapture;
         private bool _isRecording;
         private Image _dragItem;
 
         private enum DragMode { Duplicate, Tag, Link};
         private DragMode _currenDragMode = DragMode.Duplicate;
+        private List<InqLineModel> _lines = new List<InqLineModel>(); 
 
         public TextNodeView(TextNodeViewModel vm)
         {
             InitializeComponent();
+
+            TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
+
 
             var contentId = (vm.Model as ElementModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
             {
-                rtfTextBox.SetRtfText(content.Data);
+                UpdateText(content.Data);
             }
-
             (vm.Model as TextElementModel).TextChanged += delegate (object source, string text)
             {
-                rtfTextBox.SetRtfText(text);
-                // rtfTextBox.SetRtfText();
+                UpdateText(text);
             };
 
-            var inqView = new InqCanvasView(new InqCanvasViewModel(new InqCanvasModel(SessionController.Instance.GenerateId()),
-                new Size(vm.Width, vm.Height)));
+            var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
+            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
+            
+            var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;
             rr.Children.Add(inqView);
-
             
-
             vm.Controller.ContentChanged += delegate(object source, NodeContentModel data)
             {
                 if (xMediaRecotder.Visibility == Visibility.Collapsed)
@@ -77,6 +69,16 @@ namespace NuSysApp
                 memoryStream.Seek(0);
                 playbackElement.SetSource(memoryStream, "video/mp4");
                 _isRecording = false;
+            };
+
+            inqModel.LineFinalizedLocally += async delegate(InqLineModel model)
+            {
+                var nm = model.GetScaled(Constants.MaxCanvasSize);
+                _lines.Add(nm);
+                
+                var texts = await InkToText(_lines); 
+                if (texts.Count > 0)
+                    UpdateText(texts[0]);
             };
 
 
@@ -91,45 +93,25 @@ namespace NuSysApp
 
         }
 
-
-
-
-        private async Task TranscribeVoice()
+        private async void UpdateText(String str)
         {
-            // Create an instance of SpeechRecognizer. 
-            var speechRecognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
-            //speechRecognizer.
-            //speechRecognizer.UIOptions.ShowConfirmation = false;
-            //speechRecognizer.UIOptions.IsReadBackEnabled = false;
-            //speechRecognizer.UIOptions.AudiblePrompt = "";
-            // Compile the dictation grammar that is loaded by default. = ""; 
-            await speechRecognizer.CompileConstraintsAsync();
-            string spokenString = "";
-            // Start recognition. 
-            try
+            if (str != "")
             {
-                Windows.Media.SpeechRecognition.SpeechRecognitionResult speechRecognitionResult = await speechRecognizer.RecognizeAsync();
-                // If successful, display the recognition result. 
-                if (speechRecognitionResult.Status == Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus.Success)
-                {
-                    spokenString = speechRecognitionResult.Text;
-                }
+                String[] myString = { str };
+                IEnumerable<String> s = myString;
+                TextNodeWebView.InvokeScriptAsync("InsertText", s);
             }
-            catch (Exception exception)
-            {
-            }
-            speechRecognizer.Dispose();
-            //this.mdTextBox.Text = spokenString;
-            var vm = (TextNodeViewModel)this.DataContext;
-            vm.Init();
+            _text = str;
         }
 
+        
 
         private bool _isopen;
+        private string _text = string.Empty;
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
         {
- 
+
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
@@ -157,6 +139,39 @@ namespace NuSysApp
             {
                 var vm = (ElementViewModel)DataContext;
                 vm.Controller.Duplicate(r.X, r.Y);
+            }
+
+            if (_currenDragMode == DragMode.Tag)
+            {
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+               // hitsStart = hitsStart.Where(uiElem => uiElem);
+                hitsStart = hitsStart.Where(ui => (ui as FrameworkElement).Name == "Tags");
+                if (hitsStart.Any())
+                {
+                    var el = (FrameworkElement)hitsStart.First();
+                    var vm = (ElementViewModel) el.DataContext;
+                    var tags = (List<string>)vm.Model.GetMetaData("tags");
+                    tags.Add(_text);
+                    vm.Controller.SetMetadata("tags", tags);
+
+                } else { 
+
+                    var contentId = SessionController.Instance.GenerateId();
+
+                    var dict = new Message();
+                    dict["width"] = 300;
+                    dict["height"] = 150;
+                    dict["nodeType"] = ElementType.Tag.ToString();
+                    dict["x"] = r.X;
+                    dict["y"] = r.Y;
+                    dict["title"] = _text;
+                    dict["contentId"] = contentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Tag.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null));
+                }
             }
 
             if (_currenDragMode == DragMode.Link)
@@ -215,9 +230,7 @@ namespace NuSysApp
             _dragItem.RenderTransform = new CompositeTransform();
             (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
         }
-
         
-
         public NodeTemplate NodeTpl
         {
             get { return nodeTpl; }
@@ -233,32 +246,50 @@ namespace NuSysApp
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
-            await r.RenderAsync(rtfTextBox, width, height);
+            await r.RenderAsync(wee, width, height);
             return r;
         }
 
         private void borderRect_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            borderRect.Opacity = 1;
+           // borderRect.Opacity = 1;
         }
 
         private void borderRect_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-            if (rtfTextBox.GetNonRtfText() == null || rtfTextBox.GetNonRtfText() == "" || rtfTextBox.GetNonRtfText().Trim() == "")
-            {
-                borderRect.Opacity = 1;
-            }
-            else
-            {
-                borderRect.Opacity = 0;
-            }
+         //       borderRect.Opacity = 0;
         }
 
 
         private void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
             xMediaRecotder.Visibility = Visibility.Visible;
-            rtfTextBox.Visibility = Visibility.Collapsed;
+            TextNodeWebView.Visibility = Visibility.Collapsed;
+        }
+
+        public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
+        {
+            if (inqLineModels.Count == 0)
+                return new List<string>();
+
+            var im = new InkManager();
+            var b = new InkStrokeBuilder();
+
+            foreach (var inqLineModel in inqLineModels)
+            {
+                var pc = new PointCollection();
+                foreach (var point2D in inqLineModel.Points)
+                {
+                    pc.Add(new Point(point2D.X, point2D.Y));
+                }
+
+                var stroke = b.CreateStroke(pc);
+                im.AddStroke(stroke);
+            }
+
+            var result = await im.RecognizeAsync(InkRecognitionTarget.All);
+            return result[0].GetTextCandidates().ToList();
+
         }
     }
 }

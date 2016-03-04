@@ -108,6 +108,7 @@ namespace NuSysApp
 
         public void SetMetadata(string key, object val)
         {
+            Model.SetMetaData(key, val);
             MetadataChange?.Invoke(this, key);
         }
 
