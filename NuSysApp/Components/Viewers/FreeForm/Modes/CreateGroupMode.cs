@@ -3,30 +3,24 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Security.Credentials.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
+
 
 namespace NuSysApp
 {
     public class CreateGroupMode : AbstractWorkspaceViewMode
     {
-        private NodeManipulationMode _nodeManipulationMode;
         private DispatcherTimer _timer;
         private bool _isHovering;
         private ElementViewModel _hoveredNode;
-        private IThumbnailable _hoveredNodeView;
         private string _createdGroupId;
 
-        public CreateGroupMode(FreeFormViewer view, NodeManipulationMode nodeManipulationMode) : base(view)
+        public CreateGroupMode(FreeFormViewer view) : base(view)
         {
-            _nodeManipulationMode = nodeManipulationMode;
         }
 
         public async override Task Activate()
@@ -88,15 +82,10 @@ namespace NuSysApp
         {
             if (!_isHovering)
                 return;
-            
-            if (((FrameworkElement)sender).DataContext is ElementCollectionViewModel)
-                return;
-
+           
             var id1 = (((FrameworkElement)sender).DataContext as ElementViewModel).Id;
             var id2 = _hoveredNode.Id;
-
-   
-
+            
             if (id1 == id2)
                 return;
 
@@ -105,74 +94,92 @@ namespace NuSysApp
             p.X -= 150;
             p.Y -= 150;
 
-            
-         //   await SessionController.Instance.SaveThumb(id1, await ((IThumbnailable) sender).ToThumbnail(210, 100));
-     //       await SessionController.Instance.SaveThumb(id2, await ((IThumbnailable)sender).ToThumbnail(210, 100));
+
+            var controller1 = SessionController.Instance.IdToControllers[id1];
+            var controller2 = SessionController.Instance.IdToControllers[id2];
+
+            var c1IsCollection = controller1 is ElementCollectionController;
+            var c2IsCollection = controller2 is ElementCollectionController;
+           
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
 
-            var contentId = SessionController.Instance.GenerateId();
-            var newElementId = SessionController.Instance.GenerateId();
+            var newGroupId = SessionController.Instance.GenerateId();
+            if (!(c1IsCollection || c2IsCollection)) { 
+                var contentId = SessionController.Instance.GenerateId();
 
-            var elementMsg = new Message();
-            elementMsg["metadata"] = metadata;
-            elementMsg["width"] = 300;
-            elementMsg["height"] = 300;
-            elementMsg["x"] = p.X;
-            elementMsg["y"] = p.Y;
-            elementMsg["contentId"] = contentId;
-            elementMsg["nodeType"] = ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-            elementMsg["id"] = newElementId;
+                var elementMsg = new Message();
+                elementMsg["metadata"] = metadata;
+                elementMsg["width"] = 300;
+                elementMsg["height"] = 300;
+                elementMsg["x"] = p.X;
+                elementMsg["y"] = p.Y;
+                elementMsg["contentId"] = contentId;
+                elementMsg["nodeType"] = ElementType.Collection;
+                elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                elementMsg["id"] = newGroupId;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLibraryElementCollectionRequest(contentId,"",id1,id2,"NEW GROUP"));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLibraryElementCollectionRequest(contentId,"",id1,id2,"NEW GROUP"));
+                await controller2.RequestMoveToCollection(newGroupId);
+                await controller1.RequestMoveToCollection(newGroupId);
 
-           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
-           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id2));
+                _isHovering = false;
+                return;
+            }
 
-            SessionController.Instance.IdToControllers[id1].Delete();
-            SessionController.Instance.IdToControllers[id2].Delete();
+            if (c2IsCollection)
+            {
+                await controller1.RequestMoveToCollection(controller2.Model.Id);
+                return;
+            }
 
-            var m1 = new Message();
-            m1["metadata"] = metadata;
-            m1["contentId"] = SessionController.Instance.IdToControllers[id1].Model.ContentId;
-            m1["nodeType"] = SessionController.Instance.IdToControllers[id1].Model.ElementType;
-            m1["x"] = 0;
-            m1["y"] = 0;
-            m1["width"] = 200;
-            m1["height"] = 200;
-            m1["autoCreate"] = true;
-            m1["creator"] = newElementId;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
+            if (c1IsCollection)
+            {
+                await controller2.RequestMoveToCollection(controller1.Model.Id);
+            }
+ 
+         
 
-            var m2 = new Message();
-            m2["metadata"] = metadata;
-            m2["contentId"] = SessionController.Instance.IdToControllers[id2].Model.ContentId;
-            m2["nodeType"] = SessionController.Instance.IdToControllers[id2].Model.ElementType;
-            m2["x"] = 0;
-            m2["y"] = 0;
-            m2["width"] = 200;
-            m2["height"] = 200;
-            m2["autoCreate"] = true;
-            m2["creator"] = newElementId;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m2));
+            _isHovering = false;
 
         }
 
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            var draggedItem = (AnimatableUserControl)e.OriginalSource;
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
-            var result = hits.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel && !((uiElem as FrameworkElement).DataContext == (sender as FrameworkElement).DataContext) && !((uiElem as FrameworkElement).DataContext is FreeFormViewerViewModel) && !((uiElem as FrameworkElement).DataContext is LibraryBucketViewModel));
-            var draggedItem = (AnimatableUserControl) sender;   
-            FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
-            
+            var result = hits.Where((uiElem) =>
+            {
+                var fe = (FrameworkElement) uiElem;
+                var r = fe.DataContext is ElementViewModel &&
+                        fe.DataContext != SessionController.Instance.ActiveFreeFormViewer &&
+                        draggedItem.DataContext != fe.DataContext && 
+                        (draggedItem.DataContext as ElementViewModel).Model != (fe.DataContext as ElementViewModel).Model;
+                return r;
+            });
 
             if (result.Any())
             {
+               
+                _isHovering = true;
+                var hoveredNode = (FrameworkElement)result.First();
+                _hoveredNode = (ElementViewModel)hoveredNode.DataContext;
                 draggedItem.Opacity = 0.5;
+            }
+            else
+            {
+                draggedItem.Opacity = 1;
+                _timer?.Stop();
+                _timer = null;
+                _isHovering = false;
+                _hoveredNode = null;
+            }
+
+
+            /*
 
                 if (_timer == null)
                 {
@@ -191,16 +198,9 @@ namespace NuSysApp
                     };
                     _timer.Interval = TimeSpan.FromMilliseconds(200);
                     _timer.Start();
+
                 }
-            }
-            else
-            {
-                draggedItem.Opacity = 1;
-                _timer?.Stop();
-                _timer = null;
-                _isHovering = false;
-                _hoveredNode = null;
-            }
+                */
         }
     }
 }

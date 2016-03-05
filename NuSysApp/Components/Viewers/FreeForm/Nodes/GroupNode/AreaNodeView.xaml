@@ -13,8 +13,6 @@
 >
 
     <Canvas x:Name="xCanvas">
-        <Path x:Name="BezierLink" Fill="PaleVioletRed" StrokeThickness="30" Opacity=".5" Data="{Binding PathGeometry}">
-        </Path>
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

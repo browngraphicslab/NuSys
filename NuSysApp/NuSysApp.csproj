@@ -280,15 +280,12 @@
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupItemThumbFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemThumbFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridInfo.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml.cs">
       <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml.cs">
-      <DependentUpon>GroupNodeExpandedDefaultView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
@@ -695,10 +692,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

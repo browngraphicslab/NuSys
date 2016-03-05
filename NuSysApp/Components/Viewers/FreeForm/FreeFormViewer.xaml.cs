@@ -15,6 +15,16 @@ namespace NuSysApp
     {
         private AbstractWorkspaceViewMode _mode;
         private InqCanvasView _inqCanvas;
+        private NodeManipulationMode _nodeManipulationMode;
+        private CreateGroupMode _createGroupMode;
+        private DuplicateNodeMode _duplicateMode;
+        private PanZoomMode _panZoomMode;
+        private SelectMode _selectMode;
+        private TagNodeMode _tagMode;
+        private LinkMode _linkMode;
+        private GestureMode _gestureMode;
+        private MultiMode _mainMode;
+        private MultiMode _simpleEditMode;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
@@ -26,6 +36,25 @@ namespace NuSysApp
             _inqCanvas.Width = Window.Current.Bounds.Width;
             _inqCanvas.Height = Window.Current.Bounds.Height;
             xOuterWrapper.Children.Add(_inqCanvas);
+
+
+            Loaded += delegate(object sender, RoutedEventArgs args)
+            {
+                _nodeManipulationMode = new NodeManipulationMode(this);
+                _createGroupMode = new CreateGroupMode(this);
+                _duplicateMode = new DuplicateNodeMode(this);
+                _panZoomMode = new PanZoomMode(this);
+                _gestureMode = new GestureMode(this);
+                _selectMode = new SelectMode(this);
+
+                _tagMode = new TagNodeMode(this);
+                _linkMode = new LinkMode(this);
+                _mainMode = new MultiMode(this, _selectMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
+                _simpleEditMode = new MultiMode(this, _selectMode);
+                SwitchMode(Options.SelectNode, false);
+            };
+
+
 
             // TODO:refactor
             /*
@@ -44,7 +73,7 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                SwitchMode(Options.SelectNode, false);
+                //SwitchMode(Options.SelectNode, false);
             };
 
             inqCanvasModel.AppSuspended += delegate()
@@ -54,16 +83,24 @@ namespace NuSysApp
 
             vm.SelectionChanged += delegate(object source)
             {
+                
                 if (vm.Selections.Count == 0)
                 {
+                    SetViewMode(_mainMode);
                     var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
                     xOuterWrapper.Children.Move((uint)oldIndex, (uint)(xOuterWrapper.Children.Count-1));
                 }
-                else
+                else if (vm.Selections.Count == 1)
                 {
+                    SetViewMode(_simpleEditMode);
                     var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
                     xOuterWrapper.Children.Move((uint)oldIndex, 0);
-
+                }
+                else
+                {
+                    SetViewMode(_mainMode);
+                    var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                    xOuterWrapper.Children.Move((uint)oldIndex, 0);
                 }
             };
 
@@ -110,6 +147,9 @@ namespace NuSysApp
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
+            if (mode == _mode)
+                return;
+
             var deactivate = _mode?.Deactivate();
             if (deactivate != null) await deactivate;
             _mode = mode;
@@ -118,83 +158,21 @@ namespace NuSysApp
 
         public async void SwitchMode(Options mode, bool isFixed)
         {
-            SessionController.Instance.SessionView.HideRecorder();
-
             switch (mode)
             {
                 case Options.Idle:
                     SetViewMode(new MultiMode(this));
                     break;
                 case Options.SelectNode:
-                    var nodeManipulationMode = new NodeManipulationMode(this);
                     await
-                        SetViewMode(new MultiMode(this, nodeManipulationMode, new DuplicateNodeMode(this),
-                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this), new LinkMode(this),
-                            new FloatingMenuMode(this)));
-                    break;
-                case Options.SelectMarquee:
-                    await SetViewMode(new MultiMode(this, new MultiSelectMode(this), new FloatingMenuMode(this)));
-                    break;
-                case Options.MainSearch:
-                    SearchWindowView.SetFocus();
-                    SessionController.Instance.SessionView.SearchView();
+                        SetViewMode(_mainMode);
                     break;
                 case Options.PenGlobalInk:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this), new GestureMode(this)));
-                    break;
-                case Options.AddTextNode:
-
-                    break;
-                case Options.AddWeb:
-
-                    break;
-                case Options.AddAudioCapture:
-
-                    break;
-                case Options.AddMedia:
-                    break;
-                case Options.AddRecord:
-                    await SetViewMode(new MultiMode(this, new SelectMode(this), new FloatingMenuMode(this), new DuplicateNodeMode(this),
-                            new PanZoomMode(this), new SelectMode(this), new TagNodeMode(this)));
-                    var sessionView = SessionController.Instance.SessionView;
-                    sessionView.ShowRecorder();
-                    break;
-                case Options.PenErase:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
-                    // TODO: delegate to workspaceview
-                    //InqCanvas.SetErasing(true);
-                    break;
-                case Options.PenHighlight:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new FloatingMenuMode(this)));
-                    // TODO: delegate to workspaceview
-                    //                    InqCanvas.SetHighlighting(true);
-                    break;
-
-                case Options.MainSaveLoad:
-                    await
-    SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Library, isFixed),
-        new FloatingMenuMode(this)));
-                    break;
-                case Options.Save:
-                    SessionController.Instance.SaveWorkspace();
-                    SessionController.Instance.SessionView.FloatingMenu.Reset();
-                    break;
-                case Options.Load:
-                    SessionController.Instance.LoadWorkspace();
-                    SessionController.Instance.SessionView.FloatingMenu.Reset();
-                    break;
-                case Options.MiscPin:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this), new PinMode(this)));
-                    break;
-                case Options.AddBucket:
-                    await SetViewMode(new MultiMode(this, new PanZoomMode(this)));
-                    break;
-                case Options.AddVideo:
-                    await
-                        SetViewMode(new MultiMode(this, new AddNodeMode(this, ElementType.Video, isFixed),
-                            new FloatingMenuMode(this)));
+                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this), _gestureMode));
                     break;
             }
         }
+
+        public SelectMode SelectMode { get { return _selectMode; } }
     }
 }

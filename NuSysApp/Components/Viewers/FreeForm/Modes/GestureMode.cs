@@ -1,15 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Devices.Input;
 using Windows.Foundation;
-using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
@@ -21,12 +16,10 @@ namespace NuSysApp
         private DateTime _tFirstPress;
         private InqLineModel _inqLine;
         private bool _wasGesture;
-        
-        public GestureMode(FreeFormViewer view) : base(view) { }
+       
 
-        public override async Task Activate()
+        public GestureMode(FreeFormViewer view) : base(view)
         {
-            _view.InqCanvas.IsEnabled = true;
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             _inqCanvasModel = wvm.Model.InqCanvas;
             _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
@@ -34,8 +27,17 @@ namespace NuSysApp
             _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
         }
 
-        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
+        public override async Task Activate()
         {
+            
+        }
+
+        public override async Task Deactivate()
+        {
+        }
+
+        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
+        {   
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
 
@@ -44,9 +46,8 @@ namespace NuSysApp
             if (s > 1)
                 return;
 
-            _view.SwitchMode(Options.Idle, false);
             SelectionByStroke();
-            _view.SwitchMode(Options.SelectNode, false);
+            args.Handled = true;
         }
 
         private void SelectionByStroke()
@@ -68,58 +69,7 @@ namespace NuSysApp
             _inqLine = inqLine;
             _tFirstPress = DateTime.Now;
         }
-        /*
-        private async void OnPointerPressed()
-        {
-            var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
-            if (s < 0.25)
-            {
-                if (_lines.Count < 3)
-                    return;
-                   
-                var model = _lines[_lines.Count - 3];
-                
-                var gestureType = GestureRecognizer.Classify(model);
-                switch (gestureType)
-                {
-                    case GestureRecognizer.GestureType.None:
-                        break;
-                    case GestureRecognizer.GestureType.SELECTION:   
-                        //TODO: make sure checkFor TaagCreation ignore gesture lines
-                       // var isTag = await CheckForTagCreation(model);
-                      //  _wasGesture = isTag;
-                        
-                       // if (!isTag)
-                      //  {
-                      //      CreateAreaNode(model);
-                    //    }
-
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 2]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 3]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-
-                        break;
-                    case GestureRecognizer.GestureType.Scribble:
-                        
-                        _wasGesture = true;
-                        var vm = (FreeFormViewerViewModel) _view.DataContext;
-                        var deletedSome = vm.CheckForInkNodeIntersection(model);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 2]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 3]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        break;
-                }
-            }
-                
-            _tFirstPress = DateTime.Now;
-        }
-        */
+     
 
         private async void CreateAreaNode(InqLineModel line)
         {
@@ -141,12 +91,7 @@ namespace NuSysApp
 
         }
 
-        public override async Task Deactivate()
-        {
-            _view.InqCanvas.IsEnabled = false;
-            _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
 
-        }
 
         /*
         private async Task<bool> CheckForTagCreation(InqLineModel line)

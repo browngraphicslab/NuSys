@@ -198,8 +198,10 @@ namespace NuSysApp
             selected.IsSelected = true;
             if (!_selections.Contains(selected))
                 _selections.Add(selected);
-            var f = AtomViewList.Where(a => a.DataContext == selected).First();
-            Canvas.SetZIndex(f, NodeManipulationMode._zIndexCounter++);
+            var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
+            if (!selectedElements.Any())
+                return;
+            Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
             SelectionChanged?.Invoke(this);
         }
 

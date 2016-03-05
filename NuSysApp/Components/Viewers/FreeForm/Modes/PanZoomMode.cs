@@ -102,6 +102,7 @@ namespace NuSysApp
             var vm = (FreeFormViewerViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
+
             var tmpTranslate = new TranslateTransform
             {
                 X = compositeTransform.CenterX,

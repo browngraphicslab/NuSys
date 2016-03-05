@@ -41,7 +41,7 @@ namespace NuSysApp
             if (!SessionController.Instance.IdToControllers.ContainsKey(Id))
                 return;
 
-            var atomModel = SessionController.Instance.IdToControllers[Id].Model;
+            var atomModel = SessionController.Instance.IdToControllers[Id];
             atomModel.Delete();
             SessionController.Instance.IdToControllers.Remove(Id);
         }

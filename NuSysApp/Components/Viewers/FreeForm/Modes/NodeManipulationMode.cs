@@ -110,7 +110,6 @@ namespace NuSysApp
                 if (!vm.IsEditing)
                     vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
             }
-
         }
     }
 }

@@ -19,8 +19,6 @@ namespace NuSysApp
 
         public void AddChild( ElementController child )
         {
-
-
             ChildAdded?.Invoke(this, child);
         }
 

@@ -156,7 +156,7 @@ namespace NuSysApp
             }
         }
 
-        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        private async void OnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
@@ -315,8 +315,6 @@ namespace NuSysApp
             freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
-            Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
-            Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
@@ -353,16 +351,6 @@ namespace NuSysApp
             {
                 xWorkspaceTitle.Text = title;
             }
-        }
-
-        public void ShowRecorder()
-        {
-            xMediaRecorder.Show();
-        }
-
-        public void HideRecorder()
-        {
-            xMediaRecorder.Hide();
         }
 
         public void SearchView()

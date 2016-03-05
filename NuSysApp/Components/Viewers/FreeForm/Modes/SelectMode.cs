@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using MyToolkit.Utilities;
 
 namespace NuSysApp
 {
@@ -35,8 +36,8 @@ namespace NuSysApp
 
             _view.ManipulationMode = ManipulationModes.All;
 
-            _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, true );
-            _view.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, true );
+            _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, false );
+            _view.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, false );
             _view.AddHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler, true );
         }
 
@@ -50,8 +51,8 @@ namespace NuSysApp
 
             _view.ManipulationMode = ManipulationModes.None;
   
-            var vm = _view.DataContext as FreeFormViewerViewModel;
-            vm.ClearSelection();
+        //    var vm = _view.DataContext as FreeFormViewerViewModel;
+        //    vm.ClearSelection();
         }
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -71,10 +72,11 @@ namespace NuSysApp
             var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
             if (dc == null)
                 return;
+
             
             var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
             var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-            
+           
             if (!isCtrlDown) {
 
 
