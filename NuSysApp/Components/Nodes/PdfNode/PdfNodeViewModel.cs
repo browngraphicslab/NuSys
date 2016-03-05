@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
 using LdaLibrary;
+using LAIR.ResourceAPIs.WordNet;
 
 namespace NuSysApp
 {
@@ -55,7 +56,6 @@ namespace NuSysApp
                 _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
             }
 
-            
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
             LaunchLDA((PdfNodeModel)this.Model);
