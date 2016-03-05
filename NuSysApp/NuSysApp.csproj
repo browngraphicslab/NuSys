@@ -781,10 +781,6 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\WordNetPortable\WordNetPortable\WordNetPortable.csproj">
-      <Project>{15e9147d-b6ce-4a5f-95cc-28ebba605f8e}</Project>
-      <Name>WordNetPortable</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LdaLib\LdaLib.csproj">
       <Project>{108aee28-552d-4d59-bfe3-41edef97dd30}</Project>
       <Name>LdaLib</Name>
