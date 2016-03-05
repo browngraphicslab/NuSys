@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using SQLite.Net;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -119,8 +120,14 @@ namespace NuSysApp
             Anim.To(this, "Alpha", 0, 400);
             IsHitTestVisible = false;
             var vm = (FullScreenViewerViewModel)DataContext;
-            var textview = (vm.View as TextDetailView);
-            textview?.Dispose();
+            var viewVm = (vm.View.DataContext as AtomViewModel);
+            if (viewVm != null)
+            {
+                var textview = (vm.View as TextDetailView);
+                textview?.Dispose();
+                //viewVm.IsFullScreen = false;
+            }
+            //vm.SetNodeModel(null);
         }
 
         private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)

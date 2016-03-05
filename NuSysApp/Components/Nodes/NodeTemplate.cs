@@ -143,6 +143,8 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
 
+            HideBitmapRender();
+
             var vm = (NodeViewModel)this.DataContext;
             vm.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
             //   inkCanvas.Width = vm.Width;

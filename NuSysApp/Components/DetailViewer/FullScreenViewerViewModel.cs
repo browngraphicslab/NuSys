@@ -34,6 +34,10 @@ namespace NuSysApp
 
         public async void SetNodeModel(AtomModel model)
         {
+            var textview = (View as TextDetailView);
+            textview?.Dispose();
+
+
             _nodeModel = model;
             View = await _viewFactory.CreateFromSendable(_nodeModel);
             var tempvm = (AtomViewModel) View.DataContext;

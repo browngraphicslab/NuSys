@@ -80,7 +80,11 @@ namespace NuSysApp
         }
         private void TextNodeView_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            nodeTpl.RenderAsBitmap(this);
+            var vm = (AtomViewModel)this.DataContext;
+            if (!vm.IsFullScreen && !vm.IsSelected && !vm.IsMultiSelected)
+            {
+                nodeTpl.RenderAsBitmap(this);
+            }
         }
 
         private void TextNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)

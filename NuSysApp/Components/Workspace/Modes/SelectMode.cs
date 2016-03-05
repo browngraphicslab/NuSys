@@ -16,6 +16,7 @@ namespace NuSysApp
         public SelectMode(WorkspaceView view) : base(view) { }
 
         private static AtomViewModel _selectedAtomVm;
+        private static AtomViewModel _fullscreenAtomVm;
         private bool _released;
 
         public override async Task Activate()
@@ -92,6 +93,12 @@ namespace NuSysApp
                     }
                     else
                     {
+                        if (_fullscreenAtomVm != null)
+                        {
+                            _fullscreenAtomVm.IsFullScreen = false;
+                        }
+                        _fullscreenAtomVm = vm;
+                        vm.IsFullScreen = true;
                         SessionController.Instance.SessionView.ShowFullScreen((NodeModel)vm.Model);
                     }
 
@@ -99,6 +106,12 @@ namespace NuSysApp
                 if (dc is LinkViewModel)
                 {
                     var vm = (LinkViewModel)dc;
+                    if (_fullscreenAtomVm != null)
+                    {
+                        _fullscreenAtomVm.IsFullScreen = false;
+                    }
+                    _fullscreenAtomVm = vm;
+                    vm.IsFullScreen = true;
                     SessionController.Instance.SessionView.ShowFullScreen((LinkModel)vm.Model);
                 }
                // vm.ToggleSelection();

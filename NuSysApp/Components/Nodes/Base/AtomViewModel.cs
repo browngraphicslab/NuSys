@@ -21,7 +21,7 @@ namespace NuSysApp
         private Point2d _anchor;
         private string _title;
 
-        protected bool _isSelected, _isMultiSelected, _isVisible;
+        protected bool _isSelected, _isMultiSelected, _isVisible, _isFullScreen;
         private UserControl _view;
         private CompositeTransform _transform = new CompositeTransform();
         private DebouncingDictionary _debouncingDictionary;
@@ -268,6 +268,18 @@ namespace NuSysApp
 
                 _isMultiSelected = value;
                 RaisePropertyChanged("IsMultiSelected");
+            }
+        }
+
+        public bool IsFullScreen
+        {
+            get
+            {
+                return _isFullScreen;
+            }
+            set
+            {
+                _isFullScreen = value;
             }
         }
 
