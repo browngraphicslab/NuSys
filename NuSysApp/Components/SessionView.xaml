@@ -55,6 +55,9 @@
         <local:DetailViewerView x:Name="xFullScreenViewer"></local:DetailViewerView>
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
+        <Grid x:Name="xBtnPen" Background="IndianRed" Width="70" Height="100">
+            <TextBlock Text="P" FontWeight="Black"></TextBlock>
+        </Grid>
 
     </Canvas>
 </Page>

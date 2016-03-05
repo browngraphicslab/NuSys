@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,15 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+
 using NuSysApp.Util;
 
 namespace NuSysApp
@@ -60,7 +64,18 @@ namespace NuSysApp
                 delegate(object sender, SizeChangedEventArgs args)
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
+                    Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
                 };
+
+            xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
+            {
+                ActivatePenMode(true);
+                args.Handled = true;
+            };
+            xBtnPen.PointerExited += delegate (object sender, PointerRoutedEventArgs args)
+            {
+                ActivatePenMode(false);            
+            };
 
             Loaded += OnLoaded;
         }
@@ -150,9 +165,7 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
                 xFullScreenViewer.Opacity < 0.1)
             {
-                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
-                _prevOptions = Options.PenGlobalInk;
-                IsPenMode = true;
+                ActivatePenMode(true);
             }
         }
 
@@ -163,10 +176,34 @@ namespace NuSysApp
 
             if (args.VirtualKey == VirtualKey.Shift && xFullScreenViewer.Opacity < 0.1)
             {
+                ActivatePenMode(false);
+            }
+        }
+
+        private void ActivatePenMode(bool val)
+        {
+     
+            if (val)
+            {
+                if (IsPenMode)
+                    return;
+                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
+                _prevOptions = Options.PenGlobalInk;
+                IsPenMode = true;
+                xBtnPen.Background = new SolidColorBrush(Colors.Firebrick);
+                Debug.WriteLine("asdasdas");
+            }
+            else
+            {
+                if (!IsPenMode)
+                    return;
                 xFloatingMenu.SetActive(Options.SelectNode);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
+                xBtnPen.Background = new SolidColorBrush(Colors.IndianRed);
+                Debug.WriteLine("asdasdas");
             }
+            
         }
 
         public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)

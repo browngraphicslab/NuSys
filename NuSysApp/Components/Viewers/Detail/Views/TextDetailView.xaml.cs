@@ -39,14 +39,15 @@ namespace NuSysApp
         private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
         private string _modelContentId;
         private string _modelId;
-        private string _modelText = "";
+        private string _modelText="";
+        private TextNodeViewModel _viewMod;
         public TextDetailView(TextNodeViewModel vm)
         {
-
             InitializeComponent();
 
-
             DataContext = vm;
+            _viewMod = vm;
+            SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
 
             var model = (TextElementModel)vm.Model;
 
@@ -74,6 +75,47 @@ namespace NuSysApp
             _modelContentId = model.ContentId;
             _modelId = model.Id;
 
+        }
+
+
+
+
+        /* 
+        Two values are received from JS: link clicks and entire document HTML updates
+        Method parses these options, calls other methods accordingly
+         */
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found in e.Value
+            string data = e.Value;
+            Debug.WriteLine(data);
+
+            if (data.ToLower().StartsWith("launchmylink:"))
+            {
+                String potentialLink = "http://" + data.Substring("LaunchMylink:".Length);
+                NavigateToLink(potentialLink);
+
+            }
+            else if (data.ToLower().StartsWith("browseropen:"))
+            {
+                String potentialLink = "http://" + data.Substring("BrowserOpen:".Length);
+                Launcher.LaunchUriAsync(new Uri(potentialLink));
+
+            }
+            else if (data != "")
+            {
+                UpdateModelText(data);
+
+            }
+
+        }
+
+
+            
+
+        public void SetDimension(double parentWidth)
+        {
+            MyWebView.Width = parentWidth * 0.9;
         }
 
         private void WebView_OnNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
@@ -110,35 +152,8 @@ namespace NuSysApp
 
 
 
-        /* 
-        Two values are received from JS: link clicks and entire document HTML updates
-        Method parses these options, calls other methods accordingly
-         */
-        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
-        {
-            // The string received from the JavaScript code can be found in e.Value
-            string data = e.Value;
-            Debug.WriteLine(data);
 
-            if (data.ToLower().StartsWith("launchmylink:"))
-            {
-                String potentialLink = "http://" + data.Substring("LaunchMylink:".Length);
-                NavigateToLink(potentialLink);
 
-            }
-            else if (data.ToLower().StartsWith("browseropen:"))
-            {
-                String potentialLink = "http://" + data.Substring("BrowserOpen:".Length);
-                Launcher.LaunchUriAsync(new Uri(potentialLink));
-
-            }
-            else if (data != "")
-            {
-                UpdateModelText(data);
-
-            }
-
-        }
 
         /*
         Opens up link from Text Detail View in new web node, in the network 
@@ -149,10 +164,12 @@ namespace NuSysApp
 
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
+
             var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
 
             var contentId = SessionController.Instance.GenerateId();
             var nodeid = SessionController.Instance.GenerateId();
+
 
             m["contentId"] = contentId;
             m["x"] = centerpoint.X - 200;

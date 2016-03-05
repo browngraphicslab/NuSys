@@ -19,7 +19,6 @@ namespace NuSysApp
             InitializeComponent();
           //  IsDoubleTapEnabled = true;
             DataContext = vm;
-            
         }
 
 

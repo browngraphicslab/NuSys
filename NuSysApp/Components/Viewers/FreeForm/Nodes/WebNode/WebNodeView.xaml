@@ -31,7 +31,7 @@
                 </Canvas.Clip>
 
                 <ScrollViewer IsHitTestVisible="False">
-                    <WebView x:Name="xWebView" Width="1024" Height="14257" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
+                    <WebView x:Name="xWebView" Width="1024" Height="14257" IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
                 </ScrollViewer>
                 <Border Background="#99000000" Width="{Binding Width}">
                     <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>

@@ -18,6 +18,7 @@ namespace NuSysApp
         public WebNodeView(WebNodeViewModel vm)
         {
             InitializeComponent();
+            Canvas.SetZIndex(xWebView, -10);
             DataContext = vm;
             xUrlBox.ManipulationMode = ManipulationModes.All;
             xWebView.RenderTransform = new CompositeTransform
