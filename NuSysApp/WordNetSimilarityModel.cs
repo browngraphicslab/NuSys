@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LAIR.ResourceAPIs.WordNet;
+using LAIR.Collections.Generic;
 
-/*using LAIR.ResourceAPIs.WordNet;
-using LAIR.Collections.Generic;*/
-
-namespace WordNetUnivApp
+namespace LAIR.ResourceAPIs.WordNet
 {
     /// <summary>
     /// Provides WordNet-based semantic similarity measures

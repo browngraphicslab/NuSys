@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-/*using LAIR.Extensions;
-using LAIR.Collections.Generic;*/
-/*using LAIR.IO;*/
+using LAIR.Extensions;
+using LAIR.Collections.Generic;
+using LAIR.IO;
 
-namespace WordNetUnivApp
+namespace LAIR.ResourceAPIs.WordNet
 {
     /// <summary>
     /// Provides access to the WordNet resource via two alternative methods, in-memory and disk-based. The latter is blazingly
@@ -239,9 +239,9 @@ namespace WordNetUnivApp
         /// <param name="mostCommonSynSet">Returns the most common synset for the word</param>
         /// <param name="wordNetEngine">WordNetEngine to pass to the constructor of each synset shell</param>
         /// <returns>Synset shells for the given index line</returns>
-        private static HashSet<SynSet> GetSynSetShells(string wordIndexLine, POS pos, out SynSet mostCommonSynSet, WordNetEngine wordNetEngine)
+        private static Set<SynSet> GetSynSetShells(string wordIndexLine, POS pos, out SynSet mostCommonSynSet, WordNetEngine wordNetEngine)
         {
-            HashSet<SynSet> synsets = new HashSet<SynSet>();
+            Set<SynSet> synsets = new Set<SynSet>();
             mostCommonSynSet = null;
 
             // get number of synsets
@@ -273,11 +273,11 @@ namespace WordNetUnivApp
 
         private string _wordNetDirectory;
         private bool _inMemory;
-        //private Dictionary<POS, BinarySearchTextStream> _posIndexWordSearchStream;  // disk-based search streams to get words from the index files
+        private Dictionary<POS, BinarySearchTextStream> _posIndexWordSearchStream;  // disk-based search streams to get words from the index files
         private Dictionary<POS, StreamReader> _posSynSetDataFile;                   // disk-based synset data files
-        private Dictionary<POS, Dictionary<string, HashSet<SynSet>>> _posWordSynSets;   // in-memory pos-word synsets lookup
+        private Dictionary<POS, Dictionary<string, Set<SynSet>>> _posWordSynSets;   // in-memory pos-word synsets lookup
         private Dictionary<string, SynSet> _idSynset;                               // in-memory id-synset lookup where id is POS:Offset
-        private Dictionary<POS, string> _posIndexWordSearchPath;
+
         /// <summary>
         /// Gets whether or not the data in this WordNetEngine is stored in memory
         /// </summary>
@@ -297,44 +297,33 @@ namespace WordNetUnivApp
         /// <summary>
         /// Gets all words in WordNet, organized by POS.
         /// </summary>
-
-        public Dictionary<POS, HashSet<string>> AllWords
+        public Dictionary<POS, Set<string>> AllWords
         {
             get
             {
-                Dictionary<POS, HashSet<string>> posWords = new Dictionary<POS, HashSet<string>>();
+                Dictionary<POS, Set<string>> posWords = new Dictionary<POS, Set<string>>();
 
                 if (_inMemory)
-                {
                     // grab words from in-memory index
                     foreach (POS pos in _posWordSynSets.Keys)
-                        posWords.Add(pos, new HashSet<string>(_posWordSynSets[pos].Keys));
-                }
+                        posWords.Add(pos, new Set<string>(_posWordSynSets[pos].Keys));
                 else
-                {
-                    /*foreach(POS pos in _posIndexWordSearchPath.Keys)
-                    {
-
-                    }*/
-
                     // read index file for each pos
-                    /*foreach (POS pos in _posIndexWordSearchStream.Keys)
+                    foreach (POS pos in _posIndexWordSearchStream.Keys)
                     {
                         // reset index file to start
                         StreamReader indexFile = _posIndexWordSearchStream[pos].Stream;
-                        //indexFile.SetPosition(0);
-                        indexFile.DiscardBufferedData();
-                        indexFile.BaseStream.Position = 0;
+                        indexFile.SetPosition(0);
+
                         // read words, skipping header lines
-                        HashSet<string> words = new HashSet<string>();
+                        Set<string> words = new Set<string>();
                         string line;
                         while ((line = indexFile.ReadLine()) != null)
                             if (!line.StartsWith(" "))
                                 words.Add(line.Substring(0, line.IndexOf(' ')));
 
                         posWords.Add(pos, words);
-                    }*/
-                }
+                    }
 
                 return posWords;
             }
@@ -351,7 +340,7 @@ namespace WordNetUnivApp
         {
             _wordNetDirectory = wordNetDirectory;
             _inMemory = inMemory;
-            //_posIndexWordSearchStream = null;
+            _posIndexWordSearchStream = null;
             _posSynSetDataFile = null;
 
             if (!System.IO.Directory.Exists(_wordNetDirectory))
@@ -375,9 +364,9 @@ namespace WordNetUnivApp
             };
 
             // make sure all files exist
-            //foreach (string path in dataPaths.Union(indexPaths))
-             //   if (!System.IO.File.Exists(path))
-               //     throw new FileNotFoundException("Failed to find WordNet file:  " + path);
+            foreach (string path in dataPaths.Union(indexPaths))
+                if (!System.IO.File.Exists(path))
+                    throw new FileNotFoundException("Failed to find WordNet file:  " + path);
 
             #region index file sorting
             string sortFlagPath = Path.Combine(_wordNetDirectory, ".sorted_for_dot_net");
@@ -391,25 +380,20 @@ namespace WordNetUnivApp
                 {
                     // create temporary file for sorted lines
                     string tempPath = Path.GetTempFileName();
-                    FileStream fs = new FileStream(tempPath, FileMode.OpenOrCreate);
-                    StreamWriter tempFile = new StreamWriter(fs);
+                    StreamWriter tempFile = new StreamWriter(tempPath);
 
                     // get number of words (lines) in file
                     int numWords = 0;
-                    fs = new FileStream(indexPath, FileMode.Open);
-                    StreamReader indexFile = new StreamReader(fs);
+                    StreamReader indexFile = new StreamReader(indexPath);
                     string line;
-                    while ((line = indexFile.ReadLine()) != null)
-                        //while (indexFile.TryReadLine(out line))
+                    while (indexFile.TryReadLine(out line))
                         if (!line.StartsWith(" "))
                             ++numWords;
 
                     // get lines in file, sorted by first column (i.e., the word)
                     Dictionary<string, string> wordLine = new Dictionary<string, string>(numWords);
-                    indexFile = new StreamReader(fs);
-
-                    //while (indexFile.TryReadLine(out line))
-                    while (indexFile.ReadLine() != null)
+                    indexFile = new StreamReader(indexPath);
+                    while (indexFile.TryReadLine(out line))
                         // write header lines to temp file immediately
                         if (line.StartsWith(" "))
                             tempFile.WriteLine(line);
@@ -429,7 +413,7 @@ namespace WordNetUnivApp
                     foreach (string word in sortedWords)
                         tempFile.WriteLine(wordLine[word]);
 
-                    tempFile.Dispose();
+                    tempFile.Close();
 
                     // replace original index file with properly sorted one
                     System.IO.File.Delete(indexPath);
@@ -437,10 +421,9 @@ namespace WordNetUnivApp
                 }
 
                 // create flag file, indicating that we've sorted the data
-                FileStream sort_fs = new FileStream(sortFlagPath, FileMode.OpenOrCreate);
-                StreamWriter sortFlagFile = new StreamWriter(sort_fs);
+                StreamWriter sortFlagFile = new StreamWriter(sortFlagPath);
                 sortFlagFile.WriteLine("This file serves no purpose other than to indicate that the WordNet distribution data in the current directory has been sorted for use by the .NET API.");
-                sortFlagFile.Dispose();
+                sortFlagFile.Close();
             }
             #endregion
 
@@ -452,10 +435,9 @@ namespace WordNetUnivApp
                 foreach (string dataPath in dataPaths)
                 {
                     // scan synset data file for lines that don't start with a space...these are synset definition lines
-                    StreamReader dataFile = new StreamReader(new FileStream(dataPath, FileMode.Open));
+                    StreamReader dataFile = new StreamReader(dataPath);
                     string line;
-                    //while (dataFile.TryReadLine(out line))
-                    while ((line = dataFile.ReadLine()) != null)
+                    while (dataFile.TryReadLine(out line))
                     {
                         int firstSpace = line.IndexOf(' ');
                         if (firstSpace > 0)
@@ -470,10 +452,9 @@ namespace WordNetUnivApp
                     POS pos = GetFilePOS(dataPath);
 
                     // scan synset data file
-                    StreamReader dataFile = new StreamReader(new FileStream(dataPath, FileMode.Open));
+                    StreamReader dataFile = new StreamReader(dataPath);
                     string line;
-                    //while (dataFile.TryReadLine(out line))
-                    while ((line = dataFile.ReadLine()) != null)
+                    while (dataFile.TryReadLine(out line))
                     {
                         int firstSpace = line.IndexOf(' ');
                         if (firstSpace > 0)
@@ -493,10 +474,9 @@ namespace WordNetUnivApp
                     POS pos = GetFilePOS(dataPath);
 
                     // scan synset data file
-                    StreamReader dataFile = new StreamReader(new FileStream(dataPath, FileMode.Open));
+                    StreamReader dataFile = new StreamReader(dataPath);
                     string line;
-                    while ((line = dataFile.ReadLine()) != null)
-                    //while (dataFile.TryReadLine(out line))
+                    while (dataFile.TryReadLine(out line))
                     {
                         int firstSpace = line.IndexOf(' ');
                         if (firstSpace > 0)
@@ -506,17 +486,17 @@ namespace WordNetUnivApp
                 }
 
                 // organize synsets by pos and words...also set most common synset for word-pos pairs that have multiple synsets
-                _posWordSynSets = new Dictionary<POS, Dictionary<string, HashSet<SynSet>>>();
+                _posWordSynSets = new Dictionary<POS, Dictionary<string, Set<SynSet>>>();
                 foreach (string indexPath in indexPaths)
                 {
                     POS pos = GetFilePOS(indexPath);
 
-                    //_posWordSynSets.EnsureContainsKey(pos, typeof(Dictionary<string, HashSet<SynSet>>));
+                    _posWordSynSets.EnsureContainsKey(pos, typeof(Dictionary<string, Set<SynSet>>));
 
                     // scan word index file, skipping header lines
-                    StreamReader indexFile = new StreamReader(new FileStream(indexPath, FileMode.Open));
+                    StreamReader indexFile = new StreamReader(indexPath);
                     string line;
-                    while ((line = indexFile.ReadLine()) != null)
+                    while (indexFile.TryReadLine(out line))
                     {
                         int firstSpace = line.IndexOf(' ');
                         if (firstSpace > 0)
@@ -524,14 +504,14 @@ namespace WordNetUnivApp
                             // grab word and synset shells, along with the most common synset
                             string word = line.Substring(0, firstSpace);
                             SynSet mostCommonSynSet;
-                            HashSet<SynSet> synsets = GetSynSetShells(line, pos, out mostCommonSynSet, null);
+                            Set<SynSet> synsets = GetSynSetShells(line, pos, out mostCommonSynSet, null);
 
                             // set flag on most common synset if it's ambiguous
                             if (synsets.Count > 1)
                                 _idSynset[mostCommonSynSet.ID].SetAsMostCommonSynsetFor(word);
 
                             // use reference to the synsets that we instantiated in our three-pass routine above
-                            _posWordSynSets[pos].Add(word, new HashSet<SynSet>());
+                            _posWordSynSets[pos].Add(word, new Set<SynSet>(synsets.Count));
                             foreach (SynSet synset in synsets)
                                 _posWordSynSets[pos][word].Add(_idSynset[synset.ID]);
                         }
@@ -540,16 +520,32 @@ namespace WordNetUnivApp
             }
             else
             {
-                _posIndexWordSearchPath = new Dictionary<POS, string>();
+                // open binary search streams for index files
+                _posIndexWordSearchStream = new Dictionary<POS, BinarySearchTextStream>();
                 foreach (string indexPath in indexPaths)
                 {
-                    _posIndexWordSearchPath.Add(GetFilePOS(indexPath), indexPath);
+                    // create binary search stream for index file
+                    BinarySearchTextStream searchStream = new BinarySearchTextStream(indexPath, new BinarySearchTextStream.SearchComparisonDelegate(delegate(object searchWord, string currentLine)
+                        {
+                            // if we landed on the header text, search further down
+                            if (currentLine[0] == ' ')
+                                return 1;
+
+                            // get word on current line
+                            string currentWord = currentLine.Substring(0, currentLine.IndexOf(' '));
+
+                            // compare searched-for word to the current word
+                            return ((string)searchWord).CompareTo(currentWord);
+                        }));
+
+                    // add search stream for current POS
+                    _posIndexWordSearchStream.Add(GetFilePOS(indexPath), searchStream);
                 }
 
                 // open readers for synset data files
                 _posSynSetDataFile = new Dictionary<POS, StreamReader>();
                 foreach (string dataPath in dataPaths)
-                    _posSynSetDataFile.Add(GetFilePOS(dataPath), new StreamReader(new FileStream(dataPath, FileMode.Open)));
+                    _posSynSetDataFile.Add(GetFilePOS(dataPath), new StreamReader(dataPath));
             }
             #endregion
         }
@@ -590,13 +586,13 @@ namespace WordNetUnivApp
         /// <param name="posRestriction">POSs to search. Cannot contain POS.None. Will search all POSs if no restriction
         /// is given.</param>
         /// <returns>Set of SynSets that contain word</returns>
-        public HashSet<SynSet> GetSynSets(string word, params POS[] posRestriction)
+        public Set<SynSet> GetSynSets(string word, params POS[] posRestriction)
         {
             // use all POSs if none are supplied
             if (posRestriction == null || posRestriction.Length == 0)
                 posRestriction = new POS[] { POS.Adjective, POS.Adverb, POS.Noun, POS.Verb };
 
-            HashSet<POS> posSet = new HashSet<POS>(posRestriction);
+            Set<POS> posSet = new Set<POS>(posRestriction);
             if (posSet.Contains(POS.None))
                 throw new Exception("Invalid SynSet POS request:  " + POS.None);
 
@@ -604,34 +600,33 @@ namespace WordNetUnivApp
             word = word.ToLower().Replace(' ', '_');
 
             // gather synsets for each POS
-            HashSet<SynSet> allSynsets = new HashSet<SynSet>();
+            Set<SynSet> allSynsets = new Set<SynSet>();
             foreach (POS pos in posSet)
                 if (_inMemory)
                 {
                     // read instantiated synsets from memory
-                    HashSet<SynSet> synsets;
+                    Set<SynSet> synsets;
                     if (_posWordSynSets[pos].TryGetValue(word, out synsets))
                         // optimization:  if there are no more parts of speech to check, we have all the synsets - so set the return collection and make it read-only. this is faster than calling AddRange on a set.
                         if (posSet.Count == 1)
                         {
                             allSynsets = synsets;
-                            //allSynsets.IsReadOnly = true;
+                            allSynsets.IsReadOnly = true;
                         }
                         else
-                            allSynsets.UnionWith(synsets);
+                            allSynsets.AddRange(synsets);
                 }
                 else
                 {
                     // get index line for word
-                    long indexNo = FastSearch(word, _posIndexWordSearchPath[pos]);
-                    string indexLine = ReadRecord(indexNo, _posIndexWordSearchPath[pos]);
-                    
+                    string indexLine = _posIndexWordSearchStream[pos].Search(word);
+
                     // if index line exists, get synset shells and instantiate them
                     if (indexLine != null)
                     {
                         // get synset shells and instantiate them
                         SynSet mostCommonSynset;
-                        HashSet<SynSet> synsets = GetSynSetShells(indexLine, pos, out mostCommonSynset, this);
+                        Set<SynSet> synsets = GetSynSetShells(indexLine, pos, out mostCommonSynset, this);
                         foreach (SynSet synset in synsets)
                         {
                             synset.Instantiate();
@@ -661,7 +656,7 @@ namespace WordNetUnivApp
             word = word.ToLower().Replace(' ', '_');
 
             // get synsets for word-pos pair
-            HashSet<SynSet> synsets = GetSynSets(word, pos);
+            Set<SynSet> synsets = GetSynSets(word, pos);
 
             // get most common synset
             SynSet mostCommon = null;
@@ -720,110 +715,18 @@ namespace WordNetUnivApp
             }
             else
             {
+                // close all index files
+                foreach (BinarySearchTextStream stream in _posIndexWordSearchStream.Values)
+                    stream.Close();
+
+                _posIndexWordSearchStream = null;
+
                 // close all data files
                 foreach (StreamReader dataFile in _posSynSetDataFile.Values)
-                    dataFile.Dispose();
+                    dataFile.Close();
 
                 _posSynSetDataFile = null;
             }
         }
-
-        #region FastSearch
-        /// <summary>
-        /// Searches the specified file for the specified keyword
-        /// </summary>
-        /// <param name="keyword">The keyword to find</param>
-        /// <param name="dbFileName">The full path to the file to search in</param>
-        /// <returns>The offset in the file at which the word was found; otherwise 0</returns>
-        internal static long FastSearch(string keyword, string dbFileName)
-        {
-            long retVal = 0L;
-            string key = string.Empty;
-            Encoding enc = Encoding.UTF8;
-
-            using (StreamReader reader = new StreamReader(new FileStream(dbFileName, FileMode.Open), true))
-            {
-                enc = reader.CurrentEncoding;
-                reader.Dispose();
-            }
-
-            using (FileStream fs = System.IO.File.OpenRead(dbFileName))
-            {
-                long diff = 666;
-                string line = string.Empty;
-
-                fs.Seek(0, SeekOrigin.End);
-                long top = 0;
-                long bottom = fs.Position;
-                long mid = (bottom - top) / 2;
-
-                do
-                {
-                    fs.Seek(mid - 1, SeekOrigin.Begin);
-                    if (mid != 1)
-                    {
-                        while (fs.ReadByte() != '\n' && fs.Position < fs.Length)
-                        {
-                            retVal = fs.Position;
-                        }
-                    }
-
-                    byte[] btData = new byte[1024];
-                    int count = fs.Read(btData, 0, btData.Length);
-                    fs.Seek(fs.Position - count, SeekOrigin.Begin);
-
-                    string readData = enc.GetString(btData);
-                    key = readData.Split(new char[] { ' ', '\n', '\r' })[0];
-
-                    if (string.Compare(key, keyword) != 0)
-                    {
-                        if (string.Compare(key, keyword) < 0)
-                        {
-                            top = mid;
-                            diff = (bottom - top) / 2;
-                            mid = top + diff;
-                        }
-
-                        if (string.Compare(key, keyword) > 0)
-                        {
-                            bottom = mid;
-                            diff = (bottom - top) / 2;
-                            mid = top + diff;
-                        }
-                    }
-                }
-                while (string.Compare(key, keyword) != 0 && diff != 0);
-            }
-
-            if (string.Compare(key, keyword) != 0)
-                retVal = 0L;
-            else
-                retVal++;
-
-            return retVal;
-        }
-        #endregion FastSearch
-
-        #region ReadIndex
-        /// <summary>
-        /// Reads the record at the specified offset from the specified file
-        /// </summary>
-        /// <param name="offset">The offset (record id) to read</param>
-        /// <param name="dbFileName">The full path of the file to read from</param>
-        /// <returns>The record as a string is successfull; otherwise an empty string</returns>
-        internal static string ReadRecord(long offset, string dbFileName)
-        {
-            string retVal = string.Empty;
-
-            using (StreamReader reader = new StreamReader(new FileStream(dbFileName, FileMode.Open), true))
-            {
-                reader.BaseStream.Seek(offset, SeekOrigin.Begin);
-                retVal = reader.ReadLine();
-                reader.Dispose();
-            }
-
-            return retVal;
-        }
-        #endregion ReadIndex
     }
 }

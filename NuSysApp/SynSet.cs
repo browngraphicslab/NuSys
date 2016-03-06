@@ -5,10 +5,10 @@ using System.Text;
 using System.Globalization;
 using System.Collections.ObjectModel;
 
-/*using LAIR.Collections.Generic;
-using LAIR.Extensions;*/
+using LAIR.Collections.Generic;
+using LAIR.Extensions;
 
-namespace WordNetUnivApp
+namespace LAIR.ResourceAPIs.WordNet
 {
     /// <summary>
     /// Represents a WordNet synset
@@ -51,12 +51,12 @@ namespace WordNetUnivApp
         private int _offset;
         private string _gloss;
         private List<string> _words;  // words must be ordered in order to use lexical relation indexes
-        private Dictionary<WordNetEngine.SynSetRelation, HashSet<SynSet>> _relationSynSets;
-        private Dictionary<WordNetEngine.SynSetRelation, Dictionary<SynSet, Dictionary<int, HashSet<int>>>> _lexicalRelations;
+        private Dictionary<WordNetEngine.SynSetRelation, Set<SynSet>> _relationSynSets;
+        private Dictionary<WordNetEngine.SynSetRelation, Dictionary<SynSet, Dictionary<int, Set<int>>>> _lexicalRelations;
         private SynSet _searchBackPointer;
         private WordNetEngine _wordNetEngine;
         private bool _instantiated;
-        private HashSet<string> _isMostCommonSynsetForWords;  // words for which the current synset is the most common sense
+        private Set<string> _isMostCommonSynsetForWords;  // words for which the current synset is the most common sense
         private WordNetEngine.LexicographerFileName _lexicographerFileName;
 
         // the following must never change...hashing depends on them
@@ -233,8 +233,8 @@ namespace WordNetUnivApp
             relationFieldStart = definition.IndexOf(' ', relationFieldStart) + 1;
 
             // grab each related synset
-            _relationSynSets = new Dictionary<WordNetEngine.SynSetRelation, HashSet<SynSet>>();
-            _lexicalRelations = new Dictionary<WordNetEngine.SynSetRelation, Dictionary<SynSet, Dictionary<int, HashSet<int>>>>();
+            _relationSynSets = new Dictionary<WordNetEngine.SynSetRelation, Set<SynSet>>();
+            _lexicalRelations = new Dictionary<WordNetEngine.SynSetRelation, Dictionary<SynSet, Dictionary<int, Set<int>>>>();
             for (int relationNum = 0; relationNum < numRelations; ++relationNum)
             {
                 string relationSymbol = null;
@@ -285,41 +285,15 @@ namespace WordNetUnivApp
                 // add semantic relation if we have neither a source nor a target word index
                 if (sourceWordIndex == 0 && targetWordIndex == 0)
                 {
-                    if (!_relationSynSets.ContainsKey(relation))
-                    {
-                        _relationSynSets.Add(relation, new HashSet<SynSet>() { relatedSynSet });
-                    }
-                    else {
-                        _relationSynSets[relation].Add(relatedSynSet);
-                    }
+                    _relationSynSets.EnsureContainsKey(relation, typeof(Set<SynSet>));
+                    _relationSynSets[relation].Add(relatedSynSet);
                 }
                 // add lexical relation
                 else
                 {
-                    if (!_lexicalRelations.ContainsKey(relation))
-                    {
-                        Dictionary<int, HashSet<int>> d1 = new Dictionary<int, HashSet<int>>();
-                        Dictionary<SynSet, Dictionary<int, HashSet<int>>> d2 = new Dictionary<SynSet, Dictionary<int, HashSet<int>>>();
-                        d1.Add(sourceWordIndex, new HashSet<int>() { targetWordIndex });
-                        d2.Add(relatedSynSet, d1);
-                        _lexicalRelations.Add(relation, d2);
-                    }
-                    else
-                    {
-                        if (!_lexicalRelations[relation].ContainsKey(relatedSynSet))
-                        {
-                            Dictionary<int, HashSet<int>> d1 = new Dictionary<int, HashSet<int>>();
-                            d1.Add(sourceWordIndex, new HashSet<int>() { targetWordIndex });
-                            _lexicalRelations[relation].Add(relatedSynSet, d1);
-                        }
-                        else
-                        {
-                            if (!_lexicalRelations[relation][relatedSynSet].ContainsKey(sourceWordIndex))
-                            {
-                                _lexicalRelations[relation][relatedSynSet].Add(sourceWordIndex, new HashSet<int>() { targetWordIndex });
-                            }
-                        }
-                    }
+                    _lexicalRelations.EnsureContainsKey(relation, typeof(Dictionary<SynSet, Dictionary<int, Set<int>>>));
+                    _lexicalRelations[relation].EnsureContainsKey(relatedSynSet, typeof(Dictionary<int, Set<int>>));
+                    _lexicalRelations[relation][relatedSynSet].EnsureContainsKey(sourceWordIndex, typeof(Set<int>));
 
                     if (!_lexicalRelations[relation][relatedSynSet][sourceWordIndex].Contains(targetWordIndex))
                         _lexicalRelations[relation][relatedSynSet][sourceWordIndex].Add(targetWordIndex);
@@ -431,7 +405,7 @@ namespace WordNetUnivApp
         /// <param name="relation">Synset relation to follow</param>
         /// <param name="recursive">Whether or not to follow the relation recursively for all related synsets</param>
         /// <returns>Synsets related to the given one by the given relation</returns>
-        public HashSet<SynSet> GetRelatedSynSets(WordNetEngine.SynSetRelation relation, bool recursive)
+        public Set<SynSet> GetRelatedSynSets(WordNetEngine.SynSetRelation relation, bool recursive)
         {
             return GetRelatedSynSets(new WordNetEngine.SynSetRelation[] { relation }, recursive);
         }
@@ -442,9 +416,9 @@ namespace WordNetUnivApp
         /// <param name="relations">Synset relations to follow</param>
         /// <param name="recursive">Whether or not to follow the relations recursively for all related synsets</param>
         /// <returns>Synsets related to the given one by the given relations</returns>
-        public HashSet<SynSet> GetRelatedSynSets(IEnumerable<WordNetEngine.SynSetRelation> relations, bool recursive)
+        public Set<SynSet> GetRelatedSynSets(IEnumerable<WordNetEngine.SynSetRelation> relations, bool recursive)
         {
-            HashSet<SynSet> synsets = new HashSet<SynSet>();
+            Set<SynSet> synsets = new Set<SynSet>();
 
             GetRelatedSynSets(relations, recursive, synsets);
 
@@ -457,7 +431,7 @@ namespace WordNetUnivApp
         /// <param name="relations">Synset relations to get</param>
         /// <param name="recursive">Whether or not to follow the relation recursively for all related synsets</param>
         /// <param name="currSynSets">Current collection of synsets, which we'll add to.</param>
-        private void GetRelatedSynSets(IEnumerable<WordNetEngine.SynSetRelation> relations, bool recursive, HashSet<SynSet> currSynSets)
+        private void GetRelatedSynSets(IEnumerable<WordNetEngine.SynSetRelation> relations, bool recursive, Set<SynSet> currSynSets)
         {
             // try each relation
             foreach (WordNetEngine.SynSetRelation relation in relations)
@@ -492,7 +466,7 @@ namespace WordNetUnivApp
             _searchBackPointer = null;
 
             // avoid cycles
-            HashSet<SynSet> synsetsEncountered = new HashSet<SynSet>();
+            Set<SynSet> synsetsEncountered = new Set<SynSet>();
             synsetsEncountered.Add(this);
 
             // start search queue
@@ -549,7 +523,7 @@ namespace WordNetUnivApp
         public SynSet GetClosestMutuallyReachableSynset(SynSet synset, IEnumerable<WordNetEngine.SynSetRelation> relations)
         {
             // avoid cycles
-            HashSet<SynSet> synsetsEncountered = new HashSet<SynSet>();
+            Set<SynSet> synsetsEncountered = new Set<SynSet>();
             synsetsEncountered.Add(this);
 
             // start search queue
@@ -587,7 +561,7 @@ namespace WordNetUnivApp
         /// <returns>Depth of current SynSet</returns>
         public int GetDepth(IEnumerable<WordNetEngine.SynSetRelation> relations)
         {
-            HashSet<SynSet> synsets = new HashSet<SynSet>();
+            Set<SynSet> synsets = new Set<SynSet>();
             synsets.Add(this);
 
             return GetDepth(relations, ref synsets);
@@ -600,7 +574,7 @@ namespace WordNetUnivApp
         /// <param name="relations">Relations to follow</param>
         /// <param name="synsetsEncountered">Synsets that have already been encountered. Prevents cycles from being entered.</param>
         /// <returns>Depth of current SynSet</returns>
-        private int GetDepth(IEnumerable<WordNetEngine.SynSetRelation> relations, ref HashSet<SynSet> synsetsEncountered)
+        private int GetDepth(IEnumerable<WordNetEngine.SynSetRelation> relations, ref Set<SynSet> synsetsEncountered)
         {
             // get minimum depth through all relatives
             int minimumDepth = -1;
@@ -628,16 +602,12 @@ namespace WordNetUnivApp
         /// words in synsets. This method retrieves all lexical relations and the words related thereby.
         /// </summary>
         /// <returns>Mapping from relations to mappings from words in the current synset to related words in the related synsets</returns>
-        public Dictionary<WordNetEngine.SynSetRelation, Dictionary<string, HashSet<string>>> GetLexicallyRelatedWords()
+        public Dictionary<WordNetEngine.SynSetRelation, Dictionary<string, Set<string>>> GetLexicallyRelatedWords()
         {
-            Dictionary<WordNetEngine.SynSetRelation, Dictionary<string, HashSet<string>>> relatedWords = new Dictionary<WordNetEngine.SynSetRelation, Dictionary<string, HashSet<string>>>();
+            Dictionary<WordNetEngine.SynSetRelation, Dictionary<string, Set<string>>> relatedWords = new Dictionary<WordNetEngine.SynSetRelation, Dictionary<string, Set<string>>>();
             foreach (WordNetEngine.SynSetRelation relation in _lexicalRelations.Keys)
             {
-                // TO-DO: FACTOR OUT THESE INTO "ENSURECONTAINSKEY"
-                if (!relatedWords.ContainsKey(relation))
-                {
-                    relatedWords.Add(relation, new Dictionary<string, HashSet<string>>());
-                }
+                relatedWords.EnsureContainsKey(relation, typeof(Dictionary<string, Set<string>>));
 
                 foreach (SynSet relatedSynSet in _lexicalRelations[relation].Keys)
                 {
@@ -649,10 +619,7 @@ namespace WordNetUnivApp
                     {
                         string sourceWord = _words[sourceWordIndex - 1];
 
-                        if (!relatedWords[relation].ContainsKey(sourceWord))
-                        {
-                            relatedWords[relation].Add(sourceWord, new HashSet<string>());
-                        }
+                        relatedWords[relation].EnsureContainsKey(sourceWord, typeof(Set<string>), false);
 
                         foreach (int targetWordIndex in _lexicalRelations[relation][relatedSynSet][sourceWordIndex])
                         {
@@ -735,7 +702,7 @@ namespace WordNetUnivApp
         internal void SetAsMostCommonSynsetFor(string word)
         {
             if (_isMostCommonSynsetForWords == null)
-                _isMostCommonSynsetForWords = new HashSet<string>();
+                _isMostCommonSynsetForWords = new Set<string>();
 
             _isMostCommonSynsetForWords.Add(word);
         }

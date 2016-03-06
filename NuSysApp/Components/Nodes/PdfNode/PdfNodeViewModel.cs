@@ -55,7 +55,6 @@ namespace NuSysApp
                 _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
             }
 
-            
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
             LaunchLDA((PdfNodeModel)this.Model);
