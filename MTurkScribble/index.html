@@ -1,0 +1,150 @@
+<html>
+	<head>
+		<h1>Scribble</h1>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+		<script>
+var canvas, ctx, rect;
+
+function init() {
+	canvas = document.getElementById("ScribbleCanvas");
+	ctx = canvas.getContext("2d");
+	rect = canvas.getBoundingClientRect();
+	w = canvas.width;
+	h = canvas.height;
+	ctx.strokeStyle = "black";
+	ctx.lineWidth = 2;
+
+	$("#ScribbleCanvas").drawTouch();
+	$("#ScribbleCanvas").drawMouse();
+}
+$.fn.drawMouse = function() {
+	var clicked = 0;
+	var start = function(e) {
+		clicked = 1;
+		ctx.beginPath();
+		x = e.pageX;
+		y = e.pageY- rect.top;
+		telemetryBegin();
+		ctx.moveTo(x,y);
+	};
+	var move = function(e) {
+		if(clicked){
+			x = e.pageX;
+			y = e.pageY- rect.top;
+			telemetryMoved(x,y);
+			ctx.lineTo(x,y);
+			ctx.stroke();
+		}
+	};
+	var stop = function(e) {
+		telemetryEnd();	
+		clicked = 0;
+	};
+	$(this).on("mousedown", start);
+	$(this).on("mousemove", move);
+	$(window).on("mouseup", stop);
+};
+
+$.fn.drawTouch = function() {
+	var start = function(e) {
+		e = e.originalEvent;
+		ctx.beginPath();
+		x = e.changedTouches[0].pageX;
+		y = e.changedTouches[0].pageY-rect.top;
+		telemetryBegin();
+		ctx.moveTo(x,y);
+	};
+	var move = function(e) {
+		e.preventDefault();
+		e = e.originalEvent;
+		x = e.changedTouches[0].pageX;
+		y = e.changedTouches[0].pageY-rect.top;
+		telemetryMoved(x,y);
+		ctx.lineTo(x,y);
+		ctx.stroke();
+	};
+	var end = function(e) {
+		telemetryEnd();	
+	}
+	$(this).on("touchstart", start);
+	$(this).on("touchmove", move);	
+	$(this).on("touchend", end);
+}; 
+
+var timestamp,points;
+function telemetryBegin() {
+
+	timestamp = new Date();
+	points = [];
+}
+
+function telemetryMoved(x,y) {
+	var tempPoints = [x,y];
+	points.push(tempPoints);
+}
+
+function telemetryEnd() {
+	timestamp = new Date() - timestamp;
+
+	var mid = [(points[0][0] + points[points.length - 1][0]) / 2, (points[0][1] + points[points.length - 1][1]) / 2];
+
+	// DownScaled Angle averages
+	//var npoints = resample(points, 32);
+	//var sampledCentroid = centroid(npoints);
+	var Centroid = centroid(points);
+
+	var CentroidtoMidpoint = LineLength(Centroid, mid) / StrokeLength(points) ; //distance between the centroid and the midpoint
+	var FirsttoLastPoint = LineLength(points[0], points[points.length -1]) / StrokeLength(points) ;//the distance between the first and last point
+	var InkStrokeLength = StrokeLength(points);//the length of the whole stroke
+	var determiner = (InkStrokeLength - FirsttoLastPoint)/CentroidtoMidpoint;//used to determine if a stroke is a scribble or not
+	var determinerLowerBounds = 6e4;
+	var determinerUpperBounds = 8e4;
+	var lDisUpperBounds = 7e2;
+	console.log(determiner);
+	console.log(InkStrokeLength - FirsttoLastPoint);
+	if (determiner < determinerUpperBounds && determiner > determinerLowerBounds || determiner < determinerLowerBounds && InkStrokeLength - FirsttoLastPoint > lDisUpperBounds)
+	{
+		console.log("scribble");
+	} else {
+		console.log("not scribble");
+	}
+}
+function LineLength(p1, p2)
+{
+	return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+}
+
+function StrokeLength(points)
+{
+	var result = 0;
+	for (var i = 0; i < points.length - 1; i++)
+	{
+		result += LineLength(points[i], points[i + 1]);
+	}
+	return result;
+}
+function centroid(stroke)
+{
+
+	var sumX = 0, sumY = 0;
+
+	for (var i = 0; i < stroke.length; i++)
+	{
+		var p = stroke[i];
+		sumX += p[0];
+		sumY += p[1];
+	}
+
+	var mx = sumX / stroke.length;
+	var my = sumY / stroke.length;
+
+	return [mx, my];
+}
+		</script>
+	</head>
+	<body onload="init()">
+		<canvas id="ScribbleCanvas" width="400" height="400" style="border:1px solid #000000;"></canvas>	
+	</body>
+
+
+</html>
