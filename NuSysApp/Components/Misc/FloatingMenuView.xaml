@@ -96,8 +96,8 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="Nodes" />
-            <local:FloatingMenuButtonView x:Name="btnNewMedia" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="Media" />
+            <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" />
+            <local:FloatingMenuButtonView x:Name="btnNewMedia" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="" />
 
         </StackPanel>
 
@@ -118,7 +118,7 @@
             </StackPanel.RenderTransform>
          
             <!--new stuff-->
-            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Text"></local:FloatingMenuButtonView>
+            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption=""></local:FloatingMenuButtonView>
             </StackPanel>
 
         <StackPanel x:Name="SubMenuSaveLoad" VerticalAlignment="Top" Margin="170, 100, 0, 0" Opacity ="0" IsHitTestVisible="False">
