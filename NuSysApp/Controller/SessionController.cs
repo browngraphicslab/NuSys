@@ -15,24 +15,23 @@ namespace NuSysApp
 {
     public class SessionController
     {
-        public delegate void WorkspaceChangedHandler(object source, WorkspaceViewModel workspace);
+        public delegate void WorkspaceChangedHandler(object source, FreeFormViewerViewModel freeFormViewer);
 
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
-        private WorkspaceViewModel _activeWorkspace;
+        private FreeFormViewerViewModel _activeFreeFormViewer;
 
         private ContentController _contentController = new ContentController();
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, Tuple<AtomModel, LoadNodeView>> LoadingNodeDictionary =
-            new Dictionary<string, Tuple<AtomModel, LoadNodeView>>();
+        public Dictionary<string, List<ElementController>> LoadingDictionary = new Dictionary<string, List<ElementController>>();
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
         private SessionController()
         {
-            IdToSendables = new ObservableDictionary<string, Sendable>();
+            IdToControllers = new ObservableDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
@@ -41,7 +40,7 @@ namespace NuSysApp
             get { return _nuSysNetworkSession; }
         }
 
-        public ObservableDictionary<string, Sendable> IdToSendables { set; get; }
+        public ObservableDictionary<string, ElementController> IdToControllers { set; get; }
 
         public SessionView SessionView { get; set; }
 
@@ -56,15 +55,16 @@ namespace NuSysApp
 
         public string SpeechString { get; set; }
 
-        public WorkspaceViewModel ActiveWorkspace
+        public FreeFormViewerViewModel ActiveFreeFormViewer
         {
-            get { return _activeWorkspace; }
+            get { return _activeFreeFormViewer; }
             set
             {
-                _activeWorkspace = value;
-                WorkspaceChanged?.Invoke(this, _activeWorkspace);
+                _activeFreeFormViewer = value;
+                WorkspaceChanged?.Invoke(this, _activeFreeFormViewer);
             }
         }
+
 
         public static SessionController Instance
         {
@@ -86,34 +86,6 @@ namespace NuSysApp
 
         public event WorkspaceChangedHandler WorkspaceChanged;
 
-        public async Task RecursiveCreate(AtomModel atom)
-        {
-            await RecursiveCreateInner(atom, new List<AtomModel>());
-            
-        }
-
-        private async Task RecursiveCreateInner(AtomModel atom, List<AtomModel> addedModels)
-        {
-            foreach (var creator in atom.Creators)
-            {
-                var creatorModel = (NodeContainerModel)IdToSendables[creator];
-                if (!addedModels.Contains(creatorModel))
-                {
-                    await RecursiveCreateInner(creatorModel, addedModels);
-                }
-                await creatorModel.AddChild(atom);
-                addedModels.Add(atom);
-            }
-        }
-
-
-        public void DisposeInq()
-        {
-            var wvm = (WorkspaceModel) Instance.ActiveWorkspace.Model;
-            var cm = (InqCanvasModel) wvm.InqCanvas;
-            cm.DisposeInq();
-        }
-
         private async Task LoadThumbs()
         {
             Thumbnails.Clear();
@@ -126,7 +98,6 @@ namespace NuSysApp
                 var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
                 var img = await MediaUtil.ByteArrayToBitmapImage(buffer.ToArray());
                 Thumbnails[id] = img;
-                await SendThumbnail(thumbFile, id);
             }
         }
 
@@ -145,22 +116,17 @@ namespace NuSysApp
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
             FileIO.WriteBytesAsync(file, byteArray);
         }
-
-        private async Task SendThumbnail(StorageFile storageFile, string id)
-        {
-            var fileBytes = await MediaUtil.StorageFileToByteArray(storageFile);
-            var s = Convert.ToBase64String(fileBytes);
-            var request = new NewThumbnailRequest(s, id);
-        }
-
         public async Task SaveWorkspace()
         {
+            //TODO: refactor
+            /*
             await _contentController.Save();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);
             await FileIO.WriteLinesAsync(file, lines);
+            */
         }
 
         public async Task LoadWorkspace()
@@ -169,8 +135,8 @@ namespace NuSysApp
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
-            ;
-            await SessionView.LoadWorksapce(lines);
+            
+            await SessionView.LoadWorkspace(lines);
             await _contentController.Load();
         }
 

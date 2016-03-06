@@ -78,10 +78,10 @@ namespace NuSysApp
             public Point Start;
         }
 
-        public static Line[] NodeToLineSegment(NodeViewModel node)
+        public static Line[] NodeToLineSegment(ElementViewModel node)
         {
             var lines = new Line[4];
-            var nodeModel = (NodeModel) node.Model;
+            var nodeModel = (ElementModel) node.Model;
             var x = nodeModel.X + node.Transform.TranslateX;
             var y = nodeModel.Y + node.Transform.TranslateY;
 
@@ -168,14 +168,14 @@ namespace NuSysApp
             return lines;
         }
 
-        public static Rect NodeToBoudingRect(NodeViewModel nodeVm)
+        public static Rect NodeToBoudingRect(ElementViewModel nodeVm)
         {
             return new Rect()
             {
-                Height = ((NodeModel)(nodeVm.Model)).Height,
-                Width = ((NodeModel)(nodeVm.Model)).Width,
-                X = ((NodeModel)(nodeVm.Model)).X,
-                Y = ((NodeModel)(nodeVm.Model)).Y
+                Height = ((ElementModel)(nodeVm.Model)).Height,
+                Width = ((ElementModel)(nodeVm.Model)).Width,
+                X = ((ElementModel)(nodeVm.Model)).X,
+                Y = ((ElementModel)(nodeVm.Model)).Y
             };
         }
 

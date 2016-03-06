@@ -30,8 +30,7 @@ namespace NuSysApp
             await base.CheckOutgoingRequest();
         }
 
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session,
-            string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, ServerClient serverClient)
         {
             await Task.Run(async delegate
             {

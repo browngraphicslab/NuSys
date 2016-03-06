@@ -9,11 +9,11 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class PowerpointNodeModel : NodeModel
+    public class PowerpointNodeModel : ElementModel
     {
         public PowerpointNodeModel(string id) : base(id)
         {
-            NodeType = NodeType.Powerpoint;
+            ElementType = ElementType.Powerpoint;
         }
 
         public string FilePath { get; set; }

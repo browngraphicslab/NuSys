@@ -1,51 +1,54 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Devices.Input;
+using Windows.Foundation;
+using Windows.Storage;
+using Windows.System;
+using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using Windows.Foundation;
-using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
-using Windows.UI;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
-using System.Diagnostics;
-using Windows.Networking.NetworkOperators;
-using Windows.Devices.Input;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.System;
-using Windows.UI.Xaml.Media.Animation;
-using Newtonsoft.Json;
+using Windows.UI.Xaml.Shapes;
+
 using NuSysApp.Util;
-using System.IO;
 
 namespace NuSysApp
 {
-
     public sealed partial class SessionView : Page
     {
         #region Private Members
 
         private int _penSize = Constants.InitialPenSize;
-        private bool _cortanaInitialized;
         private CortanaMode _cortanaModeInstance;
-        private WorkspaceView _activeWorkspace;
+        private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
-    //    private static List<AtomModel> addedModels;
-        private static List<AtomModel> createdModels;
+        private static List<ElementModel> createdModels;
         private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
-        public ChatPopupView ChatPopupWindow {
+
+        public ChatPopupView ChatPopupWindow
+        {
             get { return ChatPopup; }
         }
 
+        public Rectangle LibraryDraggingRectangle
+        {
+            get { return LibraryDraggingNode; }
+        }
+
+
         #endregion Private Members
+
+        private int initChatNotifs;
 
         public SessionView()
         {
@@ -54,66 +57,104 @@ namespace NuSysApp
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
 
-            PointerEntered += delegate (object o, PointerRoutedEventArgs eventArgs)
-            {
-                if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen &&_prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
+            PointerEntered += OnPointerEntered;
+            PointerExited += OnPointerExited;
+
+            SizeChanged +=
+                delegate(object sender, SizeChangedEventArgs args)
                 {
-                    var source = (FrameworkElement)eventArgs.OriginalSource;
-                    if (source.DataContext is FloatingMenuViewModel)
-                        return;
+                    Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
+                    Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
+                };
 
-                    xFloatingMenu.SetActive(Options.PenGlobalInk);
-                    _prevOptions = Options.PenGlobalInk;
-                    IsPenMode = true;
-                }
-            };
-
-            PointerExited += delegate (object o, PointerRoutedEventArgs eventArgs)
+            xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
             {
-                if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
-                {
-                    var source = (FrameworkElement)eventArgs.OriginalSource;
-                    if (source.DataContext is FloatingMenuViewModel)
-                        return;
-
-                    xFloatingMenu.SetActive(Options.SelectNode);
-                    _prevOptions = Options.SelectNode;
-                    IsPenMode = false;
-                }
+                ActivatePenMode(true);
+                args.Handled = true;
             };
-
-            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
+            xBtnPen.PointerExited += delegate (object sender, PointerRoutedEventArgs args)
             {
-                Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
+                ActivatePenMode(false);            
             };
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
+            Loaded += OnLoaded;
+        }
+
+        private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            await SessionController.Instance.NuSysNetworkSession.Init();
+
+            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate(NetworkUser user)
+            {
+                UserLabel b = new UserLabel(user);
+                Users.Children.Add(b);
+                user.OnUserRemoved += delegate { Users.Children.Remove(b); };
+            };
+
+            var l = WaitingRoomView.GetFirstLoadList();
+            var firstId = WaitingRoomView.InitialWorkspaceId;
+            if (firstId == null)
             {
                 await LoadEmptyWorkspace();
+            }
+            else
+            {
+                await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
+            }
 
-                SessionController.Instance.SessionView = this;
-                xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+            SessionController.Instance.SessionView = this;
+            xFullScreenViewer.DataContext = new DetailViewerViewModel();
 
-                //  await xWorkspace.SetViewMode(new MultiMode(xWorkspace, new PanZoomMode(xWorkspace), new SelectMode(xWorkspace), new FloatingMenuMode(xWorkspace)));
 
-                _cortanaInitialized = false;
-                xFloatingMenu.SessionView = this;
+            xFloatingMenu.SessionView = this;
+            await SessionController.Instance.InitializeRecog();
 
-                SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate (NetworkUser user)
+            SessionController.Instance.NuSysNetworkSession.AddNetworkUser(
+                new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name = "Me"});
+                //TODO have Trent fix this -trent
+
+           // await Library.Reload();
+            ChatPopup.OnNewTextsChanged += delegate(int newTexts)
+            {
+                if (newTexts > 0)
                 {
-                    var list = SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values;
-                    UserLabel b = new UserLabel(user);
-                    Users.Children.Add(b);
-                    user.OnUserRemoved += delegate
-                    {
-                        Users.Children.Remove(b);
-                    };
-                };
-                await SessionController.Instance.NuSysNetworkSession.Init();
-                await SessionController.Instance.InitializeRecog();
-               
-                SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
+                    ChatNotifs.Opacity = 1;
+                    NotifNumber.Text = newTexts.ToString();
+                }
+                else
+                {
+                    ChatNotifs.Opacity = 0;
+                }
             };
+        }
+
+        private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
+        {
+            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
+            {
+                var source = (FrameworkElement) eventArgs.OriginalSource;
+                if (source.DataContext is FloatingMenuViewModel)
+                    return;
+
+                xFloatingMenu.SetActive(Options.SelectNode);
+                _prevOptions = Options.SelectNode;
+                IsPenMode = false;
+            }
+        }
+
+        private void OnPointerEntered(object sender, PointerRoutedEventArgs eventArgs)
+        {
+            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions != Options.PenGlobalInk &&
+                xFullScreenViewer.Opacity < 0.1)
+            {
+                var source = (FrameworkElement) eventArgs.OriginalSource;
+                if (source.DataContext is FloatingMenuViewModel)
+                    return;
+
+                xFloatingMenu.SetActive(Options.PenGlobalInk);
+                _prevOptions = Options.PenGlobalInk;
+                IsPenMode = true;
+            }
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -121,110 +162,185 @@ namespace NuSysApp
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
-            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
+            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
+                xFullScreenViewer.Opacity < 0.1)
             {
-                xFloatingMenu.SetActive(Options.PenGlobalInk);
-                _prevOptions = Options.PenGlobalInk;
-                IsPenMode = true;
+                ActivatePenMode(true);
             }
-
         }
 
-        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        private async void OnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
             if (args.VirtualKey == VirtualKey.Shift && xFullScreenViewer.Opacity < 0.1)
             {
-                xFloatingMenu.SetActive(Options.SelectNode);
-                _prevOptions = Options.SelectNode;
-                IsPenMode = false;
+                ActivatePenMode(false);
             }
         }
 
-        public async Task LoadWorksapce( IEnumerable<string> nodeStrings  )
+        private void ActivatePenMode(bool val)
         {
-            SessionController.Instance.IdToSendables.Clear();
+     
+            if (val)
+            {
+                if (IsPenMode)
+                    return;
+                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
+                _prevOptions = Options.PenGlobalInk;
+                IsPenMode = true;
+                xBtnPen.Background = new SolidColorBrush(Colors.Firebrick);
+                Debug.WriteLine("asdasdas");
+            }
+            else
+            {
+                if (!IsPenMode)
+                    return;
+                xFloatingMenu.SetActive(Options.SelectNode);
+                _prevOptions = Options.SelectNode;
+                IsPenMode = false;
+                xBtnPen.Background = new SolidColorBrush(Colors.IndianRed);
+                Debug.WriteLine("asdasdas");
+            }
             
-            createdModels = new List<AtomModel>();
-            var l = nodeStrings.ToList();
+        }
+
+        public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
+        {
+            SessionController.Instance.IdToControllers.Clear();
+
+            var elementCollection = new LibraryElementCollectionModel();
+            var elementCollectionInstance = new ElementCollectionModel(collectionId)
+            {
+                LibraryElementCollectionModel = elementCollection,
+                Title = "Instance title"
+            };
+            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
+            SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
+
+            await OpenCollection(elementCollectionInstanceController);
+
+            xFullScreenViewer.DataContext = new DetailViewerViewModel();
+
+            createdModels = new List<ElementModel>();
+            foreach (var dict in nodeStrings)
+            {
+                var msg = new Message(dict);
+                var id = msg.GetString("contentId");
+                var type = ElementType.Workspace;
+                if (msg.ContainsKey("type"))
+                {
+                    type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
+                }
+                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
+                {
+                    type = ElementType.Node;
+                }
+                if (type == ElementType.Node)
+                {
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
+                            new NewElementRequest(msg));
+                }
+                if (type == ElementType.Link)
+                {
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
+                }
+                
+
+                if (type == ElementType.Node && SessionController.Instance.ContentController.Get(id)==null)
+                {
+                    Task.Run(async delegate
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchContent(id);
+                    });
+                }
+            }
+        }
+
+        public async Task LoadWorkspace(IEnumerable<string> nodeStrings)
+        {
+            SessionController.Instance.IdToControllers.Clear();
+
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
                 var id = msg.GetString("id");
-                var type = (AtomModel.AtomType) Enum.Parse(typeof(AtomModel.AtomType), msg.GetString("type"));
-                if (type == AtomModel.AtomType.Node)
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewNodeRequest(msg));
-                if (type == AtomModel.AtomType.Link)
+                ElementType type = ElementType.Workspace;
+                if (msg.ContainsKey("type"))
+                {
+                    type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
+                }
+                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
+                {
+                    type = ElementType.Node;
+                }
+                if (type == ElementType.Node)
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
+                            new NewElementRequest(msg));
+                if (type == ElementType.Link)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
-                
-                var model = SessionController.Instance.IdToSendables[id] as AtomModel;
-                if (model == null)
-                    continue;
-
-                createdModels.Add(model);
-                await model.UnPack(msg);
-
-                if (model is WorkspaceModel)
-                {
-                    var wsModel = SessionController.Instance.IdToSendables[id] as AtomModel;
-                    await OpenWorkspace((WorkspaceModel)wsModel);
-                }
-            }
-
-            foreach (var model in createdModels)
-            {
-                if (!(model is InqCanvasModel))
-                {
-                    await SessionController.Instance.RecursiveCreate(model);  
-                }
             }
         }
-        
+
         public async Task LoadEmptyWorkspace()
         {
-            SessionController.Instance.IdToSendables.Clear();
-            
-            if (_activeWorkspace != null)
+            SessionController.Instance.IdToControllers.Clear();
+
+            if (_activeFreeFormViewer != null)
             {
-                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
-                var wsvm = (WorkspaceViewModel)_activeWorkspace.DataContext;
-                wsvm.Dispose();
-                mainCanvas.Children.Remove(_activeWorkspace);
-                _activeWorkspace = null;
+                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
+                var wsvm = (FreeFormViewerViewModel) _activeFreeFormViewer.DataContext;
+                mainCanvas.Children.Remove(_activeFreeFormViewer);
+                _activeFreeFormViewer = null;
             }
-            
-            var workspaceModel = new WorkspaceModel( SessionController.Instance.GenerateId() );
-            workspaceModel.Title = "New Workspace";
-            SessionController.Instance.IdToSendables[workspaceModel.Id] = workspaceModel;
-            OpenWorkspace(workspaceModel);
-            
-            xFullScreenViewer.DataContext = new FullScreenViewerViewModel();
+
+            var sc = CreateEmptyElementCollectionInstanceController();
+            SessionController.Instance.IdToControllers[sc.Model.Id] = sc;
+            OpenCollection(sc);
+
+            xFullScreenViewer.DataContext = new DetailViewerViewModel();
         }
 
-        public async Task OpenWorkspace(WorkspaceModel model)
+        private ElementCollectionController CreateEmptyElementCollectionInstanceController()
         {
-            await DisposeWorspace(_activeWorkspace);
-            if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
-                mainCanvas.Children.Remove(_activeWorkspace);
+            var elementCollection = new LibraryElementCollectionModel();
 
-            if (_activeWorkspace != null)
-                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
+            var elementCollectionInstance = new ElementCollectionModel(SessionController.Instance.GenerateId())
+            {
+                LibraryElementCollectionModel = elementCollection,
+                Title = "Instance title"
+            };
+            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
+            SessionController.Instance.IdToControllers[elementCollectionInstance.Id] =
+                elementCollectionInstanceController;
+            return elementCollectionInstanceController;
+        }
 
-            var workspaceViewModel = new WorkspaceViewModel(model);
+        public async Task OpenCollection(ElementCollectionController collectionController)
+        {
+            await DisposeCollectionView(_activeFreeFormViewer);
+            if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
+                mainCanvas.Children.Remove(_activeFreeFormViewer);
 
-            _activeWorkspace = new WorkspaceView(workspaceViewModel);
-            mainCanvas.Children.Insert(0, _activeWorkspace);
+            if (_activeFreeFormViewer != null)
+                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
 
-            _activeWorkspace.DataContext = workspaceViewModel;
-            xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
+            var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
-            SessionController.Instance.ActiveWorkspace = workspaceViewModel;
+            _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+            mainCanvas.Children.Insert(0, _activeFreeFormViewer);
+
+            _activeFreeFormViewer.DataContext = freeFormViewerViewModel;
+            xFloatingMenu.ModeChange += _activeFreeFormViewer.SwitchMode;
+
+            SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             SessionController.Instance.SessionView = this;
 
-            if (model.Title != null)
-                xWorkspaceTitle.Text = model.Title;
+            if (collectionController.Model.Title != null)
+                xWorkspaceTitle.Text = collectionController.Model.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
@@ -233,28 +349,30 @@ namespace NuSysApp
             xWorkspaceTitle.DropCompleted += UpdateTitle;
             xWorkspaceTitle.Paste += UpdateTitle;
 
-            model.TitleChanged += TitleChanged;
+            freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
-            Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
-            Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
-            Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70-ChatPopup.ActualHeight);
+            Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
             Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
+            Canvas.SetLeft(ChatNotifs, 37);
+            Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             //overlayCanvas.Width = mainCanvas.ActualWidth;
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
+
+
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateTitle(object sender, object args)
         {
-            var model = ((WorkspaceViewModel)_activeWorkspace.DataContext).Model;
+            var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
             model.Title = xWorkspaceTitle.Text;
             var m = new Message();
             m["id"] = model.Id;
@@ -263,22 +381,13 @@ namespace NuSysApp
                 NetworkClient.PacketType.UDP);
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
+
         private void TitleChanged(object source, string title)
         {
             if (xWorkspaceTitle.Text != title)
             {
                 xWorkspaceTitle.Text = title;
             }
-        }
-
-        public void ShowRecorder()
-        {
-            xMediaRecorder.Show();
-        }
-
-        public void HideRecorder()
-        {
-            xMediaRecorder.Hide();
         }
 
         public void SearchView()
@@ -293,18 +402,20 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(AtomModel model)
+        public void ShowFullScreen(ElementModel model)
         {
-            var vm = (FullScreenViewerViewModel)xFullScreenViewer.DataContext;
+            var vm = (DetailViewerViewModel) xFullScreenViewer.DataContext;
             vm.SetNodeModel(model);
             vm.MakeTagList();
         }
 
-        public async void OpenFile(NodeViewModel vm)
+        public async void OpenFile(ElementViewModel vm)
         {
             String token = vm.Model.GetMetaData("Token")?.ToString();
 
-            if (String.IsNullOrEmpty(token) || (!String.IsNullOrEmpty(token) && !Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token)))
+            if (String.IsNullOrEmpty(token) ||
+                (!String.IsNullOrEmpty(token) &&
+                 !Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token)))
             {
                 return;
             }
@@ -314,14 +425,17 @@ namespace NuSysApp
 
             if (Constants.WordFileTypes.Contains(ext))
             {
-                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
+                using (
+                    StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimeWord.OpenStreamForWriteAsync()))
                 {
                     await writer.WriteLineAsync(token);
                 }
             }
             else if (Constants.PowerpointFileTypes.Contains(ext))
             {
-                using (StreamWriter writer = new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
+                using (
+                    StreamWriter writer =
+                        new StreamWriter(await NuSysStorages.FirstTimePowerpoint.OpenStreamForWriteAsync()))
                 {
                     await writer.WriteLineAsync(token);
                 }
@@ -334,7 +448,7 @@ namespace NuSysApp
         {
             //TODO remove a loading screen
         }
-        
+
         private async void OnDrop(object sender, DragEventArgs e)
         {
             /*
@@ -346,8 +460,8 @@ namespace NuSysApp
             props["width"] = "400";
             props["height"] = "300";
             //await NetworkConnector.Instance.RequestMakeNode(p.X.ToString(), p.Y.ToString(), NodeType.Text.ToString(), text, null, props);
-        */   
-    }
+        */
+        }
 
         public FloatingMenuView FloatingMenu
         {
@@ -376,20 +490,24 @@ namespace NuSysApp
             }
         }
 
-        private async Task DisposeWorspace(WorkspaceView oldWorkspaceView)
+        private async Task DisposeCollectionView(FreeFormViewer oldFreeFormViewer)
         {
-            
         }
 
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            initChatNotifs = ChatPopup.getTexts().Count;
+            ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
             if (ChatPopup.Visibility == Visibility.Visible)
             {
                 Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
                 Canvas.SetLeft(ChatPopup, 5);
+                ChatPopup.ClearNewTexts();
             }
         }
+
 
         private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)
         {
@@ -404,11 +522,6 @@ namespace NuSysApp
             {
                 FloatingMenu.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private void UIElement_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            
         }
     }
 }

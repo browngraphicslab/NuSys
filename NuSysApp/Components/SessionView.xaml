@@ -10,15 +10,11 @@
     >
 
     <Page.Resources>
-        <Style x:Key="ChatButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#B3B3B3"/>
+        <Style x:Key="CircleButton" TargetType="Button">
             <Setter Property="Foreground" Value="#FFFFFF"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Bottom"/>
-            <Setter Property="Margin" Value="5,10,5,10"/>
-            <Setter Property="Width" Value="50"/>
-            <Setter Property="Height" Value="50"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -41,19 +37,27 @@
     </Page.Resources>
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
-        <local:MediaRecorderView x:Name="xMediaRecorder" VerticalAlignment="Top"/>
         <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
             <Image Source="/Assets/icon_record.png"></Image>
         </Button>
-        <Button x:Name="ChatButton" Style="{StaticResource ChatButtonStyle}" Click="ChatButton_OnClick">
+        <Button x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
             <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Button>
+        <Button x:Name="ChatNotifs" Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="0" VerticalAlignment="Bottom">
+            <TextBlock x:Name="NotifNumber" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
+        <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="DeepPink"></Rectangle>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
-        <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
+
+        <local:DetailViewerView x:Name="xFullScreenViewer"></local:DetailViewerView>
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
+        <Grid x:Name="xBtnPen" Background="IndianRed" Width="70" Height="100">
+            <TextBlock Text="P" FontWeight="Black"></TextBlock>
+        </Grid>
+
     </Canvas>
 </Page>

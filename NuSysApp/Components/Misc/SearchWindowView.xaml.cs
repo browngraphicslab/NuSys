@@ -23,7 +23,7 @@ namespace NuSysApp
 {
     public sealed partial class SearchWindowView : UserControl
     {
-        private Dictionary<string, List<AtomModel>> _searchIndex = new Dictionary<string, List<AtomModel>>();
+        private Dictionary<string, List<ElementModel>> _searchIndex = new Dictionary<string, List<ElementModel>>();
 
         private static SearchWindowView _instance;
 
@@ -49,7 +49,8 @@ namespace NuSysApp
         private void UIElement_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (SearchResultItem)((FrameworkElement) sender).DataContext;
-            SessionController.Instance.ActiveWorkspace.MoveToNode(vm.Id);
+            // TODO: refactor
+            //SessionController.Instance.ActiveFreeFormViewer.MoveToNode(vm.Id);
         }
     }
 }

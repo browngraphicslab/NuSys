@@ -8,7 +8,10 @@ namespace NuSysApp
 {
     public class SetTagsRequest:Request
     {
-        public SetTagsRequest(Message m) : base(RequestType.SetTagsRequest, m) { }
+        public SetTagsRequest(Message m) : base(RequestType.SetTagsRequest, m)
+        {
+
+        }
 
         public SetTagsRequest(string id, List<string> tags) : base(RequestType.SetTagsRequest)
         {
@@ -22,12 +25,16 @@ namespace NuSysApp
             {
                 throw new Exception("Set Tags Request must have an 'id' property");
             }
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerRequestType(ServerRequestType.Update);
         }
 
         public override async Task ExecuteRequestFunction()
         {
             List<string> tags = _message.GetList<string>("tags");
-            ((NodeModel)SessionController.Instance.IdToSendables[_message.GetString("id")]).SetMetaData("tags", tags);
+            // TODO: refactor
+            SessionController.Instance.IdToControllers[_message.GetString("id")].Model.SetMetaData("tags", tags);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace NuSysApp
 
             _mode = new DrawInqMode(vm.CanvasSize, vm.Model.Id);
             _inqLines = new List<CanvasGeometry>();
-            vm.Model.LineFinalized += delegate (InqLineModel lineModel)
+            vm.Model.LineFinalizedLocally += delegate (InqLineModel lineModel)
             {
                 CanvasPathBuilder line = new CanvasPathBuilder(win2dCanvas.Device);
                 var start = new Point(lineModel.Points.First().X * Constants.MaxCanvasSize, lineModel.Points.First().Y * Constants.MaxCanvasSize);
@@ -201,7 +201,7 @@ namespace NuSysApp
         }
 
 
-        CompositeTransform _trans;
+        CompositeTransform _trans = new CompositeTransform();
         public CompositeTransform Transform
         {
             set

@@ -15,15 +15,23 @@ namespace NuSysApp
         public async override Task CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
+            {
                 throw new Exception("FinalizeInkRequest must contain 'id'");
+            }
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerRequestType(ServerRequestType.Update);
+            SetServerIgnore(false);
         }
-
         public override async Task ExecuteRequestFunction()
         {
             var props = _message;
             var id = _message.Get("id");
-            
-            var canvas = (SessionController.Instance.IdToSendables[props.GetString("canvasNodeID")] as NodeModel).InqCanvas;
+
+            var has = SessionController.Instance.IdToControllers.ContainsKey(props.GetString("canvasNodeID"));
+            if (!has)
+                return;
+            var canvas = SessionController.Instance.IdToControllers[props.GetString("canvasNodeID")].Model.InqCanvas;
             if (props.ContainsKey("inkType") && props["inkType"] == "partial")
             {
                 var one = new Point2d(Double.Parse(props.GetString("x1")), Double.Parse(props.GetString("y1")));

@@ -3,25 +3,25 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class LinkModel : AtomModel
+    public class LinkModel : ElementModel
     {
-        public LinkModel(AtomModel inAtom, AtomModel outAtom, string id) : base(id)
+        public LinkModel(ElementModel inElement, ElementModel outElement, string id) : base(id)
         {
-            InAtomID = inAtom.Id;
-            OutAtomID = outAtom.Id;
+            InAtomID = inElement.Id;
+            OutAtomID = outElement.Id;
             Id = id;
-            Atom1 = inAtom;
-            Atom2 = outAtom;
-            Type = AtomType.Link;
+            Atom1 = inElement;
+            Atom2 = outElement;
+            ElementType = ElementType.Link;
         }
 
         public string InAtomID { get; set; }
 
         public string OutAtomID { get; set; }
 
-        public AtomModel Atom1 { get; private set; }
+        public ElementModel Atom1 { get; private set; }
 
-        public AtomModel Atom2 { get; private set; }
+        public ElementModel Atom2 { get; private set; }
 
         public override async Task UnPack(Message props)
         {
@@ -35,7 +35,7 @@ namespace NuSysApp
             var dict = await base.Pack();
             dict.Add("id1", InAtomID);
             dict.Add("id2", OutAtomID);
-            dict.Add("type", Type.ToString());
+            dict.Add("type", ElementType.ToString());
             return dict;
         }
     }

@@ -10,6 +10,7 @@ namespace NuSysApp
     {
         public ChangeContentRequest(Message m) : base(RequestType.ChangeContentRequest, m)
         {
+            SetServerSettings();
         }
 
         public ChangeContentRequest(string nodeID, string contentID, string contentData) : base(RequestType.ChangeContentRequest)
@@ -17,17 +18,21 @@ namespace NuSysApp
             _message["contentId"] = contentID;
             _message["data"] = contentData;
             _message["id"] = nodeID;
+            SetServerSettings();
         }
-        public override async Task CheckOutgoingRequest()
+
+        private void SetServerSettings()
         {
-            //TODO fill in
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Content);
+            SetServerRequestType(ServerRequestType.Update);
         }
         public override async Task ExecuteRequestFunction()
         {
             NodeContentModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
             content.Data = _message.GetString("data");
 
-            Sendable s = SessionController.Instance.IdToSendables[_message.GetString("id")];
+            var s = SessionController.Instance.IdToControllers[_message.GetString("id")];
             await s.UnPack(_message);
         }
     }

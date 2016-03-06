@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.System;
 
 namespace NuSysApp
-{
+{/*
     public class SendClientInfoSystemRequest : SystemRequest
     {
         public SendClientInfoSystemRequest() : base(SystemRequestType.SendClientInfo){}
@@ -56,8 +56,10 @@ namespace NuSysApp
             }
             /*
             System.Environment.
-            var s = System.Security.Principal.GenericPrincipal.Current.Identity.Name;*/
-#endregion Try on another machine
+            var s = System.Security.Principal.GenericPrincipal.Current.Identity.Name;
+
+            //Endregion above
+
             var filepath = AppContext.BaseDirectory;
             var fronttrim = filepath.Remove(0, 9);
             int i = 0;
@@ -69,7 +71,7 @@ namespace NuSysApp
             _message["name"] = trimmed;
             base.CheckOutgoingRequest();
         }
-        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, string senderIP)
+        public override async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, NetworkSession session, ServerClient serverClient)
         {
             await UITask.Run(async delegate
             {
@@ -79,4 +81,5 @@ namespace NuSysApp
             });
         }
     }
+*/
 }

@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WebNodeModel : NodeModel
+    public class WebNodeModel : ElementModel
     {
         private string _url = string.Empty;
         private List<Webpage> _history;
@@ -19,7 +19,7 @@ namespace NuSysApp
 
         public WebNodeModel(string id) : base(id)
         {
-            NodeType = NodeType.Web;
+            ElementType = ElementType.Web;
             _history = new List<Webpage>();
         }
         

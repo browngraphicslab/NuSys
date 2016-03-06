@@ -91,17 +91,13 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Canvas RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
+    <Canvas x:Name="xWrapper" RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal"  Margin="0,20,0,0">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnSelect" Icon="ms-appx:///Assets/icon_mainmenu_select.png" Caption="Select" />
-            <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="Nodes" />
-            <local:FloatingMenuButtonView x:Name="btnPen" Icon="ms-appx:///Assets/icon_ink.png" Caption="Pen"/>           
-            <local:FloatingMenuButtonView x:Name="btnNewMedia" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="Media" />
-            <local:FloatingMenuButtonView x:Name="btnSaveLoad" Icon="ms-appx:///Assets/icon_folder.png" Caption="Save/Load" />
-            <local:FloatingMenuButtonView x:Name="btnMisc" Icon="ms-appx:///Assets/icon_mainmenu_additional.png" Caption="More"/>
+            <local:FloatingMenuButtonView x:Name="btnAdd" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" />
+            <local:FloatingMenuButtonView x:Name="btnNewMedia" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="" />
 
         </StackPanel>
 
@@ -115,31 +111,15 @@
             <local:FloatingMenuButtonView x:Name="btnMultiSelect" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_multiselect.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Multiselect"></local:FloatingMenuButtonView>
         </StackPanel>
 
-        <StackPanel x:Name="SubMenuPen"  VerticalAlignment="Top" Margin="-40,40,0,0" Opacity="0" IsHitTestVisible="False">
-            <StackPanel.RenderTransform>
-                <CompositeTransform/>
-            </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnInkErase" Visibility="Collapsed"  IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" Caption="Erase" />
-        
-              <!--new stuff-->
-            <local:FloatingMenuButtonView x:Name="btnGlobalInk" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_ink.png" ParentButton="{Binding ElementName=btnPen}" Caption="Ink"></local:FloatingMenuButtonView>
-            <local:FloatingMenuButtonView IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnPen}" Caption="Gesture"></local:FloatingMenuButtonView>
-            <local:FloatingMenuButtonView IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_eraser.png" ParentButton="{Binding ElementName=btnPen}" Caption="Erase"></local:FloatingMenuButtonView>
-        </StackPanel>
 
         <StackPanel x:Name="SubMenuNodes" VerticalAlignment="Top" Margin="-40,100,0,0" Opacity="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform />
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnNewAudioCapture" Visibility="Collapsed"  IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Record" />
-            <local:FloatingMenuButtonView x:Name="btnBucket" Visibility="Collapsed" Icon="ms-appx:///Assets/icon_mainmenu_bucket.png" Window="{Binding ElementName=bucketWindow}" ParentButton="{Binding ElementName=btnAdd}" />
-            <local:FloatingMenuButtonView x:Name="btnVideo" Visibility="Collapsed" IsMode="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png"  ParentButton="{Binding ElementName=btnAdd}" />
-
+         
             <!--new stuff-->
-            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Text"></local:FloatingMenuButtonView>
-            <local:FloatingMenuButtonView x:Name="btnNewWebNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_webnode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Web"></local:FloatingMenuButtonView>
-            <local:FloatingMenuButtonView x:Name="btnNewRecordNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_audionode.png" ParentButton="{Binding ElementName=btnAdd}" Caption="Record"></local:FloatingMenuButtonView>
-        </StackPanel>
+            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAdd}" Caption=""></local:FloatingMenuButtonView>
+            </StackPanel>
 
         <StackPanel x:Name="SubMenuSaveLoad" VerticalAlignment="Top" Margin="170, 100, 0, 0" Opacity ="0" IsHitTestVisible="False">
             <StackPanel.RenderTransform>
@@ -148,19 +128,6 @@
 
             <!--new stuff-->
             <local:FloatingMenuButtonView x:Name="btnExport" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_export.png" ParentButton="{Binding ElementName=btnSaveLoad}" Caption="Save"></local:FloatingMenuButtonView>
-            <local:FloatingMenuButtonView x:Name="btnLoad"  IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_open.png" ParentButton="{Binding ElementName=btnSaveLoad}" Caption="Load"></local:FloatingMenuButtonView>
-
-        </StackPanel>
-        
-        <StackPanel x:Name="SubMenuAdditional" VerticalAlignment="Top" Margin="240,100,0,0" Opacity="0" IsHitTestVisible="False">
-            <StackPanel.RenderTransform>
-                <CompositeTransform />
-            </StackPanel.RenderTransform>
-            
-            <local:FloatingMenuButtonView x:Name="btnSearch" IsSubButton="True"  Icon="ms-appx:///Assets/icon_mainmenu_search.png" Caption="Search"  Window="{Binding ElementName=bucketWindow}"/>
-            <local:FloatingMenuButtonView x:Name="btnPin" Visibility="Collapsed" IsMode="True"  Icon="ms-appx:///Assets/icon_mainmenu_pin.png" Window="{Binding ElementName=pinWindow}" ParentButton="{Binding ElementName=btnMisc}" />
-            <local:FloatingMenuButtonView x:Name="btnUsers" Visibility="Collapsed" Icon="ms-appx:///Assets/icon_users.png" Window="{Binding ElementName=userWindow}" ParentButton="{Binding ElementName=btnMisc}" />
-
         </StackPanel>
 
         <!-- Bucket Window -->

@@ -9,11 +9,11 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    public class WordNodeModel : NodeModel
+    public class WordNodeModel : ElementModel
     {
         public WordNodeModel(string id) : base(id)
         {
-            NodeType = NodeType.Word;
+            ElementType = ElementType.Word;
         }
 
         public string FilePath { get; set; }

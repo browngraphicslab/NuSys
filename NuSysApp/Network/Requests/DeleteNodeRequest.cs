@@ -13,6 +13,7 @@ namespace NuSysApp
         {
             Id = id;
             _message["id"] = id;
+            SetServerSettings();
         }
 
         public DeleteSendableRequest(Message message) : base(message)
@@ -25,15 +26,24 @@ namespace NuSysApp
             {
                 throw new DeleteSendableRequestException("No ID was found in the recieved message ");
             }
+            SetServerSettings();
+        }
+
+        private void SetServerSettings()
+        {
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerIgnore(false);
+            SetServerRequestType(ServerRequestType.Remove);
         }
         public override async Task ExecuteRequestFunction()
         {
-            if (!SessionController.Instance.IdToSendables.ContainsKey(Id))
+            if (!SessionController.Instance.IdToControllers.ContainsKey(Id))
                 return;
 
-            var atomModel = (AtomModel)SessionController.Instance.IdToSendables[Id];
+            var atomModel = SessionController.Instance.IdToControllers[Id];
             atomModel.Delete();
-            SessionController.Instance.IdToSendables.Remove(Id);
+            SessionController.Instance.IdToControllers.Remove(Id);
         }
     }
     public class DeleteSendableRequestException : Exception

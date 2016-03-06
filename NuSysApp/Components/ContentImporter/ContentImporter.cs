@@ -60,7 +60,7 @@ namespace NuSysApp
                     var width = SessionController.Instance.SessionView.ActualWidth;
                     var height = SessionController.Instance.SessionView.ActualHeight;
                     var centerpoint =
-                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                        SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
 
                     var contentId = SessionController.Instance.GenerateId();
@@ -70,14 +70,17 @@ namespace NuSysApp
                     m["y"] = centerpoint.Y - 200;
                     m["width"] = 400;
                     m["height"] = 400;
-                    m["nodeType"] = NodeType.Text.ToString();
+                    m["nodeType"] = ElementType.Text.ToString();
                     m["autoCreate"] = true;
-                    m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+                    m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new CreateNewLibraryElementRequest(contentId, text, ElementType.Text.ToString()));
+                    //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
 
 
 
@@ -96,7 +99,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = selectionItem.BookmarkId;
@@ -121,7 +124,7 @@ namespace NuSysApp
                     width = SessionController.Instance.SessionView.ActualWidth;
                     height = SessionController.Instance.SessionView.ActualHeight;
                     centerpoint =
-                        SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(
+                        SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
                             new Point(width / 2, height / 2));
                 });
                     var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
@@ -132,14 +135,14 @@ namespace NuSysApp
                         var contentId = SessionController.Instance.GenerateId();
 
                         Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                        m["nodeType"] = NodeType.Text.ToString();
+                        m["nodeType"] = ElementType.Text.ToString();
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-
-                         await
-                            SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewLibraryElementRequest(contentId, rtfContent, ElementType.Text.ToString()));
+                    /*
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
-                                    rtfContent),NetworkClient.PacketType.TCP,null,true);
+                                    rtfContent),NetworkClient.PacketType.TCP,null,true);*/
                     }
 
                     var hasImage = selectionItem.ImageNames.Count > 0;
@@ -150,17 +153,19 @@ namespace NuSysApp
                             var contentId = SessionController.Instance.GenerateId();
 
                             Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                            m["nodeType"] = NodeType.Image.ToString();
+                            m["nodeType"] = ElementType.Image.ToString();
 
                             StorageFile imgFile;
                             try {
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
-                                await
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(ba), ElementType.Image.ToString()));
+                            /*
+                            await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                         new NewContentSystemRequest(contentId,
-                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);
+                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);*/
 
                             }
                             catch (Exception ex)
@@ -207,7 +212,6 @@ namespace NuSysApp
                 List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
                 await AddinTransfer(selectionItems);
-
                 await file.DeleteAsync();
             }
         }

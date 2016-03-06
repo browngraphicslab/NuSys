@@ -42,7 +42,7 @@ namespace NuSysApp
         public void Delete()
         {
             OnDeleteInqLine?.Invoke(this, this);
-            SessionController.Instance.IdToSendables.Remove(Id);
+            SessionController.Instance.IdToControllers.Remove(Id);
         }
 
         public override Task UnPack(Message props)
@@ -86,6 +86,16 @@ namespace NuSysApp
                 result.Add(new LineSegment(start.ToVector2(), end.ToVector2()));
             }
             return result;
+        }
+
+        public InqLineModel GetScaled(double scale)
+        {
+            var nm = new InqLineModel("");
+            foreach (var point in Points)
+            {
+                nm.AddPoint(new Point2d(point.X * scale, point.Y * scale));
+            }
+            return nm;
         }
     }
 }

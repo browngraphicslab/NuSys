@@ -35,7 +35,7 @@ namespace NuSysApp
             var pinvm = ((TextBlock)sender).DataContext as PinViewModel;
             var pinModel = (PinModel) pinvm.Model;
 
-            var vm = (WorkspaceViewModel)this.DataContext;
+            var vm = (FreeFormViewerViewModel)this.DataContext;
 
             transXAnimation.To = -pinModel.X + Window.Current.Bounds.Width/2;
             transYAnimation.To = -pinModel.Y + Window.Current.Bounds.Height/2;

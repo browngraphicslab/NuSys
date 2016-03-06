@@ -84,7 +84,7 @@ namespace NuSysApp
                 byte[] fileBytes = new byte[stream.Size];
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
-                await SendRequest(fileBytes, NodeType.Video);
+                await SendRequest(fileBytes, ElementType.Video);
                 _recording = false;
                 mediaCapture.Dispose();
                 this.IsRecordingSwitch(false);
@@ -127,7 +127,7 @@ namespace NuSysApp
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
 
-                await SendRequest(fileBytes, NodeType.Audio);
+                await SendRequest(fileBytes, ElementType.Audio);
 
                 _recording = false;
 
@@ -157,12 +157,12 @@ namespace NuSysApp
             }
         }
 
-        private async Task SendRequest(byte[] data, NodeType type)
+        private async Task SendRequest(byte[] data, ElementType type)
         {
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.ActiveWorkspace.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+            var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
 
             var contentId = SessionController.Instance.GenerateId();
 
@@ -173,9 +173,9 @@ namespace NuSysApp
             m["height"] = 400;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
 
-            if (type == NodeType.Video)
+            if (type == ElementType.Video)
             {
                 var settings =
                     mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
@@ -201,9 +201,12 @@ namespace NuSysApp
 
 
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
+           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
+           await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, Convert.ToBase64String(data)), NetworkClient.PacketType.TCP, null, true);
+            var vm = (TextNodeViewModel) DataContext;
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.Id, vm.ContentId, Convert.ToBase64String(data)));
             this.Hide();
         }
 
@@ -212,7 +215,7 @@ namespace NuSysApp
             MediaGrid.Visibility = Visibility.Collapsed;
         }
 
-        public WorkspaceView WorkspaceView { get; set; }
+        public FreeFormViewer FreeFormViewer { get; set; }
 
     }
 }

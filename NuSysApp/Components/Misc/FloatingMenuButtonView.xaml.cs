@@ -25,8 +25,7 @@ namespace NuSysApp
         public static readonly DependencyProperty ParentButtonProperty = DependencyProperty.RegisterAttached("ParentButton", typeof(FloatingMenuButtonView), typeof(FloatingMenuButtonView), null);
         public static readonly DependencyProperty IsModeProperty = DependencyProperty.RegisterAttached("IsMode", typeof(bool), typeof(FloatingMenuButtonView), null);
 
-        public static readonly DependencyProperty IsSubButtonProperty =
-            DependencyProperty.RegisterAttached("IsSubButton", typeof (bool), typeof (FloatingMenuButtonView), null);
+        public static readonly DependencyProperty IsSubButtonProperty = DependencyProperty.RegisterAttached("IsSubButton", typeof (bool), typeof (FloatingMenuButtonView), null);
 
         private static readonly SolidColorBrush ColoredBorder = new SolidColorBrush(Color.FromArgb(255, 215, 231, 230));
 

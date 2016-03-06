@@ -458,7 +458,7 @@
 ////        }
 
 ////        /*
-////        * PUBLIC general method to create Group
+////        * PUBLIC general method to create Collection
 ////        * TODO factor this into one method with RequestMakeEmptyGroup that takes in a list os ID's to place in that group
 ////        */
 ////        public async Task RequestMakeGroup(string id1, string id2, string x, string y, string oldID = null, Dictionary<string, object> properties = null, Action<string> callback = null)
@@ -490,7 +490,7 @@
 ////        }
 
 ////        /*
-////       * PUBLIC general method to create Group
+////       * PUBLIC general method to create Collection
 ////       * TODO merge this into one request make group method
 ////       */
 
@@ -637,7 +637,7 @@
 //                await n.UnPack(props);
 //                if (justCreated && n is AtomModel)
 //                {
-    //                    var creators = (n as AtomModel).Creators;
+    //                    var creators = (n as AtomModel).Creator;
     //                    if (creators.Count > 0)
     //                    {
     //                        foreach (var creator in creators)
@@ -776,7 +776,7 @@
 //        type = (NodeType)Enum.Parse(typeof(NodeType), t);
 //    }
 
-//    if (type == NodeType.Group)
+//    if (type == NodeType.Collection)
 //    {
 
 //        var childList = props.GetList<string>("groupChildren");
@@ -785,7 +785,7 @@
 
 //            var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
 //            var groups = (List<string>)childModel.GetMetaData("groups");
-//            childModel.Creators.Add(id);
+//            childModel.Creator.Add(id);
 //            groups.Add(id);
 //        }
 //    }
@@ -984,7 +984,7 @@
 ////                type = (NodeType)Enum.Parse(typeof(NodeType), t);
 ////            }
 
-////            if (type == NodeType.Group) { 
+////            if (type == NodeType.Collection) { 
 
 ////                var childList = props.GetList<string>("groupChildren");
 ////                foreach (var childId in childList)
@@ -1046,7 +1046,7 @@
 //    {
 //        if (node2 is NodeContainerModel)
 //        {
-//            node1.Creators.Add(node2.Id);
+//            node1.Creator.Add(node2.Id);
 //            var prevGroups1 = (List<string>)node1.GetMetaData("groups");
 //            prevGroups1.Add(node2.Id);
 //            node1.SetMetaData("groups", prevGroups1);

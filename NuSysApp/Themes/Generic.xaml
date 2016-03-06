@@ -22,23 +22,18 @@
                         </Grid>
 
                         <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}"
-                                  IsHitTestVisible="{Binding CanEdit, Converter={StaticResource eConverter}, Mode=TwoWay}"  Width="{Binding Width}"  Height="{Binding Height}">
+                                  IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
                             <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
-                            <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" Orientation="Horizontal" Height="75" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0" IsHitTestVisible="False" Visibility="Collapsed">
-                                <StackPanel.RenderTransform>
-                                    <CompositeTransform/>
-                                </StackPanel.RenderTransform>
-
+                            <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" Background="Red" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="-50"></TranslateTransform>
+                                </Canvas.RenderTransform>
                                 <ContentControl Content="{TemplateBinding SubMenu}" />
-
-                            </StackPanel>
-
+                            </Canvas>
+                
                             <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
-
-                            <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="#606d7a" StrokeThickness="3" 
-                           Visibility="{Binding IsMultiSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
-
+                            <Rectangle x:Name="HitArea" Height="{Binding Height}" Width="{Binding Width}" Fill="Transparent" />
 
                             <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
@@ -53,7 +48,11 @@
                             <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"></StackPanel>
+                                        <StackPanel Orientation="Horizontal" Width="{Binding Width}" Height="30" Background="Transparent">
+                                            <StackPanel.RenderTransform>
+                                                <TranslateTransform Y="35"></TranslateTransform>
+                                            </StackPanel.RenderTransform>
+                                        </StackPanel>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>

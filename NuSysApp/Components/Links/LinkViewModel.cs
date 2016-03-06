@@ -4,9 +4,9 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class LinkViewModel : AtomViewModel
+    public class LinkViewModel : ElementViewModel
     {
-        public LinkViewModel(LinkModel model, AtomViewModel atom1, AtomViewModel atom2) : base(model)
+        public LinkViewModel(ElementController controller, ElementViewModel atom1, ElementViewModel atom2) : base(controller)
         {
             Atom1 = atom1;
             Atom2 = atom2;
@@ -16,7 +16,7 @@ namespace NuSysApp
             Atom1.AddLink(this);
             Atom2.AddLink(this);
 
-            AnnotationText = model.Title;
+            AnnotationText = controller.Model.Title;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
         }
@@ -36,44 +36,12 @@ namespace NuSysApp
 
         #region Link Manipulation Methods
 
-        public override void Remove()
-        {
-            //NetworkConnector.Instance.RequestDeleteSendable(Id);
-            if (IsSelected)
-            {
-                //TODO: re-add
-                SessionController.Instance.ActiveWorkspace.ClearSelection();
-            }
-            //this.Atom1.LinkList.Remove(this);
-            //this.Atom2.LinkList.Remove(this);
-            //var toDelete = this.LinkList.ToList();
-            //foreach (var link in toDelete)
-            //{
-            //    link.Remove();
-            //    WorkSpaceViewModel.AtomViewList.Remove(link.View);
-            //}
-            //this.WorkSpaceViewModel.LinkViewModelList.Remove(this);
-            //this.Annotation?.Remove();
-        }
+  
 
         #endregion Link Manipulation Methods
 
-        public override void SetPosition(double x, double y)
-        {
-            // Position is set through connecting atoms.
-        }
-
-        protected override void OnPositionChanged(object source, double x, double y)
-        {
-            // Position is set through connecting atoms.
-        }
-
-        public override void Translate(double dx, double dy)
-        {
-            Atom1.Translate(dx, dy);
-            Atom2.Translate(dx, dy);
-        }
-
+  
+      
 
         public override void UpdateAnchor()
         {
@@ -90,26 +58,41 @@ namespace NuSysApp
             }
         }
 
-        public override void SetSelected(bool val)
+        public override bool IsSelected
         {
-            _isSelected = val;
-            Color = val
-                ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
-                : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
-            RaisePropertyChanged("Color");
-            RaisePropertyChanged("IsSelected");
+            get { return base.IsSelected; }
+            set
+            {
+                base.IsSelected = value;
+                Color = value
+                    ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
+                    : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+                RaisePropertyChanged("Color");
+                RaisePropertyChanged("IsSelected");
+            }
         }
 
-        #region Private Members
+        public override PointCollection ReferencePoints
+        {
+             get
+             {
+                 PointCollection pts = new PointCollection();
+                 pts.Add(new Point2d(Anchor.X, Anchor.Y));
+                 return pts;
+ 
+             }
+         }
 
-        private AtomViewModel _atom1, _atom2;
+#region Private Members
+
+private ElementViewModel _atom1, _atom2;
         private string _annotationText;
 
         #endregion Private members
 
         #region Public Properties
 
-        public AtomViewModel Atom1
+        public ElementViewModel Atom1
         {
             get { return _atom1; }
             set
@@ -119,7 +102,7 @@ namespace NuSysApp
             }
         }
 
-        public AtomViewModel Atom2
+        public ElementViewModel Atom2
         {
             get { return _atom2; }
             set

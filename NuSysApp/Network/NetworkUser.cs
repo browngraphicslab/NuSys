@@ -19,9 +19,6 @@ namespace NuSysApp
         }
         public string Name;
 
-        public delegate void HostStatusChangedEventHandler(bool isHost);
-        public event HostStatusChangedEventHandler OnHostStatusChange;
-
         public delegate void UserRemovedEventHandler();
         public event UserRemovedEventHandler OnUserRemoved;
         #endregion Public Variables
@@ -29,7 +26,7 @@ namespace NuSysApp
         #region Private Variables
         private Color _color;
         private bool _colorSet;
-        private HashSet<AtomModel> _modelsInUse = new HashSet<AtomModel>(); 
+        private HashSet<ElementModel> _modelsInUse = new HashSet<ElementModel>(); 
         #endregion Private Variables
         public NetworkUser(string ip)
         {
@@ -41,16 +38,11 @@ namespace NuSysApp
                     OnUserRemoved?.Invoke();
                     foreach (var atom in _modelsInUse)
                     {
-                        atom.LastNetworkUser = null;
+
+                        //TODO: refactor
+                        //atom.LastNetworkUser = null;
                     }
                     _modelsInUse.Clear();
-                }
-            };
-            SessionController.Instance.NuSysNetworkSession.OnHostChange += delegate(NetworkUser newHost, NetworkUser oldHost)
-            {
-                if (IP == newHost?.IP || IP == oldHost?.IP)
-                {
-                    OnHostStatusChange?.Invoke(newHost?.IP == IP);
                 }
             };
         }
@@ -77,16 +69,18 @@ namespace NuSysApp
             return _color;
         }
 
-        public void AddAtomInUse(AtomModel model)
+        public void AddAtomInUse(ElementModel model)
         {
             foreach (var atom in _modelsInUse)
             {
-                atom.LastNetworkUser = null;
+
+                //TODO: refactor
+                //atom.LastNetworkUser = null;
             }
             _modelsInUse.Add(model);
         }
 
-        public void RemoveAtomInUse(AtomModel model)
+        public void RemoveAtomInUse(ElementModel model)
         {
             _modelsInUse.Remove(model);
         }

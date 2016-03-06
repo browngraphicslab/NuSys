@@ -21,11 +21,15 @@ namespace NuSysApp
             SearchResults.Clear();
             if (queryString == "")
                 return;
-            var found = new HashSet<AtomModel>();
+            var found = new HashSet<ElementModel>();
+
+            // TODO: refactor
+           /*
+
             foreach (var kv in SessionController.Instance.IdToSendables)
             {
                 var kvp = (KeyValuePair<string, Sendable>) kv;
-                var atom = (AtomModel) kvp.Value;
+                var atom = (ElementModel) kvp.Value;
                 var tags = (List<string>) atom.GetMetaData("tags");
 
                 foreach (var tag in tags)
@@ -47,6 +51,7 @@ namespace NuSysApp
                 var title = atomModel.Title == "" ? "Unnamed Node" : atomModel.Title;
                 SearchResults.Add(new SearchResultItem {Id = atomModel.Id, Name = title});
             }
+            */
         }
 
         public override string ToString()

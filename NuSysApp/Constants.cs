@@ -65,6 +65,11 @@ namespace NuSysApp
         public const string AndReplacement = "$m&^@gfdsgs$";
         #endregion Network
 
+        #region Timeline
+        public const int TLNodeWidth = 174;
+        public const int ExpandOn = 400;
+        #endregion Timeline
+
         public const int InitialPenSize = 4;
 
         public const int MaxCanvasSize = 100000;

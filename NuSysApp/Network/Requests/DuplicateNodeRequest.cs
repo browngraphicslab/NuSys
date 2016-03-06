@@ -16,18 +16,20 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString("id");
-            var model = (NodeModel)SessionController.Instance.IdToSendables[id];
+            var model = SessionController.Instance.IdToControllers[id].Model;
             
-            NodeType type = model.NodeType;
+            ElementType type = model.ElementType;
 
-            if (type == NodeType.Group)
+            if (type == ElementType.Collection)
             {
                 var childList = _message.GetList<string>("groupChildren");
                 foreach (var childId in childList)
                 {
-                    var childModel = (AtomModel)SessionController.Instance.IdToSendables[childId];
+                    var childModel = SessionController.Instance.IdToControllers[childId].Model;
                     var groups = (List<string>)childModel.GetMetaData("groups");
-                    childModel.Creators.Add(id);
+
+                    //TODO: refactor
+                   // childModel.Creator = id;
                     groups.Add(id);
                 }
             }
@@ -39,18 +41,22 @@ namespace NuSysApp
             modelToDuplicate["autoCreate"] = true;
 
             var msg = new Message( modelToDuplicate );
-            var request = new NewNodeRequest(msg);
+            var request = new NewElementRequest(msg);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
-            var duplicateModel = (AtomModel)SessionController.Instance.IdToSendables[msg.GetString("id")];
+            var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
 
-            if (!(duplicateModel is NodeContainerModel))
+            if (!(duplicateModel is ElementCollectionModel))
                 return;
-                
-            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as AtomModel).Creators.Contains(id)))
+
+
+            //TODO: refactor
+            /*
+            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as ElementModel).Creator.Contains(id)))
             {
                 ((NodeContainerModel)duplicateModel).AddChild(child);
             }
+            */
         }
     }
 }

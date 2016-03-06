@@ -25,7 +25,6 @@ namespace NuSysApp
     public sealed partial class UserLabel : UserControl
     {
         private NetworkUser _user;
-        private ushort _startingFontWeight;
         private string _userName;
 
         public UserLabel(NetworkUser user)
@@ -43,26 +42,10 @@ namespace NuSysApp
                 _userName = "Me";
             }
             UserBubbleText.Text = _userName;
-            if (user.IP == SessionController.Instance.NuSysNetworkSession.HostIP) //if the user is host
-            {
-                MakeHost();
-            }
-            else
-            {
-                MakeNotHost();
-            }
-            _startingFontWeight = UserBubbleText.FontWeight.Weight;
-            user.OnHostStatusChange += delegate (bool isHost)
-            {
-                if (isHost)
-                {
-                    MakeHost();
-                }
-                else
-                {
-                    MakeNotHost();
-                }
-            };
+            UserButton.Foreground = new SolidColorBrush(Colors.White);
+
+            UserBubbleText.Inlines.Clear();
+            UserBubbleText.Text = _userName;
 
             UserButton.Click += UserButton_Click;
         }
@@ -85,40 +68,6 @@ namespace NuSysApp
         private void UserButton_OnLostFocus(object sender, RoutedEventArgs e)
         {
             UserInfoBox.Opacity = 0;
-        }
-
-        private async Task MakeHost()
-        {
-            await UITask.Run(async delegate
-            {
-                var weight = UserBubbleText.FontWeight;
-                weight.Weight = (ushort)(_startingFontWeight*(ushort)2.5);
-                UserBubbleText.FontWeight = weight;
-                //UserButton.Foreground = new SolidColorBrush(Colors.Gold);
-
-                UserBubbleText.Inlines.Clear();
-
-                Underline HostUnderline = new Underline();
-                HostUnderline.Foreground = new SolidColorBrush(Colors.White);
-                Run r = new Run();
-                r.Text = _userName;
-                HostUnderline.Inlines.Add(r);
-                UserBubbleText.Inlines.Add(HostUnderline);
-            });
-        }
-
-        private async Task MakeNotHost()
-        {
-            await UITask.Run(async delegate
-            {
-                var weight = UserBubbleText.FontWeight;
-                weight.Weight = _startingFontWeight;
-                UserBubbleText.FontWeight = weight;
-                UserButton.Foreground = new SolidColorBrush(Colors.White);
-
-                UserBubbleText.Inlines.Clear();
-                UserBubbleText.Text = _userName;
-            });
         }
     }
 }

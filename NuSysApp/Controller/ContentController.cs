@@ -26,6 +26,17 @@ namespace NuSysApp
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
+        public string Add(NodeContentModel model)
+        {
+            if (!String.IsNullOrEmpty(model.Id))
+            {
+                _contents.Add(model.Id, model);
+                Debug.WriteLine("content directly added with ID: " + model.Id);
+                return model.Id;
+            }
+            Debug.WriteLine("content failed to add directly due to invalid id");
+            return null;
+        }
         public string Add( string contentData, string presetID = null)
         {
             var id = presetID ?? SessionController.Instance.GenerateId();
@@ -53,6 +64,15 @@ namespace NuSysApp
             _waitingNodeCreations.Add(id, mre);
         }*/
 
+        public string OverWrite(NodeContentModel model)
+        {
+            if (!String.IsNullOrEmpty(model.Id))
+            {
+                _contents[model.Id]= model;
+                return model.Id;
+            }
+            return null;
+        }
         public async Task Load()
         {
             _contents.Clear();
@@ -63,8 +83,11 @@ namespace NuSysApp
             foreach (var line in lines)
             {
                 var o = JsonConvert.DeserializeObject<NodeContentModel>(line);
+
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,null));
+                /*
                 var request = new NewContentSystemRequest(o.Id,o.Data);//TODO not ideal
-                await request.ExecuteSystemRequestFunction(SessionController.Instance.NuSysNetworkSession, null, null);//TODO not ideal
+                await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequestLocally(request);*/
             }
         }
 

@@ -26,6 +26,11 @@ namespace NuSysApp
     {
         private ObservableCollection<DialogBlock> _texts = new ObservableCollection<DialogBlock>();
         private bool _touching = false;
+        private int _newTextNum;
+
+        public delegate void NewTextsChangedHandler(int newTextNumber);
+        public event NewTextsChangedHandler OnNewTextsChanged;
+
         //private Dictionary<DialogBlock,long> _textTimes = new Dictionary<DialogBlock, long>(); 
         public ChatPopupView()
         {
@@ -55,20 +60,17 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
+        public ObservableCollection<DialogBlock> getTexts()
+        {
+            return _texts;
+        } 
+
         public void AddText(string text, long time, NetworkUser user)
         {
             var block = new DialogBlock(text,user);
             block.MaxWidth = DialogPanel.ActualWidth * .67;
-            if (user.IP == SessionController.Instance.NuSysNetworkSession.LocalIP)
-            {
-                block.HorizontalAlignment = HorizontalAlignment.Right;
-                block.Margin = new Thickness(0, 0, 6, 0);
-            }
-            else
-            {
-                block.HorizontalAlignment = HorizontalAlignment.Left;
-                block.Margin = new Thickness(6, 0, 0, 0);
-            }
+            block.HorizontalAlignment = HorizontalAlignment.Left;
+            block.Margin = new Thickness(6, 0, 0, 0);
             /*
             var index = _texts.Count - 1;
             while (index > -1 && time < _textTimes[_texts[index]])
@@ -87,6 +89,8 @@ namespace NuSysApp
                 }
             };
             _texts.Add(block);
+            _newTextNum = Visibility == Visibility.Visible ? 0 : _newTextNum + 1;
+            OnNewTextsChanged.Invoke(_newTextNum);
         }
 
         private void UIElement_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -99,6 +103,12 @@ namespace NuSysApp
         {
             _touching = true;
             e.Handled = true;
+        }
+
+        public void ClearNewTexts()
+        {
+            _newTextNum = 0;
+            OnNewTextsChanged?.Invoke(0);
         }
     }
 }
