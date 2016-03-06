@@ -14,7 +14,6 @@ using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
 using LdaLibrary;
-using LAIR.ResourceAPIs.WordNet;
 
 namespace NuSysApp
 {
