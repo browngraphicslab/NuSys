@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuSysApp.Controller;
 
 namespace NuSysApp
 {
@@ -36,7 +37,7 @@ namespace NuSysApp
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
                 var link = new LinkModel(id);
-                var linkController = new ElementController(link);
+                var linkController = new LinkElementController(link);
                 SessionController.Instance.IdToControllers.Add(id, linkController);
                 await link.UnPack(_message);
 
