@@ -40,30 +40,8 @@ namespace NuSysApp
 
         #endregion Link Manipulation Methods
 
-        // TODO: refactor
-        /*
-       
-        public override void SetPosition(double x, double y)
-        {
-            // Position is set through connecting atoms.
-        }
-
-        protected override void OnPositionChanged(object source, double x, double y)
-        {
-            // Position is set through connecting atoms.
-        }
-
-            */
-
-        //TODO: refactor
-        /*
-        public override void Translate(double dx, double dy)
-        {
-            Atom1.Translate(dx, dy);
-            Atom2.Translate(dx, dy);
-        }
-        */
-
+  
+      
 
         public override void UpdateAnchor()
         {
@@ -80,19 +58,34 @@ namespace NuSysApp
             }
         }
 
-        public override void SetSelected(bool val)
+        public override bool IsSelected
         {
-            _isSelected = val;
-            Color = val
-                ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
-                : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
-            RaisePropertyChanged("Color");
-            RaisePropertyChanged("IsSelected");
+            get { return base.IsSelected; }
+            set
+            {
+                base.IsSelected = value;
+                Color = value
+                    ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
+                    : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+                RaisePropertyChanged("Color");
+                RaisePropertyChanged("IsSelected");
+            }
         }
 
-        #region Private Members
+        public override PointCollection ReferencePoints
+        {
+             get
+             {
+                 PointCollection pts = new PointCollection();
+                 pts.Add(new Point2d(Anchor.X, Anchor.Y));
+                 return pts;
+ 
+             }
+         }
 
-        private ElementViewModel _atom1, _atom2;
+#region Private Members
+
+private ElementViewModel _atom1, _atom2;
         private string _annotationText;
 
         #endregion Private members

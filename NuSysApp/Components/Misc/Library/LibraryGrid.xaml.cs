@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using MyToolkit.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -27,102 +28,77 @@ namespace NuSysApp
 
         public ObservableCollection<LibraryElement> _items;
         private int _count = 0;
-        public LibraryGrid(ObservableCollection<LibraryElement> items, LibraryView library)
+
+        private LibraryElementPropertiesWindow _propertiesWindow;
+
+        private int _numRows;
+        public LibraryGrid(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
+            this.DataContext = vm;
+            _items = vm._PageElements;
 
-            _items = items;
-
-            var numRows = 8;
+            _propertiesWindow = propertiesWindow;
+            for (int i = 1; i < _items.Count/3 + 1; i++)
+            {
+                 xGrid.RowDefinitions.Add(new RowDefinition());
+            }
+            _numRows = _items.Count/3 + 1;
             var numCols = 3;
-
+            
             foreach (var item in _items)
             {
-                LoadThumbnails(numRows, numCols, item);
+                LoadThumbnails(_numRows, numCols, item);
             }
-            library.OnNewContents += Library_OnNewContents;
+            ((LibraryBucketViewModel)library.DataContext).OnNewContents += Library_OnNewContents;
             
         }
 
         private void Library_OnNewContents(ICollection<LibraryElement> elements)
         {
-            var numRows = 8;
+            xGrid.RowDefinitions.Clear();
+            for (int i = 1; i < elements.Count / 3 + 1; i++)
+            {
+                xGrid.RowDefinitions.Add(new RowDefinition());
+            }
+            _numRows = elements.Count / 3 + 1;
             var numCols = 3;
 
             foreach (var newItem in elements)
             {
-                LoadThumbnails(numRows, numCols, newItem);
+                LoadThumbnails(_numRows, numCols, newItem);
             }
         }
 
-        public async void Search(string s)
+        public async Task Search(string s)
         {
-            ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-            var coll = _items;
-            await Task.Run(async delegate
-            {
-                foreach (var item in coll)
-                {
-                    if (item.InSearch(s))
-                    {
-                        newCollection.Add(item);
-                    }
-                }
-            });
-            _items = newCollection;
+            await ((LibraryPageViewModel)this.DataContext).Search(s);
 
-            var numRows = 8;
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in _items)
+            foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
             {
-                LoadThumbnails(numRows, numCols, item);
+                LoadThumbnails(_numRows, numCols, item);
             }
         }
 
         public void SetItems(ICollection<LibraryElement> elements)
         {
-            _items = new ObservableCollection<LibraryElement>(elements);
+            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
         }
 
-        public async void Sort(string s)
+        public async Task Sort(string s)
         {
+            await ((LibraryPageViewModel)this.DataContext).Sort(s);
 
-            IOrderedEnumerable<LibraryElement> ordered = null;
-            switch (s.ToLower().Replace(" ", string.Empty))
-            {
-                case "title":
-                    ordered = ((ObservableCollection<LibraryElement>)_items).OrderBy(l => l.Title);
-                    break;
-                case "nodetype":
-                    ordered = ((ObservableCollection<LibraryElement>)_items).OrderBy(l => l.ElementType.ToString());
-                    break;
-                case "timestamp":
-                    break;
-                default:
-                    break;
-            }
-            if (ordered != null)
-            {
-                ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-                await Task.Run(async delegate
-                {
-                    foreach (var item in ordered)
-                    {
-                        newCollection.Add(item);
-                    }
-                });
-                _items = newCollection;
-            }
 
-            var numRows = 8;
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in _items)
+            foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
             {
-                LoadThumbnails(numRows, numCols, item);
+                LoadThumbnails(_numRows, numCols, item);
             }
         }
 
@@ -159,7 +135,9 @@ namespace NuSysApp
         {
 
             StackPanel itemPanel = new StackPanel();
+            itemPanel.DoubleTapped += ItemPanel_DoubleTapped;
             itemPanel.Orientation = Orientation.Vertical;
+            itemPanel.DataContext = newItem;
 
             itemPanel.CanDrag = true;
             itemPanel.DragStarting += delegate(UIElement a, DragStartingEventArgs b) { OnLibraryElementDrag?.Invoke(a, b); };
@@ -231,7 +209,6 @@ namespace NuSysApp
 
             //}
            
-            
             var wrappedView = new Border();
             wrappedView.Padding = new Thickness(10);
             wrappedView.Child = itemPanel;
@@ -239,6 +216,19 @@ namespace NuSysApp
             Grid.SetColumn(wrappedView, _count % numCols);
             xGrid.Children.Add(wrappedView);
             _count++;
+        }
+
+        private void ItemPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            LibraryElement clickedElement = (LibraryElement)((StackPanel)sender).DataContext;
+            _propertiesWindow.setTitle(clickedElement.Title);
+            _propertiesWindow.setType(clickedElement.ElementType.ToString());
+            _propertiesWindow.Visibility = Visibility.Visible;
+        }
+
+        public async Task Update()
+        {
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
     }
 }

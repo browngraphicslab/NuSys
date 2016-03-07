@@ -43,7 +43,7 @@ namespace NuSysApp
             _partialLines = new Dictionary<string, HashSet<InqLineModel>>();
         }
 
-        public void AddLine(InqLineModel line)
+        private void AddLine(InqLineModel line)
         {
             _lines.Add(line);
             LineAdded?.Invoke(line);
@@ -65,6 +65,7 @@ namespace NuSysApp
 
         public void FinalizeLineLocally(InqLineModel line)
         {
+            line.OnDeleteInqLine += LineOnDeleteInqLine;
             LineFinalizedLocally?.Invoke(line);
         }
 
@@ -72,7 +73,6 @@ namespace NuSysApp
         {
             line.Page = Page;
             _lines.Add(line);
-            line.OnDeleteInqLine += LineOnDeleteInqLine;
             LineFinalized?.Invoke( line );
         }
 

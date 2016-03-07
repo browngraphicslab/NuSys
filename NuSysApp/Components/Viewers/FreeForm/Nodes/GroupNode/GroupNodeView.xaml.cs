@@ -28,11 +28,17 @@ namespace NuSysApp
     public sealed partial class GroupNodeView : AnimatableUserControl, IThumbnailable
     {
         private bool _isExpanded;
+
+        private GroupNodeTimelineView timelineView;
+        private GroupNodeExpandedView expandedView;
+        private GroupNodeDataGridView dataGridView;
+        private AreaNodeView freeFormView;
+
+
         private Storyboard _circleAnim;
         private Storyboard _expandedAnim;
         private Storyboard _expandedListAnim; // for data grid view
         private Storyboard _timelineAnim;
-        private GroupNodeExpandedDefaultView xExpandedDefaultView;
 
         public GroupNodeView( GroupNodeViewModel vm)
         {
@@ -46,35 +52,41 @@ namespace NuSysApp
                 PositionResizer();
             };
 
-            // create expanded view
-            xExpandedDefaultView = new GroupNodeExpandedDefaultView((ElementCollectionModel)vm.Model); // create default view
-            xExpandedDefaultView.Opacity = 0;
-            GroupNodeCanvas.Children.Add(xExpandedDefaultView);
+
+            DefaultButton.AddHandler(TappedEvent,
+                new TappedEventHandler(MenuDetailButton_Tapped), true);
+            TimeLineButton.AddHandler(TappedEvent,
+                new TappedEventHandler(MenuDetailButton_Tapped), true);
+            ListButton.AddHandler(TappedEvent,
+                new TappedEventHandler(MenuDetailButton_Tapped), true);
+            FreeFormButton.AddHandler(TappedEvent,
+                new TappedEventHandler(MenuDetailButton_Tapped), true);
+
+
+            freeFormView = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)vm.Controller));
+            timelineView = new GroupNodeTimelineView(new GroupNodeTimelineViewModel((ElementCollectionController)vm.Controller));
+            dataGridView = new GroupNodeDataGridView(new GroupNodeDataGridViewModel((ElementCollectionController)vm.Controller));
+            expandedView = new GroupNodeExpandedView();
+
+            timelineView.Visibility = Visibility.Collapsed;
+            dataGridView.Visibility = Visibility.Collapsed;
+            expandedView.Visibility = Visibility.Collapsed;
+            freeFormView.Visibility = Visibility.Collapsed;
+
+            ExpandedGrid.Children.Add(timelineView);
+            ExpandedGrid.Children.Add(dataGridView);
+            ExpandedGrid.Children.Add(expandedView);
+            ExpandedGrid.Children.Add(freeFormView);
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (GroupNodeViewModel) DataContext;
-           // vm.Controller.Resize(e.Delta.Translation.X, e.Delta.Translation.Y);
+            var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
+            vm.SetSize(vm.Width + dx, vm.Height + dy);
             
-            if (vm.Height > 400 && !_isExpanded)
-            {
-                _expandedAnim?.Stop();
-                _circleAnim?.Stop();
 
-                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 1, 450);
-                _circleAnim = Anim.To(xCircleView, "Alpha", 0, 450);
-                _isExpanded = true;
-            }
-            else if (vm.Height < 400 && _isExpanded)
-            {
-                _expandedAnim?.Stop();
-                _circleAnim?.Stop();
-
-                _expandedAnim = Anim.To(xExpandedDefaultView, "Alpha", 0, 450);
-                _circleAnim = Anim.To(xCircleView, "Alpha", 1, 450);
-                _isExpanded = false;         
-            }
             PositionResizer();
             e.Handled = true;
         }
@@ -91,6 +103,34 @@ namespace NuSysApp
             var r = new RenderTargetBitmap();
             await r.RenderAsync(this, width, height);
             return r;
+        }
+
+        private void MenuDetailButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Button tb = (Button)sender;
+
+            timelineView.Visibility = Visibility.Collapsed;
+            dataGridView.Visibility = Visibility.Collapsed;
+            expandedView.Visibility = Visibility.Collapsed;
+            freeFormView.Visibility = Visibility.Collapsed;
+
+
+            if (tb.Name == "DefaultButton")
+            {
+                expandedView.Visibility = Visibility.Visible;
+            }
+            else if (tb.Name == "TimeLineButton")
+            {
+                timelineView.Visibility = Visibility.Visible;
+            }
+            else if (tb.Name == "ListButton")
+            {
+                dataGridView.Visibility = Visibility.Visible;
+            }
+            else if (tb.Name == "FreeFormButton")
+            {
+                freeFormView.Visibility = Visibility.Visible;
+            }
         }
     }
 }

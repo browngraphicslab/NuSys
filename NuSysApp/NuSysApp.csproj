@@ -180,7 +180,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
       <DependentUpon>DetailViewerView.xaml</DependentUpon>
@@ -234,7 +237,11 @@
     <Compile Include="Components\Links\LineLinkView.xaml.cs">
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\LibraryBucketViewModel.cs" />
     <Compile Include="Components\Misc\Library\LibraryElement.cs" />
+    <Compile Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml.cs">
+      <DependentUpon>LibraryElementPropertiesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\Library\LibraryGrid.xaml.cs">
       <DependentUpon>LibraryGrid.xaml</DependentUpon>
     </Compile>
@@ -245,6 +252,7 @@
       <DependentUpon>LibraryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
+    <Compile Include="Components\Misc\Library\LibraryPageViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
@@ -259,25 +267,26 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AreaNode\AreaNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml.cs">
+      <DependentUpon>LibraryElementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AreaNode\AreaNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementInstanceController.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\IThumbnailable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml.cs">
       <DependentUpon>GroupCircleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupItemThumbFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemThumbFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridInfo.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml.cs">
       <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml.cs">
-      <DependentUpon>GroupNodeExpandedDefaultView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
       <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
     </Compile>
@@ -334,7 +343,6 @@
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
-    <Compile Include="Models\NodeContainerModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
@@ -513,7 +521,6 @@
     <Compile Include="Components\SessionView.xaml.cs">
       <DependentUpon>SessionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Modes\IntersectGroupNodeMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\TagNodeMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\DuplicateNodeMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\FreeFormViewer.xaml.cs">
@@ -566,6 +573,10 @@
     <Content Include="Assets\iframe.html" />
     <Content Include="Assets\wordIcon.png" />
     <Content Include="Components\Misc\icon_folder.png" />
+    <Content Include="Components\TextEditor\app.css" />
+    <Content Include="Components\TextEditor\app.js" />
+    <Content Include="Components\TextEditor\texteditor.html" />
+    <Content Include="Components\TextEditor\textview.html" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -637,6 +648,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Misc\Library\LibraryGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -665,19 +680,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AreaNode\AreaNodeView.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedDefaultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -808,6 +823,41 @@
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.Effects.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D12">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D12.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.MediaFoundation">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.MediaFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

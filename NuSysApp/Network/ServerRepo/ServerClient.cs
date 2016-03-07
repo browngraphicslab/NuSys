@@ -46,7 +46,7 @@ namespace NuSysApp
             ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var credentials = JsonConvert.SerializeObject(GetUserCredentials(), settings);
-            var uri = GetUri("values/1", true);
+            var uri = GetUri("values/{}", true);
             await _socket.ConnectAsync(uri);
         }
 
@@ -95,7 +95,10 @@ namespace NuSysApp
                             var id = dict["id"];
                             LibraryElement element = new LibraryElement(dict);
                             UITask.Run(delegate {
-                                                    SessionController.Instance.Library.AddNewElement(element);
+
+                                // TODO: add back in
+                                //                    SessionController.Instance.Library.AddNewElement(element);
+//                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
                             });
                             await GetContent((string) id);
                         }

@@ -15,7 +15,7 @@ namespace NuSysApp
 {
     public class NodeManipulationMode : AbstractWorkspaceViewMode
     {
-        private static int _zIndexCounter = 10000;
+        public static int _zIndexCounter = 10000;
         private bool _isPinAnimating;
 
         public List<UserControl> ActiveNodes { get; private set; }
@@ -46,8 +46,10 @@ namespace NuSysApp
         {
             var userControl = (UserControl)sender;
             if (userControl.DataContext is ElementViewModel)
+            {
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
-            
+            }
+
             ActiveNodes.Add((UserControl)sender);
         }
 
@@ -88,12 +90,26 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
-
+            
             var s = (UserControl) sender;
             var vm = (ElementViewModel)s.DataContext;
+
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
-            vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);       
+
+            if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
+            {
+                //move all selected content if a selected node is moved
+                foreach (var vmodel in SessionController.Instance.ActiveFreeFormViewer.Selections)
+                {
+                    if (!vmodel.IsEditing &&!vmodel.ContainsSelectedLink)
+                        vmodel.Controller.SetPosition(vmodel.Transform.TranslateX + dx, vmodel.Transform.TranslateY + dy);
+                }
+            }
+            else {
+                if (!vm.IsEditing)
+                    vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
+            }
         }
     }
 }

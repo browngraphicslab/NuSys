@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Media.Imaging;
+using SharpDX.Direct2D1;
+using Image = Windows.UI.Xaml.Controls.Image;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -16,6 +22,7 @@ namespace NuSysApp
 
     public enum Options
     {
+        Idle,
         MainSelect,
             SelectNode,
             SelectMarquee,
@@ -49,6 +56,8 @@ namespace NuSysApp
         public delegate void OnModeChangeHandler(Options mode, bool isFixed);
         private Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>> _storyboards;
         private FreeFormViewer _freeFormViewer;
+        private FrameworkElement _dragItem;
+        private ElementType _elementType;
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.
@@ -72,63 +81,41 @@ namespace NuSysApp
             this.InitializeComponent();
 
             _buttons = new BiDictionary<FloatingMenuButtonView, Options>();
-            _buttons[btnSelect] = Options.MainSelect;
             _buttons[btnSelectNode] = Options.SelectNode;
             //_buttons[btnMarqueeSelect] = Options.SelectMarquee;
 
-            _buttons[btnPen] = Options.PenGlobalInk;
-            _buttons[btnGlobalInk] = Options.PenGlobalInk;
-            _buttons[btnInkErase] = Options.PenErase;
+ 
             //  _buttons[btnHighlight] = Options.PenHighlight;    
 
-            _buttons[btnSearch] = Options.MainSearch;
+
 
             _buttons[btnAdd] = Options.MainAdd;
             _buttons[btnNewNode] = Options.AddTextNode;
             _buttons[btnNewMedia] = Options.AddMedia;
-            _buttons[btnNewAudioCapture] = Options.AddAudioCapture;
-            _buttons[btnNewRecordNode] = Options.AddRecord;
-            _buttons[btnNewWebNode] = Options.AddWeb;
-            _buttons[btnBucket] = Options.AddBucket;
-            _buttons[btnVideo] = Options.AddVideo;
+
             
-            _buttons[btnSaveLoad] = Options.MainSaveLoad;
-            _buttons[btnLoad] = Options.Load;
+
             _buttons[btnExport] = Options.Save;
-            _buttons[btnPin] = Options.MiscPin;
-            _buttons[btnMisc] = Options.MainMisc;
-            _buttons[btnUsers] = Options.MiscUsers;
+
+   
+
 
             pinWindow.setFloatingMenu(this);
             bucketWindow.setFloatingMenu(this);
             userWindow.setFloatingMenu(this);
 
             _storyboards = new Dictionary<Tuple<FloatingMenuButtonView, int>, Tuple<Storyboard, string>>();
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSelect"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSelect, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSelect"));
+
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 0), new Tuple<Storyboard, string>(slidein, "SubMenuPen"));
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSaveLoad"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSaveLoad"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 0), new Tuple<Storyboard, string>(windowClose, "pinWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 1), new Tuple<Storyboard, string>(windowOpen, "pinWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 0), new Tuple<Storyboard, string>(windowClose, "bucketWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnBucket, 1), new Tuple<Storyboard, string>(windowOpen, "bucketWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 0), new Tuple<Storyboard, string>(windowClose, "userWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnUsers, 1), new Tuple<Storyboard, string>(windowOpen, "userWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 0), new Tuple<Storyboard, string>(windowClose, "searchWindow"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSearch, 1), new Tuple<Storyboard, string>(windowOpen, "searchWindow"));
+
 
 
             _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
-            _activeSubMenuButtons[btnSelect] = btnSelectNode;
-            _activeSubMenuButtons[btnPen] = btnGlobalInk;
             _activeSubMenuButtons[btnAdd] = btnNewNode;
-            _activeSubMenuButtons[btnSaveLoad] = btnSaveLoad;
+
 
 
             // Register tap listeners
@@ -147,7 +134,208 @@ namespace NuSysApp
             };     
 
             pinWindow.DataContext = new PinWindowViewModel();
-            
+
+
+            btnNewMedia.ManipulationMode = ManipulationModes.All;
+            btnAdd.ManipulationMode = ManipulationModes.All;
+
+            btnAdd.ManipulationStarting += BtnAddOnManipulationStarting;
+            btnAdd.ManipulationStarted += BtnAddOnManipulationStarted;
+            btnAdd.ManipulationDelta += BtnAddOnManipulationDelta;
+            btnAdd.ManipulationCompleted += BtnAddOnManipulationCompleted;
+
+            btnNewMedia.ManipulationStarting += BtnAddOnManipulationStarting;
+            btnNewMedia.ManipulationStarted += BtnAddOnManipulationStarted;
+            btnNewMedia.ManipulationDelta += BtnAddOnManipulationDelta;
+            btnNewMedia.ManipulationCompleted += BtnAddOnManipulationCompleted;
+
+        }
+
+        private async void BtnAddOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
+        {
+            xWrapper.Children.Remove(_dragItem);
+
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(args.Position.X, args.Position.Y, 300, 300));
+            await AddNode(new Point(r.X, r.Y), new Size(r.Width, r.Height), _elementType);
+
+        }
+
+        private void BtnAddOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
+        {
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            t.TranslateX += args.Delta.Translation.X;
+            t.TranslateY += args.Delta.Translation.Y;
+        }
+
+        private void BtnAddOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
+        {
+            if (_dragItem == null)
+                return;
+            _dragItem.Opacity = 0.5;
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            t.TranslateX += args.Position.X - _dragItem.ActualWidth / 2;
+            t.TranslateY += args.Position.Y - _dragItem.ActualHeight / 2;
+        }
+
+        private async void BtnAddOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
+        {
+            _elementType = sender == btnAdd ? ElementType.Text : ElementType.Library;
+
+            args.Container = xWrapper;
+            var bmp = new RenderTargetBitmap();
+            await bmp.RenderAsync((UIElement)sender);
+            var img = new Image();
+            img.Opacity = 0;
+            var t = new CompositeTransform();
+
+            img.RenderTransform = new CompositeTransform();
+            img.Source = bmp;
+            _dragItem = img;
+
+            xWrapper.Children.Add(_dragItem);
+        }
+
+        private async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
+        {
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
+            var p = pos;
+
+            var dict = new Message();
+            Dictionary<string, object> metadata;
+            if (elementType == ElementType.Document || elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
+            {
+                var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
+                if (storageFile == null) return;
+
+                var fileType = storageFile.FileType.ToLower();
+                dict["title"] = storageFile.DisplayName;
+
+
+                var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
+
+                try
+                {
+                    //       CheckFileType(fileType); TODO readd
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("The file format you selected is currently unsupported");
+                    return;
+                }
+
+                if (Constants.ImageFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Image;
+
+                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                }
+
+                if (Constants.WordFileTypes.Contains(fileType))
+                {
+                    metadata = new Dictionary<string, object>();
+                    metadata["FilePath"] = storageFile.Path;
+                    metadata["Token"] = token.Trim();
+
+                    dict["metadata"] = metadata;
+
+                    elementType = ElementType.Word;
+
+                    //data = File.ReadAllBytes(storageFile.Path);
+                }
+
+                if (Constants.PowerpointFileTypes.Contains(fileType))
+                {
+                    metadata = new Dictionary<string, object>();
+                    metadata["FilePath"] = storageFile.Path;
+                    metadata["Token"] = token.Trim();
+
+                    dict["metadata"] = metadata;
+
+                    elementType = ElementType.Powerpoint;
+
+                    //data = File.ReadAllBytes(storageFile.Path);
+                }
+
+                if (Constants.PdfFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.PDF;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                if (Constants.VideoFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Video;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                if (Constants.AudioFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Audio;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+            }
+            var contentId = SessionController.Instance.GenerateId();
+
+            metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+            metadata["node_type"] = elementType + "Node";
+
+            dict = new Message();
+            dict["width"] = size.Width.ToString();
+            dict["height"] = size.Height.ToString();
+            dict["nodeType"] = elementType.ToString();
+            dict["x"] = p.X;
+            dict["y"] = p.Y;
+            dict["contentId"] = contentId;
+            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+            dict["metadata"] = metadata;
+            dict["autoCreate"] = true;
+
+            var request = new NewElementRequest(dict);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
+            vm.ClearSelection();
+            //   vm.ClearMultiSelection();
         }
 
 
@@ -164,8 +352,6 @@ namespace NuSysApp
         public void Reset()
         {
             btnAdd.Icon = btnNewNode.Icon;
-            btnSelect.Icon = btnSelectNode.Icon;
-            btnSaveLoad.Icon = btnExport.Icon;
             SetActive(Options.SelectNode);
         }
 
@@ -227,15 +413,7 @@ namespace NuSysApp
 
         public void CloseAllSubMenus()
         {
-            foreach (var key in _storyboards.Keys)
-            {
-                if (key.Item2 == 0) {
-                    var t = _storyboards[key];
-                    t.Item1.Stop();
-                    Storyboard.SetTargetName(t.Item1, t.Item2);
-                    t.Item1.Begin();
-                }
-            }
+           
         }
         /*
         private void ExpandTapped(object sender, TappedRoutedEventArgs e)

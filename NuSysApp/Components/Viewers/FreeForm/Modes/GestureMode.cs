@@ -1,13 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -16,81 +14,58 @@ namespace NuSysApp
         private InqCanvasModel _inqCanvasModel;
         private long _tLineFinalized;
         private DateTime _tFirstPress;
-        private static List<InqLineModel> _lines = new List<InqLineModel>();
+        private InqLineModel _inqLine;
         private bool _wasGesture;
-        
-        public GestureMode(FreeFormViewer view) : base(view) { }
+       
 
-        public override async Task Activate()
+        public GestureMode(FreeFormViewer view) : base(view)
         {
-            _view.InqCanvas.IsEnabled = true;
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             _inqCanvasModel = wvm.Model.InqCanvas;
             _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
+            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
+        }
+
+        public override async Task Activate()
+        {
+            
+        }
+
+        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
+        {   
+            if (SessionController.Instance.SessionView.IsPenMode)
+                return;
+
+            var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
+
+            if (s > 1)
+                return;
+
+            SelectionByStroke();
+            args.Handled = true;
+        }
+
+        private void SelectionByStroke()
+        {
+            var screenPoints = new Polyline();
+            var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            foreach (var point in _inqLine.Points)
+            {
+                var np = t.TransformPoint(new Point(point.X * Constants.MaxCanvasSize, point.Y * Constants.MaxCanvasSize));
+                screenPoints.Points.Add(np);
+            }
+
+            new SelectionHull(screenPoints, SessionController.Instance.SessionView.MainCanvas);
+            _inqLine.Delete();
         }
 
         private void OnLineFinalized(InqLineModel inqLine)
         {
-            if (_wasGesture)
-            {
-                inqLine.Delete();
-                _wasGesture = false;
-            } else { 
-                _lines.Add(inqLine);
-                OnPointerPressed();
-            }
-        }
-
-        private async void OnPointerPressed()
-        {
-            var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
-            if (s < 0.25)
-            {
-                if (_lines.Count < 3)
-                    return;
-                   
-                var model = _lines[_lines.Count - 3];
-                
-                var gestureType = GestureRecognizer.Classify(model);
-                switch (gestureType)
-                {
-                    case GestureRecognizer.GestureType.None:
-                        break;
-                    case GestureRecognizer.GestureType.SELECTION:   
-                        //TODO: make sure checkFor TaagCreation ignore gesture lines
-                        var isTag = await CheckForTagCreation(model);
-                        _wasGesture = isTag;
-                        
-                        if (!isTag)
-                        {
-                            CreateAreaNode(model);
-                        }
-
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 2]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 3]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-
-                        break;
-                    case GestureRecognizer.GestureType.Scribble:
-                        
-                        _wasGesture = true;
-                        var vm = (FreeFormViewerViewModel) _view.DataContext;
-                        var deletedSome = vm.CheckForInkNodeIntersection(model);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 1]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 2]);
-                        _inqCanvasModel.RemoveLine(_lines[_lines.Count - 3]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        _lines.Remove(_lines[_lines.Count - 1]);
-                        break;
-                }
-            }
-                
+            _inqLine = inqLine;
             _tFirstPress = DateTime.Now;
         }
+     
 
         private async void CreateAreaNode(InqLineModel line)
         {
@@ -112,13 +87,15 @@ namespace NuSysApp
 
         }
 
+
         public override async Task Deactivate()
         {
             _view.InqCanvas.IsEnabled = false;
             _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
-
         }
 
+
+        /*
         private async Task<bool> CheckForTagCreation(InqLineModel line)
         {
             var outerRect = Geometry.PointCollecionToBoundingRect(line.Points.ToList());
@@ -196,32 +173,9 @@ namespace NuSysApp
 
             return true;
         }
-
+        */
        
 
-        public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
-        {
-            if (inqLineModels.Count == 0)
-                return new List<string>();
-
-            var im = new InkManager();
-            var b = new InkStrokeBuilder();
-
-            foreach (var inqLineModel in inqLineModels)
-            {
-                var pc = new PointCollection();
-                foreach (var point2D in inqLineModel.Points)
-                {
-                    pc.Add(new Point(point2D.X, point2D.Y));
-                }
-
-                var stroke = b.CreateStroke(pc);
-                im.AddStroke(stroke);
-            }
-            
-            var result = await im.RecognizeAsync(InkRecognitionTarget.All);
-            return result[0].GetTextCandidates().ToList();
-            
-        }
+        
     }
 }

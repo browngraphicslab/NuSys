@@ -29,16 +29,18 @@ namespace NuSysApp
     {
         public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
         public event LibraryElementDragEventHandler OnLibraryElementDrag;
-        public LibraryList(List<LibraryElement> items, LibraryView library)
+        private LibraryElementPropertiesWindow _propertiesWindow;
+        public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
+            this.DataContext = vm;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                ListView.ItemsSource = new ObservableCollection<LibraryElement>(items);
-                library.OnNewContents += SetItems;
-                library.OnNewElementAvailable += AddNewElement;
+                ListView.ItemsSource = vm._PageElements;
+                ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
+                ((LibraryBucketViewModel)library.DataContext).OnNewElementAvailable += AddNewElement;
             };
-
+            _propertiesWindow = propertiesWindow;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1);
         }
 
@@ -52,54 +54,58 @@ namespace NuSysApp
             ((ObservableCollection<LibraryElement>)ListView.ItemsSource).Add(element);
         }
 
-        public async void Sort(string s)
-        {
-            IOrderedEnumerable<LibraryElement> ordered = null;
-            switch (s.ToLower().Replace(" ", string.Empty))
-            { 
-                case "title":
-                    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
-                    break;
-                case "nodetype":
-                    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.ElementType.ToString());
-                    break;
-                case "timestamp":
-                    break;
-                default:
-                    break;
-            }
-            if (ordered != null)
-            { 
-                ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-                await Task.Run(async delegate
-                {
-                    foreach (var item in ordered)
-                    {
-                        newCollection.Add(item);
-                    }
-                });
-                ListView.ItemsSource = newCollection;
-            }
-        }
-        public async void Search(string s)
-        {
-            ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-            var coll = ((ObservableCollection<LibraryElement>) ListView.ItemsSource);
-            await Task.Run(async delegate
-            {
-                foreach (var item in coll)
-                {
-                    if (item.InSearch(s))
-                    {
-                        newCollection.Add(item);
-                    }
-                }
-            });
-            ListView.ItemsSource = newCollection;
-        }
+
+        //public async void Sort(string s)
+        //{
+        //    IOrderedEnumerable<LibraryElement> ordered = null;
+        //    switch (s.ToLower().Replace(" ", string.Empty))
+        //    { 
+        //        case "title":
+        //            ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
+        //            break;
+        //        case "nodetype":
+        //            ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
+        //            break;
+        //        case "timestamp":
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //    if (ordered != null)
+        //    { 
+        //        ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
+        //        await Task.Run(async delegate
+        //        {
+        //            foreach (var item in ordered)
+        //            {
+        //                newCollection.Add(item);
+        //            }
+        //        });
+        //        ListView.ItemsSource = newCollection;
+        //    }
+        //}
+        //public async void Search(string s)
+        //{
+        //    ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
+        //    var coll = ((ObservableCollection<LibraryElement>) ListView.ItemsSource);
+        //    await Task.Run(async delegate
+        //    {
+        //        foreach (var item in coll)
+        //        {
+        //            if (item.InSearch(s))
+        //            {
+        //                newCollection.Add(item);
+        //            }
+        //        }
+        //    });
+        //    ListView.ItemsSource = newCollection;
+        //}
+
+
         public void SetItems(ICollection<LibraryElement> elements)
         {
             ListView.ItemsSource = new ObservableCollection<LibraryElement>(elements);
+            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
         }
 
 
@@ -122,6 +128,30 @@ namespace NuSysApp
             var view = SessionController.Instance.SessionView;
             var rect = view.LibraryDraggingRectangle;
             //Canvas.SetTop();
+        }
+
+        private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            _propertiesWindow.setTitle(((LibraryElement)e.ClickedItem).Title);
+            _propertiesWindow.setType(((LibraryElement)e.ClickedItem).ElementType.ToString());
+            _propertiesWindow.Visibility = Visibility.Visible;
+        }
+
+        public async Task Sort(string s)
+        {
+            await ((LibraryPageViewModel)this.DataContext).Sort(s);
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+        }
+
+        public async Task Search(string s)
+        {
+            await ((LibraryPageViewModel)this.DataContext).Search(s);
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+        }
+
+        public async Task Update()
+        {
+            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
     }
 }

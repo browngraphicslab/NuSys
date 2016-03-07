@@ -24,5 +24,23 @@ namespace NuSysApp
             DataContext = vm;
             this.InitializeComponent();
         }
+
+        public void Update()
+        {
+            // TODO: refactor
+            /*
+            var _vm = (AreaNodeViewModel) DataContext;
+            foreach (var atom in _vm.)
+            {
+                var vm = (AtomViewModel)atom.DataContext; //access viewmodel
+                vm.X= vm.Model.X;
+                vm.X= vm.Model.X;
+                vm.CanEdit = Sendable.EditStatus.No;
+                vm.Height = vm.Model.Height;
+                vm.Width = vm.Model.Width;
+                
+            }
+            */
+        }
     }
 }

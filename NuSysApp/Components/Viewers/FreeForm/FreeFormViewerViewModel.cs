@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 
@@ -9,18 +13,24 @@ namespace NuSysApp
     /// </summary>
     public class FreeFormViewerViewModel : ElementCollectionViewModel
     {
+        private ElementViewModel _currentlyEditing;
+        public delegate void SelectionChangedHandler(object source);
+        public event SelectionChangedHandler SelectionChanged;
+
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private ElementViewModel _preparedElementVm;
+        private List<ElementViewModel> _selections = new List<ElementViewModel>();
 
         #endregion Private Members
 
         public FreeFormViewerViewModel(ElementCollectionController controller) : base(controller)
         {
             MultiSelectedAtomViewModels = new List<ElementViewModel>();
-            SelectedElementViewModel = null;
             FMTransform = new CompositeTransform();
+
+            SelectionChanged += OnSelectionChanged;
 
             var model = controller.Model;
 
@@ -50,8 +60,20 @@ namespace NuSysApp
             }
         }
 
-        
-        
+        private void OnSelectionChanged(object source)
+        {
+            if (_currentlyEditing != null)
+            {
+                _currentlyEditing.IsEditing = false;
+                _currentlyEditing = null;
+            }
+            if (Selections.Count == 1) { 
+                _currentlyEditing = Selections[0];
+                _currentlyEditing.IsEditing = true;
+            }
+        }
+
+
         public void MoveToNode(string id)
         {
             // TODO: refactor
@@ -152,14 +174,17 @@ namespace NuSysApp
         }
 
 
-        public void DeleteLink(LinkViewModel link)
+        public List<ElementViewModel> AllContent
         {
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(link.Id));
+            get
+            {
+                return AtomViewList.Select(e => (ElementViewModel) e.DataContext).ToList();
+            }
         }
 
-        public void DeleteNode(ElementViewModel node)
+        public void DeselectAll()
         {
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(node.Id));
+            ClearSelection();
         }
 
 
@@ -168,29 +193,38 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void SetSelection(ElementViewModel selected)
+        public void AddSelection(ElementViewModel selected)
         {   
-            ClearSelection();
-            selected.SetSelected(true);
-            SelectedElementViewModel = selected;
+            selected.IsSelected = true;
+            if (!_selections.Contains(selected))
+                _selections.Add(selected);
+            var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
+            if (!selectedElements.Any())
+                return;
+            Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
+            SelectionChanged?.Invoke(this);
         }
 
-
-
-
+        public void RemoveSelection(ElementViewModel selected)
+        {
+            selected.IsSelected = false;
+            _selections.Remove(selected);
+            SelectionChanged?.Invoke(this);
+        }
 
         /// <summary>
         /// Unselects the currently selected node.
         /// </summary> 
         public void ClearSelection()
         {
-            if (SelectedElementViewModel == null) return;
-            SelectedElementViewModel.SetSelected(false);
-            SelectedElementViewModel = null;
+            foreach (var selectable in _selections)
+            {
+                selectable.IsSelected = false;
+            }
+            _selections.Clear();
+            SelectionChanged?.Invoke(this);
         }
-
         
-
 
         #endregion Node Interaction
 
@@ -201,8 +235,6 @@ namespace NuSysApp
         #endregion Event Handlers
         #region Public Members
 
-
-        public ElementViewModel SelectedElementViewModel { get; private set; }
 
         public List<ElementViewModel> MultiSelectedAtomViewModels { get; private set; }
 
@@ -233,6 +265,8 @@ namespace NuSysApp
                 RaisePropertyChanged("FMTransform");
             }
         }
+
+        public List<ElementViewModel> Selections { get { return _selections; } } 
 
         #endregion Public Members
 

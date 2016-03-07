@@ -65,10 +65,7 @@ namespace NuSysApp
             }
         }
 
-        public LibraryView Library
-        {
-            get { return SessionView.Library; }
-        }
+
         public static SessionController Instance
         {
             get
@@ -88,30 +85,6 @@ namespace NuSysApp
         }
 
         public event WorkspaceChangedHandler WorkspaceChanged;
-
-        public async Task RecursiveCreate(ElementModel element)
-        {
-            await RecursiveCreateInner(element, new List<ElementModel>());
-            
-        }
-
-        private async Task RecursiveCreateInner(ElementModel element, List<ElementModel> addedModels)
-        {
-
-            //TODO: refactor
-            /*
-            if (!String.IsNullOrEmpty(element.Creator))
-            {
-                var creatorModel = (NodeContainerModel) IdToSendables[element.Creator];
-                if (!addedModels.Contains(creatorModel))
-                {
-                    await RecursiveCreateInner(creatorModel, addedModels);
-                }
-                await creatorModel.AddChild(element);
-                addedModels.Add(element);
-            }
-            */
-        }
 
         private async Task LoadThumbs()
         {
@@ -162,7 +135,7 @@ namespace NuSysApp
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
             var lines = await FileIO.ReadLinesAsync(file);
-            ;
+            
             await SessionView.LoadWorkspace(lines);
             await _contentController.Load();
         }

@@ -30,8 +30,11 @@ namespace NuSysApp
                 case ElementType.Collection:
                     view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionController)controller));
                     break;
+                case ElementType.Library:
+                    view = new LibraryElementView(new LibraryElementViewModel(controller));
+                    break;
                 case ElementType.Tag:
-                    view = new LabelNodeView(new LabelNodeViewModel((ElementCollectionController)controller));
+                    view = new LabelNodeView(new LabelNodeViewModel((ElementController)controller));
                     break;
                 case ElementType.Image:
                     view = new ImageNodeView(new ImageElementViewModel(controller));

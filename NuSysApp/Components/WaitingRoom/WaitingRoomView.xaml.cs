@@ -81,6 +81,7 @@ namespace NuSysApp
             catch (Exception e)
             {
                 Debug.WriteLine("not a valid server");
+                // TODO: fix this
             }
         }
 
@@ -129,9 +130,10 @@ namespace NuSysApp
             try
             {
                 var cred = new Dictionary<string, string>();
+                /*
                 cred["user"] = usernameInput.Text;
                 cred["pass"] = passwordInput.Text;
-
+                */
                 var url = "http://" + ServerName + "/api/login/" ;
                 var client = new HttpClient(
                  new HttpClientHandler

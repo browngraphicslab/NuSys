@@ -29,6 +29,7 @@ namespace NuSysApp
         public Button btnDelete = null;
         public Path resizer = null;
         public Grid bg = null;
+        public Rectangle hitArea = null;
         //public TextBlock tags = null;
         public Grid titleContainer = null;
         public TextBox title = null;
@@ -66,6 +67,8 @@ namespace NuSysApp
             var vm = (ElementViewModel)this.DataContext;
             
             bg = (Grid)GetTemplateChild("bg");
+            hitArea = (Rectangle)GetTemplateChild("HitArea");
+            
             
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
         
@@ -89,8 +92,6 @@ namespace NuSysApp
             //tags.RenderTransform = t;
 
             tags = (ItemsControl) GetTemplateChild("Tags");
-            var t = new TranslateTransform {X = 0, Y = 35};
-            tags.RenderTransform = t;
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.TextChanged += delegate(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
@@ -156,11 +157,28 @@ namespace NuSysApp
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             }
-            //if (e.PropertyName == "UserColor")
-            //{
-            //    highlight.BorderBrush = vm.UserColor;
-            //}
-             
+
+            if (e.PropertyName == "IsSelected" || e.PropertyName == "IsEditing")
+            {
+                if (vm.IsSelected)
+                {
+                    bg.BorderBrush = new SolidColorBrush(Colors.CornflowerBlue);
+                    bg.BorderThickness = new Thickness(3);
+                    hitArea.Visibility = Visibility.Visible;
+                }
+                if (vm.IsEditing)
+                {
+                    bg.BorderBrush = new SolidColorBrush(Colors.YellowGreen);
+                    bg.BorderThickness = new Thickness(3);
+                    hitArea.Visibility = Visibility.Collapsed;
+                }
+                if (!(vm.IsEditing || vm.IsSelected))
+                {
+                    bg.BorderBrush = new SolidColorBrush(Colors.Transparent);
+                    bg.BorderThickness = new Thickness(3);
+                    hitArea.Visibility = Visibility.Visible;
+                }
+            }
         }
     }
 }

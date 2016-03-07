@@ -19,6 +19,7 @@ namespace NuSysApp
         private PseudoNode _tempNode;
         private Point _startPos;
         private bool _isFixed;
+        private int i; // TODO Remove
 
         public AddNodeMode(FreeFormViewer view, ElementType elementType, bool isFixed) : base(view) {
             _elementType = elementType;
@@ -222,7 +223,11 @@ namespace NuSysApp
 
             metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
+
             metadata["node_type"] = elementType + "Node";
+            Random rd = new Random(); //TODO remove
+            metadata["random_id"] = (int)rd.Next(100, 200); 
+            metadata["random_id2"] = (int)rd.Next(1, 100);
 
             dict = new Message();
             dict["width"] = size.Width.ToString();

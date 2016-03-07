@@ -3,41 +3,56 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Media;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using MyToolkit.Utilities;
 
 namespace NuSysApp
 {
     public class SelectMode : AbstractWorkspaceViewMode
     {
-        public SelectMode(FreeFormViewer view) : base(view) { }
 
-        private static ElementViewModel _selectedElementVm;
         private bool _released;
+        private bool _doubleTapped;
+        private PointerEventHandler _pointerPressedHandler;
+        private PointerEventHandler _pointerReleasedHandler;
+        private DoubleTappedEventHandler _doubleTappedHandler;
 
+        public SelectMode(FreeFormViewer view):base(view)
+        {
+            _pointerPressedHandler = OnPointerPressed;
+            _pointerReleasedHandler = OnPointerReleased;
+            _doubleTappedHandler = OnDoubleTapped;
+        }
         public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
-            _view.DoubleTapped += OnDoubleTapped;
-            _view.PointerPressed += OnPointerPressed;
-            _view.PointerReleased += OnPointerReleased;
+
             _view.ManipulationMode = ManipulationModes.All;
+
+            _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, false );
+            _view.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, false );
+            _view.AddHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler, true );
         }
 
         public override async Task Deactivate()
         {
             _view.IsDoubleTapEnabled = false;
-            _view.PointerPressed -= OnPointerPressed;
-            _view.DoubleTapped -= OnDoubleTapped;
-            _view.PointerReleased -= OnPointerReleased;
+
+            _view.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressedHandler);
+            _view.RemoveHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler);
+            _view.RemoveHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler);
 
             _view.ManipulationMode = ManipulationModes.None;
   
-            var vm = _view.DataContext as FreeFormViewerViewModel;
-            vm.ClearSelection();
+        //    var vm = _view.DataContext as FreeFormViewerViewModel;
+        //    vm.ClearSelection();
         }
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -47,20 +62,49 @@ namespace NuSysApp
             if (!_released)
                 return;
 
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            if (dc == _selectedElementVm)
+            await Task.Delay(50);
+            if (_doubleTapped)
             {
+                _doubleTapped = false;
                 return;
             }
 
-            var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
-            viwerVm.ClearSelection();
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
+            if (dc == null)
+                return;
 
-            if (dc is ElementViewModel)
+            
+            var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
+            var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+           
+            if (!isCtrlDown) {
+
+
+                if (dc is FreeFormViewerViewModel)
+                {
+                    viwerVm.ClearSelection();
+                    return;
+                }
+
+                viwerVm.ClearSelection();
+                viwerVm.AddSelection(dc);
+            }
+            else
             {
-                var vm = (ElementViewModel) dc;
-                _selectedElementVm = vm;
-                viwerVm.SetSelection(_selectedElementVm);
+                if (dc is FreeFormViewerViewModel)
+                {
+                    return;
+                }
+
+                if (dc.IsSelected)
+                {
+                    viwerVm.RemoveSelection(dc);
+                }
+                else
+                {
+                    viwerVm.AddSelection(dc);
+                }               
+
             }
         }
 
@@ -71,7 +115,7 @@ namespace NuSysApp
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-
+            _doubleTapped = true;
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {

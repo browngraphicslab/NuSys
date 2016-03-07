@@ -32,6 +32,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            /*
             InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
             var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).ContentId).Data);
             memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
@@ -39,6 +40,7 @@ namespace NuSysApp
             playbackElement.SetSource(memoryStream, "video/mp4");
             _isRecording = false;
             //  playbackElement.Play();
+            */
         }
 
 

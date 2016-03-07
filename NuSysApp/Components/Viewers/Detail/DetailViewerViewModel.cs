@@ -28,6 +28,7 @@ namespace NuSysApp
         public ObservableCollection<Button> Tags { get; set; }
  
         public DetailViewerViewModel()
+
         {
             Tags = new ObservableCollection<Button>();
         }
@@ -71,8 +72,6 @@ namespace NuSysApp
 
         public async void AddTag(string tag)
         {
-            //add to model
-
             List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
             tags.Add(tag);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
@@ -122,12 +121,9 @@ namespace NuSysApp
             if (DeleteOnFocus)
             {
                 List<string> tags = (List<string>)_nodeModel.GetMetaData("tags");
-                Debug.WriteLine("Tag removed in metadata: " + _tagToDelete);
                 tags.Remove(_tagToDelete);
-                //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
                 _nodeModel.SetMetaData("tags", tags);
 
-                //Debug.WriteLine("Tag removed in DV);
                 Tags.Remove((Button)sender);
                 RaisePropertyChanged("Tags");
             }

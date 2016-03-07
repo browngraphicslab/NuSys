@@ -12,7 +12,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -272,24 +271,6 @@
         },
         "runtime": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Algorithms/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Text.Encoding.Extensions": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -1430,33 +1411,6 @@
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
         }
       },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
-        }
-      },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -1803,7 +1757,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -2124,26 +2077,6 @@
         },
         "runtime": {
           "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Collections.Concurrent": "[4.0.0, )",
-          "System.Collections": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Linq": "[4.0.0, )",
-          "System.Diagnostics.Debug": "[4.0.10, )",
-          "System.Runtime.Extensions": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -3329,33 +3262,6 @@
         },
         "compile": {
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
@@ -3707,7 +3613,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -4014,26 +3919,6 @@
         },
         "runtime": {
           "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Collections.Concurrent": "[4.0.0, )",
-          "System.Collections": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Linq": "[4.0.0, )",
-          "System.Diagnostics.Debug": "[4.0.10, )",
-          "System.Runtime.Extensions": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -5207,33 +5092,6 @@
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
         }
       },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
-        }
-      },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -5583,7 +5441,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -5909,26 +5766,6 @@
         },
         "runtime": {
           "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Collections.Concurrent": "[4.0.0, )",
-          "System.Collections": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Linq": "[4.0.0, )",
-          "System.Diagnostics.Debug": "[4.0.10, )",
-          "System.Runtime.Extensions": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -7114,33 +6951,6 @@
         },
         "compile": {
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
@@ -7492,7 +7302,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -7799,26 +7608,6 @@
         },
         "runtime": {
           "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Collections.Concurrent": "[4.0.0, )",
-          "System.Collections": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Linq": "[4.0.0, )",
-          "System.Diagnostics.Debug": "[4.0.10, )",
-          "System.Runtime.Extensions": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -8992,33 +8781,6 @@
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
         }
       },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
-        }
-      },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -9368,7 +9130,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -9694,26 +9455,6 @@
         },
         "runtime": {
           "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Collections.Concurrent": "[4.0.0, )",
-          "System.Collections": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Linq": "[4.0.0, )",
-          "System.Diagnostics.Debug": "[4.0.10, )",
-          "System.Runtime.Extensions": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -10901,33 +10642,6 @@
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
         }
       },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
-        }
-      },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
         "dependencies": {
           "System.Runtime": "[4.0.20, )",
@@ -11277,7 +10991,6 @@
         }
       },
       "jQuery/1.6.4": {},
-      "Messenger.Security.RSA.WindowsPhone/1.0.0": {},
       "Microsoft.ApplicationInsights/1.0.0": {
         "compile": {
           "lib/portable-win81+wpa81/Microsoft.ApplicationInsights.dll": {}
@@ -11584,26 +11297,6 @@
         },
         "runtime": {
           "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Collections.Concurrent": "[4.0.0, )",
-          "System.Collections": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Linq": "[4.0.0, )",
-          "System.Diagnostics.Debug": "[4.0.10, )",
-          "System.Runtime.Extensions": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet/_._": {}
-        },
-        "runtime": {
-          "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "SharpDX/3.0.1": {
@@ -12775,33 +12468,6 @@
         },
         "compile": {
           "ref/dotnet5.1/System.Security.Cryptography.Algorithms.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.20, )",
-          "System.Runtime.InteropServices": "[4.0.20, )",
-          "System.Resources.ResourceManager": "[4.0.0, )",
-          "System.Security.Cryptography.Primitives": "[4.0.0-beta-23516, )",
-          "System.Security.Cryptography.Algorithms": "[4.0.0-beta-23516, )",
-          "System.Runtime.Handles": "[4.0.0, )",
-          "System.Text.Encoding": "[4.0.0, )",
-          "System.Runtime.Extensions": "[4.0.0, )",
-          "System.IO": "[4.0.10, )"
-        },
-        "compile": {
-          "ref/dotnet5.2/System.Security.Cryptography.Cng.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Security.Cryptography.Cng.dll": {}
-        }
-      },
-      "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-        "dependencies": {
-          "System.Runtime": "[4.0.0, )"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll": {}
         }
       },
       "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
@@ -13197,17 +12863,6 @@
         "Tools/jquery-1.6.4-vsdoc-para.js",
         "Tools/uninstall.ps1",
         "package/services/metadata/core-properties/b6ad0ff4deae4ba6946d3d117e00cfaf.psmdcp",
-        "[Content_Types].xml"
-      ]
-    },
-    "Messenger.Security.RSA.WindowsPhone/1.0.0": {
-      "sha512": "DPQoroW2QDCIdqjGHh6demRElD5f1JGM/GbUWxmUq0QQM320KL8S3rZk06tfs6Z6zrbQjoqG38fAm1DrLU2cWw==",
-      "type": "Package",
-      "files": [
-        "_rels/.rels",
-        "Messenger.Security.RSA.WindowsPhone.nuspec",
-        "Messenger.Security.RSA.WindowsPhone.dll",
-        "package/services/metadata/core-properties/01c514ce3fff411a9b38de35aede42ea.psmdcp",
         "[Content_Types].xml"
       ]
     },
@@ -14013,19 +13668,6 @@
         "runtimes/win7/lib/net/_._",
         "ref/dotnet/_._",
         "package/services/metadata/core-properties/ef198cb071f1416eb5559a8901873609.psmdcp",
-        "[Content_Types].xml"
-      ]
-    },
-    "runtime.win7.System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-      "sha512": "iO6fab6BK18Sv1H/yu/3jg4qSJifYRYiUkSiIMUMAcJazK4+O+yyS0v40vtOlNvdVMBJ31gB+eFUFihb0E9OpA==",
-      "type": "Package",
-      "files": [
-        "_rels/.rels",
-        "runtime.win7.System.Security.Cryptography.Encoding.nuspec",
-        "runtimes/win7/lib/dotnet5.4/System.Security.Cryptography.Encoding.dll",
-        "runtimes/win7/lib/net/_._",
-        "ref/dotnet/_._",
-        "package/services/metadata/core-properties/45d7c5a3dbd849a98fd181cfc9bdfd64.psmdcp",
         "[Content_Types].xml"
       ]
     },
@@ -16325,52 +15967,6 @@
         "[Content_Types].xml"
       ]
     },
-    "System.Security.Cryptography.Cng/4.0.0-beta-23516": {
-      "sha512": "jO7ya0a+ll3rD2Ig2gO8vigkOZZkcXRgpJhTLLX7+76deAYNlSmTeepBbIjp2y7CRb5t2V0ZkCfe5ssNRonFmQ==",
-      "type": "Package",
-      "files": [
-        "_rels/.rels",
-        "System.Security.Cryptography.Cng.nuspec",
-        "lib/dotnet5.4/System.Security.Cryptography.Cng.dll",
-        "lib/net46/System.Security.Cryptography.Cng.dll",
-        "ref/dotnet5.2/System.Security.Cryptography.Cng.dll",
-        "ref/net46/System.Security.Cryptography.Cng.dll",
-        "package/services/metadata/core-properties/8f462e891fb74e2abed8d66c9c28b1b6.psmdcp",
-        "[Content_Types].xml"
-      ]
-    },
-    "System.Security.Cryptography.Encoding/4.0.0-beta-23516": {
-      "sha512": "XSlFRqbEojrHSEffTWFLw7iPa3ZclvAJ/yjBNoCKr4F/xXvqPu4jcDeSb2loWhLTQkwRJR1AM/U7d0EHU6gxhw==",
-      "type": "Package",
-      "files": [
-        "_rels/.rels",
-        "System.Security.Cryptography.Encoding.nuspec",
-        "lib/net46/System.Security.Cryptography.Encoding.dll",
-        "lib/MonoAndroid10/_._",
-        "lib/MonoTouch10/_._",
-        "lib/xamarinios10/_._",
-        "lib/xamarinmac20/_._",
-        "ref/dotnet5.1/System.Security.Cryptography.Encoding.dll",
-        "ref/dotnet5.1/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/zh-hant/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/de/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/fr/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/it/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/ja/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/ko/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/ru/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/zh-hans/System.Security.Cryptography.Encoding.xml",
-        "ref/dotnet5.1/es/System.Security.Cryptography.Encoding.xml",
-        "ref/net46/System.Security.Cryptography.Encoding.dll",
-        "ref/MonoAndroid10/_._",
-        "ref/MonoTouch10/_._",
-        "ref/xamarinios10/_._",
-        "ref/xamarinmac20/_._",
-        "runtime.json",
-        "package/services/metadata/core-properties/12c31ab18e464f098e9ebef90fe38418.psmdcp",
-        "[Content_Types].xml"
-      ]
-    },
     "System.Security.Cryptography.Primitives/4.0.0-beta-23516": {
       "sha512": "ztiLIQf2hl0ljLzaUeCx5tk+TU8TrHwrEatuKgSl2KoZXxeOCeXnB+oE07xQO7RnnMlPLtX7/ucHQtteh9du7A==",
       "type": "Package",
@@ -17033,7 +16629,6 @@
   "projectFileDependencyGroups": {
     "": [
       "HtmlAgilityPack >= 1.4.9",
-      "Messenger.Security.RSA.WindowsPhone >= 1.0.0",
       "Microsoft.ApplicationInsights >= 1.0.0",
       "Microsoft.ApplicationInsights.PersistenceChannel >= 1.0.0",
       "Microsoft.ApplicationInsights.WindowsApps >= 1.0.0",
@@ -17041,7 +16636,6 @@
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "MyToolkit.Extended >= 2.5.9",
       "Newtonsoft.Json >= 8.0.1",
-      "runtime.win7.System.Security.Cryptography.Algorithms >= 4.0.0-beta-23516",
       "SharpDX >= 3.0.1",
       "SharpDX.Direct2D1 >= 3.0.1",
       "SharpDX.Direct3D11 >= 3.0.1",
@@ -17052,9 +16646,6 @@
       "SQLiteNetExtensions.Async >= 1.3.0",
       "System.Data.SQLite >= 1.0.98.1",
       "System.Security.Cryptography.Algorithms >= 4.0.0-beta-23516",
-      "System.Security.Cryptography.Cng >= 4.0.0-beta-23516",
-      "System.Security.Cryptography.Encoding >= 4.0.0-beta-23516",
-      "System.Security.Cryptography.Primitives >= 4.0.0-beta-23516",
       "win2D.uwp >= 1.1.0"
     ],
     "UAP,Version=v10.0": []

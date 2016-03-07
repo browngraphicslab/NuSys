@@ -9,32 +9,33 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name="Container" Height="720" Width="450">
-        <Pivot x:Name="Pivot" Background="Aquamarine" FontFamily="Cambria" Height="720" Width="450" IsLocked="True">
 
-            <PivotItem x:Name="WorkspacePivot" Background="CadetBlue" Margin="10,50,10,12" >
+    <Grid x:Name="Container" Width="{Binding Width}" Height="{Binding Height}">
+        <Pivot x:Name="Pivot" Background="#558C89" FontFamily="Cambria" IsLocked="True">
+
+            <PivotItem x:Name="WorkspacePivot" Background="#74AFAD " Margin="10,50,10,12" >
                 <PivotItem.Header>
                     <Grid>
-                        <TextBlock Text="Library"/>
+                        <TextBlock Text="Library" Foreground="Black"/>
                     </Grid>
                 </PivotItem.Header>
                 
             </PivotItem>
-            <PivotItem x:Name="FilesPivot" Background="CadetBlue" Margin="10,50,10,10">
+            <PivotItem x:Name="FilesPivot" Background="#74AFAD " Margin="10,50,10,10">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Files"/>
                     </Grid>
                 </PivotItem.Header>
             </PivotItem>
-            <PivotItem x:Name="WebPivot" Background="CadetBlue" Margin="10,50,10,11">
+            <PivotItem x:Name="WebPivot" Background="#74AFAD " Margin="10,50,10,11">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Web"/>
                     </Grid>
                 </PivotItem.Header>
             </PivotItem>
-            <PivotItem x:Name="OfficePivot" Background="CadetBlue" Margin="10,50,10,11">
+            <PivotItem x:Name="OfficePivot" Background="#74AFAD " Margin="10,50,10,11">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Office"/>
@@ -42,12 +43,12 @@
                 </PivotItem.Header>
             </PivotItem>
         </Pivot>
-        <TextBox x:Name="Searchfield" TextChanging="TextBox_OnTextChanging"  PlaceholderText="Search" FontSize="16" BorderBrush="Black" BorderThickness="3" Background="Black" Margin="10,45,159,638"></TextBox>
+        <TextBox x:Name="Searchfield" TextChanging="TextBox_OnTextChanging"  PlaceholderText="Search" FontSize="16" BorderBrush="Black" BorderThickness="3" Background="Black" Margin="10,45,159,638" Foreground="White"></TextBox>
        
         <Image Source="http://www.clker.com/cliparts/z/1/T/u/9/2/search-icon-hi.png" Margin="250,51,168,646"></Image>
-        <Image Tapped="ListButton_OnTapped" Source="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/128/View_Details.png" Margin="341,10,58,675"></Image>
-        <Image Tapped="GridButton_OnTapped" Source="https://cdn4.iconfinder.com/data/icons/miu/24/editor-grid-view-block-glyph-128.png" Margin="397,8,20,675"></Image>
-        <ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0">
+        <Image Tapped="ListButton_OnTapped" Source="https://cdn1.iconfinder.com/data/icons/game-center-mixed-icons/512/list.png" Margin="341,10,58,675"></Image>
+        <Image Tapped="GridButton_OnTapped" Source="https://cdn1.iconfinder.com/data/icons/griddler-layouts/100/layout-display-view-grid-3x3-512.png" Margin="397,8,20,675"></Image>
+        <ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0" Foreground="White">
             <x:String>Title</x:String>
             <x:String>Node type</x:String>
             <x:String>Creator</x:String>

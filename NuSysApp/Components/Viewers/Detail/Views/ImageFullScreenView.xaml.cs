@@ -1,6 +1,7 @@
 ﻿using NuSysApp.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -23,11 +24,13 @@ namespace NuSysApp
     public sealed partial class ImageFullScreenView : UserControl
     {
         private InqCanvasView _inqCanvasView;
+        private ImageElementViewModel _viewMod;
 
         public ImageFullScreenView(ImageElementViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
+            _viewMod = vm;
 
             var model = (ImageElementModel)vm.Model;
             var token = model.GetMetaData("Token");
@@ -42,24 +45,20 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                var sw = SessionController.Instance.SessionView.ActualWidth /2;
-                var sh = SessionController.Instance.SessionView.ActualHeight /2;
-
-                var ratio = vm.Width > vm.Height ? vm.Width/sw : vm.Height/sh;
-                xImg.Width = vm.Width/ratio;
-                xImg.Height = vm.Height/ratio;
-                //  xBorder.Width = xImg.Width + 5;
-                // xBorder.Height = xImg.Height +5;
-
-
-                //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
-                //xWrapper.Children.Add(_inqCanvasView);
-                //_inqCanvasView.IsEnabled = true;
-                //_inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
-                //_inqCanvasView.Width = xImg.Width;
-                //_inqCanvasView.Height = xImg.Height;   
+                SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
             };
+            SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
         }
+
+        public void SetDimension(double parentWidth, double parentHeight)
+        {
+            var ratio = _viewMod.Width > _viewMod.Height ? _viewMod.Width / parentWidth : _viewMod.Height / parentHeight;
+            xImg.Width = _viewMod.Width / ratio;
+            xImg.MaxWidth = parentWidth*0.9;
+            xImg.Height = _viewMod.Height / ratio;
+            xImg.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
+            buttons.Width = xImg.ActualWidth;
+        } 
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {

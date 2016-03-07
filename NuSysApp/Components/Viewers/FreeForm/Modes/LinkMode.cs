@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using MyToolkit.UI;
 using NuSysApp;
 using ReverseMarkdown.Converters;
 
@@ -20,8 +22,11 @@ namespace NuSysApp {
 
         public async override Task Activate()
         {
-            _view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;   
+
+            _view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;
+           
         }
+
 
         public async override Task Deactivate()
         {

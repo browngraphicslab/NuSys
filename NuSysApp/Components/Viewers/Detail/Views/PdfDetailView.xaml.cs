@@ -29,6 +29,7 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
+            vm.MakeTagList();
 
             var model = (PdfNodeModel)vm.Model;
             var token = model.GetMetaData("Token");
@@ -36,32 +37,35 @@ namespace NuSysApp
             if (token == null || String.IsNullOrEmpty(token?.ToString()))
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
-            }else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            }
+            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
+            Loaded += async delegate (object sender, RoutedEventArgs args)
             {
 
-                vm.PropertyChanged += delegate(object o, PropertyChangedEventArgs eventArgs)
+                vm.PropertyChanged += delegate (object o, PropertyChangedEventArgs eventArgs)
                 {
                     if (eventArgs.PropertyName != "ImageSource")
                         return;
 
                     var sw = SessionController.Instance.SessionView.ActualWidth / 1.2;
                     var sh = SessionController.Instance.SessionView.ActualHeight / 1.2;
-                    var ratio = vm.Width > vm.Height ? vm.Width / sw : vm.Height/ sh;
+                    var ratio = vm.Width > vm.Height ? vm.Width / sw : vm.Height / sh;
                     xImg.Width = vm.Width / ratio;
                     xImg.Height = vm.Height / ratio;
                     xBorder.Width = xImg.Width + 5;
                     xBorder.Height = xImg.Height + 5;
-                    
+
                 };
 
-                /*
 
-                _inqCanvasView = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(xImg.Width, xImg.Height)));
+               // await vm.InitPdfViewer();
+
+
+                _inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
                 xWrapper.Children.Insert(1, _inqCanvasView);
                 _inqCanvasView.IsEnabled = true;
                 _inqCanvasView.HorizontalAlignment = HorizontalAlignment.Left;
@@ -77,8 +81,6 @@ namespace NuSysApp
                     Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
                 };
 
-    */
-
             };
         }
 
@@ -86,7 +88,7 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             await vm.FlipLeft();
-          //  (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //  nodeTpl.inkCanvas.ReRenderLines();
 
@@ -96,8 +98,8 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel)this.DataContext;
             await vm.FlipRight();
-         //   (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
-           // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
+            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //   nodeTpl.inkCanvas.ReRenderLines();
         }
@@ -107,7 +109,7 @@ namespace NuSysApp
             var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
 
             string token = model.GetMetaData("Token")?.ToString();
-            
+
             await AccessList.OpenFile(token);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -95,10 +96,13 @@ namespace NuSysApp
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-
+            if (!(((FrameworkElement)e.OriginalSource).DataContext is FreeFormViewerViewModel))
+                return;
+            
             var vm = (FreeFormViewerViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
+
             var tmpTranslate = new TranslateTransform
             {
                 X = compositeTransform.CenterX,

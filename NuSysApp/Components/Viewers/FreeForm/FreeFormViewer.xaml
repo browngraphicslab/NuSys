@@ -11,7 +11,9 @@
     d:DesignWidth="400">
 
     <Canvas x:Name="xOuterWrapper">
+
         <Canvas x:Name="xWrapper" >
+
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

@@ -39,10 +39,13 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             if (!SessionController.Instance.IdToControllers.ContainsKey(Id))
+            {
                 return;
-            var elementController = SessionController.Instance.IdToControllers[Id];
-            var parent = (ElementCollectionController)SessionController.Instance.IdToControllers[elementController.Model.Creator];
-            parent.RemoveChild(elementController);
+            }
+
+            var atomModel = SessionController.Instance.IdToControllers[Id];
+            atomModel.Delete();
+            SessionController.Instance.IdToControllers.Remove(Id);
         }
     }
     public class DeleteSendableRequestException : Exception

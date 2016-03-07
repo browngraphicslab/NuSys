@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
@@ -20,13 +21,13 @@ namespace NuSysApp
 
         protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
-        protected ElementModel(string id) : base(id)
+        public ElementModel(string id) : base(id)
         {
 
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
 
-            Type = ElementType.Node;
+            ElementType = ElementType.Node;
             InqCanvas = new InqCanvasModel(id);
         }
 
@@ -37,8 +38,6 @@ namespace NuSysApp
         public string ContentId { set; get; }
 
         public string Creator { get; set; }
-
-        public ElementType Type { get; set; }
 
         // TODO: Move color to higher level type
 
@@ -136,6 +135,11 @@ namespace NuSysApp
             
         }
 
+        public string[] GetMetaDataKeys()
+        {
+            return Metadata.Keys.ToArray();
+        }
+
         public virtual void Delete()
         {
         }
@@ -153,7 +157,7 @@ namespace NuSysApp
             dict.Add("scaleY", ScaleY);
             dict.Add("title", Title);
             dict.Add("nodeType", ElementType.ToString());
-            dict.Add("type", Type.ToString());
+            dict.Add("type", ElementType.ToString());
             dict.Add("contentId", ContentId);
 
             var lines = new List<Dictionary<string, object>>();

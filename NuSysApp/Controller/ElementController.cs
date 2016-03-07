@@ -22,6 +22,7 @@ namespace NuSysApp
         public delegate void CanEditChangedEventHandler(object source, EditStatus status);
         public delegate void ContentLoadedHandler(object source, NodeContentModel data);
         public event ContentLoadedHandler ContentLoaded;
+        public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
@@ -105,6 +106,7 @@ namespace NuSysApp
 
         public void SetMetadata(string key, object val)
         {
+            Model.SetMetaData(key, val);
             MetadataChange?.Invoke(this, key);
         }
 
@@ -112,25 +114,49 @@ namespace NuSysApp
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
         }
-        public virtual void Duplicate()
+
+
+        public virtual void Duplicate(double x, double y)
         {
             Message m = new Message();
             m["contentId"] = Model.ContentId;
             m["data"] = "";
-            m["x"] = Model.X;
-            m["y"] = Model.Y;
-            m["width"] = 400;
-            m["height"] = 400;
+            m["x"] = x;
+            m["y"] = y;
+            m["width"] = Model.Width;
+            m["height"] = Model.Height;
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
 
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual void MoveToCollection(ElementCollectionController collection)
+        public virtual async void LinkTo(string otherId)
         {
-            Delete();
-            collection.AddChild(this);
+            var contentId = SessionController.Instance.GenerateId();
+            var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
+            var request = new NewLinkRequest(Model.Id, otherId, Model.Creator,contentId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+        }
+
+        public virtual async Task RequestMoveToCollection(string id)
+        {
+            var metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+
+            var m1 = new Message();
+            m1["metadata"] = metadata;
+            m1["contentId"] = Model.ContentId;
+            m1["nodeType"] = Model.ElementType;
+            m1["x"] = 0;
+            m1["y"] = 0;
+            m1["width"] = 200;
+            m1["height"] = 200;
+            m1["autoCreate"] = true;
+            m1["creator"] = id;
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
+
         }
 
         public void SetLastNetworkUser( NetworkUser user )
@@ -171,6 +197,12 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
+            if (props.ContainsKey("data"))
+            {
+                var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
+                content.Data = props.GetString("data", "");
+                ContentChanged?.Invoke(this, content);
+            }
         }
 
     }

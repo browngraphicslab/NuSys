@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,15 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+
 using NuSysApp.Util;
 
 namespace NuSysApp
@@ -23,7 +27,7 @@ namespace NuSysApp
 
         private int _penSize = Constants.InitialPenSize;
         private CortanaMode _cortanaModeInstance;
-        private FreeFormViewer _activeWorkspace;
+        private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
         private static List<ElementModel> createdModels;
@@ -41,10 +45,6 @@ namespace NuSysApp
             get { return LibraryDraggingNode; }
         }
 
-        public LibraryView Library
-        {
-            get { return LibraryView; }
-        }
 
         #endregion Private Members
 
@@ -64,7 +64,18 @@ namespace NuSysApp
                 delegate(object sender, SizeChangedEventArgs args)
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
+                    Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
                 };
+
+            xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
+            {
+                ActivatePenMode(true);
+                args.Handled = true;
+            };
+            xBtnPen.PointerExited += delegate (object sender, PointerRoutedEventArgs args)
+            {
+                ActivatePenMode(false);            
+            };
 
             Loaded += OnLoaded;
         }
@@ -100,7 +111,7 @@ namespace NuSysApp
                 new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name = "Me"});
                 //TODO have Trent fix this -trent
 
-            await Library.Reload();
+           // await Library.Reload();
             ChatPopup.OnNewTextsChanged += delegate(int newTexts)
             {
                 if (newTexts > 0)
@@ -152,23 +163,45 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
                 xFullScreenViewer.Opacity < 0.1)
             {
-                xFloatingMenu.SetActive(Options.PenGlobalInk);
-                _prevOptions = Options.PenGlobalInk;
-                IsPenMode = true;
+                ActivatePenMode(true);
             }
         }
 
-        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        private async void OnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
             if (args.VirtualKey == VirtualKey.Shift && xFullScreenViewer.Opacity < 0.1)
             {
+                ActivatePenMode(false);
+            }
+        }
+
+        private void ActivatePenMode(bool val)
+        {
+     
+            if (val)
+            {
+                if (IsPenMode)
+                    return;
+                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
+                _prevOptions = Options.PenGlobalInk;
+                IsPenMode = true;
+                xBtnPen.Background = new SolidColorBrush(Colors.Firebrick);
+                Debug.WriteLine("asdasdas");
+            }
+            else
+            {
+                if (!IsPenMode)
+                    return;
                 xFloatingMenu.SetActive(Options.SelectNode);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
+                xBtnPen.Background = new SolidColorBrush(Colors.IndianRed);
+                Debug.WriteLine("asdasdas");
             }
+            
         }
 
         public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
@@ -254,12 +287,12 @@ namespace NuSysApp
         {
             SessionController.Instance.IdToControllers.Clear();
 
-            if (_activeWorkspace != null)
+            if (_activeFreeFormViewer != null)
             {
-                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
-                var wsvm = (FreeFormViewerViewModel) _activeWorkspace.DataContext;
-                mainCanvas.Children.Remove(_activeWorkspace);
-                _activeWorkspace = null;
+                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
+                var wsvm = (FreeFormViewerViewModel) _activeFreeFormViewer.DataContext;
+                mainCanvas.Children.Remove(_activeFreeFormViewer);
+                _activeFreeFormViewer = null;
             }
 
             var sc = CreateEmptyElementCollectionInstanceController();
@@ -286,20 +319,20 @@ namespace NuSysApp
 
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
-            await DisposeCollectionView(_activeWorkspace);
-            if (_activeWorkspace != null && mainCanvas.Children.Contains(_activeWorkspace))
-                mainCanvas.Children.Remove(_activeWorkspace);
+            await DisposeCollectionView(_activeFreeFormViewer);
+            if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
+                mainCanvas.Children.Remove(_activeFreeFormViewer);
 
-            if (_activeWorkspace != null)
-                xFloatingMenu.ModeChange -= _activeWorkspace.SwitchMode;
+            if (_activeFreeFormViewer != null)
+                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
 
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
-            _activeWorkspace = new FreeFormViewer(freeFormViewerViewModel);
-            mainCanvas.Children.Insert(0, _activeWorkspace);
+            _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+            mainCanvas.Children.Insert(0, _activeFreeFormViewer);
 
-            _activeWorkspace.DataContext = freeFormViewerViewModel;
-            xFloatingMenu.ModeChange += _activeWorkspace.SwitchMode;
+            _activeFreeFormViewer.DataContext = freeFormViewerViewModel;
+            xFloatingMenu.ModeChange += _activeFreeFormViewer.SwitchMode;
 
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             SessionController.Instance.SessionView = this;
@@ -317,8 +350,6 @@ namespace NuSysApp
             freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
-            Canvas.SetTop(xMediaRecorder, mainCanvas.ActualHeight - xMediaRecorder.ActualHeight);
-            Canvas.SetLeft(xMediaRecorder, mainCanvas.ActualWidth - xMediaRecorder.ActualWidth);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
@@ -332,17 +363,14 @@ namespace NuSysApp
             //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
-            Canvas.SetTop(LibraryView, 55);
-            Canvas.SetLeft(LibraryView, 900);
-            Canvas.SetTop(LibraryMaximizer, 350);
-            Canvas.SetLeft(LibraryMaximizer, 1300);
-            LibraryView.Visibility = Visibility.Collapsed;
+
+
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateTitle(object sender, object args)
         {
-            var model = ((FreeFormViewerViewModel) _activeWorkspace.DataContext).Model;
+            var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
             model.Title = xWorkspaceTitle.Text;
             var m = new Message();
             m["id"] = model.Id;
@@ -358,16 +386,6 @@ namespace NuSysApp
             {
                 xWorkspaceTitle.Text = title;
             }
-        }
-
-        public void ShowRecorder()
-        {
-            xMediaRecorder.Show();
-        }
-
-        public void HideRecorder()
-        {
-            xMediaRecorder.Hide();
         }
 
         public void SearchView()
@@ -488,10 +506,6 @@ namespace NuSysApp
             }
         }
 
-        private void LibraryMaximizer_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            LibraryView.ToggleVisiblity();
-        }
 
         private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)
         {

@@ -37,7 +37,6 @@
     </Page.Resources>
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
-        <local:MediaRecorderView x:Name="xMediaRecorder" VerticalAlignment="Top"/>
         <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
             <Image Source="/Assets/icon_record.png"></Image>
@@ -52,11 +51,13 @@
         </StackPanel>
         <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="DeepPink"></Rectangle>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
-        <local:DetailViewerView x:Name="xFullScreenViewer"></local:DetailViewerView>
-        <local:LibraryView x:Name="LibraryView"></local:LibraryView>
-        <Image x:Name="LibraryMaximizer" Source="http://iconizer.net/files/Sabre/orig/folder_black_library.png" Height="70" Width="70" Tapped="LibraryMaximizer_OnTapped"></Image>
 
+        <local:DetailViewerView x:Name="xFullScreenViewer"></local:DetailViewerView>
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
+        <Grid x:Name="xBtnPen" Background="IndianRed" Width="70" Height="100">
+            <TextBlock Text="P" FontWeight="Black"></TextBlock>
+        </Grid>
+
     </Canvas>
 </Page>

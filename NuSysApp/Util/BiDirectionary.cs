@@ -22,6 +22,11 @@ namespace NuSysApp
             return valueToKey[val];
         }
 
+        public bool ContainsValue(TV value)
+        {
+            return valueToKey.ContainsKey(value);
+        }
+
         public TV this[TK i]
         {
             get { return base[i]; }
