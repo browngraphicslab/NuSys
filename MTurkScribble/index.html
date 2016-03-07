@@ -99,7 +99,7 @@ function telemetryEnd() {
 	var determiner = (InkStrokeLength - FirsttoLastPoint)/CentroidtoMidpoint;//used to determine if a stroke is a scribble or not
 	var determinerLowerBounds = 6e4;
 	var determinerUpperBounds = 8e4;
-	var lDisUpperBounds = 7e2;
+	var lDisUpperBounds = 5.5e2;
 	console.log(determiner);
 	console.log(InkStrokeLength - FirsttoLastPoint);
 	if (determiner < determinerUpperBounds && determiner > determinerLowerBounds || determiner < determinerLowerBounds && InkStrokeLength - FirsttoLastPoint > lDisUpperBounds)
