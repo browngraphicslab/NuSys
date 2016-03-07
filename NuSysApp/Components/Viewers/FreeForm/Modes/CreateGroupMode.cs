@@ -94,7 +94,6 @@ namespace NuSysApp
             p.X -= 150;
             p.Y -= 150;
 
-
             var controller1 = SessionController.Instance.IdToControllers[id1];
             var controller2 = SessionController.Instance.IdToControllers[id2];
 
@@ -121,7 +120,7 @@ namespace NuSysApp
                 elementMsg["id"] = newGroupId;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection.ToString(), "New Collection"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
 
                 await controller2.RequestMoveToCollection(newGroupId);
                 await controller1.RequestMoveToCollection(newGroupId);

@@ -39,7 +39,9 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             if (!SessionController.Instance.IdToControllers.ContainsKey(Id))
+            {
                 return;
+            }
 
             var atomModel = SessionController.Instance.IdToControllers[Id];
             atomModel.Delete();

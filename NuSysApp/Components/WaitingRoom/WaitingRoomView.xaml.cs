@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -20,6 +23,14 @@ namespace NuSysApp
     public sealed partial class WaitingRoomView : Page
     {
         public FreeFormViewer _freeFormViewer;
+
+        public static string InitialWorkspaceId { get; private set; }
+        public static bool IsLocal { get; set; }
+        public static string ServerName { get; private set; }
+        public static string UserName { get; private set; }
+        public static string Password { get; private set; }
+
+
         private static IEnumerable<string> _firstLoadList;
         public WaitingRoomView()
         {
@@ -62,9 +73,14 @@ namespace NuSysApp
                     box.Text = s;
                     List.Items.Add(box);
                 }
+                if (SessionController.Instance.NuSysNetworkSession.LocalIP == null)
+                {
+                    await SessionController.Instance.NuSysNetworkSession.Init();
+                }
             }
             catch (Exception e)
             {
+                Debug.WriteLine("not a valid server");
                 // TODO: fix this
             }
         }
@@ -77,14 +93,6 @@ namespace NuSysApp
         {
             IsLocal = true;
             this.Frame.Navigate(typeof(SessionView));
-        }
-        private void clear_OnClick(object sender, RoutedEventArgs e)
-        {
-            const string URL = "http://aint.ch/nusys/clients.php";
-            var urlParameters = "?action=clear";
-            var client = new HttpClient { BaseAddress = new Uri(URL) };
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = client.GetAsync(urlParameters).Result;
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
@@ -115,9 +123,55 @@ namespace NuSysApp
             var l = new List<string>(_firstLoadList);
             _firstLoadList = null;
             return l;
-        } 
-        public static string InitialWorkspaceId { get; private set; }
-        public static bool IsLocal { get; set; }
-        public static string ServerName { get; private set; }
+        }
+
+        private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var cred = new Dictionary<string, string>();
+                /*
+                cred["user"] = usernameInput.Text;
+                cred["pass"] = passwordInput.Text;
+                */
+                var url = "http://" + ServerName + "/api/login/" ;
+                var client = new HttpClient(
+                 new HttpClientHandler
+                 {
+                     Credentials = new NetworkCredential("unusys","pnusys"),
+                     ClientCertificateOptions = ClientCertificateOption.Automatic
+                 });
+
+                var response = await client.PutAsync(new Uri(url),new StringContent(JsonConvert.SerializeObject(cred), Encoding.UTF8, "application/json"));
+                //var response = await client.GetAsync(new Uri(url));
+                string data;
+                using (var content = response.Content)
+                {
+                    data = await content.ReadAsStringAsync();
+                }
+            }
+            catch (HttpRequestException h)
+            {
+                Debug.WriteLine("cannot connect to server");
+            }
+            
+        }
+        //TODO: move this crypto stuff elsewhere, only here temporarily
+        public static byte[] Encrypt(string plain)
+        {
+            return Encrypt(GetBytes(plain));
+        }
+
+        public static byte[] Encrypt(byte[] bytes)
+        {
+            var sha = SHA256.Create();
+            return sha.ComputeHash(bytes);
+        }
+        static byte[] GetBytes(string str)
+        {
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
+        }
     }
 }

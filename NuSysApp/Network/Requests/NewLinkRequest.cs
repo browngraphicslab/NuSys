@@ -10,12 +10,13 @@ namespace NuSysApp
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
-            _message["id"] = SessionController.Instance.GenerateId();
+            _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
+            _message["contentId"] = contentId;
         }
         public override async Task CheckOutgoingRequest()
         {
@@ -23,8 +24,9 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
+            _message["type"] = ElementType.Link.ToString();
             SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Content);
+            SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
         }
 

@@ -40,6 +40,8 @@ namespace NuSysApp
             var view = await _nodeViewFactory.CreateFromSendable(elementController);   
             AtomViewList.Add(view);
 
+            elementController.Deleted += OnChildDeleted;
+
             var model = elementController.Model;
             if (model.ContentId != null )
             {
@@ -62,6 +64,12 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.Get(model.ContentId));
                 }
             }
+        }
+
+        private void OnChildDeleted(object source)
+        {
+            var c = (ElementCollectionController) Controller;
+            c.RemoveChild((ElementController)source);
         }
 
         private void OnChildRemoved(object source, ElementController elementController)

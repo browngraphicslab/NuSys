@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.ApplicationSettings;
 using NuSysApp.Controller;
 
 namespace NuSysApp
@@ -35,11 +36,11 @@ namespace NuSysApp
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
+        public event DeleteEventHandler Deleted;
         public event LinkAddedEventHandler LinkedAdded;
         public event ContentLoadedHandler ContentLoaded;
         public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
-        public event DeleteEventHandler Deleted;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
@@ -132,14 +133,18 @@ namespace NuSysApp
             MetadataChange?.Invoke(this, key);
         }
 
-        public virtual void Delete()
+        public void Delete()
         {
-            var parent = (ElementCollectionController)SessionController.Instance.IdToControllers[Model.Creator];
-            parent.RemoveChild(this);
             Deleted?.Invoke(this);
         }
 
-        public virtual void Duplicate(double x, double y)
+        public async virtual void RequestDelete()
+        {
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
+        }
+
+
+        public async virtual void RequestDuplicate(double x, double y)
         {
             Message m = new Message();
             m["contentId"] = Model.ContentId;
@@ -151,12 +156,14 @@ namespace NuSysApp
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
 
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async void LinkTo(string otherId)
+        public virtual async void RequestLinkTo(string otherId)
         {
-            var request = new NewLinkRequest(Model.Id, otherId, Model.Creator);
+            var contentId = SessionController.Instance.GenerateId();
+            var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
+            var request = new NewLinkRequest(Model.Id, otherId, Model.Creator,contentId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
