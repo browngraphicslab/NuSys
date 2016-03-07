@@ -88,6 +88,10 @@ namespace NuSysApp
                     elementModel = new ElementModel(id);
                     controller = new ElementController(elementModel);
                     break;
+                case ElementType.Link:
+                    elementModel = new LinkModel(id);
+                    controller = new ElementController(elementModel);
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }

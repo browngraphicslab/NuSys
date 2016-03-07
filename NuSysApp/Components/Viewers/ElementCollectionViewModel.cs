@@ -37,7 +37,7 @@ namespace NuSysApp
 
         private async void OnChildAdded(object source, ElementController elementController)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(elementController, AtomViewList.ToList());   
+            var view = await _nodeViewFactory.CreateFromSendable(elementController);   
             AtomViewList.Add(view);
 
             var model = elementController.Model;

@@ -145,9 +145,6 @@ namespace NuSysApp
                 case Request.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
-                case Request.RequestType.NewLibraryElementCollectionRequest:
-                    request = new NewLibraryElementCollectionRequest(message);
-                    break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;

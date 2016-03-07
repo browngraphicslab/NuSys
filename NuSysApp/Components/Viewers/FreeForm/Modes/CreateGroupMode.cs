@@ -121,7 +121,7 @@ namespace NuSysApp
                 elementMsg["id"] = newGroupId;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLibraryElementCollectionRequest(contentId,"",id1,id2,"NEW GROUP"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection.ToString(), "New Collection"));
 
                 await controller2.RequestMoveToCollection(newGroupId);
                 await controller1.RequestMoveToCollection(newGroupId);

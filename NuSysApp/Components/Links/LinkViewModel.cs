@@ -1,24 +1,35 @@
 ﻿using System;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Controller;
 
 namespace NuSysApp
 {
     public class LinkViewModel : ElementViewModel
     {
-        public LinkViewModel(ElementController controller, ElementViewModel atom1, ElementViewModel atom2) : base(controller)
+
+        private ElementController InElementController;
+        private ElementController OutElementController;
+
+        public LinkViewModel(LinkElementController controller) : base(controller)
         {
-            Atom1 = atom1;
-            Atom2 = atom2;
-            var line = LineRepresentation;
-            Anchor = new Point2d((int) (line.X2 + (Math.Abs(line.X2 - line.X1)/2)),
-                (int) (line.Y1 + (Math.Abs(line.Y2 - line.Y1)/2)));
-            Atom1.AddLink(this);
-            Atom2.AddLink(this);
+            var linkModel = (LinkModel)controller.Model;
+            InElementController = SessionController.Instance.IdToControllers[linkModel.InAtomId]; 
+            OutElementController = SessionController.Instance.IdToControllers[linkModel.OutAtomId];
+
+            Anchor = new Point2d((int) (OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X)/2)),
+                (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
+
 
             AnnotationText = controller.Model.Title;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+
+            controller.AnchorUpdated += OnAnchorUpdated;
+        }
+
+        private void OnAnchorUpdated(object source)
+        {
         }
 
 
@@ -45,12 +56,8 @@ namespace NuSysApp
 
         public override void UpdateAnchor()
         {
-            var line = this.LineRepresentation;
-            var dx = (line.X2 - line.X1)/2;
-            var dy = (line.Y2 - line.Y1)/2;
-            Anchor.X = (int) (line.X1 + dx);
-            Anchor.Y = (int) (line.Y1 + dy);
-            Anchor = new Point2d(this.Anchor.X, this.Anchor.Y);
+            Anchor = new Point2d((int)(OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X) / 2)),
+                (int)(InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y) / 2)));
 
             foreach (var link in LinkList)
             {
@@ -92,29 +99,8 @@ private ElementViewModel _atom1, _atom2;
 
         #region Public Properties
 
-        public ElementViewModel Atom1
-        {
-            get { return _atom1; }
-            set
-            {
-                _atom1 = value;
-                RaisePropertyChanged("Atom1");
-            }
-        }
-
-        public ElementViewModel Atom2
-        {
-            get { return _atom2; }
-            set
-            {
-                _atom2 = value;
-                RaisePropertyChanged("Atom2");
-            }
-        }
-
-        public Line LineRepresentation
-            => new Line() {X1 = Atom1.Anchor.X, X2 = Atom2.Anchor.X, Y1 = Atom1.Anchor.Y, Y2 = Atom2.Anchor.Y};
-
+       
+       
         #endregion Public Properties
     }
 }

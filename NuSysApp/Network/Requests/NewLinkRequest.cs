@@ -35,7 +35,7 @@ namespace NuSysApp
             var creator = _message.GetString("creator");
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
-                var link = new LinkModel((ElementModel)SessionController.Instance.IdToControllers[id1].Model, (ElementModel)SessionController.Instance.IdToControllers[id2].Model, id);
+                var link = new LinkModel(id);
                 var linkController = new ElementController(link);
                 SessionController.Instance.IdToControllers.Add(id, linkController);
                 await link.UnPack(_message);

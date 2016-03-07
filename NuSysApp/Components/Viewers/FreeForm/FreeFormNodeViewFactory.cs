@@ -7,18 +7,16 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using NuSysApp.Controller;
 
 
 namespace NuSysApp
 {
     public class FreeFormNodeViewFactory : INodeViewFactory
     {
-        public async Task<FrameworkElement> CreateFromSendable(ElementController controller, List<FrameworkElement> AtomViewList)
+        public async Task<FrameworkElement> CreateFromSendable(ElementController controller)
         {
             UserControl view = null;
-
-            if (controller.Model is LinkModel)
-                return CreateLinkView((LinkModel)controller.Model, AtomViewList);
 
             var model = controller.Model;
 
@@ -60,6 +58,9 @@ namespace NuSysApp
                 case ElementType.Area:
                     view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)controller));
                     break;
+                case ElementType.Link:
+                    view = new BezierLinkView(new LinkViewModel((LinkElementController)controller));
+                    break;
             }
             await ((ElementViewModel)view.DataContext).Init();
 
@@ -67,20 +68,6 @@ namespace NuSysApp
         }
 
 
-        private UserControl CreateLinkView(LinkModel model, List<FrameworkElement> AtomViewList)
-        {
-            var atom1Vm =
-                (ElementViewModel)
-                    AtomViewList.First(s => ((ElementViewModel) s.DataContext).Model == model.Atom1).DataContext;
-            var atom2Vm =
-                (ElementViewModel)
-                    AtomViewList.First(s => ((ElementViewModel) s.DataContext).Model == model.Atom2).DataContext;
-
-            var viewModel = new LinkViewModel(new ElementController(model), atom1Vm, atom2Vm);
-            var view = new BezierLinkView(viewModel);
-            atom1Vm.AddLink(viewModel);
-            atom2Vm.AddLink(viewModel);
-            return view;
-        }
+       
     }
 }

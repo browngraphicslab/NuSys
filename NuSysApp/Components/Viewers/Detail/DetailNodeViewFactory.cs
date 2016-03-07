@@ -38,16 +38,17 @@ namespace NuSysApp
 
         private UserControl CreateLinkView(LinkModel model, List<UserControl> AtomViewList)
         {
-
+            /*
             var atom1Vm = (ElementViewModel)AtomViewList.First(s => ((ElementViewModel)s.DataContext).Model == model.Atom1).DataContext;
             var atom2Vm = (ElementViewModel)AtomViewList.First(s => ((ElementViewModel)s.DataContext).Model == model.Atom2).DataContext;
 
             var viewModel = new LinkViewModel(new ElementController(model), atom1Vm, atom2Vm);
             //var view = new BezierLinkView(viewModel);
-            atom1Vm.AddLink(viewModel);
-            atom2Vm.AddLink(viewModel);
+          //  atom1Vm.AddLink(viewModel);
+           // atom2Vm.AddLink(viewModel);
             var view = new LinkDetailView(viewModel);
-            return view;
+            */
+            return null;
 
         }
 

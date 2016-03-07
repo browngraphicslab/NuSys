@@ -9,6 +9,7 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using NuSysApp.Controller;
 
 namespace NuSysApp
 {
@@ -32,7 +33,7 @@ namespace NuSysApp
         protected ElementViewModel(ElementController controller)
         {
             _controller = controller;
-            LinkList = new ObservableCollection<LinkViewModel>();
+            LinkList = new ObservableCollection<LinkElementController>();
             controller.CanEditChange += OnCanEditChange;
             controller.MetadataChange += OnMetadataChange;
             controller.PositionChanged += OnPositionChanged;
@@ -41,6 +42,7 @@ namespace NuSysApp
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
             controller.TitleChanged += OnTitleChanged;
+            controller.LinkedAdded += OnLinkedAdded;
 
             Tags = new ObservableCollection<Button>();
             
@@ -52,6 +54,12 @@ namespace NuSysApp
                 };
 
             ReadFromModel();
+        }
+
+        private void OnLinkedAdded(object source, LinkElementController linkController)
+        {
+            LinkList.Add(linkController);
+            UpdateAnchor();
         }
 
         public virtual async Task Init()
@@ -190,14 +198,6 @@ namespace NuSysApp
             UpdateAnchor();
         }
 
-
-        public void AddLink(LinkViewModel linkVm)
-        {
-            LinkList.Add(linkVm);
-            UpdateAnchor();
-        }
-
-
         #endregion
 
 
@@ -213,11 +213,11 @@ namespace NuSysApp
             }
         }
 
-
+ 
 
         #region Public Properties
 
-        public ObservableCollection<LinkViewModel> LinkList { get; set; }
+        public ObservableCollection<LinkElementController> LinkList { get; set; }
 
         private EditStatus _canEdit;
 
@@ -455,8 +455,9 @@ namespace NuSysApp
                     // return true if at least one link is selected
                     foreach (var link in LinkList)
                     {
-                        if (link.IsSelected)
-                            return true;
+                        // TODO: refactor
+                        //if (link.Model.IsSelected)
+                        //    return true;
                     }
                 }
                 return false;

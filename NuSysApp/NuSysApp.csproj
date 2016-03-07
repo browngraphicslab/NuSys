@@ -332,6 +332,7 @@
     <Compile Include="Controller\ContentController.cs" />
     <Compile Include="Controller\ElementCollectionController.cs" />
     <Compile Include="Controller\ElementController.cs" />
+    <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Effects\Anim.cs" />
@@ -360,7 +361,6 @@
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
-    <Compile Include="Network\Requests\NewLibraryElementCollectionRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewElementRequest.cs" />
@@ -513,7 +513,7 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\PseudoNode.xaml.cs">
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\Nodes\FreeFormNodeViewFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\FreeFormNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\TagNode\LabelNodeView.xaml.cs">
       <DependentUpon>LabelNodeView.xaml</DependentUpon>
     </Compile>

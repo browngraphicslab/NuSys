@@ -20,8 +20,8 @@ namespace NuSysApp
 
             vm.PropertyChanged += OnPropertyChanged;
 
-            vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
-            vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
+        //    vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
+        //    vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
 
             var model = vm.Model;
             vm.Controller.TitleChanged += delegate//TODO remove this handler eventually
@@ -95,6 +95,7 @@ namespace NuSysApp
         {
             this.UpdateEndPoints();
 
+            /*
             var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
@@ -111,15 +112,18 @@ namespace NuSysApp
 
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX/2 - Rect.ActualWidth/2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY/2 - Rect.ActualHeight*1.5);
+            */
         }
 
         private void UpdateEndPoints()
         {
+            /*
             var vm = (LinkViewModel) this.DataContext;
             var atom1 = vm.Atom1;
             var atom2 = vm.Atom2;
             pathfigure.StartPoint = atom1.Anchor;
             curve.Point3 = atom2.Anchor;
+            */
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)

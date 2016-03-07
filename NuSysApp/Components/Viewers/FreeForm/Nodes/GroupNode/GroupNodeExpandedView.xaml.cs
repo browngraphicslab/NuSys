@@ -62,7 +62,7 @@ namespace NuSysApp
             {
                 var child = (FrameworkElement) newItem;
                 var childModel = (child.DataContext as GroupItemViewModel).Controller;
-                var view = await _factory.CreateFromSendable(childModel, null);
+                var view = await _factory.CreateFromSendable(childModel);
                 var wrappedView = new Border();
                 wrappedView.Padding = new Thickness(10);
                 wrappedView.Child = view;
@@ -77,7 +77,7 @@ namespace NuSysApp
         {
             var child = (FrameworkElement)myObj;
             var childModel = (child.DataContext as GroupItemViewModel).Controller;
-            var view = await _factory.CreateFromSendable(childModel, null);
+            var view = await _factory.CreateFromSendable(childModel);
             var wrappedView = new Border();
             wrappedView.Padding = new Thickness(10);
             wrappedView.Child = view;

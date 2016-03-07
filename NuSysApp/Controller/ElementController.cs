@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuSysApp.Controller;
 
 namespace NuSysApp
 {
@@ -13,15 +14,28 @@ namespace NuSysApp
         private DebouncingDictionary _debouncingDictionary;
 
         public delegate void AlphaChangedEventHandler(object source, double alpha);
+
         public delegate void DeleteEventHandler(object source);
+
         public delegate void LocationUpdateEventHandler(object source, double x, double y);
+
         public delegate void MetadataChangeEventHandler(object source, string key);
+
         public delegate void NetworkUserChangedEventHandler(NetworkUser user);
+
         public delegate void ScaleChangedEventHandler(object source, double sx, double sy);
+
         public delegate void TitleChangedHandler(object source, string title);
+
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
+
         public delegate void CanEditChangedEventHandler(object source, EditStatus status);
+
         public delegate void ContentLoadedHandler(object source, NodeContentModel data);
+
+        public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
+
+        public event LinkAddedEventHandler LinkedAdded;
         public event ContentLoadedHandler ContentLoaded;
         public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
@@ -43,7 +57,7 @@ namespace NuSysApp
             _editStatus = EditStatus.Maybe;
         }
 
-        public virtual async Task FireContentLoaded( NodeContentModel content )
+        public virtual async Task FireContentLoaded(NodeContentModel content)
         {
             ContentLoaded?.Invoke(this, content);
         }
@@ -53,7 +67,13 @@ namespace NuSysApp
             Model.Creator = parentId;
         }
 
-        public void SetScale(double sx, double sy)
+        public void AddLink(LinkElementController linkController)
+        {
+            var linkModel = (LinkModel)linkController.Model;
+            LinkedAdded?.Invoke(this, linkController);
+        }
+
+    public void SetScale(double sx, double sy)
         {
             Model.ScaleX = sx;
             Model.ScaleY = sy;
