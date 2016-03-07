@@ -94,18 +94,6 @@ namespace NuSysApp
             await request.CheckOutgoingRequest();
             await ProcessIncomingSystemRequest(request.GetFinalMessage());
         }
-
-        private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
-        {
-            await _serverClient.SendMessageToServer(message);
-            //await _networkSession.SendRequestMessage(message, recieverIPs ?? NetworkMemberIPs, NetworkClient.PacketType.TCP);
-        }
-
-        private async Task SendRequest(Message message)
-        { 
-            await _serverClient.SendMessageToServer(message);
-        }
-
         private async void OnMessageRecieved(Message m)
         {
             await ProcessIncomingRequest(m);
@@ -268,6 +256,11 @@ namespace NuSysApp
         public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
+        }
+
+        public async Task Login(string username, string password)
+        {
+            
         }
     }
     public class NoRequestTypeException : Exception
