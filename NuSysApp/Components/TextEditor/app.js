@@ -5,11 +5,58 @@ var Editor = (function () {
         this.element = element; // div containing text editor
         this.preview = preview;
         this.element.setAttribute("contenteditable", "true"); //makes text editor editable
+        this.activateTabbing();
         this.activateButtons(".btn"); // toolbar push buttons 
         this.activateButtons(".dropdown-menu li a"); // toolbar dropdown menus 
         this.activateLinkCreator(); // creating links
         this.clickableLinks(); // making links clickable in detail view
         this.updateNodeView(); // updating text node as changes are made in text detail editor
+    }
+
+    Editor.prototype.activateTabbing = function () {
+        this.element.addEventListener("keydown", function(e) {
+            if (e.keyCode === 9 || e.which === 9) {
+                e.preventDefault();
+                document.execCommand('styleWithCSS', true, null)
+                document.execCommand('indent', true, null)
+            }
+        });
+
+        //$(document).delegate('#editor', 'keydown', function (e) {
+
+        //    if (e.keyCode == 9 || e.which == 9) {
+        //        e.preventDefault();
+        //        //document.execCommand('styleWithCSS', true, null);
+        //        // document.execCommand('indent', true, null);
+        //        var start = editor.get(0).selectionStart;
+        //        var end =editor.get(0).selectionEnd;
+
+        //        // set textarea value to: text before caret + tab + text after caret
+        //        editor.val(editor.val().substring(0, start)
+        //                    + "    "
+        //                    +editor.val().substring(end));
+
+        //        // put caret at right position again
+        //        //$(this).get(0).selectionStart =
+        //        //$(this).get(0).selectionEnd = start + 1;
+        //    }
+            //var keyCode = e.keyCode || e.which;
+
+            //if (keyCode === 9) {
+            //    e.preventDefault();
+            //    var start = $(this).get(0).selectionStart;
+            //    var end = $(this).get(0).selectionEnd;
+
+            //    // set textarea value to: text before caret + tab + text after caret
+            //    $(this).val($(this).val().substring(0, start)
+            //                + "\t"
+            //                + $(this).val().substring(end));
+
+            //    // put caret at right position again
+            //    $(this).get(0).selectionStart =
+            //    $(this).get(0).selectionEnd = start + 1;
+            //}
+ 
     }
 
     /**
@@ -214,9 +261,9 @@ var Editor = (function () {
      * @param {} text 
      * @returns {} 
      */
-    Editor.prototype.InsertText = function (text) { // function to update text in the editor
-        this.element.innerHTML = text;
-    };
+   // Editor.prototype.InsertText = function (text) { // function to update text in the editor
+    //    this.element.innerHTML = text;
+    //};
 
     /**
      * Updates text node view in real-time with current text in editor

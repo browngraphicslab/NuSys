@@ -15,9 +15,28 @@
             document.getElementById("editor").innerHTML = text;
         }
 
+        this.addEventListener("keyup", function () {
+            window.external.notify(document.getElementById("editor").innerHTML);
+            
+        });
+        //this.element.addEventListener("change", function () {
+        //    if (!editor.cleanHtml().includes("popover")) {
+        //        window.external.notify(editor.cleanHtml());
+        //    }
+        //});
+        //this.element.addEventListener("mouseover", function () {
+        //    if (!editor.cleanHtml().includes("popover")) {
+        //        window.external.notify(editor.cleanHtml());
+        //    }
+        //});
+        //this.document.addEventListener("click", function () {
+        //    if (!editor.cleanHtml().includes("popover")) {
+        //        window.external.notify(editor.cleanHtml());
+        //    }
+        //});
+
     </script>
     <div id="editor">
-        Hello!
     </div>
     <div id="preview"></div>
 </body>

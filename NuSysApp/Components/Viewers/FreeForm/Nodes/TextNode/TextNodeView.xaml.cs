@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Threading.Tasks;
 using Windows.Media.Capture;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI.Input.Inking;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -46,10 +47,12 @@ namespace NuSysApp
             {
                 UpdateText(content.Data);
             }
-            (vm.Model as TextElementModel).TextChanged += delegate (object source, string text)
+            (vm.Controller as TextElementController).DetailViewChanged += delegate (object source, string text)
             {
                 UpdateText(text);
             };
+
+            TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
             var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
@@ -104,7 +107,23 @@ namespace NuSysApp
             _text = str;
         }
 
-        
+
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found in e.Value
+            string data = e.Value;
+            Debug.WriteLine(data);
+            if (data != "")
+            {
+                var vm = DataContext as ElementViewModel;
+                var controller = (TextElementController)vm.Controller;
+                controller.SetDetailText(data);
+
+            }
+
+        }
+
+
 
         private bool _isopen;
         private string _text = string.Empty;

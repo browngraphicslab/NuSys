@@ -74,7 +74,7 @@ namespace NuSysApp
             switch (model.ElementType)
             {
                 case ElementType.Text:
-                    var tvm = new TextNodeViewModel(new ElementController(model));
+                    var tvm = new TextNodeViewModel(SessionController.Instance.IdToControllers[model.Id]);
                     view = new TextDetailView(tvm);
                     await tvm.Init();
                     break;

@@ -25,6 +25,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -59,6 +60,11 @@ namespace NuSysApp
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 await SessionController.Instance.InitializeRecog();
+            };
+
+            (vm.Controller as TextElementController).NodeChanged += delegate (object source, string text)
+            {
+                UpdateText(text);
             };
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
@@ -196,8 +202,8 @@ namespace NuSysApp
             if (s != "")
             {
                 var vm = DataContext as ElementViewModel;
-                var model = (TextElementModel)vm.Model;
-                model.Text = s;
+                var controller = (TextElementController) vm.Controller;
+                controller.SetNodeText(s);
             }
         }
 

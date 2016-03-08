@@ -334,6 +334,7 @@
     <Compile Include="Controller\ElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
+    <Compile Include="Controller\TextElementController.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />

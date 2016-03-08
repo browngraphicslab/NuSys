@@ -38,7 +38,7 @@ namespace NuSysApp
             {
                 case ElementType.Text:
                     elementModel = new TextElementModel(id);
-                    controller = new ElementController(elementModel);
+                    controller = new TextElementController(elementModel);
                     break;
                 case ElementType.Image:
                     elementModel = new ImageElementModel(id);
