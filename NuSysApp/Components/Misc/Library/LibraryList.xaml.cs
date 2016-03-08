@@ -27,9 +27,16 @@ namespace NuSysApp
 {
     public sealed partial class LibraryList : UserControl, LibraryViewable
     {
-        public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
-        public event LibraryElementDragEventHandler OnLibraryElementDrag;
+        //public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
+        //public event LibraryElementDragEventHandler OnLibraryElementDrag;
         private LibraryElementPropertiesWindow _propertiesWindow;
+
+        private double _x;
+
+        private double _y;
+
+        private CompositeTransform _ct;
+
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
@@ -108,7 +115,7 @@ namespace NuSysApp
             ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
         }
 
-
+        /*
         private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
              OnLibraryElementDrag?.Invoke(sender,e);
@@ -120,8 +127,9 @@ namespace NuSysApp
             rect.Width = 200;
             rect.Height = 200;
             view.ManipulationDelta += DraggingElementManipulation;
-            */
+            
         }
+    */
 
         private void DraggingElementManipulation(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
         {
@@ -153,5 +161,135 @@ namespace NuSysApp
         {
             this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
+
+        private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+
+            var rect = view.LibraryDraggingRectangle;
+
+            rect.Width = 200;
+
+            rect.Height = 200;
+
+
+
+            //Moves rectangle to position of click.
+
+            _ct = new CompositeTransform();
+
+            rect.RenderTransform = _ct;
+
+            _x = e.GetCurrentPoint(view).Position.X;
+
+            _y = e.GetCurrentPoint(view).Position.Y;
+
+            _ct.TranslateX += _x - (rect.Width / 2);
+
+            _ct.TranslateY += _y - (rect.Height / 2);
+
+
+
+            //arbitrary z index
+
+            Canvas.SetZIndex(rect, 3);
+
+            Grid listViewGrid = (Grid)sender;
+
+            listViewGrid.CapturePointer(e.Pointer);
+
+            listViewGrid.PointerMoved += ListViewGrid_PointerMoved;
+
+            listViewGrid.PointerReleased += ListViewGrid_PointerReleased;
+
+            e.Handled = true;
+
+        }
+
+
+
+        private void ListViewGrid_PointerMoved(object sender, PointerRoutedEventArgs e)
+
+        {
+
+            var view = SessionController.Instance.SessionView;
+
+            double dx = e.GetCurrentPoint(view).Position.X - _x;
+
+            double dy = e.GetCurrentPoint(view).Position.Y - _y;
+
+
+
+            _x = e.GetCurrentPoint(view).Position.X;
+
+            _y = e.GetCurrentPoint(view).Position.Y;
+
+            _ct.TranslateX += dx;
+
+            _ct.TranslateY += dy;
+
+
+
+            e.Handled = true;
+
+        }
+
+
+
+
+
+
+
+        private void ListViewGrid_PointerReleased(object sender, PointerRoutedEventArgs e)
+
+        {
+
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+
+
+
+            rect.Width = 0;
+
+            rect.Height = 0;
+
+
+
+            LibraryElement element = (LibraryElement)((Grid)sender).DataContext;
+
+            if (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse != null)
+            {
+                var releasepoint =
+                    SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
+                        new Point(_x, _y));
+
+                Message m = new Message();
+
+                m["contentId"] = element.ContentID;
+
+                m["x"] = releasepoint.X - 200;
+
+                m["y"] = releasepoint.Y - 200;
+
+                m["width"] = 400;
+
+                m["height"] = 400;
+
+                m["nodeType"] = element.ElementType.ToString();
+
+                m["autoCreate"] = true;
+
+                m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+
+            }
+
+            e.Handled = true;
+
+        }
+
     }
+
 }
+
+  

@@ -11,7 +11,7 @@
 
     <Grid>
 
-        <ListView  x:Name="ListView" DragItemsStarting="ListViewBase_OnDragItemsStarting" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" CanDragItems="True">
+        <ListView  x:Name="ListView"  ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" >
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="#ECECEA ">
                     <Grid.ColumnDefinitions>
@@ -29,7 +29,7 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA ">
+                    <Grid VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA " PointerPressed="LibraryListItem_OnPointerPressed">
                         <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="125" />
