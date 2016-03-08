@@ -34,12 +34,15 @@ namespace NuSysApp
         private TimelineItemView _view;
         private GroupNodeTimelineViewModel _vm;
         private string _sortBy;
+        private string _viewBy;
         private Line _line;
         private Line _moveLine;
         private int _originalXPos;
         private int _moveToXPos;
-        private HashSet<string> _metaDataButtons;
+        private HashSet<string> _metaDataButtons; // for sort metadata
+        private HashSet<string> _metaDataViewButtons; // for view by metadata
         private int _custom;
+        private double _groupNodeWidth;
 
         public GroupNodeTimelineView(GroupNodeTimelineViewModel viewModel)
         {
@@ -49,15 +52,20 @@ namespace NuSysApp
             NodeContainerModel model = (NodeContainerModel)_vm.Model;
             model.SizeChanged += GroupNode_SizeChanged;
             _sortBy = "node_creation_date";
+            _viewBy = "node_creation_date";
             _custom = 0;
 
             _metaDataButtons = new HashSet<string>();
+            _metaDataViewButtons = new HashSet<string>();
+
             _panelNodes = new List<FrameworkElement>();
             _atomList = new List<Tuple<FrameworkElement, Object>>();
             _vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
 
             TagBlock.Content = _sortBy;
-            TagBlock.Tapped += TagBlock_Tapped;
+            MetaExpandBlock.Content = _viewBy;
+            SortBlock.Tapped += SortBlock_Tapped;
+            MetaBlock.Tapped += MetaBlock_Tapped;
 
             // line for rearranging elements
             _moveLine = new Line()
@@ -84,6 +92,7 @@ namespace NuSysApp
             //TimelineGrid.ManipulationStarting += TimelineGrid_ManipulationStarting;
             //TimelineGrid.PointerWheelChanged += TimelineGrid_PointerWheelChanged;
         }
+        
 
         private void GroupNode_SizeChanged(object source, WidthHeightUpdateEventArgs e)
         {
@@ -91,14 +100,43 @@ namespace NuSysApp
             rect.Rect = new Rect(0, 0, e.Width - 40, e.Height - 40);
             TimelineGrid.Clip = rect;
 
+            var rect1 = new RectangleGeometry();
+            var width = e.Width <= 140 ? 0 : e.Width - 140; 
+            rect1.Rect = new Rect(0, 0, width, 30);
+            SortCanvas.Clip = rect1;
+
+            var rect2 = new RectangleGeometry();
+            rect2.Rect = new Rect(0, 0, width, 30);
+            MetaCanvas.Clip = rect2;
+
             Canvas.SetTop(TimelinePanel, (e.Height - 130) / 2);
             Canvas.SetTop(_line, (e.Height - 130) / 2);
             _vm.CompositeTransform.CenterY = e.Height/2;
+            _groupNodeWidth = e.Width;
         }
 
-        private void TagBlock_Tapped(object sender, TappedRoutedEventArgs e)
+        private void MetaBlock_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            MetaPanel.Opacity = MetaPanel.Opacity == 0 ? 1 : 0;
+            MetaPanel.IsHitTestVisible = MetaPanel.Opacity == 0 ? false : true;
+            MetaExpandBlock.Opacity = MetaExpandBlock.Opacity == 0 ? 1 : 0;
+        }
+
+        private void SortBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
             TagPanel.Opacity = TagPanel.Opacity == 0 ? 1 : 0;
+            TagPanel.IsHitTestVisible = TagPanel.Opacity == 0 ? false : true;
+            TagBlock.Opacity = TagBlock.Opacity == 0 ? 1 : 0;
+        }
+
+        private void MetaViewButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Button b1 = (Button)sender;
+            MetaExpandBlock.Content = b1.Content.ToString();
+            ChangeMetaDataTimeline(b1.Content.ToString());
+            MetaExpandBlock.Opacity = 1;
+            MetaPanel.Opacity = 0;
+            MetaPanel.IsHitTestVisible = false;
         }
 
         private void MetaButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -106,6 +144,9 @@ namespace NuSysApp
             Button b1 = (Button)sender;
             TagBlock.Content = b1.Content.ToString();
             ResortTimeline(b1.Content.ToString());
+            TagBlock.Opacity = 1;
+            TagPanel.Opacity = 0;
+            TagPanel.IsHitTestVisible = false;
         }
 
         public void ClearTimelineChild()
@@ -139,10 +180,26 @@ namespace NuSysApp
                    || value is decimal;
         }
 
+        private void ChangeMetaDataTimeline(String dataName)
+        {
+            _viewBy = dataName;
+            var index = 0;
+            foreach (var node in _panelNodes)
+            {
+                var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
+                var vm = (AtomViewModel)atom.DataContext;
+                var nodeModel = (AtomModel)vm.Model;
+                TextBlock tb = (TextBlock)node.FindVisualChild("TextBlock");
+                var text = nodeModel.GetMetaData(dataName).ToString();
+                tb.Text = text;
+                index++;
+            }
+        }
+
         #region Sort Timeline
         private void ResortTimeline(String dataName)
         {
-            _sortBy = dataName;
+            _sortBy = dataName; //need?
             _atomList.Clear();
             _panelNodes.Clear();
             ClearTimelineChild();
@@ -166,8 +223,17 @@ namespace NuSysApp
 
             for (int i=0; i < _atomList.Count; i++)
             {
-                Object secondItem = _atomList.ElementAt(i).Item2 ?? "None";
-                _view = new TimelineItemView(_atomList.ElementAt(i).Item1, secondItem);
+                if (dataName.Contains("custom"))
+                {
+                    Tuple<int, Object> tuple = (Tuple<int, Object>)_atomList.ElementAt(i).Item2;
+                    Object secondItem = tuple.Item2 ?? "None";
+                    _view = new TimelineItemView(_atomList.ElementAt(i).Item1, secondItem);
+                }
+                else
+                {
+                    Object secondItem = _atomList.ElementAt(i).Item2 ?? "None";
+                    _view = new TimelineItemView(_atomList.ElementAt(i).Item1, secondItem);
+                }
 
                 _view.ManipulationMode = ManipulationModes.All;
                 _view.ManipulationDelta += TimelineNode_ManipulationDelta;
@@ -207,10 +273,20 @@ namespace NuSysApp
                         {
                             Content = metadatatitle,
                             Width = 100,
+                            Height = 30
                         };
                         bb.Tapped += MetaButton_Tapped;
                         TagPanel.Children.Add(bb);
+                        Button bb1 = new Button()
+                        {
+                            Content = metadatatitle,
+                            Width = 100,
+                            Height = 30
+                        };
+                        bb1.Tapped += MetaViewButton_Tapped;
+                        MetaPanel.Children.Add(bb1);
                         _metaDataButtons.Add(metadatatitle);
+                        _metaDataViewButtons.Add(metadatatitle);
                     }
                 }
             }
@@ -296,6 +372,7 @@ namespace NuSysApp
                 {
                     Content = custom,
                     Width = 100,
+                    Height = 30
                 };
                 bb.Tapped += MetaButton_Tapped;
                 TagPanel.Children.Add(bb);
@@ -303,7 +380,6 @@ namespace NuSysApp
 
                 // Change view to custom
                 TagBlock.Content = custom;
-
                 _custom++;
             }
 
@@ -314,7 +390,10 @@ namespace NuSysApp
                 var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
                 var vm = (AtomViewModel)atom.DataContext;
                 var nodeModel = (AtomModel)vm.Model;
-                nodeModel.SetMetaData(custom, index);
+                TextBlock tb = (TextBlock) node.FindVisualChild("TextBlock");
+                var text = tb.Text;
+
+                nodeModel.SetMetaData(TagBlock.Content.ToString(), new Tuple<int, Object>(index, text));
                 index++;
             }           
         }
@@ -517,6 +596,32 @@ namespace NuSysApp
             _vm.CompositeTransform = compositeTransform;
         }
         #endregion
+
+        private void TagPanel_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var buttonCount = _metaDataButtons.Count;
+            var overflow = buttonCount*100 > _groupNodeWidth - 100;
+            var leftOverflow = _vm.TranslateTransform.X + e.Delta.Translation.X > 0;
+            var rightOverflow = 100 * buttonCount + _vm.TranslateTransform.X + 140 + e.Delta.Translation.X < _groupNodeWidth;
+
+            if (!leftOverflow && overflow && !rightOverflow)
+            {
+                _vm.TranslateTransform.X += e.Delta.Translation.X;
+            }
+        }
+
+        private void MetaPanel_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var buttonCount = _metaDataViewButtons.Count;
+            var overflow = buttonCount * 100 > _groupNodeWidth - 100;
+            var leftOverflow = _vm.MetaTranslateTransform.X + e.Delta.Translation.X > 0;
+            var rightOverflow = 100 * buttonCount + _vm.MetaTranslateTransform.X + 140 + e.Delta.Translation.X < _groupNodeWidth;
+
+            if (!leftOverflow && overflow && !rightOverflow)
+            {
+                _vm.MetaTranslateTransform.X += e.Delta.Translation.X;
+            }
+        }
     }
 
 #region Comparer
@@ -556,6 +661,14 @@ namespace NuSysApp
                 DateTime date1 = (DateTime) a.Item2;
                 DateTime date2 = (DateTime) b.Item2;
                 return date1.CompareTo(date2);
+            }
+            else if (a.Item2 is Tuple<int, Object>)
+            {
+                Tuple<int, Object> tuple1 = (Tuple<int,Object>) a.Item2;
+                Tuple<int, Object> tuple2 = (Tuple<int, Object>) b.Item2;
+                int first = tuple1.Item1;
+                int second = tuple2.Item1;
+                return first.CompareTo(second);
             }
             else
             {

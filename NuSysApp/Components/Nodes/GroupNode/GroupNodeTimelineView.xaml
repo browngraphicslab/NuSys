@@ -12,19 +12,35 @@
     <Grid>
         <Grid x:Name="TimelineGrid" Background="Transparent">
             <Canvas x:Name="TimelineCanvas" Background="Transparent" RenderTransform="{Binding CompositeTransform}">
-                <Canvas x:Name="TimelinePanel" Background="Transparent" RenderTransform="{Binding TranslateTransform}"/>
+                <Canvas x:Name="TimelinePanel" Background="Transparent"/>
             </Canvas>
         </Grid>
-        <StackPanel x:Name="TagPanel"  
-                            Margin="-100,0,0,0" 
-                            Orientation="Vertical" 
-                            VerticalAlignment="Top" 
+        <Button Content="MetaData:" Margin="0,0,0,30" Name="MetaBlock"  Width="100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30" Opacity="1"/>
+        <Button Margin="100,0,0,30" Name="MetaExpandBlock" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30" Opacity="1"/>
+        <Canvas x:Name="MetaCanvas" Background="Transparent" Height="30" VerticalAlignment="Bottom" Margin="100,0,0,30">
+            <StackPanel x:Name="MetaPanel"  
+                            Orientation="Horizontal" 
+                            VerticalAlignment="Bottom" 
                             HorizontalAlignment="Left" 
-                            Background="CornflowerBlue" 
-                            Width="100" Opacity="0">
-            <Button Content="Custom" Width="100"></Button>
-        </StackPanel>
-        <Button Name="TagBlock" HorizontalAlignment="Left" VerticalAlignment="Top" Height="30" Opacity="1"/>
+                            Opacity="0"
+                            RenderTransform="{Binding MetaTranslateTransform}"
+                            ManipulationDelta="MetaPanel_OnManipulationDelta"
+                            ManipulationMode="All"
+                            IsHitTestVisible="False"/>
+        </Canvas>
+        <Button Content="Sort By:" Name="SortBlock"  Width="100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30" Opacity="1"/>
+        <Button Margin="100,0,0,0" Name="TagBlock" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30" Opacity="1"/>
+        <Canvas x:Name="SortCanvas" Background="Transparent" Height="30" VerticalAlignment="Bottom" Margin="100,0,0,0">
+            <StackPanel x:Name="TagPanel"  
+                            Orientation="Horizontal" 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Left" 
+                            Opacity="0"
+                            RenderTransform="{Binding TranslateTransform}"
+                            ManipulationDelta="TagPanel_OnManipulationDelta"
+                            ManipulationMode="All"
+                            IsHitTestVisible="False"/>
+        </Canvas>
         <AutoSuggestBox x:Name="SearchBox"
                             QueryIcon="Find" 
                             TextChanged="AutoSuggestBox_OnTextChanged"

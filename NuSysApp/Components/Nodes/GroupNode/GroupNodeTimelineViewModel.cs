@@ -13,6 +13,7 @@ namespace NuSysApp
     {
         private CompositeTransform _compositeTransform;
         private TranslateTransform _translateTransform;
+        private TranslateTransform _metaTranslateTransform;
         private List<Tuple<FrameworkElement, Object>> _dataList;
         public GroupNodeTimelineViewModel(NodeContainerModel model) : base(model)
         {
@@ -32,6 +33,12 @@ namespace NuSysApp
                 X = 0,
                 Y= 0
             };
+
+            _metaTranslateTransform = new TranslateTransform()
+            {
+                X = 0,
+                Y = 0
+            };
         }
 
         public TranslateTransform TranslateTransform
@@ -45,6 +52,20 @@ namespace NuSysApp
                 }
                 _translateTransform = value;
                 RaisePropertyChanged("TranslateTransform");
+            }
+        }
+
+        public TranslateTransform MetaTranslateTransform
+        {
+            get { return _metaTranslateTransform; }
+            set
+            {
+                if (_metaTranslateTransform == value)
+                {
+                    return;
+                }
+                _metaTranslateTransform = value;
+                RaisePropertyChanged("MetaTranslateTransform");
             }
         }
 
