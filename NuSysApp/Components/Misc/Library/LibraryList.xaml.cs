@@ -142,7 +142,7 @@ namespace NuSysApp
         {
             _propertiesWindow.setTitle(((LibraryElement)e.ClickedItem).Title);
             _propertiesWindow.setType(((LibraryElement)e.ClickedItem).ElementType.ToString());
-            _propertiesWindow.Visibility = Visibility.Visible;
+            //_propertiesWindow.Visibility = Visibility.Visible;
         }
 
         public async Task Sort(string s)
@@ -288,6 +288,10 @@ namespace NuSysApp
 
         }
 
+        private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            _propertiesWindow.Visibility = Visibility.Visible;
+        }
     }
 
 }
