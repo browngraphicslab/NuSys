@@ -110,7 +110,7 @@ namespace NuSysApp
                     };
                 };
                 await SessionController.Instance.NuSysNetworkSession.Init();
-                await SessionController.Instance.InitializeRecog();
+                //await SessionController.Instance.InitializeRecog();
                
                 SessionController.Instance.NuSysNetworkSession.AddNetworkUser(new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name="Me"});
             };
