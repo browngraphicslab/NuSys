@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public class LibraryBucketViewModel : ElementViewModel
+    public class LibraryBucketViewModel
     {
 
         public Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
@@ -23,10 +23,8 @@ namespace NuSysApp
 
         private double _width, _height;
 
-        public LibraryBucketViewModel(double width, double height):base(new ElementController(new ElementModel("")))
+        public LibraryBucketViewModel()
         {
-            Width = width;
-            Height = height;
         }
 
      

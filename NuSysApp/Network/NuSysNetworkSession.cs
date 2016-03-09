@@ -96,7 +96,13 @@ namespace NuSysApp
         }
         private async void OnMessageRecieved(Message m)
         {
-            await ProcessIncomingRequest(m);
+            try
+            {
+                await ProcessIncomingRequest(m);
+            }
+            catch (Exception e)
+            {
+            }
         }
         private async Task ProcessIncomingRequest(Message message, bool local = false)
         {

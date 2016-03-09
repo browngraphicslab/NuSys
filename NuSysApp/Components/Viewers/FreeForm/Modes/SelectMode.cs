@@ -129,17 +129,10 @@ namespace NuSysApp
                     }
                     else
                     {
-                        SessionController.Instance.SessionView.ShowFullScreen((ElementModel)vm.Model);
+                        SessionController.Instance.SessionView.ShowDetailView(vm.Controller);
                     }
 
                 }
-                if (dc is LinkViewModel)
-                {
-                    var vm = (LinkViewModel)dc;
-                    SessionController.Instance.SessionView.ShowFullScreen((LinkModel)vm.Model);
-                }
-               // vm.ToggleSelection();
-                //e.Handled = true;
             }   
         }
     }
