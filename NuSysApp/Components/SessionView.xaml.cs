@@ -400,10 +400,10 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(ElementModel model)
+        public void ShowDetailView(ElementController controller)
         {
             var vm = (DetailViewerViewModel) xFullScreenViewer.DataContext;
-            vm.SetNodeModel(model);
+            vm.ShowElement(controller);
             vm.MakeTagList();
         }
 

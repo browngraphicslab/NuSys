@@ -33,10 +33,10 @@ namespace NuSysApp
             Tags = new ObservableCollection<Button>();
         }
 
-        public async void SetNodeModel(ElementModel model)
+        public async void ShowElement(ElementController controller)
         {
-            _nodeModel = model;
-            View = await _viewFactory.CreateFromSendable(_nodeModel);
+            _nodeModel = controller.Model;
+            View = await _viewFactory.CreateFromSendable(controller);
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
             RaisePropertyChanged("View");

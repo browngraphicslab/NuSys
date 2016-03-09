@@ -267,10 +267,6 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml.cs">
-      <DependentUpon>LibraryElementView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
@@ -679,10 +675,6 @@
     <Page Include="Components\Misc\SearchButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>

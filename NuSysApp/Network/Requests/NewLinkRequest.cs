@@ -39,9 +39,10 @@ namespace NuSysApp
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
                 var link = new LinkModel(id);
+                await link.UnPack(_message);
                 var linkController = new LinkElementController(link);
                 SessionController.Instance.IdToControllers.Add(id, linkController);
-                await link.UnPack(_message);
+                
 
                 var parentController = (ElementCollectionController)SessionController.Instance.IdToControllers[creator];
                 parentController.AddChild(linkController);

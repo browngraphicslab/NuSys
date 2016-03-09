@@ -22,9 +22,7 @@ namespace NuSysApp {
 
         public async override Task Activate()
         {
-
-            _view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;
-           
+            _view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;  
         }
 
 
@@ -59,11 +57,8 @@ namespace NuSysApp {
             if (startVm == endVm)
                 return;
 
-            var contentId = SessionController.Instance.GenerateId();
-            var contentRequest = new CreateNewLibraryElementRequest(contentId, startVm.Id+ endVm.Id,ElementType.Link,"NEW LINK");
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(contentRequest);
-            var request = new NewLinkRequest(startVm.Id, endVm.Id, SessionController.Instance.ActiveFreeFormViewer.Id, contentId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            startVm.Controller.RequestLinkTo(endVm.Id);
+
             lineModel.Delete();
             
         }
