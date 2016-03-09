@@ -9,9 +9,11 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using MyToolkit.Utilities;
 using Newtonsoft.Json;
 
@@ -73,7 +75,8 @@ namespace NuSysApp
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
-                    var box = new TextBlock();
+                    var box = new CollectionTextBox();
+                    box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
                     box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
                     List.Items.Add(box);
                 }
@@ -103,7 +106,7 @@ namespace NuSysApp
             if (List.SelectedItems.Count == 1)
             {
                 var item = List.SelectedItems.First();
-                var id = ((TextBlock) item).Text;
+                var id = ((CollectionTextBox) item).ID;
                 var url = "https://" + ServerName + "/api/getworkspace/"+id;
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
@@ -222,6 +225,17 @@ namespace NuSysApp
             byte[] bytes = new byte[str.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
+        }
+
+        private partial class CollectionTextBox : TextBox
+        {
+            public string ID { set; get; }
+
+            public CollectionTextBox() : base()
+            {
+                IsEnabled = false;
+                Background = new SolidColorBrush(Colors.Transparent);
+            }
         }
     }
 }
