@@ -38,23 +38,21 @@ namespace WordNetUnivApp
             WordNetEngine _wordNetEngine = new WordNetEngine(@"C:\Users\tiffanycitra\Pictures\db\dict", false);
 
             // hardcoded for testing purposes
-            string word1 = "smile"; // word
+            string word1 = "cold"; // word
             WordNetEngine.POS wordPos = WordNetEngine.POS.Noun; // part of speech of the word specified
-            string word2 = "laughter";
+            string word2 = "expedition";
+            string word3 = "polar";
 
-
-            HashSet<SynSet> synWord1 = _wordNetEngine.GetSynSets(word1, wordPos); // get synsets of the input word
-            HashSet<SynSet> synWord2 = _wordNetEngine.GetSynSets(word2, wordPos);
-            WordNetEngine.SynSetRelation[] relations = new WordNetEngine.SynSetRelation[1] { WordNetEngine.SynSetRelation.Hypernym };
-
-            foreach (SynSet s1 in synWord1)
-            {
-                foreach (SynSet s2 in synWord2)
-                {
-                    SynSet commAnc = s1.GetClosestMutuallyReachableSynset(s2, relations);
-                    HashSet<SynSet> hypSyn = s1.GetRelatedSynSets(WordNetEngine.SynSetRelation.Hypernym, true); // get hypernym of the synset
-                }
-            }
+            // TO-DO: Just find the most common synset of a given word
+            //HashSet<SynSet> synWord1 = _wordNetEngine.GetSynSets(word1, null); // get synsets of the input word
+            SynSet synWord1 = _wordNetEngine.GetMostCommonSynSet(word1, WordNetEngine.POS.Noun);
+            SynSet synWord2 = _wordNetEngine.GetMostCommonSynSet(word2, WordNetEngine.POS.Noun);
+            SynSet synWord3 = _wordNetEngine.GetMostCommonSynSet(word3, WordNetEngine.POS.Noun);
+            WordNetEngine.SynSetRelation[] relations = new WordNetEngine.SynSetRelation[3] { WordNetEngine.SynSetRelation.Hypernym, WordNetEngine.SynSetRelation.InstanceHypernym, WordNetEngine.SynSetRelation.DerivationallyRelated };
+            HashSet <SynSet> hypSyn1 = synWord1.GetRelatedSynSets(relations, true);
+            HashSet<SynSet> hypSyn2 = synWord2.GetRelatedSynSets(relations, true); // get hypernym of the synset
+            HashSet<SynSet> hypSyn3 = synWord3.GetRelatedSynSets(relations, true);
+            SynSet common = _wordNetEngine.GetCommonSynset(new HashSet<SynSet>() { synWord1, synWord2, synWord3 });
         }
 
         /// <summary>

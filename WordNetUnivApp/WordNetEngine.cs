@@ -627,7 +627,7 @@ namespace WordNetUnivApp
                     string indexLine = ReadRecord(indexNo, _posIndexWordSearchPath[pos]);
                     
                     // if index line exists, get synset shells and instantiate them
-                    if (indexLine != null)
+                    if (indexNo != 0 && indexLine != null)
                     {
                         // get synset shells and instantiate them
                         SynSet mostCommonSynset;
@@ -707,6 +707,35 @@ namespace WordNetUnivApp
         }
         #endregion
 
+        public SynSet GetCommonSynset(HashSet<SynSet> input)
+        {
+            //WordNetEngine.SynSetRelation[] relations = new WordNetEngine.SynSetRelation[3] { WordNetEngine.SynSetRelation.Hypernym, WordNetEngine.SynSetRelation.DerivationallyRelated, WordNetEngine.SynSetRelation.TopicDomain };
+            bool firstCommonFound = false;
+            bool firstSynsetFound = false;
+            SynSet prev = null; SynSet common = null;
+            foreach (SynSet syn in input)
+            {
+                if (!firstSynsetFound)
+                {
+                    prev = syn;
+                    firstSynsetFound = true;
+                    continue;
+                }
+
+                if (firstCommonFound)
+                {
+                    common = syn.GetClosestMutuallyReachableSynset(common, null);
+                } else
+                {
+                    common = syn.GetClosestMutuallyReachableSynset(prev, null);
+                    firstCommonFound = true;
+                }   
+                prev = syn;
+            }
+            return common;
+        }
+
+        #region Close
         /// <summary>
         /// Closes all files and releases any resources assocated with this WordNet engine
         /// </summary>
@@ -727,6 +756,7 @@ namespace WordNetUnivApp
                 _posSynSetDataFile = null;
             }
         }
+        #endregion
 
         #region FastSearch
         /// <summary>

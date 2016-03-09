@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LdaLibrary
@@ -18,7 +19,7 @@ namespace LdaLibrary
         public async Task<string> removeStopWords(string line)
         {
             var finalString = "";
-            line = line.ToLower();
+            line = line.ToLower(); 
             var noSpaces = line.Split(new String[] {" "}, StringSplitOptions.RemoveEmptyEntries);
             foreach (var word in noSpaces)
             {
@@ -28,6 +29,11 @@ namespace LdaLibrary
                 }
             }
             finalString = finalString.TrimEnd(' ');
+            finalString = Regex.Replace(finalString, "\\p{P}+", ""); // remove punctuation
+            finalString = Regex.Replace(finalString, @"\b\w{1,3}\b", ""); // remove words that have three letters or fewer
+            finalString = Regex.Replace(finalString, "\t\n\r", "");
+            finalString = Regex.Replace(finalString, @"\s+", " ");  // remove extra whitespace
+
             byte[] statement = System.Text.Encoding.UTF8.GetBytes(finalString);
             // now we should write the final string elsewhere before calling inference on it.
             /*using (System.IO.FileStream writer = System.IO.File.Create("..\\..\\..\\..\\..\\..\\..\\..\\editText.txt")) // may need a 1024 (buffer size) after that 
