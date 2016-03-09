@@ -38,8 +38,7 @@ namespace NuSysApp
 
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
-
-
+            
             var contentId = (vm.Model as ElementModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
@@ -104,7 +103,11 @@ namespace NuSysApp
             _text = str;
         }
 
-        
+        public void SetDimension(double width, double height)
+        {
+            TextNodeWebView.Width = width;
+            TextNodeWebView.Height = height;
+        }
 
         private bool _isopen;
         private string _text = string.Empty;
