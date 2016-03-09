@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using NuSysApp.Controller;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,10 +20,7 @@ namespace NuSysApp
             DataContext = vm;
 
             vm.PropertyChanged += OnPropertyChanged;
-
-            vm.Atom1.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
-            vm.Atom2.PropertyChanged += new PropertyChangedEventHandler(OnAtomPropertyChanged);
-
+            
             var model = vm.Model;
             vm.Controller.TitleChanged += delegate//TODO remove this handler eventually
             {
@@ -63,6 +61,8 @@ namespace NuSysApp
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            this.UpdateControlPoints();
+
             if (propertyChangedEventArgs.PropertyName == "AnnotationText")
             {
                 AnnotationContainer.Visibility = (sender as LinkViewModel).AnnotationText == ""
@@ -95,11 +95,13 @@ namespace NuSysApp
         {
             this.UpdateEndPoints();
 
+            
             var vm = (LinkViewModel) this.DataContext;
-            var atom1 = vm.Atom1;
-            var atom2 = vm.Atom2;
-            var anchor1 = atom1.Anchor;
-            var anchor2 = atom2.Anchor;
+
+            var controller = (LinkElementController)vm.Controller;
+            var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width/2, controller.InElement.Model.Y + controller.InElement.Model.Height/2) ; 
+            var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2); 
+
             var distanceX = anchor1.X - anchor2.X;
             var distanceY = anchor1.Y - anchor2.Y;
 
@@ -111,15 +113,18 @@ namespace NuSysApp
 
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX/2 - Rect.ActualWidth/2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY/2 - Rect.ActualHeight*1.5);
+            
         }
 
         private void UpdateEndPoints()
         {
             var vm = (LinkViewModel) this.DataContext;
-            var atom1 = vm.Atom1;
-            var atom2 = vm.Atom2;
-            pathfigure.StartPoint = atom1.Anchor;
-            curve.Point3 = atom2.Anchor;
+            var controller = (LinkElementController)vm.Controller;
+            var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
+            var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
+
+            pathfigure.StartPoint = anchor1;
+            curve.Point3 = anchor2;
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)

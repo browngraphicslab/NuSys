@@ -82,8 +82,6 @@ namespace NuSysApp
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            await SessionController.Instance.NuSysNetworkSession.Init();
-
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate(NetworkUser user)
             {
                 UserLabel b = new UserLabel(user);
@@ -402,10 +400,10 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(ElementModel model)
+        public void ShowDetailView(ElementController controller)
         {
             var vm = (DetailViewerViewModel) xFullScreenViewer.DataContext;
-            vm.SetNodeModel(model);
+            vm.ShowElement(controller);
             vm.MakeTagList();
         }
 

@@ -68,10 +68,6 @@ namespace NuSysApp
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
 
-                await _serverClient.SendMessageToServer(message);
-
-                if (true)
-                    return;
                 if (request.WaitForRequestReturn())
                 {
                     ManualResetEvent mre = new ManualResetEvent(false);
@@ -79,7 +75,8 @@ namespace NuSysApp
                     _requestEventDictionary[requestID] = mre;
 
                     message["system_local_request_id"] = requestID;
-                    await SendRequest(message);
+
+                    await _serverClient.SendMessageToServer(message);
                     if (_requestEventDictionary.ContainsKey(requestID))
                     {
                         mre.WaitOne();
@@ -87,7 +84,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    await SendRequest(message);
+                    await _serverClient.SendMessageToServer(message);
                 }
             });
         }
@@ -97,21 +94,15 @@ namespace NuSysApp
             await request.CheckOutgoingRequest();
             await ProcessIncomingSystemRequest(request.GetFinalMessage());
         }
-
-        private async Task SendSystemRequest(Message message, ICollection<string> recieverIPs = null)
-        {
-            await _serverClient.SendMessageToServer(message);
-            //await _networkSession.SendRequestMessage(message, recieverIPs ?? NetworkMemberIPs, NetworkClient.PacketType.TCP);
-        }
-
-        private async Task SendRequest(Message message)
-        { 
-            await _serverClient.SendMessageToServer(message);
-        }
-
         private async void OnMessageRecieved(Message m)
         {
-            await ProcessIncomingRequest(m);
+            try
+            {
+                await ProcessIncomingRequest(m);
+            }
+            catch (Exception e)
+            {
+            }
         }
         private async Task ProcessIncomingRequest(Message message, bool local = false)
         {
@@ -144,9 +135,6 @@ namespace NuSysApp
                     break;
                 case Request.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
-                    break;
-                case Request.RequestType.NewLibraryElementCollectionRequest:
-                    request = new NewLibraryElementCollectionRequest(message);
                     break;
                 case Request.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
@@ -271,6 +259,11 @@ namespace NuSysApp
         public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
+        }
+
+        public async Task Login(string username, string password)
+        {
+            
         }
     }
     public class NoRequestTypeException : Exception

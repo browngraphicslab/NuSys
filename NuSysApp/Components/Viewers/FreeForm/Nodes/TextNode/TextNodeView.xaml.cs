@@ -138,7 +138,7 @@ namespace NuSysApp
             if (_currenDragMode == DragMode.Duplicate)
             {
                 var vm = (ElementViewModel)DataContext;
-                vm.Controller.Duplicate(r.X, r.Y);
+                vm.Controller.RequestDuplicate(r.X, r.Y);
             }
 
             if (_currenDragMode == DragMode.Tag)
@@ -170,7 +170,7 @@ namespace NuSysApp
 
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Tag.ToString(), dict.ContainsKey("title") ? dict["title"].ToString() : null));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Tag, dict.ContainsKey("title") ? dict["title"].ToString() : null));
                 }
             }
 
@@ -182,7 +182,7 @@ namespace NuSysApp
                     var first = (FrameworkElement)hitsStart.First();
                     var dc = (ElementViewModel) first.DataContext;
                     var vm = (ElementViewModel)DataContext;
-                    vm.Controller.LinkTo(dc.Id);
+                    vm.Controller.RequestLinkTo(dc.Id);
                 }
             }
             
@@ -239,7 +239,7 @@ namespace NuSysApp
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)this.DataContext;
-            vm.Controller.Delete();
+            vm.Controller.RequestDelete();
         }
 
 

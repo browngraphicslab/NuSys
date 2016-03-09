@@ -45,14 +45,10 @@ namespace NuSysApp
             {
                 Title = (string)dict["title"];
             }
-            try
+            if (dict.ContainsKey("type"))
             {
-                if (dict.ContainsKey("type"))
-                {
-                    ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                }
+                ElementType = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
             }
-            catch (Exception e) { }
         }
 
         public bool InSearch(string s)

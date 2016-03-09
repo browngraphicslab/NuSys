@@ -18,7 +18,7 @@ namespace NuSysApp
 {
     public class GroupItemThumbFactory : INodeViewFactory
     {
-        public async Task<FrameworkElement> CreateFromSendable(ElementController controller, List<FrameworkElement> AtomViewList)
+        public async Task<FrameworkElement> CreateFromSendable(ElementController controller)
         {
             var rect = new Rectangle();
             if (!(controller.Model is ElementModel)) return null;

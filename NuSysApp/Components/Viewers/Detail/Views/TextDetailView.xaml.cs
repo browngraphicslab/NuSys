@@ -183,7 +183,7 @@ namespace NuSysApp
             m["id"] = nodeid;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, ""));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "",ElementType.Web));
 
 
         }

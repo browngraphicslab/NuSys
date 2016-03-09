@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuSysApp.Controller;
 
 namespace NuSysApp
 {
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
-            _message["id"] = SessionController.Instance.GenerateId();
+            _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
+            _message["contentId"] = contentId;
         }
         public override async Task CheckOutgoingRequest()
         {
@@ -22,8 +24,9 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
+            _message["type"] = ElementType.Link.ToString();
             SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Content);
+            SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
         }
 
@@ -35,10 +38,11 @@ namespace NuSysApp
             var creator = _message.GetString("creator");
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
-                var link = new LinkModel((ElementModel)SessionController.Instance.IdToControllers[id1].Model, (ElementModel)SessionController.Instance.IdToControllers[id2].Model, id);
-                var linkController = new ElementController(link);
-                SessionController.Instance.IdToControllers.Add(id, linkController);
+                var link = new LinkModel(id);
                 await link.UnPack(_message);
+                var linkController = new LinkElementController(link);
+                SessionController.Instance.IdToControllers.Add(id, linkController);
+                
 
                 var parentController = (ElementCollectionController)SessionController.Instance.IdToControllers[creator];
                 parentController.AddChild(linkController);

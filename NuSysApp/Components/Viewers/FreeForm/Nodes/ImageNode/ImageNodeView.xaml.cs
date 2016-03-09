@@ -44,13 +44,13 @@ namespace NuSysApp
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)DataContext;
-            vm.Controller.Delete();
+            vm.Controller.RequestDelete();
         }
 
         private void OnDuplicateClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)DataContext;
-            vm.Controller.Duplicate(vm.Model.X, vm.Model.Y);
+            vm.Controller.RequestDuplicate(vm.Model.X, vm.Model.Y);
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
