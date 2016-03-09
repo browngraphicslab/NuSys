@@ -42,8 +42,8 @@ namespace NuSysApp
             
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
-            ServerName = "localhost:54764";
-            //ServerName = "nusysrepo.azurewebsites.net";
+            //ServerName = "localhost:54764";
+            ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
             {
@@ -61,7 +61,7 @@ namespace NuSysApp
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var url = "http://" + ServerName + "/api/getworkspace";
+                var url = "https://" + ServerName + "/api/getworkspace";
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
                 string data;
@@ -104,7 +104,7 @@ namespace NuSysApp
             {
                 var item = List.SelectedItems.First();
                 var id = ((TextBlock) item).Text;
-                var url = "http://" + ServerName + "/api/getworkspace/"+id;
+                var url = "https://" + ServerName + "/api/getworkspace/"+id;
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
                 string data;
@@ -139,7 +139,7 @@ namespace NuSysApp
                 cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Text));
                 
-                var url = "http://" + ServerName + "/api/login/" ;
+                var url = "https://" + ServerName + "/api/login/" ;
                 var client = new HttpClient(
                  new HttpClientHandler
                  {

@@ -56,7 +56,7 @@ namespace NuSysApp
         }
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
-            var firstpart = useWebSocket ? "ws" : "http";
+            var firstpart = useWebSocket ? "wss" : "http";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
