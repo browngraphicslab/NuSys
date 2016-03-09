@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -32,16 +34,17 @@ namespace NuSysApp
 
         private LibraryList _libraryList;
         private LibraryGrid _libraryGrid;
+        private FloatingMenuView _menu;
 
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
-        public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties)
+        public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
             this.DataContext = vm;
             this.InitializeComponent();
             LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElement>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
             this.MakeViews(pageViewModel, properties);
             WorkspacePivot.Content = _libraryList;
-
+            _menu = menu;
             this.Loaded += async delegate
             {
                 vm.InitializeLibrary();
@@ -105,13 +108,20 @@ namespace NuSysApp
             }
         }
 
+        public async void UpdateList()
+        {
+            _libraryList.Update();
+        }
+
         private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (WorkspacePivot.Content != _libraryGrid)
-            {
-                await _libraryGrid.Update();
-                WorkspacePivot.Content = _libraryGrid;
-            }
+            await this.AddNode(new Point(12, 0), new Size(12, 12), ElementType.Document);
+            this.UpdateList();
+            //if (WorkspacePivot.Content != _libraryGrid)
+            //{
+            //    await _libraryGrid.Update();
+            //    WorkspacePivot.Content = _libraryGrid;
+            //}
         }
 
 
@@ -171,6 +181,150 @@ namespace NuSysApp
         //        });
         //    });
         //}
+
+        public async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
+        {
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
+            var p = pos;
+
+            var dict = new Message();
+            Dictionary<string, object> metadata;
+            if (elementType == ElementType.Document || elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
+            {
+                var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
+                if (storageFile == null) return;
+
+                var fileType = storageFile.FileType.ToLower();
+                dict["title"] = storageFile.DisplayName;
+
+
+                var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
+
+                try
+                {
+                    //       CheckFileType(fileType); TODO readd
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("The file format you selected is currently unsupported");
+                    return;
+                }
+
+                if (Constants.ImageFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Image;
+
+                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                }
+
+                if (Constants.WordFileTypes.Contains(fileType))
+                {
+                    metadata = new Dictionary<string, object>();
+                    metadata["FilePath"] = storageFile.Path;
+                    metadata["Token"] = token.Trim();
+
+                    dict["metadata"] = metadata;
+
+                    elementType = ElementType.Word;
+
+                    //data = File.ReadAllBytes(storageFile.Path);
+                }
+
+                if (Constants.PowerpointFileTypes.Contains(fileType))
+                {
+                    metadata = new Dictionary<string, object>();
+                    metadata["FilePath"] = storageFile.Path;
+                    metadata["Token"] = token.Trim();
+
+                    dict["metadata"] = metadata;
+
+                    elementType = ElementType.Powerpoint;
+
+                    //data = File.ReadAllBytes(storageFile.Path);
+                }
+
+                if (Constants.PdfFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.PDF;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                if (Constants.VideoFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Video;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                if (Constants.AudioFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Audio;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+            }
+            var contentId = SessionController.Instance.GenerateId();
+
+            metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+            metadata["node_type"] = elementType + "Node";
+
+            dict = new Message();
+            dict["width"] = size.Width.ToString();
+            dict["height"] = size.Height.ToString();
+            dict["nodeType"] = elementType.ToString();
+            dict["x"] = p.X;
+            dict["y"] = p.Y;
+            dict["contentId"] = contentId;
+            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+            dict["metadata"] = metadata;
+            dict["autoCreate"] = true;
+
+            var request = new NewElementRequest(dict);
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
+            // TOOD: refresh library
+
+            vm.ClearSelection();
+            //   vm.ClearMultiSelection();
+        }
 
     }
 }
