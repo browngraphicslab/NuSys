@@ -151,7 +151,7 @@ namespace NuSysApp
 
             var lib =  new LibraryView(new LibraryBucketViewModel(), new LibraryElementPropertiesWindow());
             Canvas.SetLeft(lib, 100);
-            Canvas.SetTop(lib, 100);
+            Canvas.SetTop(lib, 150);
             xWrapper.Children.Add(lib);
         }
 
