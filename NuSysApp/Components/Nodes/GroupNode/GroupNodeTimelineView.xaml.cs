@@ -43,6 +43,7 @@ namespace NuSysApp
         private HashSet<string> _metaDataViewButtons; // for view by metadata
         private int _custom;
         private double _groupNodeWidth;
+        private const int TimelineNodeWidth = 140;
 
         public GroupNodeTimelineView(GroupNodeTimelineViewModel viewModel)
         {
@@ -74,16 +75,16 @@ namespace NuSysApp
             };
 
             // line across center for timeline
-            _line = new Line()
-            {
-                X1 = -50000,
-                X2 = 50000,
-                Y1 = 92.5,
-                Y2 = 92.5,
-                StrokeThickness = 5,
-                Stroke = new SolidColorBrush(Colors.Black)
-            };
-            TimelineCanvas.Children.Add(_line);
+            //_line = new Line()
+            //{
+            //    X1 = -50000,
+            //    X2 = 50000,
+            //    Y1 = 92.5,
+            //    Y2 = 92.5,
+            //    StrokeThickness = 5,
+            //    Stroke = new SolidColorBrush(Colors.Black)
+            //};
+            //TimelineCanvas.Children.Add(_line);
             TimelineCanvas.Children.Add(_moveLine);
 
             // Panning / Zooming
@@ -110,7 +111,7 @@ namespace NuSysApp
             MetaCanvas.Clip = rect2;
 
             Canvas.SetTop(TimelinePanel, (e.Height - 130) / 2);
-            Canvas.SetTop(_line, (e.Height - 130) / 2);
+            //Canvas.SetTop(_line, (e.Height - 130) / 2);
             _vm.CompositeTransform.CenterY = e.Height/2;
             _groupNodeWidth = e.Width;
         }
@@ -143,6 +144,7 @@ namespace NuSysApp
         {
             Button b1 = (Button)sender;
             TagBlock.Content = b1.Content.ToString();
+            MetaExpandBlock.Content = b1.Content.ToString();
             ResortTimeline(b1.Content.ToString());
             TagBlock.Opacity = 1;
             TagPanel.Opacity = 0;
@@ -199,7 +201,8 @@ namespace NuSysApp
         #region Sort Timeline
         private void ResortTimeline(String dataName)
         {
-            _sortBy = dataName; //need?
+            _sortBy = dataName;
+            _viewBy = dataName;
             _atomList.Clear();
             _panelNodes.Clear();
             ClearTimelineChild();
@@ -239,12 +242,11 @@ namespace NuSysApp
                 _view.ManipulationDelta += TimelineNode_ManipulationDelta;
                 _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
                 _view.ManipulationStarting += TimelineNode_ManipulationStarting;
-                _view.Margin = new Thickness(20, 0, 20, 50);
                 _view.VerticalAlignment = VerticalAlignment.Center;
 
                 TimelinePanel.Children.Add(_view);
                 _panelNodes.Add(_view);
-                Canvas.SetLeft(_view, i * 174);
+                Canvas.SetLeft(_view, i * 140);
             }
             _vm.DataList = _atomList;
         }
@@ -305,22 +307,21 @@ namespace NuSysApp
             TimelineItemView item = (TimelineItemView)sender;
             Canvas.SetTop(item, Canvas.GetTop(item) + e.Delta.Translation.Y);
             Canvas.SetLeft(item, Canvas.GetLeft(item) + e.Delta.Translation.X);
-            var nodeWidth = 174;
             var countLimit = _panelNodes.Count + 1;
 
-            int index = (int)Math.Round(Canvas.GetLeft(item) / 174);
-            int originalIndex = _originalXPos / 174;
+            int index = (int)Math.Round(Canvas.GetLeft(item) / TimelineNodeWidth);
+            int originalIndex = _originalXPos / TimelineNodeWidth;
 
-            if (Canvas.GetLeft(item) % nodeWidth <= 10 &&
+            if (Canvas.GetLeft(item) % TimelineNodeWidth <= 10 &&
                 Canvas.GetLeft(item) >= 0 &&
-                Canvas.GetLeft(item) <= countLimit * nodeWidth &&
+                Canvas.GetLeft(item) <= countLimit * TimelineNodeWidth &&
                 index != originalIndex + 1)
             {
-                _moveToXPos = (int)index * nodeWidth;
-                _moveLine.X1 = index * nodeWidth;
-                _moveLine.X2 = index * nodeWidth;
+                _moveToXPos = (int)index * TimelineNodeWidth;
+                _moveLine.X1 = index * TimelineNodeWidth;
+                _moveLine.X2 = index * TimelineNodeWidth;
                 _moveLine.Y1 = Canvas.GetTop(TimelinePanel);
-                _moveLine.Y2 = Canvas.GetTop(TimelinePanel) + 130;
+                _moveLine.Y2 = Canvas.GetTop(TimelinePanel) + 80;
                 _moveLine.StrokeThickness = 3;
             }
         }
@@ -339,27 +340,27 @@ namespace NuSysApp
             {
                 if (_originalXPos < _moveToXPos) // moving from left to right
                 {
-                    for (int i = (_originalXPos / 174) + 1; i < _moveToXPos / 174; i++)
+                    for (int i = (_originalXPos / TimelineNodeWidth) + 1; i < _moveToXPos / TimelineNodeWidth; i++)
                     {
                         var element = _panelNodes.ElementAt(i);
-                        Canvas.SetLeft(element, Canvas.GetLeft(element) - 174);
+                        Canvas.SetLeft(element, Canvas.GetLeft(element) - TimelineNodeWidth);
                         _panelNodes.RemoveAt(i);
                         _panelNodes.Insert(i - 1, element);
                     }
-                    Canvas.SetLeft(item, _moveToXPos - 174);
+                    Canvas.SetLeft(item, _moveToXPos - TimelineNodeWidth);
                     Canvas.SetTop(item, 0);
                 }
                 else // moving from right to left
                 {
-                    for (int i = (_moveToXPos / 174); i < _originalXPos / 174; i++)
+                    for (int i = (_moveToXPos / TimelineNodeWidth); i < _originalXPos / TimelineNodeWidth; i++)
                     {
                         var element = _panelNodes.ElementAt(i);
-                        Canvas.SetLeft(element, Canvas.GetLeft(element) + 174);
+                        Canvas.SetLeft(element, Canvas.GetLeft(element) + TimelineNodeWidth);
                     }
                     Canvas.SetLeft(item, _moveToXPos);
                     Canvas.SetTop(item, 0);
-                    _panelNodes.RemoveAt(_originalXPos / 174);
-                    _panelNodes.Insert(_moveToXPos / 174, item);
+                    _panelNodes.RemoveAt(_originalXPos / TimelineNodeWidth);
+                    _panelNodes.Insert(_moveToXPos / TimelineNodeWidth, item);
                 }
             }
 
@@ -436,7 +437,7 @@ namespace NuSysApp
                     _vm.CompositeTransform.ScaleX = 1;
                     _vm.CompositeTransform.ScaleY = 1;
                     // Translate X to center
-                    _vm.CompositeTransform.TranslateX = (index * -174) + (TimelineGrid.Clip.Rect.Width - 174) / 2;
+                    _vm.CompositeTransform.TranslateX = (index * -TimelineNodeWidth) + (TimelineGrid.Clip.Rect.Width - TimelineNodeWidth) / 2;
                     // Zoom in on center
                     _vm.CompositeTransform.CenterX = (TimelineGrid.Clip.Rect.Width / 2 - _vm.CompositeTransform.TranslateX);
                     _vm.CompositeTransform.ScaleX = prevZoom;
@@ -460,39 +461,6 @@ namespace NuSysApp
                 }
                 index++;
             }
-
-            //foreach (var tuple in _atomList)
-            //{
-            //    if (tuple.Item2.ToString() == s)
-            //    {
-            //        var prevZoom = _vm.CompositeTransform.ScaleX;
-            //        _vm.CompositeTransform.ScaleX = 1;
-            //        _vm.CompositeTransform.ScaleY = 1;
-            //        // Translate X to center
-            //        _vm.CompositeTransform.TranslateX = (index * -174) + (TimelineGrid.Clip.Rect.Width - 174) / 2;
-            //        // Zoom in on center
-            //        _vm.CompositeTransform.CenterX = (TimelineGrid.Clip.Rect.Width / 2 - _vm.CompositeTransform.TranslateX);
-            //        _vm.CompositeTransform.ScaleX = prevZoom;
-            //        _vm.CompositeTransform.ScaleY = prevZoom;
-
-            //        // Animate element being search for
-            //        TimelineItemView element = (TimelineItemView)_panelNodes.ElementAt(index);
-            //        Grid timelineNode = (Grid)element.FindVisualChild("TimelineNode");
-            //        Storyboard storyboard = new Storyboard();
-            //        ColorAnimation animation = new ColorAnimation();
-            //        animation.From = Colors.Orange;
-            //        animation.To = Colors.Transparent;
-            //        storyboard.Children.Add(animation);
-            //        Storyboard.SetTarget(animation, timelineNode);
-            //        PropertyPath p = new PropertyPath("(timelineNode.Background).(SolidColorBrush.Color)");
-            //        Storyboard.SetTargetProperty(animation, p.Path);
-            //        storyboard.Begin();
-
-            //        contains = true;
-            //        break;
-            //    }
-            //    index++;
-            //}
 
             if (!contains)
             {

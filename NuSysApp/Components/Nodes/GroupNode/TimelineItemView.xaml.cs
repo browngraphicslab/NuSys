@@ -29,26 +29,27 @@ namespace NuSysApp.Components.Nodes.GroupNode
             TimelineNode.Children.Add(atom); // add node
             atom.VerticalAlignment = VerticalAlignment.Bottom;
 
-            Line line = new Line()
-            {
-                Y1 = TimelineNode.ActualHeight,
-                Y2 = TimelineNode.ActualHeight + 30,
-                Stroke = new SolidColorBrush(Colors.Black),
-                StrokeThickness = 3,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            TimelinePanel.Children.Add(line); // add line
+            //Line line = new Line()
+            //{
+            //    Y1 = TimelineNode.ActualHeight,
+            //    Y2 = TimelineNode.ActualHeight + 30,
+            //    Stroke = new SolidColorBrush(Colors.Black),
+            //    StrokeThickness = 3,
+            //    HorizontalAlignment = HorizontalAlignment.Center
+            //};
+            //TimelinePanel.Children.Add(line); // add line
 
             TextBlock tb = new TextBlock();
             tb.Name = "TextBlock";
             tb.Text = sortElement.ToString();
             tb.TextAlignment = TextAlignment.Center;
-            tb.FontSize = 15;
+            tb.FontSize = 13;
             tb.VerticalAlignment = VerticalAlignment.Bottom;
             tb.HorizontalAlignment = HorizontalAlignment.Center;
-            tb.Width = 130;
+            tb.Width = 120;
 
             Grid tbGrid = new Grid();
+            tbGrid.Width = 120;
             tbGrid.BorderBrush = new SolidColorBrush(Colors.Black);
             tbGrid.BorderThickness = new Thickness(2);
             tbGrid.Children.Add(tb);

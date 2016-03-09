@@ -46,9 +46,9 @@
                             TextChanged="AutoSuggestBox_OnTextChanged"
                             QuerySubmitted="AutoSuggestBox_OnQuerySubmitted"
                             SuggestionChosen="AutoSuggestBox_OnSuggestionChosen"
-                            PlaceholderText="Search"
-                            Width="200"
-                            HorizontalAlignment="Right"
+                            PlaceholderText="SEARCH"
+                            HorizontalAlignment="Stretch"
+                            Height="35"
                             Opacity ="1"/>
     </Grid>
 </local:AnimatableUserControl>
