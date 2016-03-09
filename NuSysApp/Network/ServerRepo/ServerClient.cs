@@ -45,30 +45,18 @@ namespace NuSysApp
         {
             ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var credentials = JsonConvert.SerializeObject(GetUserCredentials(), settings);
-            var uri = GetUri("values/{}", true);
+            var credentials = GetUserCredentials();
+            var uri = GetUri("values/"+credentials, true);
             await _socket.ConnectAsync(uri);
         }
 
-        private Dictionary<string, object> GetUserCredentials()
+        private string GetUserCredentials()
         {
-            var ip = SessionController.Instance.NuSysNetworkSession.LocalIP;
-
-            var filepath = AppContext.BaseDirectory;
-            var fronttrim = filepath.Remove(0, 9);
-            int i = 0;
-            while (fronttrim[i] != '\\')
-            {
-                i++;
-            }
-            var name = fronttrim.Remove(i, fronttrim.Length - i);
-
-            Dictionary<string,object> dict = new Dictionary<string, object>();
-            return dict;
+            return WaitingRoomView.ServerSessionID.ToString();
         }
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
-            var firstpart = useWebSocket ? "wss" : "http";
+            var firstpart = useWebSocket ? "ws" : "http";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 

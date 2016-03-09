@@ -82,6 +82,7 @@ namespace NuSysApp
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
+
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate(NetworkUser user)
             {
                 UserLabel b = new UserLabel(user);
@@ -206,6 +207,10 @@ namespace NuSysApp
 
         public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
         {
+            await
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                    new SubscribeToCollectionRequest(collectionId));
+
             SessionController.Instance.IdToControllers.Clear();
 
             var elementCollection = new LibraryElementCollectionModel();
