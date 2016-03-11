@@ -49,6 +49,7 @@
                 dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
             var tcs = new TaskCompletionSource<bool>();
+            
             var ignore = dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 try
@@ -61,6 +62,7 @@
                     tcs.TrySetException(ex);
                 }
             });
+            
             return tcs.Task;
         }
     }

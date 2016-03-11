@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
@@ -74,6 +75,13 @@ namespace NuSysApp
             _inqLineModel.AddPoint(new Point2d((transformedPoint.X) / Constants.MaxCanvasSize, (transformedPoint.Y) / Constants.MaxCanvasSize));
 
             _inqLineModel.IsGesture = currentPoint.Properties.IsBarrelButtonPressed || currentPoint.Properties.IsRightButtonPressed;
+
+            var inqCanvasModel = inqCanvas.ViewModel.Model;
+
+         //   var m = new InqLineModel(_inqLineModel.Id);
+          //  m.Points = new ObservableCollection<Point2d>(_inqLineModel.Points);
+            inqCanvasModel.FinalizeLineLocally(_inqLineModel);
+
             var request = new FinalizeInkRequest( new Message(await _inqLineModel.Pack()));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }

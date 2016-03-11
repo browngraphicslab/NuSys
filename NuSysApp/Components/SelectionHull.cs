@@ -268,8 +268,8 @@ namespace NuSysApp.Components
             }
 
             // REMOVE COMMENTS FROM LINES BELOW TO SEE THE VISUAL HULL
-           // _mainCanvas.Children.Add(_visualHull);
-           // Canvas.SetZIndex(_visualHull, -1);
+            // _mainCanvas.Children.Add(_visualHull);
+            // Canvas.SetZIndex(_visualHull, -1);
         }
 
         // selects contained atoms by figuring out the atoms in the selection hull

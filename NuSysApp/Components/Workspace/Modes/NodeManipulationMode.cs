@@ -96,9 +96,7 @@ namespace NuSysApp
 
 
             var s = (UserControl) sender;
-
             var vm = s.DataContext as AtomViewModel;
-
             if (SessionController.Instance.ActiveWorkspace.SelectedContent.Contains(vm))
             {
                 //move all selected content if a selected node is moved

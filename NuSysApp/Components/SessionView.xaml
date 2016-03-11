@@ -32,7 +32,7 @@
 		                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 		                        Margin="{TemplateBinding Padding}"/>
                             <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
-                            <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
+                            <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="False" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -40,10 +40,12 @@
         </Style>
     </Page.Resources>
 
-    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" PointerPressed="mainCanvas_PointerPressed" PointerMoved="mainCanvas_PointerMoved" PointerReleased="mainCanvas_PointerReleased">
+
+    <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" PointerPressed="mainCanvas_PointerPressed" PointerMoved="mainCanvas_PointerMoved" PointerReleased="mainCanvas_PointerReleased"  IsHitTestVisible="True">
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
+
         <local:MediaRecorderView x:Name="xMediaRecorder" VerticalAlignment="Top"/>
-        <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
+        <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
         <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
             <Image Source="/Assets/icon_record.png"></Image>
         </Button>
@@ -54,10 +56,7 @@
         </StackPanel>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
         <local:FullScreenViewerView x:Name="xFullScreenViewer"></local:FullScreenViewerView>
-
-        <!--<Grid Name ="overlayCanvas" Tapped="SearchHide" Visibility ="Collapsed">-->
-            <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
-        <!--</Grid>-->
-
+        <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
+       
     </Canvas>
 </Page>

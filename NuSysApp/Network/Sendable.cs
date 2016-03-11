@@ -7,7 +7,7 @@ namespace NuSysApp
     // TODO: remove BASEINPC
     public abstract class Sendable
     {
-        public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
+        public delegate void CanEditChangedEventHandler(object source, AtomModel.EditStatus status);
 
         public delegate void UnPackedEventHandler(object source);
         
@@ -39,7 +39,7 @@ namespace NuSysApp
                     return;
                 }
                 _editStatus = value;
-                CanEditChange?.Invoke(this, new CanEditChangedEventArg(CanEdit));
+                CanEditChange?.Invoke(this, CanEdit);
             }
         }
         

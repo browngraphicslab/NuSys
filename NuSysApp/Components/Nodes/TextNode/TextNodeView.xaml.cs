@@ -26,7 +26,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    
+
     public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable
     {
 
@@ -44,13 +44,13 @@ namespace NuSysApp
             if (content != null)
                 rtfTextBox.SetRtfText(content.Data);
 
-            (vm.Model as TextNodeModel).TextChanged += delegate(object source, TextChangedEventArgs args)
+            (vm.Model as TextNodeModel).TextChanged += delegate (object source, string text)
             {
-                rtfTextBox.SetRtfText(args.Text);
-               // rtfTextBox.SetRtfText();
+                rtfTextBox.SetRtfText(text);
+                // rtfTextBox.SetRtfText();
             };
 
-            
+
             /*
             grid.IsDoubleTapEnabled = true;
             grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
@@ -60,11 +60,8 @@ namespace NuSysApp
                 range.StartOf(TextRangeUnit.Link, true);
                 var str = string.Empty;
                 range.GetText(TextGetOptions.UseCrlf, out str);
-
-
                 if (!str.StartsWith("HYPERLINK"))
                     return;
-
                 var groups = Regex.Match(str, "\"(.*?)\"").Groups;
                 var url = groups[1].Value;
                 Launcher.LaunchUriAsync(new Uri("http://en.wikipedia.org" + url));
@@ -73,10 +70,10 @@ namespace NuSysApp
             */
         }
 
-        
+
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
-            TextNodeViewModel vm = (TextNodeViewModel) DataContext;
+            TextNodeViewModel vm = (TextNodeViewModel)DataContext;
             return;
             var oldColor = this.RecordVoice.Background;
             Color c = new Color();
@@ -129,15 +126,15 @@ namespace NuSysApp
             }
 
             vm.ToggleEditing();
-            
+
             if (!vm.IsEditing)
             {
                 await vm.Init();
                 RearrangeImagePlaceHolders();
             }
 
-           
-            AdjustScrollHeight();        
+
+            AdjustScrollHeight();
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
@@ -184,7 +181,6 @@ namespace NuSysApp
         {
             /*
             TextNodeViewModel vm = (TextNodeViewModel)DataContext;
-
             if (!vm.IsEditing)
             {
                 var contentHeight = rtfTextBox.ComputeRtfHeight();
@@ -291,12 +287,9 @@ namespace NuSysApp
                 {
                     characterFormat.ForegroundColor = Color.FromArgb(100, 255, 255, 255);
                 }
-
     
-
                 selected.CharacterFormat = characterFormat;
           
-
         }
               */
         }
@@ -319,7 +312,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void FloatingButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            e.Handled = true;            
+            e.Handled = true;
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)

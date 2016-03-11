@@ -63,6 +63,10 @@ namespace NuSysApp
             {
                 if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen &&_prevOptions != Options.PenGlobalInk && xFullScreenViewer.Opacity < 0.1)
                 {
+                    var source = (FrameworkElement)eventArgs.OriginalSource;
+                    if (source.DataContext is FloatingMenuViewModel)
+                        return;
+
                     xFloatingMenu.SetActive(Options.PenGlobalInk);
                     _prevOptions = Options.PenGlobalInk;
                     IsPenMode = true;
@@ -73,6 +77,10 @@ namespace NuSysApp
             {
                 if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
                 {
+                    var source = (FrameworkElement)eventArgs.OriginalSource;
+                    if (source.DataContext is FloatingMenuViewModel)
+                        return;
+
                     xFloatingMenu.SetActive(Options.SelectNode);
                     _prevOptions = Options.SelectNode;
                     IsPenMode = false;
@@ -224,6 +232,7 @@ namespace NuSysApp
                 xWorkspaceTitle.Text = model.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
@@ -257,6 +266,7 @@ namespace NuSysApp
             m["title"] = model.Title;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
                 NetworkClient.PacketType.UDP);
+            xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
         private void TitleChanged(object source, string title)
         {
@@ -385,7 +395,6 @@ namespace NuSysApp
                 Canvas.SetLeft(ChatPopup, 5);
             }
         }
-
         public bool AllowLasso
         {
             get { return _lassoAllowed; }

@@ -5,7 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
+using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -13,26 +16,35 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using MyToolkit.Messaging;
 
 namespace NuSysApp
 {
     public class MediaUtil
     {
 
-        public static  async Task<BitmapImage> ByteArrayToBitmapImage(byte[] byteArray)
+
+        public static  async Task<BitmapImage>  ByteArrayToBitmapImage(byte[] byteArray)
         {
-            var bitmapImage = new BitmapImage();
+            
+            BitmapImage bmi = new BitmapImage();
+
             InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
 
             await stream.WriteAsync(byteArray.AsBuffer());
             stream.Seek(0);
-            bitmapImage.CreateOptions = BitmapCreateOptions.None;
+            bmi.CreateOptions = BitmapCreateOptions.None;
 
-            bitmapImage.SetSource(stream);
+            bmi.SetSource(stream);
             await stream.FlushAsync();
             stream.Dispose();
+           
+            return bmi;
+        }
 
-            return bitmapImage;
+        private static byte[] ATask(byte[] b)
+        {
+            return null;
         }
 
         public static async Task<byte[]> RenderTargetBitmapToByteArray(RenderTargetBitmap source)

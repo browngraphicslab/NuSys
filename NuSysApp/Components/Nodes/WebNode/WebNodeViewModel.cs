@@ -34,10 +34,10 @@ namespace NuSysApp
             ClipRect = new Rect(0,0, model.Width, model.Height);
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             Url = model.Url;
-            model.SizeChanged += delegate(object source, WidthHeightUpdateEventArgs args)
+            model.SizeChanged += delegate(object source, double width, double height)
             {
                 Zoom = (Width / 1024.0);
-                ClipRect = new Rect(0, 0, model.Width, model.Height);
+                ClipRect = new Rect(0, 0, width, height);
                 RaisePropertyChanged("Zoom");
                 RaisePropertyChanged("ClipRect");
             };

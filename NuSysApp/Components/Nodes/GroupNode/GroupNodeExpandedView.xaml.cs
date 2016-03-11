@@ -60,7 +60,16 @@ namespace NuSysApp
 
             foreach (var newItem in e.NewItems)
             {
-                LoadThumbnails(numRows, numCols, newItem);
+                var child = (FrameworkElement) newItem;
+                var childModel = (child.DataContext as GroupItemViewModel).Model;
+                var view = await _factory.CreateFromSendable(childModel, null);
+                var wrappedView = new Border();
+                wrappedView.Padding = new Thickness(10);
+                wrappedView.Child = view;
+                Grid.SetRow(wrappedView, _count / numCols);
+                Grid.SetColumn(wrappedView, _count % numCols);
+                xGrid.Children.Add(wrappedView);
+                _count++;
             }
         }
 

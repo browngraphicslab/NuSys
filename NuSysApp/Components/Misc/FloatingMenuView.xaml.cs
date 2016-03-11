@@ -34,6 +34,9 @@ namespace NuSysApp
             AddRecord,
             AddBucket,
             AddVideo,
+        MainSaveLoad,
+            Load,
+            Save,
         MainMisc,
             MiscLoad,
             MiscSave,
@@ -68,6 +71,7 @@ namespace NuSysApp
 
         public FloatingMenuView()
         {
+            DataContext = new FloatingMenuViewModel();
             this.InitializeComponent();
 
             _buttons = new BiDictionary<FloatingMenuButtonView, Options>();
@@ -78,7 +82,7 @@ namespace NuSysApp
             _buttons[btnPen] = Options.PenGlobalInk;
             _buttons[btnGlobalInk] = Options.PenGlobalInk;
             _buttons[btnInkErase] = Options.PenErase;
-          //  _buttons[btnHighlight] = Options.PenHighlight;    
+            //  _buttons[btnHighlight] = Options.PenHighlight;    
 
             _buttons[btnSearch] = Options.MainSearch;
 
@@ -90,10 +94,10 @@ namespace NuSysApp
             _buttons[btnNewWebNode] = Options.AddWeb;
             _buttons[btnBucket] = Options.AddBucket;
             _buttons[btnVideo] = Options.AddVideo;
-
-            _buttons[btnMisc] = Options.MainMisc;
-            _buttons[btnLoad] = Options.MiscLoad;
-            _buttons[btnExport] = Options.MiscSave;
+            
+            _buttons[btnSaveLoad] = Options.MainSaveLoad;
+            _buttons[btnLoad] = Options.Load;
+            _buttons[btnExport] = Options.Save;
             _buttons[btnPin] = Options.MiscPin;
             _buttons[btnMisc] = Options.MainMisc;
             _buttons[btnUsers] = Options.MiscUsers;
@@ -109,6 +113,8 @@ namespace NuSysApp
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 0), new Tuple<Storyboard, string>(slidein, "SubMenuSaveLoad"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnSaveLoad, 1), new Tuple<Storyboard, string>(slideout, "SubMenuSaveLoad"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 0), new Tuple<Storyboard, string>(slidein, "SubMenuAdditional"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnMisc, 1), new Tuple<Storyboard, string>(slideout, "SubMenuAdditional"));
             _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPin, 0), new Tuple<Storyboard, string>(windowClose, "pinWindow"));
@@ -126,7 +132,7 @@ namespace NuSysApp
             _activeSubMenuButtons[btnSelect] = btnSelectNode;
             _activeSubMenuButtons[btnPen] = btnGlobalInk;
             _activeSubMenuButtons[btnAdd] = btnNewNode;
-            _activeSubMenuButtons[btnMisc] = btnLoad;
+            _activeSubMenuButtons[btnSaveLoad] = btnSaveLoad;
 
             
 
@@ -165,7 +171,7 @@ namespace NuSysApp
         {
             btnAdd.Icon = btnNewNode.Icon;
             btnSelect.Icon = btnSelectNode.Icon;
-            btnMisc.Icon = btnExport.Icon;
+            btnSaveLoad.Icon = btnExport.Icon;
             SetActive(Options.SelectNode);
         }
 

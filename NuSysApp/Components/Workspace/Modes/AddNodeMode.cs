@@ -1,10 +1,12 @@
 ﻿using NuSysApp.Util;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
@@ -80,11 +82,100 @@ namespace NuSysApp
 
                 var wvm = (WorkspaceViewModel) _view.DataContext;
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));
+                BackgroundExecutionManager.RequestAccessAsync();
+
+                // Unregister all background tasks associated with this app. 
+                foreach (var tsk in BackgroundTaskRegistration.AllTasks)
+                {
+                    Debug.WriteLine(String.Format("name={0}, ID={1}", tsk.Value.Name, tsk.Value.TaskId));
+                    tsk.Value.Unregister(true);
+                }
+
+               //// ApplicationTrigger trigger = new ApplicationTrigger();
+               // var task = await RegisterBackgroundTask("RuntimeComponent1.ExampleBackgroundTask", "ExampleBackgroundTask", trigger);
+
+               // task.Completed += Task_Completed;
+                //task.Result.Completed += new BackgroundTaskCompletedEventHandler(OnCompleted);
+
+                //UpdateUI();
+
+
+                // Register the background task.
+                // To keep the memory footprint of the background task as low as possible, is has been implemented in a C++ Windows Runtime Component for Windows Phone.  
+                // The memory footprint will be higher if written in C# and will cause out of memory exception on low-cost-tier devices which will terminate the background task.
+                /* BackgroundTaskBuilder builder = new BackgroundTaskBuilder();
+                 builder.Name = "ExampleBackgroundTask";
+                 builder.TaskEntryPoint = "RuntimeComponent1.ExampleBackgroundTask";
+                 */
+
+                // The trigger used in this sample is the TimeZoneChange trigger. This is for illustration purposes.
+                // In a real scenario, choose the trigger that meets your needs. 
+                // Note: There are two ways to start the background task for testing purposes:
+                // 1. Change the time zone setting so that the system time changes - this will cause a TimeZoneChange to fire
+                // 2. Find the background task "AppTileUpdater" in the LifecycleEvents drop-down on the main toolbar and tap it.
+
+                // time trigger only works in 15 min intervals....WHY CAN'T WE DO THIS IMMEDIATELY
+
+                //ApplicationTrigger trigger = new ApplicationTrigger();
+                //builder.SetTrigger(trigger);
+                //var task = RegisterBackgroundTask(builder);
+                //builder.Register();
+
+                //await task;
+
+              //  var rr = await trigger.RequestAsync();
+               
+
                 await AddNode(_view, _startPos, new Size(r.Width, r.Height), _nodeType);
             }
             _isDragging = false;
          //   e.Handled = true;
         }
+
+        private void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            // Image i = RuntimeComponent1.ExampleBackgroundTask.Blah();
+            Debug.WriteLine("fooooooooooooddddddddd");
+            args.CheckResult();
+        }
+
+        private void OnCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            Debug.WriteLine("test, THE TASK HAS FINISHED!!!!");
+          
+           
+        }
+
+
+
+        /*
+private void OnCompleted(BackgroundTaskRegistration task, BackgroundTaskCompletedEventArgs args)
+{
+   UpdateUI();
+}
+*/
+        /*
+        public static async Task<BackgroundTaskRegistration> RegisterBackgroundTask(BackgroundTaskBuilder builder)
+        {     
+            BackgroundTaskRegistration task = builder.Register();
+            task.Completed += new BackgroundTaskCompletedEventHandler(OnCompleted);
+            return task;
+        }*/
+
+        public async Task<BackgroundTaskRegistration> RegisterBackgroundTask(String taskEntryPoint, String name, IBackgroundTrigger trigger)
+        {
+            
+            var builder = new BackgroundTaskBuilder();
+            builder.Name = name;
+            builder.TaskEntryPoint = taskEntryPoint;
+            builder.SetTrigger(trigger);
+
+            BackgroundTaskRegistration task = builder.Register();
+            
+         
+            return task;
+        }
+
 
         public override async Task Deactivate()
         {
@@ -112,6 +203,7 @@ namespace NuSysApp
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
             var dict = new Message();
+            Dictionary<string, object> metadata;
             if (nodeType == NodeType.Document || nodeType == NodeType.Word || nodeType == NodeType.Powerpoint || nodeType == NodeType.Image || nodeType == NodeType.PDF ||  nodeType == NodeType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
@@ -142,7 +234,7 @@ namespace NuSysApp
 
                 if (Constants.WordFileTypes.Contains(fileType))
                 {
-                    var metadata = new Dictionary<string, object>();
+                    metadata = new Dictionary<string, object>();
                     metadata["FilePath"] = storageFile.Path;
                     metadata["Token"] = token.Trim();
 
@@ -155,7 +247,7 @@ namespace NuSysApp
 
                 if (Constants.PowerpointFileTypes.Contains(fileType))
                 {
-                    var metadata = new Dictionary<string, object>();
+                    metadata = new Dictionary<string, object>();
                     metadata["FilePath"] = storageFile.Path;
                     metadata["Token"] = token.Trim();
 
@@ -219,12 +311,18 @@ namespace NuSysApp
             }
             var contentId = SessionController.Instance.GenerateId();
 
+            metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+            metadata["node_type"] = nodeType + "Node";
+
+            dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = nodeType.ToString();
             dict["x"] = p.X;
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
+            dict["metadata"] = metadata;
             dict["autoCreate"] = true;
             dict["creators"] = new List<string>() {SessionController.Instance.ActiveWorkspace.Id};
 

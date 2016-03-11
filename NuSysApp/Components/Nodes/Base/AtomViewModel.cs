@@ -75,17 +75,17 @@ namespace NuSysApp
             RaisePropertyChanged("Title");
         }
 
-        protected virtual void OnPositionChanged(object source, PositionChangeEventArgs e)
+        protected virtual void OnPositionChanged(object source, double x, double y)
         {
-            SetPosition(Model.X, Model.Y);
+            SetPosition(x, y);
             UpdateAnchor();
         }
 
-        protected virtual void OnSizeChanged(object source, WidthHeightUpdateEventArgs e)
+        protected virtual void OnSizeChanged(object source, double width, double height)
         {
 
-            _width = Model.Width;
-            _height = Model.Height;
+            _width = width;
+            _height = height;
             UpdateAnchor();
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
@@ -98,7 +98,7 @@ namespace NuSysApp
             RaisePropertyChanged("Transform");
         }
 
-        protected virtual void OnCanEditChange(object source, CanEditChangedEventArg e)
+        protected virtual void OnCanEditChange(object source, AtomModel.EditStatus status)
         {
             CanEdit = Model.CanEdit;
         }
@@ -129,9 +129,10 @@ namespace NuSysApp
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);
                 tagBlock.Foreground = new SolidColorBrush(Colors.White);
-                tagBlock.Margin = new Thickness(2, 2, 2, 2);
+                tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
+                tagBlock.IsHitTestVisible = false;
 
                 Tags.Add(tagBlock);
             }

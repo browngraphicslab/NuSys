@@ -792,6 +792,70 @@ std::shared_ptr<std::vector<std::shared_ptr<RectFloat>>> MuPDFDoc::SearchText(co
 	return hints;
 }
 
+std::wstring MuPDFDoc::GetAllTexts()
+{
+	fz_text_sheet *sheet = nullptr;
+	fz_text_page *text = nullptr;
+	fz_device *dev = nullptr;
+	PageCache *pageCache = &m_pages[m_currentPage];
+	std::wstring result;
+	fz_var(sheet);
+	fz_var(text);
+	fz_var(dev);
+	std::shared_ptr<std::vector<std::shared_ptr<RectFloat>>> hints(new std::vector<std::shared_ptr<RectFloat>>());
+	fz_try(m_context)
+	{
+		int hitCount = 0;
+		fz_matrix ctm = CalcConvertMatrix();
+		fz_rect mbrect = fz_transform_rect(ctm, pageCache->mediaBox);
+		sheet = fz_new_text_sheet(m_context);
+		text = fz_new_text_page(m_context, mbrect);
+		dev = fz_new_text_device(m_context, sheet, text);
+		fz_run_page(m_document, pageCache->page, dev, ctm, nullptr);
+		fz_free_device(dev);
+		dev = nullptr;
+		int len = TextLen(text);
+		for (int pos = 0; pos < len; pos++)
+		{
+			result += CharAt(text, pos);
+			/*
+			fz_bbox rr = fz_empty_bbox;
+			int n = Match(text, searchText, pos);
+			int orig = n;
+			int c;
+			while (*str)
+			{
+				str += fz_chartorune(&c, (char *)str);
+				if (c == ' ' && CharAt(page, n) == ' ')
+				{
+					while (CharAt(page, n) == ' ')
+						n++;
+				}
+				else
+				{
+					if (tolower(c) != tolower(CharAt(page, n)))
+						return 0;
+					n++;
+				}
+			}
+			return n - orig;
+			*/
+		}
+	}
+	fz_always(m_context)
+	{
+		fz_free_text_page(m_context, text);
+		fz_free_text_sheet(m_context, sheet);
+		fz_free_device(dev);
+	}
+	fz_catch(m_context)
+	{
+		return std::wstring();
+	}
+	return result;
+}
+
+
 std::shared_ptr<std::vector<std::shared_ptr<Outlineitem>>> MuPDFDoc::GetOutline()
 {
 	std::shared_ptr<std::vector<std::shared_ptr<Outlineitem>>> items(new std::vector<std::shared_ptr<Outlineitem>>());

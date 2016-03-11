@@ -108,13 +108,6 @@ namespace NuSysApp
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
-            vm.Model.SizeChanged += delegate(object source, WidthHeightUpdateEventArgs args)
-            {
-                //inkCanvas.ViewModel.CanvasSize = new Size(args.Width,args.Height);
-                //inkCanvas.Width = args.Width;
-                //inkCanvas.Height = args.Height;
-            };
-
             vm.Model.UserChanged += delegate (NetworkUser user)
             {
                 highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;

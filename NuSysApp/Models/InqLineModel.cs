@@ -8,7 +8,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using NuSysApp.EventArgs;
+
 
 namespace NuSysApp
 {
@@ -24,7 +24,7 @@ namespace NuSysApp
         public bool IsGesture { get; set; }
         public DoubleCollection StrokeDashArray { get; set; }
 
-        public delegate void DeleteInqLineEventHandler(object source, DeleteInqLineEventArgs e);
+        public delegate void DeleteInqLineEventHandler(object source, InqLineModel inqLine);
         public event DeleteInqLineEventHandler OnDeleteInqLine;
 
         public InqLineModel(string id) : base(id)
@@ -42,7 +42,7 @@ namespace NuSysApp
 
         public void Delete()
         {
-            OnDeleteInqLine?.Invoke(this, new DeleteInqLineEventArgs(this));
+            OnDeleteInqLine?.Invoke(this, this);
             SessionController.Instance.IdToSendables.Remove(Id);
         }
 
