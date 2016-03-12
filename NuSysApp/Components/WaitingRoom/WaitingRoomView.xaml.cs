@@ -190,12 +190,21 @@ namespace NuSysApp
                 if (validCredentials)
                 {
                     ServerSessionID = serverSessionId;
-                    await SessionController.Instance.NuSysNetworkSession.Init();
-                    loggedInText.Text = "Logged In!";
+                    try
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.Init();
 
-                    NewWorkspaceButton.IsEnabled = true;
-                    JoinWorkspaceButton.IsEnabled = true;
-                    LoginButton.IsEnabled = false;
+                        loggedInText.Text = "Logged In!";
+
+                        NewWorkspaceButton.IsEnabled = true;
+                        JoinWorkspaceButton.IsEnabled = true;
+                        LoginButton.IsEnabled = false;
+                    }
+                    catch (ServerClient.IncomingDataReaderException loginException)
+                    {
+                        loggedInText.Text = "Log in failed!";
+                        throw new Exception("Your account is probably already logged in");
+                    }
                 }
                 else
                 {

@@ -179,7 +179,8 @@ namespace NuSysApp
             m["url"] = url;
             m["nodeType"] = ElementType.Web;
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.Id };
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id ;
+            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             m["id"] = nodeid;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));

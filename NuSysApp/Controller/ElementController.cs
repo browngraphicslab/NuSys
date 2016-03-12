@@ -138,13 +138,13 @@ namespace NuSysApp
             Deleted?.Invoke(this);
         }
 
-        public async virtual void RequestDelete()
+        public async virtual Task RequestDelete()
         {
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
         }
 
 
-        public async virtual void RequestDuplicate(double x, double y)
+        public async virtual Task RequestDuplicate(double x, double y)
         {
             Message m = new Message();
             m["contentId"] = Model.ContentId;
@@ -155,11 +155,12 @@ namespace NuSysApp
             m["height"] = Model.Height;
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
+            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async void RequestLinkTo(string otherId)
+        public virtual async Task RequestLinkTo(string otherId)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
@@ -168,7 +169,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
         }
 
-        public virtual async Task RequestMoveToCollection(string id)
+        public virtual async Task RequestMoveToCollection(string newCollectionId,string newCollectionContentID)
         {
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -177,14 +178,16 @@ namespace NuSysApp
             m1["metadata"] = metadata;
             m1["contentId"] = Model.ContentId;
             m1["nodeType"] = Model.ElementType;
-            m1["x"] = 0;
-            m1["y"] = 0;
+            m1["x"] = 50000;
+            m1["y"] = 50000;
             m1["width"] = 200;
             m1["height"] = 200;
             m1["autoCreate"] = true;
-            m1["creator"] = id;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
+            m1["creator"] = newCollectionId;
+            m1["creatorContentID"] = newCollectionContentID;
+
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
 
         }
 

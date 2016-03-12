@@ -56,7 +56,7 @@ namespace NuSysApp
         }
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
-            var firstpart = useWebSocket ? "wss" : "http";
+            var firstpart = useWebSocket ? "wss" : "https";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
@@ -67,35 +67,48 @@ namespace NuSysApp
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
         {
-            using (DataReader reader = args.GetDataReader())
+            try
             {
-                reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
-                string read = reader.ReadString(reader.UnconsumedBufferLength);
-                //Debug.WriteLine(read + "\r\n");
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
-                if (dict.ContainsKey("server_indication_from_server"))
-                {
-                    if (dict.ContainsKey("notification_type") && (string)dict["notification_type"] == "content_available")
-                    {
-                        if (dict.ContainsKey("id"))
-                        {
-                            var id = dict["id"];
-                            LibraryElement element = new LibraryElement(dict);
-                            UITask.Run(delegate {
+                using (DataReader reader = args.GetDataReader())
 
-                                // TODO: add back in
-                                //                    SessionController.Instance.Library.AddNewElement(element);
-//                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
-                            });
-                            await GetContent((string) id);
+                {
+                    reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
+                    string read = reader.ReadString(reader.UnconsumedBufferLength);
+                    //Debug.WriteLine(read + "\r\n");
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                    };
+                    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
+                    if (dict.ContainsKey("server_indication_from_server"))
+                    {
+                        if (dict.ContainsKey("notification_type") &&
+                            (string) dict["notification_type"] == "content_available")
+                        {
+                            if (dict.ContainsKey("id"))
+                            {
+                                var id = dict["id"];
+                                LibraryElement element = new LibraryElement(dict);
+                                UITask.Run(delegate
+                                {
+
+                                    // TODO: add back in
+                                    //                    SessionController.Instance.Library.AddNewElement(element);
+                                    //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
+                                });
+                                await GetContent((string) id);
+                            }
                         }
                     }
+                    else
+                    {
+                        OnMessageRecieved?.Invoke(new Message(dict));
+                    }
                 }
-                else
-                {
-                    OnMessageRecieved?.Invoke(new Message(dict));
-                }
+            }
+            catch (Exception e)
+            {
+                throw new IncomingDataReaderException();
             }
         }
 
@@ -118,15 +131,26 @@ namespace NuSysApp
 
                     var contentData = (string)dict["data"] ?? "";
                     var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
-                    var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
-                    var content = new NodeContentModel(contentData, contentId, contentTitle, contentAliases);
+                    var contentType = dict.ContainsKey("type")
+                        ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
+                        : ElementType.Text;
+                    //var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
+                    NodeContentModel content;
+                    if (contentType == ElementType.Collection)
+                    {
+                        content = new CollectionContentModel(contentId, null, contentTitle);
+                    }
+                    else
+                    {
+                        content = new NodeContentModel(contentData, contentId, contentType, contentTitle);
+                    }
                     if (SessionController.Instance.ContentController.Get(contentId) == null)
                     {
                         SessionController.Instance.ContentController.Add(content);
                     }
                     else
                     {
-                        SessionController.Instance.ContentController.OverWrite(content);
+                        SessionController.Instance.ContentController.OverWrite(content);//TODO do we want this?
                     }
                     if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
                     {
@@ -184,6 +208,25 @@ namespace NuSysApp
             }
             return final;
         }
+
+        public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)
+        {
+            var url = GetUri("getworkspace/" + id);
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(url);
+            string data;
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsStringAsync();
+            }
+            var list = JsonConvert.DeserializeObject<List<string>>(data);
+            var returnList = new List<Message>();
+            foreach (var s in list)
+            {
+                returnList.Add(new Message(s));
+            }
+            return returnList;
+        }
         /*
         public async Task DeleteAllRepoFiles()
         {
@@ -234,5 +277,10 @@ namespace NuSysApp
 
         }
         */
+
+        public class IncomingDataReaderException : Exception
+        {
+            public IncomingDataReaderException(string s = "") : base("Error with incoming data reader message.  " + s){}
+        }
     }
 }

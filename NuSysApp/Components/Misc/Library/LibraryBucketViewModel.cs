@@ -94,6 +94,7 @@ namespace NuSysApp
                         m["height"] = 400;
                         m["nodeType"] = element.ElementType.ToString();
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                        m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
                     }

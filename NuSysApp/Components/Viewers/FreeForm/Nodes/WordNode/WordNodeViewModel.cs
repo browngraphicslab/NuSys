@@ -90,6 +90,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id ;
             m["nodeType"] = ElementType.PDF.ToString();
+            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = wordModel.GetMetaData("BookmarkId");

@@ -45,7 +45,6 @@ namespace NuSysApp
             controller.LinkedAdded += OnLinkedAdded;
 
             Tags = new ObservableCollection<Button>();
-            
 
             controller.UserChanged +=
                 delegate(NetworkUser user)
