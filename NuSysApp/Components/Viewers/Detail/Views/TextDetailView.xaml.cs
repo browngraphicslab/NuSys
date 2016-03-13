@@ -88,7 +88,7 @@ namespace NuSysApp
         {
             // The string received from the JavaScript code can be found in e.Value
             string data = e.Value;
-            Debug.WriteLine(data);
+            //Debug.WriteLine(data);
 
             if (data.ToLower().StartsWith("launchmylink:"))
             {

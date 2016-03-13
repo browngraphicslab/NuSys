@@ -331,6 +331,7 @@
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
+    <Compile Include="Controller\TextNodeController.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
@@ -346,7 +347,6 @@
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\EditStatus.cs" />
     <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
@@ -405,7 +405,6 @@
     <Compile Include="Converters\SubstractConverter.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="Lib\MarkdownDeep\Abbreviation.cs" />
     <Compile Include="Lib\MarkdownDeep\Block.cs" />

@@ -30,8 +30,6 @@ namespace NuSysApp
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
-        public delegate void CanEditChangedEventHandler(object source, EditStatus status);
-
         public delegate void ContentLoadedHandler(object source, NodeContentModel data);
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
@@ -47,15 +45,11 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public event TitleChangedHandler TitleChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event CanEditChangedEventHandler CanEditChange;
-
-        private EditStatus _editStatus;
 
         public ElementController(ElementModel model)
         {
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
-            _editStatus = EditStatus.Maybe;
         }
 
         public virtual async Task FireContentLoaded(NodeContentModel content)
@@ -207,21 +201,6 @@ namespace NuSysApp
             }
          }
 
-
-        public EditStatus CanEdit
-        {
-            get { return _editStatus; }
-            set
-            {
-                if (_editStatus == value)
-                {
-                    return;
-                }
-                _editStatus = value;
-                CanEditChange?.Invoke(this, CanEdit);
-            }
-        }
-
         public ElementModel Model
         {
             get { return _model; }
@@ -232,8 +211,11 @@ namespace NuSysApp
             if (props.ContainsKey("data"))
             {
                 var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
-                content.Data = props.GetString("data", "");
-                ContentChanged?.Invoke(this, content);
+                if (content != null)
+                {
+                    content.Data = props.GetString("data", "");
+                    ContentChanged?.Invoke(this, content);
+                }
             }
         }
 
