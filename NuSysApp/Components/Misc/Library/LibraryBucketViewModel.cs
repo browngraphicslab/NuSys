@@ -13,12 +13,12 @@ namespace NuSysApp
     public class LibraryBucketViewModel
     {
 
-        public Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
+        public Dictionary<string, NodeContentModel> _elements = new Dictionary<string, NodeContentModel>();
 
-        public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
+        public delegate void NewContentsEventHandler(ICollection<NodeContentModel> elements);
         public event NewContentsEventHandler OnNewContents;
 
-        public delegate void NewElementAvailableEventHandler(LibraryElement element);
+        public delegate void NewElementAvailableEventHandler(NodeContentModel element);
         public event NewElementAvailableEventHandler OnNewElementAvailable;
 
         private double _width, _height;
@@ -37,7 +37,7 @@ namespace NuSysApp
                 foreach (var kvp in dictionaries)
                 {
                     var id = (string)kvp.Value["id"];
-                    var element = new LibraryElement(kvp.Value);
+                    var element = new NodeContentModel(kvp.Value);
                     if (!_elements.ContainsKey(id))
                     {
                         _elements.Add(id, element);
@@ -50,11 +50,11 @@ namespace NuSysApp
         }
         public void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-            List<LibraryElement> elements = new List<LibraryElement>();
+            List<NodeContentModel> elements = new List<NodeContentModel>();
             foreach (var element in e.Items)
             {
-                var id = ((LibraryElement)element).ContentID;
-                elements.Add((LibraryElement)element);
+                var id = ((NodeContentModel)element).Id;
+                elements.Add((NodeContentModel)element);
                 if (SessionController.Instance.ContentController.Get(id) == null)
                 {
                     Task.Run(async delegate
@@ -64,9 +64,9 @@ namespace NuSysApp
                 }
             }
             e.Data.OperationCompleted += DataOnOperationCompleted;
-            e.Data.Properties.Add("LibraryElements", elements);
-            var title = ((LibraryElement)e.Items[0]).Title ?? "";
-            var type = ((LibraryElement)e.Items[0]).ElementType.ToString();
+            e.Data.Properties.Add("NodeContentModel", elements);
+            var title = ((NodeContentModel)e.Items[0]).ContentName ?? "";
+            var type = ((NodeContentModel)e.Items[0]).Type.ToString();
             e.Data.SetText(type + "  :  " + title);
             e.Cancel = false;
         }
@@ -75,7 +75,7 @@ namespace NuSysApp
 
             UITask.Run(delegate
             {
-                var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
+                var ids = (List<NodeContentModel>)sender.Properties["NodeContentModel"];
 
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
@@ -87,12 +87,12 @@ namespace NuSysApp
                     foreach (var element in ids)
                     {
                         Message m = new Message();
-                        m["contentId"] = element.ContentID;
+                        m["contentId"] = element.Id;
                         m["x"] = centerpoint.X - 200;
                         m["y"] = centerpoint.Y - 200;
                         m["width"] = 400;
                         m["height"] = 400;
-                        m["nodeType"] = element.ElementType.ToString();
+                        m["nodeType"] = element.Type.ToString();
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                         m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
@@ -102,9 +102,9 @@ namespace NuSysApp
             });
         }
 
-        public void AddNewElement(LibraryElement element)
+        public void AddNewElement(NodeContentModel element)
         {
-            _elements.Add(element.ContentID, element);
+            _elements.Add(element.ContentName, element);
             OnNewElementAvailable?.Invoke(element);
         }
 

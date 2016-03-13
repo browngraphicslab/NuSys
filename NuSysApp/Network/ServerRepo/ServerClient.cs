@@ -88,7 +88,7 @@ namespace NuSysApp
                             if (dict.ContainsKey("id"))
                             {
                                 var id = dict["id"];
-                                LibraryElement element = new LibraryElement(dict);
+                                NodeContentModel element = new NodeContentModel(dict);
                                 UITask.Run(delegate
                                 {
 

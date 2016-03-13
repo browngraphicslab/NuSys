@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SQLite.Net.Attributes;
 
 namespace NuSysApp
@@ -12,6 +13,31 @@ namespace NuSysApp
             Id = id;
             ContentName = contentName;
             Type = elementType;
+        }
+
+        public NodeContentModel(Dictionary<string, object> dict)
+        {
+            //id, data, type, title
+            Id = (string)dict["id"];
+            if (dict.ContainsKey("title"))
+            {
+                ContentName = (string)dict["title"]; // title
+            }
+            if (dict.ContainsKey("type"))
+            {
+                Type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+            }
+        }
+
+        public bool InSearch(string s)
+        {
+            var title = ContentName?.ToLower() ?? "";
+            var type = Type.ToString().ToLower();
+            if (title.Contains(s) || type.Contains(s))
+            {
+                return true;
+            }
+            return false;
         }
 
         public delegate void ContentChangedEventHandler();

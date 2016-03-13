@@ -26,7 +26,7 @@ namespace NuSysApp
         //public delegate void LibraryElementDragEventHandler(object sender, DragStartingEventArgs e);
         //public event LibraryElementDragEventHandler OnLibraryElementDrag;
 
-        public ObservableCollection<LibraryElement> _items;
+        public ObservableCollection<NodeContentModel> _items;
         private int _count = 0;
 
         private LibraryElementPropertiesWindow _propertiesWindow;
@@ -59,7 +59,7 @@ namespace NuSysApp
             
         }
 
-        private void Library_OnNewContents(ICollection<LibraryElement> elements)
+        private void Library_OnNewContents(ICollection<NodeContentModel> elements)
         {
             xGrid.RowDefinitions.Clear();
             for (int i = 1; i < elements.Count / 3 + 1; i++)
@@ -88,9 +88,9 @@ namespace NuSysApp
             }
         }
 
-        public void SetItems(ICollection<LibraryElement> elements)
+        public void SetItems(ICollection<NodeContentModel> elements)
         {
-            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
+            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<NodeContentModel>(elements);
         }
 
         public async Task Sort(string s)
@@ -136,7 +136,7 @@ namespace NuSysApp
         //    }
         //}
 
-        private async void LoadThumbnails(int numRows, int numCols, LibraryElement newItem)
+        private async void LoadThumbnails(int numRows, int numCols, NodeContentModel newItem)
         {
 
             StackPanel itemPanel = new StackPanel();
@@ -147,42 +147,42 @@ namespace NuSysApp
             //itemPanel.CanDrag = true;
             //itemPanel.DragStarting += delegate(UIElement a, DragStartingEventArgs b) { OnLibraryElementDrag?.Invoke(a, b); };
 
-            if (newItem.ElementType == ElementType.Image)
+            if (newItem.Type == ElementType.Image)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://wiki.tripwireinteractive.com/images/4/47/Placeholder.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Text)
+            else if (newItem.Type == ElementType.Text)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://findicons.com/files/icons/1580/devine_icons_part_2/512/defult_text.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Web)
+            else if (newItem.Type == ElementType.Web)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://www.clker.com/cliparts/I/Y/4/e/m/C/internet-icon-md.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.PDF)
+            else if (newItem.Type == ElementType.PDF)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://iconizer.net/files/Devine_icons/orig/PDF.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Audio)
+            else if (newItem.Type == ElementType.Audio)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://icons.iconarchive.com/icons/icons8/windows-8/512/Music-Audio-Wave-icon.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Video)
+            else if (newItem.Type == ElementType.Video)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://www.veryicon.com/icon/ico/System/Icons8%20Metro%20Style/Photo%20Video%20Camcoder%20pro.ico", UriKind.Absolute));
@@ -192,16 +192,16 @@ namespace NuSysApp
 
 
 
-            if (newItem.Title != null)
+            if (newItem.ContentName != null)
             {
                 TextBlock title = new TextBlock();
-                title.Text = newItem.Title;
+                title.Text = newItem.ContentName;
                 itemPanel.Children.Add(title);
             }
 
          
                 TextBlock nodeType = new TextBlock();
-                nodeType.Text = newItem.ElementType.ToString();
+                nodeType.Text = newItem.Type.ToString();
                 itemPanel.Children.Add(nodeType);
 
 
@@ -367,9 +367,9 @@ namespace NuSysApp
 
         private void ItemPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            LibraryElement clickedElement = (LibraryElement)((StackPanel)sender).DataContext;
-            _propertiesWindow.setTitle(clickedElement.Title);
-            _propertiesWindow.setType(clickedElement.ElementType.ToString());
+            NodeContentModel clickedElement = (NodeContentModel)((StackPanel)sender).DataContext;
+            _propertiesWindow.setTitle(clickedElement.ContentName);
+            _propertiesWindow.setType(clickedElement.Type.ToString());
             _propertiesWindow.Visibility = Visibility.Visible;
         }
 

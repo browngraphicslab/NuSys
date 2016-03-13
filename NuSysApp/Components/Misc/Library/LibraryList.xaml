@@ -38,8 +38,8 @@
                 </Grid.ColumnDefinitions>
                         
                       
-                        <TextBlock  Grid.Column="0"  Text="{Binding Title}" FontSize="16" />
-                        <TextBlock  Grid.Column="1"  Text="{Binding ElementType}" FontSize="16"/>
+                        <TextBlock  Grid.Column="0"  Text="{Binding ContentName}" FontSize="16" />
+                        <TextBlock  Grid.Column="1"  Text="{Binding Type}" FontSize="16"/>
                         <TextBlock Grid.Column="2" Text="{Binding Timestamp}" FontSize="16"/>
                      
 
