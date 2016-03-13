@@ -96,13 +96,7 @@ namespace NuSysApp
         }
         private async void OnMessageRecieved(Message m)
         {
-            try
-            {
-                await ProcessIncomingRequest(m);
-            }
-            catch (Exception e)
-            {
-            }
+            await ProcessIncomingRequest(m);
         }
         private async Task ProcessIncomingRequest(Message message, bool local = false)
         {
@@ -219,6 +213,11 @@ namespace NuSysApp
             await request.ExecuteSystemRequestFunction(this, _serverClient);
         }
         #endregion Requests
+
+        public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)
+        {
+            return await _serverClient.GetWorkspaceAsElementMessages(id);
+        }
         public void AddNetworkUser(NetworkUser user)
         {
             var add = NetworkMembers.ContainsKey(user.IP);

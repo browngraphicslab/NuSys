@@ -24,6 +24,10 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
+            if (!_message.ContainsKey("contentId"))
+            {
+                throw new Exception("new link request requires a contentId");
+            }
             _message["type"] = ElementType.Link.ToString();
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
@@ -36,12 +40,13 @@ namespace NuSysApp
             var id2 = _message.GetString("id2");
             var id = _message.GetString("id");
             var creator = _message.GetString("creator");
+            var contentId = _message.GetString("contentId");
             if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
             {
                 var link = new LinkModel(id);
                 await link.UnPack(_message);
                 var linkController = new LinkElementController(link);
-                SessionController.Instance.IdToControllers.Add(id, linkController);
+                SessionController.Instance.IdToControllers.Add(contentId, linkController);
                 
 
                 var parentController = (ElementCollectionController)SessionController.Instance.IdToControllers[creator];

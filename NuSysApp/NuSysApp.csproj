@@ -335,6 +335,7 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="Models\AreaModel.cs" />
+    <Compile Include="Models\CollectionContentModel.cs" />
     <Compile Include="Models\LibraryElementCollectionModel.cs" />
     <Compile Include="Models\ElementCollectionModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
@@ -362,6 +363,7 @@
     <Compile Include="Network\Requests\NewElementRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
@@ -373,6 +375,7 @@
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />

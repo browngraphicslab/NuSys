@@ -140,8 +140,10 @@ namespace NuSysApp
             await _contentController.Load();
         }
 
+        //private int _id = 0;
         public string GenerateId()
         {
+            //return _id++.ToString();
             return Guid.NewGuid().ToString("N");
         }
 

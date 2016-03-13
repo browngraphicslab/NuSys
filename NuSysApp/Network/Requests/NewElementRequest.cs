@@ -19,6 +19,10 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
+            if (!_message.ContainsKey("contentId") || ! _message.ContainsKey("creatorContentID"))
+            {
+                throw new NewNodeRequestException("New Node requests require messages with at least 'contentId' and 'creatorContentID'");
+            }
             if (!_message.ContainsKey("nodeType"))
             {
                 throw new NewNodeRequestException("New Node requests require messages with at least 'nodeType'");
@@ -29,6 +33,8 @@ namespace NuSysApp
         {
             var nodeType = (ElementType) Enum.Parse(typeof (ElementType), _message.GetString("nodeType"));
             var id = _message.GetString("id");
+            var contentId = _message.GetString("contentId");
+            var creatorContentID = _message.GetString("creatorContentID");
 
             ElementModel elementModel;
             ElementController controller;
@@ -78,6 +84,12 @@ namespace NuSysApp
                     break;
                 case ElementType.Collection:
                     elementModel = new ElementCollectionModel(id);
+                    elementModel.ContentId = contentId;
+                    if (SessionController.Instance.ContentController.Get(contentId) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId,
+                            null, elementModel.Title));
+                    }
                     controller = new ElementCollectionController(elementModel);
                     break;
                 case ElementType.Area:
@@ -97,11 +109,13 @@ namespace NuSysApp
             }
 
             await elementModel.UnPack(_message);
-
+            elementModel.ContentId = contentId;
             SessionController.Instance.IdToControllers[controller.Model.Id] = controller;
 
-            var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[controller.Model.Creator];
-            parentController.AddChild(controller);
+            var content = (CollectionContentModel)SessionController.Instance.ContentController.Get(creatorContentID);
+            content.AddChild(controller.Model.Id);
+            //var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[creatorContentID];
+            //parentController.AddChild(controller);
         }
     }
 
