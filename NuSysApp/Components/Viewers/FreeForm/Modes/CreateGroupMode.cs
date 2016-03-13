@@ -103,6 +103,10 @@ namespace NuSysApp
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
+            // TODO: remove temp
+            Random rnd = new Random();
+            metadata["random_id"] = rnd.Next(1, 1000);
+            metadata["random_id2"] = rnd.Next(1, 100);
 
             var newGroupId = SessionController.Instance.GenerateId();
             if (!(c1IsCollection || c2IsCollection)) { 

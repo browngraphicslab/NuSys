@@ -171,6 +171,10 @@ namespace NuSysApp
         {
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
+            // TODO: remove temp
+            Random rnd = new Random();
+            metadata["random_id"] = rnd.Next(1, 1000);
+            metadata["random_id2"] = rnd.Next(1, 100);
 
             var m1 = new Message();
             m1["metadata"] = metadata;
