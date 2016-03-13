@@ -217,7 +217,19 @@ namespace NuSysApp
                     ContentChanged?.Invoke(this, content);
                 }
             }
+            if (props.ContainsKey("x") || props.ContainsKey("y"))
+            {
+                //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y
+                var x = props.GetDouble("x", this.Model.X);
+                var y = props.GetDouble("y", this.Model.Y);
+                PositionChanged?.Invoke(this, x,y);
+            }
+            if (props.ContainsKey("width") || props.ContainsKey("height"))
+            {
+                var width = props.GetDouble("width", this.Model.Width);
+                var height = props.GetDouble("height", this.Model.Height);
+                SizeChanged?.Invoke(this,width,height);
+            }
         }
-
     }
 }
