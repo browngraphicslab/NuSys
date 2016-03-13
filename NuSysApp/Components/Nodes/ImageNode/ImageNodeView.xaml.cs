@@ -26,7 +26,7 @@ namespace NuSysApp
             {
 
                 vm.Init();
-                
+
 
             };
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
@@ -50,9 +50,5 @@ namespace NuSysApp
             return r;
         }
 
-        public void RenderAsBitmap()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -54,10 +54,6 @@ namespace NuSysApp
                 // rtfTextBox.SetRtfText();
             };
 
-
-            this.PointerEntered += TextNodeView_PointerEntered;
-            this.PointerExited += TextNodeView_PointerExited;
-
             /*
             grid.IsDoubleTapEnabled = true;
             grid.DoubleTapped += delegate(object sender, DoubleTappedRoutedEventArgs e)
@@ -77,19 +73,29 @@ namespace NuSysApp
             */
 
             //RenderAsBitmap();
-        }
-        private void TextNodeView_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = (AtomViewModel)this.DataContext;
-            if (!vm.IsFullScreen && !vm.IsSelected && !vm.IsMultiSelected)
+            //this.PointerEntered += TextNodeView_PointerEntered;
+            //this.PointerExited += TextNodeView_PointerExited;
+            this.Loaded += delegate(object source, RoutedEventArgs e)
             {
-                nodeTpl.RenderAsBitmap(this);
-            }
+                nodeTpl.HideBitmapRender(this);
+            };
+            vm.PropertyChanged += Vm_PropertyChanged;
         }
 
-        private void TextNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)
+        private async void Vm_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            nodeTpl.HideBitmapRender();
+            var vm = this.DataContext as AtomViewModel;
+            if (e.PropertyName == "IsOnScreen")
+            {
+                if (vm.IsOnScreen)
+                {
+                    nodeTpl.HideBitmapRender();
+                }
+                else
+                {
+                   nodeTpl.ShowBitmapRender(this);
+                }
+            }
         }
 
 

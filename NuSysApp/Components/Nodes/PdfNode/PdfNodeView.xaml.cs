@@ -17,28 +17,15 @@ namespace NuSysApp
         public PdfNodeView(PdfNodeViewModel vm)
         {
             InitializeComponent();
-          //  IsDoubleTapEnabled = true;
+            //  IsDoubleTapEnabled = true;
 
             Loaded += async delegate
             {
                 await vm.InitPdfViewer();
             };
 
-            this.PointerEntered += PdfNodeView_PointerEntered;
-            this.PointerExited += OnPointerExited;
-
             DataContext = vm;
-            
-        }
 
-        private void OnPointerExited(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
-        {
-            nodeTpl.RenderAsBitmap(this);
-        }
-
-        private void PdfNodeView_PointerEntered(object sender, PointerRoutedEventArgs e)
-        {
-            nodeTpl.HideBitmapRender();
         }
 
         private void OnEditInk(object sender, RoutedEventArgs e)

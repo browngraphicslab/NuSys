@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
@@ -153,10 +154,24 @@ namespace NuSysApp
         }
 
         //low quality -- maybe have to swap rendertargetbitmap out for something DX related?
-        public async void RenderAsBitmap(UserControl control)
+        public void ShowBitmapRender()
+        {
+            contentContainer.Visibility = Visibility.Collapsed;
+            titleContainer.Visibility = Visibility.Collapsed;
+            bitmapRendering.Visibility = Visibility.Visible;
+        }
+
+        public async Task ShowBitmapRender(UserControl control)
+        {
+
+            await RenderBitmap(control);
+            ShowBitmapRender();
+        }
+
+        private async Task RenderBitmap(UserControl control)
         {
             RenderTargetBitmap map = new RenderTargetBitmap();
-            await map.RenderAsync(control, (int) control.Width, (int) control.Height);
+            await map.RenderAsync(control, (int)control.Width, (int)control.Height);
             bitmapRendering.Source = map;
             var titleTransform = titleContainer.RenderTransform as TranslateTransform;
             if (titleTransform != null)
@@ -164,13 +179,10 @@ namespace NuSysApp
                 double totalNodeHeight = control.Height - titleTransform.Y;
                 bitmapRendering.RenderTransform = new CompositeTransform
                 {
-                    ScaleY = totalNodeHeight/control.Height,
+                    ScaleY = totalNodeHeight / control.Height,
                     TranslateY = titleTransform.Y
                 };
             }
-            contentContainer.Visibility = Visibility.Collapsed;
-            titleContainer.Visibility = Visibility.Collapsed;
-            bitmapRendering.Visibility = Visibility.Visible;
         }
 
         public void HideBitmapRender()
@@ -178,6 +190,12 @@ namespace NuSysApp
             contentContainer.Visibility = Visibility.Visible;
             titleContainer.Visibility = Visibility.Visible;
             bitmapRendering.Visibility = Visibility.Collapsed;
+        }
+
+        public async Task HideBitmapRender(UserControl control)
+        {
+            await RenderBitmap(control);
+            HideBitmapRender();
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

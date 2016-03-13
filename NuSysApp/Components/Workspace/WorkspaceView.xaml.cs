@@ -109,6 +109,48 @@ namespace NuSysApp
             await _mode.Activate();
         }
 
+        public void CullNodes()
+        {
+            var vm = this.DataContext as WorkspaceViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            //transform the upper left of the screen to be relative to the node canvas
+            var trans = vm.CompositeTransform;
+            Point upperLeft = trans.Inverse.TransformPoint(new Point(0, 0));
+
+            //transform the bottom right of the screen to be relative to the node canvas
+            var sessionView = SessionController.Instance.SessionView;
+            Point bottomRight =
+                trans.Inverse.TransformPoint(new Point(sessionView.ActualWidth, sessionView.ActualHeight));
+
+            Rect screenBounds = new Rect(upperLeft, bottomRight);
+
+            //iterate through all atoms, check to see if they are within the bounds of the screen. if they're not, update their VMs
+            foreach (var atom in vm.AtomViewList)
+            {
+                var atomVm = atom.DataContext as AtomViewModel;
+                if (atomVm == null)
+                {
+                    continue;
+                }
+
+                var atomTopLeft = new Point(atomVm.X,atomVm.Y);
+                var atomBottomRight = new Point(atomTopLeft.X + atomVm.Width, atomTopLeft.Y + atomVm.Height);
+                if (!screenBounds.Contains(atomTopLeft) && !screenBounds.Contains(atomBottomRight) 
+                    && !screenBounds.Contains(new Point(atomTopLeft.X, atomBottomRight.Y)) && !screenBounds.Contains(new Point(atomTopLeft.Y, atomBottomRight.X)))
+                {
+                    atomVm.IsOnScreen = false;
+                }
+                else
+                {
+                    atomVm.IsOnScreen = true;
+                }
+            }
+        }
+
         public async void SwitchMode(Options mode, bool isFixed)
         {
             SessionController.Instance.SessionView.HideRecorder();

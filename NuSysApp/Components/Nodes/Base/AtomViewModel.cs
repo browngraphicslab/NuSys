@@ -21,7 +21,7 @@ namespace NuSysApp
         private Point2d _anchor;
         private string _title;
 
-        protected bool _isSelected, _isMultiSelected, _isVisible, _isFullScreen;
+        protected bool _isSelected, _isMultiSelected, _isVisible, _isOnScreen;
         private UserControl _view;
         private CompositeTransform _transform = new CompositeTransform();
         private DebouncingDictionary _debouncingDictionary;
@@ -271,17 +271,6 @@ namespace NuSysApp
             }
         }
 
-        public bool IsFullScreen
-        {
-            get
-            {
-                return _isFullScreen;
-            }
-            set
-            {
-                _isFullScreen = value;
-            }
-        }
 
         public SolidColorBrush Color
         {
@@ -407,6 +396,20 @@ namespace NuSysApp
                 }
                 _isVisible = value;
                 RaisePropertyChanged("IsVisible");
+            }
+        }
+
+        public bool IsOnScreen
+        {
+            get { return _isOnScreen; }
+            set
+            {
+                if (_isOnScreen == value)
+                {
+                    return;
+                }
+                _isOnScreen = value;
+                RaisePropertyChanged("IsOnScreen");
             }
         }
 

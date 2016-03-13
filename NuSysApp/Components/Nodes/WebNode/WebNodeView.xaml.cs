@@ -30,13 +30,13 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-              
+
                 var model = (vm.Model as WebNodeModel);
                 model.Url = model.Url == "" ? "http://www.google.com" : model.Url;
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
-                   // xUrlBox.CancelDirectManipulations();
+                    // xUrlBox.CancelDirectManipulations();
                     eventArgs.Handled = true;
                 };
             };

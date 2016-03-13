@@ -17,6 +17,7 @@ namespace NuSysApp
             _view.ManipulationMode = ManipulationModes.All;
             _view.ManipulationDelta += OnManipulationDelta;
             _view.ManipulationStarting += OnManipulationStarting;
+            _view.ManipulationCompleted += OnManipulationEnd;
             _view.PointerWheelChanged += OnPointerWheelChanged;
         }
 
@@ -25,6 +26,7 @@ namespace NuSysApp
             _view.ManipulationMode = ManipulationModes.None;
             _view.ManipulationDelta -= OnManipulationDelta;
             _view.ManipulationStarting -= OnManipulationStarting;
+            _view.ManipulationCompleted -= OnManipulationEnd;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
         }
 
@@ -82,12 +84,18 @@ namespace NuSysApp
             model.Zoom = compositeTransform.ScaleX;
 
             _view.InqCanvas.Transform = compositeTransform;
+            _view.CullNodes();
 
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
             e.Container = _view;
+        }
+
+        protected void OnManipulationEnd(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            _view.CullNodes();
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
