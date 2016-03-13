@@ -82,6 +82,7 @@ namespace NuSysApp
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
+
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate(NetworkUser user)
             {
                 UserLabel b = new UserLabel(user);
@@ -93,7 +94,7 @@ namespace NuSysApp
             var firstId = WaitingRoomView.InitialWorkspaceId;
             if (firstId == null)
             {
-                await LoadEmptyWorkspace();
+                //await LoadEmptyWorkspace();
             }
             else
             {
@@ -206,7 +207,16 @@ namespace NuSysApp
 
         public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
         {
+            await
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                    new SubscribeToCollectionRequest(collectionId));
+
             SessionController.Instance.IdToControllers.Clear();
+
+            if (SessionController.Instance.ContentController.Get(collectionId) == null)
+            {
+                SessionController.Instance.ContentController.Add(new CollectionContentModel(collectionId, null, "instance"));
+            }
 
             var elementCollection = new LibraryElementCollectionModel();
             var elementCollectionInstance = new ElementCollectionModel(collectionId)
@@ -214,6 +224,7 @@ namespace NuSysApp
                 LibraryElementCollectionModel = elementCollection,
                 Title = "Instance title"
             };
+            elementCollectionInstance.ContentId = collectionId;
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
 
@@ -222,16 +233,18 @@ namespace NuSysApp
             xFullScreenViewer.DataContext = new DetailViewerViewModel();
 
             createdModels = new List<ElementModel>();
+            HashSet<string> usedContentIDs = new HashSet<string>();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
-                var id = msg.GetString("contentId");
+                msg["creatorContentID"] = collectionId;
+                var contentId = msg.GetString("contentId");
                 var type = ElementType.Workspace;
                 if (msg.ContainsKey("type"))
                 {
                     type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
                 }
-                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
+                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))//kinda really shitty
                 {
                     type = ElementType.Node;
                 }
@@ -240,19 +253,43 @@ namespace NuSysApp
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
                             new NewElementRequest(msg));
+                    if (msg.ContainsKey("nodeType"))
+                    {
+                        var nodeType = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
+                        if (nodeType == ElementType.Collection)
+                        {
+                            var messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(contentId);
+                            foreach (var m in messages)
+                            {
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
+                                if (m.ContainsKey("contentId"))
+                                {
+                                    var newNodeContentId = m.GetString("contentId");
+                                    if (!usedContentIDs.Contains(newNodeContentId))
+                                    {
+                                        Task.Run(async delegate
+                                        {
+                                            await SessionController.Instance.NuSysNetworkSession.FetchContent(newNodeContentId);
+                                        });
+                                        usedContentIDs.Add(newNodeContentId);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 if (type == ElementType.Link)
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
                 
-
-                if (type == ElementType.Node && SessionController.Instance.ContentController.Get(id)==null)
+                if (type == ElementType.Node && !usedContentIDs.Contains(contentId))
                 {
                     Task.Run(async delegate
                     {
-                        await SessionController.Instance.NuSysNetworkSession.FetchContent(id);
+                        await SessionController.Instance.NuSysNetworkSession.FetchContent(contentId);
                     });
+                    usedContentIDs.Add(contentId);
                 }
             }
         }
@@ -312,7 +349,7 @@ namespace NuSysApp
                 Title = "Instance title"
             };
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
-            SessionController.Instance.IdToControllers[elementCollectionInstance.Id] =
+            SessionController.Instance.IdToControllers[elementCollectionInstance.ContentId] =
                 elementCollectionInstanceController;
             return elementCollectionInstanceController;
         }
@@ -400,10 +437,10 @@ namespace NuSysApp
         }
 
 
-        public void ShowFullScreen(ElementModel model)
+        public void ShowDetailView(ElementController controller)
         {
             var vm = (DetailViewerViewModel) xFullScreenViewer.DataContext;
-            vm.SetNodeModel(model);
+            vm.ShowElement(controller);
             vm.MakeTagList();
         }
 

@@ -107,15 +107,16 @@
         <Grid Margin="0,-150,0,0">
             <Ellipse x:Name="ellipse1" Width="30" Height="30" Stroke="White" StrokeThickness="2" Opacity="0"/>
         </Grid>
-
-        <Button Click="Local_OnClick" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="650,0,0,0" Background="White">
+        <TextBlock FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="650,0,0,175" >Title: </TextBlock>
+        <TextBox Name="NewWorkspaceName" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="650,0,0,100" Background="White" ></TextBox>
+        <Button Click="NewWorkspaceOnClick" Name="NewWorkspaceButton" IsEnabled="False" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="650,0,0,0" Background="White">
             NEW WORKSPACE
         </Button>
 
         <ListBox Name="List" SelectionMode="Single" IsEnabled="True" Foreground="#9cc5c2" FontSize="24"  HorizontalAlignment="Center" VerticalAlignment="Center" Height="400" Width="300" Margin="0,-200,0,0" Background="White">
             
         </ListBox>
-        <Button Click="Join_Workspace_Click" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,300,0,0" Background="White">
+        <Button Click="Join_Workspace_Click" Name="JoinWorkspaceButton" IsEnabled="False" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="60" Width="300" Margin="0,300,0,0" Background="White">
             Join Workspace
         </Button>
 
@@ -135,7 +136,8 @@
                 <TextBox Name="passwordInput" HorizontalAlignment="Right" VerticalAlignment="Center" Height="35" Width="350"></TextBox>
             </Grid>
         </Grid>
-        <Button Click="LoginButton_OnClick" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="550,0,0,50">Login</Button>
+        <Button Click="LoginButton_OnClick" Name="LoginButton"  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="550,0,0,50">Login</Button>
+        <TextBlock Name="loggedInText" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="550,0,0,100"></TextBlock>
         
     </Grid>
 </Page>

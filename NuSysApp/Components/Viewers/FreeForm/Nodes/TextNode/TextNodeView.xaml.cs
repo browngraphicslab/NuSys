@@ -167,6 +167,7 @@ namespace NuSysApp
                     dict["title"] = _text;
                     dict["contentId"] = contentId;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                    dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);

@@ -29,7 +29,7 @@ namespace NuSysApp
         private MuPDFWinRT.Document _document;
         public int CurrentPageNumber { get;  private set; }
         public ObservableCollection<Button> SuggestedTags { get; set; }
-        private List<string> _suggestedTags;
+        private List<string> _suggestedTags = new List<string>();
 
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
@@ -86,6 +86,8 @@ namespace NuSysApp
 
         private async Task RenderPage(int pageNumber)
         {
+            if (_document == null)
+                return;
             var pageSize = _document.GetPageSize(pageNumber);
             var width = pageSize.X;
             var height = pageSize.Y;

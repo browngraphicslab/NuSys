@@ -24,7 +24,9 @@ namespace NuSysApp
             ChangeContentRequest,
             SetTagsRequest,
             ChatDialogRequest,
-            CreateNewLibrayElementRequest
+            CreateNewLibrayElementRequest,
+            SubscribeToCollectionRequest,
+            UnsubscribeFromCollectionRequest
         }
 
         public enum ServerItemType
@@ -46,6 +48,12 @@ namespace NuSysApp
             Everyone,
             EveryoneButSender
         }
+
+        public enum ServerSubscriptionType
+        {
+            Subscribe,
+            Unsubscribe
+        }
         protected Message _message;
         protected bool _serverIgnore = false;
         private ServerItemType _serverItemType;
@@ -54,6 +62,8 @@ namespace NuSysApp
         private bool _serverItemTypeSet = false;
         private bool _serverRequestTypeSet = false;
         private RequestType _requestType;
+        private bool _makeSubscriptionRequest = false;
+        private ServerSubscriptionType _serverSubscriptionType;
         public Request(RequestType request, Message message = null)
         {
             _message = message;
@@ -103,6 +113,12 @@ namespace NuSysApp
             _serverEchoType = echoType;
         }
 
+        public void SetSubscribingToCollection(bool subscribe, ServerSubscriptionType type)
+        {
+            _makeSubscriptionRequest = subscribe;
+            _serverSubscriptionType = type;
+        }
+
         public bool WaitForRequestReturn()
         {
             return _serverEchoType == ServerEchoType.Everyone;
@@ -116,14 +132,22 @@ namespace NuSysApp
             }
             else
             {
-                if (!_serverItemTypeSet || !_serverRequestTypeSet)
+                if (_makeSubscriptionRequest)
                 {
-                    throw new Exception("Request tried to be sent to server without specifying request and item type");
+                    _message["server_subscribe_to_collection_bool"] = _serverSubscriptionType.ToString();
                 }
                 else
                 {
-                    _message["server_request_type"] = _serverRequestType.ToString();
-                    _message["server_item_type"] = _serverItemType.ToString();
+                    if (!_serverItemTypeSet || !_serverRequestTypeSet)
+                    {
+                        throw new Exception(
+                            "Request tried to be sent to server without specifying request and item type");
+                    }
+                    else
+                    {
+                        _message["server_request_type"] = _serverRequestType.ToString();
+                        _message["server_item_type"] = _serverItemType.ToString();
+                    }
                 }
             }
             _message["server_echo_type"] = _serverEchoType.ToString();
