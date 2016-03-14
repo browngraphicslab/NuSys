@@ -5,14 +5,14 @@ namespace NuSysApp
 {
     public class NodeContentModel
     {
-        public bool Loaded { get; set; }
+        public bool Loaded { get; set; }//Add a loaded event
         public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
         {
             Data = data;
             Id = id;
             ContentName = contentName;
             Type = elementType;
-            Loaded = !string.IsNullOrEmpty(data);
+            Loaded = data != null;
         }
 
         public delegate void ContentChangedEventHandler();
