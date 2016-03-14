@@ -32,6 +32,8 @@ namespace NuSysApp
             vm.MakeTagList();
 
             var model = (PdfNodeModel)vm.Model;
+            vm.Document = model.Document;
+
             var token = model.GetMetaData("Token");
 
             if (token == null || String.IsNullOrEmpty(token?.ToString()))
@@ -61,8 +63,8 @@ namespace NuSysApp
 
                 };
 
-
-               // await vm.InitPdfViewer();
+                await vm.Goto(vm.CurrentPageNumber);
+                // await vm.InitPdfViewer();
 
 
                 _inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));

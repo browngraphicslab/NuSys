@@ -81,6 +81,10 @@ namespace NuSysApp
 
         public void SetSize(double width, double height)
         {
+            if (width < 5 || height < 5)
+            {
+                return;
+            }
             Model.Width = width;
             Model.Height = height;
 

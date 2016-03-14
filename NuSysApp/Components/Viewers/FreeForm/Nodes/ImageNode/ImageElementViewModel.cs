@@ -21,7 +21,18 @@ namespace NuSysApp
             controller.ContentLoaded += async delegate(object source, NodeContentModel content)
             {
                 Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(content.Data));
-                SetSize(Image.PixelWidth, Image.PixelHeight);
+
+                // adjust the size of an image that is too large
+                if (Image.PixelHeight > 300 || Image.PixelWidth > 300)
+                {
+                    double dim = Math.Max(Image.PixelWidth, Image.PixelHeight);
+                    double scale = Math.Floor(dim / 300);
+                    SetSize(Image.PixelWidth / scale, Image.PixelHeight / scale);
+                }
+                else
+                {
+                    SetSize(Image.PixelWidth, Image.PixelHeight);
+                }
                 RaisePropertyChanged("Image");
             };
         }
