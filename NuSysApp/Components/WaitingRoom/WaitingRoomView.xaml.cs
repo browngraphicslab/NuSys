@@ -52,8 +52,7 @@ namespace NuSysApp
                 ServerName = ServerNameText.Text;
                 Init();
             };
-
-            ellipse.Begin();
+            
             Init();
         }
 
