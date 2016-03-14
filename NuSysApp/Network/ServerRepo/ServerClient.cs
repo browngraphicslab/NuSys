@@ -87,8 +87,23 @@ namespace NuSysApp
                         {
                             if (dict.ContainsKey("id"))
                             {
-                                var id = dict["id"];
-                                NodeContentModel element = new NodeContentModel(dict);
+                                // instantiate the node content model
+
+                                var contentId = (string)dict["id"];
+                                string title = null;
+                                ElementType type = ElementType.Document;
+
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"]; // title
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                }
+
+                                var element = new NodeContentModel((string)dict["data"], contentId, type, title);
+
                                 UITask.Run(delegate
                                 {
 
@@ -96,7 +111,7 @@ namespace NuSysApp
                                     //                    SessionController.Instance.Library.AddNewElement(element);
                                     //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
                                 });
-                                await GetContent((string) id);
+                                await GetContent((string) contentId);
                             }
                         }
                     }

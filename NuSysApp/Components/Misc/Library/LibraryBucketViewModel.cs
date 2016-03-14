@@ -37,7 +37,25 @@ namespace NuSysApp
                 foreach (var kvp in dictionaries)
                 {
                     var id = (string)kvp.Value["id"];
-                    var element = new NodeContentModel(kvp.Value);
+                    //var element = new NodeContentModel(kvp.Value);
+
+                    var dict = kvp.Value;   
+
+                    var contentId = (string)dict["id"];
+                    string title = null;
+                    ElementType type = ElementType.Document;
+
+                    if (dict.ContainsKey("title"))
+                    {
+                        title = (string)dict["title"]; // title
+                    }
+                    if (dict.ContainsKey("type"))
+                    {
+                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                    }
+
+                    var element = new NodeContentModel((string)dict["data"], id,type,title);
+
                     if (!_elements.ContainsKey(id))
                     {
                         _elements.Add(id, element);
@@ -53,7 +71,7 @@ namespace NuSysApp
             List<NodeContentModel> elements = new List<NodeContentModel>();
             foreach (var element in e.Items)
             {
-                var id = ((NodeContentModel)element).Id;
+                var id = ((NodeContentModel)element).ContentID;
                 elements.Add((NodeContentModel)element);
                 if (SessionController.Instance.ContentController.Get(id) == null)
                 {
@@ -65,7 +83,7 @@ namespace NuSysApp
             }
             e.Data.OperationCompleted += DataOnOperationCompleted;
             e.Data.Properties.Add("NodeContentModel", elements);
-            var title = ((NodeContentModel)e.Items[0]).ContentName ?? "";
+            var title = ((NodeContentModel)e.Items[0]).Title ?? "";
             var type = ((NodeContentModel)e.Items[0]).Type.ToString();
             e.Data.SetText(type + "  :  " + title);
             e.Cancel = false;
@@ -87,7 +105,7 @@ namespace NuSysApp
                     foreach (var element in ids)
                     {
                         Message m = new Message();
-                        m["contentId"] = element.Id;
+                        m["contentId"] = element.ContentID;
                         m["x"] = centerpoint.X - 200;
                         m["y"] = centerpoint.Y - 200;
                         m["width"] = 400;
@@ -104,7 +122,7 @@ namespace NuSysApp
 
         public void AddNewElement(NodeContentModel element)
         {
-            _elements.Add(element.ContentName, element);
+            _elements.Add(element.Title, element);
             OnNewElementAvailable?.Invoke(element);
         }
 

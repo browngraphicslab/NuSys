@@ -140,7 +140,7 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).ContentName);
+            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).Title);
             _propertiesWindow.setType(((NodeContentModel)e.ClickedItem).Type.ToString());
             //_propertiesWindow.Visibility = Visibility.Visible;
         }
@@ -264,7 +264,7 @@ namespace NuSysApp
 
                 Message m = new Message();
 
-                m["contentId"] = element.Id;
+                m["contentId"] = element.ContentID;
 
                 m["x"] = releasepoint.X - 200;
 

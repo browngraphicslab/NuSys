@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+
+    /// <summary>
+    /// Note: this class is no longer active. Functionality has been incorporated into NodeContentModel
+    /// </summary>
     public class LibraryElement
     {
         public string ContentID { get; set; }
