@@ -134,8 +134,6 @@ namespace NuSysApp
 
                     var contentData = (string)dict["data"] ?? "";
 
-                    contentData += "nick";
-
                     var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
                     var contentType = dict.ContainsKey("type")
                         ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
