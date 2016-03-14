@@ -61,14 +61,14 @@ namespace NuSysApp
             
         }
 
-        public ObservableCollection<LibraryElement> GetItems()
+        public ObservableCollection<NodeContentModel> GetItems()
         {
-            return (ObservableCollection<LibraryElement>)ListView.ItemsSource;
+            return (ObservableCollection<NodeContentModel>)ListView.ItemsSource;
         }
-        private void AddNewElement(LibraryElement element)
+        private void AddNewElement(NodeContentModel element)
         {
-            //_items = new ObservableCollection<LibraryElement>((IEnumerable<LibraryElement>) ListView.ItemsSource);
-            ((ObservableCollection<LibraryElement>)ListView.ItemsSource).Add(element);
+            //_items = new ObservableCollection<NodeContentModel>((IEnumerable<NodeContentModel>) ListView.ItemsSource);
+            ((ObservableCollection<NodeContentModel>)ListView.ItemsSource).Add(element);
         }
 
 
@@ -119,10 +119,10 @@ namespace NuSysApp
         //}
 
 
-        public void SetItems(ICollection<LibraryElement> elements)
+        public void SetItems(ICollection<NodeContentModel> elements)
         {
-            ListView.ItemsSource = new ObservableCollection<LibraryElement>(elements);
-            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
+            ListView.ItemsSource = new ObservableCollection<NodeContentModel>(elements);
+            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<NodeContentModel>(elements);
         }
 
         /*
@@ -150,8 +150,8 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.setTitle(((LibraryElement)e.ClickedItem).Title);
-            _propertiesWindow.setType(((LibraryElement)e.ClickedItem).ElementType.ToString());
+            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).Title);
+            _propertiesWindow.setType(((NodeContentModel)e.ClickedItem).Type.ToString());
             //_propertiesWindow.Visibility = Visibility.Visible;
         }
 
@@ -260,7 +260,7 @@ namespace NuSysApp
 
 
 
-            LibraryElement element = (LibraryElement)((Grid)sender).DataContext;
+             var element = (NodeContentModel)((Grid)sender).DataContext;
 
             if (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse != null)
             {
@@ -280,7 +280,7 @@ namespace NuSysApp
 
                 m["height"] = 400;
 
-                m["nodeType"] = element.ElementType.ToString();
+                m["nodeType"] = element.Type.ToString();
 
                 m["autoCreate"] = true;
 

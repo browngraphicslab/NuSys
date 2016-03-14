@@ -1,17 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SQLite.Net.Attributes;
 
 namespace NuSysApp
 {
     public class NodeContentModel
     {
-        public NodeContentModel() { }
         public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
         {
             Data = data;
-            Id = id;
-            ContentName = contentName;
+            _dataLoaded = data != null;
+            ContentID = id;
+            Title = contentName;
             Type = elementType;
+        }
+
+        public bool InSearch(string s)
+        {
+            var title = Title?.ToLower() ?? "";
+            var type = Type.ToString().ToLower();
+            if (title.Contains(s) || type.Contains(s))
+            {
+                return true;
+            }
+            return false;
         }
 
         public delegate void ContentChangedEventHandler();
@@ -23,7 +35,10 @@ namespace NuSysApp
         }
         public ElementType Type { get; set; }
         public string Data { get; set; }
-        public string Id { get; set; }
-        public string ContentName { get; set; }
+        public string ContentID { get; set; }
+        public string Title { get; set; }
+        private bool _dataLoaded = false;
+        public bool DataLoaded { set { _dataLoaded = value; } }
+   
     }
 }

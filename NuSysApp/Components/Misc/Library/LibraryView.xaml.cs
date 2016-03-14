@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElement>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
+            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<NodeContentModel>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
             this.MakeViews(pageViewModel, properties);
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
