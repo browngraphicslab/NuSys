@@ -57,7 +57,9 @@ namespace NuSysApp
             var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;
             rr.Children.Add(inqView);
-            
+
+            TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
+
             vm.Controller.ContentChanged += delegate(object source, NodeContentModel data)
             {
                 if (xMediaRecotder.Visibility == Visibility.Collapsed)
@@ -126,6 +128,21 @@ namespace NuSysApp
             }
             _isopen = !_isopen;
         }
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found in e.Value
+            string data = e.Value;
+            Debug.WriteLine(data);
+            if (data != "")
+            {
+                var vm = DataContext as ElementViewModel;
+                var controller = (TextNodeController)vm.Controller;
+                controller.SetText(data);
+
+            }
+
+        }
+
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {

@@ -12,7 +12,7 @@ namespace NuSysApp
             Id = id;
             ContentName = contentName;
             Type = elementType;
-            Loaded = !string.IsNullOrEmpty(data);
+            Loaded = data != null;
         }
 
         public delegate void ContentChangedEventHandler();
