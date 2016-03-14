@@ -31,7 +31,7 @@ namespace NuSysApp
                 //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
                 //    break;
                 case "title":
-                    ordered = _PageElements.OrderBy(l => ((NodeContentModel)l).ContentName);
+                    ordered = _PageElements.OrderBy(l => ((NodeContentModel)l).Title);
                     break;
                 case "nodetype":
                     ordered = _PageElements.OrderBy(l => ((NodeContentModel)l).Type.ToString());

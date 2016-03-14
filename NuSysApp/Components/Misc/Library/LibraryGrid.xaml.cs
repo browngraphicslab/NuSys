@@ -192,10 +192,10 @@ namespace NuSysApp
 
 
 
-            if (newItem.ContentName != null)
+            if (newItem.Title != null)
             {
                 TextBlock title = new TextBlock();
-                title.Text = newItem.ContentName;
+                title.Text = newItem.Title;
                 itemPanel.Children.Add(title);
             }
 
@@ -368,7 +368,7 @@ namespace NuSysApp
         private void ItemPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             NodeContentModel clickedElement = (NodeContentModel)((StackPanel)sender).DataContext;
-            _propertiesWindow.setTitle(clickedElement.ContentName);
+            _propertiesWindow.setTitle(clickedElement.Title);
             _propertiesWindow.setType(clickedElement.Type.ToString());
             _propertiesWindow.Visibility = Visibility.Visible;
         }

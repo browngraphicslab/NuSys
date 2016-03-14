@@ -6,32 +6,18 @@ namespace NuSysApp
 {
     public class NodeContentModel
     {
-        public NodeContentModel() { }
         public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
         {
             Data = data;
-            Id = id;
-            ContentName = contentName;
+            _dataLoaded = data != null;
+            ContentID = id;
+            Title = contentName;
             Type = elementType;
-        }
-
-        public NodeContentModel(Dictionary<string, object> dict)
-        {
-            //id, data, type, title
-            Id = (string)dict["id"];
-            if (dict.ContainsKey("title"))
-            {
-                ContentName = (string)dict["title"]; // title
-            }
-            if (dict.ContainsKey("type"))
-            {
-                Type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-            }
         }
 
         public bool InSearch(string s)
         {
-            var title = ContentName?.ToLower() ?? "";
+            var title = Title?.ToLower() ?? "";
             var type = Type.ToString().ToLower();
             if (title.Contains(s) || type.Contains(s))
             {
@@ -49,7 +35,10 @@ namespace NuSysApp
         }
         public ElementType Type { get; set; }
         public string Data { get; set; }
-        public string Id { get; set; }
-        public string ContentName { get; set; }
+        public string ContentID { get; set; }
+        public string Title { get; set; }
+        private bool _dataLoaded = false;
+        public bool DataLoaded { set { _dataLoaded = value; } }
+   
     }
 }

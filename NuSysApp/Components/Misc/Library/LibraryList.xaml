@@ -11,7 +11,7 @@
 
     <Grid>
 
-        <ListView  x:Name="ListView"   ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" >
+        <ListView  x:Name="ListView"   >
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="White ">
                     <Grid.ColumnDefinitions>
@@ -31,8 +31,7 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <!--<Grid VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA " PointerPressed="LibraryListItem_OnPointerPressed" >-->
-                    <Grid VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA " PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped">
+                    <Grid x:Name="LibraryListItem"  VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted" ManipulationStarting="LibraryListItem_ManipulationStarting" ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
                             <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="125" />
@@ -40,7 +39,7 @@
                 </Grid.ColumnDefinitions>
                         
                       
-                        <TextBlock  Grid.Column="0"  Text="{Binding ContentName}" FontSize="16" />
+                        <TextBlock  Grid.Column="0"  Text="{Binding Title}" FontSize="16" />
                         <TextBlock  Grid.Column="1"  Text="{Binding Type}" FontSize="16"/>
                         <TextBlock Grid.Column="2" Text="{Binding Timestamp}" FontSize="16"/>
                      

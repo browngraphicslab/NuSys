@@ -28,11 +28,11 @@ namespace NuSysApp
 
         public string Add(NodeContentModel model)
         {
-            if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))
+            if (!String.IsNullOrEmpty(model.ContentID) && !_contents.ContainsKey(model.ContentID))
             {
-                _contents.Add(model.Id, model);
-                Debug.WriteLine("content directly added with ID: " + model.Id);
-                return model.Id;
+                _contents.Add(model.ContentID, model);
+                Debug.WriteLine("content directly added with ID: " + model.ContentID);
+                return model.ContentID;
             }
             Debug.WriteLine("content failed to add directly due to invalid id");
             return null;
@@ -66,10 +66,10 @@ namespace NuSysApp
 
         public string OverWrite(NodeContentModel model)
         {
-            if (!String.IsNullOrEmpty(model.Id))
+            if (!String.IsNullOrEmpty(model.ContentID))
             {
-                _contents[model.Id]= model;
-                return model.Id;
+                _contents[model.ContentID] = model;
+                return model.ContentID;
             }
             return null;
         }
@@ -84,7 +84,7 @@ namespace NuSysApp
             {
                 var o = JsonConvert.DeserializeObject<NodeContentModel>(line);
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,ElementType.Node));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.ContentID, o.Data,ElementType.Node));
                 /*
                 var request = new NewContentSystemRequest(o.Id,o.Data);//TODO not ideal
                 await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequestLocally(request);*/
