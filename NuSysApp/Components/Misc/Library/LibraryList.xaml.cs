@@ -13,6 +13,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -164,6 +165,7 @@ namespace NuSysApp
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            //((Grid)sender).Background = new SolidColorBrush(Color.FromArgb(230, 230, 237, 236));
             var view = SessionController.Instance.SessionView;
 
             var rect = view.LibraryDraggingRectangle;

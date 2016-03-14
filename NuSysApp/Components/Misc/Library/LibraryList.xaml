@@ -13,7 +13,7 @@
 
         <ListView  x:Name="ListView"   ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" >
             <ListView.Header>
-                <Grid VerticalAlignment="Center" Background="#ECECEA ">
+                <Grid VerticalAlignment="Center" Background="White ">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="125" />
@@ -21,8 +21,10 @@
                     </Grid.ColumnDefinitions>
 
 
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="0"  Text="Title" FontSize="18" />
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="Node Type" FontSize="18" />
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="0"  Text="TITLE" FontSize="18" FontFamily="FiraSans-Book"/>
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="TYPE" FontSize="18" FontFamily="FiraSans-Book"/>
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="2" Text="DATE" FontSize="18" FontFamily="FiraSans-Book"/>
+                    
 
                 </Grid>
             </ListView.Header>

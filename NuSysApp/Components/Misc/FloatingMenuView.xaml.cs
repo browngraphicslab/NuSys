@@ -153,6 +153,8 @@ namespace NuSysApp
 
             _lib = new LibraryView(new LibraryBucketViewModel(), new LibraryElementPropertiesWindow(), this);
             xWrapper.Children.Add(_lib);
+            Canvas.SetLeft(_lib, 100);
+            Canvas.SetTop(_lib, 110);
         }
 
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
@@ -355,6 +357,7 @@ namespace NuSysApp
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
             // TOOD: refresh library
+            _lib.UpdateList();
 
             vm.ClearSelection();
             //   vm.ClearMultiSelection();
