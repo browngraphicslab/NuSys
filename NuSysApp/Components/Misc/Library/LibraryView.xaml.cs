@@ -314,7 +314,7 @@ namespace NuSysApp
             dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
             dict["metadata"] = metadata;
             dict["autoCreate"] = true;
-
+            dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             var request = new NewElementRequest(dict);
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
