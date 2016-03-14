@@ -198,6 +198,8 @@ namespace NuSysApp
                         NewWorkspaceButton.IsEnabled = true;
                         JoinWorkspaceButton.IsEnabled = true;
                         LoginButton.IsEnabled = false;
+                        SlideOutLogin.Begin();
+                        SlideInWorkspace.Begin();
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
