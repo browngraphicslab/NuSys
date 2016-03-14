@@ -51,7 +51,6 @@ namespace NuSysApp
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
         }
-
         public virtual async Task FireContentLoaded(NodeContentModel content)
         {
             ContentLoaded?.Invoke(this, content);
@@ -68,7 +67,7 @@ namespace NuSysApp
             LinkedAdded?.Invoke(this, linkController);
         }
 
-    public void SetScale(double sx, double sy)
+        public void SetScale(double sx, double sy)
         {
             Model.ScaleX = sx;
             Model.ScaleY = sy;
@@ -208,6 +207,17 @@ namespace NuSysApp
         public ElementModel Model
         {
             get { return _model; }
+        }
+        public NodeContentModel ContentModel
+        {
+            get
+            {
+                if (Model.ContentId != null && SessionController.Instance.ContentController.Get(Model.ContentId) != null)
+                {
+                    return SessionController.Instance.ContentController.Get(Model.ContentId);
+                }
+                return null;
+            }
         }
 
         public virtual async Task UnPack(Message props)

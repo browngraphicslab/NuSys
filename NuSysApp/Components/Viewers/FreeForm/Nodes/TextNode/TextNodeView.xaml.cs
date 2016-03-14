@@ -63,23 +63,17 @@ namespace NuSysApp
                 navigated = true;
             };
 
-            (vm as TextNodeViewModel).TextBindingChanged += delegate(object source, string text, object originalSender)
+            (vm as TextNodeViewModel).TextBindingChanged += delegate(object source, string text)
             {
                 if (navigated)
                 {
-                    if (originalSender != this)
-                    {
-                        UpdateText(text);
-                    }
+                    UpdateText(text);
                 }
                 else
                 {
                     TextNodeWebView.NavigationCompleted += delegate
                     {
-                        if (originalSender != this)
-                        {
-                            UpdateText(text);
-                        }
+                        UpdateText(text);
                     };
                 }
             };
@@ -161,6 +155,7 @@ namespace NuSysApp
             }
             _isopen = !_isopen;
         }
+
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
         {
             // The string received from the JavaScript code can be found in e.Value
@@ -169,12 +164,9 @@ namespace NuSysApp
             {
                 var vm = DataContext as ElementViewModel;
                 var controller = (TextNodeController)vm.Controller;
-                controller.SetText(this,data);
-
+                controller.ContentModel?.SetContentData(vm,data);
             }
-
         }
-
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {

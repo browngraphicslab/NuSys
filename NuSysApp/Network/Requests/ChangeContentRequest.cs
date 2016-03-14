@@ -22,7 +22,7 @@ namespace NuSysApp
 
         private void SetServerSettings()
         {
-            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerEchoType(ServerEchoType.EveryoneButSender);//TODO maybe have this be everyone again
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Update);
         }

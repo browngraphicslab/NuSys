@@ -8,10 +8,9 @@ namespace NuSysApp
 {
     public class TextNodeController : ElementController
     {
-        public delegate void TextChangedHandler(object source, string text, object originalSender);
+        public delegate void TextChangedHandler(object source, string text, ElementViewModel originalSenderViewModel = null);
         public event TextChangedHandler TextChanged;
-
-        private object _lastSender;
+        
         public TextNodeController(TextElementModel model) : base(model)
         {
             if (SessionController.Instance.ContentController.Get(Model.ContentId) != null)
@@ -20,32 +19,16 @@ namespace NuSysApp
                 content.OnContentChanged += ContentChanged;
             }
         }
-
         public override async Task FireContentLoaded(NodeContentModel content)
         {
-            TextChanged?.Invoke(this,content.Data, null);
+            TextChanged?.Invoke(this,content.Data);
             await base.FireContentLoaded(content);
         }
 
-        private void ContentChanged()
+        private void ContentChanged(ElementViewModel originalSenderViewModel = null)
         {
             var content = SessionController.Instance.ContentController.Get(Model.ContentId);
-            TextChanged?.Invoke(this, content.Data, _lastSender);
-        }
-
-        public async void SetText(object sender, string text)
-        {
-            if (SessionController.Instance.ContentController.Get(Model.ContentId) != null)
-            {
-                var content = SessionController.Instance.ContentController.Get(Model.ContentId);
-
-                Task.Run(async delegate
-                {
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(content.Id,
-                        text));
-                });
-                _lastSender = sender;
-            }
+            TextChanged?.Invoke(this, content.Data, originalSenderViewModel);
         }
     }
 }

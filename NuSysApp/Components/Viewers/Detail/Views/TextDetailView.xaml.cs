@@ -64,14 +64,14 @@ namespace NuSysApp
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
             {
-                if (model.Text != "")
+                if (((TextNodeViewModel)DataContext).Text != "")
                 {
-                    UpdateText(model.Text);
+                    UpdateText(((TextNodeViewModel)DataContext).Text);
                 }
-                OpenTextBox(model.Text);
+                OpenTextBox(((TextNodeViewModel)DataContext).Text);
 
             };
-
+            vm.TextBindingChanged += delegate(object source, string text) { UpdateText(text); };
             _modelContentId = model.ContentId;
             _modelId = model.Id;
 
@@ -196,7 +196,7 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeController)((TextNodeViewModel)DataContext).Controller).SetText(this,s);
+            ((TextNodeViewModel) DataContext).ChangeContentData(s);
             /*
             if (s != "")
             {
