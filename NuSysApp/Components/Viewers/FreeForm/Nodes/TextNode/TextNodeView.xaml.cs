@@ -39,16 +39,43 @@ namespace NuSysApp
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
 
-
+            /*
             var contentId = (vm.Model as ElementModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
-            if (content != null && content.Data != null)
+            if (content != null)
             {
-                UpdateText(content.Data);
-            }
-            (vm.Model as TextElementModel).TextChanged += delegate (object source, string text)
+                if (content.Loaded)
+                {
+                    UpdateText(content.Data);
+                }
+                else
+                {
+                    content.OnContentChanged += delegate
+                    {
+                        UpdateText(content.Data);
+                    };
+                }
+            }*/
+            var navigated = false;
+
+            TextNodeWebView.NavigationCompleted += delegate
             {
-                UpdateText(text);
+                navigated = true;
+            };
+
+            (vm as TextNodeViewModel).TextBindingChanged += delegate(object source, string text)
+            {
+                if (navigated)
+                {
+                    UpdateText(text);
+                }
+                else
+                {
+                    TextNodeWebView.NavigationCompleted += delegate
+                    {
+                        UpdateText(text);
+                    };
+                }
             };
 
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());

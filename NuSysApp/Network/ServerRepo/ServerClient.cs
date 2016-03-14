@@ -133,6 +133,9 @@ namespace NuSysApp
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
                     var contentData = (string)dict["data"] ?? "";
+
+                    contentData += "nick";
+
                     var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
                     var contentType = dict.ContainsKey("type")
                         ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
@@ -151,6 +154,10 @@ namespace NuSysApp
                     var cc = SessionController.Instance.ContentController;
                     if (cc.Get(contentId) != null)
                     {
+                        cc.Get(contentId).Data = contentData;
+                        cc.Get(contentId).Loaded = true;
+                        cc.Get(contentId).FireContentChanged();
+                        /*
                         if (cc.ContainsAndLoaded(contentId))
                         {
                             cc.Get(contentId).Data = contentData;
@@ -160,7 +167,7 @@ namespace NuSysApp
                             cc.Get(contentId).Data = contentData;
                             cc.Get(contentId).Loaded = true;
                             cc.Get(contentId).FireContentChanged();
-                        }
+                        }*/
                     }
                     else
                     {
