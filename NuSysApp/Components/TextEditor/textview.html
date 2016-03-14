@@ -15,7 +15,9 @@
         document.getElementById("editor").innerHTML = text;
     }
 
-
+    this.addEventListener("keyup", function() {
+        window.external.notify(document.getElementById("editor").innerHTML);
+    });
 </script>
 <div id="editor">
     Hello!

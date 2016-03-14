@@ -63,17 +63,23 @@ namespace NuSysApp
                 navigated = true;
             };
 
-            (vm as TextNodeViewModel).TextBindingChanged += delegate(object source, string text)
+            (vm as TextNodeViewModel).TextBindingChanged += delegate(object source, string text, object originalSender)
             {
                 if (navigated)
                 {
-                    UpdateText(text);
+                    if (originalSender != this)
+                    {
+                        UpdateText(text);
+                    }
                 }
                 else
                 {
                     TextNodeWebView.NavigationCompleted += delegate
                     {
-                        UpdateText(text);
+                        if (originalSender != this)
+                        {
+                            UpdateText(text);
+                        }
                     };
                 }
             };
@@ -124,7 +130,7 @@ namespace NuSysApp
 
         private async void UpdateText(String str)
         {
-            if (str != "")
+            if (!string.IsNullOrEmpty(str))
             {
                 String[] myString = { str };
                 IEnumerable<String> s = myString;
@@ -159,12 +165,11 @@ namespace NuSysApp
         {
             // The string received from the JavaScript code can be found in e.Value
             string data = e.Value;
-            Debug.WriteLine(data);
             if (data != "")
             {
                 var vm = DataContext as ElementViewModel;
                 var controller = (TextNodeController)vm.Controller;
-                controller.SetText(data);
+                controller.SetText(this,data);
 
             }
 

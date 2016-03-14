@@ -9,7 +9,7 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        public delegate void TextBindingChangedHandler(object source, string text);
+        public delegate void TextBindingChangedHandler(object source, string text, object originalSender);
         public event TextBindingChangedHandler TextBindingChanged;
 
         public TextNodeViewModel(ElementController controller) : base(controller)
@@ -19,9 +19,9 @@ namespace NuSysApp
             ((TextNodeController) controller).TextChanged += TextChanged;
         }
 
-        private void TextChanged (object sender, string text)
+        private void TextChanged (object sender, string text, object originalSender)
         {
-            TextBindingChanged?.Invoke(this,text);
+            TextBindingChanged?.Invoke(this, text, originalSender);
         }
         #region Public Properties     
 

@@ -196,7 +196,7 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeController)((TextNodeViewModel)DataContext).Controller).SetText(s);
+            ((TextNodeController)((TextNodeViewModel)DataContext).Controller).SetText(this,s);
             /*
             if (s != "")
             {
