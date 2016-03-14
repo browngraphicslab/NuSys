@@ -96,7 +96,9 @@ namespace NuSysApp
                                     //                    SessionController.Instance.Library.AddNewElement(element);
                                     //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
                                 });
-                                await GetContent((string) id);
+                                Task.Run(async delegate {
+                                    await GetContent((string) id);
+                                });
                             }
                         }
                     }

@@ -73,32 +73,60 @@ namespace NuSysApp
         private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
         {
 
-            UITask.Run(delegate
+            UITask.Run(async delegate
             {
                 var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
 
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint =
-                    SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                        new Point(width / 2, height / 2));
-                Task.Run(delegate
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+                foreach (var element in ids)
                 {
-                    foreach (var element in ids)
-                    {
-                        Message m = new Message();
-                        m["contentId"] = element.ContentID;
-                        m["x"] = centerpoint.X - 200;
-                        m["y"] = centerpoint.Y - 200;
-                        m["width"] = 400;
-                        m["height"] = 400;
-                        m["nodeType"] = element.ElementType.ToString();
-                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                        m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                    await Task.Run(async delegate
+                    {
+                        Message message = new Message();
+                        message["contentId"] = element.ContentID;
+                        message["x"] = centerpoint.X - 200;
+                        message["y"] = centerpoint.Y - 200;
+                        message["width"] = 400;
+                        message["height"] = 400;
+                        message["nodeType"] = element.ElementType.ToString();
+                        message["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                        message["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(message));
+                    });
+                       
+                    if (element.ElementType == ElementType.Collection)
+                    {
+                        List<Message> messages = new List<Message>();
+                        await Task.Run(async delegate
+                        {
+                            messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(element.ContentID);
+                        });
+
+                        foreach (var m in messages)
+                        {
+                            await Task.Run(async delegate
+                            {
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
+                            });
+                            if (m.ContainsKey("contentId"))
+                            {
+                                var newNodeContentId = m.GetString("contentId");
+                                if (SessionController.Instance.ContentController.Get(newNodeContentId) == null)
+                                {
+                                    Task.Run(async delegate
+                                    {
+                                        SessionController.Instance.NuSysNetworkSession.FetchContent(newNodeContentId);
+                                    });
+                                }
+                            }
+
+                        }
                     }
-                });
+                }
             });
         }
 
