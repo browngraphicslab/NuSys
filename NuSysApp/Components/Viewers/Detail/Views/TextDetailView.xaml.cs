@@ -129,7 +129,7 @@ namespace NuSysApp
         */
         private async void UpdateText(String str)
         {
-            if (str != "")
+            if (!string.IsNullOrEmpty(str))
             {
                 String[] myString = { str };
                 IEnumerable<String> s = myString;
@@ -142,11 +142,13 @@ namespace NuSysApp
         */
         private async void OpenTextBox(String str)
         {
-
-            String[] myString = { str };
-            IEnumerable<String> s = myString;
-            MyWebView.InvokeScriptAsync("InsertText", s);
-            MyWebView.InvokeScriptAsync("clickableLinks", null);
+            if (!string.IsNullOrEmpty(str))
+            {
+                String[] myString = {str};
+                IEnumerable<String> s = myString;
+                MyWebView.InvokeScriptAsync("InsertText", s);
+                MyWebView.InvokeScriptAsync("clickableLinks", null);
+            }
 
         }
 
@@ -194,12 +196,14 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
+            ((TextNodeController)((TextNodeViewModel)DataContext).Controller).SetText(s);
+            /*
             if (s != "")
             {
                 var vm = DataContext as ElementViewModel;
                 var model = (TextElementModel)vm.Model;
                 model.Text = s;
-            }
+            }*/
         }
 
         public void Dispose()
@@ -291,7 +295,7 @@ namespace NuSysApp
 
         private void UpdateText()
         {
-            var request = new ChangeContentRequest(_modelId, _modelContentId, _modelText);
+            var request = new ChangeContentRequest( _modelContentId, _modelText);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
         }
 

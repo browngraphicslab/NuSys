@@ -26,6 +26,10 @@ namespace NuSysApp
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
+        public bool ContainsAndLoaded(string id)
+        {
+            return _contents.ContainsKey(id) ? _contents[id].Loaded : false;
+        }
         public string Add(NodeContentModel model)
         {
             if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))

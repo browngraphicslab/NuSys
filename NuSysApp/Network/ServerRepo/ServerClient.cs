@@ -56,7 +56,8 @@ namespace NuSysApp
         }
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
-            var firstpart = useWebSocket ? "wss" : "https";
+            var firstpart = useWebSocket ? "ws" : "http";
+            firstpart += WaitingRoomView.TEST_LOCAL_BOOLEAN ? "" : "s";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
@@ -146,14 +147,26 @@ namespace NuSysApp
                     {
                         content = new NodeContentModel(contentData, contentId, contentType, contentTitle);
                     }
-                    if (SessionController.Instance.ContentController.Get(contentId) == null)
+
+                    var cc = SessionController.Instance.ContentController;
+                    if (cc.Get(contentId) != null)
                     {
-                        SessionController.Instance.ContentController.Add(content);
+                        if (cc.ContainsAndLoaded(contentId))
+                        {
+                            cc.Get(contentId).Data = contentData;
+                        }
+                        else
+                        {
+                            cc.Get(contentId).Data = contentData;
+                            cc.Get(contentId).Loaded = true;
+                            cc.Get(contentId).FireContentChanged();
+                        }
                     }
                     else
                     {
-                        SessionController.Instance.ContentController.OverWrite(content);//TODO do we want this?
+                        SessionController.Instance.ContentController.Add(content);
                     }
+
                     if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
                     {
                         foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])

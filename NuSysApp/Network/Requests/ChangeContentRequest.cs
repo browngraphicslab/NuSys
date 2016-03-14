@@ -13,11 +13,10 @@ namespace NuSysApp
             SetServerSettings();
         }
 
-        public ChangeContentRequest(string nodeID, string contentID, string contentData) : base(RequestType.ChangeContentRequest)
+        public ChangeContentRequest(string contentID, string contentData) : base(RequestType.ChangeContentRequest)
         {
             _message["contentId"] = contentID;
             _message["data"] = contentData;
-            _message["id"] = nodeID;
             SetServerSettings();
         }
 
@@ -32,8 +31,9 @@ namespace NuSysApp
             NodeContentModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
             content.Data = _message.GetString("data");
 
-            var s = SessionController.Instance.IdToControllers[_message.GetString("id")];
-            await s.UnPack(_message);
+            content.FireContentChanged();
+            //var s = SessionController.Instance.IdToControllers[_message.GetString("id")];
+            //await s.UnPack(_message);
         }
     }
 }

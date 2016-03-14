@@ -42,7 +42,7 @@ namespace NuSysApp
 
             var contentId = (vm.Model as ElementModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
-            if (content != null)
+            if (content != null && content.Data != null)
             {
                 UpdateText(content.Data);
             }

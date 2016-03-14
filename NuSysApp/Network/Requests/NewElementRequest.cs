@@ -42,9 +42,10 @@ namespace NuSysApp
 
             switch (nodeType)
             {
-                case ElementType.Text:
+                case ElementType.Text: case ElementType.Node:
                     elementModel = new TextElementModel(id);
-                    controller = new ElementController(elementModel);
+                    elementModel.ContentId = contentId;
+                    controller = new TextNodeController((TextElementModel)elementModel);
                     break;
                 case ElementType.Image:
                     elementModel = new ImageElementModel(id);

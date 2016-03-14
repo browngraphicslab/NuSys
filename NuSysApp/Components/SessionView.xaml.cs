@@ -250,6 +250,14 @@ namespace NuSysApp
                 }
                 if (type == ElementType.Node)
                 {
+                    if (msg.ContainsKey("nodeType") && ((string)msg["nodeType"] == "Collection"))
+                    {
+                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null));
+                    }
+                    else
+                    {
+                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type));
+                    }
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
                             new NewElementRequest(msg));
@@ -261,10 +269,19 @@ namespace NuSysApp
                             var messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(contentId);
                             foreach (var m in messages)
                             {
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                                 if (m.ContainsKey("contentId"))
                                 {
                                     var newNodeContentId = m.GetString("contentId");
+                                    var elType = (ElementType)Enum.Parse(typeof(ElementType), m.GetString("type"), true);
+                                    if (elType == ElementType.Collection)
+                                    {
+                                        SessionController.Instance.ContentController.Add(new CollectionContentModel(newNodeContentId, null));
+                                    }
+                                    else
+                                    {
+                                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, newNodeContentId, elType));
+                                    }
+                                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                                     if (!usedContentIDs.Contains(newNodeContentId))
                                     {
                                         Task.Run(async delegate

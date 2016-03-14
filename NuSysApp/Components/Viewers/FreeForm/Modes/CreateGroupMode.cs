@@ -120,13 +120,17 @@ namespace NuSysApp
                 elementMsg["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 elementMsg["id"] = newCollectionId;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
-
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
 
-                await controller2.RequestMoveToCollection(newCollectionId,contentId);
-                await controller1.RequestMoveToCollection(newCollectionId,contentId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+
+                //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+
+                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 300, 300, newCollectionId);
+
+                await controller2.RequestMoveToCollection(newCollectionId, contentId);
+                await controller1.RequestMoveToCollection(newCollectionId, contentId);
+
 
                 _isHovering = false;
                 return;

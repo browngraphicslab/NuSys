@@ -82,49 +82,32 @@ namespace NuSysApp
                 var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
                 foreach (var element in ids)
                 {
-
-                    await Task.Run(async delegate
+                    if (element.ElementType != ElementType.Collection)
                     {
-                        Message message = new Message();
-                        message["contentId"] = element.ContentID;
-                        message["x"] = centerpoint.X - 200;
-                        message["y"] = centerpoint.Y - 200;
-                        message["width"] = 400;
-                        message["height"] = 400;
-                        message["nodeType"] = element.ElementType.ToString();
-                        message["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                        message["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(message));
-                    });
-                       
-                    if (element.ElementType == ElementType.Collection)
-                    {
-                        List<Message> messages = new List<Message>();
                         await Task.Run(async delegate
                         {
-                            messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(element.ContentID);
+                            Message message = new Message();
+                            message["contentId"] = element.ContentID;
+                            message["x"] = centerpoint.X - 200;
+                            message["y"] = centerpoint.Y - 200;
+                            message["width"] = 400;
+                            message["height"] = 400;
+                            message["nodeType"] = element.ElementType.ToString();
+                            message["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                            message["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+                            await
+                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                    new NewElementRequest(message));
                         });
-
-                        foreach (var m in messages)
+                    }
+                    else
+                    {
+                        await Task.Run(async delegate
                         {
-                            await Task.Run(async delegate
-                            {
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
-                            });
-                            if (m.ContainsKey("contentId"))
-                            {
-                                var newNodeContentId = m.GetString("contentId");
-                                if (SessionController.Instance.ContentController.Get(newNodeContentId) == null)
-                                {
-                                    Task.Run(async delegate
-                                    {
-                                        SessionController.Instance.NuSysNetworkSession.FetchContent(newNodeContentId);
-                                    });
-                                }
-                            }
-
-                        }
+                            await StaticServerCalls.PutCollectionInstanceOnMainCollection(centerpoint.X, centerpoint.Y,
+                                element.ContentID);
+                        });
                     }
                 }
             });
