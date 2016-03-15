@@ -23,14 +23,45 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <StackPanel>
-            
 
+            <Grid x:Name ="grid" Width="{Binding Width}">
+                <Grid.Resources>
+                    <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <MediaElement Grid.Row="0" Grid.Column="0" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform" />
                 <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <CaptureElement Name="preview"/>
-                <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True"  Stretch="Uniform" />
-            </StackPanel>
+                <ProgressBar x:Name ="scrubBar"  SizeChanged ="ScrubBar_OnSizeChanged" Height ="25" Grid.Row="1" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
+                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                    <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+                </Grid>
+                <Grid Grid.Row="2" HorizontalAlignment="Right">
+                    <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+                </Grid>
+                <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,0,0,0" VerticalAlignment="Top">
+
+                    <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_play.png" Height="25"></Image>
+                    </Button>
+                    <Button x:Name="pause" Tapped ="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_pause.png" Height="25"/>
+                    </Button>
+                    <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
+                        <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="25"></Image>
+                    </Button>
+
+                </StackPanel>
+            </Grid>
+
+
+
+
         </local:NodeTemplate.Inner>
+
     </local:NodeTemplate>
 </local:AnimatableUserControl>
-

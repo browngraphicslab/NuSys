@@ -19,7 +19,7 @@ namespace NuSysApp
             SystemRequest,
             NewLinkRequest,
             SendableUpdateRequest,
-            NewThumbnailRequest,    
+            NewThumbnailRequest,
             NewContentRequest,
             ChangeContentRequest,
             SetTagsRequest,
@@ -169,16 +169,16 @@ namespace NuSysApp
             }
         }
 
-        public virtual async Task CheckOutgoingRequest(){}//for anything you want to check right before execution
+        public virtual async Task CheckOutgoingRequest() { }//for anything you want to check right before execution
 
         //the function to be executed per the request
-        public virtual async Task ExecuteRequestFunction(){}
-       
+        public virtual async Task ExecuteRequestFunction() { }
+
 
         public class InvalidRequestTypeException : Exception
         {
             public InvalidRequestTypeException(string message) : base(message) { }
-            public InvalidRequestTypeException() :base("The request type was invalid"){ }
+            public InvalidRequestTypeException() : base("The request type was invalid") { }
         }
     }
 }

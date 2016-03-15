@@ -267,6 +267,10 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\MediaFoundationReaderUniversal.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
@@ -332,6 +336,7 @@
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Controller\TextNodeController.cs" />
+    <Compile Include="Converters\PositionToStringConverter.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
@@ -678,6 +683,10 @@
     <Page Include="Components\Misc\SearchButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>

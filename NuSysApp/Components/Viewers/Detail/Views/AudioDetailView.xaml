@@ -6,11 +6,27 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400" Height="798">
 
-    <Grid Width="140" Height="55" Background="DarkGray" CornerRadius="10">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+    <Grid x:Name="grid"  Background="DarkGray" CornerRadius="10" Margin="10,123,10,0">
+        <Grid.Resources>
+            <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Image x:Name="VisualizationImage" Height ="100"  Stretch="Fill" Grid.Row ="0" Margin="10,10,10,10"></Image>
+        <ProgressBar x:Name ="scrubBar" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}" PointerReleased="ScrubBar_OnPointerReleased" ValueChanged="ScrubBar_OnValueChanged" Grid.Row="0" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
+        <Grid Grid.Row="1" HorizontalAlignment="Left">
+            <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+        </Grid>
+        <Grid Grid.Row="1" HorizontalAlignment="Right">
+            <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+        </Grid>
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
             <Button x:Name="Play" Tapped="Play_OnTapped" Background="Transparent">
                 <Image Source="/Assets/icon_audionode_play.png" Height="20" Width="20"></Image>
             </Button>
@@ -20,7 +36,11 @@
             <Button x:Name="Stop" Tapped="Stop_OnTapped" Background="Transparent">
                 <Image Source="/Assets/icon_audionode_stop.png" Height="20" Width="20"></Image>
             </Button>
-            <MediaElement x:Name="playbackElement"  Stretch="Fill" AudioCategory="Speech" Source="{Binding AudioSource}"></MediaElement>
+            <Button x:Name="AddTimeBlock" Content="Add Annotation" Tapped="AddTimeBlock_OnTapped" Height="39" Width="142"></Button>
+            <MediaElement MediaOpened="PlaybackElement_OnMediaOpened" x:Name="playbackElement"  Stretch="Fill" Loaded="PlaybackElement_Onloaded" AudioCategory="Speech" Source="{Binding AudioSource}"  AutoPlay ="False" Position ="0"></MediaElement>
         </StackPanel>
+        <GridView x:Name ="ThumbnailGrid" Grid.Row ="3" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
+
+
     </Grid>
 </UserControl>

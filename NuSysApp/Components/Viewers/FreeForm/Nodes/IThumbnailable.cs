@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {
-    interface IThumbnailable
+    public interface IThumbnailable
     {
         Task<RenderTargetBitmap> ToThumbnail(int width, int height);
 
