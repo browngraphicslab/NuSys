@@ -248,8 +248,15 @@ namespace NuSysApp
                 ElementType type;
                 if (!msg.ContainsKey("nodeType"))
                 {
-                    throw new Exception("all elements must have key 'nodeType'");
+                    if (msg.ContainsKey("type"))
+                    {
+                        type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["type"], true);
+                    }
+                    else
+                    {
+                        throw new Exception("all elements must have key 'nodeType'");
                         //TODO make this just 'elementType' eventually
+                    }
                 }
                 else
                 {
@@ -339,7 +346,14 @@ namespace NuSysApp
                     }
                     if (dict.ContainsKey("type"))
                     {
-                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                        try
+                        {
+                            type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                        }
+                        catch (Exception e)
+                        {
+                            continue;
+                        }
                     }
                     var data = dict.ContainsKey("data") ? (string)dict["data"] : null;
 
