@@ -71,6 +71,11 @@ namespace NuSysApp
                 _isRecording = false;
             };
 
+            vm.ScreenVisibility += delegate(object source, bool screen)
+            {
+                //TODO: fill this in
+            };
+
             inqModel.LineFinalizedLocally += async delegate(InqLineModel model)
             {
                 var nm = model.GetScaled(Constants.MaxCanvasSize);
@@ -92,6 +97,7 @@ namespace NuSysApp
             Link.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
         }
+
 
         private async void UpdateText(String str)
         {

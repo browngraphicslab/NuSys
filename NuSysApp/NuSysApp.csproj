@@ -331,7 +331,6 @@
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
-    <Compile Include="Controller\TextNodeController.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
@@ -566,6 +565,7 @@
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\resizer.png" />
+    <Content Include="Assets\Screenshot %281%29.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />

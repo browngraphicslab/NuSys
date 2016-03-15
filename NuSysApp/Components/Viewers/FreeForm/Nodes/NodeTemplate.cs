@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
@@ -9,6 +10,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
@@ -32,6 +34,8 @@ namespace NuSysApp
         public Rectangle hitArea = null;
         //public TextBlock tags = null;
         public Grid titleContainer = null;
+        public Grid contentContainer = null;
+        public Image bitmapRendering = null;
         public TextBox title = null;
         public Border highlight = null;
         public ItemsControl tags = null;
@@ -93,6 +97,8 @@ namespace NuSysApp
 
             tags = (ItemsControl) GetTemplateChild("Tags");
 
+            bitmapRendering = (Image)GetTemplateChild("xBitmapRendering");
+
             title = (TextBox)GetTemplateChild("xTitle");
             title.TextChanged += delegate(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
             {
@@ -100,8 +106,8 @@ namespace NuSysApp
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
-            titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
-
+            titleContainer = (Grid) GetTemplateChild("xTitleContainer");
+            contentContainer = (Grid) GetTemplateChild("xContent");
             title.Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
@@ -153,6 +159,50 @@ namespace NuSysApp
          //   inkCanvas.Width = vm.Width;
          //   inkCanvas.Height = vm.Height;
             e.Handled = true; 
+        }
+
+        public void ShowBitmapRender()
+        {
+            contentContainer.Visibility = Visibility.Collapsed;
+            titleContainer.Visibility = Visibility.Collapsed;
+            bitmapRendering.Visibility = Visibility.Visible;
+        }
+
+        public async Task ShowBitmapRender(UserControl control)
+        {
+
+            await RenderBitmap(control);
+            ShowBitmapRender();
+        }
+
+        private async Task RenderBitmap(UserControl control)
+        {
+            RenderTargetBitmap map = new RenderTargetBitmap();
+            await map.RenderAsync(control, (int)control.Width, (int)control.Height);
+            bitmapRendering.Source = map;
+            var titleTransform = titleContainer.RenderTransform as TranslateTransform;
+            if (titleTransform != null)
+            {
+                double totalNodeHeight = control.Height - titleTransform.Y;
+                bitmapRendering.RenderTransform = new CompositeTransform
+                {
+                    ScaleY = totalNodeHeight / control.Height,
+                    TranslateY = titleTransform.Y
+                };
+            }
+        }
+
+        public void HideBitmapRender()
+        {
+            contentContainer.Visibility = Visibility.Visible;
+            titleContainer.Visibility = Visibility.Visible;
+            bitmapRendering.Visibility = Visibility.Collapsed;
+        }
+
+        public async Task HideBitmapRender(UserControl control)
+        {
+            await RenderBitmap(control);
+            HideBitmapRender();
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

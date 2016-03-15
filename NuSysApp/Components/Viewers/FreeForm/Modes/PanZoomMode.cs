@@ -17,6 +17,7 @@ namespace NuSysApp
         {
             _view.ManipulationMode = ManipulationModes.All;
             _view.ManipulationDelta += OnManipulationDelta;
+            _view.ManipulationCompleted += OnManipulationCompleted;
             _view.ManipulationStarting += OnManipulationStarting;
             _view.PointerWheelChanged += OnPointerWheelChanged;
         }
@@ -25,8 +26,15 @@ namespace NuSysApp
         {
             _view.ManipulationMode = ManipulationModes.None;
             _view.ManipulationDelta -= OnManipulationDelta;
+            _view.ManipulationCompleted -= OnManipulationCompleted;
             _view.ManipulationStarting -= OnManipulationStarting;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
+        }
+
+
+        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            _view.CullNodes();
         }
 
         protected void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
@@ -86,6 +94,7 @@ namespace NuSysApp
             */
 
             _view.InqCanvas.Transform = compositeTransform;
+            _view.CullNodes();
 
         }
 

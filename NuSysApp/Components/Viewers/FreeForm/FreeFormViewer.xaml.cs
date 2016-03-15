@@ -56,6 +56,8 @@ namespace NuSysApp
 
 
 
+
+
             // TODO:refactor
             /*
             CompositeTransform ct = new CompositeTransform();
@@ -128,6 +130,46 @@ namespace NuSysApp
                         break;
                 } 
             };
+        }
+
+
+        //called after translation event to make nodes not currently visible not display XAML
+        public void CullNodes()
+        {
+            var vm = this.DataContext as FreeFormViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            var trans = vm.CompositeTransform;
+            var sessionView = SessionController.Instance.SessionView;
+
+            Point upperLeft = trans.Inverse.TransformPoint(new Point(0, 0));
+            Point bottomRight =
+                trans.Inverse.TransformPoint(new Point(sessionView.ActualWidth, sessionView.ActualHeight));
+            Rect screenBounds = new Rect(upperLeft, bottomRight);
+
+            foreach (var atom in vm.AtomViewList)
+            {
+                var atomVm = atom.DataContext as ElementViewModel;
+                if (atomVm == null)
+                {
+                    continue;
+                }
+
+                var atomTopLeft = new Point(atomVm.Anchor.X, atomVm.Anchor.Y);
+                var atomBottomRight = new Point(atomTopLeft.X + atomVm.Width, atomTopLeft.Y + atomVm.Height);
+                if (!screenBounds.Contains(atomTopLeft) && !screenBounds.Contains(atomBottomRight)
+                    && !screenBounds.Contains(new Point(atomTopLeft.X, atomBottomRight.Y)) && !screenBounds.Contains(new Point(atomTopLeft.Y, atomBottomRight.X)))
+                {
+                    atomVm.IsOnScreen = false;
+                }
+                else
+                {
+                    atomVm.IsOnScreen = true;
+                }
+            }
         }
 
         public MultiSelectMenuView MultiMenu
