@@ -18,6 +18,12 @@ namespace NuSysApp
         public LibraryPageViewModel(ObservableCollection<NodeContentModel> elements)
         {
             _PageElements = elements;
+            SessionController.Instance.ContentController.OnNewContent += NewContent;
+        }
+
+        private void NewContent(NodeContentModel content)
+        {
+            _PageElements.Add(content);
         }
         public async Task Sort(string s)
         {

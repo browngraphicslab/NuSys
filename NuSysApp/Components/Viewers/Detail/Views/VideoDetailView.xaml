@@ -9,11 +9,43 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
-        <StackPanel VerticalAlignment="Center" Width="800">
-            <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
-            <CaptureElement x:Name="preview"/>
-            <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="True"/>
+    <Grid x:Name="grid">
+        <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
+        <Grid.Resources>
+            <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <CaptureElement x:Name="preview"/>
+        <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False" MediaOpened="PlaybackElement_OnMediaOpened" Loaded="PlaybackElement_Onloaded"/>
+        <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased" ValueChanged="ScrubBar_OnValueChanged" Grid.Row="1" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" SizeChanged="ScrubBar_OnSizeChanged" Opacity="0.3" />
+
+        <Grid Grid.Row="2" HorizontalAlignment="Left">
+            <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+        </Grid>
+        <Grid Grid.Row="2" HorizontalAlignment="Right">
+            <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+        </Grid>
+        <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,0,0,0" VerticalAlignment="Top">
+
+            <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/icon_audionode_play.png" Height="25"></Image>
+            </Button>
+            <Button x:Name="pause" Tapped ="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/icon_audionode_pause.png" Height="25"/>
+            </Button>
+            <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="25"></Image>
+            </Button>
+            <Button x:Name="AddTimeBlock" Content="Add Annotation" Tapped="AddTimeBlock_OnTapped" Height="39" Width="142"></Button>
         </StackPanel>
+        <GridView x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
+
+
     </Grid>
 </UserControl>

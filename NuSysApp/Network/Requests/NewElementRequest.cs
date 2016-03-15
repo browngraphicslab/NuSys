@@ -116,7 +116,10 @@ namespace NuSysApp
             var content = (CollectionContentModel)SessionController.Instance.ContentController.Get(creatorContentID);
             content.AddChild(controller.Model.Id);
 
-            controller.FireContentLoaded(content);
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(content.Id))
+            {
+                controller.FireContentLoaded(content);
+            }
             //var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[creatorContentID];
             //parentController.AddChild(controller);
         }

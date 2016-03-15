@@ -17,12 +17,11 @@ namespace NuSysApp
         public ElementType Type { get; set; }
         public string Data { get; set; }
         public string Id { get; set; }
-        public string ContentID { get; set; }
         public string Title { get; set; }
         public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
         {
             Data = data;
-            ContentID = id;
+            Id = id;
             Title = contentName;
             Type = elementType;
             Loaded = data != null;

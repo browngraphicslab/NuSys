@@ -286,7 +286,7 @@ namespace NuSysApp
 
                 Message m = new Message();
 
-                m["contentId"] = element.ContentID;
+                m["contentId"] = element.Id;
 
                 m["x"] = releasepoint.X - 200;
 
@@ -459,7 +459,7 @@ namespace NuSysApp
 
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
-            await _library.AddNode(new Point(r.X - 200, r.Y - 200), new Size(r.Width, r.Height), element.Type,element.ContentID);
+            await _library.AddNode(new Point(r.X - 200, r.Y - 200), new Size(r.Width, r.Height), element.Type,element.Id);
         }
     }
 

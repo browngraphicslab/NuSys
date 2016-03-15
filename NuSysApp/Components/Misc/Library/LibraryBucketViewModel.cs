@@ -43,7 +43,7 @@ namespace NuSysApp
             List<NodeContentModel> elements = new List<NodeContentModel>();
             foreach (var element in e.Items)
             {
-                var id = ((NodeContentModel)element).ContentID;
+                var id = ((NodeContentModel)element).Id;
                 elements.Add((NodeContentModel)element);
                 if (SessionController.Instance.ContentController.Get(id) == null)
                 {
@@ -76,7 +76,7 @@ namespace NuSysApp
                     {
                         await Task.Run(async delegate { 
                         Message m = new Message();
-                        m["contentId"] = element.ContentID;
+                        m["contentId"] = element.Id;
                         m["x"] = centerpoint.X - 200;
                         m["y"] = centerpoint.Y - 200;
                         m["width"] = 400;
@@ -95,7 +95,7 @@ namespace NuSysApp
                         await Task.Run(async delegate
                         {
                             await StaticServerCalls.PutCollectionInstanceOnMainCollection(centerpoint.X, centerpoint.Y,
-                                element.ContentID);
+                                element.Id);
                         });
                     }
                 }

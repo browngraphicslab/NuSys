@@ -45,7 +45,7 @@ namespace NuSysApp
             var model = elementController.Model;
             if (model.ContentId != null )
             {
-                if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
+                if (!SessionController.Instance.ContentController.ContainsAndLoaded(model.ContentId))
                 {
 
                     if (SessionController.Instance.LoadingDictionary.ContainsKey(model.ContentId))
