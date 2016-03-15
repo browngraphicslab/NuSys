@@ -131,6 +131,16 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
         }
 
+        public bool ChangeContentData(string data)
+        {
+            var content = Controller.ContentModel;
+            if (content != null)
+            {
+                content.SetContentData(this, data);
+                return true;
+            }
+            return false;
+        }
         #region Atom Manipulations
 
         public virtual void ReadFromModel()

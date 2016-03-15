@@ -250,8 +250,9 @@ namespace NuSysApp
                 }
                 if (type == ElementType.Node)
                 {
-                    if (msg.ContainsKey("nodeType") && ((string)msg["nodeType"] == "Collection"))
+                    if (msg.ContainsKey("nodeType") && ((ElementType)Enum.Parse(typeof(ElementType),(string)msg["nodeType"],true) == ElementType.Collection))
                     {
+                        type = ElementType.Collection;
                         SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null));
                     }
                     else
@@ -261,25 +262,22 @@ namespace NuSysApp
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
                             new NewElementRequest(msg));
-                    if (msg.ContainsKey("nodeType"))
-                    {
-                        var nodeType = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
-                        if (nodeType == ElementType.Collection)
+                        if (type == ElementType.Collection)
                         {
                             var messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(contentId);
                             foreach (var m in messages)
                             {
-                                if (m.ContainsKey("contentId"))
+                                if (m.ContainsKey("contentId") && m.ContainsKey("nodeType"))
                                 {
                                     var newNodeContentId = m.GetString("contentId");
-                                    var elType = (ElementType)Enum.Parse(typeof(ElementType), m.GetString("type"), true);
+                                    var elType = (ElementType) Enum.Parse(typeof (ElementType), m.GetString("nodeType"), true);
                                     if (elType == ElementType.Collection)
                                     {
                                         SessionController.Instance.ContentController.Add(new CollectionContentModel(newNodeContentId, null));
                                     }
                                     else
                                     {
-                                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, newNodeContentId, elType));
+                                        SessionController.Instance.ContentController.Add(new NodeContentModel(null,newNodeContentId, elType));
                                     }
                                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                                     if (!usedContentIDs.Contains(newNodeContentId))
@@ -292,7 +290,6 @@ namespace NuSysApp
                                     }
                                 }
                             }
-                        }
                     }
                 }
                 if (type == ElementType.Link)
