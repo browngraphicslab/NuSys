@@ -43,8 +43,6 @@ namespace NuSysApp
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
-
-
         }
 
 
@@ -162,6 +160,17 @@ namespace NuSysApp
         }
 
         private void PlaybackElement_Onloaded(object sender, RoutedEventArgs e)
+        {
+            if ((DataContext as AudioNodeViewModel).VisualGrid != null)
+            {
+                LoadPlaybackElement();
+            }
+            else
+            {
+                (DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
+            }
+        }
+        private void LoadPlaybackElement()
         {
             grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
             RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);

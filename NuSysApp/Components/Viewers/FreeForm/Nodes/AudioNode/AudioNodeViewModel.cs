@@ -25,6 +25,8 @@ namespace NuSysApp
         public delegate void BlockLeaveEventHandler(LinkedTimeBlockViewModel timeBlock);
         public event BlockHitEventHandler OnBlockLeaveEventHandler;
 
+        public delegate void VisualizationLoadedEventHandler();
+        public event VisualizationLoadedEventHandler OnVisualizationLoaded;
         public AudioNodeViewModel(ElementController model) : base(model)
         {
             Width = 300;
@@ -80,10 +82,10 @@ namespace NuSysApp
             var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get(ContentId).Data);
             MemoryStream s = new MemoryStream(byteArray);
             _stream = s.AsRandomAccessStream();
-            visualize();
+            Visualize();
         }
 
-        private void visualize()
+        private async void Visualize()
         {
             WaveStream waveStream = new MediaFoundationReaderUniversal(_stream);
             int bytesPerSample = (waveStream.WaveFormat.BitsPerSample / 8) * waveStream.WaveFormat.Channels;
@@ -153,7 +155,7 @@ namespace NuSysApp
             middleLine.StrokeThickness = 1;
             _visualGrid.Children.Add(middleLine);
 
-
+            OnVisualizationLoaded?.Invoke();
         }
         public string FileName
         {

@@ -13,7 +13,7 @@ namespace NuSysApp
 {
     public class VideoNodeViewModel : ElementViewModel
     {
-        public VideoNodeViewModel(ElementController model) : base(model)
+        public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }

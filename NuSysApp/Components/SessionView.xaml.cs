@@ -255,17 +255,17 @@ namespace NuSysApp
                 {
                     type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
                 }
-
+                var title = msg.ContainsKey("title") ? (string) msg["title"] : "";
                 if (Constants.IsNode(type))
                 {
                     if (type == ElementType.Collection)
                     {
                         type = ElementType.Collection;
-                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null));
+                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null, title));
                     }
                     else
                     {
-                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type));
+                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type, title));
                     }
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(

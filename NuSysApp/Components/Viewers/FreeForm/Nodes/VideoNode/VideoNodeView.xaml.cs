@@ -37,17 +37,31 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
-            var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).ContentId).Data);
-            memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
-            memoryStream.Seek(0);
-            playbackElement.SetSource(memoryStream, "video/mp4");
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.ContentId))
+            {
+                LoadVideo();
+            }
+            else
+            {
+                vm.Controller.ContentLoaded += LoadVideo;
+            }
+
 
             _isRecording = false;
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             //  playbackElement.Play();
+        }
+
+        private void LoadVideo(object sender = null, object data = null)
+        {
+            InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
+            var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).ContentId).Data);
+            memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
+            memoryStream.Seek(0);
+            playbackElement.SetSource(memoryStream, "video/mp4");
+            ((VideoNodeViewModel)DataContext).Controller.ContentLoaded -= LoadVideo;
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
