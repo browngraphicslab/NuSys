@@ -45,6 +45,11 @@ namespace NuSysApp
                 case ElementType.Text:
                     elementModel = new TextElementModel(id);
                     elementModel.ContentId = contentId;
+                    if (SessionController.Instance.ContentController.Get(contentId) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId,
+                            ElementType.Text, elementModel.Title));
+                    }
                     controller = new TextNodeController((TextElementModel)elementModel);
                     break;
                 case ElementType.Image:
