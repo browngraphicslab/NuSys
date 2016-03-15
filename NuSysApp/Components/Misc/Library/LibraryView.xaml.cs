@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<NodeContentModel>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
+            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<NodeContentModel>(SessionController.Instance.ContentController.Values));
             this.MakeViews(pageViewModel, properties);
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
@@ -95,7 +95,7 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
-            ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(((LibraryBucketViewModel)this.DataContext)._elements.Values);
+            ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values);
             ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
         }
 

@@ -16,6 +16,9 @@ namespace NuSysApp
 
         private Dictionary<string, NodeContentModel> _contents = new Dictionary<string, NodeContentModel>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
+
+        public delegate void NewContentEventHandler(NodeContentModel element);
+        public event NewContentEventHandler OnNewContent;
         public int Count
         {
             get { return _contents.Count; }
@@ -26,6 +29,10 @@ namespace NuSysApp
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
+        public ICollection<NodeContentModel> Values
+        {
+            get { return _contents.Values; }
+        } 
         public bool ContainsAndLoaded(string id)
         {
             return _contents.ContainsKey(id) ? _contents[id].Loaded : false;
@@ -36,6 +43,7 @@ namespace NuSysApp
             {
                 _contents.Add(model.ContentID, model);
                 Debug.WriteLine("content directly added with ID: " + model.ContentID);
+                OnNewContent?.Invoke(model);
                 return model.ContentID;
             }
             Debug.WriteLine("content failed to add directly due to invalid id");
@@ -46,6 +54,7 @@ namespace NuSysApp
             var id = presetID ?? SessionController.Instance.GenerateId();
             var n = new NodeContentModel(contentData, id, elementType);
             _contents.Add(id, n );
+            OnNewContent?.Invoke(n);
             /*
             if (presetID != null)
             {

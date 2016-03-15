@@ -41,6 +41,7 @@ namespace NuSysApp
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
+            ListView.ItemsSource = new ObservableCollection<NodeContentModel>();
             this.DataContext = vm;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -69,7 +70,10 @@ namespace NuSysApp
         private void AddNewElement(NodeContentModel element)
         {
             //_items = new ObservableCollection<NodeContentModel>((IEnumerable<NodeContentModel>) ListView.ItemsSource);
-            ((ObservableCollection<NodeContentModel>)ListView.ItemsSource).Add(element);
+            UITask.Run(delegate
+            {
+                ((ObservableCollection<NodeContentModel>) ListView.ItemsSource).Add(element);
+            });
         }
 
 

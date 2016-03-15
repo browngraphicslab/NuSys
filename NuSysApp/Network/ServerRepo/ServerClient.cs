@@ -20,8 +20,6 @@ namespace NuSysApp
     {
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
-        private ManualResetEvent _manualResetEvent;
-        private bool _waiting = false;
 
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
@@ -38,13 +36,11 @@ namespace NuSysApp
             _socket.MessageReceived += MessageRecieved;
             _socket.Closed += SocketClosed;
             _dataMessageWriter = new DataWriter(_socket.OutputStream);
-            _manualResetEvent = new ManualResetEvent(false);
         }
 
         public async Task Init()
         {
             ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
-            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var credentials = GetUserCredentials();
             var uri = GetUri("values/"+credentials, true);
             await _socket.ConnectAsync(uri);

@@ -12,9 +12,6 @@ namespace NuSysApp
 {
     public class LibraryBucketViewModel
     {
-
-        public Dictionary<string, NodeContentModel> _elements = new Dictionary<string, NodeContentModel>();
-
         public delegate void NewContentsEventHandler(ICollection<NodeContentModel> elements);
         public event NewContentsEventHandler OnNewContents;
 
@@ -25,46 +22,21 @@ namespace NuSysApp
 
         public LibraryBucketViewModel()
         {
+            SessionController.Instance.ContentController.OnNewContent += FireNewContentAvailable;
         }
 
      
      
         public async Task InitializeLibrary()
         {
-            Task.Run(async delegate
-            {
-                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                foreach (var kvp in dictionaries)
-                {
-                    var id = (string)kvp.Value["id"];
-                    //var element = new NodeContentModel(kvp.Value);
-
-                    var dict = kvp.Value;   
-
-                    var contentId = (string)dict["id"];
-                    string title = null;
-                    ElementType type = ElementType.Document;
-
-                    if (dict.ContainsKey("title"))
-                    {
-                        title = (string)dict["title"]; // title
-                    }
-                    if (dict.ContainsKey("type"))
-                    {
-                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                    }
-
-                    var element = new NodeContentModel((string)dict["data"], id,type,title);
-
-                    if (!_elements.ContainsKey(id))
-                    {
-                        _elements.Add(id, element);
-                    }
-                }
-                UITask.Run(delegate {
-                    OnNewContents?.Invoke(_elements.Values);
-                });
+            UITask.Run(delegate {
+                OnNewContents?.Invoke(SessionController.Instance.ContentController.Values);
             });
+        }
+
+        private void FireNewContentAvailable(NodeContentModel content)
+        {
+            OnNewElementAvailable?.Invoke(content);
         }
         public void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
@@ -132,7 +104,6 @@ namespace NuSysApp
 
         public void AddNewElement(NodeContentModel element)
         {
-            _elements.Add(element.Title, element);
             OnNewElementAvailable?.Invoke(element);
         }
 

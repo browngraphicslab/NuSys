@@ -306,8 +306,44 @@ namespace NuSysApp
                     usedContentIDs.Add(contentId);
                 }
             }
+
+            await ImportLibrary(usedContentIDs);
         }
 
+        private async Task ImportLibrary(HashSet<string> usedIDs)
+        {
+            Task.Run(async delegate
+            {
+                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                foreach (var kvp in dictionaries)
+                {
+                    var id = (string)kvp.Value["id"];
+                    //var element = new NodeContentModel(kvp.Value);
+
+                    var dict = kvp.Value;
+
+                    string title = null;
+                    ElementType type = ElementType.Document;
+
+                    if (dict.ContainsKey("title"))
+                    {
+                        title = (string)dict["title"]; // title
+                    }
+                    if (dict.ContainsKey("type"))
+                    {
+                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                    }
+                    var data = dict.ContainsKey("data") ? (string)dict["data"] : null;
+
+                    var element = new NodeContentModel(data, id, type, title);
+                    if (!usedIDs.Contains(id) &&
+                        SessionController.Instance.ContentController.Get(id) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(element);
+                    }
+                }
+            });
+        }
         public async Task LoadWorkspace(IEnumerable<string> nodeStrings)
         {
             SessionController.Instance.IdToControllers.Clear();
