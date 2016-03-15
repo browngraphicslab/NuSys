@@ -84,12 +84,27 @@ namespace NuSysApp
                     if (dict.ContainsKey("server_indication_from_server"))
                     {
                         if (dict.ContainsKey("notification_type") &&
-                            (string) dict["notification_type"] == "content_available")
+                            (string)dict["notification_type"] == "content_available")
                         {
                             if (dict.ContainsKey("id"))
                             {
                                 var id = dict["id"];
-                                LibraryElement element = new LibraryElement(dict);
+
+                                //id, data, type, title
+                                var contentId = (string)dict["id"];
+                                string title = null;
+                                ElementType type = ElementType.Node;
+                                string data = dict.ContainsKey("data") ? (string)dict["data"] : null;
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"];
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                }
+
+                                NodeContentModel element = new NodeContentModel(data,contentId,type,title);
                                 UITask.Run(delegate
                                 {
 
@@ -98,10 +113,11 @@ namespace NuSysApp
                                     //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
                                 });
                                 Task.Run(async delegate {
-                                    await GetContent((string) id);
+                                    await GetContent((string)id);
                                 });
                             }
                         }
+
                     }
                     else
                     {

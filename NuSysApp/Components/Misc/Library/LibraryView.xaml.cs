@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -32,16 +34,17 @@ namespace NuSysApp
 
         private LibraryList _libraryList;
         private LibraryGrid _libraryGrid;
+        private FloatingMenuView _menu;
 
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
-        public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties)
+        public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElement>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
+            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<NodeContentModel>(((LibraryBucketViewModel)this.DataContext)._elements.Values));
             this.MakeViews(pageViewModel, properties);
             WorkspacePivot.Content = _libraryList;
-
+            _menu = menu;
             this.Loaded += async delegate
             {
                 vm.InitializeLibrary();
@@ -81,8 +84,8 @@ namespace NuSysApp
         {
             _libraryGrid = new LibraryGrid(this, pageViewModel, properties);
             _libraryList = new LibraryList(this, pageViewModel, properties);
-            _libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
-            _libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
+            //_libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
+            //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
         }
 
         private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -105,13 +108,20 @@ namespace NuSysApp
             }
         }
 
+        public async void UpdateList()
+        {
+            _libraryList.Update();
+        }
+
         private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (WorkspacePivot.Content != _libraryGrid)
-            {
-                await _libraryGrid.Update();
-                WorkspacePivot.Content = _libraryGrid;
-            }
+            //await this.AddNode(new Point(12, 0), new Size(12, 12), ElementType.Document);
+            this.UpdateList();
+            //if (WorkspacePivot.Content != _libraryGrid)
+            //{
+            //    await _libraryGrid.Update();
+            //    WorkspacePivot.Content = _libraryGrid;
+            //}
         }
 
 
@@ -171,6 +181,32 @@ namespace NuSysApp
         //        });
         //    });
         //}
+
+        public async Task AddNode(Point pos, Size size, ElementType elementType, string contentId)
+        {
+            var dict = new Message();
+            Dictionary<string, object> metadata;
+
+            metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+            metadata["node_type"] = elementType + "Node";
+
+            dict = new Message();
+            dict["width"] = size.Width.ToString();
+            dict["height"] = size.Height.ToString();
+            dict["nodeType"] = elementType.ToString();
+            dict["x"] = pos.X;
+            dict["y"] = pos.Y;
+            dict["contentId"] = contentId;
+            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+            dict["metadata"] = metadata;
+            dict["autoCreate"] = true;
+            dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            var request = new NewElementRequest(dict);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+
+            // TOOD: refresh library
+        }
 
     }
 }

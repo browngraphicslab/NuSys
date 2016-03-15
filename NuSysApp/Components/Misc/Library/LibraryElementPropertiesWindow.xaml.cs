@@ -27,48 +27,48 @@ namespace NuSysApp
             _count = 0;
         }
 
-        private async void LoadThumbnails(int numRows, int numCols, LibraryElement newItem)
+        private async void LoadThumbnails(int numRows, int numCols, NodeContentModel newItem)
         {
 
             StackPanel itemPanel = new StackPanel();
             itemPanel.Orientation = Orientation.Vertical;
             
-            if (newItem.ElementType == ElementType.Image)
+            if (newItem.Type == ElementType.Image)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://wiki.tripwireinteractive.com/images/4/47/Placeholder.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Text)
+            else if (newItem.Type == ElementType.Text)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://findicons.com/files/icons/1580/devine_icons_part_2/512/defult_text.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Web)
+            else if (newItem.Type == ElementType.Web)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://www.clker.com/cliparts/I/Y/4/e/m/C/internet-icon-md.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.PDF)
+            else if (newItem.Type == ElementType.PDF)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://iconizer.net/files/Devine_icons/orig/PDF.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Audio)
+            else if (newItem.Type == ElementType.Audio)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://icons.iconarchive.com/icons/icons8/windows-8/512/Music-Audio-Wave-icon.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.ElementType == ElementType.Video)
+            else if (newItem.Type == ElementType.Video)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://www.veryicon.com/icon/ico/System/Icons8%20Metro%20Style/Photo%20Video%20Camcoder%20pro.ico", UriKind.Absolute));
@@ -85,7 +85,7 @@ namespace NuSysApp
 
 
             TextBlock WorkSpace = new TextBlock();
-            WorkSpace.Text = newItem.ElementType.ToString();
+            WorkSpace.Text = newItem.Type.ToString();
             itemPanel.Children.Add(WorkSpace);
 
 
