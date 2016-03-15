@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Controller;
@@ -25,13 +26,34 @@ namespace NuSysApp
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
 
-            controller.AnchorUpdated += OnAnchorUpdated;
+         //   controller.AnchorUpdated += OnAnchorUpdated;
+
+            InElementController.PositionChanged += InElementControllerOnPositionChanged;
+            OutElementController.PositionChanged += InElementControllerOnPositionChanged;
+            InElementController.SizeChanged += OutElementControllerOnSizeChanged;
+            OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
+
         }
 
-        private void OnAnchorUpdated(object source)
+        private void OutElementControllerOnSizeChanged(object source, double width, double height)
         {
+            UpdateAnchor();
         }
 
+        private void InElementControllerOnSizeChangedInElementControllerOnSizeChanged(object source, double width, double height)
+        {
+            UpdateAnchor();
+        }
+
+        private void OutElementControllerOnPositionChanged(object source, double d, double d1)
+        {
+            UpdateAnchor();
+        }
+
+        private void InElementControllerOnPositionChanged(object source, double d, double d1)
+        {
+            UpdateAnchor();
+        }
 
         public string AnnotationText
         {
@@ -63,6 +85,7 @@ namespace NuSysApp
             {
                 link.UpdateAnchor();
             }
+            RaisePropertyChanged("Anchor");
         }
 
         public override bool IsSelected
@@ -92,15 +115,11 @@ namespace NuSysApp
 
 #region Private Members
 
-private ElementViewModel _atom1, _atom2;
+
         private string _annotationText;
 
         #endregion Private members
 
-        #region Public Properties
 
-       
-       
-        #endregion Public Properties
     }
 }

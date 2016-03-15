@@ -125,7 +125,9 @@ namespace NuSysApp
         public object GetMetaData(string key)
         {
             if (Metadata.ContainsKey(key))
+            {
                 return Metadata[key];
+            }
             return null;
         }
 

@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public class LibraryBucketViewModel : ElementViewModel
+    public class LibraryBucketViewModel
     {
 
         public Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
@@ -23,10 +23,8 @@ namespace NuSysApp
 
         private double _width, _height;
 
-        public LibraryBucketViewModel(double width, double height):base(new ElementController(new ElementModel("")))
+        public LibraryBucketViewModel()
         {
-            Width = width;
-            Height = height;
         }
 
      
@@ -75,31 +73,43 @@ namespace NuSysApp
         private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
         {
 
-            UITask.Run(delegate
+            UITask.Run(async delegate
             {
                 var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
 
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint =
-                    SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                        new Point(width / 2, height / 2));
-                Task.Run(delegate
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+                foreach (var element in ids)
                 {
-                    foreach (var element in ids)
+                    if (element.ElementType != ElementType.Collection)
                     {
-                        Message m = new Message();
-                        m["contentId"] = element.ContentID;
-                        m["x"] = centerpoint.X - 200;
-                        m["y"] = centerpoint.Y - 200;
-                        m["width"] = 400;
-                        m["height"] = 400;
-                        m["nodeType"] = element.ElementType.ToString();
-                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                        await Task.Run(async delegate
+                        {
+                            Message message = new Message();
+                            message["contentId"] = element.ContentID;
+                            message["x"] = centerpoint.X - 200;
+                            message["y"] = centerpoint.Y - 200;
+                            message["width"] = 400;
+                            message["height"] = 400;
+                            message["nodeType"] = element.ElementType.ToString();
+                            message["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                            message["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                            await
+                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                    new NewElementRequest(message));
+                        });
                     }
-                });
+                    else
+                    {
+                        await Task.Run(async delegate
+                        {
+                            await StaticServerCalls.PutCollectionInstanceOnMainCollection(centerpoint.X, centerpoint.Y,
+                                element.ContentID);
+                        });
+                    }
+                }
             });
         }
 

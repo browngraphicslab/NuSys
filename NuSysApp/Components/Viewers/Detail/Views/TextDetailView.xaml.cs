@@ -64,14 +64,14 @@ namespace NuSysApp
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
             {
-                if (model.Text != "")
+                if (((TextNodeViewModel)DataContext).Text != "")
                 {
-                    UpdateText(model.Text);
+                    UpdateText(((TextNodeViewModel)DataContext).Text);
                 }
-                OpenTextBox(model.Text);
+                OpenTextBox(((TextNodeViewModel)DataContext).Text);
 
             };
-
+            vm.TextBindingChanged += delegate(object source, string text) { UpdateText(text); };
             _modelContentId = model.ContentId;
             _modelId = model.Id;
 
@@ -88,7 +88,7 @@ namespace NuSysApp
         {
             // The string received from the JavaScript code can be found in e.Value
             string data = e.Value;
-            Debug.WriteLine(data);
+            //Debug.WriteLine(data);
 
             if (data.ToLower().StartsWith("launchmylink:"))
             {
@@ -129,7 +129,7 @@ namespace NuSysApp
         */
         private async void UpdateText(String str)
         {
-            if (str != "")
+            if (!string.IsNullOrEmpty(str))
             {
                 String[] myString = { str };
                 IEnumerable<String> s = myString;
@@ -142,11 +142,13 @@ namespace NuSysApp
         */
         private async void OpenTextBox(String str)
         {
-
-            String[] myString = { str };
-            IEnumerable<String> s = myString;
-            MyWebView.InvokeScriptAsync("InsertText", s);
-            MyWebView.InvokeScriptAsync("clickableLinks", null);
+            if (!string.IsNullOrEmpty(str))
+            {
+                String[] myString = {str};
+                IEnumerable<String> s = myString;
+                MyWebView.InvokeScriptAsync("InsertText", s);
+                MyWebView.InvokeScriptAsync("clickableLinks", null);
+            }
 
         }
 
@@ -179,7 +181,8 @@ namespace NuSysApp
             m["url"] = url;
             m["nodeType"] = ElementType.Web;
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.Id };
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id ;
+            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             m["id"] = nodeid;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
@@ -193,12 +196,14 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
+            ((TextNodeViewModel) DataContext).ChangeContentData(s);
+            /*
             if (s != "")
             {
                 var vm = DataContext as ElementViewModel;
                 var model = (TextElementModel)vm.Model;
                 model.Text = s;
-            }
+            }*/
         }
 
         public void Dispose()
@@ -290,7 +295,7 @@ namespace NuSysApp
 
         private void UpdateText()
         {
-            var request = new ChangeContentRequest(_modelId, _modelContentId, _modelText);
+            var request = new ChangeContentRequest( _modelContentId, _modelText);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
         }
 

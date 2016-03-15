@@ -104,9 +104,9 @@ namespace NuSysApp
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
 
-            var newGroupId = SessionController.Instance.GenerateId();
             if (!(c1IsCollection || c2IsCollection)) { 
                 var contentId = SessionController.Instance.GenerateId();
+                var newCollectionId = SessionController.Instance.GenerateId();
 
                 var elementMsg = new Message();
                 elementMsg["metadata"] = metadata;
@@ -117,13 +117,20 @@ namespace NuSysApp
                 elementMsg["contentId"] = contentId;
                 elementMsg["nodeType"] = ElementType.Collection;
                 elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                elementMsg["id"] = newGroupId;
+                elementMsg["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                elementMsg["id"] = newCollectionId;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
 
-                await controller2.RequestMoveToCollection(newGroupId);
-                await controller1.RequestMoveToCollection(newGroupId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+
+                //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+
+                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 300, 300, newCollectionId);
+
+                await controller2.RequestMoveToCollection(newCollectionId, contentId);
+                await controller1.RequestMoveToCollection(newCollectionId, contentId);
+
 
                 _isHovering = false;
                 return;
@@ -131,13 +138,13 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                await controller1.RequestMoveToCollection(controller2.Model.Id);
+                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.ContentId);
                 return;
             }
 
             if (c1IsCollection)
             {
-                await controller2.RequestMoveToCollection(controller1.Model.Id);
+                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.ContentId);
             }
  
          

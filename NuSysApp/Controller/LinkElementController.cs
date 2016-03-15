@@ -12,12 +12,15 @@ namespace NuSysApp.Controller
 
         public event AnchorUpdatedEventHandler AnchorUpdated;
 
+        public ElementController InElement { get; set; }
+        public ElementController OutElement { get; set; }
+
         public LinkElementController(LinkModel model) : base(model)
         {
-            var inElement = SessionController.Instance.IdToControllers[model.InAtomId];
-            var outElement = SessionController.Instance.IdToControllers[model.OutAtomId];
-            inElement.AddLink(this);
-            outElement.AddLink(this);
+            InElement = SessionController.Instance.IdToControllers[model.InAtomId];
+            OutElement = SessionController.Instance.IdToControllers[model.OutAtomId];
+            InElement.AddLink(this);
+            OutElement.AddLink(this);
         }
 
         public void UpdateAnchor()

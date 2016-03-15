@@ -21,7 +21,7 @@
     <PackageCertificateThumbprint>39EC66F4E78ABDEC36FFC55A39C7EE7FC58A1086</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxPackageDir>C:\Users\Philipp\Desktop\deploy\</AppxPackageDir>
-    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
@@ -267,10 +267,6 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementViewModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml.cs">
-      <DependentUpon>LibraryElementView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
     </Compile>
@@ -335,10 +331,12 @@
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\SessionController.cs" />
+    <Compile Include="Controller\TextNodeController.cs" />
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="Models\AreaModel.cs" />
+    <Compile Include="Models\CollectionContentModel.cs" />
     <Compile Include="Models\LibraryElementCollectionModel.cs" />
     <Compile Include="Models\ElementCollectionModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
@@ -349,7 +347,6 @@
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\EditStatus.cs" />
     <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
@@ -366,6 +363,7 @@
     <Compile Include="Network\Requests\NewElementRequest.cs" />
     <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
@@ -377,7 +375,9 @@
     <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
+    <Compile Include="Network\StaticServerCalls.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
@@ -406,7 +406,6 @@
     <Compile Include="Converters\SubstractConverter.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
     <Compile Include="Lib\MarkdownDeep\Abbreviation.cs" />
     <Compile Include="Lib\MarkdownDeep\Block.cs" />
@@ -679,10 +678,6 @@
     <Page Include="Components\Misc\SearchButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\LibraryNode\LibraryElementView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -26,9 +26,13 @@ namespace NuSysApp
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
+        public bool ContainsAndLoaded(string id)
+        {
+            return _contents.ContainsKey(id) ? _contents[id].Loaded : false;
+        }
         public string Add(NodeContentModel model)
         {
-            if (!String.IsNullOrEmpty(model.Id))
+            if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))
             {
                 _contents.Add(model.Id, model);
                 Debug.WriteLine("content directly added with ID: " + model.Id);
@@ -37,10 +41,10 @@ namespace NuSysApp
             Debug.WriteLine("content failed to add directly due to invalid id");
             return null;
         }
-        public string Add( string contentData, string presetID = null)
+        public string Add( string contentData, ElementType elementType, string presetID = null)
         {
             var id = presetID ?? SessionController.Instance.GenerateId();
-            var n = new NodeContentModel(contentData, id);
+            var n = new NodeContentModel(contentData, id, elementType);
             _contents.Add(id, n );
             /*
             if (presetID != null)

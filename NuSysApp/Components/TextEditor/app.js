@@ -214,9 +214,9 @@ var Editor = (function () {
      * @param {} text 
      * @returns {} 
      */
-    Editor.prototype.InsertText = function (text) { // function to update text in the editor
-        this.element.innerHTML = text;
-    };
+    //Editor.prototype.InsertText = function (text) { // function to update text in the editor
+    //    this.element.innerHTML = text;
+    //};
 
     /**
      * Updates text node view in real-time with current text in editor

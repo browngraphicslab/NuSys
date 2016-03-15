@@ -89,9 +89,9 @@ namespace NuSysApp
 
 
 
-            _buttons[btnAdd] = Options.MainAdd;
+            _buttons[btnAddNode] = Options.MainAdd;
             _buttons[btnNewNode] = Options.AddTextNode;
-            _buttons[btnNewMedia] = Options.AddMedia;
+            _buttons[btnLibrary] = Options.AddMedia;
 
             
 
@@ -108,13 +108,13 @@ namespace NuSysApp
 
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 0), new Tuple<Storyboard, string>(slidein, "SubMenuPen"));
            // _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnPen, 1), new Tuple<Storyboard, string>(slideout, "SubMenuPen"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
-            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAdd, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAddNode, 0), new Tuple<Storyboard, string>(slidein, "SubMenuNodes"));
+            _storyboards.Add(new Tuple<FloatingMenuButtonView, int>(btnAddNode, 1), new Tuple<Storyboard, string>(slideout, "SubMenuNodes"));
 
 
 
             _activeSubMenuButtons = new Dictionary<FloatingMenuButtonView, FloatingMenuButtonView>();
-            _activeSubMenuButtons[btnAdd] = btnNewNode;
+            _activeSubMenuButtons[btnAddNode] = btnNewNode;
 
 
 
@@ -136,22 +136,26 @@ namespace NuSysApp
             pinWindow.DataContext = new PinWindowViewModel();
 
 
-            btnNewMedia.ManipulationMode = ManipulationModes.All;
-            btnAdd.ManipulationMode = ManipulationModes.All;
+            btnLibrary.ManipulationMode = ManipulationModes.All;
+            btnAddNode.ManipulationMode = ManipulationModes.All;
 
-            btnAdd.ManipulationStarting += BtnAddOnManipulationStarting;
-            btnAdd.ManipulationStarted += BtnAddOnManipulationStarted;
-            btnAdd.ManipulationDelta += BtnAddOnManipulationDelta;
-            btnAdd.ManipulationCompleted += BtnAddOnManipulationCompleted;
+            btnAddNode.ManipulationStarting += BtnAddNodeOnManipulationStarting;
+            btnAddNode.ManipulationStarted += BtnAddNodeOnManipulationStarted;
+            btnAddNode.ManipulationDelta += BtnAddNodeOnManipulationDelta;
+            btnAddNode.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
 
-            btnNewMedia.ManipulationStarting += BtnAddOnManipulationStarting;
-            btnNewMedia.ManipulationStarted += BtnAddOnManipulationStarted;
-            btnNewMedia.ManipulationDelta += BtnAddOnManipulationDelta;
-            btnNewMedia.ManipulationCompleted += BtnAddOnManipulationCompleted;
+            btnLibrary.ManipulationStarting += BtnAddNodeOnManipulationStarting;
+            btnLibrary.ManipulationStarted += BtnAddNodeOnManipulationStarted;
+            btnLibrary.ManipulationDelta += BtnAddNodeOnManipulationDelta;
+            btnLibrary.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
 
+            var lib =  new LibraryView(new LibraryBucketViewModel(), new LibraryElementPropertiesWindow());
+            Canvas.SetLeft(lib, 100);
+            Canvas.SetTop(lib, 100);
+            xWrapper.Children.Add(lib);
         }
 
-        private async void BtnAddOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
+        private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
             xWrapper.Children.Remove(_dragItem);
 
@@ -161,14 +165,14 @@ namespace NuSysApp
 
         }
 
-        private void BtnAddOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
+        private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
             var t = (CompositeTransform)_dragItem.RenderTransform;
             t.TranslateX += args.Delta.Translation.X;
             t.TranslateY += args.Delta.Translation.Y;
         }
 
-        private void BtnAddOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
+        private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
         {
             if (_dragItem == null)
                 return;
@@ -178,9 +182,9 @@ namespace NuSysApp
             t.TranslateY += args.Position.Y - _dragItem.ActualHeight / 2;
         }
 
-        private async void BtnAddOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
+        private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
         {
-            _elementType = sender == btnAdd ? ElementType.Text : ElementType.Library;
+            _elementType = sender == btnAddNode ? ElementType.Text : ElementType.Image;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -326,13 +330,17 @@ namespace NuSysApp
             dict["y"] = p.Y;
             dict["contentId"] = contentId;
             dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+            dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             dict["metadata"] = metadata;
             dict["autoCreate"] = true;
 
             var request = new NewElementRequest(dict);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
+            // TOOD: refresh library
 
             vm.ClearSelection();
             //   vm.ClearMultiSelection();
@@ -351,7 +359,7 @@ namespace NuSysApp
 
         public void Reset()
         {
-            btnAdd.Icon = btnNewNode.Icon;
+            btnAddNode.Icon = btnNewNode.Icon;
             SetActive(Options.SelectNode);
         }
 

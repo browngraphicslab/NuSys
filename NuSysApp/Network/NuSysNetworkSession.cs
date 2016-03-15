@@ -219,6 +219,11 @@ namespace NuSysApp
             await request.ExecuteSystemRequestFunction(this, _serverClient);
         }
         #endregion Requests
+
+        public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)
+        {
+            return await _serverClient.GetWorkspaceAsElementMessages(id);
+        }
         public void AddNetworkUser(NetworkUser user)
         {
             var add = NetworkMembers.ContainsKey(user.IP);
