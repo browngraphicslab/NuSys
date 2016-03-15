@@ -146,6 +146,10 @@
     <Content Include="Assets\logos\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\logos\StoreLogo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\pen.png" />
+    <Content Include="Assets\node icons\record.png" />
+    <Content Include="Assets\node icons\text.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <Content Include="Assets\fonts\FiraSans-Book.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
