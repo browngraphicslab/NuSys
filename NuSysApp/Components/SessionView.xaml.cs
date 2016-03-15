@@ -244,18 +244,21 @@ namespace NuSysApp
                 var msg = new Message(dict);
                 msg["creatorContentID"] = collectionId;
                 var contentId = msg.GetString("contentId");
-                var type = ElementType.Workspace;
-                if (msg.ContainsKey("type"))
+
+                ElementType type;
+                if (!msg.ContainsKey("nodeType"))
                 {
-                    type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
+                    throw new Exception("all elements must have key 'nodeType'");
+                        //TODO make this just 'elementType' eventually
                 }
-                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))//kinda really shitty
+                else
                 {
-                    type = ElementType.Node;
+                    type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
                 }
-                if (type == ElementType.Node)
+
+                if (Constants.IsNode(type))
                 {
-                    if (msg.ContainsKey("nodeType") && ((ElementType)Enum.Parse(typeof(ElementType),(string)msg["nodeType"],true) == ElementType.Collection))
+                    if (type == ElementType.Collection)
                     {
                         type = ElementType.Collection;
                         SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null));
@@ -302,7 +305,7 @@ namespace NuSysApp
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
                 
-                if (type == ElementType.Node && !usedContentIDs.Contains(contentId))
+                if (!usedContentIDs.Contains(contentId))
                 {
                     Task.Run(async delegate
                     {
@@ -328,7 +331,7 @@ namespace NuSysApp
                     var dict = kvp.Value;
 
                     string title = null;
-                    ElementType type = ElementType.Document;
+                    ElementType type = ElementType.Text;
 
                     if (dict.ContainsKey("title"))
                     {
@@ -357,7 +360,8 @@ namespace NuSysApp
             {
                 var msg = new Message(dict);
                 var id = msg.GetString("id");
-                ElementType type = ElementType.Workspace;
+                ElementType type = ElementType.Collection;
+                /*
                 if (msg.ContainsKey("type"))
                 {
                     type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
@@ -372,6 +376,7 @@ namespace NuSysApp
                             new NewElementRequest(msg));
                 if (type == ElementType.Link)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
+                    */
             }
         }
 

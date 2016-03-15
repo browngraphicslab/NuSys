@@ -223,7 +223,7 @@ namespace NuSysApp
 
             var dict = new Message();
             Dictionary<string, object> metadata;
-            if (elementType == ElementType.Document || elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
+            if (elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;

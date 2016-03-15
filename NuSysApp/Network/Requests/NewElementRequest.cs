@@ -42,7 +42,7 @@ namespace NuSysApp
 
             switch (nodeType)
             {
-                case ElementType.Text: case ElementType.Node:
+                case ElementType.Text:
                     elementModel = new TextElementModel(id);
                     elementModel.ContentId = contentId;
                     controller = new TextNodeController((TextElementModel)elementModel);
@@ -79,10 +79,6 @@ namespace NuSysApp
                     elementModel = new WebNodeModel(id);
                     controller = new ElementController(elementModel);
                     break;
-                case ElementType.Workspace:
-                    elementModel = new WorkspaceModel(id);
-                    controller = new ElementController(elementModel);
-                    break;
                 case ElementType.Collection:
                     elementModel = new ElementCollectionModel(id);
                     elementModel.ContentId = contentId;
@@ -96,11 +92,11 @@ namespace NuSysApp
                 case ElementType.Area:
                     elementModel = new AreaModel(id);
                     controller = new ElementController(elementModel);
-                    break;
+                    break;/*
                 case ElementType.Library:
                     elementModel = new ElementModel(id);
                     controller = new ElementController(elementModel);
-                    break;
+                    break;*/
                 case ElementType.Link:
                     elementModel = new LinkModel(id);
                     controller = new ElementController(elementModel);

@@ -89,7 +89,7 @@ namespace NuSysApp
                                 //id, data, type, title
                                 var contentId = (string)dict["id"];
                                 string title = null;
-                                ElementType type = ElementType.Node;
+                                ElementType type = ElementType.Text;
                                 string data = dict.ContainsKey("data") ? (string)dict["data"] : null;
                                 if (dict.ContainsKey("title"))
                                 {

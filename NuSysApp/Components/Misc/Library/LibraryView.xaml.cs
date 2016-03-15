@@ -188,7 +188,6 @@ namespace NuSysApp
         //Trent, this needs to be filled in in order for the importing to the library to work.
         private async void AddFile()
         {
-            //TODO: Add code that adds local files to the library. Below is the old code that accomplished this. (Decided to separate AddFile from AddNode)
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             ElementType elementType = ElementType.Text;

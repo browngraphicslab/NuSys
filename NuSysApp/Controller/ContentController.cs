@@ -97,7 +97,7 @@ namespace NuSysApp
             {
                 var o = JsonConvert.DeserializeObject<NodeContentModel>(line);
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,ElementType.Node));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,o.Type));
                 /*
                 var request = new NewContentSystemRequest(o.Id,o.Data);//TODO not ideal
                 await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequestLocally(request);*/
