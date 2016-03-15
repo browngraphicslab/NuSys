@@ -35,6 +35,8 @@ namespace NuSysApp
         private LibraryList _libraryList;
         private LibraryGrid _libraryGrid;
         private FloatingMenuView _menu;
+        private double _graphButtonX;
+        private double _graphButtonY;
 
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
@@ -186,7 +188,7 @@ namespace NuSysApp
         //Trent, this needs to be filled in in order for the importing to the library to work.
         private async void AddFile()
         {
-
+            //TODO: Add code that adds local files to the library. Below is the old code that accomplished this. (Decided to separate AddFile from AddNode)
             
             /*
             
@@ -362,6 +364,65 @@ namespace NuSysApp
         private void Folder_Tapped(object sender, TappedRoutedEventArgs e)
         {
             this.AddFile();
+        }
+
+        private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            // find x and y coordintes of pointer, to be used in graph image manipulation
+            var view = SessionController.Instance.SessionView;
+            _graphButtonX = e.GetCurrentPoint(view).Position.X;
+            _graphButtonY = e.GetCurrentPoint(view).Position.Y;
+        }
+
+        private void Graph_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            // show draggable graph image
+            var draggedGraphImage = SessionController.Instance.SessionView.GraphImage;
+            Canvas.SetZIndex(draggedGraphImage, 3);
+            draggedGraphImage.Width = 200;
+            draggedGraphImage.Height = 200;
+
+            // set up transforms
+            draggedGraphImage.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)draggedGraphImage.RenderTransform;
+            t.TranslateX += _graphButtonX - (draggedGraphImage.Width / 2);
+            t.TranslateY += _graphButtonY - (draggedGraphImage.Height / 2);
+        }
+
+      
+
+        private void Graph_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            // moves draggable graph image based on pointer manipulation
+            var view = SessionController.Instance.SessionView;
+            var t = (CompositeTransform)view.GraphImage.RenderTransform;
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+        }
+
+        private void Graph_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            // Hid the dragged graph image/button
+            var draggedGraphImage = SessionController.Instance.SessionView.GraphImage;
+            draggedGraphImage.Width = 0;
+            draggedGraphImage.Height = 0;
+
+            // extract composite transform and add the chart/graph based on the dropped location
+            var t = (CompositeTransform)draggedGraphImage.RenderTransform;
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
+
+            // graph is added by passing in the bounding rectangle
+            this.AddGraph(r);
+            
+        }
+
+        // adds the graph/chart based on the location that the graph button was dragged to
+        private void AddGraph(Rect r)
+        {
+          
+            // TODO: add the graph/chart
+
         }
     }
 }
