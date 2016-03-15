@@ -184,6 +184,116 @@ namespace NuSysApp
         //    });
         //}
 
+
+        //Trent, this needs to be filled in in order for the importing to the library to work.
+        private async void AddFile()
+        {
+            //TODO: Add code that adds local files to the library. Below is the old code that accomplished this. (Decided to separate AddFile from AddNode)
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
+
+            ElementType elementType = ElementType.Text;
+            string data = "";
+            string title = "";
+
+            var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
+            if (storageFile == null) return;
+
+            var fileType = storageFile.FileType.ToLower();
+            title = storageFile.DisplayName;
+
+            bool validFileType = true;
+
+            if (Constants.ImageFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Image;
+                data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+            }
+            else if (Constants.WordFileTypes.Contains(fileType))
+            { 
+                elementType = ElementType.Word;
+            }
+            else if (Constants.PowerpointFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Powerpoint;
+            }
+            else if (Constants.PdfFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.PDF;
+                IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+
+                data = Convert.ToBase64String(fileBytes);
+            }
+            else if (Constants.VideoFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Video;
+                IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+
+                data = Convert.ToBase64String(fileBytes);
+            }
+            else if (Constants.AudioFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Audio;
+                IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint) stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+
+                data = Convert.ToBase64String(fileBytes);
+            }
+            else
+            {
+                validFileType = false;
+            }
+            if (validFileType)
+            {
+                var contentId = SessionController.Instance.GenerateId();
+
+                await
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                        new CreateNewLibraryElementRequest(contentId, data, elementType, title));
+                //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
+                // TOOD: refresh library
+
+                vm.ClearSelection();
+                //   vm.ClearMultiSelection();
+            }
+            else
+            {
+                Debug.WriteLine("tried to import invalid filetype");
+            }
+
+        }
         public async Task AddNode(Point pos, Size size, ElementType elementType, string contentId)
         {
             var dict = new Message();
@@ -192,7 +302,7 @@ namespace NuSysApp
             metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
             metadata["node_type"] = elementType + "Node";
-
+            
             dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
@@ -208,6 +318,11 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
             // TOOD: refresh library
+        }
+
+        private void Folder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            this.AddFile();
         }
 
         private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -266,6 +381,7 @@ namespace NuSysApp
         {
           
             // TODO: add the graph/chart
+
         }
     }
 }
