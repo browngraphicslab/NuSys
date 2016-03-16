@@ -26,16 +26,6 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
 
             AtomViewList = new ObservableCollection<FrameworkElement>();
-
-            /*//TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
-            var startingChildren = ((CollectionContentModel)(controller.ContentModel))?.Children;
-            foreach (var childId in startingChildren)
-            {
-                if (SessionController.Instance.IdToControllers.ContainsKey(childId))
-                {
-                    OnChildAdded(this, SessionController.Instance.IdToControllers[childId]);
-                }
-            }*/
         }
 
         public override void Dispose()

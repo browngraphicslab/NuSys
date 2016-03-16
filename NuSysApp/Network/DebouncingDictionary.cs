@@ -17,7 +17,7 @@ namespace NuSysApp
         private string _id;
 
         private ConcurrentDictionary<string, object> _serverDict;
-        private int _milliSecondServerSaveDelay = 1200;
+        private int _milliSecondServerSaveDelay = 800;
         private Timer _serverSaveTimer;
         public DebouncingDictionary(string id)
         {

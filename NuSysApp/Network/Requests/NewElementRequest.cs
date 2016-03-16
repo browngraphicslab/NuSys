@@ -123,6 +123,20 @@ namespace NuSysApp
             }
             //var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[creatorContentID];
             //parentController.AddChild(controller);
+
+            if (nodeType == ElementType.Collection)
+            {
+                //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
+                var startingChildren = ((CollectionContentModel) (controller.ContentModel))?.Children;
+                foreach (var childId in startingChildren)
+                {
+                    if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                    {
+                        ((ElementCollectionController) controller).AddChild(
+                            SessionController.Instance.IdToControllers[childId]);
+                    }
+                }
+            }
         }
     }
 

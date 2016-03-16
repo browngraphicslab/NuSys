@@ -56,12 +56,32 @@ namespace NuSysApp
 
         private void LoadVideo(object sender = null, object data = null)
         {
-            InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
-            var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).ContentId).Data);
-            memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
-            memoryStream.Seek(0);
-            playbackElement.SetSource(memoryStream, "video/mp4");
-            ((VideoNodeViewModel)DataContext).Controller.ContentLoaded -= LoadVideo;
+            var content = (DataContext as VideoNodeViewModel).Controller.ContentModel;
+            if (content != null)
+            {
+                InMemoryRandomAccessStream memoryStream;
+                var stream = content.ViewUtilBucket.ContainsKey("videoStream")
+                    ? (InMemoryRandomAccessStream) content.ViewUtilBucket["videoStream"]
+                    : null;
+
+                if (stream == null)
+                {
+                    memoryStream = new InMemoryRandomAccessStream();
+                    var byteArray =
+                        Convert.FromBase64String(
+                            SessionController.Instance.ContentController.Get(
+                                (((VideoNodeViewModel) DataContext).Model as VideoNodeModel).ContentId).Data);
+                    memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
+                    memoryStream.Seek(0);
+                    content.ViewUtilBucket["videoStream"] = stream;
+                }
+                else
+                {
+                    memoryStream = stream;
+                }
+                playbackElement.SetSource(memoryStream, "video/mp4");
+                ((VideoNodeViewModel) DataContext).Controller.ContentLoaded -= LoadVideo;
+            }
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
