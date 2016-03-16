@@ -25,8 +25,15 @@ namespace NuSysApp
         public delegate void BlockLeaveEventHandler(LinkedTimeBlockViewModel timeBlock);
         public event BlockHitEventHandler OnBlockLeaveEventHandler;
 
+        public double PlaybackElement 
+        {
+            get { return ((AudioNodeModel)Model).Controller.PlaybackElement.Position.TotalMilliseconds; }
+        }
+
+
         public delegate void VisualizationLoadedEventHandler();
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
+
         public AudioNodeViewModel(ElementController model) : base(model)
         {
             Width = 300;

@@ -105,6 +105,7 @@ namespace NuSysApp.Nodes.AudioNode
         public void ResizeLine1()
         {
             double x = _endRatio * _scrubBar.ActualWidth;
+            Debug.WriteLine(x);
             double y = _startRatio * _scrubBar.ActualWidth;
             Detailx1 = y + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left;
             Detailx2 = x + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left;

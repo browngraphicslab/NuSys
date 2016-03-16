@@ -229,10 +229,10 @@
     <Compile Include="Components\GroupChat\DialogBlock.xaml.cs">
       <DependentUpon>DialogBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
-    <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
-    <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
-    <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
+    <Compile Include="Components\TextEditor\InqCanvas\Gestures\Gesturizer.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\Gestures\IGesture.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\Gestures\ScribbleGesture.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Links\BezierLinkView.xaml.cs">
@@ -337,6 +337,7 @@
     <Compile Include="Controller\ElementController.cs" />
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
+    <Compile Include="Controller\MediaController.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Controller\TextNodeController.cs" />
     <Compile Include="Converters\PositionToStringConverter.cs" />
@@ -400,15 +401,15 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\UITask.cs" />
-    <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Misc\PinWindowViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Components\InqCanvas\IInqMode.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Components\TextEditor\InqCanvas\IInqMode.cs" />
     <Compile Include="Util\TextBoxExtended.cs" />
     <Compile Include="Util\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
@@ -643,7 +644,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\InqCanvas\InqCanvasView.xaml">
+    <Page Include="Components\TextEditor\InqCanvas\InqCanvasView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
