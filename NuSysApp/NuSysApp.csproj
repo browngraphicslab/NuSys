@@ -329,6 +329,7 @@
     <Compile Include="Controller\ElementController.cs" />
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
+    <Compile Include="Controller\MediaController.cs" />
     <Compile Include="Controller\SessionController.cs" />
     <Compile Include="Controller\TextNodeController.cs" />
     <Compile Include="Converters\PositionToStringConverter.cs" />
