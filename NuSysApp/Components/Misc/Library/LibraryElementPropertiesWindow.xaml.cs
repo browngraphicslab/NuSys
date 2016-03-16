@@ -83,7 +83,6 @@ namespace NuSysApp
                 itemPanel.Children.Add(title);
             }
 
-
             TextBlock WorkSpace = new TextBlock();
             WorkSpace.Text = newItem.Type.ToString();
             itemPanel.Children.Add(WorkSpace);
@@ -144,6 +143,12 @@ namespace NuSysApp
         public void setPreviewSource(BitmapImage image)
         {
             Preview.Source = image;
+        }
+
+        private void OnTitleTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var content = SessionController.Instance.ContentController.Get(ID.Text);
+            content?.SetTitle(Title.Text);
         }
     }
 }

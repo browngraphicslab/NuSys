@@ -11,7 +11,7 @@
 
     <Grid>
 
-        <ListView  x:Name="ListView"   >
+        <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True">
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="White ">
                     <Grid.ColumnDefinitions>

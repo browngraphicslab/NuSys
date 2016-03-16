@@ -52,14 +52,12 @@ namespace NuSysApp
                     _document = Document.Create(readBuffer, DocumentType.PDF, 140);
                     model.Document = _document;
                 }
-                
+
                 await Goto(CurrentPageNumber);
                 SetSize(Width, Height);
                 LaunchLDA((PdfNodeModel)this.Model);
-
             };
         }
-
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;

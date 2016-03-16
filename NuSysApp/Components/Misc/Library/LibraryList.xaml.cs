@@ -122,14 +122,6 @@ namespace NuSysApp
             ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<NodeContentModel>(elements);
         }
 
-
-        private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).Title);
-            _propertiesWindow.setType(((NodeContentModel)e.ClickedItem).Type.ToString());
-            //_propertiesWindow.Visibility = Visibility.Visible;
-        }
-
         public async Task Sort(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Sort(s);
@@ -160,6 +152,7 @@ namespace NuSysApp
             NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
             _propertiesWindow.setTitle(element.Title);
             _propertiesWindow.setType(element.Type.ToString());
+            _propertiesWindow.setID(element.Id);
             _propertiesWindow.Visibility = Visibility.Visible;
 
             var view = SessionController.Instance.SessionView;
@@ -212,6 +205,8 @@ namespace NuSysApp
             _x += e.Delta.Translation.X;
             _y += e.Delta.Translation.Y;
 
+            _propertiesWindow.Visibility = Visibility.Collapsed;
+
 
         }
 
@@ -234,6 +229,14 @@ namespace NuSysApp
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(_x - 100, _y - 100, 200, 200));
             await _library.AddNode(new Point(r.X, r.Y), new Size(r.Width, r.Height), element.Type,element.Id);
+        }
+
+        private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).Title);
+            _propertiesWindow.setType(((NodeContentModel)e.ClickedItem).Type.ToString());
+            //_propertiesWindow.Visibility = Visibility.Visible;
+           
         }
     }
 

@@ -6,13 +6,16 @@ using System.Collections.Generic;
 
 namespace NuSysApp
 {
-    public class NodeContentModel
+    public class NodeContentModel : BaseINPC
     {
         public bool Loaded { get; set; }//TODO Add a loaded event
         //TODO add in 'MakeNewController' method that creates a new controller-model pair pointing to this and returns it
 
         public delegate void ContentChangedEventHandler(ElementViewModel originalSenderViewModel = null);
         public event ContentChangedEventHandler OnContentChanged;
+
+        public delegate void TitleChangedEventHandler(string newTitle);
+        public event TitleChangedEventHandler OnTitleChanged;
 
         public ElementType Type { get; set; }
         public string Data { get; set; }
@@ -46,6 +49,20 @@ namespace NuSysApp
             OnContentChanged?.Invoke();
         }
 
+        public void SetTitle(string title)
+        {
+            Task.Run(async delegate
+            {
+                var m  = new Message();
+                m["contentId"] = Id;
+                m["title"] = title;
+                var request = new ChangeContentRequest(m);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+            Title = title;
+            RaisePropertyChanged("Title");
+            OnTitleChanged?.Invoke(title);
+        }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)
         {
             Data = data;
