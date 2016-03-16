@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -43,11 +44,36 @@ namespace NuSysApp
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
+            ((AudioNodeModel)(vm.Model)).Controller = new MediaController(playbackElement);
+            ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
+            ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
+            ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
 
 
         }
 
+        private void Controller_OnStop(MediaElement playbackElement)
+        {
+            _stopped = true;
+            play.Opacity = 1;
+            pause.Opacity = 1;
+        }
 
+        private void Controller_OnPause(MediaElement playbackElement)
+        {
+            play.Opacity = 1;
+            pause.Opacity = 0.3;
+        }
+
+        private void Controller_OnPlay(MediaElement playbackElement)
+        {
+            play.Opacity = .3;
+            pause.Opacity = 1;
+            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
+            {
+                play.Opacity = 1;
+            };
+        }
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as AudioNodeViewModel).LinkedTimeModels.Last(), playbackElement.NaturalDuration.TimeSpan, scrubBar);
@@ -59,11 +85,12 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
-            playbackElement.Stop();
             _stopped = true;
             play.Opacity = 1;
             pause.Opacity = 1;
             e.Handled = true;
+            playbackElement.Position = new TimeSpan(0);
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Stop();
 
         }
 
@@ -82,8 +109,11 @@ namespace NuSysApp
             {
                 play.Opacity = 1;
             };
-            playbackElement.Play();
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Play();
+
         }
+
+
 
 
 
@@ -106,7 +136,8 @@ namespace NuSysApp
 
             play.Opacity = 1;
             pause.Opacity = 0.3;
-            playbackElement.Pause();
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Pause();
+
 
 
         }
@@ -144,7 +175,8 @@ namespace NuSysApp
             double millliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
-            playbackElement.Position = time;
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(time);
+
         }
 
         private void ScrubBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -156,7 +188,8 @@ namespace NuSysApp
                 double seconds = playbackElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
 
                 TimeSpan time = new TimeSpan(0, 0, (int)seconds);
-                playbackElement.Position = time;
+                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(time);
+
             }
             e.Handled = true;
         }
@@ -177,14 +210,17 @@ namespace NuSysApp
             };
         }
 
-
-
         private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             foreach (var element in _timeBlocks)
             {
                 element.ResizeLine1();
             }
+        }
+
+        private void ScrubBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(playbackElement.Position);
         }
     }
 }
