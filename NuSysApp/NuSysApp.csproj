@@ -104,7 +104,9 @@
     <Content Include="Assets\icon_folder.png" />
     <Content Include="Assets\icon_ink.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
+    <Content Include="Assets\icon_pano.png" />
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
@@ -138,14 +140,8 @@
     <Content Include="Assets\icon_audionode_rewind.png" />
     <Content Include="Assets\icon_audionode_stop.png" />
     <Content Include="Assets\icon_users.png" />
-    <Content Include="Assets\logos\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\logos\SplashScreen.scale-100.png" />
-    <Content Include="Assets\logos\SplashScreen.scale-200.png" />
-    <Content Include="Assets\logos\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\logos\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\logos\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\logos\StoreLogo.png" />
-    <Content Include="Assets\logos\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\logos\icon_pano.png" />
+    <Content Include="Assets\logos\icon_upload.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <Content Include="Assets\fonts\FiraSans-Book.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
