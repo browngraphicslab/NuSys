@@ -6,16 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="1072.214"
-    d:DesignWidth="550.229">
+    d:DesignWidth="400" Height="505">
 
-    <Border x:Name="Border" Background="AliceBlue" BorderBrush="#558C89 " BorderThickness="7" CornerRadius="2" Height="200" Width="200">
+    <Border x:Name="Border" Height="500" Width="400" Background="White" BorderBrush="#00748b" BorderThickness="2" CornerRadius="2" Margin="3,1,0.333,2.333">
 
-        <Grid>
-            <Image Source="http://www.clker.com/cliparts/t/f/J/i/7/C/amazon-style-close-button-md.png" Tapped="UIElement_OnTapped" Margin="398,0,0,670" HorizontalAlignment="Left" Width="38"/>
+        <Grid Margin="-7,0,3,0">
+            <Image Source="ms-appx:///Assets/icon_node_x.png" Tapped="UIElement_OnTapped"  HorizontalAlignment="Left" Width="25" Margin="365,10,0,460"/>
             <StackPanel Padding="50" Orientation="Vertical" >
-                <Border Height="250" Width="250" BorderThickness="4" BorderBrush="#558C89 ">
-                    <Image x:Name="Preview" Height="250" Width="250" Margin="0,0,0,0" />
+                <Border Height="150" Width="150" BorderThickness="1" BorderBrush="#00748b">
+                    <Image x:Name="Preview" Height="150" Width="150" Margin="0,0,0,0" />
                 </Border>
 
 
@@ -40,7 +39,7 @@
                     </ListView.Header>-->
 
                 <Rectangle Height="30"></Rectangle>
-                <Grid x:Name="PropertiesGrid" VerticalAlignment="Center" Padding="0" Margin="0" Background="AliceBlue">
+                <Grid x:Name="PropertiesGrid" VerticalAlignment="Center" Padding="0" Margin="0" Background="White">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
                         <ColumnDefinition Width="200" />
@@ -55,22 +54,22 @@
                     </Grid.RowDefinitions>
 
 
-                    <TextBlock  Grid.Column="0" Grid.Row="0" Text="Title" FontSize="16" Foreground="#558C89"/>
-                    <TextBlock  x:Name="Title" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" Foreground="#62bcd5"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="1" Text="Type" FontSize="16" Foreground="#558C89"/>
-                    <TextBlock  x:Name="Type" Grid.Column="1" Grid.Row="1" Text="--" FontSize="16" Foreground="#62bcd5"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="2" Text="ID" FontSize="16" Foreground="#558C89"/>
-                    <TextBlock  x:Name="ID" Grid.Column="1" Grid.Row="2" Text="--" FontSize="16" Foreground="#62bcd5"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="3" Text="Creator" FontSize="16" Foreground="#558C89"/>
-                    <TextBlock  x:Name="Creator" Grid.Column="1" Grid.Row="3" Text="--" FontSize="16" Foreground="#62bcd5"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="4" Text="Last Edited" FontSize="16" Foreground="#558C89"/>
-                    <TextBlock  x:Name="LastEdited" Grid.Column="1" Grid.Row="4" Text="--" FontSize="16" Foreground="#62bcd5"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="5" Text="History" FontSize="16" Foreground="#558C89"/>
-                    <TextBlock  x:Name="History" Grid.Column="1" Grid.Row="5" Text="--" FontSize="16" Foreground="#62bcd5"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="0" Text="Title" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="Title" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="1" Text="Type" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="Type" Grid.Column="1" Grid.Row="1" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="2" Text="ID" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="ID" Grid.Column="1" Grid.Row="2" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="3" Text="Creator" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="Creator" Grid.Column="1" Grid.Row="3" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="4" Text="Last Edited" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="LastEdited" Grid.Column="1" Grid.Row="4" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="5" Text="History" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="History" Grid.Column="1" Grid.Row="5" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
 
                 </Grid>
                 <Rectangle Height="30"></Rectangle>
-                <TextBlock Text="Aliases" Foreground="#558C89"></TextBlock>
+                <TextBlock Text="Aliases" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"></TextBlock>
                 <Rectangle Height="20"></Rectangle>
                 <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
@@ -103,3 +102,4 @@
         </Grid>
     </Border>
 </UserControl>
+

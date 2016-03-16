@@ -150,11 +150,15 @@ namespace NuSysApp
             //btnLibrary.ManipulationStarted += BtnAddNodeOnManipulationStarted;
             //btnLibrary.ManipulationDelta += BtnAddNodeOnManipulationDelta;
             //btnLibrary.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
-
-            _lib = new LibraryView(new LibraryBucketViewModel(), new LibraryElementPropertiesWindow(), this);
+            LibraryElementPropertiesWindow libProp = new LibraryElementPropertiesWindow();
+            _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
+            xWrapper.Children.Add(libProp);
+            libProp.Visibility = Visibility.Collapsed;
             Canvas.SetLeft(_lib, 100);
             Canvas.SetTop(_lib, 110);
+            Canvas.SetLeft(libProp, 545);
+            Canvas.SetTop(libProp, 160);
         }
 
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
