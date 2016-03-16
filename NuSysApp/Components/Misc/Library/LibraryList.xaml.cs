@@ -13,6 +13,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -27,12 +28,20 @@ namespace NuSysApp
 {
     public sealed partial class LibraryList : UserControl, LibraryViewable
     {
-        public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
-        public event LibraryElementDragEventHandler OnLibraryElementDrag;
+        //public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
+        //public event LibraryElementDragEventHandler OnLibraryElementDrag;
         private LibraryElementPropertiesWindow _propertiesWindow;
+
+        private double _x;
+
+        private double _y;
+
+        private CompositeTransform _ct;
+        private LibraryView _library;
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
+            ListView.ItemsSource = new ObservableCollection<NodeContentModel>();
             this.DataContext = vm;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -41,17 +50,22 @@ namespace NuSysApp
                 ((LibraryBucketViewModel)library.DataContext).OnNewElementAvailable += AddNewElement;
             };
             _propertiesWindow = propertiesWindow;
-            //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1);
+            _library = library;
+            //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
+            
         }
 
-        public ObservableCollection<LibraryElement> GetItems()
+        public ObservableCollection<NodeContentModel> GetItems()
         {
-            return (ObservableCollection<LibraryElement>)ListView.ItemsSource;
+            return (ObservableCollection<NodeContentModel>)ListView.ItemsSource;
         }
-        private void AddNewElement(LibraryElement element)
+        private void AddNewElement(NodeContentModel element)
         {
-            //_items = new ObservableCollection<LibraryElement>((IEnumerable<LibraryElement>) ListView.ItemsSource);
-            ((ObservableCollection<LibraryElement>)ListView.ItemsSource).Add(element);
+            //_items = new ObservableCollection<NodeContentModel>((IEnumerable<NodeContentModel>) ListView.ItemsSource);
+            UITask.Run(delegate
+            {
+                ((ObservableCollection<NodeContentModel>) ListView.ItemsSource).Add(element);
+            });
         }
 
 
@@ -102,39 +116,18 @@ namespace NuSysApp
         //}
 
 
-        public void SetItems(ICollection<LibraryElement> elements)
+        public void SetItems(ICollection<NodeContentModel> elements)
         {
-            ListView.ItemsSource = new ObservableCollection<LibraryElement>(elements);
-            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<LibraryElement>(elements);
+            ListView.ItemsSource = new ObservableCollection<NodeContentModel>(elements);
+            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<NodeContentModel>(elements);
         }
 
-
-        private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
-        {
-             OnLibraryElementDrag?.Invoke(sender,e);
-            /*
-            var element = (LibraryElement) e.Items[0];
-            e.Cancel = true;
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
-            rect.Width = 200;
-            rect.Height = 200;
-            view.ManipulationDelta += DraggingElementManipulation;
-            */
-        }
-
-        private void DraggingElementManipulation(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
-        {
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
-            //Canvas.SetTop();
-        }
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.setTitle(((LibraryElement)e.ClickedItem).Title);
-            _propertiesWindow.setType(((LibraryElement)e.ClickedItem).ElementType.ToString());
-            _propertiesWindow.Visibility = Visibility.Visible;
+            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).Title);
+            _propertiesWindow.setType(((NodeContentModel)e.ClickedItem).Type.ToString());
+            //_propertiesWindow.Visibility = Visibility.Visible;
         }
 
         public async Task Sort(string s)
@@ -153,5 +146,97 @@ namespace NuSysApp
         {
             this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
+
+        private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+            _x = e.GetCurrentPoint(view).Position.X;
+            _y = e.GetCurrentPoint(view).Position.Y;
+
+        }
+        private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+
+            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            _propertiesWindow.setTitle(element.Title);
+            _propertiesWindow.setType(element.Type.ToString());
+            _propertiesWindow.Visibility = Visibility.Visible;
+
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+
+        }
+
+        private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            {
+                e.Handled = true;
+                return;
+            }
+
+
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+            Canvas.SetZIndex(rect, 3);
+            rect.Width = 200;
+            rect.Height = 200;
+            rect.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)rect.RenderTransform;
+
+
+            t.TranslateX += _x - (rect.Width / 2);
+            t.TranslateY += _y - (rect.Height / 2);
+           
+        }
+
+
+        private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+
+            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+            var t = (CompositeTransform)rect.RenderTransform;
+
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+
+            _x += e.Delta.Translation.X;
+            _y += e.Delta.Translation.Y;
+
+
+        }
+
+        private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            rect.Width = 0;
+            rect.Height = 0;
+
+
+            var t = (CompositeTransform)rect.RenderTransform;
+
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(_x - 100, _y - 100, 200, 200));
+            await _library.AddNode(new Point(r.X, r.Y), new Size(r.Width, r.Height), element.Type,element.Id);
+        }
     }
+
 }
+
+  

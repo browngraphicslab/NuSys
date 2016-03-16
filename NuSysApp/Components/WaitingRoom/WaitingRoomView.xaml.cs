@@ -34,7 +34,7 @@ namespace NuSysApp
         public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-
+        public static bool TEST_LOCAL_BOOLEAN = false;
         private static IEnumerable<string> _firstLoadList;
         public WaitingRoomView()
         {
@@ -44,8 +44,8 @@ namespace NuSysApp
             
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
-            //ServerName = "localhost:54764";
-            ServerName = "nusysrepo.azurewebsites.net";
+            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
             {
@@ -62,7 +62,7 @@ namespace NuSysApp
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var url = "https://" + ServerName + "/api/getworkspace";
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace";
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
                 string data;
@@ -106,7 +106,7 @@ namespace NuSysApp
             {
                 var item = List.SelectedItems.First();
                 var id = ((CollectionTextBox) item).ID;
-                var url = "https://" + ServerName + "/api/getworkspace/"+id;
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace/"+id;
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
                 string data;
@@ -141,7 +141,7 @@ namespace NuSysApp
                 cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Text));
                 
-                var url = "https://" + ServerName + "/api/login/" ;
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/" ;
                 var client = new HttpClient(
                  new HttpClientHandler
                  {

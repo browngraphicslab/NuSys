@@ -265,6 +265,14 @@
           "lib/uap10.0/MyToolkit.Extended.dll": {}
         }
       },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
       "Newtonsoft.Json/8.0.1": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
@@ -2051,6 +2059,14 @@
         },
         "runtime": {
           "lib/uap10.0/MyToolkit.Extended.dll": {}
+        }
+      },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
         }
       },
       "Newtonsoft.Json/8.0.1": {
@@ -3893,6 +3909,14 @@
         },
         "runtime": {
           "lib/uap10.0/MyToolkit.Extended.dll": {}
+        }
+      },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
         }
       },
       "Newtonsoft.Json/8.0.1": {
@@ -5742,6 +5766,14 @@
           "lib/uap10.0/MyToolkit.Extended.dll": {}
         }
       },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
       "Newtonsoft.Json/8.0.1": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
@@ -7582,6 +7614,14 @@
         },
         "runtime": {
           "lib/uap10.0/MyToolkit.Extended.dll": {}
+        }
+      },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
         }
       },
       "Newtonsoft.Json/8.0.1": {
@@ -9431,6 +9471,14 @@
           "lib/uap10.0/MyToolkit.Extended.dll": {}
         }
       },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
       "Newtonsoft.Json/8.0.1": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
@@ -11273,6 +11321,14 @@
           "lib/uap10.0/MyToolkit.Extended.dll": {}
         }
       },
+      "NAudio/1.7.3": {
+        "compile": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        },
+        "runtime": {
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
       "Newtonsoft.Json/8.0.1": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
@@ -12901,7 +12957,7 @@
       ]
     },
     "Microsoft.ApplicationInsights.WindowsApps/1.0.0": {
-      "sha512": "NvBQnFeiFd0O1QdBz06UGApD7zn7ztVi7qO18IsM3EjiXRNgfrEBXB+azNm8XqLY8xGFAqh3HAuSd/wHZMe0XA==",
+      "sha512": "fNCAjIwvbTV+G0dT14bgM5tptsqeSaKQaCrlq7QknOq1Xdm8ZmgsDYddMgXkvykyKLjWyU6fKuOpj6fsQJy+wQ==",
       "type": "Package",
       "files": [
         "_rels/.rels",
@@ -13632,6 +13688,22 @@
         "lib/wp80/MyToolkit.Extended.dll",
         "lib/wp80/MyToolkit.Extended.xml",
         "package/services/metadata/core-properties/94bab407c82c426ab76781a5e97e8929.psmdcp",
+        "[Content_Types].xml"
+      ]
+    },
+    "NAudio/1.7.3": {
+      "sha512": "RfjCKqewCJ7OhVRqkVgiJv5ByPzPk5YWElyC7jLqcV2a9777HDGU00kmVzoMV9gbcNiTJn9ijVrTAgq4GeQP2w==",
+      "type": "Package",
+      "files": [
+        "_rels/.rels",
+        "NAudio.nuspec",
+        "lib/net35/NAudio.dll",
+        "lib/net35/NAudio.XML",
+        "lib/windows8/NAudio.Win8.dll",
+        "lib/windows8/NAudio.Win8.XML",
+        "license.txt",
+        "readme.txt",
+        "package/services/metadata/core-properties/b8fe86bb57934d148611287e4eba158c.psmdcp",
         "[Content_Types].xml"
       ]
     },
@@ -16635,6 +16707,7 @@
       "Microsoft.AspNet.SignalR.JS >= 2.2.0",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
       "MyToolkit.Extended >= 2.5.9",
+      "NAudio >= 1.7.3",
       "Newtonsoft.Json >= 8.0.1",
       "SharpDX >= 3.0.1",
       "SharpDX.Direct2D1 >= 3.0.1",

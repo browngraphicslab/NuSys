@@ -8,7 +8,6 @@
     xmlns:local="using:NuSysApp">
     <converters:SelectionToColorConverter x:Key="sConverter" />
     <converters:BoolToVisibilityConverter x:Key="vConverter" />
-    <converters:EnumToBoolConverter x:Key="eConverter" />
     <Style TargetType="local:NodeTemplate">
         <Setter Property="Template">
             <Setter.Value>

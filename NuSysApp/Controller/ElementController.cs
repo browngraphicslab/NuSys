@@ -30,8 +30,6 @@ namespace NuSysApp
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
-        public delegate void CanEditChangedEventHandler(object source, EditStatus status);
-
         public delegate void ContentLoadedHandler(object source, NodeContentModel data);
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
@@ -47,17 +45,12 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public event TitleChangedHandler TitleChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event CanEditChangedEventHandler CanEditChange;
-
-        private EditStatus _editStatus;
 
         public ElementController(ElementModel model)
         {
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
-            _editStatus = EditStatus.Maybe;
         }
-
         public virtual async Task FireContentLoaded(NodeContentModel content)
         {
             ContentLoaded?.Invoke(this, content);
@@ -74,7 +67,7 @@ namespace NuSysApp
             LinkedAdded?.Invoke(this, linkController);
         }
 
-    public void SetScale(double sx, double sy)
+        public void SetScale(double sx, double sy)
         {
             Model.ScaleX = sx;
             Model.ScaleY = sy;
@@ -87,6 +80,10 @@ namespace NuSysApp
 
         public void SetSize(double width, double height)
         {
+            if (width < 5 || height < 5)
+            {
+                return;
+            }
             Model.Width = width;
             Model.Height = height;
 
@@ -207,24 +204,20 @@ namespace NuSysApp
             }
          }
 
-
-        public EditStatus CanEdit
-        {
-            get { return _editStatus; }
-            set
-            {
-                if (_editStatus == value)
-                {
-                    return;
-                }
-                _editStatus = value;
-                CanEditChange?.Invoke(this, CanEdit);
-            }
-        }
-
         public ElementModel Model
         {
             get { return _model; }
+        }
+        public NodeContentModel ContentModel
+        {
+            get
+            {
+                if (Model.ContentId != null && SessionController.Instance.ContentController.Get(Model.ContentId) != null)
+                {
+                    return SessionController.Instance.ContentController.Get(Model.ContentId);
+                }
+                return null;
+            }
         }
 
         public virtual async Task UnPack(Message props)
@@ -232,8 +225,11 @@ namespace NuSysApp
             if (props.ContainsKey("data"))
             {
                 var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
-                content.Data = props.GetString("data", "");
-                ContentChanged?.Invoke(this, content);
+                if (content != null)
+                {
+                    content.Data = props.GetString("data", "");
+                    ContentChanged?.Invoke(this, content);
+                }
             }
             if (props.ContainsKey("x") || props.ContainsKey("y"))
             {

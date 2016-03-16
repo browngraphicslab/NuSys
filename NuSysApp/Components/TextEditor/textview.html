@@ -9,16 +9,19 @@
     <script src="app.js"></script>
 </head>
 <body>
-    <script type="text/javascript" language="javascript">
-      // Updates text in text node as it is added/edited in Text Editor
-        function InsertText(text) {
-            document.getElementById("editor").innerHTML = text;
-        }
+<script type="text/javascript" language="javascript">
+    // Updates text in text node as it is added/edited in Text Editor
+    function InsertText(text) {
+        document.getElementById("editor").innerHTML = text;
+    }
 
-    </script>
-    <div id="editor">
-        Hello!
-    </div>
-    <div id="preview"></div>
+    this.addEventListener("keyup", function() {
+        window.external.notify(document.getElementById("editor").innerHTML);
+    });
+</script>
+<div id="editor">
+    Hello!
+</div>
+<div id="preview"></div>
 </body>
 </html>

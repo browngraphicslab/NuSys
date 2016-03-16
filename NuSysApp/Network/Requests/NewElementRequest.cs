@@ -44,7 +44,13 @@ namespace NuSysApp
             {
                 case ElementType.Text:
                     elementModel = new TextElementModel(id);
-                    controller = new ElementController(elementModel);
+                    elementModel.ContentId = contentId;
+                    if (SessionController.Instance.ContentController.Get(contentId) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId,
+                            ElementType.Text, elementModel.Title));
+                    }
+                    controller = new TextNodeController((TextElementModel)elementModel);
                     break;
                 case ElementType.Image:
                     elementModel = new ImageElementModel(id);
@@ -78,10 +84,6 @@ namespace NuSysApp
                     elementModel = new WebNodeModel(id);
                     controller = new ElementController(elementModel);
                     break;
-                case ElementType.Workspace:
-                    elementModel = new WorkspaceModel(id);
-                    controller = new ElementController(elementModel);
-                    break;
                 case ElementType.Collection:
                     elementModel = new ElementCollectionModel(id);
                     elementModel.ContentId = contentId;
@@ -95,11 +97,11 @@ namespace NuSysApp
                 case ElementType.Area:
                     elementModel = new AreaModel(id);
                     controller = new ElementController(elementModel);
-                    break;
+                    break;/*
                 case ElementType.Library:
                     elementModel = new ElementModel(id);
                     controller = new ElementController(elementModel);
-                    break;
+                    break;*/
                 case ElementType.Link:
                     elementModel = new LinkModel(id);
                     controller = new ElementController(elementModel);
@@ -114,8 +116,27 @@ namespace NuSysApp
 
             var content = (CollectionContentModel)SessionController.Instance.ContentController.Get(creatorContentID);
             content.AddChild(controller.Model.Id);
+
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(content.Id))
+            {
+                controller.FireContentLoaded(content);
+            }
             //var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[creatorContentID];
             //parentController.AddChild(controller);
+
+            if (nodeType == ElementType.Collection)
+            {
+                //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
+                var startingChildren = ((CollectionContentModel) (controller.ContentModel))?.Children;
+                foreach (var childId in startingChildren)
+                {
+                    if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                    {
+                        ((ElementCollectionController) controller).AddChild(
+                            SessionController.Instance.IdToControllers[childId]);
+                    }
+                }
+            }
         }
     }
 

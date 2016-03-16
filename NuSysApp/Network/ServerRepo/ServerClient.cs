@@ -20,8 +20,6 @@ namespace NuSysApp
     {
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
-        private ManualResetEvent _manualResetEvent;
-        private bool _waiting = false;
 
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
@@ -38,13 +36,11 @@ namespace NuSysApp
             _socket.MessageReceived += MessageRecieved;
             _socket.Closed += SocketClosed;
             _dataMessageWriter = new DataWriter(_socket.OutputStream);
-            _manualResetEvent = new ManualResetEvent(false);
         }
 
         public async Task Init()
         {
             ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
-            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var credentials = GetUserCredentials();
             var uri = GetUri("values/"+credentials, true);
             await _socket.ConnectAsync(uri);
@@ -56,7 +52,8 @@ namespace NuSysApp
         }
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
-            var firstpart = useWebSocket ? "wss" : "https";
+            var firstpart = useWebSocket ? "ws" : "http";
+            firstpart += WaitingRoomView.TEST_LOCAL_BOOLEAN ? "" : "s";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
@@ -83,12 +80,27 @@ namespace NuSysApp
                     if (dict.ContainsKey("server_indication_from_server"))
                     {
                         if (dict.ContainsKey("notification_type") &&
-                            (string) dict["notification_type"] == "content_available")
+                            (string)dict["notification_type"] == "content_available")
                         {
                             if (dict.ContainsKey("id"))
                             {
                                 var id = dict["id"];
-                                LibraryElement element = new LibraryElement(dict);
+
+                                //id, data, type, title
+                                var contentId = (string)dict["id"];
+                                string title = null;
+                                ElementType type = ElementType.Text;
+                                string data = dict.ContainsKey("data") ? (string)dict["data"] : null;
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"];
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                }
+
+                                NodeContentModel element = new NodeContentModel(data,contentId,type,title);
                                 UITask.Run(delegate
                                 {
 
@@ -96,9 +108,12 @@ namespace NuSysApp
                                     //                    SessionController.Instance.Library.AddNewElement(element);
                                     //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
                                 });
-                                await GetContent((string) id);
+                                Task.Run(async delegate {
+                                    await GetContent((string)id);
+                                });
                             }
                         }
+
                     }
                     else
                     {
@@ -130,6 +145,7 @@ namespace NuSysApp
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
                     var contentData = (string)dict["data"] ?? "";
+
                     var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
                     var contentType = dict.ContainsKey("type")
                         ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
@@ -144,14 +160,30 @@ namespace NuSysApp
                     {
                         content = new NodeContentModel(contentData, contentId, contentType, contentTitle);
                     }
-                    if (SessionController.Instance.ContentController.Get(contentId) == null)
+
+                    var cc = SessionController.Instance.ContentController;
+                    if (cc.Get(contentId) != null)
                     {
-                        SessionController.Instance.ContentController.Add(content);
+                        cc.Get(contentId).Data = contentData;
+                        cc.Get(contentId).Loaded = true;
+                        cc.Get(contentId).FireContentChanged();
+                        /*
+                        if (cc.ContainsAndLoaded(contentId))
+                        {
+                            cc.Get(contentId).Data = contentData;
+                        }
+                        else
+                        {
+                            cc.Get(contentId).Data = contentData;
+                            cc.Get(contentId).Loaded = true;
+                            cc.Get(contentId).FireContentChanged();
+                        }*/
                     }
                     else
                     {
-                        SessionController.Instance.ContentController.OverWrite(content);//TODO do we want this?
+                        SessionController.Instance.ContentController.Add(content);
                     }
+
                     if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
                     {
                         foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])

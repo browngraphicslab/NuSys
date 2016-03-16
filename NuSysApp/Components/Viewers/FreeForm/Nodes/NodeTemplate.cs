@@ -99,6 +99,7 @@ namespace NuSysApp
                 titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
+                vm.Controller.SetTitle(title.Text);
             };
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
@@ -144,7 +145,12 @@ namespace NuSysApp
             var vm = (ElementViewModel)this.DataContext;
 
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            vm.Controller.SetSize(vm.Model.Width + e.Delta.Translation.X / zoom, vm.Model.Height + e.Delta.Translation.Y / zoom);
+            var resizeX = vm.Model.Width + e.Delta.Translation.X/zoom;
+            var resizeY = vm.Model.Height + e.Delta.Translation.Y/zoom;
+            if (resizeY > 0 && resizeX > 0)
+            {
+            vm.Controller.SetSize(resizeX,resizeY);
+            }
          //   inkCanvas.Width = vm.Width;
          //   inkCanvas.Height = vm.Height;
             e.Handled = true; 

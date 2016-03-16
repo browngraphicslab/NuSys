@@ -28,7 +28,7 @@ namespace NuSysApp
 
         public WorkspaceModel(string id ) : base(id)
         {
-            ElementType = ElementType.Workspace;
+            ElementType = ElementType.Collection;
             Zoom = 1;
             LocationX = -Constants.MaxCanvasSize/2.0;
             LocationY= -Constants.MaxCanvasSize/ 2.0;

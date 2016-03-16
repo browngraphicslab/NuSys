@@ -26,8 +26,8 @@ namespace NuSysApp
     {
         private readonly FreeFormViewerViewModel _freeFormViewerViewModel;
         private CompositeTransform _inkScale;
-        private MuPDFWinRT.Document _document;
         public int CurrentPageNumber { get;  private set; }
+        public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
 
@@ -37,6 +37,7 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
+
 
             controller.ContentLoaded += async delegate (object source, NodeContentModel content)
             {
@@ -49,6 +50,7 @@ namespace NuSysApp
                     uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
                     IBuffer readBuffer = dataReader.ReadBuffer(u);
                     _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+                    model.Document = _document;
                 }
                 
                 await Goto(CurrentPageNumber);
@@ -77,6 +79,8 @@ namespace NuSysApp
 
         public async Task Goto(int pageNumber)
         {
+            if (_document == null)
+                return;
             if (pageNumber == -1) return;
             if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
@@ -156,6 +160,18 @@ namespace NuSysApp
 
             RaisePropertyChanged("Tags");
 
+        }
+
+        public MuPDFWinRT.Document Document
+        {
+            get
+            {
+                return this._document;
+            }
+            set
+            {
+               this. _document = value;
+            }
         }
 
         public WriteableBitmap ImageSource

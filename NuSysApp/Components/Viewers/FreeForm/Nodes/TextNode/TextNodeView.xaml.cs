@@ -39,16 +39,43 @@ namespace NuSysApp
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
 
-
+            /*
             var contentId = (vm.Model as ElementModel).ContentId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
             {
-                UpdateText(content.Data);
-            }
-            (vm.Model as TextElementModel).TextChanged += delegate (object source, string text)
+                if (content.Loaded)
+                {
+                    UpdateText(content.Data);
+                }
+                else
+                {
+                    content.OnContentChanged += delegate
+                    {
+                        UpdateText(content.Data);
+                    };
+                }
+            }*/
+            var navigated = false;
+
+            TextNodeWebView.NavigationCompleted += delegate
             {
-                UpdateText(text);
+                navigated = true;
+            };
+
+            (vm as TextNodeViewModel).TextBindingChanged += delegate(object source, string text)
+            {
+                if (navigated)
+                {
+                    UpdateText(text);
+                }
+                else
+                {
+                    TextNodeWebView.NavigationCompleted += delegate
+                    {
+                        UpdateText(text);
+                    };
+                }
             };
 
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
@@ -57,7 +84,9 @@ namespace NuSysApp
             var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;
             rr.Children.Add(inqView);
-            
+
+            TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
+
             vm.Controller.ContentChanged += delegate(object source, NodeContentModel data)
             {
                 if (xMediaRecotder.Visibility == Visibility.Collapsed)
@@ -95,7 +124,7 @@ namespace NuSysApp
 
         private async void UpdateText(String str)
         {
-            if (str != "")
+            if (!string.IsNullOrEmpty(str))
             {
                 String[] myString = { str };
                 IEnumerable<String> s = myString;
@@ -125,6 +154,18 @@ namespace NuSysApp
                 FlipClose.Begin();
             }
             _isopen = !_isopen;
+        }
+
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found in e.Value
+            string data = e.Value;
+            if (data != "")
+            {
+                var vm = DataContext as ElementViewModel;
+                var controller = (TextNodeController)vm.Controller;
+                controller.ContentModel?.SetContentData(vm,data);
+            }
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)

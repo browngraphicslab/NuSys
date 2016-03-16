@@ -18,23 +18,26 @@ namespace NuSysApp
             var contentModel = SessionController.Instance.ContentController.Get(model.ContentId);
             if (contentModel != null)
             {
-                ((CollectionContentModel)contentModel).OnChildAdded += delegate(string id)
-                {
-                    if (SessionController.Instance.IdToControllers.ContainsKey(id))
-                    {
-                        AddChild(SessionController.Instance.IdToControllers[id]);
-                    }
-                };
-                ((CollectionContentModel)contentModel).OnChildRemoved += delegate (string id)
-                {
-                    if (SessionController.Instance.IdToControllers.ContainsKey(id))
-                    {
-                        RemoveChild(SessionController.Instance.IdToControllers[id]);
-                    }
-                };
+                ((CollectionContentModel) contentModel).OnChildAdded += AddChildById;
+                ((CollectionContentModel) contentModel).OnChildRemoved += RemoveChildById;
             }
         }
 
+        private void AddChildById(string id)
+        {
+            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            {
+                AddChild(SessionController.Instance.IdToControllers[id]);
+            }
+        }
+
+        private void RemoveChildById(string id)
+        {
+            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            {
+                RemoveChild(SessionController.Instance.IdToControllers[id]);
+            }
+        }
         public void AddChild( ElementController child )
         {
             ChildAdded?.Invoke(this, child);
