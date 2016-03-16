@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Image x:Name="VisualizationImage" Height ="100"  Stretch="Fill" Grid.Row ="0" Margin="10,10,10,10"></Image>
-        <ProgressBar x:Name ="scrubBar" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}" PointerReleased="ScrubBar_OnPointerReleased" ValueChanged="ScrubBar_OnValueChanged" Grid.Row="0" Margin="10,10,10,10" Value = "{Binding ElementName=_playbackElement, Path=Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
+        <ProgressBar x:Name ="scrubBar" Height ="100" PointerReleased="ScrubBar_OnPointerReleased" ValueChanged="ScrubBar_OnValueChanged" Grid.Row="0" Margin="10,10,10,10" Value = "{Binding ElementName=_playbackElement, Path=Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
         <Grid Grid.Row="1" HorizontalAlignment="Left">
             <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class ElementModel : Sendable
+    public abstract class ElementModel : Sendable
     {       
         private double _alpha = 1;
         private SolidColorBrush _color;
@@ -26,8 +26,6 @@ namespace NuSysApp
 
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
-
-            ElementType = ElementType.Node;
             InqCanvas = new InqCanvasModel(id);
         }
 

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SQLite.Net.Attributes;
+
+﻿using System;
+using System.Collections.Generic;
+﻿using System.Threading.Tasks;
+﻿using SQLite.Net.Attributes;
 
 namespace NuSysApp
 {
@@ -12,16 +14,35 @@ namespace NuSysApp
         public delegate void ContentChangedEventHandler(ElementViewModel originalSenderViewModel = null);
         public event ContentChangedEventHandler OnContentChanged;
 
+        public ElementType Type { get; set; }
+        public string Data { get; set; }
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public string TimeStamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
+
+        public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>(); 
         public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
         {
             Data = data;
             Id = id;
-            ContentName = contentName;
+            Title = contentName;
             Type = elementType;
             Loaded = data != null;
         }
+
+        public bool InSearch(string s)
+        {
+            var title = Title?.ToLower() ?? "";
+            var type = Type.ToString().ToLower();
+            if (title.Contains(s) || type.Contains(s))
+            {
+                return true;
+            }
+            return false;
+        }
         public void FireContentChanged()
         {
+            ViewUtilBucket = new Dictionary<string, object>();
             OnContentChanged?.Invoke();
         }
 
@@ -33,14 +54,8 @@ namespace NuSysApp
             {
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(Id,data));
             });
-
+            ViewUtilBucket = new Dictionary<string, object>();
             OnContentChanged?.Invoke(originalSenderViewModel);
         }
-
-        public ElementType Type { get; set; }
-        public string Data { get; set; }
-        public string Id { get; set; }
-        public string ContentName { get; set; }
-
     }
 }

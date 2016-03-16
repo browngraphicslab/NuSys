@@ -31,11 +31,9 @@ namespace NuSysApp
         private bool _addTimeBlockMode;
         private Line _temporaryLinkVisual;
         private List<LinkedTimeBlockViewModel> _timeBlocks;
-        private MediaElement _playbackElement ;
 
         public AudioDetailView(AudioNodeViewModel vm)
         {
-            _playbackElement = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement;
             this.DataContext = vm;
             this.InitializeComponent();
             _loaded = false;
@@ -47,6 +45,8 @@ namespace NuSysApp
             ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
             ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
             ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
+            scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            
 
             grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
             RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
@@ -59,9 +59,14 @@ namespace NuSysApp
             _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
             _temporaryLinkVisual.Opacity = 1;
 
+            
+
+
+        }
+
+        private void ScrubBarOnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
             this.AddAllLinksVisually();
-
-
         }
 
         private void Controller_OnStop1(MediaElement playbackElement)
@@ -96,9 +101,12 @@ namespace NuSysApp
 
         public async void CheckBlocksForHit(double value)
         {
+            double time = value/scrubBar.Maximum*
+                          ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement
+                              .NaturalDuration.TimeSpan.TotalMilliseconds;
             foreach (var block in _timeBlocks)
             {
-                if ((value >= block.StartTime && value <= block.EndTime) || (value <= block.StartTime && value >= block.EndTime))
+                if ((time >= block.StartTime && time <= block.EndTime) || (time <= block.StartTime && time >= block.EndTime))
                 {
                     if (block.OnBlock == false)
                     {
@@ -237,7 +245,7 @@ namespace NuSysApp
 
         private void ScrubBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            CheckBlocksForHit(((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.Position.TotalMilliseconds);
+            CheckBlocksForHit(scrubBar.Value);
 
         }
 

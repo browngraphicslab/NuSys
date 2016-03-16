@@ -238,7 +238,6 @@
       <DependentUpon>LineLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryBucketViewModel.cs" />
-    <Compile Include="Components\Misc\Library\LibraryElement.cs" />
     <Compile Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml.cs">
       <DependentUpon>LibraryElementPropertiesWindow.xaml</DependentUpon>
     </Compile>

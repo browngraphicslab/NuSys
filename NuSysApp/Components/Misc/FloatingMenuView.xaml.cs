@@ -58,6 +58,7 @@ namespace NuSysApp
         private FreeFormViewer _freeFormViewer;
         private FrameworkElement _dragItem;
         private ElementType _elementType;
+        private LibraryView _lib;
 
         /// <summary>
         /// Maps all buttons to its corresponding enum entry.
@@ -144,15 +145,30 @@ namespace NuSysApp
             btnAddNode.ManipulationDelta += BtnAddNodeOnManipulationDelta;
             btnAddNode.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
 
-            btnLibrary.ManipulationStarting += BtnAddNodeOnManipulationStarting;
-            btnLibrary.ManipulationStarted += BtnAddNodeOnManipulationStarted;
-            btnLibrary.ManipulationDelta += BtnAddNodeOnManipulationDelta;
-            btnLibrary.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
+            btnLibrary.Tapped += BtnLibrary_Tapped;
+            //btnLibrary.ManipulationStarting += BtnAddNodeOnManipulationStarting;
+            //btnLibrary.ManipulationStarted += BtnAddNodeOnManipulationStarted;
+            //btnLibrary.ManipulationDelta += BtnAddNodeOnManipulationDelta;
+            //btnLibrary.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
 
-            var lib =  new LibraryView(new LibraryBucketViewModel(), new LibraryElementPropertiesWindow());
-            Canvas.SetLeft(lib, 100);
-            Canvas.SetTop(lib, 100);
-            xWrapper.Children.Add(lib);
+            _lib = new LibraryView(new LibraryBucketViewModel(), new LibraryElementPropertiesWindow(), this);
+            xWrapper.Children.Add(_lib);
+            Canvas.SetLeft(_lib, 100);
+            Canvas.SetTop(_lib, 110);
+        }
+
+        private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (_lib.Visibility == Visibility.Visible)
+            {
+                _lib.Visibility = Visibility.Collapsed;
+                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_media.png";
+            }
+            else
+            {
+                _lib.Visibility = Visibility.Visible;
+                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_collapse.png";
+            }
         }
 
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
@@ -200,14 +216,14 @@ namespace NuSysApp
             xWrapper.Children.Add(_dragItem);
         }
 
-        private async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
+        public async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
             var p = pos;
 
             var dict = new Message();
             Dictionary<string, object> metadata;
-            if (elementType == ElementType.Document || elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
+            if (elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
@@ -341,6 +357,7 @@ namespace NuSysApp
             //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
             // TOOD: refresh library
+            _lib.UpdateList();
 
             vm.ClearSelection();
             //   vm.ClearMultiSelection();

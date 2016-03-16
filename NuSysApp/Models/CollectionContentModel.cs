@@ -41,5 +41,6 @@ namespace NuSysApp
             }
             return false;
         }
+        public HashSet<string> Children { get { return _children; } }
     }
 }

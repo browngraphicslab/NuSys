@@ -48,8 +48,6 @@ namespace NuSysApp
             ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
             ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
             ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
-
-
         }
 
         private void Controller_OnStop(MediaElement playbackElement)
@@ -195,6 +193,17 @@ namespace NuSysApp
         }
 
         private void PlaybackElement_Onloaded(object sender, RoutedEventArgs e)
+        {
+            if ((DataContext as AudioNodeViewModel).VisualGrid != null)
+            {
+                LoadPlaybackElement();
+            }
+            else
+            {
+                (DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
+            }
+        }
+        private void LoadPlaybackElement()
         {
             grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
             RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);

@@ -45,6 +45,11 @@ namespace NuSysApp
             get { return LibraryDraggingNode; }
         }
 
+        public Image GraphImage
+        {
+            get { return DraggingGraphImage; }
+        }
+
 
         #endregion Private Members
 
@@ -239,25 +244,35 @@ namespace NuSysApp
                 var msg = new Message(dict);
                 msg["creatorContentID"] = collectionId;
                 var contentId = msg.GetString("contentId");
-                var type = ElementType.Workspace;
-                if (msg.ContainsKey("type"))
+
+                ElementType type;
+                if (!msg.ContainsKey("nodeType"))
                 {
-                    type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
-                }
-                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))//kinda really shitty
-                {
-                    type = ElementType.Node;
-                }
-                if (type == ElementType.Node)
-                {
-                    if (msg.ContainsKey("nodeType") && ((ElementType)Enum.Parse(typeof(ElementType),(string)msg["nodeType"],true) == ElementType.Collection))
+                    if (msg.ContainsKey("type"))
                     {
-                        type = ElementType.Collection;
-                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null));
+                        type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["type"], true);
                     }
                     else
                     {
-                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type));
+                        throw new Exception("all elements must have key 'nodeType'");
+                        //TODO make this just 'elementType' eventually
+                    }
+                }
+                else
+                {
+                    type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
+                }
+                var title = msg.ContainsKey("title") ? (string) msg["title"] : "";
+                if (Constants.IsNode(type))
+                {
+                    if (type == ElementType.Collection)
+                    {
+                        type = ElementType.Collection;
+                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null, title));
+                    }
+                    else
+                    {
+                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type, title));
                     }
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
@@ -297,7 +312,7 @@ namespace NuSysApp
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
                 
-                if (type == ElementType.Node && !usedContentIDs.Contains(contentId))
+                if (!usedContentIDs.Contains(contentId))
                 {
                     Task.Run(async delegate
                     {
@@ -306,8 +321,51 @@ namespace NuSysApp
                     usedContentIDs.Add(contentId);
                 }
             }
+
+            await ImportLibrary(usedContentIDs);
         }
 
+        private async Task ImportLibrary(HashSet<string> usedIDs)
+        {
+            Task.Run(async delegate
+            {
+                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                foreach (var kvp in dictionaries)
+                {
+                    var id = (string)kvp.Value["id"];
+                    //var element = new NodeContentModel(kvp.Value);
+
+                    var dict = kvp.Value;
+
+                    string title = null;
+                    ElementType type = ElementType.Text;
+
+                    if (dict.ContainsKey("title"))
+                    {
+                        title = (string)dict["title"]; // title
+                    }
+                    if (dict.ContainsKey("type"))
+                    {
+                        try
+                        {
+                            type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                        }
+                        catch (Exception e)
+                        {
+                            continue;
+                        }
+                    }
+                    var data = dict.ContainsKey("data") ? (string)dict["data"] : null;
+
+                    var element = new NodeContentModel(data, id, type, title);
+                    if (!usedIDs.Contains(id) &&
+                        SessionController.Instance.ContentController.Get(id) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(element);
+                    }
+                }
+            });
+        }
         public async Task LoadWorkspace(IEnumerable<string> nodeStrings)
         {
             SessionController.Instance.IdToControllers.Clear();
@@ -316,7 +374,8 @@ namespace NuSysApp
             {
                 var msg = new Message(dict);
                 var id = msg.GetString("id");
-                ElementType type = ElementType.Workspace;
+                ElementType type = ElementType.Collection;
+                /*
                 if (msg.ContainsKey("type"))
                 {
                     type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
@@ -331,6 +390,7 @@ namespace NuSysApp
                             new NewElementRequest(msg));
                 if (type == ElementType.Link)
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
+                    */
             }
         }
 
