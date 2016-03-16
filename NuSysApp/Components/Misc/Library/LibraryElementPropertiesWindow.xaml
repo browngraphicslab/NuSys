@@ -55,7 +55,7 @@
 
 
                     <TextBlock  Grid.Column="0" Grid.Row="0" Text="Title" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBlock  x:Name="Title" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBox  x:Name="Title" TextChanged="OnTitleTextChanged" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
                     <TextBlock  Grid.Column="0" Grid.Row="1" Text="Type" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
                     <TextBlock  x:Name="Type" Grid.Column="1" Grid.Row="1" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
                     <TextBlock  Grid.Column="0" Grid.Row="2" Text="ID" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>

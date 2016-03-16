@@ -152,6 +152,7 @@ namespace NuSysApp
             NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
             _propertiesWindow.setTitle(element.Title);
             _propertiesWindow.setType(element.Type.ToString());
+            _propertiesWindow.setID(element.Id);
             _propertiesWindow.Visibility = Visibility.Visible;
 
             var view = SessionController.Instance.SessionView;
