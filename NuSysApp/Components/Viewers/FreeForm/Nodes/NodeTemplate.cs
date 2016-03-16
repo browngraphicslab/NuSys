@@ -168,20 +168,20 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
-                    bg.BorderBrush = new SolidColorBrush(Colors.CornflowerBlue);
-                    bg.BorderThickness = new Thickness(3);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255,156,197,194));
+                    bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Visible;
                 }
                 if (vm.IsEditing)
                 {
-                    bg.BorderBrush = new SolidColorBrush(Colors.YellowGreen);
-                    bg.BorderThickness = new Thickness(3);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255,197,158,156));
+                    bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Colors.Transparent);
-                    bg.BorderThickness = new Thickness(3);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 96, 109, 122));
+                    bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }

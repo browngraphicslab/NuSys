@@ -15,18 +15,18 @@
                     <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                     
                         <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
-                            <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#606d7a" BorderBrush="#606d7a" BorderThickness="2" Width="{Binding Width}"  />
-                            <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="White" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
+                            <Border x:Name="Rect" Background="White" BorderBrush="#606d7a" BorderThickness="2" Width="{Binding Width}"  />
+                            <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
                             <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
                         </Grid>
 
-                        <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}"
+                        <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="#606d7a" BorderThickness="2"  Background="White"
                                   IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
                             <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
-                            <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" Background="Red" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                            <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                 <Canvas.RenderTransform>
-                                    <TranslateTransform X="-50"></TranslateTransform>
+                                    <TranslateTransform X="-65"></TranslateTransform>
                                 </Canvas.RenderTransform>
                                 <ContentControl Content="{TemplateBinding SubMenu}" />
                             </Canvas>
