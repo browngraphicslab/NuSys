@@ -342,7 +342,6 @@
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
-    <Compile Include="Models\LibraryElementCollectionModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
