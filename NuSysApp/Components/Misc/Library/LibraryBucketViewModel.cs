@@ -45,7 +45,7 @@ namespace NuSysApp
             {
                 var id = ((NodeContentModel)element).Id;
                 elements.Add((NodeContentModel)element);
-                if (SessionController.Instance.ContentController.Get(id) == null)
+                if (!SessionController.Instance.ContentController.ContainsAndLoaded(id))
                 {
                     Task.Run(async delegate
                     {

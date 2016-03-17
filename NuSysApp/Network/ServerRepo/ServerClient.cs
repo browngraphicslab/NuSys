@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
@@ -127,20 +128,60 @@ namespace NuSysApp
             }
         }
 
+        public async Task<List<Dictionary<string,object>>> GetContentWithoutData(List<string> contentIds)
+        {
+            try
+            {
+                return await Task.Run(async delegate
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+                    var contentIdStrings = JsonConvert.SerializeObject(contentIds, settings);
+
+                    var client = new HttpClient( new HttpClientHandler{ClientCertificateOptions = ClientCertificateOption.Automatic});
+                    var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentIdStrings, Encoding.UTF8, "application/xml"));
+
+                    string data;
+                    using (var content = response.Content)
+                    {
+                        data = await content.ReadAsStringAsync();
+                    }
+                    try
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        doc.LoadXml(data);
+                        var list =  JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(doc.ChildNodes[0].InnerText, settings);
+                        return list;
+                    }
+                    catch (Exception boolParsException)
+                    {
+                        Debug.WriteLine("error parsing bool and serverSessionId returned from server");
+                    }
+                    return new List<Dictionary<string, object>>();
+                });
+
+            }
+            catch (Exception e)
+            {
+                //throw new Exception("couldn't connect to the server and get content info");
+                return new List<Dictionary<string, object>>();
+            }
+        }
         public async Task GetContent(string contentId)
         {
             try
             {
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(GetUri("getcontent/" + contentId));
+                await Task.Run(async delegate
+                {
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetAsync(GetUri("getcontent/" + contentId));
                 
-                string data;
-                using (var content = response.Content)
-                {
-                    data = await content.ReadAsStringAsync();
-                }
-                await UITask.Run(async delegate
-                {
+                    string data;
+                    using (var responseContent = response.Content)
+                    {
+                        data = await responseContent.ReadAsStringAsync();
+                    }
+
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
@@ -160,14 +201,15 @@ namespace NuSysApp
                     {
                         content = new NodeContentModel(contentData, contentId, contentType, contentTitle);
                     }
-
-                    var cc = SessionController.Instance.ContentController;
-                    if (cc.Get(contentId) != null)
+                    await UITask.Run(async delegate
                     {
-                        cc.Get(contentId).Data = contentData;
-                        cc.Get(contentId).Loaded = true;
-                        cc.Get(contentId).FireContentChanged();
-                        /*
+                        var cc = SessionController.Instance.ContentController;
+                        if (cc.Get(contentId) != null)
+                        {
+                            cc.Get(contentId).Data = contentData;
+                            cc.Get(contentId).Loaded = true;
+                            cc.Get(contentId).FireContentChanged();
+                            /*
                         if (cc.ContainsAndLoaded(contentId))
                         {
                             cc.Get(contentId).Data = contentData;
@@ -178,19 +220,20 @@ namespace NuSysApp
                             cc.Get(contentId).Loaded = true;
                             cc.Get(contentId).FireContentChanged();
                         }*/
-                    }
-                    else
-                    {
-                        SessionController.Instance.ContentController.Add(content);
-                    }
-
-                    if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
-                    {
-                        foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])
-                        {
-                            await controller.FireContentLoaded(content);
                         }
-                    }
+                        else
+                        {
+                            SessionController.Instance.ContentController.Add(content);
+                        }
+
+                        if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
+                        {
+                            foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])
+                            {
+                                await controller.FireContentLoaded(content);
+                            }
+                        }
+                    });
                 });
             }
             catch (Exception e)

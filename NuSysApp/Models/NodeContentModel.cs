@@ -20,8 +20,17 @@ namespace NuSysApp
         public ElementType Type { get; set; }
         public string Data { get; set; }
         public string Id { get; set; }
-        public string Title { get; set; }
+        public string Title {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                RaisePropertyChanged("Title");
+            } 
+        }
         public string TimeStamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
+
+        private string _title;
 
         public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>(); 
         public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
@@ -60,7 +69,6 @@ namespace NuSysApp
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             });
             Title = title;
-            RaisePropertyChanged("Title");
             OnTitleChanged?.Invoke(title);
         }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)

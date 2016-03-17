@@ -181,7 +181,14 @@ namespace NuSysApp
 
             t.TranslateX += _x - (rect.Width / 2);
             t.TranslateY += _y - (rect.Height / 2);
-           
+
+            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.Id))
+            {
+                Task.Run(async delegate
+                {
+                    SessionController.Instance.NuSysNetworkSession.FetchContent(element.Id);
+                });
+            }
         }
 
 

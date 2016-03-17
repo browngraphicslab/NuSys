@@ -255,6 +255,11 @@ namespace NuSysApp
             await _serverClient.GetContent(id);
         }
 
+        public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
+        {
+            return await _serverClient.GetContentWithoutData(contentIds);
+        }
+
         public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();

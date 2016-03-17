@@ -239,11 +239,14 @@ namespace NuSysApp
 
             createdModels = new List<ElementModel>();
             HashSet<string> usedContentIDs = new HashSet<string>();
+            var contentIDsToFetchInfo = new HashSet<string>();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
                 msg["creatorContentID"] = collectionId;
                 var contentId = msg.GetString("contentId");
+
+                contentIDsToFetchInfo.Add(contentId);
 
                 ElementType type;
                 if (!msg.ContainsKey("nodeType"))
@@ -262,17 +265,16 @@ namespace NuSysApp
                 {
                     type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
                 }
-                var title = msg.ContainsKey("title") ? (string) msg["title"] : "";
                 if (Constants.IsNode(type))
                 {
                     if (type == ElementType.Collection)
                     {
                         type = ElementType.Collection;
-                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null, title));
+                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId, null));
                     }
                     else
                     {
-                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type, title));
+                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId, type));
                     }
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
@@ -317,54 +319,74 @@ namespace NuSysApp
                     Task.Run(async delegate
                     {
                         await SessionController.Instance.NuSysNetworkSession.FetchContent(contentId);
+                        usedContentIDs.Add(contentId);
                     });
-                    usedContentIDs.Add(contentId);
                 }
             }
-
-            await ImportLibrary(usedContentIDs);
-        }
-
-        private async Task ImportLibrary(HashSet<string> usedIDs)
-        {
             Task.Run(async delegate
             {
-                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                foreach (var kvp in dictionaries)
+                await SetContentInfo(new List<string>(contentIDsToFetchInfo));
+            });
+            Task.Run(async delegate {
+                await ImportLibrary(usedContentIDs);
+            });
+        }
+
+        private async Task SetContentInfo(List<string> contentIDs)
+        {
+            var dicts = await SessionController.Instance.NuSysNetworkSession.GetContentInfo(contentIDs);
+            foreach (var dict in dicts)
+            {
+                if (dict.ContainsKey("id"))
                 {
-                    var id = (string)kvp.Value["id"];
-                    //var element = new NodeContentModel(kvp.Value);
-
-                    var dict = kvp.Value;
-
-                    string title = null;
-                    ElementType type = ElementType.Text;
-
-                    if (dict.ContainsKey("title"))
+                    var contentId = (string) dict["id"];
+                    if (dict.ContainsKey("title") && SessionController.Instance.ContentController.Get(contentId) != null)
                     {
-                        title = (string)dict["title"]; // title
-                    }
-                    if (dict.ContainsKey("type"))
-                    {
-                        try
+                        UITask.Run(delegate
                         {
-                            type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
-                        }
-                        catch (Exception e)
-                        {
-                            continue;
-                        }
-                    }
-                    var data = dict.ContainsKey("data") ? (string)dict["data"] : null;
-
-                    var element = new NodeContentModel(data, id, type, title);
-                    if (!usedIDs.Contains(id) &&
-                        SessionController.Instance.ContentController.Get(id) == null)
-                    {
-                        SessionController.Instance.ContentController.Add(element);
+                            SessionController.Instance.ContentController.Get(contentId).SetTitle((string) dict["title"]);
+                        });
                     }
                 }
-            });
+            }
+        }
+        private async Task ImportLibrary(HashSet<string> usedIDs)
+        {
+            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+            foreach (var kvp in dictionaries)
+            {
+                var id = (string)kvp.Value["id"];
+                //var element = new NodeContentModel(kvp.Value);
+
+                var dict = kvp.Value;
+
+                string title = null;
+                ElementType type = ElementType.Text;
+
+                if (dict.ContainsKey("title"))
+                {
+                    title = (string)dict["title"]; // title
+                }
+                if (dict.ContainsKey("type"))
+                {
+                    try
+                    {
+                        type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                    }
+                    catch (Exception e)
+                    {
+                        continue;
+                    }
+                }
+                var data = dict.ContainsKey("data") ? (string)dict["data"] : null;
+
+                var element = new NodeContentModel(data, id, type, title);
+                if (!usedIDs.Contains(id) &&
+                    SessionController.Instance.ContentController.Get(id) == null)
+                {
+                    SessionController.Instance.ContentController.Add(element);
+                }
+            }
         }
         public async Task LoadWorkspace(IEnumerable<string> nodeStrings)
         {
