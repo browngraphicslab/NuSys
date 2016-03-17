@@ -47,7 +47,7 @@ namespace NuSysApp
                     elementModel.ContentId = contentId;
                     if (SessionController.Instance.ContentController.Get(contentId) == null)
                     {
-                        SessionController.Instance.ContentController.Add(new NodeContentModel(null, contentId,
+                        SessionController.Instance.ContentController.Add(new LibraryElementModel(null, contentId,
                             ElementType.Text, elementModel.Title));
                     }
                     controller = new TextNodeController((TextElementModel)elementModel);
@@ -85,11 +85,11 @@ namespace NuSysApp
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Collection:
-                    elementModel = new ElementCollectionModel(id);
+                    elementModel = new CollectionElementModel(id);
                     elementModel.ContentId = contentId;
                     if (SessionController.Instance.ContentController.Get(contentId) == null)
                     {
-                        SessionController.Instance.ContentController.Add(new CollectionContentModel(contentId,
+                        SessionController.Instance.ContentController.Add(new CollectionLibraryElementModel(contentId,
                             null, elementModel.Title));
                     }
                     controller = new ElementCollectionController(elementModel);
@@ -114,7 +114,7 @@ namespace NuSysApp
             elementModel.ContentId = contentId;
             SessionController.Instance.IdToControllers[controller.Model.Id] = controller;
 
-            var content = (CollectionContentModel)SessionController.Instance.ContentController.Get(creatorContentID);
+            var content = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creatorContentID);
             content.AddChild(controller.Model.Id);
 
             if (SessionController.Instance.ContentController.ContainsAndLoaded(content.Id))
@@ -127,7 +127,7 @@ namespace NuSysApp
             if (nodeType == ElementType.Collection)
             {
                 //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
-                var startingChildren = ((CollectionContentModel) (controller.ContentModel))?.Children;
+                var startingChildren = ((CollectionLibraryElementModel) (controller.ContentModel))?.Children;
                 foreach (var childId in startingChildren)
                 {
                     if (SessionController.Instance.IdToControllers.ContainsKey(childId))

@@ -26,7 +26,7 @@ namespace NuSysApp
         //public delegate void LibraryElementDragEventHandler(object sender, DragStartingEventArgs e);
         //public event LibraryElementDragEventHandler OnLibraryElementDrag;
 
-        public ObservableCollection<NodeContentModel> _items;
+        public ObservableCollection<LibraryElementModel> _items;
         private int _count = 0;
 
         private LibraryElementPropertiesWindow _propertiesWindow;
@@ -59,7 +59,7 @@ namespace NuSysApp
             
         }
 
-        private void Library_OnNewContents(ICollection<NodeContentModel> elements)
+        private void Library_OnNewContents(ICollection<LibraryElementModel> elements)
         {
             xGrid.RowDefinitions.Clear();
             for (int i = 1; i < elements.Count / 3 + 1; i++)
@@ -88,9 +88,9 @@ namespace NuSysApp
             }
         }
 
-        public void SetItems(ICollection<NodeContentModel> elements)
+        public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<NodeContentModel>(elements);
+            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<LibraryElementModel>(elements);
         }
 
         public async Task Sort(string s)
@@ -136,7 +136,7 @@ namespace NuSysApp
         //    }
         //}
 
-        private async void LoadThumbnails(int numRows, int numCols, NodeContentModel newItem)
+        private async void LoadThumbnails(int numRows, int numCols, LibraryElementModel newItem)
         {
 
             StackPanel itemPanel = new StackPanel();
@@ -367,7 +367,7 @@ namespace NuSysApp
 
         private void ItemPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            NodeContentModel clickedElement = (NodeContentModel)((StackPanel)sender).DataContext;
+            LibraryElementModel clickedElement = (LibraryElementModel)((StackPanel)sender).DataContext;
             _propertiesWindow.setTitle(clickedElement.Title);
             _propertiesWindow.setType(clickedElement.Type.ToString());
             _propertiesWindow.Visibility = Visibility.Visible;

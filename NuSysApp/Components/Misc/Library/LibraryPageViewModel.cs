@@ -13,21 +13,21 @@ namespace NuSysApp
 {
     public class LibraryPageViewModel
     {
-        public ObservableCollection<NodeContentModel> _PageElements;
+        public ObservableCollection<LibraryElementModel> _PageElements;
 
-        public LibraryPageViewModel(ObservableCollection<NodeContentModel> elements)
+        public LibraryPageViewModel(ObservableCollection<LibraryElementModel> elements)
         {
             _PageElements = elements;
             SessionController.Instance.ContentController.OnNewContent += NewContent;
         }
 
-        private void NewContent(NodeContentModel content)
+        private void NewContent(LibraryElementModel content)
         {
             _PageElements.Add(content);
         }
         public async Task Sort(string s)
         {
-            IOrderedEnumerable<NodeContentModel> ordered = null;
+            IOrderedEnumerable<LibraryElementModel> ordered = null;
             switch (s.ToLower().Replace(" ", string.Empty))
             {
                 //case "title":
@@ -37,10 +37,10 @@ namespace NuSysApp
                 //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
                 //    break;
                 case "title":
-                    ordered = _PageElements.OrderBy(l => ((NodeContentModel)l).Title);
+                    ordered = _PageElements.OrderBy(l => ((LibraryElementModel)l).Title);
                     break;
                 case "nodetype":
-                    ordered = _PageElements.OrderBy(l => ((NodeContentModel)l).Type.ToString());
+                    ordered = _PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString());
                     break;
                 case "timestamp":
                     break;
@@ -49,7 +49,7 @@ namespace NuSysApp
             }
             if (ordered != null)
             {
-                ObservableCollection<NodeContentModel> newCollection = new ObservableCollection<NodeContentModel>();
+                ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
                 await Task.Run(async delegate
                 {
                     foreach (var item in ordered)
@@ -62,8 +62,8 @@ namespace NuSysApp
         }
         public async Task Search(string s)
         {
-            ObservableCollection<NodeContentModel> newCollection = new ObservableCollection<NodeContentModel>();
-            var coll = ((ObservableCollection<NodeContentModel>)_PageElements);
+            ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
+            var coll = ((ObservableCollection<LibraryElementModel>)_PageElements);
             await Task.Run(async delegate
             {
                 foreach (var item in coll)

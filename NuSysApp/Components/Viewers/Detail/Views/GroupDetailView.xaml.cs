@@ -34,7 +34,7 @@ namespace NuSysApp
             this.InitializeComponent();
             DataContext = vm;
 
-            var model = (ElementCollectionModel)vm.Model;
+            var model = (CollectionElementModel)vm.Model;
 
             _views = new ObservableCollection<FrameworkElement>();
 

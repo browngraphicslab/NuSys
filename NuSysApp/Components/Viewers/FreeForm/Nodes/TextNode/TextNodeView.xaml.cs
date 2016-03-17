@@ -87,7 +87,7 @@ namespace NuSysApp
 
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            vm.Controller.ContentChanged += delegate(object source, NodeContentModel data)
+            vm.Controller.ContentChanged += delegate(object source, LibraryElementModel data)
             {
                 if (xMediaRecotder.Visibility == Visibility.Collapsed)
                     return;

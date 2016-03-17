@@ -41,7 +41,7 @@ namespace NuSysApp
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.InitializeComponent();
-            ListView.ItemsSource = new ObservableCollection<NodeContentModel>();
+            ListView.ItemsSource = new ObservableCollection<LibraryElementModel>();
             this.DataContext = vm;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -55,16 +55,16 @@ namespace NuSysApp
             
         }
 
-        public ObservableCollection<NodeContentModel> GetItems()
+        public ObservableCollection<LibraryElementModel> GetItems()
         {
-            return (ObservableCollection<NodeContentModel>)ListView.ItemsSource;
+            return (ObservableCollection<LibraryElementModel>)ListView.ItemsSource;
         }
-        private void AddNewElement(NodeContentModel element)
+        private void AddNewElement(LibraryElementModel element)
         {
-            //_items = new ObservableCollection<NodeContentModel>((IEnumerable<NodeContentModel>) ListView.ItemsSource);
+            //_items = new ObservableCollection<LibraryElementModel>((IEnumerable<LibraryElementModel>) ListView.ItemsSource);
             UITask.Run(delegate
             {
-                ((ObservableCollection<NodeContentModel>) ListView.ItemsSource).Add(element);
+                ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Add(element);
             });
         }
 
@@ -116,10 +116,10 @@ namespace NuSysApp
         //}
 
 
-        public void SetItems(ICollection<NodeContentModel> elements)
+        public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            ListView.ItemsSource = new ObservableCollection<NodeContentModel>(elements);
-            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<NodeContentModel>(elements);
+            ListView.ItemsSource = new ObservableCollection<LibraryElementModel>(elements);
+            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<LibraryElementModel>(elements);
         }
 
         public async Task Sort(string s)
@@ -149,7 +149,7 @@ namespace NuSysApp
         private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
 
-            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             _propertiesWindow.setTitle(element.Title);
             _propertiesWindow.setType(element.Type.ToString());
             _propertiesWindow.setID(element.Id);
@@ -162,7 +162,7 @@ namespace NuSysApp
 
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -195,7 +195,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -219,7 +219,7 @@ namespace NuSysApp
 
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            NodeContentModel element = (NodeContentModel)((Grid)sender).DataContext;
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -240,8 +240,8 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.setTitle(((NodeContentModel)e.ClickedItem).Title);
-            _propertiesWindow.setType(((NodeContentModel)e.ClickedItem).Type.ToString());
+            _propertiesWindow.setTitle(((LibraryElementModel)e.ClickedItem).Title);
+            _propertiesWindow.setType(((LibraryElementModel)e.ClickedItem).Type.ToString());
             //_propertiesWindow.Visibility = Visibility.Visible;
            
         }

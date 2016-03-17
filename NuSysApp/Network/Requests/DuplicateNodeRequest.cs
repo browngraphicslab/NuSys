@@ -47,7 +47,7 @@ namespace NuSysApp
 
             var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
 
-            if (!(duplicateModel is ElementCollectionModel))
+            if (!(duplicateModel is CollectionElementModel))
                 return;
 
 

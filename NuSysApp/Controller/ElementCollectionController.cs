@@ -18,8 +18,8 @@ namespace NuSysApp
             var contentModel = SessionController.Instance.ContentController.Get(model.ContentId);
             if (contentModel != null)
             {
-                ((CollectionContentModel) contentModel).OnChildAdded += AddChildById;
-                ((CollectionContentModel) contentModel).OnChildRemoved += RemoveChildById;
+                ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
+                ((CollectionLibraryElementModel) contentModel).OnChildRemoved += RemoveChildById;
             }
         }
 

@@ -27,7 +27,7 @@ namespace NuSysApp
             _count = 0;
         }
 
-        private async void LoadThumbnails(int numRows, int numCols, NodeContentModel newItem)
+        private async void LoadThumbnails(int numRows, int numCols, LibraryElementModel newItem)
         {
 
             StackPanel itemPanel = new StackPanel();

@@ -101,7 +101,7 @@ namespace NuSysApp
                                     type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
                                 }
 
-                                NodeContentModel element = new NodeContentModel(data,contentId,type,title);
+                                LibraryElementModel element = new LibraryElementModel(data,contentId,type,title);
                                 UITask.Run(delegate
                                 {
 
@@ -192,14 +192,14 @@ namespace NuSysApp
                         ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
                         : ElementType.Text;
                     //var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
-                    NodeContentModel content;
+                    LibraryElementModel content;
                     if (contentType == ElementType.Collection)
                     {
-                        content = new CollectionContentModel(contentId, null, contentTitle);
+                        content = new CollectionLibraryElementModel(contentId, null, contentTitle);
                     }
                     else
                     {
-                        content = new NodeContentModel(contentData, contentId, contentType, contentTitle);
+                        content = new LibraryElementModel(contentData, contentId, contentType, contentTitle);
                     }
                     await UITask.Run(async delegate
                     {

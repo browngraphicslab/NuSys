@@ -30,7 +30,7 @@ namespace NuSysApp
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
-        public delegate void ContentLoadedHandler(object source, NodeContentModel data);
+        public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
@@ -51,7 +51,7 @@ namespace NuSysApp
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
         }
-        public virtual async Task FireContentLoaded(NodeContentModel content)
+        public virtual async Task FireContentLoaded(LibraryElementModel content)
         {
             ContentLoaded?.Invoke(this, content);
         }
@@ -208,7 +208,7 @@ namespace NuSysApp
         {
             get { return _model; }
         }
-        public NodeContentModel ContentModel
+        public LibraryElementModel ContentModel
         {
             get
             {

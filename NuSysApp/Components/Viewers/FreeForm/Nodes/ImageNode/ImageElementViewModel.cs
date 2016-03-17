@@ -18,7 +18,7 @@ namespace NuSysApp
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
-            controller.ContentLoaded += async delegate(object source, NodeContentModel content)
+            controller.ContentLoaded += async delegate(object source, LibraryElementModel content)
             {
                 var image = controller.ContentModel.ViewUtilBucket.ContainsKey("image")? (BitmapImage)controller.ContentModel.ViewUtilBucket["image"]: null;
                 if (image != null)

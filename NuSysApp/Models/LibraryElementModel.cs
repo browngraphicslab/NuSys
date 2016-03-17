@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace NuSysApp
 {
-    public class NodeContentModel : BaseINPC
+    public class LibraryElementModel : BaseINPC
     {
         public bool Loaded { get; set; }//TODO Add a loaded event
         //TODO add in 'MakeNewController' method that creates a new controller-model pair pointing to this and returns it
@@ -33,7 +33,7 @@ namespace NuSysApp
         private string _title;
 
         public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>(); 
-        public NodeContentModel(string data, string id, ElementType elementType,string contentName = null)
+        public LibraryElementModel(string data, string id, ElementType elementType,string contentName = null)
         {
             Data = data;
             Id = id;

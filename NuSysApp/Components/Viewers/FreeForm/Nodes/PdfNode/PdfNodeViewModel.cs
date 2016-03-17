@@ -39,7 +39,7 @@ namespace NuSysApp
             CurrentPageNumber = model.CurrentPageNumber;
 
 
-            controller.ContentLoaded += async delegate (object source, NodeContentModel content)
+            controller.ContentLoaded += async delegate (object source, LibraryElementModel content)
             {
                 var data = content.Data;
                 var dataBytes = Convert.FromBase64String(data);

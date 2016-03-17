@@ -84,7 +84,7 @@ namespace NuSysApp
             }
         }
 
-        private void InitWhenReady(object source = null, NodeContentModel data = null)
+        private void InitWhenReady(object source = null, LibraryElementModel data = null)
         {
             var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get(ContentId).Data);
             MemoryStream s = new MemoryStream(byteArray);

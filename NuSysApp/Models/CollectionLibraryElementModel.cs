@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class CollectionContentModel : NodeContentModel
+    public class CollectionLibraryElementModel : LibraryElementModel
     {
         private HashSet<string> _children;
 
@@ -15,7 +15,7 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
-        public CollectionContentModel(string id, IEnumerable<string> startingIDs = null, string contentName = null) : base(null,id, ElementType.Collection, contentName)
+        public CollectionLibraryElementModel(string id, IEnumerable<string> startingIDs = null, string contentName = null) : base(null,id, ElementType.Collection, contentName)
         {
             _children = startingIDs != null ? new HashSet<string>(startingIDs) : new HashSet<string>();
         }

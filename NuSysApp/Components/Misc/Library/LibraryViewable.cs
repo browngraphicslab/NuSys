@@ -10,6 +10,6 @@ namespace NuSysApp
     {
         Task Sort(string s);
         Task Search(string s);
-        void SetItems(ICollection<NodeContentModel> elements);
+        void SetItems(ICollection<LibraryElementModel> elements);
     }
 }

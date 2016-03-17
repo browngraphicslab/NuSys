@@ -19,7 +19,7 @@ namespace NuSysApp
                 content.OnContentChanged += ContentChanged;
             }
         }
-        public override async Task FireContentLoaded(NodeContentModel content)
+        public override async Task FireContentLoaded(LibraryElementModel content)
         {
             TextChanged?.Invoke(this,content.Data);
             await base.FireContentLoaded(content);

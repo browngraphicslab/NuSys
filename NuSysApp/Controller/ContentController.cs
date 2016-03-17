@@ -14,22 +14,22 @@ namespace NuSysApp
     public class ContentController
     {
 
-        private Dictionary<string, NodeContentModel> _contents = new Dictionary<string, NodeContentModel>();
+        private Dictionary<string, LibraryElementModel> _contents = new Dictionary<string, LibraryElementModel>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
 
-        public delegate void NewContentEventHandler(NodeContentModel element);
+        public delegate void NewContentEventHandler(LibraryElementModel element);
         public event NewContentEventHandler OnNewContent;
         public int Count
         {
             get { return _contents.Count; }
         }
     
-        public NodeContentModel Get(string id)
+        public LibraryElementModel Get(string id)
         {
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
-        public ICollection<NodeContentModel> Values
+        public ICollection<LibraryElementModel> Values
         {
             get { return _contents.Values; }
         } 
@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             return _contents.ContainsKey(id) ? _contents[id].Loaded : false;
         }
-        public string Add(NodeContentModel model)
+        public string Add(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))
             {
@@ -52,7 +52,7 @@ namespace NuSysApp
         public string Add( string contentData, ElementType elementType, string presetID = null)
         {
             var id = presetID ?? SessionController.Instance.GenerateId();
-            var n = new NodeContentModel(contentData, id, elementType);
+            var n = new LibraryElementModel(contentData, id, elementType);
             _contents.Add(id, n );
             OnNewContent?.Invoke(n);
             /*
@@ -77,7 +77,7 @@ namespace NuSysApp
             _waitingNodeCreations.Add(id, mre);
         }*/
 
-        public string OverWrite(NodeContentModel model)
+        public string OverWrite(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Id))
             {
@@ -95,7 +95,7 @@ namespace NuSysApp
 
             foreach (var line in lines)
             {
-                var o = JsonConvert.DeserializeObject<NodeContentModel>(line);
+                var o = JsonConvert.DeserializeObject<LibraryElementModel>(line);
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,o.Type));
                 /*

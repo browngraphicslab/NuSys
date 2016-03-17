@@ -12,10 +12,10 @@ namespace NuSysApp
 {
     public class LibraryBucketViewModel
     {
-        public delegate void NewContentsEventHandler(ICollection<NodeContentModel> elements);
+        public delegate void NewContentsEventHandler(ICollection<LibraryElementModel> elements);
         public event NewContentsEventHandler OnNewContents;
 
-        public delegate void NewElementAvailableEventHandler(NodeContentModel element);
+        public delegate void NewElementAvailableEventHandler(LibraryElementModel element);
         public event NewElementAvailableEventHandler OnNewElementAvailable;
 
         private double _width, _height;
@@ -34,17 +34,17 @@ namespace NuSysApp
             });
         }
 
-        private void FireNewContentAvailable(NodeContentModel content)
+        private void FireNewContentAvailable(LibraryElementModel content)
         {
             OnNewElementAvailable?.Invoke(content);
         }
         public void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-            List<NodeContentModel> elements = new List<NodeContentModel>();
+            List<LibraryElementModel> elements = new List<LibraryElementModel>();
             foreach (var element in e.Items)
             {
-                var id = ((NodeContentModel)element).Id;
-                elements.Add((NodeContentModel)element);
+                var id = ((LibraryElementModel)element).Id;
+                elements.Add((LibraryElementModel)element);
                 if (!SessionController.Instance.ContentController.ContainsAndLoaded(id))
                 {
                     Task.Run(async delegate
@@ -54,9 +54,9 @@ namespace NuSysApp
                 }
             }
             e.Data.OperationCompleted += DataOnOperationCompleted;
-            e.Data.Properties.Add("NodeContentModel", elements);
-            var title = ((NodeContentModel)e.Items[0]).Title ?? "";
-            var type = ((NodeContentModel)e.Items[0]).Type.ToString();
+            e.Data.Properties.Add("LibraryElementModel", elements);
+            var title = ((LibraryElementModel)e.Items[0]).Title ?? "";
+            var type = ((LibraryElementModel)e.Items[0]).Type.ToString();
             e.Data.SetText(type + "  :  " + title);
             e.Cancel = false;
         }
@@ -65,7 +65,7 @@ namespace NuSysApp
 
             UITask.Run(async delegate
             {
-                var ids = (List<NodeContentModel>)sender.Properties["NodeContentModel"];
+                var ids = (List<LibraryElementModel>)sender.Properties["LibraryElementModel"];
 
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
@@ -102,7 +102,7 @@ namespace NuSysApp
             });
         }
 
-        public void AddNewElement(NodeContentModel element)
+        public void AddNewElement(LibraryElementModel element)
         {
             OnNewElementAvailable?.Invoke(element);
         }

@@ -28,7 +28,7 @@ namespace NuSysApp
         }
         public override async Task ExecuteRequestFunction()
         {
-            NodeContentModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
+            LibraryElementModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
             content.Data = _message.GetString("data");
 
             content.FireContentChanged();
