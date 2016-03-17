@@ -71,10 +71,7 @@ namespace NuSysApp
                 _isRecording = false;
             };
 
-            vm.ScreenVisibility += delegate(object source, bool screen)
-            {
-                //TODO: fill this in
-            };
+            vm.ScreenVisibility += OnScreenVisibilityChanged;
 
             inqModel.LineFinalizedLocally += async delegate(InqLineModel model)
             {
@@ -98,6 +95,17 @@ namespace NuSysApp
 
         }
 
+        private async void OnScreenVisibilityChanged(object source, bool isOnScreen)
+        {
+            if (isOnScreen)
+            {
+                nodeTpl.HideBitmapRender();
+            }
+            else
+            {
+                await nodeTpl.ShowBitmapRender(this);
+            }
+        }
 
         private async void UpdateText(String str)
         {

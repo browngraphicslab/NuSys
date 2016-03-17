@@ -19,6 +19,19 @@ namespace NuSysApp
             InitializeComponent();
           //  IsDoubleTapEnabled = true;
             DataContext = vm;
+            vm.ScreenVisibility += OnScreenVisibilityChanged;
+        }
+
+        private async void OnScreenVisibilityChanged(object source, bool isOnScreen)
+        {
+            if (isOnScreen)
+            {
+                nodeTpl.HideBitmapRender();
+            }
+            else
+            {
+                await nodeTpl.ShowBitmapRender(this);
+            }
         }
 
 
