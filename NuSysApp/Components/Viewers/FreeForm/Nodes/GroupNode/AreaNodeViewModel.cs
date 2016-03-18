@@ -19,9 +19,25 @@ namespace NuSysApp
 
         public PathGeometry PathGeometry { get; set; }
 
+        public Rect ClipRect { get; set; }
         public AreaNodeViewModel(ElementCollectionController controller):base(controller)
         {
 
+            ClipRect = new Rect(0, 0, controller.Model.Width, controller.Model.Height);
+            
+            Controller.SizeChanged += delegate (object source, double width, double height)
+            {
+                ClipRect = new Rect(0, 0, width, height);
+                RaisePropertyChanged("ClipRect");
+            };
+
+            Controller.ScaleChanged += delegate(object source, double x, double y)
+            {
+                double width = Controller.Model.Width;
+                double height = Controller.Model.Height;
+                ClipRect = new Rect(0, 0, width*x, height*y);
+                RaisePropertyChanged("ClipRect");
+            };
             //_nodeViewFactory = new FreeFormNodeViewFactory();
             /*
         
