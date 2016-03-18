@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ namespace NuSysApp
 
         private async void OnChildAdded(object source, ElementController elementController)
         {
+            Debug.Assert(elementController != null);
+
             var view = await _nodeViewFactory.CreateFromSendable(elementController);   
             AtomViewList.Add(view);
 

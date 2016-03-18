@@ -100,6 +100,8 @@ namespace NuSysApp
                 _isRecording = false;
             };
 
+            vm.ScreenVisibility += OnScreenVisibilityChanged;
+
             inqModel.LineFinalizedLocally += async delegate(InqLineModel model)
             {
                 var nm = model.GetScaled(Constants.MaxCanvasSize);
@@ -120,6 +122,18 @@ namespace NuSysApp
             Link.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
+        }
+
+        private async void OnScreenVisibilityChanged(object source, bool isOnScreen)
+        {
+            if (isOnScreen)
+            {
+                nodeTpl.HideBitmapRender();
+            }
+            else
+            {
+                await nodeTpl.ShowBitmapRender(this);
+            }
         }
 
         private async void UpdateText(String str)
