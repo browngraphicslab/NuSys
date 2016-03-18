@@ -196,6 +196,20 @@ namespace NuSysApp
                     {
                         await SessionController.Instance.NuSysNetworkSession.Init();
 
+                        SessionController.Instance.ContentController.OnNewContent += delegate (LibraryElementModel element)
+                        {
+                            if (element.Type == ElementType.Collection)
+                            {
+                                UITask.Run(delegate
+                                {
+                                    var box = new CollectionTextBox();
+                                    box.ID = element.Id;
+                                    box.Text = element.Title ?? "Unnamed Collection";
+                                    List.Items.Add(box);
+                                });
+                            }
+                        };
+
                         loggedInText.Text = "Logged In!";
 
                         NewWorkspaceButton.IsEnabled = true;
