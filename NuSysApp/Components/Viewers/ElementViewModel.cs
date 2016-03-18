@@ -26,7 +26,7 @@ namespace NuSysApp
         private SolidColorBrush _userColor;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
-        protected bool _isSelected, _isVisible;
+        protected bool _isSelected, _isVisible, _isOnScreen;
 
         #endregion Private Members
 
@@ -157,6 +157,7 @@ namespace NuSysApp
             Alpha = model.Alpha;
             Title = model.Title;
             IsVisible = true;
+            IsOnScreen = true;
             Transform.TranslateX = model.X;
             Transform.TranslateY = model.Y;
 
@@ -331,6 +332,22 @@ namespace NuSysApp
                 }
                 _isVisible = value;
                 RaisePropertyChanged("IsVisible");
+            }
+        }
+
+        public delegate void ScreenVisibilityEventHandler(object source, bool isOnScreen);
+        public event ScreenVisibilityEventHandler ScreenVisibility;
+
+        public bool IsOnScreen
+        {
+            get { return _isOnScreen; }
+            set
+            {
+                if (_isOnScreen != value)
+                {
+                    _isOnScreen = value;
+                    ScreenVisibility?.Invoke(this, _isOnScreen);
+                }
             }
         }
 
