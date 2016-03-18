@@ -116,7 +116,7 @@ namespace NuSysApp
                 case ElementType.Link:
                     elementModel = new LinkModel(id);
                     await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
+                    controller = new LinkElementController((LinkModel)elementModel);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");

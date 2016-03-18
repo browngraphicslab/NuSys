@@ -251,6 +251,7 @@ namespace NuSysApp
                             var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                             foreach (var m in messages)
                             {
+                                m["creatorContentID"] = libraryId;
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                             }
                     }

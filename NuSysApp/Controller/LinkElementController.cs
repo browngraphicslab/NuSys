@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp.Controller
+namespace NuSysApp
 {
     public class LinkElementController : ElementController
     {
