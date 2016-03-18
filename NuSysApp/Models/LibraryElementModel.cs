@@ -104,7 +104,7 @@ namespace NuSysApp
         }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)
         {
-            Data = data;
+            _data = data;
 
             Task.Run(async delegate
             {
