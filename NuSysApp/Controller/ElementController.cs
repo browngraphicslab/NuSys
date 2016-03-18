@@ -141,9 +141,13 @@ namespace NuSysApp
         }
 
 
-        public async virtual Task RequestDuplicate(double x, double y)
+        public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
-            Message m = new Message();
+            if (m == null)
+                m = new Message();
+
+            m.Remove("id");
+
             m["contentId"] = Model.ContentId;
             m["data"] = "";
             m["x"] = x;
@@ -153,7 +157,6 @@ namespace NuSysApp
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
             m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
