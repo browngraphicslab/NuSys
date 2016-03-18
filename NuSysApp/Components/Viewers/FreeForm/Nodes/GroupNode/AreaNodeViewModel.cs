@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class AreaNodeViewModel : ElementCollectionViewModel
+    public class AreaNodeViewModel : FreeFormViewerViewModel
     {
 
         public PointCollection Points { get; set; }
@@ -21,6 +21,8 @@ namespace NuSysApp
 
         public AreaNodeViewModel(ElementCollectionController controller):base(controller)
         {
+
+            _nodeViewFactory = new FreeFormNodeViewFactory();
             /*
         
            // Points = new PointCollection();

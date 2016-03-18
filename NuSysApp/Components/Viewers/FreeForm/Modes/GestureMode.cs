@@ -21,10 +21,12 @@ namespace NuSysApp
         private bool _wasGesture;
         private bool _released;
        
+        private FreeFormViewer _cview;
 
         public GestureMode(FreeFormViewer view) : base(view)
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
+            _cview = (FreeFormViewer) view;
             _inqCanvasModel = wvm.Model.InqCanvas;
             
             _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
@@ -55,7 +57,7 @@ namespace NuSysApp
                 var pc = f.FindParentDataContext();
                 await Task.Delay(200);
                 if (_released && SessionController.Instance.ActiveFreeFormViewer.Selections.Count < 2 || (pc is FreeFormViewerViewModel))
-                    _view.MultiMenu.Visibility = Visibility.Collapsed;
+                    _cview.MultiMenu.Visibility = Visibility.Collapsed;
                 return;
             }
             
@@ -77,9 +79,9 @@ namespace NuSysApp
             var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
             if (numSelections > 0) { 
                 _inqLine.Delete();
-                _view.MultiMenu.Visibility = Visibility.Visible;
-                Canvas.SetLeft(_view.MultiMenu, screenPoints.Points[0].X);
-                Canvas.SetTop(_view.MultiMenu, screenPoints.Points[0].Y);
+                _cview.MultiMenu.Visibility = Visibility.Visible;
+                Canvas.SetLeft(_cview.MultiMenu, screenPoints.Points[0].X);
+                Canvas.SetTop(_cview.MultiMenu, screenPoints.Points[0].Y);
             }
         }
 
@@ -114,7 +116,7 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
-            _view.InqCanvas.IsEnabled = false;
+            _cview.InqCanvas.IsEnabled = false;
             _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
         }
 

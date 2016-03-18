@@ -19,7 +19,7 @@ namespace NuSysApp
         private ElementViewModel _hoveredNode;
         private string _createdGroupId;
 
-        public CreateGroupMode(FreeFormViewer view) : base(view)
+        public CreateGroupMode(FrameworkElement view) : base(view)
         {
         }
 
