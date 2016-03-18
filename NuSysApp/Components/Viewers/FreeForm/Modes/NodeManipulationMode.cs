@@ -94,11 +94,16 @@ namespace NuSysApp
             var s = (UserControl) sender;
             var vm = (ElementViewModel)s.DataContext;
 
+
+
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
             if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
             {
+               Canvas.SetLeft(_view.MultiMenu, Canvas.GetLeft(_view.MultiMenu) + e.Delta.Translation.X);
+               Canvas.SetTop(_view.MultiMenu, Canvas.GetTop(_view.MultiMenu) + e.Delta.Translation.Y);
+
                 //move all selected content if a selected node is moved
                 foreach (var vmodel in SessionController.Instance.ActiveFreeFormViewer.Selections)
                 {

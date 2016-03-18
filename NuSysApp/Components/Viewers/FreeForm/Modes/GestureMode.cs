@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
+using MyToolkit.UI;
 
 namespace NuSysApp
 {
@@ -16,32 +19,46 @@ namespace NuSysApp
         private DateTime _tFirstPress;
         private InqLineModel _inqLine;
         private bool _wasGesture;
+        private bool _released;
        
 
         public GestureMode(FreeFormViewer view) : base(view)
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             _inqCanvasModel = wvm.Model.InqCanvas;
-            _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
+            
             _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
         }
 
         public override async Task Activate()
         {
-            
+            _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
         }
 
-        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
-        {   
+        private void OnPointerReleased(object source, PointerRoutedEventArgs args)
+        {
+            _released = true;
+        }
+
+        private async void  OnPointerPressed(object source, PointerRoutedEventArgs args)
+        {
+            _released = false;
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
 
             var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
-
             if (s > 1)
+            {
+                var f = (FrameworkElement)args.OriginalSource;
+                var pc = f.FindParentDataContext();
+                await Task.Delay(200);
+                if (_released && SessionController.Instance.ActiveFreeFormViewer.Selections.Count < 2 || (pc is FreeFormViewerViewModel))
+                    _view.MultiMenu.Visibility = Visibility.Collapsed;
                 return;
-
+            }
+            
             SelectionByStroke();
             args.Handled = true;
         }
@@ -56,8 +73,14 @@ namespace NuSysApp
                 screenPoints.Points.Add(np);
             }
 
-            new SelectionHull(screenPoints, SessionController.Instance.SessionView.MainCanvas);
-            _inqLine.Delete();
+            var hull = new SelectionHull();
+            var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
+            if (numSelections > 0) { 
+                _inqLine.Delete();
+                _view.MultiMenu.Visibility = Visibility.Visible;
+                Canvas.SetLeft(_view.MultiMenu, screenPoints.Points[0].X);
+                Canvas.SetTop(_view.MultiMenu, screenPoints.Points[0].Y);
+            }
         }
 
         private void OnLineFinalized(InqLineModel inqLine)

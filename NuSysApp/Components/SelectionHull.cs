@@ -32,15 +32,18 @@ namespace NuSysApp
         /// If you want to visually confirm that addSelectionHull lasso works, remove the comments on the
         /// last 2 lines of the addSelectionHull() method
         /// </summary>
-        public SelectionHull(Polyline lasso, Canvas mainCanvas)
+        public SelectionHull()
+        {
+        }
+
+        public int Compute(Polyline lasso, Canvas mainCanvas)
         {
             // handles bad point input
             if (lasso.Points.Count < 5)
-                return;
+                return 0;
 
             executeHousekeepingTasks(lasso, mainCanvas);
-            executeHullTasks();
-
+            return executeHullTasks();
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace NuSysApp
         /// <summary>
         /// Executes hull tasks, i.e. sorting points and figuring out the hull. 
         /// </summary>
-        private void executeHullTasks()
+        private int executeHullTasks()
         {
             findBottomLeftMostPoint();
             placeBottomLeftMostPointAtFirstPosition();
@@ -69,8 +72,10 @@ namespace NuSysApp
             if (_hullPoints != null)
             {
                 addSelectionHull();
-                selectContainedNodes(SessionController.Instance.ActiveFreeFormViewer.AllContent);
+                return selectContainedNodes(SessionController.Instance.ActiveFreeFormViewer.AllContent);
             }
+
+            return 0;
         }
 
         // Cleans artifact ui elements from the main canvas (i.e. the lasso polyline, any extraneous leftover shapes, etc.)
@@ -273,8 +278,9 @@ namespace NuSysApp
         }
 
         // selects contained atoms by figuring out the atoms in the selection hull
-        private void selectContainedNodes(List<ElementViewModel> atoms)
+        private int selectContainedNodes(List<ElementViewModel> atoms)
         {
+            var count = 0;
             foreach (var atom in atoms)
             {
                 foreach (Point refPoint in atom.ReferencePoints)
@@ -282,10 +288,13 @@ namespace NuSysApp
                     if (this.isPointInHull(refPoint))
                     {
                         SessionController.Instance.ActiveFreeFormViewer.AddSelection(atom);
+                        count++;
                         break;
                     }
                 }
             }
+
+            return count;
         }
 
         private bool isPointInHull(Point testPoint)

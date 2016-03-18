@@ -77,9 +77,10 @@ namespace NuSysApp
 
             var inqCanvasModel = inqCanvas.ViewModel.Model;
 
-         //   var m = new InqLineModel(_inqLineModel.Id);
-          //  m.Points = new ObservableCollection<Point2d>(_inqLineModel.Points);
             inqCanvasModel.FinalizeLineLocally(_inqLineModel);
+
+            if (_inqLineModel.IsDeleted)
+                return;
 
             var request = new FinalizeInkRequest( new Message(await _inqLineModel.Pack()));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);

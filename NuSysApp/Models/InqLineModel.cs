@@ -22,6 +22,7 @@ namespace NuSysApp
         public int Page { get; set; }
         public SolidColorBrush Stroke { get; set; }
         public bool IsGesture { get; set; }
+        public bool IsDeleted { get; set; }
 
         public delegate void DeleteInqLineEventHandler(object source, InqLineModel inqLine);
         public event DeleteInqLineEventHandler OnDeleteInqLine;
@@ -41,6 +42,7 @@ namespace NuSysApp
 
         public void Delete()
         {
+            IsDeleted = true;
             OnDeleteInqLine?.Invoke(this, this);
             SessionController.Instance.IdToControllers.Remove(Id);
         }
