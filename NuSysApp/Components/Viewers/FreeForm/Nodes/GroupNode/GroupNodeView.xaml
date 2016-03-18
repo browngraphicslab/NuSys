@@ -12,9 +12,11 @@
     RenderTransform="{Binding Transform}"
     Opacity="{Binding Alpha}"
     Width="{Binding Width}" Height="{Binding Height}"
-    Background="#99000000">
+    Background="Transparent"
+    BorderThickness="2"
+    BorderBrush="Black">
 
-    <Canvas x:Name="GroupNodeCanvas" Height="{Binding Height}" Width="{Binding Width}" Background="DarkGray">
+    <Canvas x:Name="GroupNodeCanvas" Height="{Binding Height}" Width="{Binding Width}" Background="LightSkyBlue">
         <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Yellow" StrokeThickness="3" 
                            Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
         <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" IsHitTestVisible="{Binding IsEditing}">
