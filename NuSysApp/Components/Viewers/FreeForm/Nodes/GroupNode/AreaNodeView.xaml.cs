@@ -21,6 +21,7 @@ namespace NuSysApp
     {
         private SelectMode _selectMode;
         private NodeManipulationMode _nodeManipulationMode;
+        private CreateGroupMode _createGroupMode;
 
         public AreaNodeView(AreaNodeViewModel vm)
         {
@@ -32,6 +33,9 @@ namespace NuSysApp
 
             _nodeManipulationMode = new NodeManipulationMode(this);
             _nodeManipulationMode.Activate();
+
+           
+
 
         }
 

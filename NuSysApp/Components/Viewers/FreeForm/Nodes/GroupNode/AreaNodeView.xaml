@@ -13,11 +13,11 @@
     HorizontalAlignment="Left" VerticalAlignment="Top"
 >
 
-    <Canvas  x:Name="xCanvas">
+    <Canvas  x:Name="xCanvas" Width="1000" Height="1000">
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas HorizontalAlignment="Left"  Width="{Binding Width}" Height="{Binding Height}" Background="Beige" />
+                    <Canvas HorizontalAlignment="Left" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

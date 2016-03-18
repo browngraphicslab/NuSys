@@ -22,7 +22,7 @@ namespace NuSysApp
         public AreaNodeViewModel(ElementCollectionController controller):base(controller)
         {
 
-            _nodeViewFactory = new FreeFormNodeViewFactory();
+            //_nodeViewFactory = new FreeFormNodeViewFactory();
             /*
         
            // Points = new PointCollection();
