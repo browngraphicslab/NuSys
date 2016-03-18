@@ -72,6 +72,11 @@ namespace NuSysApp
             Type = elementType;
             Loaded = false;
         }
+
+        public bool LoadingOrLoaded()
+        {
+            return Loaded || _loading;
+        }
         public void Load(string data)
         {
             Data = data;

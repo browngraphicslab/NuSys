@@ -98,16 +98,25 @@ namespace NuSysApp
                                 }
 
                                 Task.Run(async delegate {
-                                    if (type == ElementType.Collection)
+                                    if (SessionController.Instance.ContentController.Get(id) != null)
                                     {
-                                        SessionController.Instance.ContentController.Add(new CollectionLibraryElementModel(id, title));
+                                        var element = SessionController.Instance.ContentController.Get(id);
+                                        element.Title = title;//TODO make sure no other variables, like timestamp, need to be set here
                                     }
                                     else
                                     {
-                                        SessionController.Instance.ContentController.Add(new LibraryElementModel(id,type, title));
+                                        if (type == ElementType.Collection)
+                                        {
+                                            SessionController.Instance.ContentController.Add(
+                                                new CollectionLibraryElementModel(id, title));
+                                        }
+                                        else
+                                        {
+                                            SessionController.Instance.ContentController.Add(
+                                                new LibraryElementModel(id, type, title));
+                                        }
                                     }
-                                    
-                                    await FetchLibraryElementData(id);
+                                    //await FetchLibraryElementData(id);
                                 });
                             }
                         }
@@ -184,8 +193,24 @@ namespace NuSysApp
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
                     var contentData = (string)dict["data"] ?? "";
+                    var id = (string) dict["id"];
+                    var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                    var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
+
+                    if (content == null)
+                    {
+                        if (type == ElementType.Collection)
+                        {
+                            content = new CollectionLibraryElementModel(id,title);
+                        }
+                        else
+                        {
+                            content = new LibraryElementModel(id,type,title);
+                        }
+                        SessionController.Instance.ContentController.Add(content);
+                    }
 
                     await UITask.Run(async delegate
                     {

@@ -35,7 +35,26 @@ namespace NuSysApp
             ElementModel elementModel;
             ElementController controller;
 
-            var elementType = SessionController.Instance.ContentController.Get(libraryId).Type;
+            var libraryElement = SessionController.Instance.ContentController.Get(libraryId);
+            if (libraryElement == null)
+            {
+                var type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["nodeType"], true);
+                if (type == ElementType.Collection)
+                {
+                    libraryElement = new CollectionLibraryElementModel(libraryId);
+                }
+                else
+                {
+                    libraryElement = new LibraryElementModel(libraryId,type);
+                }
+                SessionController.Instance.ContentController.Add(libraryElement);
+            }
+            if (!libraryElement.LoadingOrLoaded())
+            {
+                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
+            }
+
+            var elementType = libraryElement.Type;
 
             switch (elementType)
             {
