@@ -37,6 +37,8 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = false;
         private static IEnumerable<string> _firstLoadList;
+        private bool _loggedIn = false;
+        private bool _isLoaded = false;
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -197,7 +199,14 @@ namespace NuSysApp
                         loggedInText.Text = "Logged In!";
 
                         NewWorkspaceButton.IsEnabled = true;
-                        JoinWorkspaceButton.IsEnabled = true;
+                        _loggedIn = true;
+                        if (_isLoaded)
+                        {
+                            UITask.Run(delegate {
+                                JoinWorkspaceButton.IsEnabled = true;
+                                JoinWorkspaceButton.Visibility = Visibility.Visible;
+                            });
+                        }
                         LoginButton.IsEnabled = false;
                         SlideOutLogin.Begin();
                         SlideInWorkspace.Begin();
@@ -230,7 +239,6 @@ namespace NuSysApp
                                         continue;
                                     }
                                 }
-                                var dictdata = dict.ContainsKey("data") ? (string)dict["data"] : null;
 
                                 LibraryElementModel element;
                                 if (type == ElementType.Collection)
@@ -245,6 +253,14 @@ namespace NuSysApp
                                 {
                                     SessionController.Instance.ContentController.Add(element);
                                 }
+                            }
+                            _isLoaded = true;
+                            if (_loggedIn)
+                            {
+                                UITask.Run(delegate {
+                                    JoinWorkspaceButton.IsEnabled = true;
+                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                });
                             }
                         });
                     }
