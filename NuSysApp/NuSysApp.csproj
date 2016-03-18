@@ -104,6 +104,9 @@
     <Content Include="Assets\icon_folder.png" />
     <Content Include="Assets\icon_ink.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
+    <Content Include="Assets\icon_nodemenu_record.png" />
+    <Content Include="Assets\icon_nodemenu_tag.png" />
+    <Content Include="Assets\icon_nodemenu_text.png" />
     <Content Include="Assets\icon_pano.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_upload.png" />
@@ -183,6 +186,13 @@
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\Misc\NodeMenuView.xaml.cs">
+      <DependentUpon>NodeMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\NodeMenuButtonView.xaml.cs">
+      <DependentUpon>NodeMenuButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\NodeMenuViewModel.cs" />
     <Compile Include="Components\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -587,6 +597,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Components\Misc\NodeMenuView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\NodeMenuButtonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
