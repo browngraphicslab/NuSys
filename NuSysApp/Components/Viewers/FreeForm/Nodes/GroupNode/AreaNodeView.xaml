@@ -13,7 +13,7 @@
     HorizontalAlignment="Left" VerticalAlignment="Top"
 >
 
-    <Canvas  x:Name="xCanvas" Width="1000" Height="1000">
+    <Canvas x:Name="xCanvas" Width="1000" Height="1000">
         <Canvas.Clip>
             <RectangleGeometry Rect="{Binding ClipRect}">
             </RectangleGeometry>
@@ -22,7 +22,6 @@
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}" />
-                    
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
