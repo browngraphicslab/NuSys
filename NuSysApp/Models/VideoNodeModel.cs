@@ -25,7 +25,7 @@ namespace NuSysApp
             //ByteArray = byteArray;
             Recording = new InMemoryRandomAccessStream();
             //Test = new MediaElement();
-            //var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).ContentId).Data);
+            //var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).LibraryId).Data);
             //Recording.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
             //Recording.Seek(0);
             //Debug.WriteLine(memoryStream);

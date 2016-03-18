@@ -40,7 +40,7 @@ namespace NuSysApp
             DataContext = vm;
 
             /*
-            var contentId = (vm.Model as ElementModel).ContentId;
+            var contentId = (vm.Model as ElementModel).LibraryId;
             var content = SessionController.Instance.ContentController.Get(contentId);
             if (content != null)
             {
@@ -164,7 +164,7 @@ namespace NuSysApp
             {
                 var vm = DataContext as ElementViewModel;
                 var controller = (TextNodeController)vm.Controller;
-                controller.ContentModel?.SetContentData(vm,data);
+                controller.LibraryElementModel?.SetContentData(vm,data);
             }
         }
 

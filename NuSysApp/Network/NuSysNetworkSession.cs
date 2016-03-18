@@ -214,7 +214,7 @@ namespace NuSysApp
         }
         #endregion Requests
 
-        public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)
+        public async Task<List<Message>> GetCollectionAsElementMessages(string id)
         {
             return await _serverClient.GetWorkspaceAsElementMessages(id);
         }
@@ -250,9 +250,9 @@ namespace NuSysApp
             }
         }
 
-        public async Task FetchContent(string id)
+        public async Task FetchLibraryElementData(string id)
         {
-            await _serverClient.GetContent(id);
+            await _serverClient.FetchLibraryElementData(id);
         }
 
         public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)

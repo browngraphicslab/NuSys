@@ -13,21 +13,16 @@ namespace NuSysApp
         
         public TextNodeController(TextElementModel model) : base(model)
         {
-            if (SessionController.Instance.ContentController.Get(Model.ContentId) != null)
+            if (SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
             {
-                var content = SessionController.Instance.ContentController.Get(Model.ContentId);
+                var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
                 content.OnContentChanged += ContentChanged;
             }
-        }
-        public override async Task FireContentLoaded(LibraryElementModel content)
-        {
-            TextChanged?.Invoke(this,content.Data);
-            await base.FireContentLoaded(content);
         }
 
         private void ContentChanged(ElementViewModel originalSenderViewModel = null)
         {
-            var content = SessionController.Instance.ContentController.Get(Model.ContentId);
+            var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
             TextChanged?.Invoke(this, content.Data, originalSenderViewModel);
         }
     }

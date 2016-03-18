@@ -49,7 +49,7 @@ namespace NuSysApp
                 {
                     Task.Run(async delegate
                     {
-                        SessionController.Instance.NuSysNetworkSession.FetchContent(id);
+                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
                     });
                 }
             }

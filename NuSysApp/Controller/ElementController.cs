@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,10 +51,6 @@ namespace NuSysApp
         {
             _model = model;
             _debouncingDictionary = new DebouncingDictionary(model.Id);
-        }
-        public virtual async Task FireContentLoaded(LibraryElementModel content)
-        {
-            ContentLoaded?.Invoke(this, content);
         }
 
         public void SetCreator(string parentId)
@@ -144,7 +141,7 @@ namespace NuSysApp
         public async virtual Task RequestDuplicate(double x, double y)
         {
             Message m = new Message();
-            m["contentId"] = Model.ContentId;
+            m["contentId"] = Model.LibraryId;
             m["data"] = "";
             m["x"] = x;
             m["y"] = y;
@@ -173,7 +170,7 @@ namespace NuSysApp
 
             var m1 = new Message();
             m1["metadata"] = metadata;
-            m1["contentId"] = Model.ContentId;
+            m1["contentId"] = Model.LibraryId;
             m1["nodeType"] = Model.ElementType;
             m1["x"] = 50000;
             m1["y"] = 50000;
@@ -208,13 +205,13 @@ namespace NuSysApp
         {
             get { return _model; }
         }
-        public LibraryElementModel ContentModel
+        public LibraryElementModel LibraryElementModel
         {
             get
             {
-                if (Model.ContentId != null && SessionController.Instance.ContentController.Get(Model.ContentId) != null)
+                if (Model.LibraryId != null && SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
                 {
-                    return SessionController.Instance.ContentController.Get(Model.ContentId);
+                    return SessionController.Instance.ContentController.Get(Model.LibraryId);
                 }
                 return null;
             }
@@ -244,6 +241,11 @@ namespace NuSysApp
                 var height = props.GetDouble("height", this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
             }
+        }
+
+        public void FireContentLoaded()
+        {
+            ContentLoaded?.Invoke(this,LibraryElementModel);
         }
     }
 }

@@ -30,7 +30,6 @@ namespace NuSysApp
         private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
-        private static List<ElementModel> createdModels;
         private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
@@ -107,7 +106,7 @@ namespace NuSysApp
             }
 
             SessionController.Instance.SessionView = this;
-            xFullScreenViewer.DataContext = new DetailViewerViewModel();
+            xDetailViewer.DataContext = new DetailViewerViewModel();
 
 
             xFloatingMenu.SessionView = this;
@@ -134,7 +133,7 @@ namespace NuSysApp
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
         {
-            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xFullScreenViewer.Opacity < 0.1)
+            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xDetailViewer.Opacity < 0.1)
             {
                 var source = (FrameworkElement) eventArgs.OriginalSource;
                 if (source.DataContext is FloatingMenuViewModel)
@@ -149,7 +148,7 @@ namespace NuSysApp
         private void OnPointerEntered(object sender, PointerRoutedEventArgs eventArgs)
         {
             if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions != Options.PenGlobalInk &&
-                xFullScreenViewer.Opacity < 0.1)
+                xDetailViewer.Opacity < 0.1)
             {
                 var source = (FrameworkElement) eventArgs.OriginalSource;
                 if (source.DataContext is FloatingMenuViewModel)
@@ -167,7 +166,7 @@ namespace NuSysApp
                 return;
 
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
-                xFullScreenViewer.Opacity < 0.1)
+                xDetailViewer.Opacity < 0.1)
             {
                 ActivatePenMode(true);
             }
@@ -178,7 +177,7 @@ namespace NuSysApp
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
-            if (args.VirtualKey == VirtualKey.Shift && xFullScreenViewer.Opacity < 0.1)
+            if (args.VirtualKey == VirtualKey.Shift && xDetailViewer.Opacity < 0.1)
             {
                 ActivatePenMode(false);
             }
@@ -218,93 +217,41 @@ namespace NuSysApp
 
             SessionController.Instance.IdToControllers.Clear();
 
-            if (SessionController.Instance.ContentController.Get(collectionId) == null)
-            {
-                SessionController.Instance.ContentController.Add(new CollectionLibraryElementModel(collectionId, null, "instance"));
-            }
-            var elementCollection = SessionController.Instance.ContentController.Get(collectionId);
-            //var elementCollection = new LibraryElementCollectionModel();
             var elementCollectionInstance = new CollectionElementModel(collectionId)
             {
                 Title = "Instance title"
             };
-            elementCollectionInstance.ContentId = collectionId;
+
+            elementCollectionInstance.LibraryId = collectionId;
+
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
 
             await OpenCollection(elementCollectionInstanceController);
 
-            xFullScreenViewer.DataContext = new DetailViewerViewModel();
+            xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            createdModels = new List<ElementModel>();
-            HashSet<string> usedContentIDs = new HashSet<string>();
-            var contentIDsToFetchInfo = new HashSet<string>();
             foreach (var dict in nodeStrings)
             {
                 var msg = new Message(dict);
                 msg["creatorContentID"] = collectionId;
-                var contentId = msg.GetString("contentId");
-
-                contentIDsToFetchInfo.Add(contentId);
+                var libraryId = msg.GetString("contentId");
 
                 ElementType type;
-                if (!msg.ContainsKey("nodeType"))
-                {
-                    if (msg.ContainsKey("type"))
-                    {
-                        type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["type"], true);
-                    }
-                    else
-                    {
-                        throw new Exception("all elements must have key 'nodeType'");
-                        //TODO make this just 'elementType' eventually
-                    }
-                }
-                else
-                {
-                    type = (ElementType) Enum.Parse(typeof (ElementType), (string) msg["nodeType"], true);
-                }
+
+                var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+                type = libraryModel.Type;
+
                 if (Constants.IsNode(type))
                 {
-                    if (type == ElementType.Collection)
-                    {
-                        type = ElementType.Collection;
-                        SessionController.Instance.ContentController.Add(new CollectionLibraryElementModel(contentId, null));
-                    }
-                    else
-                    {
-                        SessionController.Instance.ContentController.Add(new LibraryElementModel(null, contentId, type));
-                    }
                     await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
-                            new NewElementRequest(msg));
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(msg));
                         if (type == ElementType.Collection)
                         {
-                            var messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(contentId);
+                            var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                             foreach (var m in messages)
                             {
-                                if (m.ContainsKey("contentId") && m.ContainsKey("nodeType"))
-                                {
-                                    var newNodeContentId = m.GetString("contentId");
-                                    var elType = (ElementType) Enum.Parse(typeof (ElementType), m.GetString("nodeType"), true);
-                                    if (elType == ElementType.Collection)
-                                    {
-                                        SessionController.Instance.ContentController.Add(new CollectionLibraryElementModel(newNodeContentId, null));
-                                    }
-                                    else
-                                    {
-                                        SessionController.Instance.ContentController.Add(new LibraryElementModel(null,newNodeContentId, elType));
-                                    }
-                                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
-                                    if (!usedContentIDs.Contains(newNodeContentId))
-                                    {
-                                        Task.Run(async delegate
-                                        {
-                                            await SessionController.Instance.NuSysNetworkSession.FetchContent(newNodeContentId);
-                                        });
-                                        usedContentIDs.Add(newNodeContentId);
-                                    }
-                                }
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                             }
                     }
                 }
@@ -312,86 +259,9 @@ namespace NuSysApp
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
-                
-                if (!usedContentIDs.Contains(contentId))
-                {
-                    Task.Run(async delegate
-                    {
-                        await SessionController.Instance.NuSysNetworkSession.FetchContent(contentId);
-                        usedContentIDs.Add(contentId);
-                    });
-                }
-            }
-            Task.Run(async delegate
-            {
-                await SetContentInfo(new List<string>(contentIDsToFetchInfo));
-            });
-            Task.Run(async delegate {
-                await ImportLibrary(usedContentIDs);
-            });
-        }
-
-        private async Task SetContentInfo(List<string> contentIDs)
-        {
-            var dicts = await SessionController.Instance.NuSysNetworkSession.GetContentInfo(contentIDs);
-            foreach (var dict in dicts)
-            {
-                if (dict.ContainsKey("id"))
-                {
-                    var contentId = (string) dict["id"];
-                    if (dict.ContainsKey("title") && SessionController.Instance.ContentController.Get(contentId) != null)
-                    {
-                        UITask.Run(delegate
-                        {
-                            SessionController.Instance.ContentController.Get(contentId).SetTitle((string) dict["title"]);
-                        });
-                    }
-                }
             }
         }
-        private async Task ImportLibrary(HashSet<string> usedIDs)
-        {
-            await Task.Run(async delegate
-            {
-                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                foreach (var kvp in dictionaries)
-                {
-                    var id = (string) kvp.Value["id"];
-                    //var element = new LibraryElementModel(kvp.Value);
-
-                    var dict = kvp.Value;
-
-                    string title = null;
-                    ElementType type = ElementType.Text;
-
-                    if (dict.ContainsKey("title"))
-                    {
-                        title = (string) dict["title"]; // title
-                    }
-                    if (dict.ContainsKey("type"))
-                    {
-                        try
-                        {
-                            type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
-                        }
-                        catch (Exception e)
-                        {
-                            continue;
-                        }
-                    }
-                    var data = dict.ContainsKey("data") ? (string) dict["data"] : null;
-
-                    var element = new LibraryElementModel(data, id, type, title);
-                    if (!usedIDs.Contains(id) &&
-                        SessionController.Instance.ContentController.Get(id) == null)
-                    {
-                        UITask.Run(delegate {
-                                                SessionController.Instance.ContentController.Add(element);
-                        });
-                    }
-                }
-            });
-        }
+       
         public async Task LoadWorkspace(IEnumerable<string> nodeStrings)
         {
             SessionController.Instance.IdToControllers.Clear();
@@ -436,7 +306,7 @@ namespace NuSysApp
             SessionController.Instance.IdToControllers[sc.Model.Id] = sc;
             OpenCollection(sc);
 
-            xFullScreenViewer.DataContext = new DetailViewerViewModel();
+            xDetailViewer.DataContext = new DetailViewerViewModel();
         }
         /*
         private ElementCollectionController CreateEmptyElementCollectionInstanceController()
@@ -449,7 +319,7 @@ namespace NuSysApp
                 Title = "Instance title"
             };
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
-            SessionController.Instance.IdToControllers[elementCollectionInstance.ContentId] =
+            SessionController.Instance.IdToControllers[elementCollectionInstance.LibraryId] =
                 elementCollectionInstanceController;
             return elementCollectionInstanceController;
         }*/
@@ -474,8 +344,8 @@ namespace NuSysApp
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             SessionController.Instance.SessionView = this;
 
-            if (collectionController.Model.Title != null)
-                xWorkspaceTitle.Text = collectionController.Model.Title;
+            if (collectionController.LibraryElementModel.Title != null)
+                xWorkspaceTitle.Text = collectionController.LibraryElementModel.Title;
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
@@ -539,7 +409,7 @@ namespace NuSysApp
 
         public void ShowDetailView(ElementController controller)
         {
-            var vm = (DetailViewerViewModel) xFullScreenViewer.DataContext;
+            var vm = (DetailViewerViewModel) xDetailViewer.DataContext;
             vm.ShowElement(controller);
             vm.MakeTagList();
         }

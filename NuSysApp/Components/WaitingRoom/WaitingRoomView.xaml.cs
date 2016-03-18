@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -200,6 +201,52 @@ namespace NuSysApp
                         LoginButton.IsEnabled = false;
                         SlideOutLogin.Begin();
                         SlideInWorkspace.Begin();
+
+                        await Task.Run(async delegate
+                        {
+                            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            foreach (var kvp in dictionaries)
+                            {
+                                var id = (string)kvp.Value["id"];
+                                //var element = new LibraryElementModel(kvp.Value);
+
+                                var dict = kvp.Value;
+
+                                string title = null;
+                                ElementType type = ElementType.Text;
+
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"]; // title
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    try
+                                    {
+                                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        continue;
+                                    }
+                                }
+                                var dictdata = dict.ContainsKey("data") ? (string)dict["data"] : null;
+
+                                LibraryElementModel element;
+                                if (type == ElementType.Collection)
+                                {
+                                    element = new CollectionLibraryElementModel(id, title);
+                                }
+                                else
+                                {
+                                    element = new LibraryElementModel(id, type, title);
+                                }
+                                if (SessionController.Instance.ContentController.Get(id) == null)
+                                {
+                                    SessionController.Instance.ContentController.Add(element);
+                                }
+                            }
+                        });
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {

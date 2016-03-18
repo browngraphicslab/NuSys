@@ -72,7 +72,7 @@ namespace NuSysApp
 
             };
             vm.TextBindingChanged += delegate(object source, string text) { UpdateText(text); };
-            _modelContentId = model.ContentId;
+            _modelContentId = model.LibraryId;
             _modelId = model.Id;
 
         }

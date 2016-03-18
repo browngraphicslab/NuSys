@@ -31,7 +31,7 @@ namespace NuSysApp
 
                 await Task.Run(async delegate
                 {
-                    messages = await SessionController.Instance.NuSysNetworkSession.GetWorkspaceAsElementMessages(contentID);
+                    messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(contentID);
                 });
 
                 foreach (var m in messages)
@@ -44,7 +44,7 @@ namespace NuSysApp
                         {
                             Task.Run(async delegate
                             {
-                                SessionController.Instance.NuSysNetworkSession.FetchContent(newNodeContentId);
+                                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(newNodeContentId);
                             });
                         }
                     }

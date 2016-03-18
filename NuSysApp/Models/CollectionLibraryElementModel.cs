@@ -15,9 +15,9 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
-        public CollectionLibraryElementModel(string id, IEnumerable<string> startingIDs = null, string contentName = null) : base(null,id, ElementType.Collection, contentName)
+        public CollectionLibraryElementModel(string id, string contentName = null) : base(id, ElementType.Collection, contentName)
         {
-            _children = startingIDs != null ? new HashSet<string>(startingIDs) : new HashSet<string>();
+            _children = new HashSet<string>();
         }
 
         public bool AddChild(string id)

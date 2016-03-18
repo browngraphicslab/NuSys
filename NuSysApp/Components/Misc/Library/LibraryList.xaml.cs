@@ -186,7 +186,7 @@ namespace NuSysApp
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchContent(element.Id);
+                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.Id);
                 });
             }
         }
