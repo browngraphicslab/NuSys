@@ -127,6 +127,16 @@ namespace NuSysApp
             var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creatorContentID);
             parentCollectionLibraryElement.AddChild(id);
 
+            if (parentCollectionLibraryElement.Id == SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id)
+            {
+                Task.Run(async delegate
+                {
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new SubscribeToCollectionRequest(libraryId));
+                });
+            }
+
             if (SessionController.Instance.ContentController.Get(libraryId).Loaded)
             {
                 controller.FireContentLoaded();
