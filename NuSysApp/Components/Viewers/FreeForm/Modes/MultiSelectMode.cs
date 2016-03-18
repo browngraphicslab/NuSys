@@ -26,9 +26,10 @@ namespace NuSysApp
         private Point _canvasStartPoint;
 
         private Rectangle _currentRect;
-
+        private FreeFormViewer _cview;
         public MultiSelectMode(FreeFormViewer view) : base(view)
         {
+            _cview = (FreeFormViewer) view;//casted value
         }
 
         public override async Task Activate()
@@ -49,9 +50,9 @@ namespace NuSysApp
             _view.PointerReleased -= View_PointerReleased;
             _view.DoubleTapped -= View_OnDoubleTapped;
 
-            _view.MultiMenu.Visibility = Visibility.Collapsed;
-            _view.MultiMenu.Delete.Click -= Delete_OnClick;
-            _view.MultiMenu.Group.Click -= Group_OnClick;
+            _cview.MultiMenu.Visibility = Visibility.Collapsed;
+            _cview.MultiMenu.Delete.Click -= Delete_OnClick;
+            _cview.MultiMenu.Group.Click -= Group_OnClick;
        //     var vm = (WorkspaceViewModel)_view.DataContext;
       //      vm.ClearMultiSelection();
         }
@@ -60,20 +61,20 @@ namespace NuSysApp
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
          //   vm.DeleteMultiSelecttion();
-            _view.SwitchMode(Options.SelectNode, false);
+            _cview.SwitchMode(Options.SelectNode, false);
         }
 
         private void Group_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
          //   vm.GroupFromMultiSelection();
-            _view.SwitchMode(Options.SelectNode, false);
+            _cview.SwitchMode(Options.SelectNode, false);
         }
 
         private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-                _view.MultiMenu.Delete.Click -= Delete_OnClick;
-                _view.MultiMenu.Group.Click -= Group_OnClick;
+                _cview.MultiMenu.Delete.Click -= Delete_OnClick;
+                _cview.MultiMenu.Group.Click -= Group_OnClick;
             var dc = ((FrameworkElement)e.OriginalSource).DataContext;
             if (dc is ElementViewModel)
             {
@@ -82,8 +83,8 @@ namespace NuSysApp
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;
             _currentPoint = e.GetCurrentPoint(_view).Position;
-            _canvasStartPoint = e.GetCurrentPoint(_view.InqCanvas).Position;
-            _view.InqCanvas.CapturePointer(e.Pointer);
+            _canvasStartPoint = e.GetCurrentPoint(_cview.InqCanvas).Position;
+            _cview.InqCanvas.CapturePointer(e.Pointer);
         }
 
         private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -94,9 +95,9 @@ namespace NuSysApp
             {
                 var vm = (FreeFormViewerViewModel)_view.DataContext;
       
-                _view.MultiMenu.Visibility = Visibility.Visible;
-                _view.MultiMenu.Delete.Click += Delete_OnClick;
-                _view.MultiMenu.Group.Click += Group_OnClick;
+                _cview.MultiMenu.Visibility = Visibility.Visible;
+                _cview.MultiMenu.Delete.Click += Delete_OnClick;
+                _cview.MultiMenu.Group.Click += Group_OnClick;
             }
 
             _isMouseDown = false;
@@ -116,7 +117,7 @@ namespace NuSysApp
         private async void View_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _isMouseDown = false;
-            _view.InqCanvas.ReleasePointerCaptures();
+            _cview.InqCanvas.ReleasePointerCaptures();
             SelectContainedComponents();
             // TODO: add again
            // _view.InqCanvas.Children.Remove(_currentRect);
@@ -155,7 +156,7 @@ namespace NuSysApp
 
             foreach (var atom in vm.AtomViewList)
             {
-                var atomPoint = atom.TransformToVisual(_view.InqCanvas).TransformPoint(new Point(0, 0));
+                var atomPoint = atom.TransformToVisual(_cview.InqCanvas).TransformPoint(new Point(0, 0));
                 var atomRect = new Rect(atomPoint.X, atomPoint.Y, atom.Width, atom.Height);
                 atomRect.Intersect(r);
                 if (!Double.IsInfinity(atomRect.Width) || !Double.IsInfinity(atomRect.Height))
@@ -170,11 +171,11 @@ namespace NuSysApp
 
             if (vm.MultiSelectedAtomViewModels.Count > 0)
             {
-                Canvas.SetLeft(_view.MultiMenu, _startPoint.X);
-                Canvas.SetTop(_view.MultiMenu, _startPoint.Y);
-                _view.MultiMenu.Visibility = Visibility.Visible;
-                _view.MultiMenu.Delete.Click += Delete_OnClick;
-                _view.MultiMenu.Group.Click += Group_OnClick;
+                Canvas.SetLeft(_cview.MultiMenu, _startPoint.X);
+                Canvas.SetTop(_cview.MultiMenu, _startPoint.Y);
+                _cview.MultiMenu.Visibility = Visibility.Visible;
+                _cview.MultiMenu.Delete.Click += Delete_OnClick;
+                _cview.MultiMenu.Group.Click += Group_OnClick;
             }
             else
             {

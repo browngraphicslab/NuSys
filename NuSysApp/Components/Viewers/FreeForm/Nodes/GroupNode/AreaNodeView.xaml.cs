@@ -19,10 +19,20 @@ namespace NuSysApp
 {
     public sealed partial class AreaNodeView : AnimatableUserControl
     {
+        private SelectMode _selectMode;
+        private NodeManipulationMode _nodeManipulationMode;
+
         public AreaNodeView(AreaNodeViewModel vm)
         {
             DataContext = vm;
             this.InitializeComponent();
+
+            _selectMode = new SelectMode(this);
+            _selectMode.Activate();
+
+            _nodeManipulationMode = new NodeManipulationMode(this);
+            _nodeManipulationMode.Activate();
+
         }
 
         public void Update()

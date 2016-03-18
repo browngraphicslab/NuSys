@@ -11,7 +11,12 @@ namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
-        public PanZoomMode(FreeFormViewer view) : base(view) { }
+        private FreeFormViewer _cview;
+
+        public PanZoomMode(FreeFormViewer view) : base(view)
+        {
+            _cview = (FreeFormViewer)view;
+        }
 
         public override async Task Activate()
         {
@@ -85,7 +90,7 @@ namespace NuSysApp
             model.Zoom = compositeTransform.ScaleX;
             */
 
-            _view.InqCanvas.Transform = compositeTransform;
+            _cview.InqCanvas.Transform = compositeTransform;
 
         }
 
@@ -156,7 +161,7 @@ namespace NuSysApp
             model.Zoom = compositeTransform.ScaleX;
             */
 
-            _view.InqCanvas.Transform = compositeTransform;
+            _cview.InqCanvas.Transform = compositeTransform;
         }
     }
 }

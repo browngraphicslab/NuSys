@@ -20,7 +20,7 @@ namespace NuSysApp
 
         public List<UserControl> ActiveNodes { get; private set; }
 
-        public NodeManipulationMode(FreeFormViewer view) : base(view) { }
+        public NodeManipulationMode(FrameworkElement view) : base(view) { }
 
         public override async Task Activate()
         {

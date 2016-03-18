@@ -65,6 +65,9 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.Get(model.ContentId));
                 }
             }
+            model.X = 0;
+            model.Y = 0;
+            
         }
 
         private void OnChildDeleted(object source)

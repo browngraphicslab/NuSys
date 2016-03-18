@@ -10,13 +10,14 @@
     d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
+    HorizontalAlignment="Left" VerticalAlignment="Top"
 >
 
-    <Canvas x:Name="xCanvas">
+    <Canvas  x:Name="xCanvas">
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas  HorizontalAlignment="Left" Background="Transparent" />
+                    <Canvas HorizontalAlignment="Left"  Width="{Binding Width}" Height="{Binding Height}" Background="Beige" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

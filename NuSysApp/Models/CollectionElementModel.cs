@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public class CollectionElementModel : ElementModel
     {
-        public CollectionLibraryElementModel LibraryElementCollectionModel { get; set; }
+        public CollectionLibraryElementModel CollectionLibraryElementModel { get; set; }
 
         public CollectionElementModel(string id):base(id)
         {

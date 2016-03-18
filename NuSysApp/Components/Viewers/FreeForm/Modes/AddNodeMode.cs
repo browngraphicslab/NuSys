@@ -81,7 +81,7 @@ namespace NuSysApp
 
                 var wvm = (FreeFormViewerViewModel) _view.DataContext;
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));
-                await AddNode(_view, _startPos, new Size(r.Width, r.Height), _elementType);
+                await AddNode((FreeFormViewer)_view, _startPos, new Size(r.Width, r.Height), _elementType);
             }
             _isDragging = false;
          //   e.Handled = true;

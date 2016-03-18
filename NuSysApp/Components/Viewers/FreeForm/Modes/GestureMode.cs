@@ -16,11 +16,13 @@ namespace NuSysApp
         private DateTime _tFirstPress;
         private InqLineModel _inqLine;
         private bool _wasGesture;
-       
+        private FreeFormViewer _cview;
+
 
         public GestureMode(FreeFormViewer view) : base(view)
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
+            _cview = (FreeFormViewer) view;
             _inqCanvasModel = wvm.Model.InqCanvas;
             _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
             _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
@@ -91,7 +93,7 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
-            _view.InqCanvas.IsEnabled = false;
+            _cview.InqCanvas.IsEnabled = false;
             _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
         }
 
