@@ -133,7 +133,7 @@ namespace NuSysApp
 
         public bool ChangeContentData(string data)
         {
-            var content = Controller.ContentModel;
+            var content = Controller.LibraryElementModel;
             if (content != null)
             {
                 content.SetContentData(this, data);
@@ -380,7 +380,7 @@ namespace NuSysApp
 
         public string ContentId
         {
-            get { return ((ElementModel) Model).ContentId; }
+            get { return ((ElementModel) Model).LibraryId; }
         }
 
         public CompositeTransform InkScale

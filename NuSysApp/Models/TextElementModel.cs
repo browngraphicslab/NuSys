@@ -35,7 +35,7 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController;
             var contentId = props.GetString("contentId");
             if (!string.IsNullOrEmpty(contentId) && controller.Get(contentId) != null)
-                Text = SessionController.Instance.ContentController.Get(ContentId).Data;
+                Text = SessionController.Instance.ContentController.Get(LibraryId).Data;
 
         }
 

@@ -41,7 +41,7 @@ namespace NuSysApp
             DataContext = vm;
 
             InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
-            var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).ContentId).Data);
+            var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).LibraryId).Data);
             memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
             memoryStream.Seek(0);
             playbackElement.SetSource(memoryStream, "video/mp4");
@@ -117,7 +117,7 @@ namespace NuSysApp
             if (playbackElement.Source == null && _loaded == false)
             {
                 InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
-                var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).ContentId).Data);
+                var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId).Data);
                 memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
                 memoryStream.Seek(0);
                 playbackElement.SetSource(memoryStream, "video/mp4");

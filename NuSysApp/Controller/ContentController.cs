@@ -52,7 +52,7 @@ namespace NuSysApp
         public string Add( string contentData, ElementType elementType, string presetID = null)
         {
             var id = presetID ?? SessionController.Instance.GenerateId();
-            var n = new LibraryElementModel(contentData, id, elementType);
+            var n = new LibraryElementModel(id, elementType);
             _contents.Add(id, n );
             OnNewContent?.Invoke(n);
             /*

@@ -378,7 +378,7 @@
                 <TextBlock Foreground="White" TextAlignment="Center" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="24" Margin="0,0,0,10">choose a workspace:</TextBlock>
                 <ListBox Name="List" SelectionMode="Single" IsEnabled="True" Foreground="#9cc5c2" FontSize="24" Height="200" Width="350" Background="White" Margin="0,0,0,10">
                 </ListBox>
-                <Button  Click="Join_Workspace_Click" Margin="0,0,0,20"  Name="JoinWorkspaceButton" IsEnabled="False" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="150" Background="White">
+                <Button Visibility="Collapsed" Click="Join_Workspace_Click" Margin="0,0,0,20"  Name="JoinWorkspaceButton" IsEnabled="False" Foreground="#9cc5c2" FontSize="24" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="150" Background="White">
                     enter
                 </Button>
                 <TextBlock Foreground="White" TextAlignment="Center" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="24" Margin="0,0,0,10">make a workspace:</TextBlock>

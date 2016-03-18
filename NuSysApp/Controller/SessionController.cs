@@ -25,8 +25,6 @@ namespace NuSysApp
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
-        public Dictionary<string, List<ElementController>> LoadingDictionary = new Dictionary<string, List<ElementController>>();
-
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
         private SessionController()

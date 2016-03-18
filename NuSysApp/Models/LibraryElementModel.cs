@@ -8,8 +8,26 @@ namespace NuSysApp
 {
     public class LibraryElementModel : BaseINPC
     {
-        public bool Loaded { get; set; }//TODO Add a loaded event
-        //TODO add in 'MakeNewController' method that creates a new controller-model pair pointing to this and returns it
+        public bool Loaded { get; set; }
+
+        public delegate void OnLoadedEventHandler();
+        public event OnLoadedEventHandler OnLoaded {
+            add
+            {
+                _onLoaded += value;
+                if (!Loaded && !_loading)
+                {
+                    _loading = true;
+                    Task.Run(async delegate
+                    {
+                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(Id);
+                    });
+                }
+            }
+            remove { _onLoaded -= value; }
+        }
+
+        private event OnLoadedEventHandler _onLoaded;
 
         public delegate void ContentChangedEventHandler(ElementViewModel originalSenderViewModel = null);
         public event ContentChangedEventHandler OnContentChanged;
@@ -18,7 +36,18 @@ namespace NuSysApp
         public event TitleChangedEventHandler OnTitleChanged;
 
         public ElementType Type { get; set; }
-        public string Data { get; set; }
+
+        public string Data
+        {
+            get { return _data; }
+            set
+            {
+                _data = value;
+                ViewUtilBucket = new Dictionary<string, object>();
+                OnContentChanged?.Invoke();
+            }
+        }
+
         public string Id { get; set; }
         public string Title {
             get { return _title; }
@@ -32,16 +61,28 @@ namespace NuSysApp
 
         private string _title;
 
-        public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>(); 
-        public LibraryElementModel(string data, string id, ElementType elementType,string contentName = null)
+        public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>();
+        private string _data;
+        private bool _loading = false;
+        public LibraryElementModel(string id, ElementType elementType, string contentName = null)
         {
-            Data = data;
+            Data = null;
             Id = id;
             Title = contentName;
             Type = elementType;
-            Loaded = data != null;
+            Loaded = false;
         }
 
+        public bool LoadingOrLoaded()
+        {
+            return Loaded || _loading;
+        }
+        public void Load(string data)
+        {
+            Data = data;
+            Loaded = true;
+            _onLoaded?.Invoke();
+        }
         public bool InSearch(string s)
         {
             var title = Title?.ToLower() ?? "";
@@ -51,11 +92,6 @@ namespace NuSysApp
                 return true;
             }
             return false;
-        }
-        public void FireContentChanged()
-        {
-            ViewUtilBucket = new Dictionary<string, object>();
-            OnContentChanged?.Invoke();
         }
 
         public void SetTitle(string title)
@@ -73,7 +109,7 @@ namespace NuSysApp
         }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)
         {
-            Data = data;
+            _data = data;
 
             Task.Run(async delegate
             {
@@ -81,6 +117,11 @@ namespace NuSysApp
             });
             ViewUtilBucket = new Dictionary<string, object>();
             OnContentChanged?.Invoke(originalSenderViewModel);
+        }
+
+        public void SetLoading(bool loading)
+        {
+            _loading = loading;
         }
     }
 }

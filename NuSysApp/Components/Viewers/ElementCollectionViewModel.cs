@@ -42,29 +42,6 @@ namespace NuSysApp
             AtomViewList.Add(view);
 
             elementController.Deleted += OnChildDeleted;
-
-            var model = elementController.Model;
-            if (model.ContentId != null )
-            {
-                if (!SessionController.Instance.ContentController.ContainsAndLoaded(model.ContentId))
-                {
-
-                    if (SessionController.Instance.LoadingDictionary.ContainsKey(model.ContentId))
-                    {
-                        SessionController.Instance.LoadingDictionary[model.ContentId]?.Add(elementController);
-                    }
-                    else
-                    {
-                        SessionController.Instance.LoadingDictionary[model.ContentId] =
-                            new List<ElementController>() {elementController};
-                    }
-                }
-                else
-                {
-                    elementController.FireContentLoaded(
-                        SessionController.Instance.ContentController.Get(model.ContentId));
-                }
-            }
         }
 
         private void OnChildDeleted(object source)

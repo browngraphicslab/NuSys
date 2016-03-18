@@ -20,7 +20,7 @@ namespace NuSysApp
 
             controller.ContentLoaded += async delegate(object source, LibraryElementModel content)
             {
-                var image = controller.ContentModel.ViewUtilBucket.ContainsKey("image")? (BitmapImage)controller.ContentModel.ViewUtilBucket["image"]: null;
+                var image = controller.LibraryElementModel.ViewUtilBucket.ContainsKey("image")? (BitmapImage)controller.LibraryElementModel.ViewUtilBucket["image"]: null;
                 if (image != null)
                 {
                     Image = image;
@@ -40,7 +40,7 @@ namespace NuSysApp
                     {
                         SetSize(Image.PixelWidth, Image.PixelHeight);
                     }
-                    controller.ContentModel.ViewUtilBucket["image"] = Image;
+                    controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
                     RaisePropertyChanged("Image");
                 }
             };

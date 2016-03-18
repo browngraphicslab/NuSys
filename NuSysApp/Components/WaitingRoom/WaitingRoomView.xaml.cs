@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -36,6 +37,8 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = false;
         private static IEnumerable<string> _firstLoadList;
+        private bool _loggedIn = false;
+        private bool _isLoaded = false;
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -196,10 +199,70 @@ namespace NuSysApp
                         loggedInText.Text = "Logged In!";
 
                         NewWorkspaceButton.IsEnabled = true;
-                        JoinWorkspaceButton.IsEnabled = true;
+                        _loggedIn = true;
+                        if (_isLoaded)
+                        {
+                            UITask.Run(delegate {
+                                JoinWorkspaceButton.IsEnabled = true;
+                                JoinWorkspaceButton.Visibility = Visibility.Visible;
+                            });
+                        }
                         LoginButton.IsEnabled = false;
                         SlideOutLogin.Begin();
                         SlideInWorkspace.Begin();
+
+                        await Task.Run(async delegate
+                        {
+                            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            foreach (var kvp in dictionaries)
+                            {
+                                var id = (string)kvp.Value["id"];
+                                //var element = new LibraryElementModel(kvp.Value);
+
+                                var dict = kvp.Value;
+
+                                string title = null;
+                                ElementType type = ElementType.Text;
+
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"]; // title
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    try
+                                    {
+                                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                LibraryElementModel element;
+                                if (type == ElementType.Collection)
+                                {
+                                    element = new CollectionLibraryElementModel(id, title);
+                                }
+                                else
+                                {
+                                    element = new LibraryElementModel(id, type, title);
+                                }
+                                if (SessionController.Instance.ContentController.Get(id) == null)
+                                {
+                                    SessionController.Instance.ContentController.Add(element);
+                                }
+                            }
+                            _isLoaded = true;
+                            if (_loggedIn)
+                            {
+                                UITask.Run(delegate {
+                                    JoinWorkspaceButton.IsEnabled = true;
+                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                });
+                            }
+                        });
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {

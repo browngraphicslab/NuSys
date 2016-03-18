@@ -15,7 +15,7 @@ namespace NuSysApp
         public TextNodeViewModel(ElementController controller) : base(controller)
         {           
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
-            Text = controller.ContentModel?.Data;
+            Text = controller.LibraryElementModel?.Data;
             ((TextNodeController) controller).TextChanged += TextChanged;
         }
 

@@ -138,13 +138,13 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.ContentId);
+                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.LibraryId);
                 return;
             }
 
             if (c1IsCollection)
             {
-                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.ContentId);
+                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.LibraryId);
             }
  
          

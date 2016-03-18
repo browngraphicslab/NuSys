@@ -84,7 +84,7 @@ namespace NuSysApp
         //}
         public void MakeViews(LibraryPageViewModel pageViewModel, LibraryElementPropertiesWindow properties)
         {
-            _libraryGrid = new LibraryGrid(this, pageViewModel, properties);
+            //_libraryGrid = new LibraryGrid(this, pageViewModel, properties);
             _libraryList = new LibraryList(this, pageViewModel, properties);
             //_libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
             //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
@@ -142,7 +142,7 @@ namespace NuSysApp
         //        {
         //            Task.Run(async delegate
         //            {
-        //                SessionController.Instance.NuSysNetworkSession.FetchContent(id);
+        //                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
         //            });
         //        }
         //    }
@@ -295,26 +295,38 @@ namespace NuSysApp
         }
         public async Task AddNode(Point pos, Size size, ElementType elementType, string contentId)
         {
-            var dict = new Message();
-            Dictionary<string, object> metadata;
+            Task.Run(async delegate
+            {
+                if (elementType != ElementType.Collection)
+                {
+                    var dict = new Message();
+                    Dictionary<string, object> metadata;
 
-            metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
-            metadata["node_type"] = elementType + "Node";
-            
-            dict = new Message();
-            dict["width"] = size.Width.ToString();
-            dict["height"] = size.Height.ToString();
-            dict["nodeType"] = elementType.ToString();
-            dict["x"] = pos.X;
-            dict["y"] = pos.Y;
-            dict["contentId"] = contentId;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-            dict["metadata"] = metadata;
-            dict["autoCreate"] = true;
-            dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            var request = new NewElementRequest(dict);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    metadata = new Dictionary<string, object>();
+                    metadata["node_creation_date"] = DateTime.Now;
+                    metadata["node_type"] = elementType + "Node";
+
+                    dict = new Message();
+                    dict["width"] = size.Width.ToString();
+                    dict["height"] = size.Height.ToString();
+                    dict["nodeType"] = elementType.ToString();
+                    dict["x"] = pos.X;
+                    dict["y"] = pos.Y;
+                    dict["contentId"] = contentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                    dict["metadata"] = metadata;
+                    dict["autoCreate"] = true;
+                    dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                }
+                else
+                {
+                    await
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, contentId, size.Width,
+                            size.Height);
+                }
+            });
 
             // TOOD: refresh library
         }

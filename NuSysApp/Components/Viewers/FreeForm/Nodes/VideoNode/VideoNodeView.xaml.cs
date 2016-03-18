@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.ContentId))
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
                 LoadVideo();
             }
@@ -56,7 +56,7 @@ namespace NuSysApp
 
         private void LoadVideo(object sender = null, object data = null)
         {
-            var content = (DataContext as VideoNodeViewModel).Controller.ContentModel;
+            var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
             if (content != null)
             {
                 InMemoryRandomAccessStream memoryStream;
@@ -70,7 +70,7 @@ namespace NuSysApp
                     var byteArray =
                         Convert.FromBase64String(
                             SessionController.Instance.ContentController.Get(
-                                (((VideoNodeViewModel) DataContext).Model as VideoNodeModel).ContentId).Data);
+                                (((VideoNodeViewModel) DataContext).Model as VideoNodeModel).LibraryId).Data);
                     memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
                     memoryStream.Seek(0);
                     content.ViewUtilBucket["videoStream"] = stream;

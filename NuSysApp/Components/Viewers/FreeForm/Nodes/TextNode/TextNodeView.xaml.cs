@@ -36,6 +36,7 @@ namespace NuSysApp
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
 
+
             var navigated = false;
 
             TextNodeWebView.NavigationCompleted += delegate
@@ -140,7 +141,7 @@ namespace NuSysApp
             {
                 var vm = DataContext as ElementViewModel;
                 var controller = (TextNodeController)vm.Controller;
-                controller.ContentModel?.SetContentData(vm,data);
+                controller.LibraryElementModel?.SetContentData(vm,data);
             }
         }
 

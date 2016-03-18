@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace NuSysApp
@@ -23,117 +24,130 @@ namespace NuSysApp
             {
                 throw new NewNodeRequestException("New Node requests require messages with at least 'contentId' and 'creatorContentID'");
             }
-            if (!_message.ContainsKey("nodeType"))
-            {
-                throw new NewNodeRequestException("New Node requests require messages with at least 'nodeType'");
-            }
         }
 
         public override async Task ExecuteRequestFunction()
         {
-            var nodeType = (ElementType) Enum.Parse(typeof (ElementType), _message.GetString("nodeType"));
             var id = _message.GetString("id");
-            var contentId = _message.GetString("contentId");
+            var libraryId = _message.GetString("contentId");
             var creatorContentID = _message.GetString("creatorContentID");
 
             ElementModel elementModel;
             ElementController controller;
-            ElementViewModel nodeViewModel;
 
-            switch (nodeType)
+            var libraryElement = SessionController.Instance.ContentController.Get(libraryId);
+            if (libraryElement == null)
+            {
+                var type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["nodeType"], true);
+                if (type == ElementType.Collection)
+                {
+                    libraryElement = new CollectionLibraryElementModel(libraryId);
+                }
+                else
+                {
+                    libraryElement = new LibraryElementModel(libraryId,type);
+                }
+                SessionController.Instance.ContentController.Add(libraryElement);
+            }
+            if (!libraryElement.LoadingOrLoaded())
+            {
+                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
+            }
+
+            var elementType = libraryElement.Type;
+
+            switch (elementType)
             {
                 case ElementType.Text:
                     elementModel = new TextElementModel(id);
-                    elementModel.ContentId = contentId;
-                    if (SessionController.Instance.ContentController.Get(contentId) == null)
-                    {
-                        SessionController.Instance.ContentController.Add(new LibraryElementModel(null, contentId,
-                            ElementType.Text, elementModel.Title));
-                    }
+                    await elementModel.UnPack(_message);
                     controller = new TextNodeController((TextElementModel)elementModel);
                     break;
                 case ElementType.Image:
                     elementModel = new ImageElementModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ImageElementIntanceController(elementModel);
                     break;
                 case ElementType.Word:
                     elementModel = new WordNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Powerpoint:
                     elementModel = new PowerpointNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.PDF:
                     elementModel = new PdfNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Audio:
                     elementModel = new AudioNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Video:
                     elementModel = new VideoNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Tag:
                     elementModel = new TagNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Web:
                     elementModel = new WebNodeModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 case ElementType.Collection:
                     elementModel = new CollectionElementModel(id);
-                    elementModel.ContentId = contentId;
-                    if (SessionController.Instance.ContentController.Get(contentId) == null)
-                    {
-                        SessionController.Instance.ContentController.Add(new CollectionLibraryElementModel(contentId,
-                            null, elementModel.Title));
-                    }
+                    await elementModel.UnPack(_message);
                     controller = new ElementCollectionController(elementModel);
                     break;
                 case ElementType.Area:
                     elementModel = new AreaModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
-                    break;/*
-                case ElementType.Library:
-                    elementModel = new ElementModel(id);
-                    controller = new ElementController(elementModel);
-                    break;*/
+                    break;
                 case ElementType.Link:
                     elementModel = new LinkModel(id);
+                    await elementModel.UnPack(_message);
                     controller = new ElementController(elementModel);
                     break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }
 
-            await elementModel.UnPack(_message);
-            elementModel.ContentId = contentId;
-            SessionController.Instance.IdToControllers[controller.Model.Id] = controller;
+            SessionController.Instance.IdToControllers[id] = controller;
 
-            var content = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creatorContentID);
-            content.AddChild(controller.Model.Id);
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creatorContentID);
+            parentCollectionLibraryElement.AddChild(id);
 
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(content.Id))
+            if (SessionController.Instance.ContentController.Get(libraryId).Loaded)
             {
-                controller.FireContentLoaded(content);
+                controller.FireContentLoaded();
             }
-            //var parentController = (ElementCollectionController) SessionController.Instance.IdToControllers[creatorContentID];
-            //parentController.AddChild(controller);
+            else
+            {
+                SessionController.Instance.ContentController.Get(libraryId).OnLoaded += delegate
+                {
+                    controller.FireContentLoaded();
+                };
+            }
 
-            if (nodeType == ElementType.Collection)
+            if (elementType == ElementType.Collection)
             {
                 //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
-                var startingChildren = ((CollectionLibraryElementModel) (controller.ContentModel))?.Children;
-                foreach (var childId in startingChildren)
+                var existingChildren = ((CollectionLibraryElementModel) (controller.LibraryElementModel))?.Children;
+                foreach (var childId in existingChildren)
                 {
                     if (SessionController.Instance.IdToControllers.ContainsKey(childId))
                     {
-                        ((ElementCollectionController) controller).AddChild(
-                            SessionController.Instance.IdToControllers[childId]);
+                        ((ElementCollectionController) controller).AddChild(SessionController.Instance.IdToControllers[childId]);
                     }
                 }
             }

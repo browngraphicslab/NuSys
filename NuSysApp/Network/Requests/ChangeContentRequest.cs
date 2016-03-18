@@ -30,10 +30,6 @@ namespace NuSysApp
         {
             LibraryElementModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
             content.Data = _message.GetString("data");
-
-            content.FireContentChanged();
-            //var s = SessionController.Instance.IdToControllers[_message.GetString("id")];
-            //await s.UnPack(_message);
         }
     }
 }

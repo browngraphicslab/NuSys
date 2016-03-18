@@ -85,13 +85,9 @@ namespace NuSysApp
                         {
                             if (dict.ContainsKey("id"))
                             {
-                                var id = dict["id"];
-
-                                //id, data, type, title
-                                var contentId = (string)dict["id"];
+                                var id = (string)dict["id"];
                                 string title = null;
                                 ElementType type = ElementType.Text;
-                                string data = dict.ContainsKey("data") ? (string)dict["data"] : null;
                                 if (dict.ContainsKey("title"))
                                 {
                                     title = (string)dict["title"];
@@ -101,16 +97,26 @@ namespace NuSysApp
                                     type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
                                 }
 
-                                LibraryElementModel element = new LibraryElementModel(data,contentId,type,title);
-                                UITask.Run(delegate
-                                {
-
-                                    // TODO: add back in
-                                    //                    SessionController.Instance.Library.AddNewElement(element);
-                                    //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
-                                });
                                 Task.Run(async delegate {
-                                    await GetContent((string)id);
+                                    if (SessionController.Instance.ContentController.Get(id) != null)
+                                    {
+                                        var element = SessionController.Instance.ContentController.Get(id);
+                                        element.Title = title;//TODO make sure no other variables, like timestamp, need to be set here
+                                    }
+                                    else
+                                    {
+                                        if (type == ElementType.Collection)
+                                        {
+                                            SessionController.Instance.ContentController.Add(
+                                                new CollectionLibraryElementModel(id, title));
+                                        }
+                                        else
+                                        {
+                                            SessionController.Instance.ContentController.Add(
+                                                new LibraryElementModel(id, type, title));
+                                        }
+                                    }
+                                    //await FetchLibraryElementData(id);
                                 });
                             }
                         }
@@ -167,14 +173,15 @@ namespace NuSysApp
                 return new List<Dictionary<string, object>>();
             }
         }
-        public async Task GetContent(string contentId)
+        public async Task FetchLibraryElementData(string libraryId)
         {
             try
             {
                 await Task.Run(async delegate
                 {
+                    SessionController.Instance.ContentController.Get(libraryId).SetLoading(true);
                     HttpClient client = new HttpClient();
-                    var response = await client.GetAsync(GetUri("getcontent/" + contentId));
+                    var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
                 
                     string data;
                     using (var responseContent = response.Content)
@@ -186,53 +193,28 @@ namespace NuSysApp
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
                     var contentData = (string)dict["data"] ?? "";
+                    var id = (string) dict["id"];
+                    var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                    var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
 
-                    var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
-                    var contentType = dict.ContainsKey("type")
-                        ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
-                        : ElementType.Text;
-                    //var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
-                    LibraryElementModel content;
-                    if (contentType == ElementType.Collection)
+                    LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
+
+                    if (content == null)
                     {
-                        content = new CollectionLibraryElementModel(contentId, null, contentTitle);
+                        if (type == ElementType.Collection)
+                        {
+                            content = new CollectionLibraryElementModel(id,title);
+                        }
+                        else
+                        {
+                            content = new LibraryElementModel(id,type,title);
+                        }
+                        SessionController.Instance.ContentController.Add(content);
                     }
-                    else
-                    {
-                        content = new LibraryElementModel(contentData, contentId, contentType, contentTitle);
-                    }
+
                     await UITask.Run(async delegate
                     {
-                        var cc = SessionController.Instance.ContentController;
-                        if (cc.Get(contentId) != null)
-                        {
-                            cc.Get(contentId).Data = contentData;
-                            cc.Get(contentId).Loaded = true;
-                            cc.Get(contentId).FireContentChanged();
-                            /*
-                        if (cc.ContainsAndLoaded(contentId))
-                        {
-                            cc.Get(contentId).Data = contentData;
-                        }
-                        else
-                        {
-                            cc.Get(contentId).Data = contentData;
-                            cc.Get(contentId).Loaded = true;
-                            cc.Get(contentId).FireContentChanged();
-                        }*/
-                        }
-                        else
-                        {
-                            SessionController.Instance.ContentController.Add(content);
-                        }
-
-                        if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
-                        {
-                            foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])
-                            {
-                                await controller.FireContentLoaded(content);
-                            }
-                        }
+                        content.Load(contentData);
                     });
                 });
             }

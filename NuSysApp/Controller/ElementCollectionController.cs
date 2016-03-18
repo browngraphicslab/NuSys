@@ -15,7 +15,7 @@ namespace NuSysApp
 
         public ElementCollectionController(ElementModel model) : base(model)
         {
-            var contentModel = SessionController.Instance.ContentController.Get(model.ContentId);
+            var contentModel = SessionController.Instance.ContentController.Get(model.LibraryId);
             if (contentModel != null)
             {
                 ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
