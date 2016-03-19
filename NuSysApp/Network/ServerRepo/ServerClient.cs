@@ -97,7 +97,7 @@ namespace NuSysApp
                                     type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
                                 }
 
-                                Task.Run(async delegate {
+                                UITask.Run(async delegate {
                                     if (SessionController.Instance.ContentController.Get(id) != null)
                                     {
                                         var element = SessionController.Instance.ContentController.Get(id);
@@ -118,8 +118,12 @@ namespace NuSysApp
                                     }
                                     if (NeededLibraryDataIDs.Contains(id))
                                     {
-                                        await FetchLibraryElementData(id);
-                                        NeededLibraryDataIDs.Remove(id);
+                                        Task.Run(async() =>
+                                        {
+                                            await FetchLibraryElementData(id);
+                                            NeededLibraryDataIDs.Remove(id);
+                                        });
+
                                     }
                                 });
                             }

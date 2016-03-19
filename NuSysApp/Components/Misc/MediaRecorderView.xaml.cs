@@ -103,7 +103,7 @@ namespace NuSysApp
                     await mediaCapture.InitializeAsync(settings);
                     stream = new InMemoryRandomAccessStream();
                     await
-                    mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto),
+                    mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Qvga),
                         stream);
                     Element.Source = mediaCapture;
                     await mediaCapture.StartPreviewAsync();
@@ -149,7 +149,7 @@ namespace NuSysApp
                     stream = new InMemoryRandomAccessStream();
                     await
                         mediaCapture.StartRecordToStreamAsync(
-                            MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Auto),
+                            MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Low),
                             stream);
                     _recording = true;
                     this.IsRecordingSwitch(true);
