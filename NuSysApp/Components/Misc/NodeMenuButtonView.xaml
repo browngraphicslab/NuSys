@@ -8,11 +8,56 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="300">
-    <Button x:Name="btn" Height="80" Width="70" Background="Transparent">
+    <UserControl.Resources>
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="UseSystemFocusVisuals" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="RootGrid">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <Button x:Name="btn" Height="80" Width="70" Style="{StaticResource MenuButton}">
         <Button.Content>
             <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="btnCaption" TextAlignment="Center" FontSize="16" Margin="0,5,0,0"  FontFamily="ms-appx:///Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9cc5c2" ></TextBlock>
-                <Image x:Name="icon" Height="40" Width="40" VerticalAlignment="Center" Margin="0,0,0,0"  HorizontalAlignment="Center" ></Image>
+                <TextBlock x:Name="btnCaption" Text="Hei" TextAlignment="Center" FontSize="16" Margin="0,5,0,0"  FontFamily="ms-appx:///Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9cc5c2" ></TextBlock>
+                <Image x:Name="icon" Source="ms-appx:///Assets/icon_nodemenu_record.png" Height="40" Width="40" VerticalAlignment="Center" Margin="0,0,0,0"  HorizontalAlignment="Center" ></Image>
             </StackPanel>
         </Button.Content>
     </Button>
