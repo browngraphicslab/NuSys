@@ -141,6 +141,9 @@
     <Content Include="Assets\icon_audionode_stop.png" />
     <Content Include="Assets\icon_users.png" />
     <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_pause.png" />
+    <Content Include="Assets\node icons\icon_play.png" />
+    <Content Include="Assets\node icons\icon_stop.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\text.png" />

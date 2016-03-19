@@ -42,6 +42,7 @@ namespace NuSysApp
             TextNodeWebView.NavigationCompleted += delegate
             {
                 navigated = true;
+                UpdateText(vm.Text);
             };
 
             vm.TextBindingChanged += delegate(object source, string text)
@@ -90,7 +91,6 @@ namespace NuSysApp
                 if (texts.Count > 0)
                     UpdateText(texts[0]);
             };
-
 
          //   EditText.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
        //     EditText.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
