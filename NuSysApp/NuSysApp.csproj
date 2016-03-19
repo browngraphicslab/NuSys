@@ -391,6 +391,10 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
+    <Compile Include="Util\TextInputBlock.xaml.cs">
+      <DependentUpon>TextInputBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Util\TextInputBlockViewModel.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Misc\PinWindowViewModel.cs" />
@@ -804,6 +808,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Util\TextInputBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

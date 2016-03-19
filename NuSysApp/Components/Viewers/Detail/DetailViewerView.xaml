@@ -16,25 +16,28 @@
             </Grid>
         </StackPanel>
         <StackPanel>
-            <Grid x:Name="xContainer" Background="#95A7B8" HorizontalAlignment="Right">
+            <Grid x:Name="xContainer" Background="#95A7B8" HorizontalAlignment="Stretch">
                 <ContentPresenter x:Name ="nodeContent" Content="{Binding View}" Margin="5,5,5,5"></ContentPresenter>
-                <StackPanel x:Name="exitButtonContainer" Background="#565F6D" Height="30" HorizontalAlignment="Right" VerticalAlignment="Top" ManipulationDelta="topBar_OnManipulationDelta" ManipulationMode="All">
+                <StackPanel x:Name="exitButtonContainer" Background="#565F6D" Height="30" HorizontalAlignment="Stretch" VerticalAlignment="Top" ManipulationDelta="topBar_OnManipulationDelta" ManipulationMode="All">
                     <TextBlock x:Name="exitButton" HorizontalAlignment="Right" Text="x" Foreground="White" FontSize="24" Margin="0,-4,10,0" Tapped="closeDV_OnTapped"/>
                 </StackPanel>
                 <StackPanel x:Name="Properties" Margin="10,45,10,5" Padding="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <TextBlock Text="PROPERTIES" Foreground="White" FontSize="30" CharacterSpacing="45"/>
                     <Line x:Name="propLine" Stroke="White" StrokeThickness="1.5" X1="0" Y1="10" Y2="10" Margin="0,0,0,5"></Line>
-                    <StackPanel Orientation="Horizontal" Height="42">
+                    <StackPanel Name="TitleContainer"  Orientation="Horizontal" Height="42" HorizontalAlignment ="Left">
                         <TextBlock x:Name="Title" Text="TITLE: " Foreground="White" FontSize="30.0" CharacterSpacing="40"/>
-                        <TextBox x:Name="TitleEnter" TextChanged="TitleEnter_OnTextChanged" Text="{Binding Title}" Foreground="White" Background="Transparent" 
-                                FontSize="27" CharacterSpacing="40" BorderThickness="0"></TextBox>
-                    </StackPanel>
+                        <!--<TextBox x:Name="TitleEnter" TextChanged="TitleEnter_OnTextChanged" Text="{Binding Title}" Foreground="White" Background="Transparent" 
+                                FontSize="27" CharacterSpacing="40" BorderThickness="0"></TextBox>-->
+                        <local:TextInputBlock x:Name ="TitleEnter"  LeftJustified="True" HorizontalAlignment="Stretch"  Width="{Binding ElementName=Properties, Path=Width}"></local:TextInputBlock>
+                        </StackPanel>
                 </StackPanel>
                 <StackPanel x:Name="TagContainer" Margin="10,5,10,15" Padding="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="TAGS" Foreground="White" FontSize="30" CharacterSpacing="45" Margin="0,0,20,0"></TextBlock>
-                        <StackPanel Height="30" HorizontalAlignment="Right" Orientation="Horizontal">
-                            <TextBox x:Name="NewTagBox" KeyUp="NewTagBox_OnKeyUp" Height="30" BorderThickness="0"></TextBox>
+                        <StackPanel Height="30" HorizontalAlignment="Right" VerticalAlignment="Top"  Orientation="Horizontal">
+                            <!--<TextBox x:Name="NewTagBox" KeyUp="NewTagBox_OnKeyUp" Height="30" BorderThickness="0"></TextBox>-->
+                            <local:TextInputBlock x:Name ="NewTagBox" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch"></local:TextInputBlock>
+
                             <Button x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray"></Button>
                         </StackPanel>
                     </StackPanel>
