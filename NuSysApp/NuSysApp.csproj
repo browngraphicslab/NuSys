@@ -101,6 +101,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\icon_chat.png" />
+    <Content Include="Assets\icon_collapse.png" />
+    <Content Include="Assets\icon_delete_color.png" />
     <Content Include="Assets\icon_folder.png" />
     <Content Include="Assets\icon_ink.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
@@ -108,9 +110,14 @@
     <Content Include="Assets\icon_pano.png" />
     <Content Include="Assets\icon_plus.png" />
     <Content Include="Assets\icon_record.png" />
+
     <Content Include="Assets\icon_recording.png" />
     <Content Include="Assets\icon_tag.png" />
     <Content Include="Assets\icon_text.png" />
+
+    <Content Include="Assets\icon_refresh.png" />
+    <Content Include="Assets\icon_search.png" />
+
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\logos\150x150.png" />

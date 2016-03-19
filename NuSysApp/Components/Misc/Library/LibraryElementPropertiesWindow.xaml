@@ -6,12 +6,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignWidth="400" Height="505">
+    d:DesignWidth="500" Height="505">
 
-    <Border x:Name="Border" Height="500" Width="400" Background="White" BorderBrush="#E6EDEC" BorderThickness="2" CornerRadius="2" Margin="3,1,0.333,2.333">
+    <Border x:Name="Border" Height="500" Width="400" Background="White" BorderBrush="#83A6A3" BorderThickness="1" Margin="3,0,0.333,0">
 
         <Grid Margin="-7,0,3,0">
-            <Image Source="ms-appx:///Assets/icon_node_x.png" Tapped="UIElement_OnTapped"  HorizontalAlignment="Left" Width="25" Margin="365,10,0,460"/>
+            <Image Source="ms-appx:///Assets/icon_collapse.png" Tapped="UIElement_OnTapped"  HorizontalAlignment="Right" Width="10" Margin="0,0,10,0"/>
             <StackPanel Padding="50" Orientation="Vertical" >
                 <Border Height="150" Width="150" BorderThickness="1" BorderBrush="#E6EDEC">
                     <Image x:Name="Preview" Height="150" Width="150" Margin="0,0,0,0" />
@@ -55,7 +55,7 @@
 
 
                     <TextBlock  Grid.Column="0" Grid.Row="0" Text="Title" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBox  x:Name="Title" TextChanged="OnTitleTextChanged" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBox  x:Name="Title" TextChanged="OnTitleTextChanged" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" BorderThickness="0"  Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
                     <TextBlock  Grid.Column="0" Grid.Row="1" Text="Type" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
                     <TextBlock  x:Name="Type" Grid.Column="1" Grid.Row="1" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
                     <TextBlock  Grid.Column="0" Grid.Row="2" Text="ID" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
@@ -96,8 +96,11 @@
                     </StackPanel>
                 </ScrollViewer>
 
+                <Button Width="30" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10,10,10,10" Foreground="White" Background="Transparent"
+                    Padding="0">
+                    <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="30"></Image>
+                </Button>
             </StackPanel>
-
 
         </Grid>
     </Border>

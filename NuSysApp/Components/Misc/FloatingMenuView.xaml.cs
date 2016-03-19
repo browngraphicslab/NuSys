@@ -46,6 +46,7 @@ namespace NuSysApp
             xWrapper.Children.Add(_lib);
             xWrapper.Children.Add(libProp);
             libProp.Visibility = _lib.Visibility = Visibility.Collapsed;
+            xAddNodeMenu.Visibility = Visibility.Collapsed;
 
             Canvas.SetTop(_lib, 80);
 
