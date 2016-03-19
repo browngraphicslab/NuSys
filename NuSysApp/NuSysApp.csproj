@@ -145,6 +145,7 @@
     <Content Include="Assets\icon_audionode_rewind.png" />
     <Content Include="Assets\icon_audionode_stop.png" />
     <Content Include="Assets\icon_users.png" />
+    <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_pause.png" />
     <Content Include="Assets\node icons\icon_play.png" />
@@ -315,6 +316,9 @@
       <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml.cs">
+      <DependentUpon>RecordingNodeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -712,6 +716,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

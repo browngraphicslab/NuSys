@@ -8,6 +8,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
+        <Canvas x:Name="xAddNodeMenu">
+        <Image Source="ms-appx:///Assets/menu_bubble.png" Width="289" Height="126">
+            <Image.RenderTransform>
+                <TranslateTransform X="-120" Y =" -110"></TranslateTransform>
+            </Image.RenderTransform>
+        </Image>
+
         <StackPanel Orientation="Horizontal">
             <StackPanel.RenderTransform>
                 <TranslateTransform X="-60" Y="-60"></TranslateTransform>
@@ -25,6 +32,7 @@
                 <Image Source="ms-appx:///Assets/icon_tag.png" Width="50" Height="50"  VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
             </StackPanel>
         </StackPanel>
+        </Canvas>
 
         <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">
             <StackPanel.RenderTransform>

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public abstract class ElementModel : Sendable
+    public class ElementModel : Sendable
     {       
         private double _alpha = 1;
         private SolidColorBrush _color;

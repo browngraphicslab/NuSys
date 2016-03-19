@@ -14,7 +14,7 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
 
-            var fm = SessionController.Instance.SessionView.FloatingMenu;
+            var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
             fm.ManipulationMode = ManipulationModes.All;
             fm.ManipulationDelta += OnManipulationDelta;
 
@@ -24,13 +24,15 @@ namespace NuSysApp
         {
             _view.IsDoubleTapEnabled = false;
             _view.DoubleTapped -= OnDoubleTapped;
-            var fm = SessionController.Instance.SessionView.FloatingMenu;
+            var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
             fm.ManipulationMode = ManipulationModes.None;
             fm.ManipulationDelta -= OnManipulationDelta;
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            var os = (FrameworkElement) e.OriginalSource;
+
             var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;

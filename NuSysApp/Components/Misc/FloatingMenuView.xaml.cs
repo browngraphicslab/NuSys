@@ -47,6 +47,8 @@ namespace NuSysApp
             xWrapper.Children.Add(libProp);
             libProp.Visibility = _lib.Visibility = Visibility.Collapsed;
 
+            Canvas.SetTop(_lib, 80);
+
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnTag);
@@ -64,7 +66,10 @@ namespace NuSysApp
 
         private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
+            if (xAddNodeMenu.Visibility == Visibility.Visible)
+                xAddNodeMenu.Visibility = Visibility.Collapsed;
+            else
+                xAddNodeMenu.Visibility = Visibility.Visible;
         }
 
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
@@ -113,7 +118,10 @@ namespace NuSysApp
 
         private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
         {
-            _elementType = sender == btnAddNode ? ElementType.Text : ElementType.Image;
+            if (sender == btnText)
+                _elementType = ElementType.Text;
+            if (sender == btnRecording)
+                _elementType = ElementType.Recording;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -133,6 +141,22 @@ namespace NuSysApp
         public async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
+            if (elementType == ElementType.Recording)
+            {
+                var r = new RecordingNodeView(new ElementViewModel(new ElementController(new ElementModel("")
+                {
+                    X = pos.X,
+                    Y = pos.Y,
+                    Width = 300,
+                    Height = 300
+                })));
+
+                vm.AtomViewList.Add(r);
+                
+            } else if (elementType == ElementType.Text) { 
+                
+
+       
             var p = pos;
 
             var dict = new Message();
@@ -158,11 +182,18 @@ namespace NuSysApp
            
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(dict));
-    
+
+            }
+
             _lib.UpdateList();
             vm.ClearSelection();
         }
-       
+
+        public FrameworkElement Panel
+        {
+            get { return FloatingMenuPanel; }
+        }
+
         public SessionView SessionView
         {
             get;set;

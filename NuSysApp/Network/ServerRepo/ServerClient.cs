@@ -28,6 +28,7 @@ namespace NuSysApp
         public delegate void ClientDroppedEventHandler(string ip);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
 
+        public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>(); 
         public string ServerBaseURI { get; private set; }
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
@@ -68,7 +69,6 @@ namespace NuSysApp
             try
             {
                 using (DataReader reader = args.GetDataReader())
-
                 {
                     reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                     string read = reader.ReadString(reader.UnconsumedBufferLength);
@@ -116,7 +116,11 @@ namespace NuSysApp
                                                 new LibraryElementModel(id, type, title));
                                         }
                                     }
-                                    //await FetchLibraryElementData(id);
+                                    if (NeededLibraryDataIDs.Contains(id))
+                                    {
+                                        await FetchLibraryElementData(id);
+                                        NeededLibraryDataIDs.Remove(id);
+                                    }
                                 });
                             }
                         }
@@ -192,10 +196,21 @@ namespace NuSysApp
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
+                    if (!dict.ContainsKey("data") || !dict.ContainsKey("id") || !dict.ContainsKey("type"))
+                    {
+                        NeededLibraryDataIDs.Add(libraryId);
+                        return;
+                    }
+
                     var contentData = (string)dict["data"] ?? "";
                     var id = (string) dict["id"];
                     var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
                     var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
+
+                    if (NeededLibraryDataIDs.Contains(id))
+                    {
+                        NeededLibraryDataIDs.Remove(id);
+                    }
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
 
