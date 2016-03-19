@@ -52,8 +52,6 @@ namespace NuSysApp
                 _mainMode = new MultiMode(this, _selectMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
                 _simpleEditMode = new MultiMode(this, _selectMode);
                 SwitchMode(Options.SelectNode, false);
-
-                CullNodes();
             };
 
 

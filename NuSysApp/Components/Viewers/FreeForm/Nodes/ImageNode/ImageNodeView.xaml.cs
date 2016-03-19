@@ -34,20 +34,6 @@ namespace NuSysApp
 
             };
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
-
-            vm.ScreenVisibility += OnScreenVisibilityChanged;
-        }
-
-        private async void OnScreenVisibilityChanged(object source, bool isOnScreen)
-        {
-            if (isOnScreen)
-            {
-                nodeTpl.HideBitmapRender();
-            }
-            else
-            {
-                await nodeTpl.ShowBitmapRender(this);
-            }
         }
 
         private void OnEditInk(object sender, RoutedEventArgs e)
