@@ -14,8 +14,9 @@ namespace NuSysApp
             _view.IsDoubleTapEnabled = true;
             _view.DoubleTapped += OnDoubleTapped;
 
-            //_view.FloatingMenu.ManipulationMode = ManipulationModes.All;
-            //_view.FloatingMenu.ManipulationDelta += OnManipulationDelta;
+            var fm = SessionController.Instance.SessionView.FloatingMenu;
+            fm.ManipulationMode = ManipulationModes.All;
+            fm.ManipulationDelta += OnManipulationDelta;
 
         }
 
@@ -23,17 +24,14 @@ namespace NuSysApp
         {
             _view.IsDoubleTapEnabled = false;
             _view.DoubleTapped -= OnDoubleTapped;
-
-           // _view.FloatingMenu.ManipulationMode = ManipulationModes.None;
-           // _view.FloatingMenu.ManipulationDelta -= OnManipulationDelta;
+            var fm = SessionController.Instance.SessionView.FloatingMenu;
+            fm.ManipulationMode = ManipulationModes.None;
+            fm.ManipulationDelta -= OnManipulationDelta;
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
-            var vm = (FreeFormViewerViewModel)dc;
-            var compositeTransform = vm.FMTransform;
-
+            var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
 
@@ -49,16 +47,10 @@ namespace NuSysApp
                 return;
             }
 
-            var vm = (FreeFormViewerViewModel)_view.DataContext;
-            var floatingMenuTransform = new CompositeTransform();
-
-            var p = e.GetPosition(_view);
-            floatingMenuTransform.TranslateX = p.X;
-            floatingMenuTransform.TranslateY = p.Y;
-            vm.FMTransform = floatingMenuTransform;
-
-           // _view.FloatingMenu.Visibility = Visibility.Visible;
-
+            var p = e.GetPosition(null);
+            var t = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
+            t.TranslateX = p.X - 70;
+            t.TranslateY = p.Y - 100;
             e.Handled = true;
         }
     }

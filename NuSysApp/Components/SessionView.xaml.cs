@@ -134,8 +134,6 @@ namespace NuSysApp
             if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xDetailViewer.Opacity < 0.1)
             {
                 var source = (FrameworkElement) eventArgs.OriginalSource;
-                if (source.DataContext is FloatingMenuViewModel)
-                    return;
 
                 _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
@@ -149,8 +147,6 @@ namespace NuSysApp
                 xDetailViewer.Opacity < 0.1)
             {
                 var source = (FrameworkElement) eventArgs.OriginalSource;
-                if (source.DataContext is FloatingMenuViewModel)
-                    return;
 
                 _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;

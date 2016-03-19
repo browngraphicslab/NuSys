@@ -7,8 +7,26 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Canvas x:Name="xWrapper" RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
-        <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal"  Margin="0,20,0,0">
+    <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.RenderTransform>
+                <TranslateTransform X="-60" Y="-60"></TranslateTransform>
+            </StackPanel.RenderTransform>
+            <StackPanel x:Name="btnRecording" Orientation="Vertical">
+                <TextBlock Text="Recording" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <Image Source="ms-appx:///Assets/icon_recording.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+            </StackPanel>
+            <StackPanel x:Name="btnText" Orientation="Vertical">
+                <TextBlock Text="Text"  TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <Image Source="ms-appx:///Assets/icon_text.png" Width="50" Height="50"  VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+            </StackPanel>
+            <StackPanel x:Name="btnTag" Orientation="Vertical">
+                <TextBlock Text="Tag" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <Image Source="ms-appx:///Assets/icon_tag.png" Width="50" Height="50"  VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>

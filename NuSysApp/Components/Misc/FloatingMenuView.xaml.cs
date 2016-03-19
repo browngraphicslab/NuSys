@@ -23,31 +23,8 @@ namespace NuSysApp
     public enum Options
     {
         Idle,
-        MainSelect,
-            SelectNode,
-            SelectMarquee,
-        MainSearch,
-        MainPen,
-            PenGlobalInk,
-            PenErase,
-            PenHighlight,
-        MainAdd,
-            AddTextNode,
-            AddInkNode,
-            AddMedia,
-            AddWeb,
-            AddAudioCapture,
-            AddRecord,
-            AddBucket,
-            AddVideo,
-        MainSaveLoad,
-            Load,
-            Save,
-        MainMisc,
-            MiscLoad,
-            MiscSave,
-            MiscPin,
-            MiscUsers
+        SelectNode,
+        PenGlobalInk,
     }
 
     public sealed partial class FloatingMenuView : UserControl
@@ -57,41 +34,37 @@ namespace NuSysApp
         private ElementType _elementType;
         private LibraryView _lib;
 
-        /// <summary>
-        /// Maps all buttons to its corresponding enum entry.
-        /// </summary>
-        private readonly BiDictionary<FloatingMenuButtonView, Options> _buttons;
-
-       
-
-        /// <summary>
-        /// Maps each main menu button to its current active submenu button
-        /// </summary>
-        private Dictionary<FloatingMenuButtonView, FloatingMenuButtonView> _activeSubMenuButtons;
-
         public FloatingMenuView()
         {
-            DataContext = new FloatingMenuViewModel();
-            this.InitializeComponent();
-            
-            btnLibrary.ManipulationMode = ManipulationModes.All;
-            btnAddNode.ManipulationMode = ManipulationModes.All;
-
-            btnAddNode.ManipulationStarting += BtnAddNodeOnManipulationStarting;
-            btnAddNode.ManipulationStarted += BtnAddNodeOnManipulationStarted;
-            btnAddNode.ManipulationDelta += BtnAddNodeOnManipulationDelta;
-            btnAddNode.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
+            RenderTransform = new CompositeTransform();
+            InitializeComponent();
 
             btnLibrary.Tapped += BtnLibrary_Tapped;
+            btnAddNode.Tapped += BtnAddNode_Tapped;
             LibraryElementPropertiesWindow libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
             xWrapper.Children.Add(libProp);
-            libProp.Visibility = Visibility.Collapsed;
-            Canvas.SetLeft(_lib, 100);
-            Canvas.SetTop(_lib, 110);
-            Canvas.SetLeft(libProp, 545);
-            Canvas.SetTop(libProp, 160);
+            libProp.Visibility = _lib.Visibility = Visibility.Collapsed;
+
+            AddNodeSubmenuButton(btnText);
+            AddNodeSubmenuButton(btnRecording);
+            AddNodeSubmenuButton(btnTag);
+        }
+
+
+        private void AddNodeSubmenuButton(FrameworkElement btn)
+        {
+            btn.ManipulationMode = ManipulationModes.All;
+            btn.ManipulationStarting += BtnAddNodeOnManipulationStarting;
+            btn.ManipulationStarted += BtnAddNodeOnManipulationStarted;
+            btn.ManipulationDelta += BtnAddNodeOnManipulationDelta;
+            btn.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
+        }
+
+        private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
 
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
@@ -110,11 +83,12 @@ namespace NuSysApp
 
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
+            var c = (CompositeTransform) RenderTransform;
+            
             xWrapper.Children.Remove(_dragItem);
-
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(args.Position.X, args.Position.Y, 300, 300));
-            await AddNode(new Point(r.X, r.Y), new Size(r.Width, r.Height), _elementType);
+            var r = wvm.CompositeTransform.Inverse.TransformPoint(new Point(args.Position.X + c.TranslateX, args.Position.Y + c.TranslateY));
+            await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
 
         }
 
@@ -123,6 +97,7 @@ namespace NuSysApp
             var t = (CompositeTransform)_dragItem.RenderTransform;
             t.TranslateX += args.Delta.Translation.X;
             t.TranslateY += args.Delta.Translation.Y;
+            args.Handled = true;
         }
 
         private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
@@ -133,6 +108,7 @@ namespace NuSysApp
             var t = (CompositeTransform)_dragItem.RenderTransform;
             t.TranslateX += args.Position.X - _dragItem.ActualWidth / 2;
             t.TranslateY += args.Position.Y - _dragItem.ActualHeight / 2;
+            args.Handled = true;
         }
 
         private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
@@ -151,6 +127,7 @@ namespace NuSysApp
             _dragItem = img;
 
             xWrapper.Children.Add(_dragItem);
+            args.Handled = true;
         }
 
         public async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
@@ -171,18 +148,16 @@ namespace NuSysApp
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = elementType.ToString();
-            dict["x"] = p.X;
-            dict["y"] = p.Y;
+            dict["x"] = (p.X - size.Width/2).ToString();
+            dict["y"] = (p.Y - size.Height/2).ToString();
             dict["contentId"] = contentId;
             dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
             dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             dict["metadata"] = metadata;
             dict["autoCreate"] = true;
-
-            var request = new NewElementRequest(dict);
-            
+           
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(dict));
     
             _lib.UpdateList();
             vm.ClearSelection();
