@@ -21,7 +21,7 @@
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}" />
+                    <Canvas HorizontalAlignment="Left" VerticalAlignment="Top" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
