@@ -8,13 +8,12 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="300">
-
     <Button x:Name="btn" Height="80" Width="70" Background="Transparent">
         <Button.Content>
             <StackPanel Orientation="Vertical">
                 <TextBlock x:Name="btnCaption" TextAlignment="Center" FontSize="16" Margin="0,5,0,0"  FontFamily="ms-appx:///Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9cc5c2" ></TextBlock>
                 <Image x:Name="icon" Height="40" Width="40" VerticalAlignment="Center" Margin="0,0,0,0"  HorizontalAlignment="Center" ></Image>
-                </StackPanel>
+            </StackPanel>
         </Button.Content>
     </Button>
 </UserControl>

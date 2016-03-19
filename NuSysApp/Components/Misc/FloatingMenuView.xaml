@@ -92,13 +92,22 @@
     </UserControl.Resources>
 
     <Canvas x:Name="xWrapper" RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
-        <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal"  Margin="0,20,0,0">
+        <Canvas.Resources>
+            <Storyboard x:Name="FadeInStoryboard">
+                <DoubleAnimation From="0" To="1" Storyboard.TargetName="NodeMenu" Storyboard.TargetProperty="Opacity" Duration="0:0:0.6" />
+            </Storyboard>
+        </Canvas.Resources>
+
+        <StackPanel x:Name="NodeMenu" Margin="-20,-40,0,0" Visibility="Collapsed">
+            <local:NodeMenuView/>
+        </StackPanel>
+        
+        <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal"  Margin="60,80,0,0">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
-            <local:FloatingMenuButtonView x:Name="btnAddNode" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" />
+            <local:FloatingMenuButtonView x:Name="btnAddNode" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" Tapped="btnAddNode_Tapped" />
             <local:FloatingMenuButtonView x:Name="btnLibrary" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="" />
-
         </StackPanel>
 
         <StackPanel Name="SubMenuSelect" VerticalAlignment="Top" Margin="-110,100,0,0" Opacity="0" IsHitTestVisible="False">

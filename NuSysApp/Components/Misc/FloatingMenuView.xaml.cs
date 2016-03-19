@@ -488,5 +488,17 @@ namespace NuSysApp
         {
             get;set;
         }
+
+        private void btnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (NodeMenu.Visibility == Visibility.Visible)
+            {
+                NodeMenu.Visibility = Visibility.Collapsed;
+            } else
+            {
+                NodeMenu.Visibility = Visibility.Visible;
+                FadeInStoryboard.Begin();
+            }
+        }
     }
 }
