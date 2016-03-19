@@ -19,7 +19,7 @@ namespace NuSysApp
         private ElementViewModel _hoveredNode;
         private string _createdGroupId;
 
-        public CreateGroupMode(FreeFormViewer view) : base(view)
+        public CreateGroupMode(FrameworkElement view) : base(view)
         {
         }
 
@@ -85,7 +85,11 @@ namespace NuSysApp
            
             var id1 = (((FrameworkElement)sender).DataContext as ElementViewModel).Id;
             var id2 = _hoveredNode.Id;
-            
+            if (_hoveredNode.IsEditing)//TODO FIX?
+            {
+                return; //makes sure you don't add a node to a group that it is already in when in simple edit mode
+            }
+
             if (id1 == id2)
                 return;
 

@@ -20,7 +20,7 @@ namespace NuSysApp
 
         public List<UserControl> ActiveNodes { get; private set; }
 
-        public NodeManipulationMode(FreeFormViewer view) : base(view) { }
+        public NodeManipulationMode(FrameworkElement view) : base(view) { }
 
         public override async Task Activate()
         {
@@ -101,8 +101,12 @@ namespace NuSysApp
 
             if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
             {
-               Canvas.SetLeft(_view.MultiMenu, Canvas.GetLeft(_view.MultiMenu) + e.Delta.Translation.X);
-               Canvas.SetTop(_view.MultiMenu, Canvas.GetTop(_view.MultiMenu) + e.Delta.Translation.Y);
+                if (_view is FreeFormViewer)
+                {
+                    var cview = (FreeFormViewer) _view;
+                    Canvas.SetLeft(cview.MultiMenu, Canvas.GetLeft(cview.MultiMenu) + e.Delta.Translation.X);
+                    Canvas.SetTop(cview.MultiMenu, Canvas.GetTop(cview.MultiMenu) + e.Delta.Translation.Y);
+                }
 
                 //move all selected content if a selected node is moved
                 foreach (var vmodel in SessionController.Instance.ActiveFreeFormViewer.Selections)
