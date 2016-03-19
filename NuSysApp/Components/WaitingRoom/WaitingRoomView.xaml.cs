@@ -142,7 +142,7 @@ namespace NuSysApp
                 var cred = new Dictionary<string, string>();
                 
                 cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
-                cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Text));
+                cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
                 
                 var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/" ;
                 var client = new HttpClient(
