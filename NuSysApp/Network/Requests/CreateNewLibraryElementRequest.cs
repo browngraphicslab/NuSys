@@ -35,7 +35,7 @@ namespace NuSysApp
 
         public override async Task CheckOutgoingRequest()
         {
-            _message["library_element_creation_timestamp"] = DateTime.UtcNow.Second;
+            _message["library_element_creation_timestamp"] = DateTime.UtcNow;
 
             ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
             if (type == ElementType.Collection)

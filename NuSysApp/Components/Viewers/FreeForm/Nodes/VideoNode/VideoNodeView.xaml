@@ -33,7 +33,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <MediaElement Grid.Row="0" Grid.Column="0" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform" />
+                <MediaElement Grid.Row="0" Grid.Column="0" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform"/>
                 <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <CaptureElement Name="preview"/>
                 <ProgressBar x:Name ="scrubBar"  SizeChanged ="ScrubBar_OnSizeChanged" Height ="25" Grid.Row="1" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
