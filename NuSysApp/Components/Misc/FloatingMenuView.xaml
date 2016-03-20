@@ -10,29 +10,33 @@
     <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <Canvas x:Name="xAddNodeMenu">
         <Image Source="ms-appx:///Assets/menu_bubble.png" Width="289" Height="110">
-            <Image.RenderTransform>
-                <TranslateTransform X="-110" Y =" -95"></TranslateTransform>
+                <Image.RenderTransform>
+                    <TranslateTransform X="-110" Y =" -110"></TranslateTransform>
             </Image.RenderTransform>
         </Image>
 
-        <StackPanel Orientation="Horizontal" Margin="-30,-25,10,-20">
-            <StackPanel.RenderTransform>
-                <TranslateTransform X="-60" Y="-60"></TranslateTransform>
-            </StackPanel.RenderTransform>
-            <StackPanel x:Name="btnRecording" Orientation="Vertical">
-                <TextBlock Text="Record" Margin="20,0,20,0"  TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
-                <Image Source="ms-appx:///Assets/icon_recording.png" Width="50" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center"></Image>
-            </StackPanel>
-                <StackPanel x:Name="btnText" Margin="20,0,20,0" Orientation="Vertical">
-                <TextBlock Text="Text"  TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
-                <Image Source="ms-appx:///Assets/icon_text.png" Width="50" Height="50"  VerticalAlignment="Bottom" HorizontalAlignment="Center"></Image>
-            </StackPanel>
-                <StackPanel x:Name="btnTag" Margin="20,0,20,0" Orientation="Vertical">
-                    <TextBlock Text="Tag" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
-                    <Image Source="ms-appx:///Assets/icon_tag.png" Width="45" Height="45"  VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            <StackPanel>
+                <StackPanel.RenderTransform>
+                    <TranslateTransform X="-75" Y="-90"></TranslateTransform>
+                </StackPanel.RenderTransform>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel x:Name="btnRecording" Orientation="Vertical" Margin="10,0,10,0">
+                        <TextBlock Text="Recording" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9CC5C2" ></TextBlock>
+                        <Image Source="ms-appx:///Assets/icon_recording.png" Width="50" Height="50" Stretch="UniformToFill" VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+                    </StackPanel>
+                    <StackPanel x:Name="btnText" Orientation="Vertical" Margin="10,0,10,0">
+                        <TextBlock Text="Text"  TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9CC5C2" ></TextBlock>
+                        <Image Source="ms-appx:///Assets/icon_text.png" Width="50" Height="50"  VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+                    </StackPanel>
+                    <StackPanel x:Name="btnTag" Orientation="Vertical" Margin="10,0,10,0">
+                        <TextBlock Text="Tag" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9CC5C2" ></TextBlock>
+                        <Image Source="ms-appx:///Assets/icon_tag.png" Width="40" Height="40"  VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Drag to Create" TextAlignment="Center" FontSize="15" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9CC5C2"></TextBlock>
                 </StackPanel>
             </StackPanel>
-            <TextBlock Margin="-25,-20,0,20" FontStyle="Italic" Foreground="#9cc5c2">Drag to Create</TextBlock>
         </Canvas>
 
         <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">

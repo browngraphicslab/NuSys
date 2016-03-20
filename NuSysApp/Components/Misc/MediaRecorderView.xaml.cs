@@ -66,16 +66,12 @@ namespace NuSysApp
             if (boolean)
             {
                 RecordButton.Visibility = Visibility.Collapsed;
-                RecordText.Visibility = Visibility.Collapsed;
                 StopButton.Visibility = Visibility.Visible;
-                StopText.Visibility = Visibility.Visible;
             }
             else
             {
                 RecordButton.Visibility = Visibility.Visible;
-                RecordText.Visibility = Visibility.Visible;
                 StopButton.Visibility = Visibility.Collapsed;
-                StopText.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -103,7 +99,7 @@ namespace NuSysApp
                     await mediaCapture.InitializeAsync(settings);
                     stream = new InMemoryRandomAccessStream();
                     await
-                    mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto),
+                    mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Qvga),
                         stream);
                     Element.Source = mediaCapture;
                     await mediaCapture.StartPreviewAsync();
@@ -149,7 +145,7 @@ namespace NuSysApp
                     stream = new InMemoryRandomAccessStream();
                     await
                         mediaCapture.StartRecordToStreamAsync(
-                            MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Auto),
+                            MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Low),
                             stream);
                     _recording = true;
                     this.IsRecordingSwitch(true);

@@ -36,9 +36,11 @@ namespace NuSysApp
         public async void ShowElement(ElementController controller)
         {
             _nodeModel = controller.Model;
+            Title = _nodeModel.Title;
             View = await _viewFactory.CreateFromSendable(controller);
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
+            RaisePropertyChanged("Title");
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");
         }

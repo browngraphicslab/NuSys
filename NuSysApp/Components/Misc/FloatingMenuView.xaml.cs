@@ -49,7 +49,6 @@ namespace NuSysApp
             xAddNodeMenu.Visibility = Visibility.Collapsed;
 
             Canvas.SetTop(_lib, 80);
-
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnTag);
