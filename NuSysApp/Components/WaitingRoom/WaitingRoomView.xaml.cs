@@ -81,6 +81,7 @@ namespace NuSysApp
                     var box = new CollectionTextBox();
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
                     box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
+                    List.Items.Add(box);
                 }
             }
             catch (Exception e)
