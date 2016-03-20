@@ -40,6 +40,7 @@ namespace NuSysApp
             View = await _viewFactory.CreateFromSendable(controller);
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
+            MakeTagList();
             RaisePropertyChanged("Title");
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");

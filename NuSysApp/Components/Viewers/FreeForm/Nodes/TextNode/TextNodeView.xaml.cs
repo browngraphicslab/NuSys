@@ -69,13 +69,13 @@ namespace NuSysApp
 
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            vm.Controller.ContentChanged += delegate(object source, LibraryElementModel data)
+            vm.Controller.LibraryElementModel.OnContentChanged += delegate(ElementViewModel originalSenderViewMode)
             {
                 if (xMediaRecotder.Visibility == Visibility.Collapsed)
                     return;
 
                 var memoryStream = new InMemoryRandomAccessStream();
-                var byteArray = Convert.FromBase64String(data.Data);
+                var byteArray = Convert.FromBase64String(vm.Controller.LibraryElementModel.Data);
                 memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
                 memoryStream.Seek(0);
                 playbackElement.SetSource(memoryStream, "video/mp4");

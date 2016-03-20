@@ -24,13 +24,12 @@ namespace NuSysApp
     public sealed partial class ImageFullScreenView : UserControl
     {
         private InqCanvasView _inqCanvasView;
-        private ImageElementViewModel _viewMod;
+
 
         public ImageFullScreenView(ImageElementViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
-            _viewMod = vm;
 
             var model = (ImageElementModel)vm.Model;
             var token = model.GetMetaData("Token");
@@ -43,22 +42,7 @@ namespace NuSysApp
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
-            {
-                SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
-            };
-            SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
         }
-
-        public void SetDimension(double parentWidth, double parentHeight)
-        {
-            var ratio = _viewMod.Width > _viewMod.Height ? _viewMod.Width / parentWidth : _viewMod.Height / parentHeight;
-            xImg.Width = _viewMod.Width / ratio;
-            xImg.MaxWidth = parentWidth*0.9;
-            xImg.Height = _viewMod.Height / ratio;
-            xImg.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
-            buttons.Width = xImg.ActualWidth;
-        } 
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {

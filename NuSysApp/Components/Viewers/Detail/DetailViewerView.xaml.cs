@@ -26,13 +26,8 @@ namespace NuSysApp
         public DetailViewerView()
         {
             InitializeComponent();
-
-            Opacity = 0;
-            Loaded += delegate(object sender, RoutedEventArgs args)
-            {
-           
-            };
-
+      
+  
           DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
           {
               if (!(DataContext is DetailViewerViewModel))
@@ -43,31 +38,27 @@ namespace NuSysApp
               Tags.ItemsSource = vm.Tags;
               vm.MakeTagList();
           };
-            IsHitTestVisible = true;
+            
+        }
+
+        public async void ShowElement(ElementController controller)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            vm.ShowElement(controller);
+            Visibility = Visibility.Visible;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            if (propertyChangedEventArgs.PropertyName == "View")
-            {
-                Anim.To(this, "Alpha", 1, 400, null, (a, i) => { IsHitTestVisible = true; });
-                this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
-                this.Height = SessionController.Instance.SessionView.ActualHeight;
-                xContainer.Height = this.Height;
-                xContainer.Width = this.Width - 30;
-                resizer.Height = Height;
-                exitButtonContainer.Width = xContainer.Width;
-         //       Properties.Width = xContainer.Width - 15;
-                TagContainer.Width = xContainer.Width - 15;
-         //       propLine.X2 = Properties.Width - 15;
-                tagLine.X2 = TagContainer.Width - 15;
-                NewTagBox.Width = TagContainer.Width - 163;
-                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
-                Canvas.SetTop(resizerImage, (resizer.Height / 2) - (resizerImage.Height / 2));
-            }
 
             var vm = (DetailViewerViewModel) DataContext;
             Tags.ItemsSource = vm.Tags;
+
+            this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
+            this.Height = SessionController.Instance.SessionView.ActualHeight;
+            this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+            Canvas.SetTop(this, 0);
+            Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
         }
 
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -112,8 +103,7 @@ namespace NuSysApp
 
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            Anim.To(this, "Alpha", 0, 400);
-            IsHitTestVisible = false;
+            Visibility = Visibility.Collapsed;
             var vm = (DetailViewerViewModel)DataContext;
             var textview = (vm.View as TextDetailView);
             textview?.Dispose();
@@ -131,24 +121,25 @@ namespace NuSysApp
             if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0))
             {
                 this.Width -= e.Delta.Translation.X;
-                xContainer.Width = this.Width - 30;
-                exitButtonContainer.Width = xContainer.Width;
+               // xContainer.Width = this.Width - 30;
+               // exitButtonContainer.Width = xContainer.Width;
+               
                 if (nodeContent.Content is ImageFullScreenView)
                 {
-                    ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                   // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
                 } else if (nodeContent.Content is TextDetailView)
                 {
-                    ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                 //   ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
                 } else if (nodeContent.Content is WebDetailView)
                 {
-                    ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                    Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
+               //     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+               //     Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
                 }
            //     Properties.Width = xContainer.Width - 15;
-                TagContainer.Width = xContainer.Width - 15;
+          //      TagContainer.Width = xContainer.Width - 15;
           //      propLine.X2 = Properties.Width - 15;
-                tagLine.X2 = TagContainer.Width - 15;
-                NewTagBox.Width = TagContainer.Width - 163;
+              //  tagLine.X2 = TagContainer.Width - 15;
+               // NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, rightCoord - this.Width);
 
                 e.Handled = true;
