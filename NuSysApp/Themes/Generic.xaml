@@ -32,13 +32,19 @@
                                 </Canvas>                    
                                 <Canvas x:Name="SubMenuRight" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                     <Canvas.RenderTransform>
-                                        <TranslateTransform X=""></TranslateTransform>
+                                        <TranslateTransform X="15"></TranslateTransform>
                                     </Canvas.RenderTransform>
-                                    <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                                        LNK
+                                    <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}">
+                                        <StackPanel>
+                                            <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                            <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                        </StackPanel>
                                     </Button>
-                                    <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuItem}">
-                                        <Image Source="ms-appx:///Assets/icon_mainmenu_node.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                                    <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,70,0,0">
+                                        <StackPanel>
+                                            <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                            <TextBlock Text="Link" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                        </StackPanel>
                                     </Button>
                                 </Canvas>
 

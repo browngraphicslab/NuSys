@@ -57,18 +57,15 @@ namespace NuSysApp
                 xContainer.Width = this.Width - 30;
                 resizer.Height = Height;
                 exitButtonContainer.Width = xContainer.Width;
-                Properties.Width = xContainer.Width - 15;
+         //       Properties.Width = xContainer.Width - 15;
                 TagContainer.Width = xContainer.Width - 15;
-                propLine.X2 = Properties.Width - 15;
+         //       propLine.X2 = Properties.Width - 15;
                 tagLine.X2 = TagContainer.Width - 15;
                 NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                 Canvas.SetTop(resizerImage, (resizer.Height / 2) - (resizerImage.Height / 2));
             }
-            if (propertyChangedEventArgs.PropertyName == "Title")
-            {
-                TitleEnter.Text = ((DetailViewerViewModel)DataContext).Title;
-            }
+
             var vm = (DetailViewerViewModel) DataContext;
             Tags.ItemsSource = vm.Tags;
         }
@@ -124,7 +121,7 @@ namespace NuSysApp
 
         private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
         {
-            ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
+      //      ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -147,9 +144,9 @@ namespace NuSysApp
                     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
                     Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
                 }
-                Properties.Width = xContainer.Width - 15;
+           //     Properties.Width = xContainer.Width - 15;
                 TagContainer.Width = xContainer.Width - 15;
-                propLine.X2 = Properties.Width - 15;
+          //      propLine.X2 = Properties.Width - 15;
                 tagLine.X2 = TagContainer.Width - 15;
                 NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, rightCoord - this.Width);

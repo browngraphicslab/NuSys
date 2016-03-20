@@ -37,6 +37,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            playbackElement.AutoPlay = false;
             if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
                 LoadVideo();
@@ -45,7 +46,7 @@ namespace NuSysApp
             {
                 vm.Controller.ContentLoaded += LoadVideo;
             }
-
+            
 
             _isRecording = false;
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
@@ -80,6 +81,7 @@ namespace NuSysApp
                     memoryStream = stream;
                 }
                 playbackElement.SetSource(memoryStream, "video/mp4");
+                
                 ((VideoNodeViewModel) DataContext).Controller.ContentLoaded -= LoadVideo;
             }
         }
@@ -204,8 +206,8 @@ namespace NuSysApp
         }*/
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementViewModel)this.DataContext;
-            //vm.Remove();
+            var vm = (ElementViewModel)DataContext;
+            vm.Controller.RequestDelete();
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
