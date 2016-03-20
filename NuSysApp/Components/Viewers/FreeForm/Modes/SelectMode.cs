@@ -136,7 +136,7 @@ namespace NuSysApp
                     {
                         SessionController.Instance.SessionView.OpenFile(vm);
                     }
-                    else
+                    else if (vm.ElementType != ElementType.Link)
                     {
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller);
                     }
