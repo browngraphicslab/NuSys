@@ -9,17 +9,23 @@
     mc:Ignorable="d">
     <Grid x:Name="MediaGrid" Background="White" BorderBrush="Gainsboro" BorderThickness="2"  VerticalAlignment="Top" HorizontalAlignment="Right">
         <CaptureElement VerticalAlignment="Top" Name="Element"></CaptureElement>
-            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-            <TextBlock x:Name="StopText" Visibility="Collapsed" Height="18" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Stop" Width="43" TextAlignment="Center"></TextBlock>
+            <Grid VerticalAlignment="Bottom">
+            <TextBlock x:Name="StopText" Visibility="Collapsed" Height="18" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="Stop" Width="43" TextAlignment="Center"></TextBlock>
 
-            <ToggleSwitch x:Name="AudioVideoSwitch" VerticalAlignment="Center" Margin="5,0,0,0"  OnContent="Video" OffContent="Audio"></ToggleSwitch>
-            <Button x:Name="RecordButton" Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
-                <Ellipse Width="20" Height="20" Fill="IndianRed"></Ellipse>
+            <ToggleSwitch x:Name="AudioVideoSwitch" VerticalAlignment="Center" Margin="5,0,0,60"  OnContent="Video" OffContent="Audio"></ToggleSwitch>
+            <Button x:Name="RecordButton" Height="60" Background="Transparent" HorizontalAlignment="Left"  VerticalAlignment="Center" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
+                <Grid>
+                    <Ellipse Width="12" Height="12" StrokeThickness="3" Fill="IndianRed"  Stroke="IndianRed"></Ellipse>
+                    <Ellipse Width="30" Height="30" StrokeThickness="3"  Stroke="IndianRed"></Ellipse>
+                </Grid>
             </Button>
-            <Button x:Name="StopButton" Visibility="Collapsed"  Height="60" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
-                <Rectangle Width="20" Height="20" Fill="IndianRed"></Rectangle>
+            <Button x:Name="StopButton" Visibility="Collapsed"  Height="60" Background="Transparent"  HorizontalAlignment="Left" VerticalAlignment="Center" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
+                <Grid>
+                    <Rectangle Width="10" Height="10" Fill="IndianRed"></Rectangle>
+                    <Ellipse Width="30" Height="30" StrokeThickness="3"  Stroke="IndianRed"></Ellipse>
+                </Grid>
             </Button>
-            <TextBlock x:Name="RecordText" Height="18" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="Record" Width="43" TextAlignment="Center"></TextBlock>
-        </StackPanel>
+            <TextBlock x:Name="RecordText" Margin="10,10,10,10" Height="18" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="Record" Width="43" TextAlignment="Center"></TextBlock>
+        </Grid>
     </Grid>
 </UserControl>
