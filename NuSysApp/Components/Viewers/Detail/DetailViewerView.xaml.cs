@@ -42,6 +42,7 @@ namespace NuSysApp
               vm.PropertyChanged += OnPropertyChanged;
               Tags.ItemsSource = vm.Tags;
               vm.MakeTagList();
+              Metadata.ItemsSource = vm.Metadata;
           };
             IsHitTestVisible = true;
         }
@@ -99,6 +100,25 @@ namespace NuSysApp
             NewTagBox.Text = "";
         }
 
+        private async void NewKey_OnKeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.OriginalKey == VirtualKey.Enter)
+            {
+                await AddMetadataKey(e);
+            }
+        }
+
+        private async Task AddMetadataKey(KeyRoutedEventArgs e)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            string newKey = ((TextBox)e.OriginalSource).Text.Trim();
+            if (newKey != "")
+            {
+              vm.AddMetadata(newKey, "", false);
+            }
+            NewMetadataBox.Text = "";
+        }
+
         private void topBar_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if ((e.OriginalSource as UIElement) == (UIElement)exitButton)
@@ -120,6 +140,15 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
             var textview = (vm.View as TextDetailView);
             textview?.Dispose();
+        }
+
+        private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var toggle = (Properties.Visibility == Visibility.Collapsed);
+            Properties.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
+            TagContainer.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
+            nodeContent.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
+            MetadataContainer.Visibility = toggle ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
