@@ -111,9 +111,11 @@ namespace NuSysApp
 
         }
 
-
-
-
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (ElementViewModel) DataContext;
+            vm.Controller.RequestDelete();
+        }
 
         private async void RenderImageSource(Grid RenderedGrid)
         {

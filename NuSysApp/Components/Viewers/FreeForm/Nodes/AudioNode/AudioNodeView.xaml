@@ -13,6 +13,11 @@
 
 
     <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
+        <local:NodeTemplate.SubMenu>
+            <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+            </Button>
+        </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid x:Name ="grid" Width="{Binding Width}">
                 <Grid.Resources>
