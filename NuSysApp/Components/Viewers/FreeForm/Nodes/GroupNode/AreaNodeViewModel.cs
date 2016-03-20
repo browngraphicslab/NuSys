@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Util;
 using Windows.UI.Xaml.Shapes;
@@ -38,6 +40,9 @@ namespace NuSysApp
                 ClipRect = new Rect(0, 0, width*x, height*y);
                 RaisePropertyChanged("ClipRect");
             };
+
+            
+
             //_nodeViewFactory = new FreeFormNodeViewFactory();
             /*
         
