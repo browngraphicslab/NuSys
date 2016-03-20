@@ -60,7 +60,7 @@
                                         <ItemsPanelTemplate>
                                             <StackPanel Orientation="Horizontal" Width="{Binding Width}" Height="30" Background="Transparent">
                                                 <StackPanel.RenderTransform>
-                                                    <TranslateTransform Y="-35"></TranslateTransform>
+                                                    <TranslateTransform Y="35"></TranslateTransform>
                                                 </StackPanel.RenderTransform>
                                             </StackPanel>
                                         </ItemsPanelTemplate>

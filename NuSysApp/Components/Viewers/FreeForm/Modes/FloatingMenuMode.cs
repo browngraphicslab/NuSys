@@ -11,8 +11,8 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-            _view.IsDoubleTapEnabled = true;
-            _view.DoubleTapped += OnDoubleTapped;
+            _view.IsRightTapEnabled = true;
+            _view.RightTapped += OnRightTapped;
 
             var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
             fm.ManipulationMode = ManipulationModes.All;
@@ -22,8 +22,8 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
-            _view.IsDoubleTapEnabled = false;
-            _view.DoubleTapped -= OnDoubleTapped;
+            _view.IsRightTapEnabled = false;
+            _view.RightTapped-= OnRightTapped;
             var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
             fm.ManipulationMode = ManipulationModes.None;
             fm.ManipulationDelta -= OnManipulationDelta;
@@ -40,7 +40,7 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        protected void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        protected void OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
             var dc = ((FrameworkElement)sender).DataContext;
             if (!(dc is FreeFormViewerViewModel))
