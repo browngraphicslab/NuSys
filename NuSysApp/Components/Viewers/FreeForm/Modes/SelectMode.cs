@@ -66,7 +66,7 @@ namespace NuSysApp
         {
           
             _released = false;
-            await Task.Delay(100);
+            await Task.Delay(200);
             if (!_released)
                 return;
 
