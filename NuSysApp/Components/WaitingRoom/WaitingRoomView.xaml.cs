@@ -74,13 +74,13 @@ namespace NuSysApp
                     data = await content.ReadAsStringAsync();
                 }
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
+
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
                     var box = new CollectionTextBox();
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
                     box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
-                    List.Items.Add(box);
                 }
             }
             catch (Exception e)
@@ -234,9 +234,16 @@ namespace NuSysApp
                                 //var element = new LibraryElementModel(kvp.Value);
 
                                 var dict = kvp.Value;
-
                                 string title = null;
                                 ElementType type = ElementType.Text;
+                                string timestamp = "";
+
+
+                                if (dict.ContainsKey("library_element_creation_timestamp"))
+                                {
+                                    timestamp = dict["library_element_creation_timestamp"].ToString();
+                                }
+
 
                                 if (dict.ContainsKey("title"))
                                 {
@@ -263,6 +270,7 @@ namespace NuSysApp
                                 {
                                     element = new LibraryElementModel(id, type, title);
                                 }
+                                element.Timestamp = timestamp;
                                 if (SessionController.Instance.ContentController.Get(id) == null)
                                 {
                                     SessionController.Instance.ContentController.Add(element);
