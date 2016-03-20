@@ -204,9 +204,6 @@ namespace NuSysApp
                 case SystemRequest.SystemRequestType.RemoveClient:
                     request = new RemoveClientSystemRequest(message);
                     break;
-                case SystemRequest.SystemRequestType.SendWorkspace:
-                    request = new SendWorkspaceRequest(message);
-                    break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }

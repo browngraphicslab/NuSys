@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
+    <Grid BorderBrush="#83A6A3" BorderThickness="1">
 
         <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True">
             <ListView.Header>
@@ -21,9 +21,9 @@
                     </Grid.ColumnDefinitions>
 
 
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="0"  Text="TITLE" FontSize="18" FontFamily="FiraSans-Book"/>
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="TYPE" FontSize="18" FontFamily="FiraSans-Book"/>
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="2" Text="DATE" FontSize="18" FontFamily="FiraSans-Book"/>
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="0" Foreground="#9cc5c2"  Text="title" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Foreground="#9cc5c2"  Text="type" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+                    <TextBlock HorizontalAlignment="Center" Grid.Column="2" Foreground="#9cc5c2"  Text="date" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
                     
 
                 </Grid>

@@ -13,7 +13,7 @@ using NuSysApp.Controller;
 
 namespace NuSysApp
 {
-    public abstract class ElementViewModel : BaseINPC, ISelectable
+    public class ElementViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
 
@@ -30,7 +30,7 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected ElementViewModel(ElementController controller)
+        public ElementViewModel(ElementController controller)
         {
             _controller = controller;
             LinkList = new ObservableCollection<LinkElementController>();

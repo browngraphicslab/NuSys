@@ -7,156 +7,39 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <Storyboard x:Name="windowOpen">
-            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.4" To="130" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" d:IsOptimized="True">
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase  EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>True</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
+    <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
+        <Canvas x:Name="xAddNodeMenu">
+        <Image Source="ms-appx:///Assets/menu_bubble.png" Width="289" Height="126">
+            <Image.RenderTransform>
+                <TranslateTransform X="-120" Y =" -110"></TranslateTransform>
+            </Image.RenderTransform>
+        </Image>
 
-        <Storyboard x:Name="windowClose">
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.2" To="130" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>False</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.RenderTransform>
+                <TranslateTransform X="-60" Y="-60"></TranslateTransform>
+            </StackPanel.RenderTransform>
+            <StackPanel x:Name="btnRecording" Orientation="Vertical">
+                <TextBlock Text="Recording" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <Image Source="ms-appx:///Assets/icon_recording.png" Width="50" Height="50" VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+            </StackPanel>
+            <StackPanel x:Name="btnText" Orientation="Vertical">
+                <TextBlock Text="Text"  TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <Image Source="ms-appx:///Assets/icon_text.png" Width="50" Height="50"  VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+            </StackPanel>
+            <StackPanel x:Name="btnTag" Orientation="Vertical">
+                <TextBlock Text="Tag" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <Image Source="ms-appx:///Assets/icon_tag.png" Width="50" Height="50"  VerticalAlignment="Top" HorizontalAlignment="Center"></Image>
+            </StackPanel>
+        </StackPanel>
+        </Canvas>
 
-        <Storyboard x:Name="expand">
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="FloatingMenuPanel">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>True</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Name="collapse">
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="FloatingMenuPanel" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="FloatingMenuPanel">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>False</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
-        <Storyboard x:Name="slideout">
-            <DoubleAnimation Duration="0:0:0.4" To="130" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" d:IsOptimized="True">
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase  EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:0.2" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" d:IsOptimized="True"/>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" >
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>True</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Name="slidein">
-            <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.4" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" d:IsOptimized="True">
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase  EasingMode="EaseOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                    <DiscreteObjectKeyFrame.Value>
-                        <x:Boolean>False</x:Boolean>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-    </UserControl.Resources>
-
-    <Canvas x:Name="xWrapper" RenderTransform="{Binding FMTransform}" Margin="10,10,0,0"  Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
-        <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal"  Margin="0,20,0,0">
+        <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
             </StackPanel.RenderTransform>
             <local:FloatingMenuButtonView x:Name="btnAddNode" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" />
             <local:FloatingMenuButtonView x:Name="btnLibrary" Icon="ms-appx:///Assets/icon_mainmenu_media.png" Caption="" />
-
         </StackPanel>
-
-        <StackPanel Name="SubMenuSelect" VerticalAlignment="Top" Margin="-110,100,0,0" Opacity="0" IsHitTestVisible="False">
-            <StackPanel.RenderTransform>
-                <CompositeTransform/>
-            </StackPanel.RenderTransform>
-            
-            <!--new stuff-->
-            <local:FloatingMenuButtonView x:Name="btnSelectNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_select.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Select"></local:FloatingMenuButtonView>
-            <local:FloatingMenuButtonView x:Name="btnMultiSelect" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_multiselect.png" ParentButton="{Binding ElementName=btnSelect}" Caption="Multiselect"></local:FloatingMenuButtonView>
-        </StackPanel>
-
-
-        <StackPanel x:Name="SubMenuNodes" VerticalAlignment="Top" Margin="-40,100,0,0" Opacity="0" IsHitTestVisible="False">
-            <StackPanel.RenderTransform>
-                <CompositeTransform />
-            </StackPanel.RenderTransform>
-         
-            <!--new stuff-->
-            <local:FloatingMenuButtonView x:Name="btnNewNode" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_node.png" ParentButton="{Binding ElementName=btnAddNode}" Caption=""></local:FloatingMenuButtonView>
-            </StackPanel>
-
-        <StackPanel x:Name="SubMenuSaveLoad" VerticalAlignment="Top" Margin="170, 100, 0, 0" Opacity ="0" IsHitTestVisible="False">
-            <StackPanel.RenderTransform>
-                <CompositeTransform/>
-            </StackPanel.RenderTransform>
-
-            <!--new stuff-->
-            <local:FloatingMenuButtonView x:Name="btnExport" IsMode="True" IsSubButton="True" Icon="ms-appx:///Assets/icon_mainmenu_export.png" ParentButton="{Binding ElementName=btnSaveLoad}" Caption="Save"></local:FloatingMenuButtonView>
-        </StackPanel>
-
-        <!-- Bucket Window -->
-        <local:BucketWindowView x:Name="bucketWindow" Opacity="0" IsHitTestVisible="False" Canvas.Left="30" Canvas.Top="71">
-            <local:BucketWindowView.RenderTransform>
-                <CompositeTransform />
-            </local:BucketWindowView.RenderTransform>
-        </local:BucketWindowView>
-
-        <!-- Pin Window -->
-        <local:PinWindowView x:Name="pinWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
-            <local:PinWindowView.RenderTransform>
-                <CompositeTransform />
-            </local:PinWindowView.RenderTransform>
-        </local:PinWindowView>
-        <!--PinList="{Binding PinViewModelList}"-->
-
-        <!--UserWindow-->
-        <local:UserWindowView x:Name="userWindow" Margin="40,30,0,0" Opacity="0" IsHitTestVisible="False">
-            <local:UserWindowView.RenderTransform>
-                <CompositeTransform />
-            </local:UserWindowView.RenderTransform>
-        </local:UserWindowView>
-
-        <local:SearchWindowView x:Name="searchWindow" Margin="40,120,0,0" Opacity="0" IsHitTestVisible="False">
-            <local:SearchWindowView.RenderTransform>
-                <CompositeTransform />
-            </local:SearchWindowView.RenderTransform>
-        </local:SearchWindowView>
-
     </Canvas>
 </UserControl>
