@@ -37,13 +37,13 @@
                                     <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}">
                                         <StackPanel>
                                             <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                            <TextBlock TextAlignment="Center" Foreground="#9CC5C2" FontSize="12">Duplicate</TextBlock>
+                                            <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                         </StackPanel>
                                     </Button>
                                     <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,70,0,0">
                                         <StackPanel>
                                             <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                            <TextBlock TextAlignment="Center" Foreground="#9CC5C2" FontSize="12">Link</TextBlock>
+                                            <TextBlock Text="Link" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                         </StackPanel>
                                     </Button>
                                 </Canvas>
