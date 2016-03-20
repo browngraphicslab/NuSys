@@ -35,7 +35,7 @@ namespace NuSysApp
         public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
         private static IEnumerable<string> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
@@ -74,7 +74,7 @@ namespace NuSysApp
                     data = await content.ReadAsStringAsync();
                 }
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
-
+                List?.Items?.Clear();
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);

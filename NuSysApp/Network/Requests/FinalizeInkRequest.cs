@@ -18,8 +18,9 @@ namespace NuSysApp
             {
                 throw new Exception("FinalizeInkRequest must contain 'id'");
             }
+            _message["contentId"] = _message.GetString("id", null);
             SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Alias);
+            SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Update);
             SetServerIgnore(false);
         }
