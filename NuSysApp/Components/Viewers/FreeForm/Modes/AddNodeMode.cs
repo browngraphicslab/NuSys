@@ -249,9 +249,7 @@ namespace NuSysApp
             vm.ClearSelection();
          //   vm.ClearMultiSelection();
 
-            if (!_isFixed) { 
-                SessionController.Instance.SessionView.FloatingMenu.Reset();
-            }           
+        
         }
     }
 }

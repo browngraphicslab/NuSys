@@ -50,7 +50,8 @@ namespace NuSysApp
         public ElementController(ElementModel model)
         {
             _model = model;
-            _debouncingDictionary = new DebouncingDictionary(model.Id);
+            if (_model != null)
+                _debouncingDictionary = new DebouncingDictionary(model.Id);
         }
 
         public void SetCreator(string parentId)
@@ -60,7 +61,6 @@ namespace NuSysApp
 
         public void AddLink(LinkElementController linkController)
         {
-            var linkModel = (LinkModel)linkController.Model;
             LinkedAdded?.Invoke(this, linkController);
         }
 

@@ -118,6 +118,9 @@ namespace NuSysApp
                     await elementModel.UnPack(_message);
                     controller = new LinkElementController((LinkModel)elementModel);
                     break;
+                case ElementType.Recording:
+                    controller = new ElementController(null);
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }

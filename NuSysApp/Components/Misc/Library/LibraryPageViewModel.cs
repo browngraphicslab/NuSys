@@ -23,7 +23,11 @@ namespace NuSysApp
 
         private void NewContent(LibraryElementModel content)
         {
-            _PageElements.Add(content);
+            UITask.Run(() =>
+            {
+                _PageElements.Add(content);
+            });
+
         }
         public async Task Sort(string s)
         {
