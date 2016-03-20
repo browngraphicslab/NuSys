@@ -9,13 +9,13 @@
     mc:Ignorable="d">
     <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <Canvas x:Name="xAddNodeMenu">
-        <Image Source="ms-appx:///Assets/menu_bubble.png" Width="289" Height="126">
-            <Image.RenderTransform>
-                <TranslateTransform X="-110" Y =" -110"></TranslateTransform>
+        <Image Source="ms-appx:///Assets/menu_bubble.png" Width="289" Height="110">
+                <Image.RenderTransform>
+                    <TranslateTransform X="-110" Y =" -110"></TranslateTransform>
             </Image.RenderTransform>
         </Image>
 
-        <StackPanel>
+            <StackPanel>
                 <StackPanel.RenderTransform>
                     <TranslateTransform X="-75" Y="-90"></TranslateTransform>
                 </StackPanel.RenderTransform>
@@ -37,8 +37,6 @@
                     <TextBlock Text="Drag to Create" TextAlignment="Center" FontSize="15" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="#9CC5C2"></TextBlock>
                 </StackPanel>
             </StackPanel>
-        
-        
         </Canvas>
 
         <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">
