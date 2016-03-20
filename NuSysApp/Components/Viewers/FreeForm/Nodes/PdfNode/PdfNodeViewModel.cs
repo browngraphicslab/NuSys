@@ -192,7 +192,6 @@ namespace NuSysApp
 
         public void MakeTagList()
         {
-            _suggestedTags.Add("hello");
             SuggestedTags = new ObservableCollection<Button>();
             foreach (string tag in _suggestedTags)
             {
