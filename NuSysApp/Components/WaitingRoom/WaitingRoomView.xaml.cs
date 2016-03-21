@@ -131,18 +131,29 @@ namespace NuSysApp
             _firstLoadList = null;
             return l;
         }
-
+        private async void NewUser_OnClick(object sender, RoutedEventArgs e)
+        {
+            Login(true);
+        }
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Login(false);
+        }
+
+        private async void Login(bool createNewUser)
         {
             try
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var cred = new Dictionary<string, string>();
-                
+
                 cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
-                
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/" ;
+                if (createNewUser)
+                {
+                    cred["new_user"] = "";
+                }
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
                 var client = new HttpClient(
                  new HttpClientHandler
                  {
@@ -165,8 +176,8 @@ namespace NuSysApp
                 }
 
                 string data;
-                var text = JsonConvert.SerializeObject(cred,settings);
-                var response = await client.PostAsync(new Uri(url),new StringContent(text, Encoding.UTF8, "application/xml"));
+                var text = JsonConvert.SerializeObject(cred, settings);
+                var response = await client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
                 using (var content = response.Content)
                 {
                     data = await content.ReadAsStringAsync();
@@ -179,7 +190,7 @@ namespace NuSysApp
                     doc.LoadXml(data);
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
                     validCredentials = bool.Parse(dict["valid"]);
-                    serverSessionId = dict["server_session_id"];
+                    serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
                 }
                 catch (Exception boolParsException)
                 {
@@ -301,7 +312,7 @@ namespace NuSysApp
             {
                 Debug.WriteLine("cannot connect to server");
             }
-            
+
         }
         //TODO: move this crypto stuff elsewhere, only here temporarily
         public static byte[] Encrypt(string plain)
