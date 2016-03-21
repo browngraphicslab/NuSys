@@ -206,6 +206,10 @@ namespace NuSysApp
                     var first = (FrameworkElement)hitsStart.First();
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
+                    if (vm == dc || (dc is FreeFormViewerViewModel))
+                    {
+                        return;
+                    }
                     vm.Controller.RequestLinkTo(dc.Id);
                 }
             }

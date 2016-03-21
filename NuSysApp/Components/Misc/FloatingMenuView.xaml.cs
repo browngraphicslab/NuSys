@@ -49,9 +49,11 @@ namespace NuSysApp
             xAddNodeMenu.Visibility = Visibility.Collapsed;
 
             Canvas.SetTop(_lib, 80);
+            Canvas.SetLeft(libProp, 400);
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnTag);
+            AddNodeSubmenuButton(btnWeb);
         }
 
 
@@ -122,6 +124,8 @@ namespace NuSysApp
                 _elementType = ElementType.Text;
             if (sender == btnRecording)
                 _elementType = ElementType.Recording;
+            if (sender == btnWeb)
+                _elementType = ElementType.Web;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -153,7 +157,7 @@ namespace NuSysApp
 
                 vm.AtomViewList.Add(r);
                 
-            } else if (elementType == ElementType.Text) { 
+            } else if (elementType == ElementType.Text || elementType == ElementType.Web) { 
                 
 
        
@@ -175,8 +179,7 @@ namespace NuSysApp
             dict["x"] = (p.X - size.Width/2).ToString();
             dict["y"] = (p.Y - size.Height/2).ToString();
             dict["contentId"] = contentId;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-            dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             dict["metadata"] = metadata;
             dict["autoCreate"] = true;
            

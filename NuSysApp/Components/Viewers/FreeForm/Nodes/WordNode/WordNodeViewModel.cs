@@ -88,9 +88,8 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id ;
             m["nodeType"] = ElementType.PDF.ToString();
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = wordModel.GetMetaData("BookmarkId");

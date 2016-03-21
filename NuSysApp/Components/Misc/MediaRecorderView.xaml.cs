@@ -54,6 +54,7 @@ namespace NuSysApp
             {
                 await OnStartRecordingAudClick();
             }
+            AudioVideoSwitch.Visibility = Visibility.Collapsed;
         }
 
         public void Show()
@@ -175,8 +176,7 @@ namespace NuSysApp
             m["height"] = vm.Model.Height;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             if (type == ElementType.Video)
             {
@@ -203,8 +203,8 @@ namespace NuSysApp
             }
 
 
-           
-           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
+
+            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 

@@ -119,6 +119,7 @@
     <Content Include="Assets\icon_search.png" />
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
+    <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
@@ -162,6 +163,7 @@
     <Content Include="Assets\node icons\icon_pause.png" />
     <Content Include="Assets\node icons\icon_play.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\text.png" />
@@ -374,7 +376,6 @@
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
@@ -383,6 +384,7 @@
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
+    <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
@@ -564,6 +566,7 @@
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

@@ -212,8 +212,8 @@ namespace NuSysApp
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
-            var r = new RenderTargetBitmap();//TODO implement
-
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(grid, width, height);
             return r;
         }
 

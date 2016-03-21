@@ -39,7 +39,7 @@ namespace NuSysApp
             Width = 300;
             Height = 200;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-
+            //_visualGrid = new Grid();
         }
 
         public void addTimeBlockChange(

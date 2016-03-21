@@ -27,17 +27,29 @@ namespace NuSysApp
         {
             InitializeComponent();
             Visibility = Visibility.Collapsed;
-  
-              DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
+
+
+     
+
+            DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
               {
                   if (!(DataContext is DetailViewerViewModel))
                       return;
               
+
                   var vm = (DetailViewerViewModel)DataContext;
                   vm.PropertyChanged += OnPropertyChanged;
                   Tags.ItemsSource = vm.Tags;
                   vm.MakeTagList();
+
+                  this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
+                  this.Height = SessionController.Instance.SessionView.ActualHeight;
+                  this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+                  Canvas.SetTop(this, 0);
+                  Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
+                  // Metadata.ItemsSource = vm.Metadata;
               };
+
             
         }
 
@@ -54,11 +66,6 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel) DataContext;
             Tags.ItemsSource = vm.Tags;
 
-            this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
-            this.Height = SessionController.Instance.SessionView.ActualHeight;
-            this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-            Canvas.SetTop(this, 0);
-            Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
         }
 
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -87,6 +94,25 @@ namespace NuSysApp
             NewTagBox.Text = "";
         }
 
+        private async void NewKey_OnKeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.OriginalKey == VirtualKey.Enter)
+            {
+                await AddMetadataKey(e);
+            }
+        }
+
+        private async Task AddMetadataKey(KeyRoutedEventArgs e)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            string newKey = ((TextBox)e.OriginalSource).Text.Trim();
+            if (newKey != "")
+            {
+              vm.AddMetadata(newKey, "", false);
+            }
+          //  NewMetadataBox.Text = "";
+        }
+
         private void topBar_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if ((e.OriginalSource as UIElement) == (UIElement)exitButton)
@@ -107,6 +133,15 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
             var textview = (vm.View as TextDetailView);
             textview?.Dispose();
+        }
+
+        private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var toggle = (TitleEnter.Visibility == Visibility.Collapsed);
+            TitleEnter.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
+            TagContainer.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
+            nodeContent.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
+           // MetadataContainer.Visibility = toggle ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
