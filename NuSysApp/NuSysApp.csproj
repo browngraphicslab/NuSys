@@ -291,6 +291,7 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
