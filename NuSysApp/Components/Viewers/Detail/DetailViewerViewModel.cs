@@ -131,6 +131,9 @@ namespace NuSysApp
             Tags.Add(tagBlock);
 
             RaisePropertyChanged("Tags");
+
+            //makes the entire metadata list again to update new tags
+            MakeMetadataList();
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel
