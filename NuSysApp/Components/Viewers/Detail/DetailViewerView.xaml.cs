@@ -122,7 +122,7 @@ namespace NuSysApp
             textview?.Dispose();
         }
 
-        private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
+        private void TitleEnter_OnTextChanged(object sender, string s)
         {
             ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
