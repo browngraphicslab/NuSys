@@ -20,6 +20,7 @@ namespace NuSysApp
         //private ObservableCollection<LinkedTimeBlockViewModel> _linkedTimeBlocks;
 
         private ObservableCollection<LinkedTimeBlockModel> _linkedTimeModels;
+
         private MediaController _controller;
 
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;

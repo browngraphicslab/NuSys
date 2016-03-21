@@ -142,13 +142,13 @@ namespace NuSysApp
 
             if (SessionController.Instance.ContentController.Get(libraryId).Loaded)
             {
-                controller.FireContentLoaded();
+              //  controller.FireContentLoaded();
             }
             else
             {
                 SessionController.Instance.ContentController.Get(libraryId).OnLoaded += delegate
                 {
-                    controller.FireContentLoaded();
+               //     controller.FireContentLoaded();
                 };
             }
 

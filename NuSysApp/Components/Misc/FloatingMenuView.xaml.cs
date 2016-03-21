@@ -96,7 +96,7 @@ namespace NuSysApp
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
 
         }
-
+         
         private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
             var t = (CompositeTransform)_dragItem.RenderTransform;

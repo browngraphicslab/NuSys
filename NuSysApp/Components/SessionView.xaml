@@ -59,6 +59,5 @@
         <Grid x:Name="xBtnPen" Background="IndianRed" Width="70" Height="100">
             <TextBlock Text="P" FontWeight="Black"></TextBlock>
         </Grid>
-
     </Canvas>
 </Page>

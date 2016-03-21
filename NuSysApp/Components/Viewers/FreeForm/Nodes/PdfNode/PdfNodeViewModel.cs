@@ -37,27 +37,42 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
-
-
-            controller.ContentLoaded += async delegate (object source, LibraryElementModel content)
-            {
-                var data = content.Data;
-                var dataBytes = Convert.FromBase64String(data);
-                var ms = new MemoryStream(dataBytes);
-                using (IInputStream inputStreamAt = ms.AsInputStream())
-                using (var dataReader = new DataReader(inputStreamAt))
-                {
-                    uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                    IBuffer readBuffer = dataReader.ReadBuffer(u);
-                    _document = Document.Create(readBuffer, DocumentType.PDF, 140);
-                    model.Document = _document;
-                }
-
-                await Goto(CurrentPageNumber);
-                SetSize(Width, Height);
-                LaunchLDA((PdfNodeModel)this.Model);
-            };
         }
+
+        public async override Task Init()
+        {
+            if (Controller.LibraryElementModel.Loaded)
+            {
+                await DisplayPdf();
+            }
+            else
+            {
+                Controller.LibraryElementModel.OnLoaded += async delegate
+                {
+                    await DisplayPdf();
+                };
+            }
+        }
+
+        private async Task DisplayPdf()
+        {
+            var data = Controller.LibraryElementModel.Data;
+            var dataBytes = Convert.FromBase64String(data);
+            var ms = new MemoryStream(dataBytes);
+            using (IInputStream inputStreamAt = ms.AsInputStream())
+            using (var dataReader = new DataReader(inputStreamAt))
+            {
+                uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
+                IBuffer readBuffer = dataReader.ReadBuffer(u);
+                _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+             //   Document = _document;
+            }
+
+            await Goto(CurrentPageNumber);
+            SetSize(Width, Height);
+            LaunchLDA((PdfNodeModel)this.Model);
+        }
+
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;

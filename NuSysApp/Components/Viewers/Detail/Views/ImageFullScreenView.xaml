@@ -9,11 +9,11 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
-    <Grid x:Name="totalStackPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <StackPanel x:Name="buttons" Orientation="Horizontal" Background="#565F6D" VerticalAlignment="Top">
+    <Grid x:Name="totalStackPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <StackPanel x:Name="buttons" Orientation="Horizontal" Background="#565F6D" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
             <Button Click="ButtonBase_OnClick" Foreground="White" Background="Transparent">INK</Button>
             <Button Name="SourceBttn" Foreground="White" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
         </StackPanel>
-        <Image x:Name="xImg" Source="{Binding Image}" Stretch="Uniform" VerticalAlignment="Top" Margin="0,30,0,0"/>
+        <Image x:Name="xImg" Source="{Binding Image}" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,30,0,0"/>
     </Grid>
 </UserControl>
