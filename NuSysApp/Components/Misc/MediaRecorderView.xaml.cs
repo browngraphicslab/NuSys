@@ -54,6 +54,7 @@ namespace NuSysApp
             {
                 await OnStartRecordingAudClick();
             }
+            AudioVideoSwitch.Visibility = Visibility.Collapsed;
         }
 
         public void Show()

@@ -162,6 +162,7 @@
     <Content Include="Assets\node icons\icon_pause.png" />
     <Content Include="Assets\node icons\icon_play.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\text.png" />
