@@ -119,6 +119,7 @@
     <Content Include="Assets\icon_search.png" />
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
+    <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
