@@ -36,9 +36,12 @@ namespace NuSysApp
         public static string ServerSessionID { get; private set; }
 
         public static bool TEST_LOCAL_BOOLEAN = true;
+
         private static IEnumerable<string> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
+
+        private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -48,6 +51,7 @@ namespace NuSysApp
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
             ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
@@ -82,6 +86,7 @@ namespace NuSysApp
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
                     box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
                     List.Items.Add(box);
+                    _preloadedIDs.Add(box.ID);
                 }
             }
             catch (Exception e)
@@ -199,7 +204,7 @@ namespace NuSysApp
 
                         SessionController.Instance.ContentController.OnNewContent += delegate (LibraryElementModel element)
                         {
-                            if (element.Type == ElementType.Collection)
+                            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.Id))
                             {
                                 UITask.Run(delegate
                                 {
@@ -208,6 +213,7 @@ namespace NuSysApp
                                     box.Text = element.Title ?? "Unnamed Collection";
                                     List.Items.Add(box);
                                 });
+                                _preloadedIDs.Add(element.Id);
                             }
                         };
 

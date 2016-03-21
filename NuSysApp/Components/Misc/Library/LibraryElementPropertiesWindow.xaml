@@ -97,7 +97,7 @@
                 </ScrollViewer>
 
                 <Button Width="30" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10,10,10,10" Foreground="White" Background="Transparent"
-                    Padding="0">
+                    Padding="0" Name="deleteButton" Click="Delete_OnClick">
                     <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="30"></Image>
                 </Button>
             </StackPanel>

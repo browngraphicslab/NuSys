@@ -51,7 +51,10 @@ namespace NuSysApp
         {
             _model = model;
             if (_model != null)
+            {
                 _debouncingDictionary = new DebouncingDictionary(model.Id);
+            }
+            LibraryElementModel.OnDelete += Delete;
         }
 
         public void SetCreator(string parentId)

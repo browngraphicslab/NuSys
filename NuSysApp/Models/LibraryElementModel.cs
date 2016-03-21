@@ -35,6 +35,8 @@ namespace NuSysApp
         public delegate void TitleChangedEventHandler(string newTitle);
         public event TitleChangedEventHandler OnTitleChanged;
 
+        public delegate void ElementDeletedEventHandler();
+        public event ElementDeletedEventHandler OnDelete;
         public ElementType Type { get; set; }
 
         public string Data
@@ -72,6 +74,11 @@ namespace NuSysApp
             Loaded = false;
         }
 
+        public void FireDelete()
+        {
+            OnDelete?.Invoke();
+            SessionController.Instance.ContentController.Remove(this);
+        }
         public bool LoadingOrLoaded()
         {
             return Loaded || _loading;

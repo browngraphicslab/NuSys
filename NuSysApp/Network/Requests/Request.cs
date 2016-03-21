@@ -26,7 +26,8 @@ namespace NuSysApp
             ChatDialogRequest,
             CreateNewLibrayElementRequest,
             SubscribeToCollectionRequest,
-            UnsubscribeFromCollectionRequest
+            UnsubscribeFromCollectionRequest,
+            DeleteLibraryElementRequest
         }
 
         public enum ServerItemType

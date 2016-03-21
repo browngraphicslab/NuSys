@@ -377,6 +377,7 @@
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
+    <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />

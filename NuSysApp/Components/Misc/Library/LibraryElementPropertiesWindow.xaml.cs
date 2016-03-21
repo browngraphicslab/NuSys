@@ -150,5 +150,10 @@ namespace NuSysApp
             var content = SessionController.Instance.ContentController.Get(ID.Text);
             content?.SetTitle(Title.Text);
         }
+
+        private void Delete_OnClick(object sender, RoutedEventArgs e)
+        {
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(ID.Text));
+        }
     }
 }

@@ -19,6 +19,9 @@ namespace NuSysApp
 
         public delegate void NewContentEventHandler(LibraryElementModel element);
         public event NewContentEventHandler OnNewContent;
+
+        public delegate void ElementDeletedEventHandler(LibraryElementModel element);
+        public event ElementDeletedEventHandler OnElementDelete;
         public int Count
         {
             get { return _contents.Count; }
@@ -77,6 +80,16 @@ namespace NuSysApp
             _waitingNodeCreations.Add(id, mre);
         }*/
 
+        public bool Remove(LibraryElementModel model)
+        {
+            if (!_contents.ContainsKey(model.Id))
+            {
+                return false;
+            }
+            _contents.Remove(model.Id);
+            OnElementDelete?.Invoke(model);
+            return true;
+        }
         public string OverWrite(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Id))

@@ -51,6 +51,13 @@ namespace NuSysApp
             {
                 vm.InitializeLibrary();
             };
+            vm.OnElementDeleted += delegate
+            {
+                UITask.Run(delegate
+                {
+                    properties.Visibility = Visibility.Collapsed;
+                });
+            };
         }
 
         public async void ToggleVisiblity()

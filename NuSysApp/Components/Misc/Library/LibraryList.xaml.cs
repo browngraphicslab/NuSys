@@ -48,6 +48,7 @@ namespace NuSysApp
                 ListView.ItemsSource = vm._PageElements;
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
                 ((LibraryBucketViewModel)library.DataContext).OnNewElementAvailable += AddNewElement;
+                ((LibraryBucketViewModel)library.DataContext).OnElementDeleted += RemoveElement;
             };
             _propertiesWindow = propertiesWindow;
             _library = library;
@@ -62,9 +63,17 @@ namespace NuSysApp
         private void AddNewElement(LibraryElementModel element)
         {
             //_items = new ObservableCollection<LibraryElementModel>((IEnumerable<LibraryElementModel>) ListView.ItemsSource);
+            //UITask.Run(delegate
+            //{
+                //((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Add(element);
+            //});
+        }
+
+        private void RemoveElement(LibraryElementModel element)
+        {
             UITask.Run(delegate
             {
-                ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Add(element);
+                ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Remove(element);
             });
         }
 
