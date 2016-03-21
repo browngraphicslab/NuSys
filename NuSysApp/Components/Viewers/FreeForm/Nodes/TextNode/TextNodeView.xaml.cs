@@ -27,6 +27,9 @@ namespace NuSysApp
         private MediaCapture _mediaCapture;
         private bool _isRecording;
 
+
+        private bool _isopen;
+        private string _text = string.Empty;
         private List<InqLineModel> _lines = new List<InqLineModel>(); 
 
         public TextNodeView(TextNodeViewModel vm)
@@ -89,7 +92,9 @@ namespace NuSysApp
                 
                 var texts = await InkToText(_lines); 
                 if (texts.Count > 0)
-                    UpdateText(texts[0]);
+                    UpdateText(_text + texts[0]);
+                 UpdateController(_text);
+
             };
 
          //   EditText.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
@@ -110,14 +115,15 @@ namespace NuSysApp
             _text = str;
         }
 
-        
-
-        private bool _isopen;
-        private string _text = string.Empty;
+      
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
         {
-
+            if (_isopen)
+            {
+                FlipClose.Begin();
+                _isopen = false;
+            }
         }
 
         private void OnInkClick(object sender, RoutedEventArgs e)
@@ -139,10 +145,17 @@ namespace NuSysApp
             string data = e.Value;
             if (data != "")
             {
-                var vm = DataContext as ElementViewModel;
-                var controller = (TextNodeController)vm.Controller;
-                controller.LibraryElementModel?.SetContentData(vm,data);
+                UpdateController(data);
+
+               
             }
+        }
+
+        private void UpdateController(String s)
+        {
+            var vm = DataContext as ElementViewModel;
+            var controller = (TextNodeController)vm.Controller;
+            controller.LibraryElementModel?.SetContentData(vm, s);
         }
 
         
@@ -177,10 +190,24 @@ namespace NuSysApp
         }
 
 
-        private void RecordButton_OnClick(object sender, RoutedEventArgs e)
+        private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
-            xMediaRecotder.Visibility = Visibility.Visible;
-            TextNodeWebView.Visibility = Visibility.Collapsed;
+            if(_isopen)
+            {
+                FlipClose.Begin();
+                _isopen = false;
+            }
+            var session = SessionController.Instance;
+            if (!session.IsRecording)
+            {
+                await session.TranscribeVoice();
+
+                var text = session.SpeechString;
+                UpdateText(_text + " " + text);
+                UpdateController(_text);
+
+            }
+
         }
 
         public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
