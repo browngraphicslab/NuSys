@@ -46,7 +46,6 @@ namespace NuSysApp
         {
             get { return _contentController; }
         }
-
         public SpeechRecognizer Recognizer { get; set; }
 
         public bool IsRecording { get; set; }

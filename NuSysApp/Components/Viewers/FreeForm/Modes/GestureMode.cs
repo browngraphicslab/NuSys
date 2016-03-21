@@ -106,8 +106,7 @@ namespace NuSysApp
             m["nodeType"] = ElementType.Area.ToString();
             m["points"] = transPoints;
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id ;
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId ;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 

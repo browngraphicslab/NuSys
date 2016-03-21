@@ -35,6 +35,8 @@ namespace NuSysApp
         public delegate void TitleChangedEventHandler(string newTitle);
         public event TitleChangedEventHandler OnTitleChanged;
 
+        public delegate void ElementDeletedEventHandler();
+        public event ElementDeletedEventHandler OnDelete;
         public ElementType Type { get; set; }
 
         public string Data
@@ -57,6 +59,7 @@ namespace NuSysApp
                 RaisePropertyChanged("Title");
             } 
         }
+        public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
         private string _title;
 
@@ -72,6 +75,11 @@ namespace NuSysApp
             Loaded = false;
         }
 
+        public void FireDelete()
+        {
+            OnDelete?.Invoke();
+            SessionController.Instance.ContentController.Remove(this);
+        }
         public bool LoadingOrLoaded()
         {
             return Loaded || _loading;

@@ -11,7 +11,7 @@
     <Border x:Name="Border" Height="500" Width="400" Background="White" BorderBrush="#83A6A3" BorderThickness="1" Margin="3,0,0.333,0">
 
         <Grid Margin="-7,0,3,0">
-            <Image Source="ms-appx:///Assets/icon_collapse.png" Tapped="UIElement_OnTapped"  HorizontalAlignment="Right" Width="10" Margin="0,0,10,0"/>
+            <Image Source="ms-appx:///Assets/icon_collapse.png" Tapped="CollapseArrow_OnTapped"  HorizontalAlignment="Right" Width="10" Margin="0,0,10,0"/>
             <StackPanel Padding="50" Orientation="Vertical" >
                 <Border Height="150" Width="150" BorderThickness="1" BorderBrush="#E6EDEC">
                     <Image x:Name="Preview" Height="150" Width="150" Margin="0,0,0,0" />
@@ -97,11 +97,14 @@
                 </ScrollViewer>
 
                 <Button Width="30" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10,10,10,10" Foreground="White" Background="Transparent"
-                    Padding="0">
+                    Padding="0" Name="deleteButton" Click="Delete_OnClick">
                     <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="30"></Image>
                 </Button>
             </StackPanel>
-
+            <Button Name="EnterCollectionButton" Padding="0" Visibility="Visible" Click="EnterCollection_OnClick" Width="30" Height="50" VerticalAlignment="Top" 
+                        HorizontalAlignment="Center" Margin="10,10,10,10" Background="Transparent">
+                <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="30"></Image>
+            </Button>
         </Grid>
     </Border>
 </UserControl>

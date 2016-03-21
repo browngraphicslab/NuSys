@@ -368,9 +368,7 @@ namespace NuSysApp
         private void ItemPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             LibraryElementModel clickedElement = (LibraryElementModel)((StackPanel)sender).DataContext;
-            _propertiesWindow.setTitle(clickedElement.Title);
-            _propertiesWindow.setType(clickedElement.Type.ToString());
-            _propertiesWindow.Visibility = Visibility.Visible;
+            _propertiesWindow.SetElement(clickedElement);
         }
 
         public async Task Update()

@@ -25,14 +25,14 @@ namespace NuSysApp
 
         public UserControl View { get; set; }
             
-        public ObservableCollection<Button> Tags { get; set; }
+        public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
  
         public DetailViewerViewModel()
 
         {
-            Tags = new ObservableCollection<Button>();
+            Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
         }
 
@@ -114,7 +114,7 @@ namespace NuSysApp
                 List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
                 foreach (string tag in tags)
                 {
-                    Button tagBlock = this.MakeTagBlock(tag);
+                    var tagBlock = this.MakeTagBlock(tag);
                     Tags.Add(tagBlock);
                 }
             }
@@ -127,7 +127,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
 
             //this should be refactored later
-            Button tagBlock = this.MakeTagBlock(tag);
+            var tagBlock = this.MakeTagBlock(tag);
             Tags.Add(tagBlock);
 
             RaisePropertyChanged("Tags");
@@ -137,7 +137,7 @@ namespace NuSysApp
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel
-        public Button MakeTagBlock(string text)
+        public FrameworkElement MakeTagBlock(string text)
         {
             var deleteButton = new TextBlock() { Text = "X" };
             deleteButton.Foreground = new SolidColorBrush(Colors.White);
@@ -151,20 +151,28 @@ namespace NuSysApp
             var tagContent = new TextBlock() { Text = text };
             tagContent.Foreground = new SolidColorBrush(Colors.White);
             tagContent.FontStyle = FontStyle.Italic;
+            tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            var stackPanel = new StackPanel();
+            var stackPanel = new Grid();
+            stackPanel.ColumnDefinitions.Add(new ColumnDefinition{Width = new GridLength(20)});
+            stackPanel.ColumnDefinitions.Add(new ColumnDefinition{Width = GridLength.Auto});
             stackPanel.Children.Add(deleteButton);
             stackPanel.Children.Add(tagContent);
-            stackPanel.Orientation = Orientation.Horizontal;
+            Grid.SetColumn(deleteButton,0);
+            Grid.SetColumn(tagContent,1);
 
             Button tagBlock = new Button();
+            tagBlock.Tapped += TagBlock_Tapped;
+            tagBlock.Background = new SolidColorBrush(Colors.DarkSalmon);
             tagBlock.Content = stackPanel;
-            tagBlock.Height = 40;
-            tagBlock.Margin = new Thickness(2, 2, 2, 2);
+            tagBlock.Height = 30;
             tagBlock.Padding = new Thickness(5);
-            tagBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            tagBlock.Background = new SolidColorBrush(Colors.Transparent);
-            tagBlock.Tapped += TagBlock_Tapped; 
+            tagBlock.BorderThickness = new Thickness(0);
+            tagBlock.Foreground = new SolidColorBrush(Colors.White);
+            tagBlock.Margin = new Thickness(5, 2, 2, 5);///
+            tagBlock.Opacity = 0.75;
+            tagBlock.FontStyle = FontStyle.Italic;
+            tagBlock.IsHitTestVisible = false;
 
             return tagBlock;
         }

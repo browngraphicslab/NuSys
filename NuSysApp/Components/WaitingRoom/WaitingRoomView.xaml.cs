@@ -36,9 +36,12 @@ namespace NuSysApp
         public static string ServerSessionID { get; private set; }
 
         public static bool TEST_LOCAL_BOOLEAN = false;
-        private static IEnumerable<string> _firstLoadList;
+
+        private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
+
+        private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -48,6 +51,7 @@ namespace NuSysApp
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
             ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
@@ -74,7 +78,7 @@ namespace NuSysApp
                     data = await content.ReadAsStringAsync();
                 }
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
-
+                List?.Items?.Clear();
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
@@ -82,6 +86,7 @@ namespace NuSysApp
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
                     box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
                     List.Items.Add(box);
+                    _preloadedIDs.Add(box.ID);
                 }
             }
             catch (Exception e)
@@ -110,27 +115,19 @@ namespace NuSysApp
             {
                 var item = List.SelectedItems.First();
                 var id = ((CollectionTextBox) item).ID;
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace/"+id;
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(new Uri(url));
-                string data;
-                using (var content = response.Content)
-                {
-                    data = await content.ReadAsStringAsync();
-                }
-                _firstLoadList = JsonConvert.DeserializeObject<List<string>>(data);
+                _firstLoadList = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
             }
         }
 
-        public static IEnumerable<string> GetFirstLoadList()
+        public static IEnumerable<Message> GetFirstLoadList()
         {
             if (_firstLoadList == null)
             {
-                return new List<string>();
+                return new List<Message>();
             }
-            var l = new List<string>(_firstLoadList);
+            var l = new List<Message>(_firstLoadList);
             _firstLoadList = null;
             return l;
         }
@@ -199,7 +196,7 @@ namespace NuSysApp
 
                         SessionController.Instance.ContentController.OnNewContent += delegate (LibraryElementModel element)
                         {
-                            if (element.Type == ElementType.Collection)
+                            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.Id))
                             {
                                 UITask.Run(delegate
                                 {
@@ -208,6 +205,7 @@ namespace NuSysApp
                                     box.Text = element.Title ?? "Unnamed Collection";
                                     List.Items.Add(box);
                                 });
+                                _preloadedIDs.Add(element.Id);
                             }
                         };
 
