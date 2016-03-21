@@ -34,12 +34,14 @@ namespace NuSysApp
         private TimelineItemView _view;
         private GroupNodeTimelineViewModel _vm;
         private string _sortBy;
+        private string _viewBy;
         private Line _moveLine;
         private int _originalXPos;
         private int _moveToXPos;
         private HashSet<string> _metaDataButtons;
         private int _custom;
         private const int TimelineNodeWidth = 140;
+        private Boolean panelTapped = false;
 
         public GroupNodeTimelineView(GroupNodeTimelineViewModel viewModel)
         {
@@ -49,23 +51,40 @@ namespace NuSysApp
             var model = _vm.Model;
             _vm.Controller.SizeChanged += GroupNode_SizeChanged;
             _sortBy = "node_creation_date";
+            _viewBy = "node_creation_date";
             _custom = 0;
 
-            Canvas.SetTop(TimelinePanel, (model.Height - 80) / 2);
+            //Tapped += delegate(object sender, TappedRoutedEventArgs args)
+            //{
+            //    args.Handled = true;
+            //};
+
+            Canvas.SetTop(TimelinePanelBorder, (model.Height - 80) / 2);
 
             _metaDataButtons = new HashSet<string>();
             _panelNodes = new List<FrameworkElement>();
             _atomList = new List<Tuple<FrameworkElement, Object>>();
             _vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
 
+            ViewBlock.Content = _viewBy;
+            ViewBlock.Tapped += ViewBlock_Tapped;
+
             TagBlock.Content = _sortBy;
             TagBlock.Tapped += TagBlock_Tapped;
 
-            // line for rearranging elements
-            _moveLine = new Line()
-            {
-                Stroke = new SolidColorBrush(Colors.Coral)
-            };
+            //line for rearranging elements
+           _moveLine = new Line()
+           {
+               Stroke = new SolidColorBrush(Colors.Coral)
+           };
+
+           TimelineCanvas.Children.Add(_moveLine);
+            TimelinePanel.Tapped += TimelinePanel_Tapped;
+
+            //Set Clip
+            var rect = new RectangleGeometry();
+            rect.Rect = new Rect(0, 0, model.Width, model.Height);
+            TimelineGrid.Clip = rect;
 
             // Panning / Zooming
             TimelineGrid.ManipulationMode = ManipulationModes.All;
@@ -74,13 +93,26 @@ namespace NuSysApp
             TimelineGrid.PointerWheelChanged += TimelineGrid_PointerWheelChanged;
         }
 
+
+        private void TimelinePanel_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Debug.WriteLine("tapped!");
+            panelTapped = !panelTapped;
+            TimelinePanelBorder.Width = _panelNodes.Count*TimelineNodeWidth;
+            TimelinePanelBorder.BorderThickness = panelTapped ? new Thickness(2) : new Thickness(0);
+            //_vm.IsEditing = true;
+            GroupNodeViewModel groupVm =
+                (GroupNodeViewModel) TimelineGrid.GetVisualParentOfType<GroupNodeView>().DataContext;
+            //groupVm.IsEditing = panelTapped;
+        }
+
         private void GroupNode_SizeChanged(object source, double width, double height)
         {
             var rect = new RectangleGeometry();
             rect.Rect = new Rect(0, 0, width, height);
             TimelineGrid.Clip = rect;
 
-            Canvas.SetTop(TimelinePanel, (height - 80) / 2);
+            Canvas.SetTop(TimelinePanelBorder, (height - 80) / 2);
             _vm.CompositeTransform.CenterY = height / 2;
         }
 
@@ -89,11 +121,37 @@ namespace NuSysApp
             TagPanel.Opacity = TagPanel.Opacity == 0 ? 1 : 0;
         }
 
+        private void ViewBlock_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ViewPanel.Opacity = ViewPanel.Opacity == 0 ? 1 : 0;
+        }
+
         private void MetaButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             Button b1 = (Button)sender;
-            TagBlock.Content = b1.Content.ToString();
+            TagBlock.Content = ViewBlock.Content = b1.Content.ToString();
             ResortTimeline(b1.Content.ToString());
+
+            if (b1.Content.ToString().Contains("custom"))
+            {
+                _viewBy = "node_creation_date";
+                ViewBlock.Content = _viewBy;
+                ChangeViewByTimeline(_viewBy);
+            }
+            else
+            {
+                ViewBlock.Content = b1.Content.ToString();
+            }
+          
+            TagPanel.Opacity = TagPanel.Opacity == 0 ? 1 : 0;
+        }
+
+        private void ViewButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Button b1 = (Button)sender;
+            ViewBlock.Content = b1.Content.ToString();
+            ChangeViewByTimeline(b1.Content.ToString());
+            ViewPanel.Opacity = ViewPanel.Opacity == 0 ? 1 : 0;
         }
 
         public void ClearTimelineChild()
@@ -127,10 +185,28 @@ namespace NuSysApp
                    || value is decimal;
         }
 
+        private void ChangeViewByTimeline(String dataName)
+        {
+            _viewBy = dataName;
+            var index = 0;
+            foreach (var node in _panelNodes)
+            {
+                var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
+                var vm = (ElementViewModel)atom.DataContext;
+                var nodeModel = (ElementModel)vm.Model;
+
+                TextBlock tb = (TextBlock)node.FindVisualChild("TextBlock");
+                var text = nodeModel.GetMetaData(dataName).ToString();
+                tb.Text = text;
+                index++;
+            }
+        }
+
         #region Sort Timeline
         private void ResortTimeline(String dataName)
         {
-            _sortBy = dataName;
+            _sortBy = _viewBy = dataName;
+            
             _atomList.Clear();
             _panelNodes.Clear();
             ClearTimelineChild();
@@ -154,10 +230,10 @@ namespace NuSysApp
                 Object secondItem = _atomList.ElementAt(i).Item2 ?? "None";
                 _view = new TimelineItemView(_atomList.ElementAt(i).Item1, secondItem);
 
-                //_view.ManipulationMode = ManipulationModes.All;
-                //_view.ManipulationDelta += TimelineNode_ManipulationDelta;
-                //_view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
-                //_view.ManipulationStarting += TimelineNode_ManipulationStarting;
+                _view.ManipulationMode = ManipulationModes.All;
+                _view.ManipulationDelta += TimelineNode_ManipulationDelta;
+                _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
+                _view.ManipulationStarting += TimelineNode_ManipulationStarting;
                 _view.VerticalAlignment = VerticalAlignment.Center;
 
                 TimelinePanel.Children.Add(_view);
@@ -166,7 +242,7 @@ namespace NuSysApp
             }
             _vm.DataList = _atomList;
         }
-
+        
         private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems == null)
@@ -202,6 +278,16 @@ namespace NuSysApp
                         bb.Tapped += MetaButton_Tapped;
                         TagPanel.Children.Add(bb);
                         _metaDataButtons.Add(metadatatitle);
+
+                        Button viewButton = new Button()
+                        {
+                            Content = metadatatitle,
+                            Width = 100,
+                        };
+                        viewButton.Tapped += ViewButton_Tapped;
+                        ViewPanel.Children.Add(viewButton);
+
+                        _metaDataButtons.Add(metadatatitle);
                     }
                 }
             }
@@ -217,27 +303,62 @@ namespace NuSysApp
 
         private void TimelineNode_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            TimelineItemView item = (TimelineItemView)sender;
-            Canvas.SetTop(item, Canvas.GetTop(item) + e.Delta.Translation.Y);
-            Canvas.SetLeft(item, Canvas.GetLeft(item) + e.Delta.Translation.X);
-            var nodeWidth = TimelineNodeWidth;
-            var countLimit = _panelNodes.Count + 1;
-
-            int index = (int)Math.Round(Canvas.GetLeft(item) / TimelineNodeWidth);
-            int originalIndex = _originalXPos / TimelineNodeWidth;
-
-            if (Canvas.GetLeft(item) % nodeWidth <= 10 &&
-                Canvas.GetLeft(item) >= 0 &&
-                Canvas.GetLeft(item) <= countLimit * nodeWidth &&
-                index != originalIndex + 1)
+            if (panelTapped)
             {
-                _moveToXPos = (int)index * nodeWidth;
-                _moveLine.X1 = index * nodeWidth;
-                _moveLine.X2 = index * nodeWidth;
-                _moveLine.Y1 = Canvas.GetTop(TimelinePanel);
-                _moveLine.Y2 = Canvas.GetTop(TimelinePanel) + 130;
-                _moveLine.StrokeThickness = 3;
-            }
+                TimelineItemView item = (TimelineItemView)sender;
+                var timelineZoom = 1/_vm.CompositeTransform.ScaleX;
+                var workspaceZoom = 1 / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+                Canvas.SetTop(item, Canvas.GetTop(item) + e.Delta.Translation.Y * timelineZoom * workspaceZoom);
+                Canvas.SetLeft(item, Canvas.GetLeft(item) + e.Delta.Translation.X * timelineZoom * workspaceZoom);
+                var countLimit = _panelNodes.Count;
+
+                int index = (int)Math.Round(Canvas.GetLeft(item) / TimelineNodeWidth);
+                int originalIndex = _originalXPos / TimelineNodeWidth;
+
+                if (Canvas.GetLeft(item) % TimelineNodeWidth <= 20 &&
+                    Canvas.GetLeft(item) >= 0 &&
+                    Canvas.GetLeft(item) < countLimit * TimelineNodeWidth)
+                {
+                    //dt = DateTime.Now;
+                    //t.Interval = new TimeSpan(0, 0, 0, 0, 1);
+                    //t.Start();
+
+                    // where element will be moved to
+                    _moveToXPos = (int)index * TimelineNodeWidth;
+                    var moveToIndex = _moveToXPos/TimelineNodeWidth;
+
+                    // draw line
+                    _moveLine.X1 = index * TimelineNodeWidth;
+                    _moveLine.X2 = index * TimelineNodeWidth;
+                    _moveLine.Y1 = Canvas.GetTop(TimelinePanelBorder);
+                    _moveLine.Y2 = Canvas.GetTop(TimelinePanelBorder) + 100;
+                    _moveLine.StrokeThickness = 1;
+
+                    if (originalIndex < moveToIndex)
+                    {
+                        for (int i = originalIndex + 1; i <= moveToIndex; i++)
+                        {
+                            var element = _panelNodes.ElementAt(i);
+                            Canvas.SetLeft(element, Canvas.GetLeft(element) - TimelineNodeWidth);
+                            //Anim.FromTo(element, "(Canvas.Left)", Canvas.GetLeft(element), Canvas.GetLeft(element) - TimelineNodeWidth, 1, null);
+                            _panelNodes.RemoveAt(i);
+                            _panelNodes.Insert(i - 1, element);
+                        }
+                    }
+                    else if (originalIndex > moveToIndex)
+                    {
+                        for (int i = moveToIndex; i < originalIndex; i++)
+                        {
+                            var element = _panelNodes.ElementAt(i);
+                            Canvas.SetLeft(element, Canvas.GetLeft(element) + TimelineNodeWidth);
+                            //Anim.FromTo(element, "(Canvas.Left)", Canvas.GetLeft(element), Canvas.GetLeft(element) + TimelineNodeWidth, 1, null);
+                        }
+                        _panelNodes.RemoveAt(_originalXPos / TimelineNodeWidth);
+                        _panelNodes.Insert(_moveToXPos / TimelineNodeWidth, item);
+                    }
+                    _originalXPos = _moveToXPos;
+                }
+            } 
         }
 
         private void TimelineNode_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -245,38 +366,8 @@ namespace NuSysApp
             TimelineItemView item = (TimelineItemView)sender;
             _moveLine.StrokeThickness = 0;
 
-            if (_moveToXPos == _originalXPos) // same place
-            {
-                Canvas.SetLeft(item, _originalXPos);
-                Canvas.SetTop(item, 0);
-            }
-            else
-            {
-                if (_originalXPos < _moveToXPos) // moving from left to right
-                {
-                    for (int i = (_originalXPos / TimelineNodeWidth) + 1; i < _moveToXPos / TimelineNodeWidth; i++)
-                    {
-                        var element = _panelNodes.ElementAt(i);
-                        Canvas.SetLeft(element, Canvas.GetLeft(element) - TimelineNodeWidth);
-                        _panelNodes.RemoveAt(i);
-                        _panelNodes.Insert(i - 1, element);
-                    }
-                    Canvas.SetLeft(item, _moveToXPos - TimelineNodeWidth);
-                    Canvas.SetTop(item, 0);
-                }
-                else // moving from right to left
-                {
-                    for (int i = (_moveToXPos / TimelineNodeWidth); i < _originalXPos / TimelineNodeWidth; i++)
-                    {
-                        var element = _panelNodes.ElementAt(i);
-                        Canvas.SetLeft(element, Canvas.GetLeft(element) + TimelineNodeWidth);
-                    }
-                    Canvas.SetLeft(item, _moveToXPos);
-                    Canvas.SetTop(item, 0);
-                    _panelNodes.RemoveAt(_originalXPos / TimelineNodeWidth);
-                    _panelNodes.Insert(_moveToXPos / TimelineNodeWidth, item);
-                }
-            }
+            Canvas.SetLeft(item, _moveToXPos);
+            Canvas.SetTop(item, 0);
 
             String custom = "custom" + _custom;
             if (!TagBlock.Content.ToString().Contains("custom"))
@@ -294,7 +385,6 @@ namespace NuSysApp
 
                 // Change view to custom
                 TagBlock.Content = custom;
-
                 _custom++;
             }
 
@@ -384,39 +474,42 @@ namespace NuSysApp
         #region Pan/Zoom for timeline
         private void TimelineGrid_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            var compositeTransform = _vm.CompositeTransform;
-            var tmpTranslate = new TranslateTransform
+            if (!panelTapped)
             {
-                X = compositeTransform.CenterX,
-                Y = compositeTransform.CenterY
-            };
+                var compositeTransform = _vm.CompositeTransform;
+                var tmpTranslate = new TranslateTransform
+                {
+                    X = compositeTransform.CenterX,
+                    Y = compositeTransform.CenterY
+                };
 
-            var cent = e.GetCurrentPoint(TimelineCanvas).Position;
-            var localPoint = tmpTranslate.Inverse.TransformPoint(cent);
+                var cent = e.GetCurrentPoint(TimelineCanvas).Position;
+                var localPoint = tmpTranslate.Inverse.TransformPoint(cent);
 
-            //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
+                //Now scale the point in local space
+                localPoint.X *= compositeTransform.ScaleX;
+                localPoint.Y *= compositeTransform.ScaleY;
 
-            //Transform local space into world space again
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+                //Transform local space into world space again
+                var worldPoint = tmpTranslate.TransformPoint(localPoint);
 
-            //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - cent.X,
-                worldPoint.Y - cent.Y);
+                //Take the actual scaling...
+                var distance = new Point(
+                    worldPoint.X - cent.X,
+                    worldPoint.Y - cent.Y);
 
-            //...amd balance the jump of the changed scaling origin by changing the translation            
-            compositeTransform.TranslateX += distance.X;
+                //...amd balance the jump of the changed scaling origin by changing the translation            
+                compositeTransform.TranslateX += distance.X;
 
-            var direction = Math.Sign((double)e.GetCurrentPoint(TimelineCanvas).Properties.MouseWheelDelta);
-            var zoomspeed = direction < 0 ? 0.95 : 1.05;//0.08 * direction;
-            var translateSpeed = 10;
-            compositeTransform.ScaleX *= zoomspeed;
-            compositeTransform.ScaleY *= zoomspeed;
+                var direction = Math.Sign((double)e.GetCurrentPoint(TimelineCanvas).Properties.MouseWheelDelta);
+                var zoomspeed = direction < 0 ? 0.95 : 1.05;//0.08 * direction;
+                var translateSpeed = 10;
+                compositeTransform.ScaleX *= zoomspeed;
+                compositeTransform.ScaleY *= zoomspeed;
 
-            compositeTransform.CenterX = cent.X;
-            _vm.CompositeTransform = compositeTransform;
+                compositeTransform.CenterX = cent.X;
+                _vm.CompositeTransform = compositeTransform;
+            }    
         }
 
         private void TimelineGrid_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
@@ -426,48 +519,60 @@ namespace NuSysApp
 
         private void TimelineGrid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var compositeTransform = _vm.CompositeTransform;
-            var tmpTranslate = new TranslateTransform
+            if (!panelTapped)
             {
-                X = compositeTransform.CenterX,
-                Y = compositeTransform.CenterY
-            };
+                var compositeTransform = _vm.CompositeTransform;
+                var tmpTranslate = new TranslateTransform
+                {
+                    X = compositeTransform.CenterX,
+                    Y = compositeTransform.CenterY
+                };
 
-            var center = compositeTransform.Inverse.TransformPoint(e.Position);
+                var center = compositeTransform.Inverse.TransformPoint(e.Position);
 
-            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
+                var localPoint = tmpTranslate.Inverse.TransformPoint(center);
 
-            //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
+                //Now scale the point in local space
+                localPoint.X *= compositeTransform.ScaleX;
+                localPoint.Y *= compositeTransform.ScaleY;
 
-            //Transform local space into world space again
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+                //Transform local space into world space again
+                var worldPoint = tmpTranslate.TransformPoint(localPoint);
 
-            //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - center.X,
-                worldPoint.Y - center.Y);
+                //Take the actual scaling...
+                var distance = new Point(
+                    worldPoint.X - center.X,
+                    worldPoint.Y - center.Y);
 
-            //...and balance the jump of the changed scaling origin by changing the translation            
-            compositeTransform.TranslateX += distance.X;
+                //...and balance the jump of the changed scaling origin by changing the translation            
+                compositeTransform.TranslateX += distance.X;
 
-            //Also set the scaling values themselves, especially set the new scale center...
-            compositeTransform.ScaleX *= e.Delta.Scale;
-            compositeTransform.ScaleY *= e.Delta.Scale;
+                //Also set the scaling values themselves, especially set the new scale center...
+                compositeTransform.ScaleX *= e.Delta.Scale;
+                compositeTransform.ScaleY *= e.Delta.Scale;
 
-            compositeTransform.CenterX = center.X;
+                compositeTransform.CenterX = center.X;
 
-            //And consider a translational shift
-            if (((FrameworkElement)e.OriginalSource).DataContext == TimelineGrid.DataContext)
-            {
-                compositeTransform.TranslateX += e.Delta.Translation.X;
-            }
-            //Debug.WriteLine(_vm.CompositeTransform.TranslateX - _vm.TranslateTransform.X);
-            Debug.WriteLine(compositeTransform.TranslateX);
-            _vm.CompositeTransform = compositeTransform;
+                //And consider a translational shift
+                if (((FrameworkElement)e.OriginalSource).DataContext == TimelineGrid.DataContext)
+                {
+                    compositeTransform.TranslateX += e.Delta.Translation.X;
+                }
+                //Debug.WriteLine(_vm.CompositeTransform.TranslateX - _vm.TranslateTransform.X);
+                Debug.WriteLine(compositeTransform.TranslateX);
+                _vm.CompositeTransform = compositeTransform;
+            } 
         }
         #endregion
+
+        private void TimelineGrid_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Debug.WriteLine("grid tapped");
+            GroupNodeViewModel groupVm =
+                (GroupNodeViewModel)TimelineGrid.GetVisualParentOfType<GroupNodeView>().DataContext;
+            groupVm.IsEditing = true;
+            Debug.WriteLine("isEditing: " + groupVm.IsEditing);
+        }
     }
 
     #region Comparer
