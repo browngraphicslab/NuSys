@@ -154,18 +154,25 @@ namespace NuSysApp
         }
 
         private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
-        {/*
-            var id = ID.Text;
-            Task.Run(async delegate
+        {
+            var id = _currentElementModel.Id;
+            UITask.Run(async delegate
             {
                 var content = SessionController.Instance.ContentController.Get(id);
                 if (content != null && content.Type == ElementType.Collection)
                 {
-                    var messages =
-                        await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                    List<Message> messages = new List<Message>();
+                    await Task.Run(async delegate
+                    {
+                        messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                    });
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new UnsubscribeFromCollectionRequest(
+                                SessionController.Instance.ActiveFreeFormViewer.ContentId));
                     await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                 }
-            });*/
+            });
         }
     }
 }

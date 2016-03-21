@@ -165,7 +165,6 @@ namespace NuSysApp
         public virtual async Task RequestMoveToCollection(string newCollectionContentID)
         {
             var metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
 
             var m1 = new Message();
             m1["metadata"] = metadata;

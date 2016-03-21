@@ -73,6 +73,12 @@ namespace NuSysApp
             Title = contentName;
             Type = elementType;
             Loaded = false;
+            SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
+        }
+
+        protected virtual void OnSessionControllerEnterNewCollection()
+        {
+            ViewUtilBucket.Clear();
         }
 
         public void FireDelete()
