@@ -69,7 +69,7 @@ namespace NuSysApp
             expandedView = new GroupNodeExpandedView();
 
             timelineView.Visibility = Visibility.Collapsed;
-            dataGridView.Visibility = Visibility.Collapsed;
+            dataGridView.Visibility = Visibility.Visible;
             expandedView.Visibility = Visibility.Collapsed;
             freeFormView.Visibility = Visibility.Collapsed;
 

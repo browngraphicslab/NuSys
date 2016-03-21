@@ -44,7 +44,7 @@ namespace NuSysApp
             }
             else
             {
-                vm.Controller.ContentLoaded += LoadVideo;
+                vm.Controller.LibraryElementModel.OnLoaded += LoadVideo;
             }
             
 
@@ -55,7 +55,7 @@ namespace NuSysApp
             //  playbackElement.Play();
         }
 
-        private void LoadVideo(object sender = null, object data = null)
+        private void LoadVideo()
         {
             var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
             if (content != null)
@@ -82,7 +82,7 @@ namespace NuSysApp
                 }
                 playbackElement.SetSource(memoryStream, "video/mp4");
                 
-                ((VideoNodeViewModel) DataContext).Controller.ContentLoaded -= LoadVideo;
+                ((VideoNodeViewModel) DataContext).Controller.LibraryElementModel.OnLoaded-= LoadVideo;
             }
         }
 
@@ -212,8 +212,8 @@ namespace NuSysApp
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
-            var r = new RenderTargetBitmap();//TODO implement
-
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(grid, width, height);
             return r;
         }
 

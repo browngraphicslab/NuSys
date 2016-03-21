@@ -21,11 +21,9 @@ namespace NuSysApp
                 case ElementType.Text:
                     var tvm = new TextNodeViewModel(controller);
                     view = new TextDetailView(tvm);
-                    await tvm.Init();
                     break;
                 case ElementType.Image:
                     var ivm = new ImageElementViewModel(controller);
-                    await ivm.Init();
                     view = new ImageFullScreenView(ivm);
                     break;
                 case ElementType.Word:
@@ -45,7 +43,6 @@ namespace NuSysApp
                     break;
                 case ElementType.Audio:
                     AudioNodeViewModel audioVM = new AudioNodeViewModel(controller);
-                    await audioVM.Init();
                     view = new AudioDetailView(audioVM);
                     break;
                 case ElementType.Collection:
@@ -53,7 +50,7 @@ namespace NuSysApp
                     break;
             }
 
-
+            await ((ElementViewModel)view.DataContext).Init();
             return view;
         }
 

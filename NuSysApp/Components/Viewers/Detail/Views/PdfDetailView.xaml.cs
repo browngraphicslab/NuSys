@@ -29,44 +29,10 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
-            vm.MakeTagList();
-
-            var model = (PdfNodeModel)vm.Model;
-            vm.Document = model.Document;
-
-            var token = model.GetMetaData("Token");
-
-            if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
-            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
+            
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
-
-                vm.PropertyChanged += delegate (object o, PropertyChangedEventArgs eventArgs)
-                {
-                    if (eventArgs.PropertyName != "ImageSource")
-                        return;
-
-                    var sw = SessionController.Instance.SessionView.ActualWidth / 1.2;
-                    var sh = SessionController.Instance.SessionView.ActualHeight / 1.2;
-                    var ratio = vm.Width > vm.Height ? vm.Width / sw : vm.Height / sh;
-                    xImg.Width = vm.Width / ratio;
-                    xImg.Height = vm.Height / ratio;
-                    xBorder.Width = xImg.Width + 5;
-                    xBorder.Height = xImg.Height + 5;
-
-                };
-
-                await vm.Goto(vm.CurrentPageNumber);
-                // await vm.InitPdfViewer();
-
-
                 _inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
                 xWrapper.Children.Insert(1, _inqCanvasView);
                 _inqCanvasView.IsEnabled = true;
@@ -84,6 +50,8 @@ namespace NuSysApp
                 };
 
             };
+
+            vm.MakeTagList();
         }
 
         private async void OnPageLeftClick(object sender, RoutedEventArgs e)

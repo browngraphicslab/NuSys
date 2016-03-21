@@ -66,7 +66,7 @@ namespace NuSysApp
         {
           
             _released = false;
-            await Task.Delay(100);
+            await Task.Delay(200);
             if (!_released)
                 return;
 
@@ -125,18 +125,18 @@ namespace NuSysApp
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
             if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {
                 if (dc is ElementViewModel)
                 {
-                    var vm = (ElementViewModel)dc;
+                    var vm = dc as ElementViewModel;
 
                     if (vm.ElementType == ElementType.Word || vm.ElementType == ElementType.Powerpoint)
                     {
                         SessionController.Instance.SessionView.OpenFile(vm);
                     }
-                    else
+                    else if (vm.ElementType != ElementType.Link)
                     {
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller);
                     }

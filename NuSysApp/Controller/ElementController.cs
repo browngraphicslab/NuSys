@@ -37,8 +37,6 @@ namespace NuSysApp
 
         public event DeleteEventHandler Deleted;
         public event LinkAddedEventHandler LinkedAdded;
-        public event ContentLoadedHandler ContentLoaded;
-        public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
@@ -230,7 +228,6 @@ namespace NuSysApp
                 if (content != null)
                 {
                     content.Data = props.GetString("data", "");
-                    ContentChanged?.Invoke(this, content);
                 }
             }
             if (props.ContainsKey("x") || props.ContainsKey("y"))
@@ -246,11 +243,6 @@ namespace NuSysApp
                 var height = props.GetDouble("height", this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
             }
-        }
-
-        public void FireContentLoaded()
-        {
-            ContentLoaded?.Invoke(this,LibraryElementModel);
         }
     }
 }
