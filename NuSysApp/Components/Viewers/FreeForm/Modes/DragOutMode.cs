@@ -123,7 +123,7 @@ namespace NuSysApp
                         if (_counter == 2)
                         {
                             var controller = SessionController.Instance.IdToControllers[model.Id];
-                            await controller.RequestMoveToCollection(null, WaitingRoomView.InitialWorkspaceId);
+                            await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId);
                             _timer.Stop();
                             _counter = 0;
                         }
