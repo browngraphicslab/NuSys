@@ -26,18 +26,18 @@ namespace NuSysApp
         public DetailViewerView()
         {
             InitializeComponent();
-      
+            Visibility = Visibility.Collapsed;
   
-          DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
-          {
-              if (!(DataContext is DetailViewerViewModel))
-                  return;
+              DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
+              {
+                  if (!(DataContext is DetailViewerViewModel))
+                      return;
               
-              var vm = (DetailViewerViewModel)DataContext;
-              vm.PropertyChanged += OnPropertyChanged;
-              Tags.ItemsSource = vm.Tags;
-              vm.MakeTagList();
-          };
+                  var vm = (DetailViewerViewModel)DataContext;
+                  vm.PropertyChanged += OnPropertyChanged;
+                  Tags.ItemsSource = vm.Tags;
+                  vm.MakeTagList();
+              };
             
         }
 
@@ -76,7 +76,7 @@ namespace NuSysApp
 
         private async Task AddTag()
         {
-            tagLine.Opacity = 1;
+            //tagLine.Opacity = 1;
             var vm = (DetailViewerViewModel)DataContext;
             string newTag = NewTagBox.Text.Trim();
             if (newTag != "")

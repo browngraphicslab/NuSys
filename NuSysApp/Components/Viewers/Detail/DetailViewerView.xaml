@@ -16,40 +16,52 @@
         </Grid>
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DarkGray" Padding="20,5,20,5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="100"></RowDefinition>
+                <RowDefinition Height="200"></RowDefinition>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Text="x" Foreground="White" FontSize="24" Tapped="closeDV_OnTapped"/>
 
             <StackPanel Grid.Row="1"  x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>
-                <Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>
+                <Rectangle HorizontalAlignment="Stretch" Fill="White" Height="4"/>
             </StackPanel>
 
             <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top"></ContentPresenter>
 
-            <StackPanel Grid.Row="3" x:Name="TagContainer"  HorizontalAlignment="Stretch">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                    <TextBlock Text="TAGS" Foreground="White" FontSize="30" CharacterSpacing="45" Margin="0,0,20,0" HorizontalAlignment="Stretch"></TextBlock>
-                    <StackPanel Height="30" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <TextBox x:Name="NewTagBox" KeyUp="NewTagBox_OnKeyUp" Height="30" BorderThickness="0"></TextBox>
-                        <Button x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray"></Button>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel>
-                    <Line x:Name="tagLine" Stroke="White" StrokeThickness="1.5" X1="0" Y1="0" Y2="0" Margin="0,15,0,0" Opacity="0"></Line>
-                    <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </StackPanel>
-            </StackPanel>
+            <Grid Grid.Row="3" x:Name="TagContainer"  HorizontalAlignment="Stretch" Background="Red">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="Yellow">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0" Text="TAGS" Foreground="White" FontSize="30" CharacterSpacing="45" ></TextBlock>
+                    <TextBox Grid.Column="1" x:Name="NewTagBox" KeyUp="NewTagBox_OnKeyUp" Height="30" BorderThickness="0" HorizontalAlignment="Stretch"></TextBox>
+                    <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray"></Button>
+
+                </Grid>
+            </Grid>
+
+
+            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Background="Orange">
+                 <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapGrid Orientation="Horizontal" MaximumRowsOrColumns="5"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
         </Grid>
     </Grid>
 </local:AnimatableUserControl>
