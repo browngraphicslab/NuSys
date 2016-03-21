@@ -39,7 +39,7 @@ namespace NuSysApp
             Width = 300;
             Height = 200;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-
+            //_visualGrid = new Grid();
         }
 
         public void addTimeBlockChange(
@@ -80,11 +80,11 @@ namespace NuSysApp
             }
             else
             {
-                Controller.ContentLoaded += InitWhenReady;
+                Controller.LibraryElementModel.OnLoaded += InitWhenReady;
             }
         }
 
-        private void InitWhenReady(object source = null, LibraryElementModel data = null)
+        private void InitWhenReady()
         {
             var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get(ContentId).Data);
             MemoryStream s = new MemoryStream(byteArray);

@@ -9,17 +9,8 @@
     d:DesignHeight="750"
     d:DesignWidth="600">
 
-    <!--<Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" Width="600" Height="750">-->
-    <StackPanel x:Name="grid" Background="Transparent" VerticalAlignment="Top" Margin="10 150 10 100">
-        <!--    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Height="30" Width="30" Tapped="OnRecordClick">
-                    <Image Source="/Assets/icon_record.png" Height="15"></Image>
-                </Button>
-                <Button Visibility="Visible" Name="SourceBttn" Width="auto" Height="30" Content="Go To Source" Foreground="White" HorizontalAlignment="Right" Click="OnGoToSource"></Button>
-            </StackPanel>-->
         <WebView Name ="MyWebView" Height="420" Width="500" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
                              Visibility="Visible" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
         </WebView>
-    </StackPanel>
-    <!--</Border>-->
+
 </UserControl>

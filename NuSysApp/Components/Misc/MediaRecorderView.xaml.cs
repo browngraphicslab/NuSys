@@ -54,6 +54,7 @@ namespace NuSysApp
             {
                 await OnStartRecordingAudClick();
             }
+            AudioVideoSwitch.Visibility = Visibility.Collapsed;
         }
 
         public void Show()
@@ -66,16 +67,12 @@ namespace NuSysApp
             if (boolean)
             {
                 RecordButton.Visibility = Visibility.Collapsed;
-                RecordText.Visibility = Visibility.Collapsed;
                 StopButton.Visibility = Visibility.Visible;
-                StopText.Visibility = Visibility.Visible;
             }
             else
             {
                 RecordButton.Visibility = Visibility.Visible;
-                RecordText.Visibility = Visibility.Visible;
                 StopButton.Visibility = Visibility.Collapsed;
-                StopText.Visibility = Visibility.Collapsed;
             }
         }
 

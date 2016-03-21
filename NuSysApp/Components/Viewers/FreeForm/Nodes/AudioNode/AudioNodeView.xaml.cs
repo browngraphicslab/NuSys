@@ -111,9 +111,11 @@ namespace NuSysApp
 
         }
 
-
-
-
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (ElementViewModel) DataContext;
+            vm.Controller.RequestDelete();
+        }
 
         private async void RenderImageSource(Grid RenderedGrid)
         {
@@ -164,7 +166,9 @@ namespace NuSysApp
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
-            return new RenderTargetBitmap();//TODO implement
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(grid, width, height);
+            return r;
         }
 
         private void SrubBar_OnTapped(object sender, TappedRoutedEventArgs e)

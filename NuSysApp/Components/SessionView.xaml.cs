@@ -338,9 +338,7 @@ namespace NuSysApp
 
         public void ShowDetailView(ElementController controller)
         {
-            var vm = (DetailViewerViewModel) xDetailViewer.DataContext;
-            vm.ShowElement(controller);
-            vm.MakeTagList();
+            xDetailViewer.ShowElement(controller);
         }
 
         public async void OpenFile(ElementViewModel vm)

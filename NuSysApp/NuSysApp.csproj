@@ -119,6 +119,7 @@
     <Content Include="Assets\icon_search.png" />
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
+    <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
@@ -153,9 +154,16 @@
     <Content Include="Assets\icon_users.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_duplicate.png" />
+    <Content Include="Assets\node icons\icon_freeform.png" />
+    <Content Include="Assets\node icons\icon_grid.png" />
+    <Content Include="Assets\node icons\icon_line.png" />
+    <Content Include="Assets\node icons\icon_link.png" />
+    <Content Include="Assets\node icons\icon_list.png" />
     <Content Include="Assets\node icons\icon_pause.png" />
     <Content Include="Assets\node icons\icon_play.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\text.png" />
