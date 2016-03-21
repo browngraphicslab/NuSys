@@ -214,7 +214,7 @@ namespace NuSysApp
 
             SessionController.Instance.IdToControllers.Clear();
             
-            var elementCollectionInstance = new CollectionElementModel(collectionId)
+            var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
             {
                 Title = "Instance title"
             };
@@ -230,7 +230,7 @@ namespace NuSysApp
 
             foreach (var msg in nodeMessages)
             {
-                msg["creatorContentID"] = collectionId;
+                msg["creator"] = collectionId;
                 var libraryId = msg.GetString("contentId");
 
                 ElementType type;
@@ -256,7 +256,7 @@ namespace NuSysApp
                             var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                             foreach (var m in messages)
                             {
-                                m["creatorContentID"] = libraryId;
+                                m["creator"] = libraryId;
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                             }
                     }

@@ -323,7 +323,7 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }

@@ -176,8 +176,7 @@ namespace NuSysApp
             m["height"] = vm.Model.Height;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             if (type == ElementType.Video)
             {
