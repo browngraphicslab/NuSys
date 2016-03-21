@@ -11,8 +11,10 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="LightGray" Width="30"
-                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All"> 
-            <Grid.RenderTransform><TranslateTransform X="-30"></TranslateTransform></Grid.RenderTransform>
+                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
+            <Grid.RenderTransform>
+                <TranslateTransform X="-30"></TranslateTransform>
+            </Grid.RenderTransform>
             <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DarkGray" Padding="25,10,25,10">
@@ -23,12 +25,14 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
+
             
             <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="MetaData" Foreground="White" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
             <TextBlock Grid.Row="0" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Text="x" Foreground="White" FontSize="24" Tapped="closeDV_OnTapped"/>
 
             <StackPanel Grid.Row="1"  x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
                 <TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>
+
                 <Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>
             </StackPanel>
 
@@ -51,7 +55,6 @@
                     <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray" VerticalAlignment="Center"></Button>
                 </Grid>
             </Grid>
-
 
             <Grid Grid.Row="4" HorizontalAlignment="Stretch">
                  <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">

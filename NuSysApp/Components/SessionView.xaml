@@ -37,10 +37,7 @@
     </Page.Resources>
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
-        <TextBox x:Name="xWorkspaceTitle" TextWrapping="NoWrap" AcceptsReturn="False" MaxHeight="50"  Text="Unnamed Workspace" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" FontSize="26" BorderBrush="Transparent" TextAlignment="Right" VerticalAlignment="Center"></TextBox>
-        <Button x:Name="xRecord" Click="OnRecordClick" Height="47" VerticalAlignment="Center">
-            <Image Source="/Assets/icon_record.png"></Image>
-        </Button>
+        <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="SlateGray"  LeftJustified="False" HorizontalAlignment="Stretch"  Width="{Binding ElementName=Properties, Path=Width}"></local:TextInputBlock>
         <Button x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
             <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>

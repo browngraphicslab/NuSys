@@ -81,8 +81,13 @@ namespace NuSysApp
         {
             if (!_isHovering)
                 return;
-           
-            var id1 = (((FrameworkElement)sender).DataContext as ElementViewModel).Id;
+
+            var draggedItem = (((FrameworkElement) sender).DataContext as ElementViewModel);
+
+            if (draggedItem is LinkViewModel)
+                return;
+
+            var id1 = draggedItem.Id;
             var id2 = _hoveredNode.Id;
             if (_hoveredNode.IsEditing)//TODO FIX?
             {
@@ -164,6 +169,7 @@ namespace NuSysApp
                 var fe = (FrameworkElement) uiElem;
                 var r = fe.DataContext is ElementViewModel &&
                         fe.DataContext != SessionController.Instance.ActiveFreeFormViewer &&
+                        !(fe.DataContext is LinkViewModel) &&
                         draggedItem.DataContext != fe.DataContext && 
                         (draggedItem.DataContext as ElementViewModel).Model != (fe.DataContext as ElementViewModel).Model;
                 return r;

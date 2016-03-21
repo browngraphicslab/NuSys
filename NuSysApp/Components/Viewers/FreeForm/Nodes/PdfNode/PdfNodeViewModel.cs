@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
-
+using LdaLibrary;
 using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
@@ -54,6 +54,7 @@ namespace NuSysApp
             }
         }
 
+
         private async Task DisplayPdf()
         {
             var data = Controller.LibraryElementModel.Data;
@@ -64,7 +65,7 @@ namespace NuSysApp
             {
                 uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
                 IBuffer readBuffer = dataReader.ReadBuffer(u);
-                _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+                _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
              //   Document = _document;
             }
 
@@ -141,7 +142,8 @@ namespace NuSysApp
         {
 
             var test = new List<string>();
-            // here we hard code our starting parameters
+
+            // parameters for our LDA algorithm
             string filename = model.Title;
             test.Add(filename);
             test.Add("niters 10");
@@ -163,12 +165,9 @@ namespace NuSysApp
             }
 
 
-            //DieStopWords ds = new DieStopWords();
-            //data = await ds.removeStopWords(data);
-            //List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
-
-
-            var topics = new List<string>();
+            DieStopWords ds = new DieStopWords();
+            data = await ds.removeStopWords(data);
+            List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
             this.Model.SetMetaData("tags", topics);
 
             RaisePropertyChanged("Tags");
@@ -209,7 +208,6 @@ namespace NuSysApp
 
         public void MakeTagList()
         {
-            _suggestedTags.Add("hello");
             SuggestedTags = new ObservableCollection<Button>();
             foreach (string tag in _suggestedTags)
             {

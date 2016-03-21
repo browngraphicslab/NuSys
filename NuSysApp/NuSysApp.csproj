@@ -206,6 +206,9 @@
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
+      <DependentUpon>TextInputBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -288,6 +291,7 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
@@ -598,6 +602,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Components\Misc\TextInputBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -821,6 +829,10 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LdaLib\LdaLib.csproj">
+      <Project>{108aee28-552d-4d59-bfe3-41edef97dd30}</Project>
+      <Name>LdaLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
