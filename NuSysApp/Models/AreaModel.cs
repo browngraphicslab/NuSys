@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class AreaModel : ElementCollectionModel
+    public class AreaModel : CollectionElementModel
     {
         public List<Point> Points { get; set; } 
 

@@ -93,5 +93,18 @@ namespace NuSysApp
         #region Other
         public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
         #endregion Other
+
+        #region StaticMethods
+
+        public static bool IsNode(ElementType type)
+        {
+            if (type == ElementType.Tag || type == ElementType.Area ||
+                type == ElementType.Link)
+            {
+                return false;
+            }
+            return true;
+        }
+        #endregion StaticMethods
     }
 }

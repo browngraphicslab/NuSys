@@ -49,7 +49,7 @@ namespace NuSysApp
         public Point GetCenter()
         {
             var vm = (LabelNodeViewModel)DataContext;
-            var groupNodeModel = (ElementCollectionModel)vm.Model;
+            var groupNodeModel = (CollectionElementModel)vm.Model;
             return new Point(groupNodeModel.X + TitleBorder.ActualWidth/2.0, groupNodeModel.Y + TitleBorder.ActualHeight / 2.0);
         }
 

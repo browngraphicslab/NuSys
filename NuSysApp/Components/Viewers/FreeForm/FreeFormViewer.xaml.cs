@@ -23,6 +23,7 @@ namespace NuSysApp
         private TagNodeMode _tagMode;
         private LinkMode _linkMode;
         private GestureMode _gestureMode;
+        private FloatingMenuMode _floatingMenuMode;
         private MultiMode _mainMode;
         private MultiMode _simpleEditMode;
 
@@ -46,11 +47,12 @@ namespace NuSysApp
                 _panZoomMode = new PanZoomMode(this);
                 _gestureMode = new GestureMode(this);
                 _selectMode = new SelectMode(this);
+                _floatingMenuMode = new FloatingMenuMode(this);
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
-                _mainMode = new MultiMode(this, _selectMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
-                _simpleEditMode = new MultiMode(this, _selectMode);
+                _mainMode = new MultiMode(this, _selectMode, _floatingMenuMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
+                _simpleEditMode = new MultiMode(this, _selectMode, _floatingMenuMode);
                 SwitchMode(Options.SelectNode, false);
             };
 
@@ -83,7 +85,6 @@ namespace NuSysApp
 
             vm.SelectionChanged += delegate(object source)
             {
-                
                 if (vm.Selections.Count == 0)
                 {
                     SetViewMode(_mainMode);

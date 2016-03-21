@@ -30,6 +30,13 @@ namespace NuSysApp
             _pointerReleasedHandler = OnPointerReleased;
             _doubleTappedHandler = OnDoubleTapped;
         }
+
+        public SelectMode(AreaNodeView view) : base(view)
+        {
+            _pointerPressedHandler = OnPointerPressed;
+            _pointerReleasedHandler = OnPointerReleased;
+            _doubleTappedHandler = OnDoubleTapped;
+        }
         public override async Task Activate()
         {
             _view.IsDoubleTapEnabled = true;
@@ -57,8 +64,9 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+          
             _released = false;
-            await Task.Delay(100);
+            await Task.Delay(200);
             if (!_released)
                 return;
 
@@ -74,7 +82,7 @@ namespace NuSysApp
                 return;
 
             
-            var viwerVm = (FreeFormViewerViewModel)_view.DataContext;
+            var viwerVm =_view.DataContext as FreeFormViewerViewModel;
             var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
            
             if (!isCtrlDown) {
@@ -82,12 +90,12 @@ namespace NuSysApp
 
                 if (dc is FreeFormViewerViewModel)
                 {
-                    viwerVm.ClearSelection();
+                    viwerVm?.ClearSelection();
                     return;
                 }
 
-                viwerVm.ClearSelection();
-                viwerVm.AddSelection(dc);
+                viwerVm?.ClearSelection();
+                viwerVm?.AddSelection(dc);
             }
             else
             {
@@ -98,11 +106,11 @@ namespace NuSysApp
 
                 if (dc.IsSelected)
                 {
-                    viwerVm.RemoveSelection(dc);
+                    viwerVm?.RemoveSelection(dc);
                 }
                 else
                 {
-                    viwerVm.AddSelection(dc);
+                    viwerVm?.AddSelection(dc);
                 }               
 
             }
@@ -111,23 +119,24 @@ namespace NuSysApp
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _released = true;
+            e.Handled = true;
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext;
+            var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
             if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {
                 if (dc is ElementViewModel)
                 {
-                    var vm = (ElementViewModel)dc;
+                    var vm = dc as ElementViewModel;
 
                     if (vm.ElementType == ElementType.Word || vm.ElementType == ElementType.Powerpoint)
                     {
                         SessionController.Instance.SessionView.OpenFile(vm);
                     }
-                    else
+                    else if (vm.ElementType != ElementType.Link)
                     {
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller);
                     }

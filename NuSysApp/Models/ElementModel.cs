@@ -26,8 +26,6 @@ namespace NuSysApp
 
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
-
-            ElementType = ElementType.Node;
             InqCanvas = new InqCanvasModel(id);
         }
 
@@ -35,7 +33,7 @@ namespace NuSysApp
 
         public InqCanvasModel InqCanvas { get; set; }
 
-        public string ContentId { set; get; }
+        public string LibraryId { set; get; }
 
         public string Creator { get; set; }
 
@@ -125,7 +123,9 @@ namespace NuSysApp
         public object GetMetaData(string key)
         {
             if (Metadata.ContainsKey(key))
+            {
                 return Metadata[key];
+            }
             return null;
         }
 
@@ -158,7 +158,7 @@ namespace NuSysApp
             dict.Add("title", Title);
             dict.Add("nodeType", ElementType.ToString());
             dict.Add("type", ElementType.ToString());
-            dict.Add("contentId", ContentId);
+            dict.Add("contentId", LibraryId);
 
             var lines = new List<Dictionary<string, object>>();
             foreach (var inqLineModel in InqCanvas.Lines)
@@ -212,7 +212,7 @@ namespace NuSysApp
             }
             if (props.ContainsKey("contentId"))
             {
-                ContentId = props.GetString("contentId", "");
+                LibraryId = props.GetString("contentId", "");
             }
             if (props.ContainsKey("creator"))
             {

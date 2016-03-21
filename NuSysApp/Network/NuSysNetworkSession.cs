@@ -204,9 +204,6 @@ namespace NuSysApp
                 case SystemRequest.SystemRequestType.RemoveClient:
                     request = new RemoveClientSystemRequest(message);
                     break;
-                case SystemRequest.SystemRequestType.SendWorkspace:
-                    request = new SendWorkspaceRequest(message);
-                    break;
                 default:
                     throw new InvalidRequestTypeException("The system request type could not be found and made into a request instance");
             }
@@ -214,7 +211,7 @@ namespace NuSysApp
         }
         #endregion Requests
 
-        public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)
+        public async Task<List<Message>> GetCollectionAsElementMessages(string id)
         {
             return await _serverClient.GetWorkspaceAsElementMessages(id);
         }
@@ -250,9 +247,14 @@ namespace NuSysApp
             }
         }
 
-        public async Task FetchContent(string id)
+        public async Task FetchLibraryElementData(string id)
         {
-            await _serverClient.GetContent(id);
+            await _serverClient.FetchLibraryElementData(id);
+        }
+
+        public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
+        {
+            return await _serverClient.GetContentWithoutData(contentIds);
         }
 
         public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()

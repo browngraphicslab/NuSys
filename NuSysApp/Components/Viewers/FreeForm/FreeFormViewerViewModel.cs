@@ -28,7 +28,6 @@ namespace NuSysApp
         public FreeFormViewerViewModel(ElementCollectionController controller) : base(controller)
         {
             MultiSelectedAtomViewModels = new List<ElementViewModel>();
-            FMTransform = new CompositeTransform();
 
             SelectionChanged += OnSelectionChanged;
 
@@ -251,21 +250,7 @@ namespace NuSysApp
                 RaisePropertyChanged("CompositeTransform");
             }
         }
-
-        public CompositeTransform FMTransform
-        {
-            get { return _fMTransform; }
-            set
-            {
-                if (_fMTransform == value)
-                {
-                    return;
-                }
-                _fMTransform = value;
-                RaisePropertyChanged("FMTransform");
-            }
-        }
-
+        
         public List<ElementViewModel> Selections { get { return _selections; } } 
 
         #endregion Public Members

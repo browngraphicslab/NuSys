@@ -69,7 +69,7 @@ namespace NuSysApp
             expandedView = new GroupNodeExpandedView();
 
             timelineView.Visibility = Visibility.Collapsed;
-            dataGridView.Visibility = Visibility.Collapsed;
+            dataGridView.Visibility = Visibility.Visible;
             expandedView.Visibility = Visibility.Collapsed;
             freeFormView.Visibility = Visibility.Collapsed;
 
@@ -84,7 +84,7 @@ namespace NuSysApp
             var vm = (GroupNodeViewModel) DataContext;
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
-            vm.SetSize(vm.Width + dx, vm.Height + dy);
+            vm.Controller.SetSize(vm.Width + dx, vm.Height + dy);
             
 
             PositionResizer();

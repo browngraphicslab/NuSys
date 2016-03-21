@@ -12,99 +12,98 @@ namespace NuSysApp
 {
     public class LibraryBucketViewModel
     {
-
-        public Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
-
-        public delegate void NewContentsEventHandler(ICollection<LibraryElement> elements);
+        public delegate void NewContentsEventHandler(ICollection<LibraryElementModel> elements);
         public event NewContentsEventHandler OnNewContents;
 
-        public delegate void NewElementAvailableEventHandler(LibraryElement element);
+        public delegate void NewElementAvailableEventHandler(LibraryElementModel element);
         public event NewElementAvailableEventHandler OnNewElementAvailable;
 
         private double _width, _height;
 
         public LibraryBucketViewModel()
         {
+            SessionController.Instance.ContentController.OnNewContent += FireNewContentAvailable;
         }
 
      
      
         public async Task InitializeLibrary()
         {
-            Task.Run(async delegate
-            {
-                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                foreach (var kvp in dictionaries)
-                {
-                    var id = (string)kvp.Value["id"];
-                    var element = new LibraryElement(kvp.Value);
-                    if (!_elements.ContainsKey(id))
-                    {
-                        _elements.Add(id, element);
-                    }
-                }
-                UITask.Run(delegate {
-                    OnNewContents?.Invoke(_elements.Values);
-                });
+            UITask.Run(delegate {
+                OnNewContents?.Invoke(SessionController.Instance.ContentController.Values);
             });
+        }
+
+        private void FireNewContentAvailable(LibraryElementModel content)
+        {
+            OnNewElementAvailable?.Invoke(content);
         }
         public void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
-            List<LibraryElement> elements = new List<LibraryElement>();
+            List<LibraryElementModel> elements = new List<LibraryElementModel>();
             foreach (var element in e.Items)
             {
-                var id = ((LibraryElement)element).ContentID;
-                elements.Add((LibraryElement)element);
-                if (SessionController.Instance.ContentController.Get(id) == null)
+                var id = ((LibraryElementModel)element).Id;
+                elements.Add((LibraryElementModel)element);
+                if (!SessionController.Instance.ContentController.ContainsAndLoaded(id))
                 {
                     Task.Run(async delegate
                     {
-                        SessionController.Instance.NuSysNetworkSession.FetchContent(id);
+                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
                     });
                 }
             }
             e.Data.OperationCompleted += DataOnOperationCompleted;
-            e.Data.Properties.Add("LibraryElements", elements);
-            var title = ((LibraryElement)e.Items[0]).Title ?? "";
-            var type = ((LibraryElement)e.Items[0]).ElementType.ToString();
+            e.Data.Properties.Add("LibraryElementModel", elements);
+            var title = ((LibraryElementModel)e.Items[0]).Title ?? "";
+            var type = ((LibraryElementModel)e.Items[0]).Type.ToString();
             e.Data.SetText(type + "  :  " + title);
             e.Cancel = false;
         }
         private void DataOnOperationCompleted(DataPackage sender, OperationCompletedEventArgs args)
         {
 
-            UITask.Run(delegate
+            UITask.Run(async delegate
             {
-                var ids = (List<LibraryElement>)sender.Properties["LibraryElements"];
+                var ids = (List<LibraryElementModel>)sender.Properties["LibraryElementModel"];
 
                 var width = SessionController.Instance.SessionView.ActualWidth;
                 var height = SessionController.Instance.SessionView.ActualHeight;
-                var centerpoint =
-                    SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                        new Point(width / 2, height / 2));
-                Task.Run(delegate
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+                foreach (var element in ids)
                 {
-                    foreach (var element in ids)
+                    if (element.Type != ElementType.Collection)
                     {
+                        await Task.Run(async delegate { 
                         Message m = new Message();
-                        m["contentId"] = element.ContentID;
+                        m["contentId"] = element.Id;
                         m["x"] = centerpoint.X - 200;
                         m["y"] = centerpoint.Y - 200;
                         m["width"] = 400;
                         m["height"] = 400;
-                        m["nodeType"] = element.ElementType.ToString();
+                        m["nodeType"] = element.Type.ToString();
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                         m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                            await
+                                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                    new NewElementRequest(m));
+                        });
                     }
-                });
+                    else
+                    {
+                        await Task.Run(async delegate
+                        {
+                            await StaticServerCalls.PutCollectionInstanceOnMainCollection(centerpoint.X, centerpoint.Y,
+                                element.Id);
+                        });
+                    }
+                }
             });
         }
 
-        public void AddNewElement(LibraryElement element)
+        public void AddNewElement(LibraryElementModel element)
         {
-            _elements.Add(element.ContentID, element);
             OnNewElementAvailable?.Invoke(element);
         }
 

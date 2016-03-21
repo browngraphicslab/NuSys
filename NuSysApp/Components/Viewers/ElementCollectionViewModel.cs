@@ -24,6 +24,7 @@ namespace NuSysApp
             controller.ChildRemoved += OnChildRemoved;
             
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
+
             AtomViewList = new ObservableCollection<FrameworkElement>();
         }
 
@@ -41,29 +42,6 @@ namespace NuSysApp
             AtomViewList.Add(view);
 
             elementController.Deleted += OnChildDeleted;
-
-            var model = elementController.Model;
-            if (model.ContentId != null )
-            {
-                if (SessionController.Instance.ContentController.Get(model.ContentId) == null)
-                {
-
-                    if (SessionController.Instance.LoadingDictionary.ContainsKey(model.ContentId))
-                    {
-                        SessionController.Instance.LoadingDictionary[model.ContentId]?.Add(elementController);
-                    }
-                    else
-                    {
-                        SessionController.Instance.LoadingDictionary[model.ContentId] =
-                            new List<ElementController>() {elementController};
-                    }
-                }
-                else
-                {
-                    elementController.FireContentLoaded(
-                        SessionController.Instance.ContentController.Get(model.ContentId));
-                }
-            }
         }
 
         private void OnChildDeleted(object source)

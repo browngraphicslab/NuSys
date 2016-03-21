@@ -17,21 +17,54 @@ namespace NuSysApp
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-
-            controller.ContentLoaded += async delegate(object source, NodeContentModel content)
-            {
-                Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(content.Data));
-                SetSize(Image.PixelWidth, Image.PixelHeight);
-                RaisePropertyChanged("Image");
-            };
+            
         }
-
 
         public BitmapImage Image { get; set; }
 
         public override async Task Init()
         {
+            if (Controller.LibraryElementModel.Loaded)
+            {
+                await DisplayImage();
+            }
+            else
+            {
+                Controller.LibraryElementModel.OnLoaded += async delegate
+                {
+                    await DisplayImage();
+                };
+            }
             RaisePropertyChanged("Image");
+        }
+
+        private async Task DisplayImage()
+        {
+            var image = Controller.LibraryElementModel.ViewUtilBucket.ContainsKey("image")
+                       ? (BitmapImage)Controller.LibraryElementModel.ViewUtilBucket["image"]
+                       : null;
+            if (image != null)
+            {
+                Image = image;
+            }
+            else
+            {
+                Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(Controller.LibraryElementModel.Data));
+
+                // adjust the size of an image that is too large
+                if (Image.PixelHeight > 300 || Image.PixelWidth > 300)
+                {
+                    double dim = Math.Max(Image.PixelWidth, Image.PixelHeight);
+                    double scale = Math.Floor(dim / 300);
+                    SetSize(Image.PixelWidth / scale, Image.PixelHeight / scale);
+                }
+                else
+                {
+                    SetSize(Image.PixelWidth, Image.PixelHeight);
+                }
+                Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
+                RaisePropertyChanged("Image");
+            }
         }
 
         public override void SetSize(double width, double height)

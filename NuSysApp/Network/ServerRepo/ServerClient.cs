@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
@@ -20,8 +21,6 @@ namespace NuSysApp
     {
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
-        private ManualResetEvent _manualResetEvent;
-        private bool _waiting = false;
 
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
@@ -29,6 +28,7 @@ namespace NuSysApp
         public delegate void ClientDroppedEventHandler(string ip);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
 
+        public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>(); 
         public string ServerBaseURI { get; private set; }
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
@@ -38,13 +38,11 @@ namespace NuSysApp
             _socket.MessageReceived += MessageRecieved;
             _socket.Closed += SocketClosed;
             _dataMessageWriter = new DataWriter(_socket.OutputStream);
-            _manualResetEvent = new ManualResetEvent(false);
         }
 
         public async Task Init()
         {
             ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
-            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var credentials = GetUserCredentials();
             var uri = GetUri("values/"+credentials, true);
             await _socket.ConnectAsync(uri);
@@ -56,7 +54,8 @@ namespace NuSysApp
         }
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
-            var firstpart = useWebSocket ? "wss" : "https";
+            var firstpart = useWebSocket ? "ws" : "http";
+            firstpart += WaitingRoomView.TEST_LOCAL_BOOLEAN ? "" : "s";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
@@ -70,7 +69,6 @@ namespace NuSysApp
             try
             {
                 using (DataReader reader = args.GetDataReader())
-
                 {
                     reader.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
                     string read = reader.ReadString(reader.UnconsumedBufferLength);
@@ -83,22 +81,54 @@ namespace NuSysApp
                     if (dict.ContainsKey("server_indication_from_server"))
                     {
                         if (dict.ContainsKey("notification_type") &&
-                            (string) dict["notification_type"] == "content_available")
+                            (string)dict["notification_type"] == "content_available")
                         {
                             if (dict.ContainsKey("id"))
                             {
-                                var id = dict["id"];
-                                LibraryElement element = new LibraryElement(dict);
-                                UITask.Run(delegate
+                                var id = (string)dict["id"];
+                                string title = null;
+                                ElementType type = ElementType.Text;
+                                if (dict.ContainsKey("title"))
                                 {
+                                    title = (string)dict["title"];
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                }
 
-                                    // TODO: add back in
-                                    //                    SessionController.Instance.Library.AddNewElement(element);
-                                    //                                SessionController.Instance.LibraryBucketViewModel.AddNewElement(element);
+                                UITask.Run(async delegate {
+                                    if (SessionController.Instance.ContentController.Get(id) != null)
+                                    {
+                                        var element = SessionController.Instance.ContentController.Get(id);
+                                        element.Title = title;//TODO make sure no other variables, like timestamp, need to be set here
+                                    }
+                                    else
+                                    {
+                                        if (type == ElementType.Collection)
+                                        {
+                                            SessionController.Instance.ContentController.Add(
+                                                new CollectionLibraryElementModel(id, title));
+                                        }
+                                        else
+                                        {
+                                            SessionController.Instance.ContentController.Add(
+                                                new LibraryElementModel(id, type, title));
+                                        }
+                                    }
+                                    if (NeededLibraryDataIDs.Contains(id))
+                                    {
+                                        Task.Run(async() =>
+                                        {
+                                            await FetchLibraryElementData(id);
+                                            NeededLibraryDataIDs.Remove(id);
+                                        });
+
+                                    }
                                 });
-                                await GetContent((string) id);
                             }
                         }
+
                     }
                     else
                     {
@@ -112,53 +142,99 @@ namespace NuSysApp
             }
         }
 
-        public async Task GetContent(string contentId)
+        public async Task<List<Dictionary<string,object>>> GetContentWithoutData(List<string> contentIds)
         {
             try
             {
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(GetUri("getcontent/" + contentId));
+                return await Task.Run(async delegate
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+                    var contentIdStrings = JsonConvert.SerializeObject(contentIds, settings);
+
+                    var client = new HttpClient( new HttpClientHandler{ClientCertificateOptions = ClientCertificateOption.Automatic});
+                    var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentIdStrings, Encoding.UTF8, "application/xml"));
+
+                    string data;
+                    using (var content = response.Content)
+                    {
+                        data = await content.ReadAsStringAsync();
+                    }
+                    try
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        doc.LoadXml(data);
+                        var list =  JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(doc.ChildNodes[0].InnerText, settings);
+                        return list;
+                    }
+                    catch (Exception boolParsException)
+                    {
+                        Debug.WriteLine("error parsing bool and serverSessionId returned from server");
+                    }
+                    return new List<Dictionary<string, object>>();
+                });
+
+            }
+            catch (Exception e)
+            {
+                //throw new Exception("couldn't connect to the server and get content info");
+                return new List<Dictionary<string, object>>();
+            }
+        }
+        public async Task FetchLibraryElementData(string libraryId)
+        {
+            try
+            {
+                await Task.Run(async delegate
+                {
+                    SessionController.Instance.ContentController.Get(libraryId).SetLoading(true);
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
                 
-                string data;
-                using (var content = response.Content)
-                {
-                    data = await content.ReadAsStringAsync();
-                }
-                await UITask.Run(async delegate
-                {
+                    string data;
+                    using (var responseContent = response.Content)
+                    {
+                        data = await responseContent.ReadAsStringAsync();
+                    }
+
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
+                    if (!dict.ContainsKey("data") || !dict.ContainsKey("id") || !dict.ContainsKey("type"))
+                    {
+                        NeededLibraryDataIDs.Add(libraryId);
+                        return;
+                    }
+
                     var contentData = (string)dict["data"] ?? "";
-                    var contentTitle = dict.ContainsKey("title") ? (string)dict["title"] : null;
-                    var contentType = dict.ContainsKey("type")
-                        ? (ElementType) Enum.Parse(typeof (ElementType), (string)dict["type"], true)
-                        : ElementType.Text;
-                    //var contentAliases = dict.ContainsKey("aliases") ? JsonConvert.DeserializeObject<List<string>>(dict["aliases"].ToString()) : new List<string>();
-                    NodeContentModel content;
-                    if (contentType == ElementType.Collection)
+                    var id = (string) dict["id"];
+                    var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                    var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
+
+                    if (NeededLibraryDataIDs.Contains(id))
                     {
-                        content = new CollectionContentModel(contentId, null, contentTitle);
+                        NeededLibraryDataIDs.Remove(id);
                     }
-                    else
+
+                    LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
+
+                    if (content == null)
                     {
-                        content = new NodeContentModel(contentData, contentId, contentType, contentTitle);
-                    }
-                    if (SessionController.Instance.ContentController.Get(contentId) == null)
-                    {
+                        if (type == ElementType.Collection)
+                        {
+                            content = new CollectionLibraryElementModel(id,title);
+                        }
+                        else
+                        {
+                            content = new LibraryElementModel(id,type,title);
+                        }
                         SessionController.Instance.ContentController.Add(content);
                     }
-                    else
+
+                    await UITask.Run(async delegate
                     {
-                        SessionController.Instance.ContentController.OverWrite(content);//TODO do we want this?
-                    }
-                    if (SessionController.Instance.LoadingDictionary.ContainsKey(contentId))
-                    {
-                        foreach (var controller in SessionController.Instance.LoadingDictionary[contentId])
-                        {
-                            await controller.FireContentLoaded(content);
-                        }
-                    }
+                        content.Load(contentData);
+                    });
                 });
             }
             catch (Exception e)

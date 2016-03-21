@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
@@ -19,7 +18,7 @@ namespace NuSysApp
         private ElementViewModel _hoveredNode;
         private string _createdGroupId;
 
-        public CreateGroupMode(FreeFormViewer view) : base(view)
+        public CreateGroupMode(FrameworkElement view) : base(view)
         {
         }
 
@@ -85,7 +84,11 @@ namespace NuSysApp
            
             var id1 = (((FrameworkElement)sender).DataContext as ElementViewModel).Id;
             var id2 = _hoveredNode.Id;
-            
+            if (_hoveredNode.IsEditing)//TODO FIX?
+            {
+                return; //makes sure you don't add a node to a group that it is already in when in simple edit mode
+            }
+
             if (id1 == id2)
                 return;
 
@@ -120,13 +123,17 @@ namespace NuSysApp
                 elementMsg["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 elementMsg["id"] = newCollectionId;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
-
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
 
-                await controller2.RequestMoveToCollection(newCollectionId,contentId);
-                await controller1.RequestMoveToCollection(newCollectionId,contentId);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+
+                //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+
+                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 300, 300, newCollectionId);
+
+                await controller2.RequestMoveToCollection(newCollectionId, contentId);
+                await controller1.RequestMoveToCollection(newCollectionId, contentId);
+
 
                 _isHovering = false;
                 return;
@@ -134,13 +141,13 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.ContentId);
+                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.LibraryId);
                 return;
             }
 
             if (c1IsCollection)
             {
-                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.ContentId);
+                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.LibraryId);
             }
  
          

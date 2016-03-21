@@ -16,19 +16,22 @@ using ReverseMarkdown.Converters;
 namespace NuSysApp { 
     public class LinkMode : AbstractWorkspaceViewMode
     {
+        private FreeFormViewer _cview;
+
         public LinkMode(FreeFormViewer view) : base(view)
         {
+            _cview = (FreeFormViewer) view;
         }
 
         public async override Task Activate()
         {
-            _view.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;  
+            _cview.InqCanvas.ViewModel.Model.LineFinalized += OnLineFinalized;  
         }
 
 
         public async override Task Deactivate()
         {
-            _view.InqCanvas.ViewModel.Model.LineFinalized -= OnLineFinalized;
+            _cview.InqCanvas.ViewModel.Model.LineFinalized -= OnLineFinalized;
         }
 
         private async void OnLineFinalized(InqLineModel lineModel)

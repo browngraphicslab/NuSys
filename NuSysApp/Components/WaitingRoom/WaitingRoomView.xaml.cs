@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -34,8 +35,10 @@ namespace NuSysApp
         public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-
+        public static bool TEST_LOCAL_BOOLEAN = false;
         private static IEnumerable<string> _firstLoadList;
+        private bool _loggedIn = false;
+        private bool _isLoaded = false;
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -44,16 +47,15 @@ namespace NuSysApp
             
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
-            //ServerName = "localhost:54764";
-            ServerName = "nusysrepo.azurewebsites.net";
+            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
             {
                 ServerName = ServerNameText.Text;
                 Init();
             };
-
-            ellipse.Begin();
+            
             Init();
         }
 
@@ -63,7 +65,7 @@ namespace NuSysApp
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var url = "https://" + ServerName + "/api/getworkspace";
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace";
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
                 string data;
@@ -72,6 +74,7 @@ namespace NuSysApp
                     data = await content.ReadAsStringAsync();
                 }
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
+
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
@@ -107,7 +110,7 @@ namespace NuSysApp
             {
                 var item = List.SelectedItems.First();
                 var id = ((CollectionTextBox) item).ID;
-                var url = "https://" + ServerName + "/api/getworkspace/"+id;
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace/"+id;
                 HttpClient client = new HttpClient();
                 var response = await client.GetAsync(new Uri(url));
                 string data;
@@ -140,9 +143,9 @@ namespace NuSysApp
                 var cred = new Dictionary<string, string>();
                 
                 cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
-                cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Text));
+                cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
                 
-                var url = "https://" + ServerName + "/api/login/" ;
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/" ;
                 var client = new HttpClient(
                  new HttpClientHandler
                  {
@@ -194,11 +197,95 @@ namespace NuSysApp
                     {
                         await SessionController.Instance.NuSysNetworkSession.Init();
 
+                        SessionController.Instance.ContentController.OnNewContent += delegate (LibraryElementModel element)
+                        {
+                            if (element.Type == ElementType.Collection)
+                            {
+                                UITask.Run(delegate
+                                {
+                                    var box = new CollectionTextBox();
+                                    box.ID = element.Id;
+                                    box.Text = element.Title ?? "Unnamed Collection";
+                                    List.Items.Add(box);
+                                });
+                            }
+                        };
+
                         loggedInText.Text = "Logged In!";
 
                         NewWorkspaceButton.IsEnabled = true;
-                        JoinWorkspaceButton.IsEnabled = true;
+                        _loggedIn = true;
+                        if (_isLoaded)
+                        {
+                            UITask.Run(delegate {
+                                JoinWorkspaceButton.IsEnabled = true;
+                                JoinWorkspaceButton.Visibility = Visibility.Visible;
+                            });
+                        }
                         LoginButton.IsEnabled = false;
+                        SlideOutLogin.Begin();
+                        SlideInWorkspace.Begin();
+
+                        await Task.Run(async delegate
+                        {
+                            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            foreach (var kvp in dictionaries)
+                            {
+                                var id = (string)kvp.Value["id"];
+                                //var element = new LibraryElementModel(kvp.Value);
+
+                                var dict = kvp.Value;
+                                string title = null;
+                                ElementType type = ElementType.Text;
+                                string timestamp = "";
+
+
+                                if (dict.ContainsKey("library_element_creation_timestamp"))
+                                {
+                                    timestamp = dict["library_element_creation_timestamp"].ToString();
+                                }
+
+
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"]; // title
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    try
+                                    {
+                                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                LibraryElementModel element;
+                                if (type == ElementType.Collection)
+                                {
+                                    element = new CollectionLibraryElementModel(id, title);
+                                }
+                                else
+                                {
+                                    element = new LibraryElementModel(id, type, title);
+                                }
+                                element.Timestamp = timestamp;
+                                if (SessionController.Instance.ContentController.Get(id) == null)
+                                {
+                                    SessionController.Instance.ContentController.Add(element);
+                                }
+                            }
+                            _isLoaded = true;
+                            if (_loggedIn)
+                            {
+                                UITask.Run(delegate {
+                                    JoinWorkspaceButton.IsEnabled = true;
+                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                });
+                            }
+                        });
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {

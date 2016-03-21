@@ -26,8 +26,8 @@ namespace NuSysApp
     {
         private readonly FreeFormViewerViewModel _freeFormViewerViewModel;
         private CompositeTransform _inkScale;
-        private MuPDFWinRT.Document _document;
         public int CurrentPageNumber { get;  private set; }
+        public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
 
@@ -37,25 +37,40 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
+        }
 
-            controller.ContentLoaded += async delegate (object source, NodeContentModel content)
+        public async override Task Init()
+        {
+            if (Controller.LibraryElementModel.Loaded)
             {
-                var data = content.Data;
-                var dataBytes = Convert.FromBase64String(data);
-                var ms = new MemoryStream(dataBytes);
-                using (IInputStream inputStreamAt = ms.AsInputStream())
-                using (var dataReader = new DataReader(inputStreamAt))
+                await DisplayPdf();
+            }
+            else
+            {
+                Controller.LibraryElementModel.OnLoaded += async delegate
                 {
-                    uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                    IBuffer readBuffer = dataReader.ReadBuffer(u);
-                    _document = Document.Create(readBuffer, DocumentType.PDF, 140);
-                }
-                
-                await Goto(CurrentPageNumber);
-                SetSize(Width, Height);
-                LaunchLDA((PdfNodeModel)this.Model);
+                    await DisplayPdf();
+                };
+            }
+        }
 
-            };
+        private async Task DisplayPdf()
+        {
+            var data = Controller.LibraryElementModel.Data;
+            var dataBytes = Convert.FromBase64String(data);
+            var ms = new MemoryStream(dataBytes);
+            using (IInputStream inputStreamAt = ms.AsInputStream())
+            using (var dataReader = new DataReader(inputStreamAt))
+            {
+                uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
+                IBuffer readBuffer = dataReader.ReadBuffer(u);
+                _document = Document.Create(readBuffer, DocumentType.PDF, 140);
+             //   Document = _document;
+            }
+
+            await Goto(CurrentPageNumber);
+            SetSize(Width, Height);
+            LaunchLDA((PdfNodeModel)this.Model);
         }
 
         private async void OnPageChange(int page)
@@ -77,6 +92,8 @@ namespace NuSysApp
 
         public async Task Goto(int pageNumber)
         {
+            if (_document == null)
+                return;
             if (pageNumber == -1) return;
             if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
@@ -156,6 +173,18 @@ namespace NuSysApp
 
             RaisePropertyChanged("Tags");
 
+        }
+
+        public MuPDFWinRT.Document Document
+        {
+            get
+            {
+                return this._document;
+            }
+            set
+            {
+               this. _document = value;
+            }
         }
 
         public WriteableBitmap ImageSource

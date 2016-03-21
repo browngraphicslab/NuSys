@@ -10,13 +10,18 @@
     d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
+    HorizontalAlignment="Left" VerticalAlignment="Top"
 >
 
-    <Canvas x:Name="xCanvas">
+    <Canvas x:Name="xCanvas" Width="1000" Height="1000">
+        <Canvas.Clip>
+            <RectangleGeometry Rect="{Binding ClipRect}">
+            </RectangleGeometry>
+        </Canvas.Clip>
         <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas  HorizontalAlignment="Left" Background="Transparent" />
+                    <Canvas HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

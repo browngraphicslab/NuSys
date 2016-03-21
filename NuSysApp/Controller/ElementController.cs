@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,16 +31,12 @@ namespace NuSysApp
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
-        public delegate void CanEditChangedEventHandler(object source, EditStatus status);
-
-        public delegate void ContentLoadedHandler(object source, NodeContentModel data);
+        public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
         public event DeleteEventHandler Deleted;
         public event LinkAddedEventHandler LinkedAdded;
-        public event ContentLoadedHandler ContentLoaded;
-        public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
@@ -47,20 +44,12 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public event TitleChangedHandler TitleChanged;
         public event NetworkUserChangedEventHandler UserChanged;
-        public event CanEditChangedEventHandler CanEditChange;
-
-        private EditStatus _editStatus;
 
         public ElementController(ElementModel model)
         {
             _model = model;
-            _debouncingDictionary = new DebouncingDictionary(model.Id);
-            _editStatus = EditStatus.Maybe;
-        }
-
-        public virtual async Task FireContentLoaded(NodeContentModel content)
-        {
-            ContentLoaded?.Invoke(this, content);
+            if (_model != null)
+                _debouncingDictionary = new DebouncingDictionary(model.Id);
         }
 
         public void SetCreator(string parentId)
@@ -70,11 +59,10 @@ namespace NuSysApp
 
         public void AddLink(LinkElementController linkController)
         {
-            var linkModel = (LinkModel)linkController.Model;
             LinkedAdded?.Invoke(this, linkController);
         }
 
-    public void SetScale(double sx, double sy)
+        public void SetScale(double sx, double sy)
         {
             Model.ScaleX = sx;
             Model.ScaleY = sy;
@@ -87,6 +75,10 @@ namespace NuSysApp
 
         public void SetSize(double width, double height)
         {
+            if (width < 5 || height < 5)
+            {
+                return;
+            }
             Model.Width = width;
             Model.Height = height;
 
@@ -144,10 +136,13 @@ namespace NuSysApp
         }
 
 
-        public async virtual Task RequestDuplicate(double x, double y)
+        public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
-            Message m = new Message();
-            m["contentId"] = Model.ContentId;
+           if (m == null)
+                m = new Message();
+
+            m.Remove("id");
+            m["contentId"] = Model.LibraryId;
             m["data"] = "";
             m["x"] = x;
             m["y"] = y;
@@ -156,7 +151,6 @@ namespace NuSysApp
             m["nodeType"] = Model.ElementType.ToString();
             m["creator"] = Model.Creator;
             m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
@@ -176,7 +170,7 @@ namespace NuSysApp
 
             var m1 = new Message();
             m1["metadata"] = metadata;
-            m1["contentId"] = Model.ContentId;
+            m1["contentId"] = Model.LibraryId;
             m1["nodeType"] = Model.ElementType;
             m1["x"] = 50000;
             m1["y"] = 50000;
@@ -207,24 +201,20 @@ namespace NuSysApp
             }
          }
 
-
-        public EditStatus CanEdit
-        {
-            get { return _editStatus; }
-            set
-            {
-                if (_editStatus == value)
-                {
-                    return;
-                }
-                _editStatus = value;
-                CanEditChange?.Invoke(this, CanEdit);
-            }
-        }
-
         public ElementModel Model
         {
             get { return _model; }
+        }
+        public LibraryElementModel LibraryElementModel
+        {
+            get
+            {
+                if (Model.LibraryId != null && SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
+                {
+                    return SessionController.Instance.ContentController.Get(Model.LibraryId);
+                }
+                return null;
+            }
         }
 
         public virtual async Task UnPack(Message props)
@@ -232,8 +222,10 @@ namespace NuSysApp
             if (props.ContainsKey("data"))
             {
                 var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
-                content.Data = props.GetString("data", "");
-                ContentChanged?.Invoke(this, content);
+                if (content != null)
+                {
+                    content.Data = props.GetString("data", "");
+                }
             }
             if (props.ContainsKey("x") || props.ContainsKey("y"))
             {

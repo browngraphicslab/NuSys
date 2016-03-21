@@ -8,60 +8,77 @@
     xmlns:local="using:NuSysApp">
     <converters:SelectionToColorConverter x:Key="sConverter" />
     <converters:BoolToVisibilityConverter x:Key="vConverter" />
-    <converters:EnumToBoolConverter x:Key="eConverter" />
     <Style TargetType="local:NodeTemplate">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
-                    
-                        <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
-                            <Border x:Name="Rect" CornerRadius="5,5,5,5" Background="#606d7a" BorderBrush="#606d7a" BorderThickness="2" Width="{Binding Width}"  />
-                            <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="White" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
-                            <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
-                        </Grid>
+                        <Canvas x:Name="xCanvas">
+                            <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
+                                <Border x:Name="Rect" Background="White" BorderBrush="#606d7a" BorderThickness="2" Width="{Binding Width}"  />
+                                <TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
+                                <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
+                            </Grid>
 
-                        <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}"
+                            <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="#606d7a" BorderThickness="2"  Background="White"
                                   IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
-                            <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
-                            <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" Background="Red" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
-                                <Canvas.RenderTransform>
-                                    <TranslateTransform X="-50"></TranslateTransform>
-                                </Canvas.RenderTransform>
-                                <ContentControl Content="{TemplateBinding SubMenu}" />
-                            </Canvas>
-                
-                            <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
-                            <Rectangle x:Name="HitArea" Height="{Binding Height}" Width="{Binding Width}" Fill="Transparent" />
+                                <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
+                                <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                                    <Canvas.RenderTransform>
+                                        <TranslateTransform X="-65"></TranslateTransform>
+                                    </Canvas.RenderTransform>
+                                    <ContentControl Content="{TemplateBinding SubMenu}" />
+                                </Canvas>                    
+                                <Canvas x:Name="SubMenuRight" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                                    <Canvas.RenderTransform>
+                                        <TranslateTransform X="15"></TranslateTransform>
+                                    </Canvas.RenderTransform>
+                                    <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}">
+                                        <StackPanel>
+                                            <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                            <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,70,0,0">
+                                        <StackPanel>
+                                            <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                            <TextBlock Text="Link" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                </Canvas>
 
-                            <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
+                                <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
+                                <Rectangle x:Name="HitArea" Height="{Binding Height}" Width="{Binding Width}" Fill="Transparent" />
+
+                                <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" /> -->
 
-          
-                            <Path x:Name="Resizer" Fill="#606d7a" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+
+                                <Path x:Name="Resizer" Fill="#606d7a" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" />
-                            <!--<TextBlock x:Name="Tags" VerticalAlignment="Bottom" FontSize="18" Text="{Binding Tags}"></TextBlock>-->
-                            <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Width="{Binding Width}" Height="30" Background="Transparent">
-                                            <StackPanel.RenderTransform>
-                                                <TranslateTransform Y="35"></TranslateTransform>
-                                            </StackPanel.RenderTransform>
-                                        </StackPanel>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </Grid>
-                        <Canvas>
-                        <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
-                        </Canvas>
-                        <Canvas>
-                            <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
+                                <!--<TextBlock x:Name="Tags" VerticalAlignment="Bottom" FontSize="18" Text="{Binding Tags}"></TextBlock>-->
+                                <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Width="{Binding Width}" Height="30" Background="Transparent">
+                                                <StackPanel.RenderTransform>
+                                                    <TranslateTransform Y="35"></TranslateTransform>
+                                                </StackPanel.RenderTransform>
+                                            </StackPanel>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </Grid>
+                            <Canvas>
+                                <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
+                            </Canvas>
+                            <Canvas>
+                                <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
+                            </Canvas>
                         </Canvas>
                     </Grid>
                 </ControlTemplate>

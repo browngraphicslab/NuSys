@@ -17,7 +17,7 @@ namespace NuSysApp
         private string _id;
 
         private ConcurrentDictionary<string, object> _serverDict;
-        private int _milliSecondServerSaveDelay = 1200;
+        private int _milliSecondServerSaveDelay = 800;
         private Timer _serverSaveTimer;
         public DebouncingDictionary(string id)
         {
@@ -44,7 +44,14 @@ namespace NuSysApp
             {
                 _timing = true;
                 _dict.TryAdd(id, value);
-                _serverDict.TryAdd(id, value);
+                if (_serverDict.ContainsKey(id))
+                {
+                    _serverDict[id] = value;
+                }
+                else
+                {
+                    _serverDict.TryAdd(id, value);
+                }
                 _timer?.Change(_milliSecondDebounce, _milliSecondDebounce);
                 _serverSaveTimer?.Change(_milliSecondServerSaveDelay, _milliSecondServerSaveDelay);
             }
@@ -54,10 +61,12 @@ namespace NuSysApp
                 {
                     _dict[id] = value;
                     _serverDict[id] = value;
-                    return;
                 }
-                _dict.TryAdd(id, value);
-                _serverDict.TryAdd(id, value);
+                else
+                {
+                    _dict.TryAdd(id, value);
+                    _serverDict.TryAdd(id, value);
+                }
                 _serverSaveTimer?.Change(_milliSecondServerSaveDelay, _milliSecondServerSaveDelay);
             }
         }

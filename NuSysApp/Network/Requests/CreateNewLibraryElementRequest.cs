@@ -32,5 +32,21 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Add);
         }
+
+        public override async Task CheckOutgoingRequest()
+        {
+            _message["library_element_creation_timestamp"] = DateTime.UtcNow;
+
+            ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
+            if (type == ElementType.Collection)
+            {
+                SessionController.Instance.ContentController.Add(
+                    new CollectionLibraryElementModel((string) _message["id"]));
+            }
+            else
+            {
+                SessionController.Instance.ContentController.Add(new LibraryElementModel((string) _message["id"], type));
+            }
+        }
     }
 }

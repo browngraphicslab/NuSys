@@ -49,15 +49,15 @@
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
-        <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="DeepPink"></Rectangle>
-        <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView>
+        <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="LightGray"></Rectangle>
+        <Image Name="DraggingGraphImage" Source="http://png-3.findicons.com/files/icons/2660/finance/256/bar_graph.png" Width="0" Height="0"></Image>
+            <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
-        <local:DetailViewerView x:Name="xFullScreenViewer"></local:DetailViewerView>
+        <local:DetailViewerView x:Name="xDetailViewer"></local:DetailViewerView>
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
         <Grid x:Name="xBtnPen" Background="IndianRed" Width="70" Height="100">
             <TextBlock Text="P" FontWeight="Black"></TextBlock>
         </Grid>
-
     </Canvas>
 </Page>

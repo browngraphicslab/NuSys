@@ -81,7 +81,7 @@ namespace NuSysApp
 
                 var wvm = (FreeFormViewerViewModel) _view.DataContext;
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(0, 0, _tempNode.Width, _tempNode.Height));
-                await AddNode(_view, _startPos, new Size(r.Width, r.Height), _elementType);
+                await AddNode((FreeFormViewer)_view, _startPos, new Size(r.Width, r.Height), _elementType);
             }
             _isDragging = false;
          //   e.Handled = true;
@@ -114,7 +114,7 @@ namespace NuSysApp
 
             var dict = new Message();
             Dictionary<string, object> metadata;
-            if (elementType == ElementType.Document || elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF ||  elementType == ElementType.Video)
+            if (elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF ||  elementType == ElementType.Video)
             {
                 var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
                 if (storageFile == null) return;
@@ -249,9 +249,7 @@ namespace NuSysApp
             vm.ClearSelection();
          //   vm.ClearMultiSelection();
 
-            if (!_isFixed) { 
-                SessionController.Instance.SessionView.FloatingMenu.Reset();
-            }           
+        
         }
     }
 }

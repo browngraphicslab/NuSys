@@ -14,24 +14,36 @@ namespace NuSysApp
     public class ContentController
     {
 
-        private Dictionary<string, NodeContentModel> _contents = new Dictionary<string, NodeContentModel>();
+        private Dictionary<string, LibraryElementModel> _contents = new Dictionary<string, LibraryElementModel>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
+
+        public delegate void NewContentEventHandler(LibraryElementModel element);
+        public event NewContentEventHandler OnNewContent;
         public int Count
         {
             get { return _contents.Count; }
         }
     
-        public NodeContentModel Get(string id)
+        public LibraryElementModel Get(string id)
         {
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
 
-        public string Add(NodeContentModel model)
+        public ICollection<LibraryElementModel> Values
+        {
+            get { return _contents.Values; }
+        } 
+        public bool ContainsAndLoaded(string id)
+        {
+            return _contents.ContainsKey(id) ? _contents[id].Loaded : false;
+        }
+        public string Add(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))
             {
                 _contents.Add(model.Id, model);
                 Debug.WriteLine("content directly added with ID: " + model.Id);
+                OnNewContent?.Invoke(model);
                 return model.Id;
             }
             Debug.WriteLine("content failed to add directly due to invalid id");
@@ -40,8 +52,9 @@ namespace NuSysApp
         public string Add( string contentData, ElementType elementType, string presetID = null)
         {
             var id = presetID ?? SessionController.Instance.GenerateId();
-            var n = new NodeContentModel(contentData, id, elementType);
+            var n = new LibraryElementModel(id, elementType);
             _contents.Add(id, n );
+            OnNewContent?.Invoke(n);
             /*
             if (presetID != null)
             {
@@ -64,11 +77,11 @@ namespace NuSysApp
             _waitingNodeCreations.Add(id, mre);
         }*/
 
-        public string OverWrite(NodeContentModel model)
+        public string OverWrite(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Id))
             {
-                _contents[model.Id]= model;
+                _contents[model.Id] = model;
                 return model.Id;
             }
             return null;
@@ -82,9 +95,9 @@ namespace NuSysApp
 
             foreach (var line in lines)
             {
-                var o = JsonConvert.DeserializeObject<NodeContentModel>(line);
+                var o = JsonConvert.DeserializeObject<LibraryElementModel>(line);
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,ElementType.Node));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,o.Type));
                 /*
                 var request = new NewContentSystemRequest(o.Id,o.Data);//TODO not ideal
                 await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequestLocally(request);*/

@@ -13,7 +13,7 @@ using NuSysApp.Controller;
 
 namespace NuSysApp
 {
-    public abstract class ElementViewModel : BaseINPC, ISelectable
+    public class ElementViewModel : BaseINPC, ISelectable
     {
         #region Private Members      
 
@@ -30,11 +30,10 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        protected ElementViewModel(ElementController controller)
+        public ElementViewModel(ElementController controller)
         {
             _controller = controller;
             LinkList = new ObservableCollection<LinkElementController>();
-            controller.CanEditChange += OnCanEditChange;
             controller.MetadataChange += OnMetadataChange;
             controller.PositionChanged += OnPositionChanged;
             controller.SizeChanged += OnSizeChanged;
@@ -94,12 +93,6 @@ namespace NuSysApp
             Transform.ScaleY = sy;
             RaisePropertyChanged("Transform");
         }
-
-        protected virtual void OnCanEditChange(object source, EditStatus status)
-        {
-            CanEdit = status;
-        }
-
         protected virtual void OnAlphaChanged(object source, double alpha)
         {
             Alpha = Model.Alpha;
@@ -138,6 +131,16 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
         }
 
+        public bool ChangeContentData(string data)
+        {
+            var content = Controller.LibraryElementModel;
+            if (content != null)
+            {
+                content.SetContentData(this, data);
+                return true;
+            }
+            return false;
+        }
         #region Atom Manipulations
 
         public virtual void ReadFromModel()
@@ -178,7 +181,6 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            _controller.CanEditChange -= OnCanEditChange;
             _controller.MetadataChange -= OnMetadataChange;
             _controller.PositionChanged -= OnPositionChanged;
             _controller.SizeChanged -= OnSizeChanged;
@@ -217,18 +219,6 @@ namespace NuSysApp
         #region Public Properties
 
         public ObservableCollection<LinkElementController> LinkList { get; set; }
-
-        private EditStatus _canEdit;
-
-        public EditStatus CanEdit
-        {
-            get { return _canEdit; }
-            set
-            {
-                _canEdit = value;
-                RaisePropertyChanged("CanEdit");
-            }
-        }
 
         public virtual bool IsSelected
         {
@@ -390,7 +380,7 @@ namespace NuSysApp
 
         public string ContentId
         {
-            get { return ((ElementModel) Model).ContentId; }
+            get { return ((ElementModel) Model).LibraryId; }
         }
 
         public CompositeTransform InkScale

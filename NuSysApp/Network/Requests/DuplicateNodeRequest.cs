@@ -39,7 +39,7 @@ namespace NuSysApp
             modelToDuplicate["x"] = _message.GetDouble("targetX");
             modelToDuplicate["y"] = _message.GetDouble("targetY");
             modelToDuplicate["autoCreate"] = true;
-            modelToDuplicate["creatorContentID"] = model.ContentId;
+            modelToDuplicate["creatorContentID"] = model.LibraryId;
 
             var msg = new Message( modelToDuplicate );
             var request = new NewElementRequest(msg);
@@ -47,7 +47,7 @@ namespace NuSysApp
 
             var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
 
-            if (!(duplicateModel is ElementCollectionModel))
+            if (!(duplicateModel is CollectionElementModel))
                 return;
 
 

@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Shapes;
 namespace NuSysApp
 {
 
-    public class WorkspaceModel : ElementCollectionModel
+    public class WorkspaceModel : CollectionElementModel
     {   
         public double Zoom { get; set; }
         public double LocationX { get; set; }
@@ -28,7 +28,7 @@ namespace NuSysApp
 
         public WorkspaceModel(string id ) : base(id)
         {
-            ElementType = ElementType.Workspace;
+            ElementType = ElementType.Collection;
             Zoom = 1;
             LocationX = -Constants.MaxCanvasSize/2.0;
             LocationY= -Constants.MaxCanvasSize/ 2.0;
