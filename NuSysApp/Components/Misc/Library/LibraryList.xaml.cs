@@ -47,36 +47,18 @@ namespace NuSysApp
             {
                 ListView.ItemsSource = vm._PageElements;
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
-                ((LibraryBucketViewModel)library.DataContext).OnNewElementAvailable += AddNewElement;
-                ((LibraryBucketViewModel)library.DataContext).OnElementDeleted += RemoveElement;
             };
             _propertiesWindow = propertiesWindow;
             _library = library;
+            vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
-            
+
         }
 
         public ObservableCollection<LibraryElementModel> GetItems()
         {
             return (ObservableCollection<LibraryElementModel>)ListView.ItemsSource;
         }
-        private void AddNewElement(LibraryElementModel element)
-        {
-            //_items = new ObservableCollection<LibraryElementModel>((IEnumerable<LibraryElementModel>) ListView.ItemsSource);
-            //UITask.Run(delegate
-            //{
-                //((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Add(element);
-            //});
-        }
-
-        private void RemoveElement(LibraryElementModel element)
-        {
-            UITask.Run(delegate
-            {
-                ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Remove(element);
-            });
-        }
-
 
         //public async void Sort(string s)
         //{
@@ -143,7 +125,7 @@ namespace NuSysApp
             this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
 
-        public async Task Update()
+        public async void Update()
         {
             this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
         }
@@ -159,9 +141,7 @@ namespace NuSysApp
         {
 
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            _propertiesWindow.setTitle(element.Title);
-            _propertiesWindow.setType(element.Type.ToString());
-            _propertiesWindow.setID(element.Id);
+            _propertiesWindow.SetElement(element);
             _propertiesWindow.Visibility = Visibility.Visible;
 
             var view = SessionController.Instance.SessionView;
@@ -249,10 +229,7 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.setTitle(((LibraryElementModel)e.ClickedItem).Title);
-            _propertiesWindow.setType(((LibraryElementModel)e.ClickedItem).Type.ToString());
-            //_propertiesWindow.Visibility = Visibility.Visible;
-           
+            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));          
         }
     }
 

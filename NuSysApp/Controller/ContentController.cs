@@ -34,7 +34,7 @@ namespace NuSysApp
 
         public ICollection<LibraryElementModel> Values
         {
-            get { return _contents.Values; }
+            get { return new List<LibraryElementModel>(_contents.Values); }
         } 
         public bool ContainsAndLoaded(string id)
         {

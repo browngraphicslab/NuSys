@@ -37,7 +37,7 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = true;
 
-        private static IEnumerable<string> _firstLoadList;
+        private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
@@ -115,27 +115,19 @@ namespace NuSysApp
             {
                 var item = List.SelectedItems.First();
                 var id = ((CollectionTextBox) item).ID;
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace/"+id;
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(new Uri(url));
-                string data;
-                using (var content = response.Content)
-                {
-                    data = await content.ReadAsStringAsync();
-                }
-                _firstLoadList = JsonConvert.DeserializeObject<List<string>>(data);
+                _firstLoadList = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
             }
         }
 
-        public static IEnumerable<string> GetFirstLoadList()
+        public static IEnumerable<Message> GetFirstLoadList()
         {
             if (_firstLoadList == null)
             {
-                return new List<string>();
+                return new List<Message>();
             }
-            var l = new List<string>(_firstLoadList);
+            var l = new List<Message>(_firstLoadList);
             _firstLoadList = null;
             return l;
         }

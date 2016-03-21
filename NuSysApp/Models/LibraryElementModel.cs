@@ -59,6 +59,7 @@ namespace NuSysApp
                 RaisePropertyChanged("Title");
             } 
         }
+        public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
         private string _title;
 

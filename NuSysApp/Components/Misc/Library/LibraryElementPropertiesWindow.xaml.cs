@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -21,6 +23,7 @@ namespace NuSysApp
     public sealed partial class LibraryElementPropertiesWindow : UserControl
     {
         private int _count;
+        private LibraryElementModel _currentElementModel;
         public LibraryElementPropertiesWindow()
         {
             this.InitializeComponent();
@@ -97,34 +100,29 @@ namespace NuSysApp
             _count++;
         }
 
-        public void setTitle(string title)
+        public void SetElement(LibraryElementModel element)
         {
-            if (title != null)
+            if (element == null)
             {
-                Title.Text = title;
+                Debug.WriteLine("tried to see properties window of a null element");
+                return;
             }
-           
-        }
+            _currentElementModel = element;
 
-        public void setType(string type)
-        {
-            if (type != null)
+            Title.Text = element.Title ?? "";
+            Type.Text = element.Type.ToString() ?? "";
+            ID.Text = element.Id ?? "";
+            Creator.Text = element.Creator ?? "";
+
+            if (element.Type == ElementType.Collection)
             {
-                Type.Text = type;
+                EnterCollectionButton.Visibility = Visibility.Visible;
             }
-           
+            else
+            {
+                EnterCollectionButton.Visibility = Visibility.Collapsed;
+            }
         }
-
-        public void setID(string id)
-        {
-            ID.Text = id;
-        }
-
-        public void setCreator(string creator)
-        {
-            Creator.Text = creator;
-        }
-
         public void setLastEdited(string lastedited)
         {
             LastEdited.Text = lastedited;
@@ -135,7 +133,7 @@ namespace NuSysApp
             LastEdited.Text = history;
         }
 
-        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void CollapseArrow_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
         }
@@ -147,13 +145,27 @@ namespace NuSysApp
 
         private void OnTitleTextChanged(object sender, TextChangedEventArgs e)
         {
-            var content = SessionController.Instance.ContentController.Get(ID.Text);
-            content?.SetTitle(Title.Text);
+            _currentElementModel?.SetTitle(Title.Text);
         }
 
         private void Delete_OnClick(object sender, RoutedEventArgs e)
         {
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(ID.Text));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(_currentElementModel.Id));
+        }
+
+        private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
+        {/*
+            var id = ID.Text;
+            Task.Run(async delegate
+            {
+                var content = SessionController.Instance.ContentController.Get(id);
+                if (content != null && content.Type == ElementType.Collection)
+                {
+                    var messages =
+                        await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                    await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
+                }
+            });*/
         }
     }
 }

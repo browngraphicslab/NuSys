@@ -203,14 +203,14 @@ namespace NuSysApp
             
         }
 
-        public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
+        public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                     new SubscribeToCollectionRequest(collectionId));
 
             SessionController.Instance.IdToControllers.Clear();
-
+            
             var elementCollectionInstance = new CollectionElementModel(collectionId)
             {
                 Title = "Instance title"
@@ -225,15 +225,23 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            foreach (var dict in nodeStrings)
+            foreach (var msg in nodeMessages)
             {
-                var msg = new Message(dict);
                 msg["creatorContentID"] = collectionId;
                 var libraryId = msg.GetString("contentId");
 
                 ElementType type;
 
                 var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+                if (libraryModel == null)
+                {
+                    if (msg.ContainsKey("id"))
+                    {
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new DeleteSendableRequest((string) msg["id"]));
+                    }
+                    continue;
+                }
                 type = libraryModel.Type;
 
                 if (Constants.IsNode(type))

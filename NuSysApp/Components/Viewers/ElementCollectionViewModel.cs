@@ -52,7 +52,11 @@ namespace NuSysApp
 
         private void OnChildRemoved(object source, ElementController elementController)
         {
-            AtomViewList.Remove(AtomViewList.Where(a => ((ElementViewModel)a.DataContext).Id == elementController.Model.Id).First());
+            var soughtChildren = AtomViewList.Where(a => ((ElementViewModel) a.DataContext).Id == elementController.Model.Id);
+            if (soughtChildren.Any())
+            {
+                AtomViewList.Remove( soughtChildren.First());
+            }
         }
     }
 }

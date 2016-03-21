@@ -112,7 +112,7 @@ namespace NuSysApp
         {
             if (WorkspacePivot.Content != _libraryList)
             {
-                await _libraryList.Update();
+                 _libraryList.Update();
                 WorkspacePivot.Content = _libraryList;
             }
         }

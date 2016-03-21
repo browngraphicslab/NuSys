@@ -34,7 +34,12 @@ namespace NuSysApp
         public async Task InitializeLibrary()
         {
             UITask.Run(delegate {
-                OnNewContents?.Invoke(SessionController.Instance.ContentController.Values);
+                //OnNewContents?.Invoke(SessionController.Instance.ContentController.Values);
+                var values = new List<LibraryElementModel>(SessionController.Instance.ContentController.Values);
+                foreach (var v in values)
+                {
+                    OnNewElementAvailable?.Invoke(v);             
+                }
             });
         }
 
@@ -111,12 +116,6 @@ namespace NuSysApp
                 }
             });
         }
-
-        public void AddNewElement(LibraryElementModel element)
-        {
-            OnNewElementAvailable?.Invoke(element);
-        }
-
         public void GridViewDragStarting(object sender, DragStartingEventArgs e)
         {
             //e.Data.Properties.
