@@ -211,7 +211,7 @@ namespace NuSysApp
                     var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
                     var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
                     var timestamp = dict.ContainsKey("library_element_creation_timestamp")
-                        ? (string) dict["library_element_creation_timestamp"]
+                        ? (string) dict["library_element_creation_timestamp"].ToString()
                         : null;
 
                     if (NeededLibraryDataIDs.Contains(id))

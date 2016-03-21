@@ -63,6 +63,7 @@ namespace NuSysApp
 
             PointerEntered += OnPointerEntered;
             PointerExited += OnPointerExited;
+            SessionController.Instance.SessionView = this;
 
             SizeChanged +=
                 delegate(object sender, SizeChangedEventArgs args)
@@ -106,7 +107,7 @@ namespace NuSysApp
                 await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
             }
 
-            SessionController.Instance.SessionView = this;
+            
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
             await SessionController.Instance.InitializeRecog();

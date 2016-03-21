@@ -566,6 +566,7 @@
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

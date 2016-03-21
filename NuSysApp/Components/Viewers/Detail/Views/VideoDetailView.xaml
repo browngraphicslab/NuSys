@@ -8,8 +8,8 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-
-    <Grid x:Name="grid">
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="grid">
         <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
         <Grid.Resources>
             <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
@@ -42,10 +42,12 @@
             <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="25"></Image>
             </Button>
-            <Button x:Name="AddTimeBlock" Content="Add Annotation" Tapped="AddTimeBlock_OnTapped" Height="39" Width="142"></Button>
+            <Button Visibility="Collapsed" x:Name="AddTimeBlock" Content="Add Annotation" Tapped="AddTimeBlock_OnTapped" Height="39" Width="142"></Button>
         </StackPanel>
-        <GridView x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
+        <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
 
 
     </Grid>
+        
+   </Border>
 </UserControl>
