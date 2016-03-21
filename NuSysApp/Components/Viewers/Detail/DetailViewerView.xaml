@@ -8,6 +8,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="LightGray" Width="30"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All"> 
@@ -21,7 +22,8 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
-
+            
+            <TextBlock Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="MetaData" Foreground="White" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
             <TextBlock Grid.Row="0" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Text="x" Foreground="White" FontSize="24" Tapped="closeDV_OnTapped"/>
 
             <StackPanel Grid.Row="1"  x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top">
@@ -31,7 +33,19 @@
 
             <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top"></ContentPresenter>
 
-            <StackPanel Grid.Row="3" x:Name="TagContainer"  HorizontalAlignment="Stretch">
+                <StackPanel Grid.Row="2" x:Name="MetadataContainer"  Margin="10,45,10,5" Padding="5,0,5,0" HorizontalAlignment="Left" Visibility="Collapsed">
+                    <TextBlock Text="METADATA" Foreground="White" FontSize="30" CharacterSpacing="45"/>
+                    <Line Stroke="White" StrokeThickness="1.5" X1="0" Y1="10" Y2="10" Margin="0,0,0,5"></Line>
+                    <ItemsControl x:Name="Metadata" ItemsSource="{Binding Metadata}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                    <TextBox x:Name="NewMetadataBox" KeyUp="NewKey_OnKeyUp" Height="30" PlaceholderText="New Metadata Key" Margin="2,5,0,0"  BorderThickness="0"></TextBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" x:Name="TagContainer"  HorizontalAlignment="Stretch">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                     <TextBlock Text="TAGS" Foreground="White" FontSize="30" CharacterSpacing="45" Margin="0,0,20,0" HorizontalAlignment="Stretch"></TextBlock>
                     <StackPanel Height="30" HorizontalAlignment="Right" Orientation="Horizontal">
