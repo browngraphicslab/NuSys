@@ -20,9 +20,9 @@ namespace NuSysApp
             {
                 _message["id"] = SessionController.Instance.GenerateId();
             }
-            if (!_message.ContainsKey("contentId") || ! _message.ContainsKey("creatorContentID"))
+            if (!_message.ContainsKey("contentId"))
             {
-                throw new NewNodeRequestException("New Node requests require messages with at least 'contentId' and 'creatorContentID'");
+                throw new NewNodeRequestException("New Node requests require messages with at least 'contentId'");
             }
         }
 
@@ -30,7 +30,7 @@ namespace NuSysApp
         {
             var id = _message.GetString("id");
             var libraryId = _message.GetString("contentId");
-            var creatorContentID = _message.GetString("creatorContentID");
+            var creator = _message.GetString("creator");
 
             ElementModel elementModel;
             ElementController controller;
@@ -118,13 +118,16 @@ namespace NuSysApp
                     await elementModel.UnPack(_message);
                     controller = new LinkElementController((LinkModel)elementModel);
                     break;
+                case ElementType.Recording:
+                    controller = new ElementController(null);
+                    break;
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }
 
             SessionController.Instance.IdToControllers[id] = controller;
 
-            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creatorContentID);
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creator);
             parentCollectionLibraryElement.AddChild(id);
 
             if (parentCollectionLibraryElement.Id == SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id)
@@ -139,13 +142,13 @@ namespace NuSysApp
 
             if (SessionController.Instance.ContentController.Get(libraryId).Loaded)
             {
-                controller.FireContentLoaded();
+              //  controller.FireContentLoaded();
             }
             else
             {
                 SessionController.Instance.ContentController.Get(libraryId).OnLoaded += delegate
                 {
-                    controller.FireContentLoaded();
+               //     controller.FireContentLoaded();
                 };
             }
 

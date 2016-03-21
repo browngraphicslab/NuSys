@@ -15,15 +15,32 @@ namespace NuSysApp
     {
         public ObservableCollection<LibraryElementModel> _PageElements;
 
+        public delegate void ItemsChangedEventHandler();
+        public event ItemsChangedEventHandler OnItemsChanged;
         public LibraryPageViewModel(ObservableCollection<LibraryElementModel> elements)
         {
             _PageElements = elements;
             SessionController.Instance.ContentController.OnNewContent += NewContent;
+            SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
         }
 
         private void NewContent(LibraryElementModel content)
         {
-            _PageElements.Add(content);
+            UITask.Run(() =>
+            {
+                _PageElements.Add(content);
+                OnItemsChanged?.Invoke();
+            });
+
+        }
+
+        private void DeleteContent(LibraryElementModel content)
+        {
+            UITask.Run(() =>
+            {
+                _PageElements.Remove(content);
+                OnItemsChanged?.Invoke();
+            });
         }
         public async Task Sort(string s)
         {

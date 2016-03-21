@@ -69,6 +69,7 @@ namespace NuSysApp
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
                     Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
+                    Canvas.SetLeft(xBtnPen, 5);
                 };
 
             xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
@@ -108,8 +109,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView = this;
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-
-            xFloatingMenu.SessionView = this;
             await SessionController.Instance.InitializeRecog();
 
             SessionController.Instance.NuSysNetworkSession.AddNetworkUser(
@@ -136,10 +135,8 @@ namespace NuSysApp
             if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xDetailViewer.Opacity < 0.1)
             {
                 var source = (FrameworkElement) eventArgs.OriginalSource;
-                if (source.DataContext is FloatingMenuViewModel)
-                    return;
 
-                xFloatingMenu.SetActive(Options.SelectNode);
+                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
             }
@@ -151,10 +148,8 @@ namespace NuSysApp
                 xDetailViewer.Opacity < 0.1)
             {
                 var source = (FrameworkElement) eventArgs.OriginalSource;
-                if (source.DataContext is FloatingMenuViewModel)
-                    return;
 
-                xFloatingMenu.SetActive(Options.PenGlobalInk);
+                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
             }
@@ -193,31 +188,33 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
-                xBtnPen.Background = new SolidColorBrush(Colors.Firebrick);
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,156,197,194));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                 Debug.WriteLine("asdasdas");
             }
             else
             {
                 if (!IsPenMode)
                     return;
-                xFloatingMenu.SetActive(Options.SelectNode);
+                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
-                xBtnPen.Background = new SolidColorBrush(Colors.IndianRed);
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,199,232,235));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 199, 232, 235));
                 Debug.WriteLine("asdasdas");
             }
             
         }
 
-        public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
+        public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                     new SubscribeToCollectionRequest(collectionId));
 
             SessionController.Instance.IdToControllers.Clear();
-
-            var elementCollectionInstance = new CollectionElementModel(collectionId)
+            
+            var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
             {
                 Title = "Instance title"
             };
@@ -231,15 +228,23 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            foreach (var dict in nodeStrings)
+            foreach (var msg in nodeMessages)
             {
-                var msg = new Message(dict);
-                msg["creatorContentID"] = collectionId;
+                msg["creator"] = collectionId;
                 var libraryId = msg.GetString("contentId");
 
                 ElementType type;
 
                 var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+                if (libraryModel == null)
+                {
+                    if (msg.ContainsKey("id"))
+                    {
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new DeleteSendableRequest((string) msg["id"]));
+                    }
+                    continue;
+                }
                 type = libraryModel.Type;
 
                 if (Constants.IsNode(type))
@@ -251,7 +256,7 @@ namespace NuSysApp
                             var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                             foreach (var m in messages)
                             {
-                                m["creatorContentID"] = libraryId;
+                                m["creator"] = libraryId;
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                             }
                     }
@@ -262,68 +267,6 @@ namespace NuSysApp
                 }
             }
         }
-       
-        public async Task LoadWorkspace(IEnumerable<string> nodeStrings)
-        {
-            SessionController.Instance.IdToControllers.Clear();
-
-            foreach (var dict in nodeStrings)
-            {
-                var msg = new Message(dict);
-                var id = msg.GetString("id");
-                ElementType type = ElementType.Collection;
-                /*
-                if (msg.ContainsKey("type"))
-                {
-                    type = (ElementType) Enum.Parse(typeof (ElementType), msg.GetString("type"));
-                }
-                else if (msg.ContainsKey("nodeType") || msg.ContainsKey("NodeType") || msg.ContainsKey("Nodetype"))
-                {
-                    type = ElementType.Node;
-                }
-                if (type == ElementType.Node)
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(
-                            new NewElementRequest(msg));
-                if (type == ElementType.Link)
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
-                    */
-            }
-        }
-        /*
-        public async Task LoadEmptyWorkspace()
-        {
-            SessionController.Instance.IdToControllers.Clear();
-
-            if (_activeFreeFormViewer != null)
-            {
-                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
-                var wsvm = (FreeFormViewerViewModel) _activeFreeFormViewer.DataContext;
-                mainCanvas.Children.Remove(_activeFreeFormViewer);
-                _activeFreeFormViewer = null;
-            }
-            
-            var sc = CreateEmptyElementCollectionInstanceController();
-            SessionController.Instance.IdToControllers[sc.Model.Id] = sc;
-            OpenCollection(sc);
-
-            xDetailViewer.DataContext = new DetailViewerViewModel();
-        }
-        /*
-        private ElementCollectionController CreateEmptyElementCollectionInstanceController()
-        {
-            var elementCollection = new CollectionLibraryElementModel();
-
-            var elementCollectionInstance = new CollectionElementModel(SessionController.Instance.GenerateId())
-            {
-                LibraryElementCollectionModel = elementCollection,
-                Title = "Instance title"
-            };
-            var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
-            SessionController.Instance.IdToControllers[elementCollectionInstance.LibraryId] =
-                elementCollectionInstanceController;
-            return elementCollectionInstanceController;
-        }*/
 
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
@@ -331,16 +274,12 @@ namespace NuSysApp
             if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
                 mainCanvas.Children.Remove(_activeFreeFormViewer);
 
-            if (_activeFreeFormViewer != null)
-                xFloatingMenu.ModeChange -= _activeFreeFormViewer.SwitchMode;
-
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);
 
             _activeFreeFormViewer.DataContext = freeFormViewerViewModel;
-            xFloatingMenu.ModeChange += _activeFreeFormViewer.SwitchMode;
 
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             SessionController.Instance.SessionView = this;
@@ -410,9 +349,7 @@ namespace NuSysApp
 
         public void ShowDetailView(ElementController controller)
         {
-            var vm = (DetailViewerViewModel) xDetailViewer.DataContext;
-            vm.ShowElement(controller);
-            vm.MakeTagList();
+            xDetailViewer.ShowElement(controller);
         }
 
         public async void OpenFile(ElementViewModel vm)

@@ -13,7 +13,6 @@
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
-    
     <local:AnimatableUserControl.Resources>
 
             <local:BoolInvertConverter x:Key="iConverter"/>
@@ -84,6 +83,4 @@
             </local:NodeTemplate.Inner>
         </local:NodeTemplate>
     </Canvas>
-
-
 </local:AnimatableUserControl>

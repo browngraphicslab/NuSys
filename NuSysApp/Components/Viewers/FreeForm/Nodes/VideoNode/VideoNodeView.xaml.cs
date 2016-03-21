@@ -37,15 +37,16 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            playbackElement.AutoPlay = false;
             if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
                 LoadVideo();
             }
             else
             {
-                vm.Controller.ContentLoaded += LoadVideo;
+                vm.Controller.LibraryElementModel.OnLoaded += LoadVideo;
             }
-
+            
 
             _isRecording = false;
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
@@ -54,7 +55,7 @@ namespace NuSysApp
             //  playbackElement.Play();
         }
 
-        private void LoadVideo(object sender = null, object data = null)
+        private void LoadVideo()
         {
             var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
             if (content != null)
@@ -80,7 +81,8 @@ namespace NuSysApp
                     memoryStream = stream;
                 }
                 playbackElement.SetSource(memoryStream, "video/mp4");
-                ((VideoNodeViewModel) DataContext).Controller.ContentLoaded -= LoadVideo;
+                
+                ((VideoNodeViewModel) DataContext).Controller.LibraryElementModel.OnLoaded-= LoadVideo;
             }
         }
 
@@ -204,14 +206,14 @@ namespace NuSysApp
         }*/
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementViewModel)this.DataContext;
-            //vm.Remove();
+            var vm = (ElementViewModel)DataContext;
+            vm.Controller.RequestDelete();
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
-            var r = new RenderTargetBitmap();//TODO implement
-
+            var r = new RenderTargetBitmap();
+            await r.RenderAsync(grid, width, height);
             return r;
         }
 

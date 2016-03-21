@@ -22,6 +22,10 @@ namespace NuSysApp
 
     public sealed partial class MediaRecorderView : UserControl
     {
+        public delegate void RecordingActionHandler(object source);
+
+        public event RecordingActionHandler RecordingStopped;
+
         private MediaCapture mediaCapture;
         private bool _recording;
         private InMemoryRandomAccessStream stream;
@@ -50,6 +54,7 @@ namespace NuSysApp
             {
                 await OnStartRecordingAudClick();
             }
+            AudioVideoSwitch.Visibility = Visibility.Collapsed;
         }
 
         public void Show()
@@ -62,16 +67,12 @@ namespace NuSysApp
             if (boolean)
             {
                 RecordButton.Visibility = Visibility.Collapsed;
-                RecordText.Visibility = Visibility.Collapsed;
                 StopButton.Visibility = Visibility.Visible;
-                StopText.Visibility = Visibility.Visible;
             }
             else
             {
                 RecordButton.Visibility = Visibility.Visible;
-                RecordText.Visibility = Visibility.Visible;
                 StopButton.Visibility = Visibility.Collapsed;
-                StopText.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -99,7 +100,7 @@ namespace NuSysApp
                     await mediaCapture.InitializeAsync(settings);
                     stream = new InMemoryRandomAccessStream();
                     await
-                    mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto),
+                    mediaCapture.StartRecordToStreamAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Qvga),
                         stream);
                     Element.Source = mediaCapture;
                     await mediaCapture.StartPreviewAsync();
@@ -145,7 +146,7 @@ namespace NuSysApp
                     stream = new InMemoryRandomAccessStream();
                     await
                         mediaCapture.StartRecordToStreamAsync(
-                            MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Auto),
+                            MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Low),
                             stream);
                     _recording = true;
                     this.IsRecordingSwitch(true);
@@ -159,6 +160,8 @@ namespace NuSysApp
 
         private async Task SendRequest(byte[] data, ElementType type)
         {
+            var vm = (ElementViewModel) DataContext;
+
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
             var height = SessionController.Instance.SessionView.ActualHeight;
@@ -167,13 +170,13 @@ namespace NuSysApp
             var contentId = SessionController.Instance.GenerateId();
 
             m["contentId"] = contentId;
-            m["x"] = centerpoint.X - 200;
-            m["y"] = centerpoint.Y - 200;
-            m["width"] = 400;
-            m["height"] = 400;
+            m["x"] = vm.Model.X;
+            m["y"] = vm.Model.Y;
+            m["width"] = vm.Model.Width;
+            m["height"] = vm.Model.Height;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             if (type == ElementType.Video)
             {
@@ -200,18 +203,14 @@ namespace NuSysApp
             }
 
 
-           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-           // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
+
+            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
+           await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
-            var vm = (TextNodeViewModel) DataContext;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.ContentId, Convert.ToBase64String(data)));
-            this.Hide();
-        }
-
-        public void Hide()
-        {
-            MediaGrid.Visibility = Visibility.Collapsed;
+            // var vm = (TextNodeViewModel) DataContext;
+            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.ContentId, Convert.ToBase64String(data)));
+            RecordingStopped?.Invoke(this);
         }
 
         public FreeFormViewer FreeFormViewer { get; set; }

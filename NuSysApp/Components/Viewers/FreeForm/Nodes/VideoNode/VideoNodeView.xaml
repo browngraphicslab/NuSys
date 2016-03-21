@@ -17,8 +17,8 @@
 
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_node_x2.png" Height="30" Width="30" Stretch="Uniform"></Image>
+                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
@@ -33,7 +33,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <MediaElement Grid.Row="0" Grid.Column="0" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform" />
+                <MediaElement Grid.Row="0" Grid.Column="0" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform"/>
                 <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <CaptureElement Name="preview"/>
                 <ProgressBar x:Name ="scrubBar"  SizeChanged ="ScrubBar_OnSizeChanged" Height ="25" Grid.Row="1" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
@@ -46,13 +46,13 @@
                 <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,0,0,0" VerticalAlignment="Top">
 
                     <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
-                        <Image Source="ms-appx:///Assets/icon_audionode_play.png" Height="25"></Image>
+                        <Image Source="ms-appx:///Assets/node icons/icon_play.png" Height="20"></Image>
                     </Button>
                     <Button x:Name="pause" Tapped ="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
-                        <Image Source="ms-appx:///Assets/icon_audionode_pause.png" Height="25"/>
+                        <Image Source="ms-appx:///Assets/node icons/icon_pause.png" Height="20"/>
                     </Button>
                     <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
-                        <Image Source="ms-appx:///Assets/icon_audionode_stop.png" Height="25"></Image>
+                        <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
                     </Button>
 
                 </StackPanel>

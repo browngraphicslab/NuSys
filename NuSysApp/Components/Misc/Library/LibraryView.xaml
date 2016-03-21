@@ -10,32 +10,31 @@
     d:DesignWidth="450">
 
 
-    <Grid x:Name="Container" Width="450" Height="550">
-        <Pivot x:Name="Pivot" Background="#E6EDEC" FontFamily="FiraSans-Book" IsLocked="True" Foreground="#74AFAD" Height="550">
-
-            <PivotItem x:Name="WorkspacePivot" Background="White " Margin="0,8,0,37" Width="450" BorderBrush="#00748b" BorderThickness="5">
+    <Grid x:Name="Container" Width="450" Height="550" BorderBrush="#83A6A3">
+        <Pivot x:Name="Pivot" Background="#E6EDEC" BorderBrush="#83A6A3" BorderThickness="1"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" IsLocked="True" Foreground="#74AFAD" Height="550">
+            <PivotItem x:Name="WorkspacePivot" Background="White" Margin="0,8,0,37" Width="450" BorderBrush="#9cc5c2" BorderThickness="1">
                 <PivotItem.Header>
                     <Grid>
-                        <TextBlock Text="LIBRARY" Foreground="#00748b" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                        <TextBlock Text="Library" Foreground="#83A6A3" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
                     </Grid>
                 </PivotItem.Header>
 
             </PivotItem>
-            <PivotItem x:Name="FilesPivot" Background="#74AFAD " Margin="10,50,10,10">
+            <PivotItem x:Name="FilesPivot" Background="White" Margin="10,50,10,10">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Files"/>
                     </Grid>
                 </PivotItem.Header>
             </PivotItem>
-            <PivotItem x:Name="WebPivot" Background="#74AFAD " Margin="10,50,10,11">
+            <PivotItem x:Name="WebPivot" Background="White"  Margin="10,50,10,11">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Web"/>
                     </Grid>
                 </PivotItem.Header>
             </PivotItem>
-            <PivotItem x:Name="OfficePivot" Background="#74AFAD " Margin="10,50,10,11">
+            <PivotItem x:Name="OfficePivot" Background="White" Margin="10,50,10,11">
                 <PivotItem.Header>
                     <Grid>
                         <TextBlock Text="Office"/>
@@ -43,12 +42,16 @@
                 </PivotItem.Header>
             </PivotItem>
         </Pivot>
-        <TextBox x:Name="Searchfield" TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="3" Background="White"  Foreground="White" VerticalAlignment="Center" Height="39" Margin="0,513,-1,-2"></TextBox>
+        <TextBox x:Name="Searchfield" TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>
 
-        <Image Source="ms-appx:///Assets/icon_mainmenu_search.png" Margin="416,518,6,0" />
-        <Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="402,11,13,506"></Image>
+        <Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>
+        <Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>
+        <Button Height="40" Width="50" Margin="400,512,0,0" Tapped="Folder_Tapped" Background="Transparent" BorderBrush="#9cc5c2" BorderThickness="2">
+            <Image Source="ms-appx:///Assets/icon_upload.png" Height="30"></Image>
+        </Button>
 
-        <Image x:Name="Graph" Source="ms-appx:///Assets/icon_pano.png" ManipulationMode="TranslateX, TranslateY" PointerPressed="Graph_OnPointerPressed" ManipulationStarted="Graph_OnManipulationStarted" ManipulationDelta="Graph_OnManipulationDelta" ManipulationCompleted="Graph_OnManipulationCompleted" Margin="351,10,60,503"/>
+        <Image x:Name="Graph" Source="ms-appx:///Assets/icon_pano.png"  Height="20" VerticalAlignment="Top" Margin="0,15,10,0" ManipulationMode="TranslateX, TranslateY" PointerPressed="Graph_OnPointerPressed" ManipulationStarted="Graph_OnManipulationStarted" ManipulationDelta="Graph_OnManipulationDelta" ManipulationCompleted="Graph_OnManipulationCompleted" 
+               HorizontalAlignment="Right"/>
 
         <!--<ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0" Foreground="White">
             <x:String>Title</x:String>

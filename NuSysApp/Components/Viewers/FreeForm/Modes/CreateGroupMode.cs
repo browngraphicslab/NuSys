@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
@@ -120,8 +119,7 @@ namespace NuSysApp
                 elementMsg["y"] = p.Y;
                 elementMsg["contentId"] = contentId;
                 elementMsg["nodeType"] = ElementType.Collection;
-                elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                elementMsg["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 elementMsg["id"] = newCollectionId;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
@@ -132,8 +130,8 @@ namespace NuSysApp
 
                 var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 300, 300, newCollectionId);
 
-                await controller2.RequestMoveToCollection(newCollectionId, contentId);
-                await controller1.RequestMoveToCollection(newCollectionId, contentId);
+                await controller2.RequestMoveToCollection(contentId);
+                await controller1.RequestMoveToCollection(contentId);
 
 
                 _isHovering = false;
@@ -142,13 +140,13 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.LibraryId);
+                await controller1.RequestMoveToCollection(controller2.Model.LibraryId);
                 return;
             }
 
             if (c1IsCollection)
             {
-                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.LibraryId);
+                await controller2.RequestMoveToCollection(controller1.Model.LibraryId);
             }
  
          

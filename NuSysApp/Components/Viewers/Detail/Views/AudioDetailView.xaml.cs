@@ -46,10 +46,12 @@ namespace NuSysApp
             ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
             ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
             scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            scrubBar.Loaded += ScrubBarOnLoaded;
+
+            (DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
+
             
 
-            grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
-            RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
             _temporaryLinkVisual = new Line();
             _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
             _temporaryLinkVisual.StrokeThickness = VisualizationImage.ActualHeight;
@@ -62,6 +64,12 @@ namespace NuSysApp
             
 
 
+        }
+
+        private void LoadPlaybackElement()
+        {
+            grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
+            RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
         }
 
         private void ScrubBarOnLoaded(object sender, RoutedEventArgs routedEventArgs)

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public abstract class ElementModel : Sendable
+    public class ElementModel : Sendable
     {       
         private double _alpha = 1;
         private SolidColorBrush _color;
@@ -195,7 +195,6 @@ namespace NuSysApp
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
-//            Creator = props.GetString("creator", Creator);
             Title = props.GetString("title", "");
             if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers != null &&
                 SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(
@@ -216,7 +215,7 @@ namespace NuSysApp
             }
             if (props.ContainsKey("creator"))
             {
-                Creator = props.GetString("creator", "");
+                Creator = props.GetString("creator", Creator);
             }
 
 

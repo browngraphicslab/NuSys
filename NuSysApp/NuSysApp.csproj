@@ -101,13 +101,25 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\icon_chat.png" />
+    <Content Include="Assets\icon_collapse.png" />
+    <Content Include="Assets\icon_delete_color.png" />
+    <Content Include="Assets\icon_duplicate.png" />
     <Content Include="Assets\icon_folder.png" />
     <Content Include="Assets\icon_ink.png" />
+    <Content Include="Assets\icon_link.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
+    <Content Include="Assets\icon_node.png" />
     <Content Include="Assets\icon_pano.png" />
+    <Content Include="Assets\icon_plus.png" />
     <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\icon_recording.png" />
+    <Content Include="Assets\icon_tag.png" />
+    <Content Include="Assets\icon_text.png" />
+    <Content Include="Assets\icon_refresh.png" />
+    <Content Include="Assets\icon_search.png" />
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
+    <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
@@ -140,10 +152,18 @@
     <Content Include="Assets\icon_audionode_rewind.png" />
     <Content Include="Assets\icon_audionode_stop.png" />
     <Content Include="Assets\icon_users.png" />
+    <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_duplicate.png" />
+    <Content Include="Assets\node icons\icon_freeform.png" />
+    <Content Include="Assets\node icons\icon_grid.png" />
+    <Content Include="Assets\node icons\icon_line.png" />
+    <Content Include="Assets\node icons\icon_link.png" />
+    <Content Include="Assets\node icons\icon_list.png" />
     <Content Include="Assets\node icons\icon_pause.png" />
     <Content Include="Assets\node icons\icon_play.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
     <Content Include="Assets\node icons\text.png" />
@@ -255,7 +275,6 @@
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
     <Compile Include="Components\Misc\Library\LibraryPageViewModel.cs" />
-    <Compile Include="Components\Misc\FloatingMenuViewModel.cs" />
     <Compile Include="Components\Misc\LoadingBar.xaml.cs">
       <DependentUpon>LoadingBar.xaml</DependentUpon>
     </Compile>
@@ -312,6 +331,9 @@
       <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml.cs">
+      <DependentUpon>RecordingNodeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml.cs">
       <DependentUpon>WebNodeView.xaml</DependentUpon>
     </Compile>
@@ -355,7 +377,6 @@
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
@@ -364,6 +385,7 @@
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
+    <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
@@ -373,7 +395,6 @@
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
     <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
-    <Compile Include="Network\Requests\SystemRequests\SendWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
@@ -401,7 +422,6 @@
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\TextEditor\InqCanvas\InqCanvasViewModel.cs" />
-    <Compile Include="Components\Misc\PinWindowViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
@@ -492,18 +512,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\Viewers\ElementViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeViewModel.cs" />
-    <Compile Include="Components\Misc\PinViewModel.cs" />
-    <Compile Include="Components\Misc\BucketWindowView.xaml.cs">
-      <DependentUpon>BucketWindowView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Misc\PinView.xaml.cs">
-      <DependentUpon>PinView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Misc\MultiSelectMenuView.xaml.cs">
       <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Misc\UserWindowView.xaml.cs">
-      <DependentUpon>UserWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
@@ -551,9 +561,6 @@
     <Compile Include="Components\Viewers\FreeForm\Modes\MultiSelectMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PanZoomMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PinMode.cs" />
-    <Compile Include="Components\Misc\PinWindowView.xaml.cs">
-      <DependentUpon>PinWindowView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\PromoteInkMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\SelectMode.cs" />
     <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
@@ -727,6 +734,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -759,19 +770,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Misc\BucketWindowView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Misc\PinView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Components\Misc\MultiSelectMenuView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Misc\UserWindowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -806,10 +805,6 @@
     <Page Include="Components\Misc\FloatingMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Misc\PinWindowView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeView.xaml">
       <SubType>Designer</SubType>

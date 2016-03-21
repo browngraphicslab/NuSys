@@ -87,8 +87,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creator"] =  SessionController.Instance.ActiveFreeFormViewer.Id;
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] =  SessionController.Instance.ActiveFreeFormViewer.ContentId;
             m["nodeType"] = ElementType.PDF.ToString();
 
             var metadata = new Dictionary<string, object>();

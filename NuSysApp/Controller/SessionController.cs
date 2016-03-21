@@ -46,7 +46,6 @@ namespace NuSysApp
         {
             get { return _contentController; }
         }
-
         public SpeechRecognizer Recognizer { get; set; }
 
         public bool IsRecording { get; set; }
@@ -127,16 +126,6 @@ namespace NuSysApp
             */
         }
 
-        public async Task LoadWorkspace()
-        {
-            await LoadThumbs();
-
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
-            var lines = await FileIO.ReadLinesAsync(file);
-            
-            await SessionView.LoadWorkspace(lines);
-            await _contentController.Load();
-        }
 
         //private int _id = 0;
         public string GenerateId()

@@ -35,17 +35,25 @@ namespace NuSysApp
 
         public override async Task CheckOutgoingRequest()
         {
-            _message["library_element_creation_timestamp"] = DateTime.UtcNow.Second;
+            var time = DateTime.UtcNow.ToString();
+            _message["library_element_creation_timestamp"] = time;
 
             ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
+
+            LibraryElementModel libraryElement;
             if (type == ElementType.Collection)
             {
-                SessionController.Instance.ContentController.Add(
-                    new CollectionLibraryElementModel((string) _message["id"]));
+                libraryElement =  new CollectionLibraryElementModel((string) _message["id"]);
             }
             else
             {
-                SessionController.Instance.ContentController.Add(new LibraryElementModel((string) _message["id"], type));
+                libraryElement = new LibraryElementModel((string) _message["id"], type);
+            }
+            SessionController.Instance.ContentController.Add(libraryElement);
+            libraryElement.Timestamp = time;
+            if (_message.ContainsKey("data") && _message["data"] != null)
+            {
+                libraryElement.Load(_message.GetString("data"));
             }
         }
     }

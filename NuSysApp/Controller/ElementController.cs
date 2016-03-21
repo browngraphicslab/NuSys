@@ -37,8 +37,6 @@ namespace NuSysApp
 
         public event DeleteEventHandler Deleted;
         public event LinkAddedEventHandler LinkedAdded;
-        public event ContentLoadedHandler ContentLoaded;
-        public event ContentLoadedHandler ContentChanged;
         public event MetadataChangeEventHandler MetadataChange;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
@@ -50,17 +48,17 @@ namespace NuSysApp
         public ElementController(ElementModel model)
         {
             _model = model;
-            _debouncingDictionary = new DebouncingDictionary(model.Id);
+            if (_model != null)
+            {
+                _debouncingDictionary = new DebouncingDictionary(model.Id);
+            }
+            if (LibraryElementModel != null)
+            {
+                LibraryElementModel.OnDelete += Delete;
+            }
         }
-
-        public void SetCreator(string parentId)
-        {
-            Model.Creator = parentId;
-        }
-
         public void AddLink(LinkElementController linkController)
         {
-            var linkModel = (LinkModel)linkController.Model;
             LinkedAdded?.Invoke(this, linkController);
         }
 
@@ -151,8 +149,7 @@ namespace NuSysApp
             m["width"] = Model.Width;
             m["height"] = Model.Height;
             m["nodeType"] = Model.ElementType.ToString();
-            m["creator"] = Model.Creator;
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
@@ -165,7 +162,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
         }
 
-        public virtual async Task RequestMoveToCollection(string newCollectionId,string newCollectionContentID)
+        public virtual async Task RequestMoveToCollection(string newCollectionContentID)
         {
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -179,8 +176,7 @@ namespace NuSysApp
             m1["width"] = 200;
             m1["height"] = 200;
             m1["autoCreate"] = true;
-            m1["creator"] = newCollectionId;
-            m1["creatorContentID"] = newCollectionContentID;
+            m1["creator"] = newCollectionContentID;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
@@ -227,7 +223,6 @@ namespace NuSysApp
                 if (content != null)
                 {
                     content.Data = props.GetString("data", "");
-                    ContentChanged?.Invoke(this, content);
                 }
             }
             if (props.ContainsKey("x") || props.ContainsKey("y"))
@@ -243,11 +238,6 @@ namespace NuSysApp
                 var height = props.GetDouble("height", this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
             }
-        }
-
-        public void FireContentLoaded()
-        {
-            ContentLoaded?.Invoke(this,LibraryElementModel);
         }
     }
 }

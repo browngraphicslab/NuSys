@@ -56,9 +56,10 @@
         <local:DetailViewerView x:Name="xDetailViewer"></local:DetailViewerView>
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         <local:FloatingMenuView x:Name="xFloatingMenu"/>
-        <Grid x:Name="xBtnPen" Background="IndianRed" Width="70" Height="100">
-            <TextBlock Text="P" FontWeight="Black"></TextBlock>
+        <Grid x:Name="xBtnPen" CornerRadius="50"  BorderBrush="#c7e8eb" BorderThickness="3"  Width="60" Height="60">
+            <Grid x:Name="PenCircle" CornerRadius="50" Width="50" Height="50" Background="#c7e8eb">
+                <Image Source="../Assets/node icons/pen.png" Height="30"></Image>
+            </Grid>
         </Grid>
-
     </Canvas>
 </Page>
