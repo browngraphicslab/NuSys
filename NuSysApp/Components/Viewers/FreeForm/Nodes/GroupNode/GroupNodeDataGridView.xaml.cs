@@ -26,6 +26,7 @@ namespace NuSysApp
 
        
             DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
+
         }
 
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)

@@ -26,7 +26,6 @@ namespace NuSysApp.Components.Nodes.GroupNode
         public TimelineItemView(FrameworkElement atom, Object sortElement)
         {
             this.InitializeComponent();
-            Debug.WriteLine("should be true: " + (atom != null));
             atom.RenderTransform = null;
             TimelineNode.Children.Add(atom); // add node
             atom.VerticalAlignment = VerticalAlignment.Bottom;
