@@ -128,7 +128,7 @@ namespace NuSysApp
             */
         }
 
-        public void FireEnterNewCollection()
+        public void FireEnterNewCollectionEvent()
         {
             OnEnterNewCollection?.Invoke();
         }

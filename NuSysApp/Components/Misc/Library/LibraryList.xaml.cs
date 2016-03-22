@@ -152,7 +152,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.Id) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
