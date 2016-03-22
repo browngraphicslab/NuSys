@@ -36,7 +36,8 @@
 
         this.analyzeContent();
         console.log(this._startX + "START" + this._startY);
-        console.log("marquee end" + x +":"+ y);
+        console.log("marquee end" + x + ":" + y);
+        this.samplePoints = [new Point(this._startX, this._startY), new Point(this._endX, this._startY), new Point(this._endX, this._endY), new Point(this._startX, this._endY)];
     }
     getContent(): string {
         return this._content;

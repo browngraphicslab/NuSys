@@ -90,18 +90,16 @@ class Stroke {
         var prept = this.points[0];
         var strokeHash = {};
         var sampledStrokes = [];
-
+        sampledStrokes.push(prept);
         for (var i = 1; i < len; i++) {
         //    var pt = this.nearestPointArea(this.points[i]);
             var pt = this.points[i];
-            if (Math.abs(predg - this.degree(pt, prept)) < 10) {
+            if (Math.abs(predg - this.degree(pt, prept)) < 10 && i < len-1) {
                 continue;
             }
             predg = this.degree(pt, prept);
             sampledStrokes.push(this.points[i]);
-
         }
-        console.log(sampledStrokes);
         var res = new Stroke();
         res.points = sampledStrokes;
         return res;

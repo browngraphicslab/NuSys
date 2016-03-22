@@ -73,10 +73,9 @@ class Main {
      //   this.showPreviousSelections();
 
         this.body.addEventListener("mousedown", (e) => {
-            if (this.bubble_focused && !this.isAbove(e, this.selectionOnHover) && !this.isAboveBubble(e)) {
+            if (this.bubble_focused && !this.isAboveBubble(e)) {
                 //set Bubble Speech.... 
-                
-
+               
                 $(this.bubble).css("display", "none");
                 this.body.appendChild(this.canvas);
                 this.is_above_previous = false;
@@ -309,14 +308,16 @@ class Main {
     }
     mouseUp = (e): void => {
         console.log("mouseUp");
-        console.log(this.is_above_previous);
-        if (this.is_above_previous) {
+        if (this.selectionOnHover) {
             if (this.is_editing_selection) {
                 this.inkCanvas.clear();
                 console.log(this.selectionOnHover);
-            //    this.removeHighlight(this.selectionOnHover);
+                this.removeHighlight(this.selectionOnHover);
                 this.isLineSelected = false;
+                this.isPointSelected = false;
+                this.is_editing_selection = false;
                 this.pointIndex = -1;
+                this.countX = 0;
                 document.body.removeChild(this.canvas);
                 var editedSelection = new LassoSelection();
                 var editedStroke = new Stroke();
@@ -328,8 +329,11 @@ class Main {
                 editedSelection.url = this.selectionOnHover.url;
                 editedSelection.tags = this.selectionOnHover.tags;
                 chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
+                document.body.appendChild(this.canvas);
+
                 return;
             } else {
+                console.log("======BUBBE");
                 $(this.bubble).show();
                 $(this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
                 $(this.bubble).css("left", e.clientX - 30);
@@ -347,7 +351,9 @@ class Main {
         document.body.removeChild(this.canvas);
         var isLineSelected = false;
         this.isSelecting = false;
-        
+        this.isLineSelected = false;
+        this.isPointSelected = false;
+        this.is_editing_selection = false;
         this.selection.stroke = this.inkCanvas._activeStroke;
         this.selection.end(e.clientX, e.clientY);
         console.log(this.selection.getContent()); //print out content 
@@ -468,35 +474,83 @@ class Main {
     }
 
     mouseMove = (e): void => {
-        this.selectionOnHover = this.getSelectionOnHover(e);
-        if (this.selectionOnHover) {
-   //         console.log("there is a selection :");
-            //         console.log(this.selectionOnHover);
-            this.inkCanvas.drawPreviousGesture(this.selectionOnHover);
-            this.pointAbove = this.inkCanvas.editPoint(this.selectionOnHover.samplePoints, e);
-            if (this.pointAbove) {
-                console.log("point..... ");
-            } else {
-                this.lineAbove = this.inkCanvas.editStrokes(this.selectionOnHover.samplePoints, e);
-                if (this.lineAbove) {
-                    console.log("line.....");
-                }
+        if (this.is_editing_selection) {
+            var sel = this.selectionOnHover;
+
+            if (this.isPointSelected) {
+                    if (this.pointIndex == -1) {
+                        this.pointIndex = this.findReplacementStroke(sel.samplePoints, this.pointAbove);
+                    }
+                    var newPoint = new Point(e.clientX, e.clientY);
+                    sel.samplePoints.join();
+                    sel.samplePoints.splice(this.pointIndex, 1, newPoint);
+                    sel.samplePoints.join();
+                    this.inkCanvas.clear();
+                    this.inkCanvas.drawPreviousGesture(sel);
+                
+
             }
 
-        } else if (this.isSelecting) {
-            this.inkCanvas.draw(e.clientX, e.clientY);
-            if (this.currentStrokeType != StrokeType.Lasso && this.currentStrokeType != StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke)) {
-           //     console.log("strokeType changed from " + this.currentStrokeType + " to " + StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke));
-                this.currentStrokeType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke);
-                this.switchSelection(this.currentStrokeType);
-                this.inkCanvas.switchBrush(this.currentStrokeType);
+            if (this.isLineSelected) {
+                    var index = this.findInsertionStroke(sel.samplePoints, this.lineAbove);
+                    index++;
+                    console.log("mousemove...");
+                    console.log(index);
+                    var newPoint = new Point(e.clientX, e.clientY);
+                    console.log(sel.samplePoints.length);
+                    if (this.countX == 0) {
+                        sel.samplePoints.join();
+                        sel.samplePoints.splice(index, 0, newPoint);
+                        sel.samplePoints.join();
+                    } else {
+                        sel.samplePoints.join();
+                        sel.samplePoints.splice(index, 1, newPoint);
+                        sel.samplePoints.join();
+                    }
+
+                    console.log(sel.samplePoints.length);
+                    this.inkCanvas.clear();
+                    this.inkCanvas.drawPreviousGesture(sel);
+                    console.log("==========DRAW====");
+                    this.countX++;
+                
+
             }
+            this.selectionOnHover.samplePoints = sel.samplePoints;
 
         } else {
-            this.inkCanvas.clear();
-            this.pointAbove = null;
-            this.lineAbove = null;
-   //         console.log("not above any selection");
+            this.selectionOnHover = this.getSelectionOnHover(e);
+            if (this.selectionOnHover) {
+                //         console.log("there is a selection :");
+                //         console.log(this.selectionOnHover);
+                this.inkCanvas.drawPreviousGesture(this.selectionOnHover);
+                this.pointAbove = this.inkCanvas.editPoint(this.selectionOnHover.samplePoints, e);
+                if (this.pointAbove) {
+                    console.log("point..... ");
+
+                } else {
+                    this.lineAbove = this.inkCanvas.editStrokes(this.selectionOnHover.samplePoints, e);
+                    if (this.lineAbove) {
+                        console.log("line.....");
+                    }
+                }
+
+            } else if (this.isSelecting) {
+                this.inkCanvas.draw(e.clientX, e.clientY);
+                if (this.currentStrokeType != StrokeType.Lasso && this.currentStrokeType != StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke)) {
+                    //     console.log("strokeType changed from " + this.currentStrokeType + " to " + StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke));
+                    this.currentStrokeType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke);
+                    this.switchSelection(this.currentStrokeType);
+                    this.inkCanvas.switchBrush(this.currentStrokeType);
+                }
+
+            } else {
+                this.inkCanvas.clear();
+                this.pointAbove = null;
+                this.lineAbove = null;
+                this.is_editing_selection = false;
+                //         console.log("not above any selection");
+            }
         }
 
  /*       ///////////////////
@@ -591,13 +645,7 @@ class Main {
                     console.log("isAbove!!!! " + sel);
                     this.selectionOnHover = sel;
                     this.is_above_previous = true;
-                    if (sel.type == StrokeType.Marquee) {
-                        this.inkCanvas.drawPreviousGestureM(sel.stroke);
-                    }
-                    if (sel.type == StrokeType.Lasso) {
-                        console.log(sel);
-                        this.inkCanvas.drawPreviousGestureL(sel.samplePoints);
-                    }
+                    this.inkCanvas.drawPreviousGesture(sel);
                     //draw red 
                     //onHover
                     //clickable-remember variable(selection Current PRev);tu
@@ -608,20 +656,11 @@ class Main {
 
     // checks if current mouse is above previous, must consider scrollTop
     isAbove(e, sel: AbstractSelection): Boolean {
-        if (sel.type == StrokeType.Marquee) {
-      //      console.log("marquee check");
-            var firstPoint = sel.stroke.points[0];
-            var lastPoint = sel.stroke.points[sel.stroke.points.length - 1];
-       //     console.log(e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
-            return (e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
-        }
-        if (sel.type == StrokeType.Lasso) {
-            //   console.log(sel.isPointBound(new Point(e.clientX, e.clientY)));
+
             var stroke = new Stroke();
             stroke.points = sel.samplePoints;
             return this.isPointBound(new Point(e.clientX, e.clientY), stroke);
-        }
-        return false;
+
     }
 
     sampleLines(stroke :Stroke): Array<Line> {
@@ -709,6 +748,7 @@ class Main {
         var hitElem = document.elementFromPoint(e.clientX, e.clientY);
         var res = true;
         console.log(hitElem);
+        var el = this.getSelectionOnHover(e);
 
         if (this.pointAbove) {
             this.isPointSelected = true;
@@ -719,7 +759,7 @@ class Main {
             this.isLineSelected = true;
             this.is_editing_selection = true;
             document.body.appendChild(this.canvas);
-        } else if (hitElem.nodeName == "A") {
+        } else if (hitElem.nodeName == "A") {   
             console.log("atag");
             var link = hitElem.getAttribute("href").toString();
 
@@ -733,14 +773,7 @@ class Main {
 
             this.bubble_focused = true;
             //  $(this.bubble).css("border", "8px solid red");
-        } else if (this.is_above_previous) {
-            console.log("======111 ABOVE PREVIOUS HIT");
-            console.log(this.selectionOnHover);
-            console.log(this.selectionOnHover.samplePoints);
-            if (this.isAboveLine(this.selectionOnHover.samplePoints)) {
-              //  this.inkCanvas.edit
-            }
-        }
+        } 
         else {
             document.body.appendChild(this.canvas);
             res = false;

@@ -64,6 +64,7 @@ class InkCanvas {
         this.clear();
         this.drawPoint(points[0]);
         this.drawline(points[0], points[points.length - 1]);
+
         for (var i = 1; i < points.length; i++) {
             this.drawPoint(points[i]);
             this.drawline(points[i], points[i - 1]);
@@ -71,18 +72,8 @@ class InkCanvas {
     }
 
     drawPreviousGesture(sel: AbstractSelection) {
-        if ((sel.type) == StrokeType.Marquee) {
-            //    this.drawPreviousGestureM(sel.stroke);
-            var p1 = sel.stroke.points[0];
-            var p3 = sel.stroke.points[sel.stroke.points.length-1];
-            var p2 = new Point(p3.x, p1.y);
-            var p4 = new Point(p1.x, p3.y);
-            this.drawPointsAndLines([p1, p2, p3, p4]);           
-        }
-        if ((sel.type) == StrokeType.Lasso) {
             this.drawPointsAndLines(sel.samplePoints);
-           // this.drawPreviousGestureL(sel.samplePoints);
-        }
+
     }
 
     drawPreviousGestureL(points: Array<Point>) {
@@ -131,8 +122,13 @@ class InkCanvas {
     editStrokes(points: Array<Point>, e): Line {
         var sampleStroke = points;
         var lines = [];
-        for (var i = 1; i < sampleStroke.length; i++) {
-            var line = new Line(sampleStroke[i - 1], sampleStroke[i])
+        for (var i = 0; i < sampleStroke.length; i++) {
+            console.log("DAXXXXXXXXF");
+            if (i == 0) {
+                var line = new Line(sampleStroke[sampleStroke.length - 1], sampleStroke[0]);
+            } else {
+                var line = new Line(sampleStroke[i - 1], sampleStroke[i])
+            }
             if (this.checkAboveLine(line, new Point(e.clientX, e.clientY))) {
                 this.focusLine(line);
                 return line;
@@ -170,6 +166,12 @@ class InkCanvas {
     }
 
     checkAboveLine(line: Line, mouse: Point): boolean {
+        if (line.p1.x == line.p2.x) {
+            return (Math.abs(mouse.x - line.p1.x) < 5 && this.isBetween(line.p1.y, line.p2.y, mouse.y));
+        }
+        if (line.p1.y == line.p2.y) {
+            return (Math.abs(mouse.y - line.p1.y) < 5 && this.isBetween(line.p1.x, line.p2.x, mouse.x));
+        }
         var m1 = (mouse.y - line.p1.y) / (mouse.x - line.p1.x);
         var m2 = (line.p2.y - mouse.y) / (line.p2.x - mouse.x);
         // console.log((m1 == m2) && (line.p1.y <= mouse.y && mouse.y <= line.p2.y) && (line.p1.x <= mouse.x && mouse.x <= line.p2.x));
