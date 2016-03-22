@@ -148,11 +148,24 @@ namespace NuSysApp
             var rect = view.LibraryDraggingRectangle;
 
         }
-
+        private async void Sort_Button_Click(object sender, RoutedEventArgs e)
+        {
+            string s = "nodetype";
+            switch (((Button)sender).Content.ToString())
+            {
+                case "title":
+                    s = "title";
+                    break;
+                case "date":
+                    s = "timestamp";
+                    break;
+            }
+            Sort(s);
+        }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.Id) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -230,6 +243,11 @@ namespace NuSysApp
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
             _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));          
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

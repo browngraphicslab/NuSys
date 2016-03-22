@@ -60,6 +60,7 @@ namespace NuSysApp
                     ordered = _PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString());
                     break;
                 case "timestamp":
+                    ordered = _PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks());
                     break;
                 default:
                     break;
