@@ -94,7 +94,7 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid x:Name="LibraryListItem"  VerticalAlignment="Center" Padding="0" Margin="0" BorderBrush="Red" BorderThickness="{Binding BorderThickness}" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
+                    <Grid x:Name="LibraryListItem"  Height="20" VerticalAlignment="Center" Padding="0" Margin="0" BorderBrush="Red" BorderThickness="{Binding BorderThickness}" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
                             <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="125" />

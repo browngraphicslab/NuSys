@@ -164,7 +164,7 @@ namespace NuSysApp
                    // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
                 } else if (nodeContent.Content is TextDetailView)
                 {
-                 //   ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                    ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
                 } else if (nodeContent.Content is WebDetailView)
                 {
                //     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);

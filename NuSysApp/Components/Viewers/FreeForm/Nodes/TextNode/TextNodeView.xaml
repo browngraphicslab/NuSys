@@ -7,8 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:foundation="using:Windows.Foundation"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
@@ -64,7 +62,6 @@
                         <Grid.Projection>
                             <PlaneProjection RotationY="0"></PlaneProjection>
                         </Grid.Projection>
-                        <Rectangle Width="{Binding Width}" Height="{Binding Height}" Opacity="0.5" />
                     </Grid>
                     <Grid x:Name="wee">
                         <Grid.Projection>
