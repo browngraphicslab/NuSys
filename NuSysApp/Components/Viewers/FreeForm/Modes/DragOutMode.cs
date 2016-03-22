@@ -132,9 +132,14 @@ namespace NuSysApp
             var model = sendVm.Model;
             var groupModel = vm.Model;
 
-            var point = vm.CompositeTransform.TransformPoint(args.Position);
-            var x = point.X + groupModel.X;
-            var y = point.Y + groupModel.Y; var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
+            var point = vm.CompositeTransform.Inverse.TransformPoint(args.Position);
+            var x = point.X - groupModel.X;
+            var y = point.Y - groupModel.Y;
+
+            var t = send.TransformToVisual(SessionController.Instance.SessionView.MainCanvas);
+            var p = t.TransformPoint(new Point(x, y));
+
+            var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
             return new Point(x, y);
         }
 
