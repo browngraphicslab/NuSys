@@ -249,10 +249,10 @@ namespace NuSysApp
                 }
                 dict[id] = msg;
             }
-            var made = new HashSet<string>();
-            while (dict.Any()) {
-                await MakeElement(made, dict, dict.First().Value, true, 2);
-            }
+            await Task.Run(async delegate{
+                await MakeCollection(dict, true, 2);
+            });
+            Debug.WriteLine("done joining collection: " + collectionId);
             /*
             foreach (var msg in nodeMessages)
             {
@@ -300,9 +300,17 @@ namespace NuSysApp
                 }
             }*/
         }
-
+        private async Task MakeCollection(Dictionary<string, Message> messagesLeft, bool loadCollections, int levelsLeft = 1)
+        {
+            var made = new HashSet<string>();
+            while (messagesLeft.Any())
+            {
+                await MakeElement(made, messagesLeft, messagesLeft.First().Value, loadCollections, levelsLeft);
+            }
+        }
         private async Task MakeElement(HashSet<string> made, Dictionary<string,Message> messagesLeft, Message message, bool loadCollections, int levelsLeft = 1)
         {
+            Debug.WriteLine("making element");
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
             var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
@@ -311,19 +319,15 @@ namespace NuSysApp
             {
                 case ElementType.Collection:
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
-                    if (loadCollections && !SessionController.Instance.ContentController.ContainsAndLoaded(libraryId))
+                    if (loadCollections)
                     {
                         var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                         var subMessagesLeft = new Dictionary<string, Message>();
-                        var subMadeElements = new HashSet<string>();//TODO change this if we want to create links regardless on elements being in different collections
                         foreach(var m in messages)
                         {
                             subMessagesLeft.Add(m.GetString("id"), m);
                         }
-                        while(subMessagesLeft.Count > 0)
-                        {
-                            await MakeElement(subMadeElements, subMessagesLeft, subMessagesLeft.First().Value, levelsLeft > 1, levelsLeft - 1);
-                        }
+                        await MakeCollection(subMessagesLeft, levelsLeft > 1, levelsLeft - 1);
                     }
                     break;
                 case ElementType.Link:
