@@ -161,8 +161,7 @@ namespace NuSysApp
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
-            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
-                xDetailViewer.Opacity < 0.1)
+            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
             {
                 ActivatePenMode(true);
             }
@@ -173,7 +172,7 @@ namespace NuSysApp
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
-            if (args.VirtualKey == VirtualKey.Shift && xDetailViewer.Opacity < 0.1)
+            if (args.VirtualKey == VirtualKey.Shift)
             {
                 ActivatePenMode(false);
             }

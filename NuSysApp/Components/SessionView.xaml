@@ -38,10 +38,10 @@
 
     <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
         <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="SlateGray"  LeftJustified="False" HorizontalAlignment="Stretch"  Width="{Binding ElementName=Properties, Path=Width}"></local:TextInputBlock>
-        <Button x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
+        <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
             <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-        <Button x:Name="ChatNotifs" Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="0" VerticalAlignment="Bottom">
+        <Button x:Name="ChatNotifs" Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="0" VerticalAlignment="Bottom" Visibility="Collapsed">
             <TextBlock x:Name="NotifNumber" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
