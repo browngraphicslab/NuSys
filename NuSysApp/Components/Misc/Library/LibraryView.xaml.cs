@@ -58,6 +58,10 @@ namespace NuSysApp
                     properties.Visibility = Visibility.Collapsed;
                 });
             };
+            SessionController.Instance.OnEnterNewCollection += delegate
+            {
+                Visibility = Visibility.Collapsed;
+            };
         }
 
         public async void ToggleVisiblity()
