@@ -66,9 +66,9 @@ namespace NuSysApp
             _atomList = new List<Tuple<FrameworkElement, Object>>();
             _vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
 
+            // Set content & handlers for viewblock & tagblock
             ViewBlock.Content = _viewBy;
             ViewBlock.Tapped += ViewBlock_Tapped;
-
             TagBlock.Content = _sortBy;
             TagBlock.Tapped += TagBlock_Tapped;
 
@@ -78,10 +78,10 @@ namespace NuSysApp
                Stroke = new SolidColorBrush(Colors.Coral)
            };
 
-           TimelineCanvas.Children.Add(_moveLine);
+            TimelineCanvas.Children.Add(_moveLine);
             TimelinePanel.Tapped += TimelinePanel_Tapped;
 
-            //Set Clip
+            //Set Clip for canvas
             var rect = new RectangleGeometry();
             rect.Rect = new Rect(0, 0, model.Width, model.Height);
             TimelineGrid.Clip = rect;
@@ -132,13 +132,14 @@ namespace NuSysApp
             TagBlock.Content = ViewBlock.Content = b1.Content.ToString();
             ResortTimeline(b1.Content.ToString());
 
+            // if custome, reset viewed metadata to node_creation_date
             if (b1.Content.ToString().Contains("custom"))
             {
                 _viewBy = "node_creation_date";
                 ViewBlock.Content = _viewBy;
                 ChangeViewByTimeline(_viewBy);
             }
-            else
+            else //set viewblock to whatever its sorted by
             {
                 ViewBlock.Content = b1.Content.ToString();
             }
@@ -297,14 +298,19 @@ namespace NuSysApp
         #region Timeline Rearrange
         private void TimelineNode_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
-            TimelineItemView item = (TimelineItemView)sender;
-            _originalXPos = (int)Canvas.GetLeft(item);
+            if (panelTapped)
+            {
+                TimelineItemView item = (TimelineItemView)sender;
+                _originalXPos = (int)Canvas.GetLeft(item);
+            }  
         }
 
         private void TimelineNode_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            Debug.WriteLine("coming in here, panedlTapped false?: " + panelTapped);
             if (panelTapped)
             {
+                Debug.WriteLine("shouldn't come in here");
                 TimelineItemView item = (TimelineItemView)sender;
                 var timelineZoom = 1/_vm.CompositeTransform.ScaleX;
                 var workspaceZoom = 1 / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
@@ -363,41 +369,44 @@ namespace NuSysApp
 
         private void TimelineNode_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            TimelineItemView item = (TimelineItemView)sender;
-            _moveLine.StrokeThickness = 0;
-
-            Canvas.SetLeft(item, _moveToXPos);
-            Canvas.SetTop(item, 0);
-
-            String custom = "custom" + _custom;
-            if (!TagBlock.Content.ToString().Contains("custom"))
+            if (panelTapped)
             {
-                // if not custom, create a new custom
-                // add metadata button
-                Button bb = new Button()
+                TimelineItemView item = (TimelineItemView)sender;
+                _moveLine.StrokeThickness = 0;
+
+                Canvas.SetLeft(item, _moveToXPos);
+                Canvas.SetTop(item, 0);
+
+                String custom = "custom" + _custom;
+                if (!TagBlock.Content.ToString().Contains("custom"))
                 {
-                    Content = custom,
-                    Width = 100,
-                };
-                bb.Tapped += MetaButton_Tapped;
-                TagPanel.Children.Add(bb);
-                _metaDataButtons.Add(custom);
+                    // if not custom, create a new custom
+                    // add metadata button
+                    Button bb = new Button()
+                    {
+                        Content = custom,
+                        Width = 100,
+                    };
+                    bb.Tapped += MetaButton_Tapped;
+                    TagPanel.Children.Add(bb);
+                    _metaDataButtons.Add(custom);
 
-                // Change view to custom
-                TagBlock.Content = custom;
-                _custom++;
-            }
+                    // Change view to custom
+                    TagBlock.Content = custom;
+                    _custom++;
+                }
 
-            // set new metadata
-            var index = 0;
-            foreach (var node in _panelNodes)
-            {
-                var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
-                var vm = (ElementViewModel)atom.DataContext;
-                var nodeModel = (ElementModel)vm.Model;
-                nodeModel.SetMetaData(custom, index);
-                index++;
-            }
+                // set new metadata
+                var index = 0;
+                foreach (var node in _panelNodes)
+                {
+                    var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
+                    var vm = (ElementViewModel)atom.DataContext;
+                    var nodeModel = (ElementModel)vm.Model;
+                    nodeModel.SetMetaData(custom, index);
+                    index++;
+                }
+            }    
         }
         #endregion
 
@@ -412,14 +421,8 @@ namespace NuSysApp
 
         private void AutoSuggestBox_OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            if (args.ChosenSuggestion != null)
-            {
-                MoveToSearch(args.ChosenSuggestion.ToString());
-            }
-            else
-            {
-                MoveToSearch(args.QueryText);
-            }
+            SearchBox.Text = "";
+            MoveToSearch(args.QueryText);
         }
 
         private void MoveToSearch(String s)
@@ -559,20 +562,10 @@ namespace NuSysApp
                     compositeTransform.TranslateX += e.Delta.Translation.X;
                 }
                 //Debug.WriteLine(_vm.CompositeTransform.TranslateX - _vm.TranslateTransform.X);
-                Debug.WriteLine(compositeTransform.TranslateX);
                 _vm.CompositeTransform = compositeTransform;
             } 
         }
         #endregion
-
-        private void TimelineGrid_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            Debug.WriteLine("grid tapped");
-            GroupNodeViewModel groupVm =
-                (GroupNodeViewModel)TimelineGrid.GetVisualParentOfType<GroupNodeView>().DataContext;
-            groupVm.IsEditing = true;
-            Debug.WriteLine("isEditing: " + groupVm.IsEditing);
-        }
     }
 
     #region Comparer

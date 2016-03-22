@@ -10,7 +10,7 @@
     d:DesignWidth="400"
 >
     <Grid>
-        <Grid x:Name="TimelineGrid" Background="#DFE9E8" Tapped="TimelineGrid_OnTapped">
+        <Grid x:Name="TimelineGrid" Background="#DFE9E8">
             <Canvas x:Name="TimelineCanvas" Background="Transparent" RenderTransform="{Binding CompositeTransform}">
                 <Border x:Name ="TimelinePanelBorder" BorderBrush="Yellow" Height="110">
                     <Canvas x:Name="TimelinePanel" Background="Transparent"/>
