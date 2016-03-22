@@ -44,8 +44,10 @@ namespace NuSysApp
 
             _dragOutMode = new DragOutMode(this);
             _dragOutMode.Activate();
-            
+           
+           
         }
+
 
         //private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
         //{
@@ -83,5 +85,7 @@ namespace NuSysApp
         }
 
         public Canvas OuterCanvas => xCanvas;
+
+        public Canvas InnerCanvas => iCanvas;
     }
 }
