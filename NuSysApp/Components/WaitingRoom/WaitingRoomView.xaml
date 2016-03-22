@@ -422,7 +422,7 @@
 
             </Grid>
             <Button Style="{StaticResource WaitingRoomButton}" Width="150" Height="50" Background="White" Foreground="#9cc5c2" FontSize="22"  Click="LoginButton_OnClick" Name="LoginButton"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,300,0,0">Login</Button>
-            <Button Style="{StaticResource WaitingRoomButton}" Width="120" Height="35" Background="White" Foreground="#9cc5c2" FontSize="22"  Click="NewUser_OnClick" Name="NewUserButton"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,575,0,0">New User</Button>
+            <Button Style="{StaticResource WaitingRoomButton}" Width="150" Height="50" Background="White" Foreground="#9cc5c2" FontSize="22"  Click="NewUser_OnClick" Name="NewUserButton"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,475,0,0">New User</Button>
             
             <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,400,0,0"></TextBlock>
         </Grid>

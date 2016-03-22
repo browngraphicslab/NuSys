@@ -48,8 +48,10 @@ namespace NuSysApp
             libProp.Visibility = _lib.Visibility = Visibility.Collapsed;
             xAddNodeMenu.Visibility = Visibility.Collapsed;
 
-            Canvas.SetTop(_lib, 80);
-            Canvas.SetLeft(libProp, 400);
+            Canvas.SetTop(_lib, 100);
+            Canvas.SetLeft(_lib, 100);
+            Canvas.SetTop(libProp, 100);
+            Canvas.SetLeft(libProp, 550);
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnTag);
@@ -170,8 +172,9 @@ namespace NuSysApp
            
             var contentId = SessionController.Instance.GenerateId();
 
+            
             metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
+            //metadata["node_creation_date"] = DateTime.Now;
             metadata["node_type"] = elementType + "Node";
 
             dict = new Message();

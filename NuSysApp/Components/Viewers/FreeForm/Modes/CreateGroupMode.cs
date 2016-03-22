@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -111,6 +112,10 @@ namespace NuSysApp
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
+            // TODO: remove temp
+            Random rnd = new Random();
+            metadata["random_id"] = rnd.Next(1, 1000);
+            metadata["random_id2"] = rnd.Next(1, 100);
 
             if (!(c1IsCollection || c2IsCollection)) { 
                 var contentId = SessionController.Instance.GenerateId();
@@ -145,7 +150,18 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                await controller1.RequestMoveToCollection(controller2.Model.LibraryId);
+                var x = draggedItem.Transform.TranslateX;
+                var y = draggedItem.Transform.TranslateY;
+                var point = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
+                var model = (ElementModel) _hoveredNode.Model;
+                var modelX = model.X;
+                var modelY = model.Y;
+                var gX =  modelX - point.X;
+                var gY = modelY - point.Y;
+                
+                var point2 = _hoveredNode.Transform.TransformPoint(point);
+
+                await controller1.RequestMoveToCollection(controller2.Model.LibraryId, point2.X, point2.Y);
                 return;
             }
 
