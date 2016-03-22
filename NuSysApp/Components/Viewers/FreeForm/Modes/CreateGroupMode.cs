@@ -156,12 +156,20 @@ namespace NuSysApp
                 var model = (ElementModel) _hoveredNode.Model;
                 var modelX = model.X;
                 var modelY = model.Y;
-                var gX =  modelX - point.X;
-                var gY = modelY - point.Y;
+                var gX =  modelX + point.X;
+                var gY = modelY + point.Y;
                 
                 var point2 = _hoveredNode.Transform.TransformPoint(point);
-
-                await controller1.RequestMoveToCollection(controller2.Model.LibraryId, point2.X, point2.Y);
+                var transform = ((UIElement) sender).TransformToVisual(_hoveredView);
+                var u = VisualTreeHelper.GetParent(_hoveredView);
+                while (!(u is GroupNodeView))//TODO HACKY
+                {
+                    u = VisualTreeHelper.GetParent(u);
+                }
+                var gview = (GroupNodeView)u;
+                var fview = gview.FreeFormView;
+                var o = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(fview.InnerCanvas).TransformPoint(new Point(point.X, point.Y));
+                await controller1.RequestMoveToCollection(controller2.Model.LibraryId,o.X, o.Y);
                 return;
             }
 
@@ -176,6 +184,7 @@ namespace NuSysApp
 
         }
 
+        private FrameworkElement _hoveredView;
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var draggedItem = (AnimatableUserControl)e.OriginalSource;
@@ -195,8 +204,8 @@ namespace NuSysApp
             {
                
                 _isHovering = true;
-                var hoveredNode = (FrameworkElement)result.First();
-                _hoveredNode = (ElementViewModel)hoveredNode.DataContext;
+                _hoveredView  = (FrameworkElement)result.First();
+                _hoveredNode = (ElementViewModel)_hoveredView.DataContext;
                 draggedItem.Opacity = 0.5;
             }
             else
@@ -206,6 +215,7 @@ namespace NuSysApp
                 _timer = null;
                 _isHovering = false;
                 _hoveredNode = null;
+                _hoveredView = null;
             }
 
 
