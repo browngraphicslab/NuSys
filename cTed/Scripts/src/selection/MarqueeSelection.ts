@@ -88,7 +88,7 @@
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j])) {
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
-                                console.log(trueEl.childNodes[index]);
+                          //      console.log(trueEl.childNodes[index]);
                                 this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
@@ -106,8 +106,8 @@
                 }
             }
             else {
-                console.log("BOUNDEDDDD=====");
-                console.log(trueEl.childNodes[indexList[i]]);
+            //    console.log("BOUNDEDDDD=====");
+            //    console.log(trueEl.childNodes[indexList[i]]);
                 var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
 
 
@@ -121,13 +121,13 @@
                 }
 
                 if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
-                    console.log("-----------TEXT?-------");
-                    console.log($(trueEl.childNodes[indexList[i]]));
+            //        console.log("-----------TEXT?-------");
+            //        console.log($(trueEl.childNodes[indexList[i]]));
                     $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
                 }
                 $(realNList[i]).css("background-color", "yellow"); 
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
-                console.log(startIndex);
+            //    console.log(startIndex);
                 this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], -1);
                  
                 //if (trueEl.childNodes[index].childNodes[j]) {
@@ -143,15 +143,11 @@
     }
 
     addToHighLights(el: Element, txtindx: Number, wordindx): void {
-        //console.log("ADD TO HIGHLIGHTS====================");
-        //console.info(el.tagName);
-        //console.log(el.attributes);
+
         var index = $(el.tagName).index(el);
-        //console.log(index);
         var obj = { type: "marquee", tagName: el.tagName, index: index };
         if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
-            //console.log("-------------DIFFICULT--------------");
-            //console.log(el.attributes);
+
             var par = el.attributes[0]["ownerElement"].parentElement;
             if (el.tagName == "WORD") {
 
@@ -164,12 +160,10 @@
             obj["parIndex"] = parIndex;
             obj["txtnIndx"] = txtindx;
             obj["val"] = el;
-
-            //console.log(el.attributes[0]["ownerElement"].parentElement);
-            //console.log(obj);
         } 
         this.selectedElements.push(obj);        
     }
+
     intersectWith(el): boolean {
 
         //checks if element is intersecting with selection range 

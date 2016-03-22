@@ -5,6 +5,7 @@
     tags: string;
     stroke: Stroke;
     type: StrokeType;
+    samplePoints: Array<Point>;
 
     public selectedElements: Array<any> = new Array<any>();
 
@@ -17,6 +18,10 @@
     getContent(): string {
         return null;
     }
+
+
+
+    
 
 
 

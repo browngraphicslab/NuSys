@@ -7,4 +7,7 @@ interface IBrush {
 
     drawPrevious(stroke: Stroke, inkCanvas: InkCanvas);
 
+    focusLine(line: Line, inkCanvas: InkCanvas);
+
+    focusPoint(point: Point, inkCanvas: InkCanvas);
 }

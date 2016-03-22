@@ -28,6 +28,10 @@ class NullSelection extends AbstractSelection {
     getContent(): string {
         return this._content;
     }
+    isPointAbove(p: Point): boolean {
+        return false;
+    }
+
 
     analyzeContent(): void{
         console.log("null selection... only for image");

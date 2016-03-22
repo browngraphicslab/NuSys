@@ -58,6 +58,8 @@
     <TypeScriptCompile Include="Scripts\src\StrokeClassifier.ts" />
     <TypeScriptCompile Include="Scripts\src\Stroke.ts" />
     <TypeScriptCompile Include="Scripts\src\StrokeType.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Line.ts" />
+    <TypeScriptCompile Include="Scripts\src\util\Point.ts" />
     <TypeScriptCompile Include="Scripts\src\util\Rectangle.ts" />
     <TypeScriptCompile Include="Scripts\src\util\Statistics.ts" />
     <TypeScriptCompile Include="Scripts\src\util\Vector2.ts" />

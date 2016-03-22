@@ -24,6 +24,8 @@ class MarqueeBrush implements IBrush {
         ctx.stroke();
     }
 
+
+
     redraw(stroke: Stroke, inkCanvas: InkCanvas) {
         var firstPoint = stroke.points[0];
         var lastPoint = stroke.points[stroke.points.length - 1];
@@ -33,9 +35,27 @@ class MarqueeBrush implements IBrush {
         this.draw(lastPoint.x, lastPoint.y, inkCanvas);
     }
 
+    focusLine(line: Line, inkCanvas: InkCanvas) {
+
+    }
+
+    focusPoint(p: Point, inkCanvas: InkCanvas) {
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+
+
+        ctx.fillStyle = '#0000FF';
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2, false);
+        ctx.fill();
+    }      
+
     //draw previous on hover
     drawPrevious(stroke: Stroke, inkCanvas: InkCanvas) {
-        console.log("======DRAWPREV");
+        console.log("======DRAWPREVMARQUEE");
+        console.log(stroke);
         var firstPoint = stroke.points[0];
         var lastPoint = stroke.points[stroke.points.length - 1];
 
@@ -44,9 +64,8 @@ class MarqueeBrush implements IBrush {
         ctx.globalCompositeOperation = "source-over";
 
         ctx.beginPath();
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "rgb(255,70,70)";
-        ctx.setLineDash([5]);
+        ctx.lineWidth = 100;
+        ctx.strokeStyle = "rgb(0,0,0)";
         ctx.rect(firstPoint.x, firstPoint.y - $(window).scrollTop(), lastPoint.x - firstPoint.x, lastPoint.y - firstPoint.y);
         ctx.stroke();
     }

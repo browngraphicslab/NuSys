@@ -1,9 +1,9 @@
-﻿class Stroke {
+﻿/// <reference path = "util/Point.ts"/>
+class Stroke {
 
     public points: Array<any>;
     
     constructor() {
-        console.log("new Stroke in Inkcanvas");
         this.points = new Array<any>();
     }
 
@@ -26,6 +26,22 @@
 
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
+
+    nearestPointArea(p: Point): Point {
+        console.log("nearestpont for " + p.x + "and " + p.y);
+        var xval = Math.floor(p.x / 3);
+        var yval = Math.floor(p.y / 3);
+        if (Math.abs(p.x / 3 - xval) > 0.5)
+            xval++;
+        if (Math.abs(p.y / 3 - yval) > 0.5)
+            yval++;
+        console.log("resulting : " + xval +  " and " + yval);
+        return new Point(xval, yval);
+    }
+    degree(p1, p2: Point): number {
+        return Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+    }
+
     
 
     getStrokeMetrics() {
@@ -63,4 +79,32 @@
         error /= this.points.length;
         return { length: this.points.length, error: m };
     }
+
+
+
+    sampleStroke(): Stroke {
+        var len = this.points.length;
+        var ypre;
+        var xpre;
+        var predg = 0;
+        var prept = this.points[0];
+        var strokeHash = {};
+        var sampledStrokes = [];
+
+        for (var i = 1; i < len; i++) {
+        //    var pt = this.nearestPointArea(this.points[i]);
+            var pt = this.points[i];
+            if (Math.abs(predg - this.degree(pt, prept)) < 10) {
+                continue;
+            }
+            predg = this.degree(pt, prept);
+            sampledStrokes.push(this.points[i]);
+
+        }
+        console.log(sampledStrokes);
+        var res = new Stroke();
+        res.points = sampledStrokes;
+        return res;
+    }
+
 }

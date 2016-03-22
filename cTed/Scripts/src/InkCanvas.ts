@@ -18,11 +18,16 @@ class InkCanvas {
         console.log("new Canvas!!!!!");
     }
 
+    drawStroke(stroke: Stroke) {
+        var sample = stroke.sampleStroke();
+        for (var i = 0; i < sample.points.length; i++) {
+            this._brush.draw(sample[i].x, sample[i].y, this);
+        }
+    }
 
     draw(x: number, y: number) {
         this._activeStroke.push(x,y);
         this._brush.draw(x, y, this);
-        console.log("draw ................... at " + x + ":" + y);
     }
 
     removeStroke(): void {
@@ -53,6 +58,123 @@ class InkCanvas {
         console.log("======================redraw==");
         this._prevBrush = new MarqueeBrush();
         this._prevBrush.drawPrevious(stroke, this);
+    }
+
+    drawPointsAndLines(points: Array<Point>) {
+        this.clear();
+        this.drawPoint(points[0]);
+        this.drawline(points[0], points[points.length - 1]);
+        for (var i = 1; i < points.length; i++) {
+            this.drawPoint(points[i]);
+            this.drawline(points[i], points[i - 1]);
+        }
+    }
+
+    drawPreviousGesture(sel: AbstractSelection) {
+        if ((sel.type) == StrokeType.Marquee) {
+            //    this.drawPreviousGestureM(sel.stroke);
+            var p1 = sel.stroke.points[0];
+            var p3 = sel.stroke.points[sel.stroke.points.length-1];
+            var p2 = new Point(p3.x, p1.y);
+            var p4 = new Point(p1.x, p3.y);
+            this.drawPointsAndLines([p1, p2, p3, p4]);           
+        }
+        if ((sel.type) == StrokeType.Lasso) {
+            this.drawPointsAndLines(sel.samplePoints);
+           // this.drawPreviousGestureL(sel.samplePoints);
+        }
+    }
+
+    drawPreviousGestureL(points: Array<Point>) {
+        console.log("======================redraw==");
+        this._prevBrush = new LassoBrush();
+        var stroke = new Stroke();
+        stroke.points = points;
+        this._prevBrush.drawPrevious(stroke, this);
+    }
+
+    drawPoint(p: Point) {
+        var ctx = this._context;
+
+        ctx.globalCompositeOperation = "source-over";
+
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2, false);
+        ctx.fill();
+    }
+
+    drawline(p1, p2: Point) {
+        var ctx = this._context;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#123456';
+        ctx.setLineDash([]);
+        ctx.beginPath();
+
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+    }
+    
+    editPoint(points: Array<Point>, e): Point {
+        var sampleStroke = points;
+        var lines = [];
+        for (var i = 1; i < sampleStroke.length; i++) {
+            if (Math.abs(e.clientX - sampleStroke[i].x) < 3 && Math.abs(e.clientY - sampleStroke[i].y) < 3) {
+                this.focusPoint(sampleStroke[i]);
+                return sampleStroke[i];
+            } 
+        }
+    }
+
+    editStrokes(points: Array<Point>, e): Line {
+        var sampleStroke = points;
+        var lines = [];
+        for (var i = 1; i < sampleStroke.length; i++) {
+            var line = new Line(sampleStroke[i - 1], sampleStroke[i])
+            if (this.checkAboveLine(line, new Point(e.clientX, e.clientY))) {
+                this.focusLine(line);
+                return line;
+            }
+        }
+    }
+
+    focusLine(line: Line) {
+        var ctx = this._context;
+        ctx.beginPath();
+      //  ctx.fillStyle = '#ff0000';
+        ctx.moveTo(line.p1.x, line.p1.y);
+        ctx.lineTo(line.p2.x, line.p2.y);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+
+    focusPoint(p: Point) {
+        var ctx = this._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = '#0000FF';
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2, false);
+        ctx.fill();
+    }
+
+
+    isBetween(a, b, x: number): boolean {
+        if (a > b) {
+            return x < a && x > b;
+        } else {
+            return x < b && x > a;
+        }
+    }
+
+    checkAboveLine(line: Line, mouse: Point): boolean {
+        var m1 = (mouse.y - line.p1.y) / (mouse.x - line.p1.x);
+        var m2 = (line.p2.y - mouse.y) / (line.p2.x - mouse.x);
+        // console.log((m1 == m2) && (line.p1.y <= mouse.y && mouse.y <= line.p2.y) && (line.p1.x <= mouse.x && mouse.x <= line.p2.x));
+        return (Math.abs(m1 - m2) < 0.15) && (this.isBetween(line.p1.y, line.p2.y, mouse.y)) && this.isBetween(line.p1.x, line.p2.x, mouse.x);
+
     }
 
     clear(): void {

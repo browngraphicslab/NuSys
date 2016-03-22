@@ -52,6 +52,12 @@ var Background = (function () {
                 return;
             }
         });
+        chrome.tabs.executeScript(tabId, { file: "jquery.js" }, function (result) {
+            if (chrome.runtime.lastError) {
+                console.log("error in loading jquery");
+                return;
+            }
+        });
         chrome.tabs.executeScript(tabId, { file: "cTed.js" }, function (result) {
             if (chrome.runtime.lastError) {
                 console.log("error in loading cTed");
@@ -88,7 +94,42 @@ var Background = (function () {
                     console.log("storing selection");
                     chrome.storage.local.set(cTedStorage, function () {
                         //     printSelections();
+                        console.log(cTedStorage);
                         console.log("selection stored");
+                    });
+                });
+            }
+            if (request.msg == "edit_selection") {
+                console.log("edit_selection");
+                console.log(request.data);
+                chrome.storage.local.get(function (cTedStorage) {
+                    var selections = cTedStorage["selections"];
+                    for (var i = 0; i < selections.length; i++) {
+                        if (selections[i].id == request.data.id) {
+                            selections[i] = request.data;
+                            continue;
+                        }
+                    }
+                    cTedStorage["selections"] = selections;
+                    chrome.storage.local.set(cTedStorage, function () {
+                        console.log("selection edited");
+                    });
+                });
+            }
+            if (request.msg == "remove_selection") {
+                console.log("remove_selection to bg");
+                chrome.storage.local.get(function (cTedStorage) {
+                    console.log(cTedStorage);
+                    console.log(request.data);
+                    for (var i = 0; i < cTedStorage["selections"].length; i++) {
+                        console.log(cTedStorage["selections"][i]["id"]);
+                        if (cTedStorage["selections"][i]["id"] == request.data) {
+                            cTedStorage["selections"].splice(i, 1);
+                            break;
+                        }
+                    }
+                    chrome.storage.local.set(cTedStorage, function () {
+                        console.log("selection removed");
                     });
                 });
             }

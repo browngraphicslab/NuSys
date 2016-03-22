@@ -17,10 +17,17 @@ class Main {
     isSelecting: boolean;
     bubble_focused: boolean;
     selectionOnHover: AbstractSelection;
+    lineAbove: Line;
+    pointAbove: Point;
+    pointIndex: number = -1;
+    selectionToEdit: AbstractSelection;
+    isLineSelected: boolean;
+    isPointSelected: boolean;
     is_above_previous: boolean;
+    is_editing_selection: boolean;
     selection: AbstractSelection;
     selections: Array<AbstractSelection> = new Array<AbstractSelection>();
-    previousSelections: Array<AbstractSelection> = new Array<AbstractSelection>();
+    //previousSelections: Array<AbstractSelection> = new Array<AbstractSelection>();
     is_active: boolean;
     _startX: number;
     _startY: number;
@@ -50,8 +57,9 @@ class Main {
         this.canvas.style.left = "0";
         this.canvas.style.zIndex = "998";
 
+        this.bubble_focused = false;
         this.bubble = document.createElement("p");
-        this.bubble.innerHTML ="<input style=' width: 200px; height: 90px; text-align: center; line-height: 100px;  -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; border: none; outline: none; '>";
+        this.bubble.innerHTML ="<textarea style=' width: 200px; height: 90px; text-align: center;  -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; border: none; outline: none; '>";
         $(this.bubble).addClass("noteBubble");
         document.body.appendChild(this.bubble);
         document.styleSheets[0]["insertRule"]('p.noteBubble {position: absolute; width: 200px; height: 100px; text - align: center; line - height: 100px; background: #fff; border: 8px solid #666; -moz-border-radius: 30px;  -webkit-border-radius: 30px; border-radius: 30px; -moz -box-shadow: 2px 2px 4px #888; -webkit-box-shadow: 2px 2px 4px #888; box-shadow: 2px 2px 4px #888; }', 0);
@@ -62,7 +70,7 @@ class Main {
         this.inkCanvas = new InkCanvas(this.canvas);
         this._url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.set_message_listener();
-        this.showPreviousSelections();
+     //   this.showPreviousSelections();
 
         this.body.addEventListener("mousedown", (e) => {
             if (this.bubble_focused && !this.isAbove(e, this.selectionOnHover) && !this.isAboveBubble(e)) {
@@ -72,11 +80,14 @@ class Main {
                 $(this.bubble).css("display", "none");
                 this.body.appendChild(this.canvas);
                 this.is_above_previous = false;
+                this.is_editing_selection = false;
                 this.bubble_focused = false;
                 this.mouseDown(e);
             }
         });
+
     }
+
 
     showPreviousSelections(): void {
         chrome.storage.local.get((cTedStorage) => {
@@ -84,7 +95,9 @@ class Main {
             console.info(cTedStorage);
             cTedStorage["selections"].forEach((s) => {
                 if (s.url == this._url) {
-                    this.previousSelections.push(s);
+      //              this.previousSelections.push(s);
+                    this.selections.push(s); 
+                    this.updateSelectedList();
                     if (s.type == StrokeType.Marquee) {
                         this.highlightPrevious(s);
                     }
@@ -98,12 +111,35 @@ class Main {
                     if (s.type == StrokeType.Null) {
                         this.highlightPrevious(s);
                     }
+                    if (s.type == StrokeType.Lasso) {
+                        console.log("lasso");
+                        this.highlightPrevious(s);
+                    }
                 }
             });
         });
     }
 
-    
+    removeHighlight(s: AbstractSelection): void {
+
+        s.selectedElements.forEach((el) => {
+            if (el.tagName == "WORD") {
+                if (el.wordIndx == -1) {
+                    $('WORD').get(el.index)["style"].backgroundColor = "";
+                } else {
+                    var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
+                    ele["style"].backgroundColor = "";
+                }
+            } else if (el.tagName == "HILIGHT") {
+                $(el.par).get(el.parIndex).childNodes[el.txtnIndx]["style"].backgroundColor = "";
+            } else {
+                $(el.tagName).get(el.index).style.backgroundColor = "";
+
+            }
+
+
+        });
+    }
 
     highlightPrevious(s: AbstractSelection): void {
         var parElement;
@@ -114,8 +150,8 @@ class Main {
                 if (el.wordIndx == -1) {
                     $('WORD').get(el.index)["style"].backgroundColor = "yellow";
                 } else {
-                    console.log("TAG NAME WORD");
-                    console.log(el);
+                //    console.log("TAG NAME WORD");
+                //    console.log(el);
                     var txtElement = $(el.par).get(el.parIndex).childNodes[el.txtnIndx];
                     if (!this._parsedTextNodes.hasOwnProperty(el.par)) {
                         $(txtElement).replaceWith("<words>" + $(txtElement).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
@@ -267,14 +303,39 @@ class Main {
     sendResponse(bool: Boolean) {  
          
     }
+
+    makeNewLasso() {
+
+    }
     mouseUp = (e): void => {
         console.log("mouseUp");
+        console.log(this.is_above_previous);
         if (this.is_above_previous) {
-            $(this.bubble).show();
-            $(this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
-            $(this.bubble).css("left", e.clientX - 30);
-            $(this.bubble).css("border", "8px solid #666");
-            document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+            if (this.is_editing_selection) {
+                this.inkCanvas.clear();
+                console.log(this.selectionOnHover);
+            //    this.removeHighlight(this.selectionOnHover);
+                this.isLineSelected = false;
+                this.pointIndex = -1;
+                document.body.removeChild(this.canvas);
+                var editedSelection = new LassoSelection();
+                var editedStroke = new Stroke();
+                editedStroke.points = this.selectionOnHover.samplePoints;
+                editedSelection.stroke = editedStroke;
+                editedSelection.end(0, 0);
+                editedSelection.type = StrokeType.Lasso;
+                editedSelection.id = this.selectionOnHover.id;
+                editedSelection.url = this.selectionOnHover.url;
+                editedSelection.tags = this.selectionOnHover.tags;
+                chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
+                return;
+            } else {
+                $(this.bubble).show();
+                $(this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
+                $(this.bubble).css("left", e.clientX - 30);
+                $(this.bubble).css("border", "8px solid #666");
+                document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+            }
 
             $(this.bubble).click(function () {
 
@@ -284,7 +345,9 @@ class Main {
         }
         console.log("======================================");
         document.body.removeChild(this.canvas);
+        var isLineSelected = false;
         this.isSelecting = false;
+        
         this.selection.stroke = this.inkCanvas._activeStroke;
         this.selection.end(e.clientX, e.clientY);
         console.log(this.selection.getContent()); //print out content 
@@ -295,11 +358,12 @@ class Main {
         console.log(this.selection);
         if (this.selection.getContent() != "" && this.selection.getContent() != " ") {
             this.selections.push(this.selection); //add selection to selections array 
-            this.previousSelections.push(this.selection);
+   //         this.previousSelections.push(this.selection);
             this.updateSelectedList();
             chrome.runtime.sendMessage({ msg: "store_selection", data: this.selection });
         }
         this.inkCanvas.clear();
+   //     this.inkCanvas.drawStroke(this.selection.stroke);
         this.currentStrokeType = StrokeType.Line;
         document.body.appendChild(this.canvas);
     }
@@ -307,8 +371,28 @@ class Main {
     updateSelectedList(): void {
         var list = $(this.menuIframe).contents().find("#selected_list");
         list.empty();
-        this.selections.forEach((s) => {
-            list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
+        var count = 0;
+        this.selections.forEach((s: AbstractSelection) => {
+            console.info(s);
+            var item = document.createElement("div");
+            item.setAttribute("class", "selected_list_item");
+            var close_btn = document.createElement("button");
+            close_btn.setAttribute("class", "btn_close_item");
+            $(close_btn).click(() => {
+                console.log("remove");
+                var indx = this.selections.indexOf(s);
+                console.log(indx);
+                console.log(this.selections[indx]);
+                this.removeHighlight(this.selections[indx]);
+                chrome.runtime.sendMessage({ msg: "remove_selection", data: this.selections[indx]["id"] });
+                this.selections.splice(this.selections.indexOf(s), 1);
+        //        this.previousSelections.splice(this.previousSelections.indexOf(s), 1);
+                close_btn.parentElement.remove();
+            });
+            item["innerHTML"] = s["_content"];
+            $(item).prepend(close_btn);
+            count++;
+            list.append(item);
         });
 
     }
@@ -323,15 +407,142 @@ class Main {
         } catch (e) {
             console.log("no canvas visible." + e);
         }
-        this.checkAtag(e);
-        this.isSelecting = true;
-        this._startX = e.clientX;
-        this._startY = e.clientY;
-        this.selection.start(e.clientX, e.clientY);
+        if (!this.checkAtag(e)) {
+            this.isSelecting = true;
+            this._startX = e.clientX;
+            this._startY = e.clientY;
+            this.selection.start(e.clientX, e.clientY);
+        }
+
+    }
+    findReplacementStroke(points: Array<Point>, p: Point): number {
+        console.log(p);
+        console.log(points);
+        var size = points.length;
+        for (var i = 0; i < size; i++) {
+            if (points[i].x == p.x && points[i].y == p.y)
+                return i;
+        }
+        return -1;
+    }
+
+    findInsertionStroke(points: Array<Point>, line: Line): number {
+        var size = points.length;
+        for (var i = 0; i < size; i++) {
+            if (points[i].x == line.p1.x && points[i].y == line.p1.y)
+                return i;
+        }
+        //points.forEach((p, i) => {
+        //    console.log(p);
+        //    console.log(line);
+        //    console.log(p.x == line.p1.x);
+        //    if (p.x == line.p1.x && p.y == line.p1.y) {
+        //        return i;
+        //    }
+        //});
+        console.log("================!!!")
+        return -1;
+    }
+    
+    countX: number = 0;
+
+    getSelectionOnHover = (e): AbstractSelection => {
+    //    console.log(this.selections);
+        for (var i = 0; i < this.selections.length; i++) {
+            if (this.isAbove(e, this.selections[i])) {
+                return this.selections[i];
+            }
+        }
+        //this.selections.forEach((sel, indx) => {
+        //    if (this.isAbove(e, sel)) {
+        //        console.log("true!!!!");
+        //        this.selectionOnHover = sel;
+        //        return sel;
+        //        //draw red 
+        //        //onHover
+        //        //clickable-remember variable(selection Current PRev);tu
+        //    }
+        //});
+
+        return null;
     }
 
     mouseMove = (e): void => {
-        if (this.isSelecting) {
+        this.selectionOnHover = this.getSelectionOnHover(e);
+        if (this.selectionOnHover) {
+   //         console.log("there is a selection :");
+            //         console.log(this.selectionOnHover);
+            this.inkCanvas.drawPreviousGesture(this.selectionOnHover);
+            this.pointAbove = this.inkCanvas.editPoint(this.selectionOnHover.samplePoints, e);
+            if (this.pointAbove) {
+                console.log("point..... ");
+            } else {
+                this.lineAbove = this.inkCanvas.editStrokes(this.selectionOnHover.samplePoints, e);
+                if (this.lineAbove) {
+                    console.log("line.....");
+                }
+            }
+
+        } else if (this.isSelecting) {
+            this.inkCanvas.draw(e.clientX, e.clientY);
+            if (this.currentStrokeType != StrokeType.Lasso && this.currentStrokeType != StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke)) {
+           //     console.log("strokeType changed from " + this.currentStrokeType + " to " + StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke));
+                this.currentStrokeType = StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke);
+                this.switchSelection(this.currentStrokeType);
+                this.inkCanvas.switchBrush(this.currentStrokeType);
+            }
+
+        } else {
+            this.inkCanvas.clear();
+            this.pointAbove = null;
+            this.lineAbove = null;
+   //         console.log("not above any selection");
+        }
+
+ /*       ///////////////////
+        if (this.isPointSelected) {
+            var sel = this.selectionOnHover;
+            if (sel.type == StrokeType.Lasso) {
+                if (this.pointIndex == -1) {
+                    this.pointIndex = this.findReplacementStroke(sel.samplePoints, this.pointAbove);
+                }
+                console.log("----------------------------------");
+                console.log(index);
+                var newPoint = new Point(e.clientX, e.clientY);
+                sel.samplePoints.join();
+                sel.samplePoints.splice(this.pointIndex, 1, newPoint);
+                sel.samplePoints.join();
+                this.inkCanvas.clear();
+                this.inkCanvas.drawPreviousGestureL(sel.samplePoints);
+ 
+            }
+        }else if (this.isLineSelected) {
+            var sel = this.selectionOnHover;
+            if (sel.type == StrokeType.Lasso) {
+                var index = this.findInsertionStroke(sel.samplePoints, this.lineAbove);
+                index++;
+                console.log("mousemove...");
+                console.log(index);
+                var newPoint = new Point(e.clientX, e.clientY);
+                console.log(sel.samplePoints.length);
+                if (this.countX == 0) {
+                    sel.samplePoints.join();
+                    sel.samplePoints.splice(index, 0, newPoint);
+                    sel.samplePoints.join();
+                } else {
+                    sel.samplePoints.join();
+                    sel.samplePoints.splice(index, 1, newPoint);
+                    sel.samplePoints.join();
+                }
+
+                console.log(sel.samplePoints.length);
+                this.inkCanvas.clear();
+                this.inkCanvas.drawPreviousGestureL(sel.samplePoints);
+                console.log("==========DRAW====");
+                this.countX++;
+            }
+        }
+        else if (this.isSelecting) {
             this.inkCanvas.draw(e.clientX, e.clientY);
             if (this.currentStrokeType != StrokeType.Lasso && this.currentStrokeType != StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke)) {
                 console.log("strokeType changed from " + this.currentStrokeType + " to " + StrokeClassifier.getStrokeType(this.inkCanvas._activeStroke));
@@ -341,11 +552,30 @@ class Main {
             }
         } else {
             if (this.is_above_previous) {
+                console.log("check for line intersect...");
+                var line = this.inkCanvas.editStrokes(this.selectionOnHover.samplePoints, new Point(e.clientX, e.clientY));
+                var point = this.inkCanvas.editPoint(this.selectionOnHover.samplePoints, new Point(e.clientX, e.clientY));
+                if (point != null) {
+                    console.log("==========POINT==============");
+                    console.log(point);
+                    this.pointAbove = point;
+
+                }else if (line != null) {
+                    console.log("==============LINE==================");
+                    console.log(line);
+                    this.lineAbove = line;
+                    console.log("=============EDITING LINE============");
+                    console.log(this.selectionOnHover);
+
+                }
                 this.checkStillOnHover(e);
-            } else 
+            } else {
                 this.showGestureOnHover(e);
+                this.lineAbove = null;
+                this.pointAbove = null;
+            }
      
-        }
+        } */
     }
 
     checkStillOnHover(e): void {
@@ -356,13 +586,18 @@ class Main {
     }
 
     showGestureOnHover(e): void {
-            this.previousSelections.forEach((sel, indx) => {
+            this.selections.forEach((sel, indx) => {
                 if (this.isAbove(e, sel)) {
-                    console.log("isAbove " + sel);
+                    console.log("isAbove!!!! " + sel);
                     this.selectionOnHover = sel;
                     this.is_above_previous = true;
-                    this.inkCanvas.drawPreviousGestureM(sel.stroke);
-
+                    if (sel.type == StrokeType.Marquee) {
+                        this.inkCanvas.drawPreviousGestureM(sel.stroke);
+                    }
+                    if (sel.type == StrokeType.Lasso) {
+                        console.log(sel);
+                        this.inkCanvas.drawPreviousGestureL(sel.samplePoints);
+                    }
                     //draw red 
                     //onHover
                     //clickable-remember variable(selection Current PRev);tu
@@ -373,13 +608,66 @@ class Main {
 
     // checks if current mouse is above previous, must consider scrollTop
     isAbove(e, sel: AbstractSelection): Boolean {
-        var firstPoint = sel.stroke.points[0];
-        var lastPoint = sel.stroke.points[sel.stroke.points.length - 1];
-        
-        return (e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
-        //return bool
-         
+        if (sel.type == StrokeType.Marquee) {
+      //      console.log("marquee check");
+            var firstPoint = sel.stroke.points[0];
+            var lastPoint = sel.stroke.points[sel.stroke.points.length - 1];
+       //     console.log(e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
+            return (e.clientX > firstPoint.x && e.clientX < lastPoint.x) && (e.clientY > firstPoint.y - $(window).scrollTop() && e.clientY < lastPoint.y - $(window).scrollTop());
+        }
+        if (sel.type == StrokeType.Lasso) {
+            //   console.log(sel.isPointBound(new Point(e.clientX, e.clientY)));
+            var stroke = new Stroke();
+            stroke.points = sel.samplePoints;
+            return this.isPointBound(new Point(e.clientX, e.clientY), stroke);
+        }
+        return false;
     }
+
+    sampleLines(stroke :Stroke): Array<Line> {
+        var sampleStroke = stroke.points;
+        var lines = [];
+        for (var i = 1; i < sampleStroke.length; i++) {
+            lines.push(new Line(sampleStroke[i - 1], sampleStroke[i]));
+        }
+        lines.push(new Line(sampleStroke[sampleStroke.length - 1], sampleStroke[0]));
+        return lines;
+    }
+    ///directly from lasso
+    isPointBound(p: Point, s: Stroke): boolean {
+        var lines = this.sampleLines(s);
+      //  console.log("======isPointBound ");
+      //  console.log(p);
+        var xPoints = [];
+        for (var i = 0; i < lines.length; i++) {
+            var l = lines[i];
+            if (p.y <= Math.max(l.p1.y, l.p2.y) && p.y >= Math.min(l.p1.y, l.p2.y)) {
+                var x = (l.C - l.B * p.y) / l.A;
+                xPoints.push(x);
+            }
+        }
+      //  console.log(xPoints);
+        if (xPoints.length == 0)
+            return false;
+        xPoints.sort(function (a, b) { return a - b; });
+        var res = false;
+        //for compromise
+
+        
+        for (var i = 0; i < xPoints.length; i++) {
+            var xval = xPoints[i];
+            if (i == 0)
+                xval -= 30;
+            if (i == xPoints.length - 1)
+                xval += 30;
+            if (p.x < xval)
+                return res;
+            res = !res;
+        }
+        return false;
+    }
+
+
 
     isAboveBubble(e): Boolean {
 
@@ -414,11 +702,28 @@ class Main {
     showBubble(){
         $(this.bubble).show();
     }
-    checkAtag = (e): void => {
+
+    
+    checkAtag = (e): boolean => {
+        console.log("checkAtag");
         var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+        var res = true;
         console.log(hitElem);
 
-        if (hitElem.nodeName == "A") {
+        if (this.pointAbove) {
+                this.isPointSelected = true;
+                this.is_editing_selection = true;
+                document.body.appendChild(this.canvas);
+
+        }else if (this.lineAbove) {
+                this.isLineSelected = true;
+                this.is_editing_selection = true;
+                document.body.appendChild(this.canvas);
+        }
+        }
+        else if (hitElem.nodeName == "A") {
+            console.log("atag");
+
             var link = hitElem.getAttribute("href").toString();
 
             if (link.indexOf("http") == -1) {
@@ -426,14 +731,30 @@ class Main {
             }
             console.log(link);
             window.open(link, "_self");
-        } else if (hitElem.nodeName == "INPUT") {
+        } else if (hitElem.nodeName == "TEXTAREA") {
+            console.log("textarea");
+
             this.bubble_focused = true;
-            $(this.bubble).css("border", "8px solid red");
+            //  $(this.bubble).css("border", "8px solid red");
+        } else if (this.is_above_previous) {
+            console.log("======111 ABOVE PREVIOUS HIT");
+            console.log(this.selectionOnHover);
+            console.log(this.selectionOnHover.samplePoints);
+            if (this.isAboveLine(this.selectionOnHover.samplePoints)) {
+              //  this.inkCanvas.edit
+            }
         }
         else {
             document.body.appendChild(this.canvas);
+            res = false;
         }
+        return res;
     }
+    isAboveLine(points: Array<Point>): boolean {
+
+        return false;
+    }
+
 
     toggleEnabled(flag: boolean): void {
         console.log("toggle state changed");
