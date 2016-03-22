@@ -30,6 +30,7 @@ namespace NuSysApp
 
         private bool _isopen;
         private string _text = string.Empty;
+        private string _savedForInking = string.Empty;
         private List<InqLineModel> _lines = new List<InqLineModel>(); 
 
         public TextNodeView(TextNodeViewModel vm)
@@ -92,7 +93,7 @@ namespace NuSysApp
                 
                 var texts = await InkToText(_lines); 
                 if (texts.Count > 0)
-                    UpdateText(_text + texts[0]);
+                    UpdateText(_savedForInking + texts[0]);
                  UpdateController(_text);
 
             };
@@ -128,6 +129,7 @@ namespace NuSysApp
 
         private void OnInkClick(object sender, RoutedEventArgs e)
         {
+            _savedForInking = _text;
             if (!_isopen)
             {
                 FlipOpen.Begin();
