@@ -162,7 +162,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
         }
 
-        public virtual async Task RequestMoveToCollection(string newCollectionContentID)
+        public virtual async Task RequestMoveToCollection(string newCollectionContentID, double x=50000, double y=50000)
         {
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -174,8 +174,8 @@ namespace NuSysApp
             m1["metadata"] = metadata;
             m1["contentId"] = Model.LibraryId;
             m1["nodeType"] = Model.ElementType;
-            m1["x"] = 50000;
-            m1["y"] = 50000;
+            m1["x"] = x;
+            m1["y"] = y;
             m1["width"] = 200;
             m1["height"] = 200;
             m1["autoCreate"] = true;
