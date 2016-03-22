@@ -22,7 +22,7 @@ namespace NuSysApp
                 TranslateX = 0,
                 TranslateY = 0,
                 CenterX = 0,
-                CenterY = controller.Model.Height/2,
+                CenterY = (controller.Model.Height)/2,
                 ScaleX = 1,
                 ScaleY = 1
             };

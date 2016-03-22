@@ -168,8 +168,9 @@ namespace NuSysApp
            
             var contentId = SessionController.Instance.GenerateId();
 
+            
             metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
+            //metadata["node_creation_date"] = DateTime.Now;
             metadata["node_type"] = elementType + "Node";
 
             dict = new Message();
