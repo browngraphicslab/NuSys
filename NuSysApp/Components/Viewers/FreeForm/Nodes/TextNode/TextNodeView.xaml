@@ -64,7 +64,6 @@
                         <Grid.Projection>
                             <PlaneProjection RotationY="0"></PlaneProjection>
                         </Grid.Projection>
-                        <Rectangle Width="{Binding Width}" Height="{Binding Height}" Opacity="0.5" />
                     </Grid>
                     <Grid x:Name="wee">
                         <Grid.Projection>

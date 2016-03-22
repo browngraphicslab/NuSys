@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using Windows.Media.Capture;
 using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Shapes;
+using MyToolkit.Utilities;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -30,16 +33,17 @@ namespace NuSysApp
 
         private bool _isopen;
         private string _text = string.Empty;
-        private List<InqLineModel> _lines = new List<InqLineModel>(); 
+        private string _saveForInking = string.Empty;
+        private TextNodeViewModel _vm;
+
+       
 
         public TextNodeView(TextNodeViewModel vm)
         {
             InitializeComponent();
-
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
-
-
+            _vm = vm;
             var navigated = false;
 
             TextNodeWebView.NavigationCompleted += delegate
@@ -63,45 +67,33 @@ namespace NuSysApp
                 }
             };
 
+            TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
+        }
+
+        private void SetUpInking()
+        {
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
-            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
-            
+            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(_vm.Width, _vm.Height));
+
             var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;
+            rr.Children.Clear();
+            Rectangle r = new Rectangle();
+            r.Opacity = 0.5;
+            rr.Children.Add(r);
             rr.Children.Add(inqView);
-
-            TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
-
-            vm.Controller.LibraryElementModel.OnContentChanged += delegate(ElementViewModel originalSenderViewMode)
-            {
-                if (xMediaRecotder.Visibility == Visibility.Collapsed)
-                    return;
-
-                var memoryStream = new InMemoryRandomAccessStream();
-                var byteArray = Convert.FromBase64String(vm.Controller.LibraryElementModel.Data);
-                memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
-                memoryStream.Seek(0);
-                playbackElement.SetSource(memoryStream, "video/mp4");
-                _isRecording = false;
-            };
-
-            inqModel.LineFinalizedLocally += async delegate(InqLineModel model)
+            _saveForInking = _text;
+            List<InqLineModel> lines = new List<InqLineModel>();
+            inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
             {
                 var nm = model.GetScaled(Constants.MaxCanvasSize);
-                _lines.Add(nm);
-                
-                var texts = await InkToText(_lines); 
+                lines.Add(nm);
+
+                var texts = await InkToText(lines);
                 if (texts.Count > 0)
-                    UpdateText(_text + texts[0]);
-                 UpdateController(_text);
-
+                    UpdateText(_saveForInking + " " + texts[0]);
+                UpdateController(_text);
             };
-
-         //   EditText.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-       //     EditText.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-
-
-
         }
 
         private async void UpdateText(String str)
@@ -130,6 +122,7 @@ namespace NuSysApp
         {
             if (!_isopen)
             {
+                SetUpInking();
                 FlipOpen.Begin();
             }
             else
@@ -145,9 +138,7 @@ namespace NuSysApp
             string data = e.Value;
             if (data != "")
             {
-                UpdateController(data);
-
-               
+                UpdateController(data);             
             }
         }
 
@@ -205,9 +196,7 @@ namespace NuSysApp
                 var text = session.SpeechString;
                 UpdateText(_text + " " + text);
                 UpdateController(_text);
-
             }
-
         }
 
         public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
@@ -225,7 +214,6 @@ namespace NuSysApp
                 {
                     pc.Add(new Point(point2D.X, point2D.Y));
                 }
-
                 var stroke = b.CreateStroke(pc);
                 im.AddStroke(stroke);
             }
