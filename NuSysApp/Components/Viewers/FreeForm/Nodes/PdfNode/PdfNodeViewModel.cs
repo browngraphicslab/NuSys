@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
-using LdaLibrary;
+//using LdaLibrary;
 using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
@@ -71,7 +71,7 @@ namespace NuSysApp
 
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
-            LaunchLDA((PdfNodeModel)this.Model);
+            //LaunchLDA((PdfNodeModel)this.Model);
         }
 
         private async void OnPageChange(int page)
@@ -164,13 +164,13 @@ namespace NuSysApp
                 currPage++;
             }
 
-
+            /*
             DieStopWords ds = new DieStopWords();
             data = await ds.removeStopWords(data);
             List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
             this.Model.SetMetaData("tags", topics);
 
-            RaisePropertyChanged("Tags");
+            RaisePropertyChanged("Tags");*/
 
         }
 
