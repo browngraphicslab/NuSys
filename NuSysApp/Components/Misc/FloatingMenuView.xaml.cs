@@ -69,22 +69,24 @@ namespace NuSysApp
         private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (xAddNodeMenu.Visibility == Visibility.Visible)
+            {
                 xAddNodeMenu.Visibility = Visibility.Collapsed;
-            else
+            }
+            else {
                 xAddNodeMenu.Visibility = Visibility.Visible;
+            }
         }
 
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            _lib.ToggleVisiblity();
             if (_lib.Visibility == Visibility.Visible)
             {
-                _lib.Visibility = Visibility.Collapsed;
-                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_media.png";
+                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_collapse.png";
             }
             else
             {
-                _lib.Visibility = Visibility.Visible;
-                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_collapse.png";
+                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_media.png";
             }
         }
 

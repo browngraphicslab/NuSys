@@ -37,7 +37,7 @@ namespace NuSysApp
         private FloatingMenuView _menu;
         private double _graphButtonX;
         private double _graphButtonY;
-
+        private LibraryElementPropertiesWindow _propertiesWindow;
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
@@ -45,6 +45,7 @@ namespace NuSysApp
             this.InitializeComponent();
             LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(SessionController.Instance.ContentController.Values));
             this.MakeViews(pageViewModel, properties);
+            _propertiesWindow = properties;
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
             this.Loaded += async delegate
@@ -67,6 +68,10 @@ namespace NuSysApp
         public async void ToggleVisiblity()
         {
             Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
+            if(Visibility == Visibility.Collapsed)
+            {
+                _propertiesWindow.Visibility = Visibility.Collapsed;
+            }
         }
         //public async Task InitializeLibrary()
         //{
@@ -304,12 +309,13 @@ namespace NuSysApp
             }
 
         }
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string contentId)
+        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
                 if (elementType != ElementType.Collection)
                 {
+                    var element = SessionController.Instance.ContentController.Get(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 
@@ -318,12 +324,13 @@ namespace NuSysApp
                     metadata["node_type"] = elementType + "Node";
 
                     dict = new Message();
+                    dict["title"] = element?.Title + " element";
                     dict["width"] = size.Width.ToString();
                     dict["height"] = size.Height.ToString();
                     dict["nodeType"] = elementType.ToString();
                     dict["x"] = pos.X;
                     dict["y"] = pos.Y;
-                    dict["contentId"] = contentId;
+                    dict["contentId"] = libraryId;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
@@ -334,7 +341,7 @@ namespace NuSysApp
                 else
                 {
                     await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, contentId, size.Width,
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
                             size.Height);
                 }
             });

@@ -136,5 +136,20 @@ namespace NuSysApp
         {
             _loading = loading;
         }
+        public long GetTimestampTicks()
+        {
+            if (!String.IsNullOrEmpty(Timestamp))
+            {
+                try {
+                    return DateTime.Parse(Timestamp).Ticks;
+                }
+                catch(Exception e)
+                {
+                    return 0;
+                }
+            }
+
+            return 0;
+        }
     }
 }

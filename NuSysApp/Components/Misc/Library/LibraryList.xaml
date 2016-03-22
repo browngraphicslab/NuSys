@@ -21,10 +21,16 @@
                     </Grid.ColumnDefinitions>
 
 
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="0" Foreground="#9cc5c2"  Text="title" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Foreground="#9cc5c2"  Text="type" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="2" Foreground="#9cc5c2"  Text="date" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                    
+                    <Button HorizontalAlignment="Center" Grid.Column="0" Click="Sort_Button_Click" Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        title
+                    </Button>
+                    <Button HorizontalAlignment="Center" Grid.Column="1" Click="Sort_Button_Click" Foreground="#9cc5c2"   FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    type
+                    </Button>
+                    <Button HorizontalAlignment="Center" Grid.Column="2" Click="Sort_Button_Click" Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                   date
+                    </Button>
+
 
                 </Grid>
             </ListView.Header>
