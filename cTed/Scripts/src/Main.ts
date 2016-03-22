@@ -711,19 +711,16 @@ class Main {
         console.log(hitElem);
 
         if (this.pointAbove) {
-                this.isPointSelected = true;
-                this.is_editing_selection = true;
-                document.body.appendChild(this.canvas);
+            this.isPointSelected = true;
+            this.is_editing_selection = true;
+            document.body.appendChild(this.canvas);
 
-        }else if (this.lineAbove) {
-                this.isLineSelected = true;
-                this.is_editing_selection = true;
-                document.body.appendChild(this.canvas);
-        }
-        }
-        else if (hitElem.nodeName == "A") {
+        } else if (this.lineAbove) {
+            this.isLineSelected = true;
+            this.is_editing_selection = true;
+            document.body.appendChild(this.canvas);
+        } else if (hitElem.nodeName == "A") {
             console.log("atag");
-
             var link = hitElem.getAttribute("href").toString();
 
             if (link.indexOf("http") == -1) {

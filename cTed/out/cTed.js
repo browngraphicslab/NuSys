@@ -2762,7 +2762,6 @@ var InkCanvas = (function () {
         ctx.stroke();
     };
     InkCanvas.prototype.focusPoint = function (p) {
-        console.log("FOCUSED");
         var ctx = this._context;
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = '#0000FF';
@@ -2835,7 +2834,7 @@ var LassoBrush = (function () {
     };
     //draw previous on hover
     LassoBrush.prototype.drawline = function (p1, p2, inkCanvas) {
-        console.log("drawline....");
+        //  console.log("drawline....");
         var c = inkCanvas._canvas;
         var ctx = inkCanvas._context;
         ctx.lineWidth = 30;
@@ -2848,7 +2847,7 @@ var LassoBrush = (function () {
     LassoBrush.prototype.drawPrevious = function (stroke, inkCanvas) {
         var _this = this;
         inkCanvas.clear();
-        console.log("======DRAWPREVLASSO!!");
+        //   console.log("======DRAWPREVLASSO!!");
         stroke.points.forEach(function (p, i) {
             _this.draw(p.x, p.y, inkCanvas);
             if (i == 0) {
@@ -3146,18 +3145,14 @@ var Main = (function () {
             var hitElem = document.elementFromPoint(e.clientX, e.clientY);
             var res = true;
             console.log(hitElem);
-            if (_this.is_above_previous) {
-                console.log("is_above_previous");
-                console.log(_this.lineAbove);
-                //this.selectionToEdit = this.selectionOnHover;
-                if (_this.pointAbove) {
-                    _this.isPointSelected = true;
-                    _this.is_editing_selection = true;
-                }
-                else if (_this.lineAbove) {
-                    _this.isLineSelected = true;
-                    _this.is_editing_selection = true;
-                }
+            if (_this.pointAbove) {
+                _this.isPointSelected = true;
+                _this.is_editing_selection = true;
+                document.body.appendChild(_this.canvas);
+            }
+            else if (_this.lineAbove) {
+                _this.isLineSelected = true;
+                _this.is_editing_selection = true;
                 document.body.appendChild(_this.canvas);
             }
             else if (hitElem.nodeName == "A") {
