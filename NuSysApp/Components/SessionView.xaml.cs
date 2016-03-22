@@ -70,7 +70,7 @@ namespace NuSysApp
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
                     Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
-                    Canvas.SetLeft(xBtnPen, 5);
+                    Canvas.SetLeft(xBtnPen, 10);
                 };
 
             xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
@@ -189,8 +189,8 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,156,197,194));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
                 Debug.WriteLine("asdasdas");
             }
             else
@@ -200,8 +200,8 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,199,232,235));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 199, 232, 235));
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                 Debug.WriteLine("asdasdas");
             }
             
