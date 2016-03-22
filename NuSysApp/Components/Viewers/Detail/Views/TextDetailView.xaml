@@ -8,9 +8,10 @@
     mc:Ignorable="d"
     d:DesignHeight="750"
     d:DesignWidth="600">
-
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <WebView Name ="MyWebView" Height="420" Width="500" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
                              Visibility="Visible" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
         </WebView>
+    </Border>
 
 </UserControl>

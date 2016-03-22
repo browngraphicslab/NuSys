@@ -72,8 +72,7 @@ namespace NuSysApp
                     m["height"] = 400;
                     m["nodeType"] = ElementType.Text.ToString();
                     m["autoCreate"] = true;
-                    m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                    m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
@@ -99,8 +98,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-            m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = selectionItem.BookmarkId;

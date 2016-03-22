@@ -51,6 +51,13 @@ namespace NuSysApp
             {
                 vm.InitializeLibrary();
             };
+            vm.OnElementDeleted += delegate
+            {
+                UITask.Run(delegate
+                {
+                    properties.Visibility = Visibility.Collapsed;
+                });
+            };
         }
 
         public async void ToggleVisiblity()
@@ -105,7 +112,7 @@ namespace NuSysApp
         {
             if (WorkspacePivot.Content != _libraryList)
             {
-                await _libraryList.Update();
+                 _libraryList.Update();
                 WorkspacePivot.Content = _libraryList;
             }
         }
@@ -316,7 +323,7 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }

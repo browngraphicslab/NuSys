@@ -18,11 +18,15 @@ namespace NuSysApp
         public delegate void NewElementAvailableEventHandler(LibraryElementModel element);
         public event NewElementAvailableEventHandler OnNewElementAvailable;
 
+        public delegate void ElementDeletedEventHandler(LibraryElementModel element);
+        public event ElementDeletedEventHandler OnElementDeleted;
+
         private double _width, _height;
 
         public LibraryBucketViewModel()
         {
             SessionController.Instance.ContentController.OnNewContent += FireNewContentAvailable;
+            SessionController.Instance.ContentController.OnElementDelete += FireElementDeleted;
         }
 
      
@@ -30,7 +34,12 @@ namespace NuSysApp
         public async Task InitializeLibrary()
         {
             UITask.Run(delegate {
-                OnNewContents?.Invoke(SessionController.Instance.ContentController.Values);
+                //OnNewContents?.Invoke(SessionController.Instance.ContentController.Values);
+                var values = new List<LibraryElementModel>(SessionController.Instance.ContentController.Values);
+                foreach (var v in values)
+                {
+                    OnNewElementAvailable?.Invoke(v);             
+                }
             });
         }
 
@@ -38,6 +47,12 @@ namespace NuSysApp
         {
             OnNewElementAvailable?.Invoke(content);
         }
+
+        private void FireElementDeleted(LibraryElementModel element)
+        {
+            OnElementDeleted?.Invoke(element);
+        }
+
         public void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
             List<LibraryElementModel> elements = new List<LibraryElementModel>();
@@ -82,8 +97,7 @@ namespace NuSysApp
                         m["width"] = 400;
                         m["height"] = 400;
                         m["nodeType"] = element.Type.ToString();
-                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                        m["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
                             await
                                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
@@ -101,12 +115,6 @@ namespace NuSysApp
                 }
             });
         }
-
-        public void AddNewElement(LibraryElementModel element)
-        {
-            OnNewElementAvailable?.Invoke(element);
-        }
-
         public void GridViewDragStarting(object sender, DragStartingEventArgs e)
         {
             //e.Data.Properties.

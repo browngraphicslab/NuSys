@@ -82,7 +82,9 @@ namespace NuSysApp
             if (_inqLineModel.IsDeleted)
                 return;
 
-            var request = new FinalizeInkRequest( new Message(await _inqLineModel.Pack()));
+            var message = new Message(await _inqLineModel.Pack());
+
+            var request = new FinalizeInkRequest( message);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
     }

@@ -46,7 +46,6 @@ namespace NuSysApp
         {
             get { return _contentController; }
         }
-
         public SpeechRecognizer Recognizer { get; set; }
 
         public bool IsRecording { get; set; }
@@ -63,6 +62,8 @@ namespace NuSysApp
             }
         }
 
+        public delegate void EnterNewCollectionEventHandler();
+        public event EnterNewCollectionEventHandler OnEnterNewCollection;
 
         public static SessionController Instance
         {
@@ -127,6 +128,10 @@ namespace NuSysApp
             */
         }
 
+        public void FireEnterNewCollection()
+        {
+            OnEnterNewCollection?.Invoke();
+        }
 
         //private int _id = 0;
         public string GenerateId()

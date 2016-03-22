@@ -63,12 +63,14 @@ namespace NuSysApp
 
             PointerEntered += OnPointerEntered;
             PointerExited += OnPointerExited;
+            SessionController.Instance.SessionView = this;
 
             SizeChanged +=
                 delegate(object sender, SizeChangedEventArgs args)
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
                     Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
+                    Canvas.SetLeft(xBtnPen, 5);
                 };
 
             xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
@@ -105,7 +107,7 @@ namespace NuSysApp
                 await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
             }
 
-            SessionController.Instance.SessionView = this;
+            
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
             await SessionController.Instance.InitializeRecog();
@@ -187,7 +189,8 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
-                xBtnPen.Background = new SolidColorBrush(Colors.Firebrick);
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,156,197,194));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                 Debug.WriteLine("asdasdas");
             }
             else
@@ -197,21 +200,22 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
-                xBtnPen.Background = new SolidColorBrush(Colors.IndianRed);
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,199,232,235));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 199, 232, 235));
                 Debug.WriteLine("asdasdas");
             }
             
         }
 
-        public async Task LoadWorkspaceFromServer(IEnumerable<string> nodeStrings, string collectionId)
+        public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                     new SubscribeToCollectionRequest(collectionId));
 
             SessionController.Instance.IdToControllers.Clear();
-
-            var elementCollectionInstance = new CollectionElementModel(collectionId)
+            
+            var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
             {
                 Title = "Instance title"
             };
@@ -225,15 +229,23 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            foreach (var dict in nodeStrings)
+            foreach (var msg in nodeMessages)
             {
-                var msg = new Message(dict);
-                msg["creatorContentID"] = collectionId;
+                msg["creator"] = collectionId;
                 var libraryId = msg.GetString("contentId");
 
                 ElementType type;
 
                 var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+                if (libraryModel == null)
+                {
+                    if (msg.ContainsKey("id"))
+                    {
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new DeleteSendableRequest((string) msg["id"]));
+                    }
+                    continue;
+                }
                 type = libraryModel.Type;
 
                 if (Constants.IsNode(type))
@@ -245,7 +257,7 @@ namespace NuSysApp
                             var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                             foreach (var m in messages)
                             {
-                                m["creatorContentID"] = libraryId;
+                                m["creator"] = libraryId;
                                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                             }
                     }
@@ -281,11 +293,11 @@ namespace NuSysApp
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
-            xWorkspaceTitle.Paste += UpdateTitle;
+            //xWorkspaceTitle.Paste += UpdateTitle;
 
             freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-            Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
+            //Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 65);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
@@ -307,7 +319,7 @@ namespace NuSysApp
         private void UpdateTitle(object sender, object args)
         {
             var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
-            model.Title = xWorkspaceTitle.Text;
+           model.Title = xWorkspaceTitle.Text;
             var m = new Message();
             m["id"] = model.Id;
             m["title"] = model.Title;

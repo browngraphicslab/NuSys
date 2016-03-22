@@ -81,8 +81,13 @@ namespace NuSysApp
         {
             if (!_isHovering)
                 return;
-           
-            var id1 = (((FrameworkElement)sender).DataContext as ElementViewModel).Id;
+
+            var draggedItem = (((FrameworkElement) sender).DataContext as ElementViewModel);
+
+            if (draggedItem is LinkViewModel)
+                return;
+
+            var id1 = draggedItem.Id;
             var id2 = _hoveredNode.Id;
             if (_hoveredNode.IsEditing)//TODO FIX?
             {
@@ -119,8 +124,7 @@ namespace NuSysApp
                 elementMsg["y"] = p.Y;
                 elementMsg["contentId"] = contentId;
                 elementMsg["nodeType"] = ElementType.Collection;
-                elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                elementMsg["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 elementMsg["id"] = newCollectionId;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
@@ -131,8 +135,8 @@ namespace NuSysApp
 
                 var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 300, 300, newCollectionId);
 
-                await controller2.RequestMoveToCollection(newCollectionId, contentId);
-                await controller1.RequestMoveToCollection(newCollectionId, contentId);
+                await controller2.RequestMoveToCollection(contentId);
+                await controller1.RequestMoveToCollection(contentId);
 
 
                 _isHovering = false;
@@ -141,13 +145,13 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                await controller1.RequestMoveToCollection(controller2.Model.Id, controller2.Model.LibraryId);
+                await controller1.RequestMoveToCollection(controller2.Model.LibraryId);
                 return;
             }
 
             if (c1IsCollection)
             {
-                await controller2.RequestMoveToCollection(controller1.Model.Id,controller1.Model.LibraryId);
+                await controller2.RequestMoveToCollection(controller1.Model.LibraryId);
             }
  
          
@@ -165,6 +169,7 @@ namespace NuSysApp
                 var fe = (FrameworkElement) uiElem;
                 var r = fe.DataContext is ElementViewModel &&
                         fe.DataContext != SessionController.Instance.ActiveFreeFormViewer &&
+                        !(fe.DataContext is LinkViewModel) &&
                         draggedItem.DataContext != fe.DataContext && 
                         (draggedItem.DataContext as ElementViewModel).Model != (fe.DataContext as ElementViewModel).Model;
                 return r;

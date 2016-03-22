@@ -198,7 +198,7 @@ namespace NuSysApp.Nodes.AudioNode
                             gridView.Items.Remove((Image)sender);
 
                         }
-
+                        _model.LinkedNodes.Remove(_nodeImageTuples[i].Item1);
                         _nodeImageTuples.RemoveAt(i);
                         OnBlock = false;
                         ((Image)sender).ReleasePointerCapture(e.Pointer);

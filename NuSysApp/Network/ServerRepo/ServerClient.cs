@@ -210,6 +210,9 @@ namespace NuSysApp
                     var id = (string) dict["id"];
                     var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
                     var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
+                    var timestamp = dict.ContainsKey("library_element_creation_timestamp")
+                        ? (string) dict["library_element_creation_timestamp"].ToString()
+                        : null;
 
                     if (NeededLibraryDataIDs.Contains(id))
                     {
@@ -217,7 +220,6 @@ namespace NuSysApp
                     }
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
-
                     if (content == null)
                     {
                         if (type == ElementType.Collection)
@@ -230,7 +232,7 @@ namespace NuSysApp
                         }
                         SessionController.Instance.ContentController.Add(content);
                     }
-
+                    content.Timestamp = timestamp;
                     await UITask.Run(async delegate
                     {
                         content.Load(contentData);

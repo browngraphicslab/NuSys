@@ -119,6 +119,7 @@
     <Content Include="Assets\icon_search.png" />
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
+    <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
@@ -205,6 +206,9 @@
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
+      <DependentUpon>TextInputBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -287,6 +291,7 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
@@ -375,7 +380,6 @@
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\ID.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
@@ -384,6 +388,7 @@
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
+    <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
@@ -565,6 +570,7 @@
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -596,6 +602,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Components\Misc\TextInputBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -819,6 +829,10 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LdaLib\LdaLib.csproj">
+      <Project>{108aee28-552d-4d59-bfe3-41edef97dd30}</Project>
+      <Name>LdaLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>

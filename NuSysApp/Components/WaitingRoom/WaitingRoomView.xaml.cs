@@ -36,9 +36,12 @@ namespace NuSysApp
         public static string ServerSessionID { get; private set; }
 
         public static bool TEST_LOCAL_BOOLEAN = false;
-        private static IEnumerable<string> _firstLoadList;
+
+        private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
+
+        private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -48,6 +51,7 @@ namespace NuSysApp
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
             ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
@@ -74,7 +78,7 @@ namespace NuSysApp
                     data = await content.ReadAsStringAsync();
                 }
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
-
+                List?.Items?.Clear();
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
@@ -82,6 +86,7 @@ namespace NuSysApp
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
                     box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
                     List.Items.Add(box);
+                    _preloadedIDs.Add(box.ID);
                 }
             }
             catch (Exception e)
@@ -110,42 +115,45 @@ namespace NuSysApp
             {
                 var item = List.SelectedItems.First();
                 var id = ((CollectionTextBox) item).ID;
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace/"+id;
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(new Uri(url));
-                string data;
-                using (var content = response.Content)
-                {
-                    data = await content.ReadAsStringAsync();
-                }
-                _firstLoadList = JsonConvert.DeserializeObject<List<string>>(data);
+                _firstLoadList = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
             }
         }
 
-        public static IEnumerable<string> GetFirstLoadList()
+        public static IEnumerable<Message> GetFirstLoadList()
         {
             if (_firstLoadList == null)
             {
-                return new List<string>();
+                return new List<Message>();
             }
-            var l = new List<string>(_firstLoadList);
+            var l = new List<Message>(_firstLoadList);
             _firstLoadList = null;
             return l;
         }
-
+        private async void NewUser_OnClick(object sender, RoutedEventArgs e)
+        {
+            Login(true);
+        }
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Login(false);
+        }
+
+        private async void Login(bool createNewUser)
         {
             try
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var cred = new Dictionary<string, string>();
-                
+
                 cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
-                
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/" ;
+                if (createNewUser)
+                {
+                    cred["new_user"] = "";
+                }
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
                 var client = new HttpClient(
                  new HttpClientHandler
                  {
@@ -168,8 +176,8 @@ namespace NuSysApp
                 }
 
                 string data;
-                var text = JsonConvert.SerializeObject(cred,settings);
-                var response = await client.PostAsync(new Uri(url),new StringContent(text, Encoding.UTF8, "application/xml"));
+                var text = JsonConvert.SerializeObject(cred, settings);
+                var response = await client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
                 using (var content = response.Content)
                 {
                     data = await content.ReadAsStringAsync();
@@ -182,7 +190,7 @@ namespace NuSysApp
                     doc.LoadXml(data);
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
                     validCredentials = bool.Parse(dict["valid"]);
-                    serverSessionId = dict["server_session_id"];
+                    serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
                 }
                 catch (Exception boolParsException)
                 {
@@ -199,7 +207,7 @@ namespace NuSysApp
 
                         SessionController.Instance.ContentController.OnNewContent += delegate (LibraryElementModel element)
                         {
-                            if (element.Type == ElementType.Collection)
+                            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.Id))
                             {
                                 UITask.Run(delegate
                                 {
@@ -208,6 +216,7 @@ namespace NuSysApp
                                     box.Text = element.Title ?? "Unnamed Collection";
                                     List.Items.Add(box);
                                 });
+                                _preloadedIDs.Add(element.Id);
                             }
                         };
 
@@ -303,7 +312,7 @@ namespace NuSysApp
             {
                 Debug.WriteLine("cannot connect to server");
             }
-            
+
         }
         //TODO: move this crypto stuff elsewhere, only here temporarily
         public static byte[] Encrypt(string plain)

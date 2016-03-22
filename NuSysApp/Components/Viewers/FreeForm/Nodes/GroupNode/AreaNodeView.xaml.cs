@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -23,6 +24,9 @@ namespace NuSysApp
         private NodeManipulationMode _nodeManipulationMode;
         private CreateGroupMode _createGroupMode;
         private PanZoomMode _panZoomMode;
+        private ElementType _elementType;
+        private Image _dragItem;
+        private DragOutMode _dragOutMode;
 
         public AreaNodeView(AreaNodeViewModel vm)
         {
@@ -38,8 +42,28 @@ namespace NuSysApp
             _panZoomMode = new PanZoomMode(this);
             _panZoomMode.Activate();
 
+            _dragOutMode = new DragOutMode(this);
+            _dragOutMode.Activate();
+            
         }
 
+        //private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
+        //{
+        //    _elementType = sender == btnAddNode ? ElementType.Text : ElementType.Image;
+
+        //    args.Container = xWrapper;
+        //    var bmp = new RenderTargetBitmap();
+        //    await bmp.RenderAsync((UIElement)sender);
+        //    var img = new Image();
+        //    img.Opacity = 0;
+        //    var t = new CompositeTransform();
+
+        //    img.RenderTransform = new CompositeTransform();
+        //    img.Source = bmp; 
+        //    _dragItem = img;
+
+        //    xWrapper.Children.Add(_dragItem);
+        //}
         public void Update()
         {
             // TODO: refactor
@@ -57,5 +81,7 @@ namespace NuSysApp
             }
             */
         }
+
+        public Canvas OuterCanvas => xCanvas;
     }
 }
