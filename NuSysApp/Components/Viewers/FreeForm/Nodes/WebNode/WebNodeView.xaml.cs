@@ -21,7 +21,7 @@ namespace NuSysApp
             Canvas.SetZIndex(xWebView, -10);
             DataContext = vm;
             xUrlBox.ManipulationMode = ManipulationModes.All;
-            xWebView.RenderTransform = new CompositeTransform
+            WebCanvas.RenderTransform = new CompositeTransform
             {
                 ScaleX = vm.Zoom,
                 ScaleY = vm.Zoom
@@ -45,12 +45,18 @@ namespace NuSysApp
             vm.PropertyChanged += OnPropertyChanged;
         }
 
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            vm.Controller.RequestDelete();
+        }
+
         private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             var vm = (WebNodeViewModel) DataContext;
             //   await xWebView.InvokeScriptAsync("eval", new string[] { "ZoomFunction(" + vm.Zoom + ");" });
 
-            var c = xWebView.RenderTransform as CompositeTransform;
+            var c = WebCanvas.RenderTransform as CompositeTransform;
             c.ScaleX = vm.Zoom;
             c.ScaleY = vm.Zoom;
         }
