@@ -47,12 +47,32 @@ namespace NuSysApp
             {
                 ListView.ItemsSource = vm._PageElements;
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
+                foreach(var i in vm._PageElements)
+                {
+                    i.OnLightupContent += delegate(bool b)
+                    {
+                        if (b)
+                        {
+                            Select(i);
+                        }
+                    };
+                }
             };
+            ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
             _propertiesWindow = propertiesWindow;
             _library = library;
             vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
 
+        }
+        private void Select(LibraryElementModel model)
+        {
+            ListView.SelectedItem = null;
+            if (((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Count == SessionController.Instance.ContentController.Count || ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Contains(model))
+            {
+                ListView.SelectedItem = model;
+                ListView.ScrollIntoView(model);
+            }
         }
 
         public ObservableCollection<LibraryElementModel> GetItems()
@@ -136,6 +156,8 @@ namespace NuSysApp
             _x = e.GetCurrentPoint(view).Position.X;
             _y = e.GetCurrentPoint(view).Position.Y;
 
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            element.FireLightupContent(true);
         }
         private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
@@ -146,7 +168,7 @@ namespace NuSysApp
 
             var view = SessionController.Instance.SessionView;
             var rect = view.LibraryDraggingRectangle;
-
+            element.FireLightupContent(true);
         }
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -242,12 +264,7 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));          
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
+            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));         
         }
     }
 

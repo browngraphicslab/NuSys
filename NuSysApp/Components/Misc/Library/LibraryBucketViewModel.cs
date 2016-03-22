@@ -21,6 +21,9 @@ namespace NuSysApp
         public delegate void ElementDeletedEventHandler(LibraryElementModel element);
         public event ElementDeletedEventHandler OnElementDeleted;
 
+        public delegate void HighlightElementEventHandler(LibraryElementModel element);
+        public event HighlightElementEventHandler OnHighlightElement;
+
         private double _width, _height;
 
         public LibraryBucketViewModel()
@@ -45,6 +48,13 @@ namespace NuSysApp
 
         private void FireNewContentAvailable(LibraryElementModel content)
         {
+            content.OnLightupContent += delegate(bool lit)
+            {
+                if (lit)
+                {
+                    OnHighlightElement?.Invoke(content);
+                }
+            };
             OnNewElementAvailable?.Invoke(content);
         }
 

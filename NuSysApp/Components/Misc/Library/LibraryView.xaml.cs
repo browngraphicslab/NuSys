@@ -71,6 +71,7 @@ namespace NuSysApp
             if(Visibility == Visibility.Collapsed)
             {
                 _propertiesWindow.Visibility = Visibility.Collapsed;
+                LibraryElementModel.LitElement?.FireLightupContent(false);
             }
         }
         //public async Task InitializeLibrary()

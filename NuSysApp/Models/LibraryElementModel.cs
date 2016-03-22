@@ -1,14 +1,20 @@
 
-﻿using System;
+using System;
 using System.Collections.Generic;
-﻿using System.Threading.Tasks;
-﻿using SQLite.Net.Attributes;
+using System.Threading.Tasks;
+using SQLite.Net.Attributes;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
     public class LibraryElementModel : BaseINPC
     {
         public bool Loaded { get; set; }
+
+        public static LibraryElementModel LitElement;
 
         public delegate void OnLoadedEventHandler();
         public event OnLoadedEventHandler OnLoaded {
@@ -37,6 +43,9 @@ namespace NuSysApp
 
         public delegate void ElementDeletedEventHandler();
         public event ElementDeletedEventHandler OnDelete;
+
+        public delegate void LightupContentEventHandler(bool lightup);
+        public event LightupContentEventHandler OnLightupContent;
         public ElementType Type { get; set; }
 
         public string Data
@@ -75,7 +84,22 @@ namespace NuSysApp
             Loaded = false;
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-
+        public void FireLightupContent(bool lightup)
+        {
+            if (LitElement != null && LitElement != this)
+            {
+                LitElement.FireLightupContent(false);
+            }
+            if (lightup)
+            {
+                LitElement = this;
+            }
+            else
+            {
+                LitElement = null;
+            }
+            OnLightupContent?.Invoke(lightup);
+        }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             ViewUtilBucket.Clear();

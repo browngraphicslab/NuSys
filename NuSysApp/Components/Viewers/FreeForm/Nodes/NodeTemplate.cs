@@ -139,7 +139,12 @@ namespace NuSysApp
                 userName.Foreground = vm.UserColor;
                 userName.Text = user?.Name ?? "";
             };
-            
+            vm.Controller.LibraryElementModel.OnLightupContent += delegate (bool lightup)
+             {
+                 highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+                 highlight.BorderThickness = new Thickness(5);
+                 highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
+             };
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
