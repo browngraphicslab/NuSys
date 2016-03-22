@@ -7,8 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:foundation="using:Windows.Foundation"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
     Width="{Binding Width}"
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
