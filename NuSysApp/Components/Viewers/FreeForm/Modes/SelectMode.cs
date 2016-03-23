@@ -45,7 +45,7 @@ namespace NuSysApp
 
             _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, false );
             _view.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, false );
-            _view.AddHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler, true );
+            _view.AddHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler, false );
         }
 
         public override async Task Deactivate()

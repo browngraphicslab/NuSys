@@ -17,6 +17,7 @@ namespace NuSysApp
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
+
         public override void SetSize(double width, double height)
         {
             var model = Model as VideoNodeModel;
@@ -47,5 +48,6 @@ namespace NuSysApp
         {
             (Model as VideoNodeModel).LinkedTimeModels.Add(model);
         }
+
     }
 }

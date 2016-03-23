@@ -122,6 +122,7 @@ namespace NuSysApp
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
                 vm.Controller.SetTitle(title.Text);
+
             };
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 

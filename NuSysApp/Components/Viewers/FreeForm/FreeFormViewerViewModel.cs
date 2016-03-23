@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 
@@ -227,6 +228,7 @@ namespace NuSysApp
             }
             _selections.Clear();
             SelectionChanged?.Invoke(this);
+            FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
         }
         
 
