@@ -206,6 +206,7 @@ namespace NuSysApp
         #region Sort Timeline
         private void ResortTimeline(String dataName)
         {
+            return;
             _sortBy = _viewBy = dataName;
             
             _atomList.Clear();
@@ -260,12 +261,12 @@ namespace NuSysApp
                 var vm = (ElementViewModel)atom.DataContext;
                 var model = (ElementModel)vm.Model;
                 string[] keys = model.GetMetaDataKeys();
-
+                /*
                 Debug.WriteLine("key length: " + keys.Length);
                 foreach (var metadatatitle in keys)
                 {
                     Debug.WriteLine(metadatatitle);
-                }
+                }*/
 
                 foreach (var metadatatitle in keys)
                 {

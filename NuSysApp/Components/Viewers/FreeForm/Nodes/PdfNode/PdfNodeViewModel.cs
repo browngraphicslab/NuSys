@@ -65,7 +65,7 @@ namespace NuSysApp
             {
                 uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
                 IBuffer readBuffer = dataReader.ReadBuffer(u);
-                _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
+                _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 120);
              //   Document = _document;
             }
 
@@ -136,6 +136,11 @@ namespace NuSysApp
                 var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
                 base.SetSize(height * r, height);
             }
+        }
+
+        protected override void OnSizeChanged(object source, double width, double height)
+        {
+            SetSize(width, height);
         }
 
         public async Task LaunchLDA(PdfNodeModel model)

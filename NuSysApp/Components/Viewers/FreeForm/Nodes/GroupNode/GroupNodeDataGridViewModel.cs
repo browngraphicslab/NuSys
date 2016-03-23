@@ -33,10 +33,11 @@ namespace NuSysApp
 
                 _nodeModel.SetMetaData("creator", "Dummy Data");
 
+                string id = _nodeModel.Id;
                 string timeStamp = _nodeModel.GetMetaData("node_creation_date")?.ToString();
                 string creator = _nodeModel.GetMetaData("creator")?.ToString();
                 string nodeType = _nodeModel.ElementType.ToString();
-                GroupNodeDataGridInfo atomData = new GroupNodeDataGridInfo(timeStamp, creator, nodeType);
+                GroupNodeDataGridInfo atomData = new GroupNodeDataGridInfo(id, timeStamp, creator, nodeType);
                 _atomDataList.Add(atomData);
             }
         }

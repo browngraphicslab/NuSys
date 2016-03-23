@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<converters:AnimatableUserControl
     x:Class="NuSysApp.BezierLinkView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,9 +9,9 @@
     d:DesignWidth="400"
     xmlns:converters="using:NuSysApp"
 >
-    <UserControl.Resources>
+    <converters:AnimatableUserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="bConverter"/>
-    </UserControl.Resources>
+    </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".5" CompositeMode="MinBlend">
@@ -38,7 +38,8 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <Grid x:Name="AnnotationContainer">
+        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical">
+            <Grid>
             <Rectangle x:Name="Rect" Fill="Transparent" StrokeThickness="2" Stroke="#D2F3FF" StrokeDashArray="4,4" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal">
                 <TextBox x:Name="Annotation" IsHitTestVisible="{Binding IsSelected}" TextWrapping="Wrap"  AcceptsReturn="True"  Width="260" MaxHeight="80" FontSize="18" BorderBrush="Transparent" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding AnnotationText, Mode=TwoWay}"></TextBox>
@@ -46,6 +47,10 @@
                     <Image Source="/Assets/icon_record.png" Height="20"/>
                 </Button>
             </StackPanel>
-        </Grid>
+            </Grid>
+            <Button Margin="0,2,0,2" x:Name="Delete" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+            </Button>
+        </StackPanel>
     </Canvas>
-</UserControl>
+</converters:AnimatableUserControl>

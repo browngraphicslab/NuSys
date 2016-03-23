@@ -45,6 +45,7 @@ namespace NuSysApp
                   this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                   this.Height = SessionController.Instance.SessionView.ActualHeight;
                   this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+                  this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth-30;
                   Canvas.SetTop(this, 0);
                   Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                   // Metadata.ItemsSource = vm.Metadata;
@@ -56,8 +57,9 @@ namespace NuSysApp
         public async void ShowElement(ElementController controller)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.ShowElement(controller);
-            Visibility = Visibility.Visible;
+            if (await vm.ShowElement(controller))
+                Visibility = Visibility.Visible;
+
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -152,29 +154,14 @@ namespace NuSysApp
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             double rightCoord = Canvas.GetLeft(this) + this.Width;
-
-            if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0))
+       
+            if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
                 this.Width -= e.Delta.Translation.X;
                // xContainer.Width = this.Width - 30;
+
                // exitButtonContainer.Width = xContainer.Width;
                
-                if (nodeContent.Content is ImageFullScreenView)
-                {
-                   // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                } else if (nodeContent.Content is TextDetailView)
-                {
-                    ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
-                } else if (nodeContent.Content is WebDetailView)
-                {
-               //     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-               //     Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
-                }
-           //     Properties.Width = xContainer.Width - 15;
-          //      TagContainer.Width = xContainer.Width - 15;
-          //      propLine.X2 = Properties.Width - 15;
-              //  tagLine.X2 = TagContainer.Width - 15;
-               // NewTagBox.Width = TagContainer.Width - 163;
                 Canvas.SetLeft(this, rightCoord - this.Width);
 
                 e.Handled = true;

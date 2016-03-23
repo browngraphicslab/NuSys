@@ -8,7 +8,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using NuSysApp.Controller;
-
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
 {

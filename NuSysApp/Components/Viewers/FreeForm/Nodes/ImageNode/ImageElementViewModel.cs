@@ -46,25 +46,27 @@ namespace NuSysApp
             if (image != null)
             {
                 Image = image;
+                Controller.SetSize(Controller.Model.Width, Controller.Model.Width);
             }
             else
             {
                 Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(Controller.LibraryElementModel.Data));
 
                 // adjust the size of an image that is too large
+                Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
                 if (Image.PixelHeight > 300 || Image.PixelWidth > 300)
                 {
                     double dim = Math.Max(Image.PixelWidth, Image.PixelHeight);
                     double scale = Math.Floor(dim / 300);
-                    SetSize(Image.PixelWidth / scale, Image.PixelHeight / scale);
+                    Controller.SetSize(Image.PixelWidth / scale, Image.PixelHeight / scale);
                 }
                 else
                 {
-                    SetSize(Image.PixelWidth, Image.PixelHeight);
+                    Controller.SetSize(Image.PixelWidth, Image.PixelHeight);
                 }
-                Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
-                RaisePropertyChanged("Image");
             }
+            
+            RaisePropertyChanged("Image");
         }
 
         public override void SetSize(double width, double height)
@@ -79,6 +81,11 @@ namespace NuSysApp
                 var r = Image.PixelWidth / (double)Image.PixelHeight;
                 base.SetSize(height * r, height);
             }
+        }
+
+        protected override void OnSizeChanged(object source, double width, double height)
+        {
+            SetSize(width,height);
         }
     }
 }

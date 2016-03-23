@@ -50,6 +50,9 @@ namespace NuSysApp
                     break;
             }
 
+            if (view == null)
+                return null; 
+
             await ((ElementViewModel)view.DataContext).Init();
             return view;
         }

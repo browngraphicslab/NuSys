@@ -23,6 +23,22 @@ namespace NuSysApp
         {
            DataContext = viewModel;
            this.InitializeComponent();
+
+       
+            DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
+
+        }
+
+        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
+        {
+            var src = (FrameworkElement) args.OriginalSource;
+            if (src.DataContext is GroupNodeDataGridInfo)
+            {
+                var dc = (GroupNodeDataGridInfo) src.DataContext;
+                //SessionController.Instance.IdToControllers[dc.Id].RequestMoveToCollection()
+                // get Id here
+
+            }
         }
     }
 }

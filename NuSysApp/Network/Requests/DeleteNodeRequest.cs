@@ -43,8 +43,8 @@ namespace NuSysApp
                 return;
             }
 
-            var atomModel = SessionController.Instance.IdToControllers[Id];
-            atomModel.Delete();
+            var controller = SessionController.Instance.IdToControllers[Id];
+            controller.Delete();
             SessionController.Instance.IdToControllers.Remove(Id);
         }
     }
