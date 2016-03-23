@@ -19,7 +19,7 @@ namespace NuSysApp
 
         public delegate void DeleteEventHandler(object source);
 
-        public delegate void LocationUpdateEventHandler(object source, double x, double y);
+        public delegate void LocationUpdateEventHandler(object source, double x, double y, double dx = 0, double dy = 0);
 
         public delegate void MetadataChangeEventHandler(object source, string key);
 
@@ -92,10 +92,12 @@ namespace NuSysApp
 
         public void SetPosition(double x, double y)
         {
+            var px = Model.X;
+            var py = Model.Y;
             Model.X = x;
             Model.Y = y;
 
-            PositionChanged?.Invoke(this, x, y);
+            PositionChanged?.Invoke(this, x, y, x - px, y - py);
 
             _debouncingDictionary.Add("x", x);
             _debouncingDictionary.Add("y", y);
@@ -128,6 +130,7 @@ namespace NuSysApp
         public void Delete()
         {
             Deleted?.Invoke(this);
+            SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
         }
 
         public async virtual Task RequestDelete()
@@ -162,16 +165,21 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
         }
 
-        public virtual async Task RequestMoveToCollection(string newCollectionContentID)
+        public virtual async Task RequestMoveToCollection(string newCollectionContentID, double x=50000, double y=50000)
         {
             var metadata = new Dictionary<string, object>();
-
+            metadata["node_creation_date"] = DateTime.Now;
+            // TODO: remove temp
+            Random rnd = new Random();
+            metadata["random_id"] = rnd.Next(1, 1000);
+            metadata["random_id2"] = rnd.Next(1, 100);
             var m1 = new Message();
             m1["metadata"] = metadata;
             m1["contentId"] = Model.LibraryId;
             m1["nodeType"] = Model.ElementType;
-            m1["x"] = 50000;
-            m1["y"] = 50000;
+            m1["title"] = Model.Title;
+            m1["x"] = x;
+            m1["y"] = y;
             m1["width"] = 200;
             m1["height"] = 200;
             m1["autoCreate"] = true;

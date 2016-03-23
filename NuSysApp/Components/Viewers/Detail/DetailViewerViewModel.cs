@@ -10,6 +10,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -36,11 +37,14 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
         }
 
-        public async void ShowElement(ElementController controller)
+        public async Task<bool> ShowElement(ElementController controller)
         {
+            View = await _viewFactory.CreateFromSendable(controller);
+            if (View == null)
+                return false;
             _nodeModel = controller.Model;
             Title = _nodeModel.Title;
-            View = await _viewFactory.CreateFromSendable(controller);
+            
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
             MakeTagList();
@@ -49,6 +53,7 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
             this.MakeMetadataList();
+            return true;
         }
 
         private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
@@ -144,10 +149,12 @@ namespace NuSysApp
             deleteButton.FontSize = 15;
             deleteButton.FontWeight = FontWeights.Bold;
             deleteButton.Margin = new Thickness(0,0,3,0);
-            deleteButton.PointerExited += DeleteButton_PointerExited;
-            deleteButton.PointerEntered += DeleteButton_PointerEntered;
-            deleteButton.Name = text;
             
+            var deleteGrid = new Grid();
+            deleteGrid.Tag = text;
+            deleteGrid.Children.Add(deleteButton);
+            deleteGrid.Tapped += DeleteGridOnTapped;
+
             var tagContent = new TextBlock() { Text = text };
             tagContent.Foreground = new SolidColorBrush(Colors.White);
             tagContent.FontStyle = FontStyle.Italic;
@@ -156,9 +163,9 @@ namespace NuSysApp
             var stackPanel = new Grid();
             stackPanel.ColumnDefinitions.Add(new ColumnDefinition{Width = new GridLength(20)});
             stackPanel.ColumnDefinitions.Add(new ColumnDefinition{Width = GridLength.Auto});
-            stackPanel.Children.Add(deleteButton);
+            stackPanel.Children.Add(deleteGrid);
             stackPanel.Children.Add(tagContent);
-            Grid.SetColumn(deleteButton,0);
+            Grid.SetColumn(deleteGrid, 0);
             Grid.SetColumn(tagContent,1);
 
             Button tagBlock = new Button();
@@ -172,9 +179,21 @@ namespace NuSysApp
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
             tagBlock.Opacity = 0.75;
             tagBlock.FontStyle = FontStyle.Italic;
-            tagBlock.IsHitTestVisible = false;
+           // tagBlock.IsHitTestVisible = false;
 
             return tagBlock;
+        }
+
+        private async void DeleteGridOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
+        {
+            List<string> tags = (List<string>)_nodeModel.GetMetaData("tags");
+            var t = ((FrameworkElement) sender).Tag as string;
+            if (t == null)
+                return;
+            tags.Remove(t);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
+            MakeTagList();
+            RaisePropertyChanged("Tags");
         }
 
         private async void MetaDataBox_OnKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
@@ -237,27 +256,10 @@ namespace NuSysApp
 
         private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            if (DeleteOnFocus)
-            {
-                List<string> tags = (List<string>)_nodeModel.GetMetaData("tags");
-                tags.Remove(_tagToDelete);
-                _nodeModel.SetMetaData("tags", tags);
-
-                Tags.Remove((Button)sender);
-                RaisePropertyChanged("Tags");
-            }
+      
         }
 
-        private void DeleteButton_PointerExited(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
-        {
-            DeleteOnFocus = false;
-        }
-        private void DeleteButton_PointerEntered(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
-        {
-            DeleteOnFocus = true;
-            _tagToDelete = ((TextBlock)sender).Name;
-            Debug.WriteLine(((TextBlock)sender).Name);
-        }
+
     }
 
     internal class T

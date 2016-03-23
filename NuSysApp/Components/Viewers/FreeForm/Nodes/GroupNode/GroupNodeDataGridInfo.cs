@@ -5,9 +5,10 @@
         private string _timeStamp;
         private string _creator;
         private string _nodetype;
-
-        public GroupNodeDataGridInfo(string time, string name, string nodetype)
+        
+        public GroupNodeDataGridInfo(string id,string time, string name, string nodetype)
         {
+            Id = id;
             this._timeStamp = time;
             this._creator = name;
             this._nodetype = nodetype;
@@ -30,5 +31,7 @@
             get { return _nodetype; }
             set { _nodetype = value; }
         }
+
+        public string Id { get; set; }
     }
 }

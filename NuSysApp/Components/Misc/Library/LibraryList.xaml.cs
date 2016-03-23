@@ -47,66 +47,34 @@ namespace NuSysApp
             {
                 ListView.ItemsSource = vm._PageElements;
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
+                foreach(var i in vm._PageElements)
+                {
+                    i.OnLightupContent += delegate(bool b)
+                    {
+                        if (b)
+                        {
+                            Select(i);
+                        }
+                    };
+                }
             };
+            ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
             _propertiesWindow = propertiesWindow;
             _library = library;
             vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
 
         }
-
-        public ObservableCollection<LibraryElementModel> GetItems()
+        private void Select(LibraryElementModel model)
         {
-            return (ObservableCollection<LibraryElementModel>)ListView.ItemsSource;
+            ListView.SelectedItem = null;
+            if (((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Count == SessionController.Instance.ContentController.Count || ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Contains(model))
+            {
+                ListView.SelectedItem = model;
+                ListView.ScrollIntoView(model);
+            }
         }
-
-        //public async void Sort(string s)
-        //{
-        //    IOrderedEnumerable<LibraryElement> ordered = null;
-        //    switch (s.ToLower().Replace(" ", string.Empty))
-        //    { 
-        //        case "title":
-        //            ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
-        //            break;
-        //        case "nodetype":
-        //            ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
-        //            break;
-        //        case "timestamp":
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //    if (ordered != null)
-        //    { 
-        //        ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-        //        await Task.Run(async delegate
-        //        {
-        //            foreach (var item in ordered)
-        //            {
-        //                newCollection.Add(item);
-        //            }
-        //        });
-        //        ListView.ItemsSource = newCollection;
-        //    }
-        //}
-        //public async void Search(string s)
-        //{
-        //    ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-        //    var coll = ((ObservableCollection<LibraryElement>) ListView.ItemsSource);
-        //    await Task.Run(async delegate
-        //    {
-        //        foreach (var item in coll)
-        //        {
-        //            if (item.InSearch(s))
-        //            {
-        //                newCollection.Add(item);
-        //            }
-        //        }
-        //    });
-        //    ListView.ItemsSource = newCollection;
-        //}
-
-
+        
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
             ListView.ItemsSource = new ObservableCollection<LibraryElementModel>(elements);
@@ -136,6 +104,8 @@ namespace NuSysApp
             _x = e.GetCurrentPoint(view).Position.X;
             _y = e.GetCurrentPoint(view).Position.Y;
 
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            element.FireLightupContent(true);
         }
         private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
@@ -146,13 +116,26 @@ namespace NuSysApp
 
             var view = SessionController.Instance.SessionView;
             var rect = view.LibraryDraggingRectangle;
-
+            element.FireLightupContent(true);
         }
-
+        private async void Sort_Button_Click(object sender, RoutedEventArgs e)
+        {
+            string s = "nodetype";
+            switch (((Button)sender).Content.ToString())
+            {
+                case "title":
+                    s = "title";
+                    break;
+                case "date":
+                    s = "timestamp";
+                    break;
+            }
+            Sort(s);
+        }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.Id) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -229,7 +212,7 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));          
+            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));         
         }
     }
 

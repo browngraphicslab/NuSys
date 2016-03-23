@@ -70,7 +70,7 @@ namespace NuSysApp
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
                     Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
-                    Canvas.SetLeft(xBtnPen, 5);
+                    Canvas.SetLeft(xBtnPen, 10);
                 };
 
             xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
@@ -161,8 +161,7 @@ namespace NuSysApp
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
-            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk &&
-                xDetailViewer.Opacity < 0.1)
+            if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
             {
                 ActivatePenMode(true);
             }
@@ -173,7 +172,7 @@ namespace NuSysApp
             if (FocusManager.GetFocusedElement() is TextBox)
                 return;
 
-            if (args.VirtualKey == VirtualKey.Shift && xDetailViewer.Opacity < 0.1)
+            if (args.VirtualKey == VirtualKey.Shift)
             {
                 ActivatePenMode(false);
             }
@@ -189,8 +188,8 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,156,197,194));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
                 Debug.WriteLine("asdasdas");
             }
             else
@@ -200,8 +199,8 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255,199,232,235));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 199, 232, 235));
+                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                 Debug.WriteLine("asdasdas");
             }
             
@@ -229,6 +228,31 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
+            var dict = new Dictionary<string, Message>();
+
+            foreach (var msg in nodeMessages)
+            {
+                msg["creator"] = collectionId;
+                var libraryId = msg.GetString("contentId");
+                var id = msg.GetString("id");
+
+                var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+                if (libraryModel == null)
+                {
+                    if (msg.ContainsKey("id"))
+                    {
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new DeleteSendableRequest((string)msg["id"]));
+                    }
+                    continue;
+                }
+                dict[id] = msg;
+            }
+            await Task.Run(async delegate{
+                await MakeCollection(dict, true, 2);
+            });
+            Debug.WriteLine("done joining collection: " + collectionId);
+            /*
             foreach (var msg in nodeMessages)
             {
                 msg["creator"] = collectionId;
@@ -250,25 +274,101 @@ namespace NuSysApp
 
                 if (Constants.IsNode(type))
                 {
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(msg));
-                        if (type == ElementType.Collection)
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(msg));
+                    if (type == ElementType.Collection)
+                    {
+                        Dictionary<string, Message> subCollectionMessages = new Dictionary<string, Message>();
+                        HashSet<string> subCollectionLoaded = new HashSet<string>();
+                        var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
+                        foreach (var m in messages)
                         {
-                            var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
-                            foreach (var m in messages)
-                            {
-                                m["creator"] = libraryId;
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
-                            }
+                            subCollectionMessages[m.GetString("id")] = m;
+                        }
+
+                        while(subCollectionMessages.Count > 0)
+                        {
+                            var m = subCollectionMessages.First().Value;
+                            m["creator"] = libraryId;
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
+                        }
                     }
                 }
                 if (type == ElementType.Link)
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
                 }
+            }*/
+        }
+        private async Task MakeCollection(Dictionary<string, Message> messagesLeft, bool loadCollections, int levelsLeft = 1)
+        {
+            var made = new HashSet<string>();
+            while (messagesLeft.Any())
+            {
+                await MakeElement(made, messagesLeft, messagesLeft.First().Value, loadCollections, levelsLeft);
             }
         }
-
+        private async Task MakeElement(HashSet<string> made, Dictionary<string,Message> messagesLeft, Message message, bool loadCollections, int levelsLeft = 1)
+        {
+            Debug.WriteLine("making element");
+            var libraryId = message.GetString("contentId");
+            var id = message.GetString("id");
+            var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+            var type = libraryModel.Type;
+            switch (type)
+            {
+                case ElementType.Collection:
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
+                    if (loadCollections)
+                    {
+                        var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
+                        var subMessagesLeft = new Dictionary<string, Message>();
+                        foreach(var m in messages)
+                        {
+                            subMessagesLeft.Add(m.GetString("id"), m);
+                        }
+                        await MakeCollection(subMessagesLeft, levelsLeft > 1, levelsLeft - 1);
+                    }
+                    break;
+                case ElementType.Link:
+                    var id1 = message.GetString("id1");
+                    var id2 = message.GetString("id2");
+                    if(made.Contains(id1) && made.Contains(id2))//both have been made
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
+                    }
+                    else if(!made.Contains(id1) && !made.Contains(id2))//neither have been made
+                    {
+                        if(messagesLeft.ContainsKey(id1) && messagesLeft.ContainsKey(id2))
+                        {
+                            await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
+                            await MakeElement(made, messagesLeft, messagesLeft[id2], loadCollections, levelsLeft);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
+                        }
+                    }
+                    else if (!made.Contains(id1))//id2 has been made, but id1 hasn't
+                    {
+                        if (messagesLeft.ContainsKey(id1))
+                        {
+                            await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
+                        }
+                    }
+                    else if (!made.Contains(id2))//id1 has been made, but id2 hasn't
+                    {
+                        if (messagesLeft.ContainsKey(id2))
+                        {
+                            await MakeElement(made, messagesLeft, messagesLeft[id2], loadCollections, levelsLeft);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
+                        }
+                    }
+                    break;
+                default:
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
+                    break;
+            }
+            messagesLeft.Remove(id);
+            made.Add(id);
+        }
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
             await DisposeCollectionView(_activeFreeFormViewer);

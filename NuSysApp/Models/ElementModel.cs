@@ -23,7 +23,7 @@ namespace NuSysApp
 
         public ElementModel(string id) : base(id)
         {
-
+            ElementType = ElementType.None;
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
             InqCanvas = new InqCanvasModel(id);

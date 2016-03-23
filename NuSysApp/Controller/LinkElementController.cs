@@ -21,9 +21,15 @@ namespace NuSysApp
             OutElement = SessionController.Instance.IdToControllers[model.OutAtomId];
             InElement.AddLink(this);
             OutElement.AddLink(this);
+
+            base.PositionChanged += delegate(object source, double d, double d1, double dx, double dy)
+            {
+                InElement.SetPosition(InElement.Model.X + dx, InElement.Model.Y + dy);
+                OutElement.SetPosition(OutElement.Model.X + dx, OutElement.Model.Y + dy);
+            };
         }
 
-        public override async Task RequestMoveToCollection(string newCollectionContentID)
+        public override async Task RequestMoveToCollection(string newCollectionContentID, double x = 50000, double y = 50000)
         {
             var metadata = new Dictionary<string, object>();
             var link = Model as LinkModel;
@@ -32,8 +38,8 @@ namespace NuSysApp
             m1["metadata"] = metadata;
             m1["contentId"] = Model.LibraryId;
             m1["nodeType"] = Model.ElementType;
-            m1["x"] = 50000;
-            m1["y"] = 50000;
+            m1["x"] = x;
+            m1["y"] = y;
             m1["width"] = 200;
             m1["height"] = 200;
             m1["autoCreate"] = true;

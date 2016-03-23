@@ -200,6 +200,10 @@ namespace NuSysApp
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
             if (!selectedElements.Any())
                 return;
+
+            var libElemModel = ((ElementViewModel)selectedElements.First().DataContext).Controller.LibraryElementModel;
+            if (libElemModel != null)
+                libElemModel.FireLightupContent(true);
             Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
             SelectionChanged?.Invoke(this);
         }
@@ -219,6 +223,7 @@ namespace NuSysApp
             foreach (var selectable in _selections)
             {
                 selectable.IsSelected = false;
+                LibraryElementModel.LitElement?.FireLightupContent(false);
             }
             _selections.Clear();
             SelectionChanged?.Invoke(this);

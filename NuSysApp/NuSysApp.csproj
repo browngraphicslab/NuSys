@@ -18,10 +18,10 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>39EC66F4E78ABDEC36FFC55A39C7EE7FC58A1086</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\Philipp\Desktop\deploy\</AppxPackageDir>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxPackageDir>D:\Trent\NuSys\</AppxPackageDir>
+    <AppxBundlePlatforms>x86|arm</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
@@ -121,9 +121,14 @@
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\logos\150x150.png" />
+    <Content Include="Assets\logos\150x150.scale-100.png" />
+    <Content Include="Assets\logos\150x150.scale-200.png" />
     <Content Include="Assets\logos\310x150.png" />
     <Content Include="Assets\logos\310x310.png" />
     <Content Include="Assets\logos\44x44.png" />
+    <Content Include="Assets\logos\50x50.png" />
+    <Content Include="Assets\logos\620x300.png" />
+    <Content Include="Assets\logos\630x300.png" />
     <Content Include="Assets\logos\71x71.png" />
     <Content Include="Assets\icon.scale-125.png" />
     <Content Include="Assets\icon.scale-150.png" />
@@ -152,6 +157,15 @@
     <Content Include="Assets\icon_audionode_rewind.png" />
     <Content Include="Assets\icon_audionode_stop.png" />
     <Content Include="Assets\icon_users.png" />
+    <Content Include="Assets\logos\SplashScreen.scale-200.png" />
+    <Content Include="Assets\logos\SplashScreen.scale-400.jpg" />
+    <Content Include="Assets\logos\SplashScreen.scale-400.png" />
+    <Content Include="Assets\logos\Square150x150Logo.png" />
+    <Content Include="Assets\logos\Square300x300Logo.png" />
+    <Content Include="Assets\logos\Square44x44Logo.png" />
+    <Content Include="Assets\logos\StoreLogo.png" />
+    <Content Include="Assets\logos\Wide310x150Logo.png" />
+    <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />

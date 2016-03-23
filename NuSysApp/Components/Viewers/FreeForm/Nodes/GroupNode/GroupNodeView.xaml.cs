@@ -105,6 +105,8 @@ namespace NuSysApp
             return r;
         }
 
+        public AreaNodeView FreeFormView => freeFormView;
+
         private void MenuDetailButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             Button tb = (Button)sender;

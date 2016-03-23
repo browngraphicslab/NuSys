@@ -1,6 +1,2 @@
 #TargetFrameworkVersion=:PlatformToolSet=v120:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit
-<<<<<<< HEAD:MuPDFWinRT/Win8/ARM/Debug/MuPDFWinRT/MuPDFWinRT.tlog/MuPDFWinRT.lastbuildstate
-Debug|ARM|S:\NuSys\|
-=======
-Debug|Win32|C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\|
->>>>>>> origin/junsu:MuPDF.WinRT/Win8/Win32/Debug/MuPDFWinRT/MuPDFWinRT.tlog/MuPDFWinRT.lastbuildstate
+Debug|ARM|C:\Users\nusys\Documents\Trent_Repo_2\nusys\|

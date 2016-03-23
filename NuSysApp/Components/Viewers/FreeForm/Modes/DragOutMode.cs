@@ -21,7 +21,7 @@ namespace NuSysApp
         private DispatcherTimer _timer;
         private int _counter = 0;
         private readonly int _waitTime = 500;
-
+       
         public DragOutMode(FrameworkElement view) : base(view){ }
 
         public override async Task Activate()
@@ -114,16 +114,13 @@ namespace NuSysApp
             var sendVm = (ElementViewModel)send.DataContext;
             var model = sendVm.Model;
             var groupModel = vm.Model;
-            var point = vm.CompositeTransform.TransformPoint(new Point(model.X, model.Y));
-            var x = point.X + groupModel.X;
-            var y = point.Y + groupModel.Y;
-            var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
+            var point = this.GetRealCoordinatesOnScreen(sender);
             var t = (CompositeTransform)_dragItem.RenderTransform;
-            t.TranslateX = point2.X;
-            t.TranslateY = point2.Y;
+            t.TranslateX = point.X;
+            t.TranslateY = point.Y;
         }
 
-        private Point GetRealCoordinatesOnScreen(object sender, ManipulationDeltaRoutedEventArgs args)
+        private Point GetRealCoordinatesOnScreen(object sender)
         {
             var cview = (AreaNodeView)_view;
             var vm = (AreaNodeViewModel)cview.DataContext;
@@ -132,15 +129,17 @@ namespace NuSysApp
             var model = sendVm.Model;
             var groupModel = vm.Model;
 
-            var point = vm.CompositeTransform.TransformPoint(args.Position);
+            var point = vm.CompositeTransform.TransformPoint(new Point(model.X, model.Y));
             var x = point.X + groupModel.X;
-            var y = point.Y + groupModel.Y; var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
-            return new Point(x, y);
+            var y = point.Y + groupModel.Y;
+            var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
+            return point2;
+
         }
 
         private bool IsPointerInGroup(object sender, ManipulationDeltaRoutedEventArgs args)
         {
-            var hits = VisualTreeHelper.FindElementsInHostCoordinates(this.GetRealCoordinatesOnScreen(sender, args), SessionController.Instance.SessionView);
+            var hits = VisualTreeHelper.FindElementsInHostCoordinates(this.GetRealCoordinatesOnScreen(sender), SessionController.Instance.SessionView);
             var result = hits.Where((uiElem) => uiElem is AreaNodeView);
             return result.Any();
         }
@@ -176,8 +175,12 @@ namespace NuSysApp
                     }
                     if (_counter == 2) //This happens after waiting another 0.5 seconds
                     {
+                        var t = (CompositeTransform)_dragItem.RenderTransform;
+                        var screenX = t.TranslateX;
+                        var screenY = t.TranslateY;
+                        var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(screenX, screenY));
                         var controller = SessionController.Instance.IdToControllers[model.Id];
-                        await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId);
+                        await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
                         this.StopTimer(sender, args);
                     }
                 };
