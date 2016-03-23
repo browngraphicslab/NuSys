@@ -45,7 +45,7 @@
         <TextBox x:Name="Searchfield" TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>
 
         <Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>
-        <Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>
+        <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
         <Button Height="40" Width="50" Margin="400,512,0,0" Tapped="Folder_Tapped" Background="Transparent" BorderBrush="#9cc5c2" BorderThickness="2">
             <Image Source="ms-appx:///Assets/icon_upload.png" Height="30"></Image>
         </Button>
