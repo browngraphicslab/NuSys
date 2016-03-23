@@ -21,8 +21,8 @@ namespace NuSysApp
         private DispatcherTimer _timer;
         private int _counter = 0;
         private readonly int _waitTime = 500;
-       
-        public DragOutMode(FrameworkElement view) : base(view){ }
+
+        public DragOutMode(FrameworkElement view) : base(view) { }
 
         public override async Task Activate()
         {
@@ -51,7 +51,7 @@ namespace NuSysApp
                 var userControl = (UserControl)n;
                 if (userControl.DataContext is ElementViewModel)
                 {
-                    
+
                     userControl.ManipulationDelta -= OnManipulationDelta;
                     userControl.PointerReleased -= UserControlOnPointerReleased;
                 }
@@ -70,7 +70,7 @@ namespace NuSysApp
             _timer = null;
         }
 
-       
+
         private async void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
             if (!IsPointerInGroup(sender, args))
@@ -128,18 +128,15 @@ namespace NuSysApp
             var sendVm = (ElementViewModel)send.DataContext;
             var model = sendVm.Model;
             var groupModel = vm.Model;
-
             var point = vm.CompositeTransform.TransformPoint(new Point(model.X, model.Y));
             var x = point.X + groupModel.X;
             var y = point.Y + groupModel.Y;
             var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
             return point2;
-
         }
 
         private bool IsPointerInGroup(object sender, ManipulationDeltaRoutedEventArgs args)
         {
-            var point = ((UIElement) sender).TransformToVisual(SessionController.Instance.SessionView.MainCanvas);
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(this.GetRealCoordinatesOnScreen(sender), SessionController.Instance.SessionView);
             var result = hits.Where((uiElem) => uiElem is AreaNodeView);
             return result.Any();
@@ -205,7 +202,7 @@ namespace NuSysApp
                     var sendVm = (ElementViewModel)send.DataContext;
                     sendVm.IsVisible = true;
                 }
-                
+
             }
             _dragItem = null;
             _counter = 0;

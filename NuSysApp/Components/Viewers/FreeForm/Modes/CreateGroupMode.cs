@@ -153,23 +153,15 @@ namespace NuSysApp
                 var x = draggedItem.Transform.TranslateX;
                 var y = draggedItem.Transform.TranslateY;
                 var point = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
-                var model = (ElementModel) _hoveredNode.Model;
+                var model = (ElementModel)_hoveredNode.Model;
                 var modelX = model.X;
                 var modelY = model.Y;
-                var gX =  modelX + point.X;
-                var gY = modelY + point.Y;
-                
+                var gX = modelX - point.X;
+                var gY = modelY - point.Y;
+
                 var point2 = _hoveredNode.Transform.TransformPoint(point);
-                var transform = ((UIElement) sender).TransformToVisual(_hoveredView);
-                var u = VisualTreeHelper.GetParent(_hoveredView);
-                while (!(u is GroupNodeView))//TODO HACKY
-                {
-                    u = VisualTreeHelper.GetParent(u);
-                }
-                var gview = (GroupNodeView)u;
-                var fview = gview.FreeFormView;
-                var o = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(fview.InnerCanvas).TransformPoint(new Point(point.X, point.Y));
-                await controller1.RequestMoveToCollection(controller2.Model.LibraryId,o.X, o.Y);
+
+                await controller1.RequestMoveToCollection(controller2.Model.LibraryId, point2.X, point2.Y);
                 return;
             }
 

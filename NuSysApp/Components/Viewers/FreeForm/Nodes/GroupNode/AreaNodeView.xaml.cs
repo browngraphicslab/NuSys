@@ -86,6 +86,6 @@ namespace NuSysApp
 
         public Canvas OuterCanvas => xCanvas;
 
-        public Canvas InnerCanvas => iCanvas;
+   
     }
 }
