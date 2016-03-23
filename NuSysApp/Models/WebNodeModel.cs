@@ -11,7 +11,7 @@ namespace NuSysApp
 {
     public class WebNodeModel : ElementModel
     {
-        private string _url = string.Empty;
+        //private string _url = string.Empty;
         //private List<Webpage> _history;
         
 

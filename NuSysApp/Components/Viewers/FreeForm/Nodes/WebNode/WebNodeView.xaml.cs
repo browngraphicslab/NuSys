@@ -31,16 +31,12 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-
-                //String url = vm.Controller.LibraryElementModel.Data;
-                String  url = vm.Url;
+                String url = vm.Controller.LibraryElementModel.Data;
                 url = url ?? "http://www.google.com";
-                url = url == "" ? "http://www.google.com" : vm.Controller.LibraryElementModel.Data;
                 vm.Controller.LibraryElementModel?.SetContentData(vm, url);
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
-                   // xUrlBox.CancelDirectManipulations();
                     eventArgs.Handled = true;
                 };
             };

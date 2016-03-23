@@ -57,11 +57,9 @@ namespace NuSysApp
             controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
             {
                 Url = controller.LibraryElementModel.Data;
-
                 if (originalSenderViewModel != this)
                 {
                     RaisePropertyChanged("Url");
-
                 }
             };
             //    Zoom = (Width / 1024.0);

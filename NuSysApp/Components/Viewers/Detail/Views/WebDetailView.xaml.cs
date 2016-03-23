@@ -31,12 +31,6 @@ namespace NuSysApp
             Loaded += delegate (object sender, RoutedEventArgs args)
             {
                 SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
-
-                //(vm.Model as WebNodeModel).Url = "http://www.google.com";
-                //(vm.Model as WebNodeModel).Url = vm.Url;
-
-                //vm.Controller.LibraryElementModel?.SetContentData(vm, vm.Url);
-
             };
             SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
             var url = vm.Controller.LibraryElementModel.Data;
@@ -51,16 +45,8 @@ namespace NuSysApp
     
         public void SetDimension(double parentWidth, double parentHeight)
         {
-            //webViewPanel.Width = parentWidth*0.8;
-            //webViewPanel.Height = parentHeight*0.6;
             xWebView.Width = parentWidth;
             xWebView.Height = parentHeight;
-            //xWebView.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
-            //xScrollViewer.Height = xWebView.Height;
-            //xScrollViewer.Width = xWebView.Width;
-            //webTopBar.Width = xWebView.ActualWidth;
-            //this.Height = xWebView.ActualHeight + 37;
-            //this.Width = xWebView.ActualWidth;
             Canvas.SetZIndex(Refresh,20);
         }
 
@@ -68,7 +54,6 @@ namespace NuSysApp
         {
             url = url ?? "http://www.google.com";
             xWebView.Navigate(new Uri(url));
-
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -147,15 +132,14 @@ namespace NuSysApp
             xUrlBox.Text = url;
             if (_viewMod.Controller.LibraryElementModel.Data != url)
             {
-                (DataContext as WebNodeViewModel).Url = url;
-               // (DataContext as WebNodeViewModel).History.Add(new WebNodeModel.Webpage(url, GetTimestamp(DateTime.Now)));
                 Back.IsEnabled = true;
+                _viewMod.Controller.LibraryElementModel?.SetContentData(_viewMod, url);
 
-                var message = new Message();
-                message["url"] = url;
-                message["id"] = (DataContext as WebNodeViewModel).Id;
-                var request = new SendableUpdateRequest(message);
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                //var message = new Message();
+                //message["url"] = url;
+                //message["id"] = (DataContext as WebNodeViewModel).Id;
+                //var request = new SendableUpdateRequest(message);
+                //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }
 
         }

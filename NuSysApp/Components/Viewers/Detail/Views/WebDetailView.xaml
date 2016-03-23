@@ -22,7 +22,7 @@
             </Button>
         </Grid>
         <!--<ScrollViewer x:Name="xScrollViewer" Margin="0,37,0,0">-->
-        <WebView x:Name="xWebView" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  NavigationCompleted="XWebView_OnNavigationCompleted"/>
+        <WebView x:Name="xWebView" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  NavigationCompleted="XWebView_OnNavigationCompleted" />
         <!--</ScrollViewer>-->
     </StackPanel>
     <!--</Grid>-->
