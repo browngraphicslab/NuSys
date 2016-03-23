@@ -143,7 +143,7 @@ namespace NuSysApp
 
             if (vm.Controller.LibraryElementModel != null) { 
                 vm.Controller.LibraryElementModel.OnLightupContent += delegate (bool lightup)
-                 {
+                {
                      highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
                      highlight.BorderThickness = new Thickness(5);
                      highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);

@@ -194,10 +194,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="selected"></param>
         public void AddSelection(ElementViewModel selected)
-        {   
+        {
             selected.IsSelected = true;
+          
             if (!_selections.Contains(selected))
                 _selections.Add(selected);
+   
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
             if (!selectedElements.Any())
                 return;
@@ -206,6 +208,8 @@ namespace NuSysApp
             if (libElemModel != null)
                 libElemModel.FireLightupContent(true);
             Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
+         
+
             SelectionChanged?.Invoke(this);
         }
 

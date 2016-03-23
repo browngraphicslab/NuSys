@@ -64,7 +64,6 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-          
             _released = false;
             await Task.Delay(200);
             if (!_released)

@@ -97,6 +97,7 @@ namespace NuSysApp
                     mediaCapture = new MediaCapture();
                     var settings = new MediaCaptureInitializationSettings();
                     settings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
+                   //var prop = mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
                     await mediaCapture.InitializeAsync(settings);
                     stream = new InMemoryRandomAccessStream();
                     await
@@ -172,8 +173,8 @@ namespace NuSysApp
             m["contentId"] = contentId;
             m["x"] = vm.Model.X;
             m["y"] = vm.Model.Y;
-            m["width"] = vm.Model.Width;
-            m["height"] = vm.Model.Height;
+            m["width"] = vm.Width;
+            m["height"] = vm.Height;
             m["nodeType"] = type.ToString();
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
