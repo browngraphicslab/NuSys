@@ -13,12 +13,12 @@
     HorizontalAlignment="Left" VerticalAlignment="Top"
 >
 
-    <Canvas x:Name="xCanvas" Width="1000" Height="1000">
+    <Canvas x:Name="xCanvas" Background="Aquamarine" Width="100000" Height="100000">
         <Canvas.Clip>
             <RectangleGeometry Rect="{Binding ClipRect}">
             </RectangleGeometry>
         </Canvas.Clip>
-        <Canvas x:Name ="iCanvas" HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}">
+        <Canvas x:Name ="iCanvas" Background="Brown"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" />
         </Canvas>
     </Canvas>

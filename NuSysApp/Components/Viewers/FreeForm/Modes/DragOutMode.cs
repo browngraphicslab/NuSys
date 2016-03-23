@@ -137,6 +137,7 @@ namespace NuSysApp
 
         private bool IsPointerInGroup(object sender, ManipulationDeltaRoutedEventArgs args)
         {
+            var point = ((UIElement) sender).TransformToVisual(SessionController.Instance.SessionView.MainCanvas);
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(this.GetRealCoordinatesOnScreen(sender), SessionController.Instance.SessionView);
             var result = hits.Where((uiElem) => uiElem is AreaNodeView);
             return result.Any();
