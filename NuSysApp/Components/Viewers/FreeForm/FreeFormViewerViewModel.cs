@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 
@@ -193,10 +194,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="selected"></param>
         public void AddSelection(ElementViewModel selected)
-        {   
+        {
             selected.IsSelected = true;
+          
             if (!_selections.Contains(selected))
                 _selections.Add(selected);
+   
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
             if (!selectedElements.Any())
                 return;
@@ -205,6 +208,8 @@ namespace NuSysApp
             if (libElemModel != null)
                 libElemModel.FireLightupContent(true);
             Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
+         
+
             SelectionChanged?.Invoke(this);
         }
 
@@ -227,6 +232,7 @@ namespace NuSysApp
             }
             _selections.Clear();
             SelectionChanged?.Invoke(this);
+            FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
         }
         
 

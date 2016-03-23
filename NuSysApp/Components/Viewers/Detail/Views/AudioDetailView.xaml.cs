@@ -41,12 +41,13 @@ namespace NuSysApp
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
-            ((AudioNodeModel)(vm.Model)).Controller.OnScrub += Controller_OnScrub;
+            ((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
             ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
             ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
             ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
             scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             scrubBar.Loaded += ScrubBarOnLoaded;
+            ((AudioNodeModel)(vm.Model)).Controller.Scrub();
 
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
 
@@ -75,6 +76,7 @@ namespace NuSysApp
         private void ScrubBarOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             this.AddAllLinksVisually();
+            this.CheckBlocksForHit(scrubBar.Value);
         }
 
         private void Controller_OnStop1(MediaElement playbackElement)
@@ -100,11 +102,15 @@ namespace NuSysApp
             };
         }
 
-        private void Controller_OnScrub(MediaElement playbackElement)
+        private void ControllerOnScrub(MediaElement playbackElement)
         {
-            scrubBar.Value = scrubBar.Maximum*
-                             (playbackElement.Position.TotalMilliseconds/
+            if (!playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds.Equals(0))
+            {
+                scrubBar.Value = scrubBar.Maximum *
+                             (playbackElement.Position.TotalMilliseconds /
                               playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+            }
+            
         }
 
         public async void CheckBlocksForHit(double value)
@@ -201,7 +207,7 @@ namespace NuSysApp
                 double millliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
                 TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
-                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(time);
+                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
 
             }
         }
@@ -223,10 +229,10 @@ namespace NuSysApp
                 if (_addTimeBlockMode == false)
                 {
                     double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
-                    double seconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
+                    double milliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
-                    TimeSpan time = new TimeSpan(0, 0, (int)seconds);
-                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(time);
+                    TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)milliseconds);
+                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
 
                 }
                 else if (_addTimeBlockMode == true)

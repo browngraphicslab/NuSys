@@ -122,6 +122,7 @@ namespace NuSysApp
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
                 vm.Controller.SetTitle(title.Text);
+
             };
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
@@ -142,7 +143,7 @@ namespace NuSysApp
 
             if (vm.Controller.LibraryElementModel != null) { 
                 vm.Controller.LibraryElementModel.OnLightupContent += delegate (bool lightup)
-                 {
+                {
                      highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
                      highlight.BorderThickness = new Thickness(5);
                      highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);

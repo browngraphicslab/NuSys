@@ -20,6 +20,7 @@ namespace NuSysApp
         public RecordingNodeView(ElementViewModel vm)
         {
             DataContext = vm;
+            vm.Controller.SetSize(vm.Width, vm.Height);
             InitializeComponent();
             xMediaRecorder.RecordingStopped += delegate(object source)
             {

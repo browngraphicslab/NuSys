@@ -107,7 +107,11 @@ namespace NuSysApp
             {
                 play.Opacity = 1;
             };
+            
             ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Play();
+            
+            
+
 
         }
 
@@ -177,7 +181,8 @@ namespace NuSysApp
             double millliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(time);
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
+            
 
         }
 
@@ -187,10 +192,10 @@ namespace NuSysApp
             if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed)
             {
                 double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
-                double seconds = playbackElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
+                double milliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
-                TimeSpan time = new TimeSpan(0, 0, (int)seconds);
-                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(time);
+                TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)milliseconds);
+                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
 
             }
             e.Handled = true;
@@ -233,7 +238,7 @@ namespace NuSysApp
 
         private void ScrubBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub(playbackElement.Position);
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub();
         }
     }
 }
