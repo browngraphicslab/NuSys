@@ -169,10 +169,10 @@ namespace NuSysApp
                  {
                      ToggleRecording(CurrentAudioFile.Name);
                  }*/
-            playbackElement.Pause();
+            playbackElement.Stop();
             //scrubBar.Value = 0;
-            playbackElement.Position = new TimeSpan(0);
-           
+            //playbackElement.Position = new TimeSpan(0,0,0,0,1);
+            scrubBar.Value = 0;
 
             //playbackElement.Stop();
 
@@ -208,6 +208,9 @@ namespace NuSysApp
             if (playbackElement.CurrentState != MediaElementState.Playing)
             {
                 Binding b = new Binding();
+                b.ElementName = "playbackElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 
                 playbackElement.Play();
             }

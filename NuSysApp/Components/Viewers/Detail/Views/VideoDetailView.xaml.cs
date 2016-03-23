@@ -284,8 +284,8 @@ namespace NuSysApp
                  {
                      ToggleRecording(CurrentAudioFile.Name);
                  }*/
-            playbackElement.Pause();
-            playbackElement.Position = new TimeSpan(0);
+            playbackElement.Stop();
+            scrubBar.Value = 0;
             
             //       _stopped = true;
             e.Handled = true;
@@ -313,6 +313,10 @@ namespace NuSysApp
                    {
                        play.Opacity = 1;
                    };*/
+            Binding b = new Binding();
+            b.ElementName = "playbackElement";
+            b.Path = new PropertyPath("Position.TotalMilliseconds");
+            scrubBar.SetBinding(ProgressBar.ValueProperty, b);
             playbackElement.Play();
         }
 

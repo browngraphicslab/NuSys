@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
         <CaptureElement x:Name="preview"/>
         <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False" MediaOpened="PlaybackElement_OnMediaOpened" Loaded="PlaybackElement_Onloaded"/>
-        <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased" ValueChanged="ScrubBar_OnValueChanged" Grid.Row="1" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" SizeChanged="ScrubBar_OnSizeChanged" Opacity="0.3" />
+        <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased" ValueChanged="ScrubBar_OnValueChanged" Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" SizeChanged="ScrubBar_OnSizeChanged" Opacity="0.3" />
 
         <Grid Grid.Row="2" HorizontalAlignment="Left">
             <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
