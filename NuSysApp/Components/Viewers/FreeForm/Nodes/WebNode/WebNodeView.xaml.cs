@@ -15,25 +15,28 @@ namespace NuSysApp
 {
     public sealed partial class WebNodeView : AnimatableUserControl
     {
+        private String  _url ;
         public WebNodeView(WebNodeViewModel vm)
         {
             InitializeComponent();
             Canvas.SetZIndex(xWebView, -10);
             DataContext = vm;
             xUrlBox.ManipulationMode = ManipulationModes.All;
-            WebCanvas.RenderTransform = new CompositeTransform
+            xWebView.RenderTransform = new CompositeTransform
             {
                 ScaleX = vm.Zoom,
                 ScaleY = vm.Zoom
             };
 
-            (vm.Model as WebNodeModel).UrlChanged += OnUrlChanged;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-              
-                var model = (vm.Model as WebNodeModel);
-                model.Url = model.Url == "" ? "http://www.google.com" : model.Url;
+
+                //String url = vm.Controller.LibraryElementModel.Data;
+                String  url = vm.Url;
+                url = url ?? "http://www.google.com";
+                url = url == "" ? "http://www.google.com" : vm.Controller.LibraryElementModel.Data;
+                vm.Controller.LibraryElementModel?.SetContentData(vm, url);
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
@@ -41,6 +44,14 @@ namespace NuSysApp
                     eventArgs.Handled = true;
                 };
             };
+
+
+            vm.Controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
+            {
+                var url = vm.Controller.LibraryElementModel.Data;
+                OnUrlChanged(url);
+            };
+
 
             vm.PropertyChanged += OnPropertyChanged;
         }
@@ -55,17 +66,16 @@ namespace NuSysApp
         {
             var vm = (WebNodeViewModel) DataContext;
             //   await xWebView.InvokeScriptAsync("eval", new string[] { "ZoomFunction(" + vm.Zoom + ");" });
-
-            var c = WebCanvas.RenderTransform as CompositeTransform;
+            vm.Url = _url;
+            var c = xWebView.RenderTransform as CompositeTransform;
             c.ScaleX = vm.Zoom;
             c.ScaleY = vm.Zoom;
         }
 
-        private void OnUrlChanged(object source, string url)
+        private void OnUrlChanged(string url)
         {
+            url = url ?? "http://www.google.com";
             xWebView.Navigate(new Uri(url));
-            var vm = (WebNodeViewModel)DataContext;
-           
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -75,7 +85,8 @@ namespace NuSysApp
                 var vm = (WebNodeViewModel)DataContext;
 
                 //(vm.Model as WebNodeModel).Url = xUrlBox.Text;
-                (vm.Model as WebNodeModel).Url = this.checkIfUrlRight(xUrlBox.Text);
+                var url  = this.checkIfUrlRight(xUrlBox.Text);
+                vm.Controller.LibraryElementModel?.SetContentData(vm, url);
 
             }
         }

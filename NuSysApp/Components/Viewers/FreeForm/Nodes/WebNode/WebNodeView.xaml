@@ -21,17 +21,18 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Canvas Name ="WebCanvas" Width ="{Binding Width}" Height ="{Binding Height}">
+            <!--<Canvas Name ="WebCanvas" Width ="{Binding Width}" Height ="{Binding Height}">
                 <Canvas.Clip>
                     <RectangleGeometry Rect="{Binding ClipRect}">
                     </RectangleGeometry>
-                </Canvas.Clip>
-
-                    <WebView x:Name="xWebView" Width ="{Binding Width}" Height ="{Binding Height}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
-                <Border Background="#99000000" Width="{Binding Width}">
-                    <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
+                </Canvas.Clip>-->
+            <Grid>
+                <WebView x:Name="xWebView" Width ="{Binding Width}" Height ="{Binding Height}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
+                <Border Background="#99000000" VerticalAlignment="Top" Width="{Binding Width}" Height="39">
+                    <TextBox x:Name="xUrlBox"  Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
                 </Border>
-            </Canvas>
+                <!--</Canvas>-->
+            </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableUserControl>

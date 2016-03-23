@@ -6,10 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
 >
-    <Grid x:Name="webViewPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+    <!--<Grid x:Name="webViewPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">-->
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid x:Name="webTopBar" Background="#99000000" VerticalAlignment="Top">
             <Button x:Name="Back" Height="37" Foreground="White" Click="Back_OnClick" VerticalAlignment="Top" HorizontalAlignment="Left">
                 <Image Source="http://www.iconsplace.com/icons/preview/white/left-round-256.png"></Image>
@@ -22,9 +21,10 @@
                 <Image Source="http://www.iconsdb.com/icons/preview/white/recurring-appointment-xxl.png"></Image>
             </Button>
         </Grid>
-        <ScrollViewer x:Name="xScrollViewer" Margin="0,37,0,0">
-            <WebView x:Name="xWebView" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Top" NavigationCompleted="XWebView_OnNavigationCompleted"/>
-        </ScrollViewer>
-    </Grid>
+        <!--<ScrollViewer x:Name="xScrollViewer" Margin="0,37,0,0">-->
+        <WebView x:Name="xWebView" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  NavigationCompleted="XWebView_OnNavigationCompleted"/>
+        <!--</ScrollViewer>-->
+    </StackPanel>
+    <!--</Grid>-->
 </UserControl>
 
