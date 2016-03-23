@@ -10,7 +10,6 @@
 	border-collapse: separate; 
 	padding: 10px; 
 	box-sizing: content-box; 
-	overflow: auto;
 	outline: none;
     font-family: Segoe UI;
 }

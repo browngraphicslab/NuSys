@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         private NetworkUser _lastNetworkUser;
         private ElementModel _model;
-        private DebouncingDictionary _debouncingDictionary;
+        protected DebouncingDictionary _debouncingDictionary;
 
         public delegate void AlphaChangedEventHandler(object source, double alpha);
 
@@ -57,6 +57,7 @@ namespace NuSysApp
                 LibraryElementModel.OnDelete += Delete;
             }
         }
+
         public void AddLink(LinkElementController linkController)
         {
             LinkedAdded?.Invoke(this, linkController);
