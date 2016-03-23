@@ -200,7 +200,10 @@ namespace NuSysApp
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
             if (!selectedElements.Any())
                 return;
-            ((ElementViewModel)selectedElements.First().DataContext).Controller.LibraryElementModel.FireLightupContent(true);
+
+            var libElemModel = ((ElementViewModel)selectedElements.First().DataContext).Controller.LibraryElementModel;
+            if (libElemModel != null)
+                libElemModel.FireLightupContent(true);
             Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
             SelectionChanged?.Invoke(this);
         }

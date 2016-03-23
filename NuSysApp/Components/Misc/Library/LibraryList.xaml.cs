@@ -74,59 +74,7 @@ namespace NuSysApp
                 ListView.ScrollIntoView(model);
             }
         }
-
-        public ObservableCollection<LibraryElementModel> GetItems()
-        {
-            return (ObservableCollection<LibraryElementModel>)ListView.ItemsSource;
-        }
-
-        //public async void Sort(string s)
-        //{
-        //    IOrderedEnumerable<LibraryElement> ordered = null;
-        //    switch (s.ToLower().Replace(" ", string.Empty))
-        //    { 
-        //        case "title":
-        //            ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
-        //            break;
-        //        case "nodetype":
-        //            ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
-        //            break;
-        //        case "timestamp":
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //    if (ordered != null)
-        //    { 
-        //        ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-        //        await Task.Run(async delegate
-        //        {
-        //            foreach (var item in ordered)
-        //            {
-        //                newCollection.Add(item);
-        //            }
-        //        });
-        //        ListView.ItemsSource = newCollection;
-        //    }
-        //}
-        //public async void Search(string s)
-        //{
-        //    ObservableCollection<LibraryElement> newCollection = new ObservableCollection<LibraryElement>();
-        //    var coll = ((ObservableCollection<LibraryElement>) ListView.ItemsSource);
-        //    await Task.Run(async delegate
-        //    {
-        //        foreach (var item in coll)
-        //        {
-        //            if (item.InSearch(s))
-        //            {
-        //                newCollection.Add(item);
-        //            }
-        //        }
-        //    });
-        //    ListView.ItemsSource = newCollection;
-        //}
-
-
+        
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
             ListView.ItemsSource = new ObservableCollection<LibraryElementModel>(elements);

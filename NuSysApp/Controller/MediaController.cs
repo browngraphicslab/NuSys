@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp.Controller
 {
@@ -13,7 +14,10 @@ namespace NuSysApp.Controller
         public event StopEventHandler OnStop;
 
         public delegate void PauseEventHandler(MediaElement playbackElement);
-        public event PauseEventHandler OnPause = delegate {};
+        public event PauseEventHandler OnPause;
+
+        public delegate void ScrubJumpEventHandler(MediaElement playbackElement);
+        public event ScrubJumpEventHandler OnScrubJump;
 
         public delegate void ScrubEventHandler(MediaElement playbackElement);
         public event ScrubEventHandler OnScrub;
@@ -30,28 +34,43 @@ namespace NuSysApp.Controller
 
         public void Play()
         {
-            _playbackElement.Play();
-            OnPlay?.Invoke(_playbackElement);
+            if (_playbackElement.CurrentState != MediaElementState.Playing)
+            {
+                _playbackElement.Play();
+                OnPlay?.Invoke(_playbackElement);
+            }
         }
 
         public void Stop()
         {
-            _playbackElement.Position = new TimeSpan(0);
+            if (_playbackElement.CurrentState != MediaElementState.Stopped)
+            {
+                _playbackElement.Position = new TimeSpan(0);
 
-            _playbackElement.Stop();
-            OnStop?.Invoke(_playbackElement);
-            OnScrub?.Invoke(_playbackElement);
+                _playbackElement.Stop();
+                OnStop?.Invoke(_playbackElement);
+                OnScrubJump?.Invoke(_playbackElement);
+            }
+            
         }
 
         public void Pause()
         {
-            _playbackElement.Pause();
-            OnPause?.Invoke(_playbackElement);
+            if (_playbackElement.CurrentState != MediaElementState.Paused)
+            {
+                _playbackElement.Pause();
+                OnPause?.Invoke(_playbackElement);
+            }
         }
 
-        public void Scrub(TimeSpan time)
+        public void ScrubJump(TimeSpan time)
         {
             _playbackElement.Position = time;
+            OnScrub?.Invoke(_playbackElement);
+        }
+
+        public void Scrub()
+        {
             OnScrub?.Invoke(_playbackElement);
         }
 

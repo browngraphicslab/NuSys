@@ -12,7 +12,7 @@ using NuSysApp.Controller;
 
 namespace NuSysApp
 {
-    public sealed partial class BezierLinkView : UserControl
+    public sealed partial class BezierLinkView : AnimatableUserControl
     {
         public BezierLinkView(LinkViewModel vm)
         {
@@ -142,6 +142,13 @@ namespace NuSysApp
             {
                 var vm = this.DataContext as LinkViewModel;
             }
+        }
+
+        private async void Delete_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (LinkViewModel)this.DataContext;
+            var controller = (LinkElementController)vm.Controller;
+            await controller.RequestDelete();
         }
     }
 }

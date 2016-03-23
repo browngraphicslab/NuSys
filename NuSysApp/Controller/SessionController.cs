@@ -146,9 +146,9 @@ namespace NuSysApp
         {
             await Task.Run(async () =>
             {
-                Recognizer = new SpeechRecognizer();
+              //  Recognizer = new SpeechRecognizer();
                 // Compile the dictation grammar that is loaded by default. = ""; 
-                await Recognizer.CompileConstraintsAsync();
+             //   await Recognizer.CompileConstraintsAsync();
             });
         }
 
@@ -157,7 +157,7 @@ namespace NuSysApp
             string spokenString = "";
             // Create an instance of SpeechRecognizer. 
             // Start recognition. 
-
+            return;
             try
             {
                 // this.RecordVoice.Click += stopTranscribing;

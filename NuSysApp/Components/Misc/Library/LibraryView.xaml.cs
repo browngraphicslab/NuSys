@@ -43,15 +43,13 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(SessionController.Instance.ContentController.Values));
+            var data = SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link);
+            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
             this.MakeViews(pageViewModel, properties);
             _propertiesWindow = properties;
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
-            this.Loaded += async delegate
-            {
-                vm.InitializeLibrary();
-            };
+    
             vm.OnElementDeleted += delegate
             {
                 UITask.Run(delegate
@@ -114,7 +112,7 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
-            ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values);
+            ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray());
             ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
         }
 

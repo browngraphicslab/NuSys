@@ -25,8 +25,7 @@ namespace NuSysApp
             AnnotationText = controller.Model.Title;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
-
-         //   controller.AnchorUpdated += OnAnchorUpdated;
+   
 
             InElementController.PositionChanged += InElementControllerOnPositionChanged;
             OutElementController.PositionChanged += InElementControllerOnPositionChanged;
@@ -45,12 +44,12 @@ namespace NuSysApp
             UpdateAnchor();
         }
 
-        private void OutElementControllerOnPositionChanged(object source, double d, double d1)
+        private void OutElementControllerOnPositionChanged(object source, double d, double d1, double x, double y)
         {
             UpdateAnchor();
         }
 
-        private void InElementControllerOnPositionChanged(object source, double d, double d1)
+        private void InElementControllerOnPositionChanged(object source, double d, double d1, double x, double y)
         {
             UpdateAnchor();
         }

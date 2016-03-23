@@ -52,7 +52,7 @@
                 <Grid.Projection>
                     <PlaneProjection RotationY="0"></PlaneProjection>
                 </Grid.Projection>
-                <TextBox x:Name="TextBox" FontSize="27" TextChanged="TextBox_OnTextChanged"  CharacterSpacing="40" BorderThickness="0"></TextBox>
+                <TextBox x:Name="TextBox" FontSize="27" TextChanged="TextBox_OnTextChanged"  CharacterSpacing="40" BorderThickness="0" IsTabStop="False"></TextBox>
             </Grid>
         </Grid>
 

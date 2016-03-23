@@ -17,7 +17,7 @@ namespace NuSysApp
     {
         #region Private Members      
 
-        private double _x, _y, _height, _width, _alpha;
+        protected double _x, _y, _height, _width, _alpha;
         private Point2d _anchor = new Point2d(0,0);
         private string _id;
         private SolidColorBrush _color;
@@ -70,7 +70,7 @@ namespace NuSysApp
             RaisePropertyChanged("Title");
         }
 
-        protected virtual void OnPositionChanged(object source, double x, double y)
+        protected virtual void OnPositionChanged(object source, double x, double y, double dx, double dy)
         {
             Transform.TranslateX = x;
             Transform.TranslateY = y;
@@ -212,6 +212,7 @@ namespace NuSysApp
             {
                 link.UpdateAnchor();
             }
+            
         }
 
  

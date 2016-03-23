@@ -165,6 +165,7 @@
     <Content Include="Assets\logos\Square44x44Logo.png" />
     <Content Include="Assets\logos\StoreLogo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.png" />
+    <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
