@@ -36,9 +36,9 @@
             <Button x:Name="Stop" Tapped="Stop_OnTapped" Background="Transparent">
                 <Image Source="/Assets/icon_audionode_stop.png" Height="20" Width="20"></Image>
             </Button>
-            <Button x:Name="AddTimeBlock" Visibility="Collapsed" Content="Add Annotation" Tapped="AddTimeBlock_OnTapped" Height="39" Width="142"></Button>
+            <Button x:Name="AddTimeBlock" Visibility="Visible" Content="Add Annotation" Tapped="AddTimeBlock_OnTapped" Height="39" Width="142"></Button>
         </StackPanel>
-            <GridView x:Name ="ThumbnailGrid" Visibility="Collapsed" Grid.Row ="3" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
+            <GridView x:Name ="ThumbnailGrid" Visibility="Visible" Grid.Row ="3" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
         </Grid>
     </Border>
 </UserControl>
