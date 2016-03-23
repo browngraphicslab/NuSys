@@ -134,5 +134,11 @@ namespace NuSysApp
                 freeFormView.Visibility = Visibility.Visible;
             }
         }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (GroupNodeViewModel)DataContext;
+            vm.Controller.RequestDelete();
+        }
     }
 }

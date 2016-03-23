@@ -254,7 +254,7 @@ namespace NuSysApp
 
             double width = this.Width;
             double height = this.Height;
-            vm.SetSize(width, height);
+            vm.Controller.SetSize(width, height);
             playbackElement.Position = new TimeSpan(0);
         }
         public int AspectHeight { get { return playbackElement.AspectRatioHeight; } }

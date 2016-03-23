@@ -20,8 +20,8 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>D:\Trent\NuSys\</AppxPackageDir>
-    <AppxBundlePlatforms>x86|arm</AppxBundlePlatforms>
+    <AppxPackageDir>S:\deploy\</AppxPackageDir>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
@@ -120,6 +120,7 @@
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\icon_web_color.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\150x150.scale-100.png" />
     <Content Include="Assets\logos\150x150.scale-200.png" />
@@ -161,6 +162,8 @@
     <Content Include="Assets\logos\SplashScreen.scale-400.jpg" />
     <Content Include="Assets\logos\SplashScreen.scale-400.png" />
     <Content Include="Assets\logos\Square150x150Logo.png" />
+    <Content Include="Assets\logos\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\logos\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\logos\Square300x300Logo.png" />
     <Content Include="Assets\logos\Square44x44Logo.png" />
     <Content Include="Assets\logos\StoreLogo.png" />
@@ -428,6 +431,7 @@
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
+    <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
     <Compile Include="Util\LineEquation.cs" />
@@ -603,6 +607,12 @@
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\wordIcon.png" />
     <Content Include="Components\Misc\icon_folder.png" />
     <Content Include="Components\TextEditor\app.css" />

@@ -399,7 +399,7 @@ namespace NuSysApp
             Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             //Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
-            Canvas.SetLeft(Users, 65);
+            Canvas.SetLeft(Users, 5);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
             Canvas.SetTop(ChatPopup, mainCanvas.ActualHeight - 70 - ChatPopup.ActualHeight);
             Canvas.SetLeft(ChatPopup, 5);
