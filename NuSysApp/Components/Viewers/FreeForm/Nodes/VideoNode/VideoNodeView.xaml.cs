@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            playbackElement.AutoPlay = false;
+            //playbackElement.AutoPlay = false;
             if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
                 LoadVideo();
@@ -53,6 +53,10 @@ namespace NuSysApp
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             //  playbackElement.Play();
+            playbackElement.Position = new TimeSpan(0);
+            //playbackElement.Stop();
+
+
         }
 
         private void LoadVideo()
@@ -84,6 +88,9 @@ namespace NuSysApp
                 
                 ((VideoNodeViewModel) DataContext).Controller.LibraryElementModel.OnLoaded-= LoadVideo;
             }
+            playbackElement.Position = new TimeSpan(0);
+
+
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -109,9 +116,9 @@ namespace NuSysApp
             if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed)
             {
                 double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
-                double seconds = playbackElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
+                double milliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
-                TimeSpan time = new TimeSpan(0, 0, (int)seconds);
+                TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)milliseconds);
                 playbackElement.Position = time;
             }
             e.Handled = true;
@@ -163,6 +170,15 @@ namespace NuSysApp
                      ToggleRecording(CurrentAudioFile.Name);
                  }*/
             playbackElement.Stop();
+            //scrubBar.Value = 0;
+            //playbackElement.Position = new TimeSpan(0,0,0,0,1);
+            scrubBar.Value = 0;
+
+            //playbackElement.Stop();
+
+
+            //playbackElement.Position = new TimeSpan(0,0,0,0,0);
+
             //       _stopped = true;
             e.Handled = true;
         }
@@ -189,13 +205,22 @@ namespace NuSysApp
                    {
                        play.Opacity = 1;
                    };*/
-            playbackElement.Play();
+            if (playbackElement.CurrentState != MediaElementState.Playing)
+            {
+                Binding b = new Binding();
+                b.ElementName = "playbackElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+
+                playbackElement.Play();
+            }
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
 
             playbackElement.Pause();
+            //playbackElement.Position = new TimeSpan(0);
             //    pause.Opacity = .3;
         }
         /*private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -230,7 +255,7 @@ namespace NuSysApp
             double width = this.Width;
             double height = this.Height;
             vm.SetSize(width, height);
-
+            playbackElement.Position = new TimeSpan(0);
         }
         public int AspectHeight { get { return playbackElement.AspectRatioHeight; } }
         public int AspectWidth { get { return playbackElement.AspectRatioWidth; } }

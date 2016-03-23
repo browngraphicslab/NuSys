@@ -49,6 +49,7 @@ namespace NuSysApp
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
+            
 
 
             //Loaded += delegate (object sender, RoutedEventArgs args)
@@ -284,6 +285,8 @@ namespace NuSysApp
                      ToggleRecording(CurrentAudioFile.Name);
                  }*/
             playbackElement.Stop();
+            scrubBar.Value = 0;
+            
             //       _stopped = true;
             e.Handled = true;
         }
@@ -310,6 +313,10 @@ namespace NuSysApp
                    {
                        play.Opacity = 1;
                    };*/
+            Binding b = new Binding();
+            b.ElementName = "playbackElement";
+            b.Path = new PropertyPath("Position.TotalMilliseconds");
+            scrubBar.SetBinding(ProgressBar.ValueProperty, b);
             playbackElement.Play();
         }
 
