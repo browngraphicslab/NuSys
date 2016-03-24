@@ -53,8 +53,8 @@ namespace NuSysApp
             };
 
 
-            DefaultButton.AddHandler(TappedEvent,
-                new TappedEventHandler(MenuDetailButton_Tapped), true);
+            //DefaultButton.AddHandler(TappedEvent,
+            //    new TappedEventHandler(MenuDetailButton_Tapped), true);
             TimeLineButton.AddHandler(TappedEvent,
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
             ListButton.AddHandler(TappedEvent,

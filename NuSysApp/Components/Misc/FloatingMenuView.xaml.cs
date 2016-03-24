@@ -56,6 +56,7 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnTag);
             AddNodeSubmenuButton(btnWeb);
+            AddNodeSubmenuButton(btnNew);
         }
 
 
@@ -84,11 +85,11 @@ namespace NuSysApp
             _lib.ToggleVisiblity();
             if (_lib.Visibility == Visibility.Visible)
             {
-                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_collapse.png";
+                btnLibrary.Icon = "ms-appx:///Assets/icon_whitex.png";
             }
             else
             {
-                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_media.png";
+                btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
             }
         }
 
@@ -98,7 +99,8 @@ namespace NuSysApp
             
             xWrapper.Children.Remove(_dragItem);
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var r = wvm.CompositeTransform.Inverse.TransformPoint(new Point(args.Position.X + c.TranslateX, args.Position.Y + c.TranslateY));
+           var r = xWrapper.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(args.Position.X, args.Position.Y));
+          //  var r = wvm.CompositeTransform.Inverse.TransformPoint(new Point(args.Position.X + c.TranslateX, args.Position.Y + c.TranslateY));
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
 
         }
@@ -130,6 +132,8 @@ namespace NuSysApp
                 _elementType = ElementType.Recording;
             if (sender == btnWeb)
                 _elementType = ElementType.Web;
+            if (sender == btnNew)
+                _elementType = ElementType.Collection;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -161,7 +165,7 @@ namespace NuSysApp
 
                 vm.AtomViewList.Add(r);
                 
-            } else if (elementType == ElementType.Text || elementType == ElementType.Web) { 
+            } else if (elementType == ElementType.Text || elementType == ElementType.Web || elementType == ElementType.Collection) { 
                 
 
        
@@ -181,8 +185,8 @@ namespace NuSysApp
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = elementType.ToString();
-            dict["x"] = (p.X - size.Width/2).ToString();
-            dict["y"] = (p.Y - size.Height/2).ToString();
+            dict["x"] = (p.X).ToString();
+            dict["y"] = (p.Y).ToString();
             dict["contentId"] = contentId;
             dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             dict["metadata"] = metadata;

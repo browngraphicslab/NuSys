@@ -14,14 +14,17 @@
 
         <Canvas x:Name="xWrapper" >
 
-            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas  HorizontalAlignment="Left" Background="Transparent" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Background="Transparent" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
+                <ItemsControl x:Name="IC"  ItemsSource="{Binding AtomViewList}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Canvas>
 
+          
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
         </Canvas>
     </Canvas>
