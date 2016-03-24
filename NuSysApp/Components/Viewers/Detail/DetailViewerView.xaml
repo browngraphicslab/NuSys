@@ -51,8 +51,9 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Grid.Column="0" Text="TAGS" Foreground="White" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Grid.Column="1" x:Name="NewTagBox" KeyUp="NewTagBox_OnKeyUp" Height="30" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Center"></TextBox>
-                    <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray" VerticalAlignment="Center"></Button>
+                    <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
+                        </local:TextInputBlock>
+                        <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray" VerticalAlignment="Center"></Button>
                 </Grid>
             </Grid>
 

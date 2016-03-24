@@ -83,6 +83,8 @@ namespace NuSysApp
                 ActivatePenMode(false);            
             };
 
+            xWorkspaceTitle.IsActivated = true;
+
             Loaded += OnLoaded;
         }
 
