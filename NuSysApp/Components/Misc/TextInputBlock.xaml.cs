@@ -30,6 +30,7 @@ namespace NuSysApp
         private bool _textMode;
         private bool _isRecording;
         private bool _isInking;
+        private bool _isActivated;
         private string inkText;
         private string _text;
 
@@ -49,6 +50,7 @@ namespace NuSysApp
             _inkMode = false;
             _isRecording = false;
             _isInking = false;
+            _isActivated = false;
             this.InitializeComponent();
             this.SetUpInking();
         }
@@ -77,7 +79,6 @@ namespace NuSysApp
                 {
                     Grid.SetColumn(Buttons, 0);
                     Grid.SetColumn(Input, 1);
-
                 }
             }
         }
@@ -153,6 +154,8 @@ namespace NuSysApp
 
         private void MenuButton_OnClick(object sender, RoutedEventArgs e)
         {
+            if (!IsActivated)
+                return;
             if (_inkMode)
             {
                 if (!_isInking)
@@ -182,7 +185,6 @@ namespace NuSysApp
         private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
             //record functionality
-
             RecordModeOn();
             InputMenu.Visibility = Visibility.Collapsed;
             this.SetButton("ms-appx:///Assets/icon_audionode_record.png");
@@ -190,7 +192,10 @@ namespace NuSysApp
             if (!session.IsRecording)
             {
                 await session.TranscribeVoice();
-                TextBox.Text = session.SpeechString;
+                if (session.SpeechString != null)
+                {
+                    TextBox.Text = session.SpeechString;
+                }
             }
             TextModeOn();
             this.SetButton("ms-appx:///Assets/icon_node_text.png");
@@ -206,7 +211,6 @@ namespace NuSysApp
         private void InkButton_OnClick(object sender, RoutedEventArgs e)
         {
             //ink functionality
-
             InkModeOn();
             InputMenu.Visibility = Visibility.Collapsed;
             TextBox.Visibility = Visibility.Visible;
@@ -226,12 +230,28 @@ namespace NuSysApp
         private void TextButton_OnClick(object sender, RoutedEventArgs e)
         {
             //inkText default functionality
-
             TextModeOn();
             InputMenu.Visibility = Visibility.Collapsed;
             this.SetButton("ms-appx:///Assets/icon_node_text.png");
             TextBox.Visibility = Visibility.Visible;
+        }
 
+        public bool IsActivated
+        {
+            get { return _isActivated; }
+            set { _isActivated = value; }
+        }
+
+        public void Activate()
+        {
+            IsActivated = true;
+            InputMenu.Visibility = Visibility.Visible;
+        }
+
+        public void DeActivate()
+        {
+            IsActivated = false;
+            InputMenu.Visibility = Visibility.Collapsed;
         }
 
         public void TextModeOn()

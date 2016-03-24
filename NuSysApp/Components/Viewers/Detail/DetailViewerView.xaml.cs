@@ -28,9 +28,6 @@ namespace NuSysApp
             InitializeComponent();
             Visibility = Visibility.Collapsed;
 
-
-     
-
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
               {
                   if (!(DataContext is DetailViewerViewModel))
@@ -75,6 +72,7 @@ namespace NuSysApp
             if (e.OriginalKey == VirtualKey.Enter)
             {
                 await AddTag();
+                e.Handled = true;
             }
         }
 
@@ -101,6 +99,7 @@ namespace NuSysApp
             if (e.OriginalKey == VirtualKey.Enter)
             {
                 await AddMetadataKey(e);
+                e.Handled = true;
             }
         }
 
