@@ -10,17 +10,22 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     RenderTransform="{Binding Transform}"
+    xmlns:converters="using:NuSysApp"
     Opacity="{Binding Alpha}"
     Width="{Binding Width}" Height="{Binding Height}"
     Background="Transparent"
     BorderThickness="2"
     BorderBrush="Black"
    >
+    <local:AnimatableUserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="vConverter"/>
+    </local:AnimatableUserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
         <local:NodeTemplate.SubMenu>
             <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                 <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
             </Button>
+            
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
 
@@ -30,17 +35,31 @@
             <!--<TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>-->
             <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         </Grid>
-                
-        <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" IsHitTestVisible="{Binding IsEditing}">
-            <StackPanel Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Right">
+
+                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+
+                    <StackPanel Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Right">
                 <StackPanel.RenderTransform>
-                    <TranslateTransform X="130" Y="140"></TranslateTransform>
+                    <TranslateTransform X="70" Y="140"></TranslateTransform>
                 </StackPanel.RenderTransform>
-                <TextBlock Text="View as" FontSize="15" FontWeight="Bold" Margin="0,5"></TextBlock>
+                  
+
+
+                            <Button Margin="0,0,0,0" x:Name="FreeFormButton"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                            <Image Source="ms-appx:///Assets/node icons/icon_freeform.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                            </Button>
+                            <Button Margin="0,0,0,0" x:Name="ListButton" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                            <Image Source="ms-appx:///Assets/node icons/icon_list.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                            </Button>
+                            <Button Margin="0,0,0,0" x:Name="TimeLineButton" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                            <Image Source="ms-appx:///Assets/node icons/icon_line.png"  Height="28" Width="28" Stretch="Uniform"></Image>
+                            </Button>
+                    
+                        <!--<TextBlock Text="View as" FontSize="15" FontWeight="Bold" Margin="0,5"></TextBlock>
                 <Button x:Name="FreeFormButton" Margin="0,0,10,0" Height="30" Width="100" Content="Free Form" FontSize="15" />
                 <Button x:Name="ListButton"  Height="30" Width="100" Content="List" FontSize="15"/>
                 <Button x:Name="TimeLineButton" Margin="0,0,10,0" Height="30" Width="100" Content="Timeline" FontSize="15"/>
-                <Button x:Name="DefaultButton" Margin="0,0,10,0" Height="30" Width="100" Content="Default" FontSize="15" Visibility="Collapsed"/>
+                <Button x:Name="DefaultButton" Margin="0,0,10,0" Height="30" Width="100" Content="Default" FontSize="15" Visibility="Collapsed"/>-->
             </StackPanel>
         </Grid>
 
