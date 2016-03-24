@@ -29,17 +29,15 @@ namespace NuSysApp.Components.Nodes.GroupNode
         {
             this.InitializeComponent();
 
-
             _atom = atom;
 
             //image.RenderTransform = null;
-            
+
             TimelineNode.Children.Add(image); // add node
-            //image.VerticalAlignment = VerticalAlignment.Bottom;
+                                              //image.VerticalAlignment = VerticalAlignment.Bottom;
 
             //titleTb.Text = title;
 
-        
             TextBlock tb = new TextBlock();
             tb.Name = "TextBlock";
             tb.Text = sortElement.ToString();
@@ -58,7 +56,7 @@ namespace NuSysApp.Components.Nodes.GroupNode
             tbGrid.Children.Add(tb);
             TimelinePanel.Children.Add(tbGrid);
         }
-        
+
         //TODO refactor
         public FrameworkElement getAtom()
         {
