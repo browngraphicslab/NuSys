@@ -84,11 +84,11 @@ namespace NuSysApp
             _lib.ToggleVisiblity();
             if (_lib.Visibility == Visibility.Visible)
             {
-                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_collapse.png";
+                btnLibrary.Icon = "ms-appx:///Assets/icon_whitex.png";
             }
             else
             {
-                btnLibrary.Icon = "ms-appx:///Assets/icon_mainmenu_media.png";
+                btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
             }
         }
 
