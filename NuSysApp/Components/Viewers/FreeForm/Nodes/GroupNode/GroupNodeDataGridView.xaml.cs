@@ -37,6 +37,7 @@ namespace NuSysApp
             DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
             SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            //DataGrid.Fi
 
         }
 

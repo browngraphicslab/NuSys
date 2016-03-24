@@ -12,11 +12,12 @@
     Width="{Binding Width}" 
     Height="{Binding Height}">
 
-    <controls:DataGrid x:Name="DataGrid" DefaultOrderIndex="1" ItemsSource="{Binding Path=AtomDataList}">
+    <controls:DataGrid x:Name="DataGrid" DefaultOrderIndex="1" ItemsSource="{Binding Path=AtomDataList}" >
         <controls:DataGrid.Columns>
             <!--<controls:DataGridTextColumn Width="150" Header="Creator" Binding="{Binding Creator}"/>-->
-            <controls:DataGridTextColumn Width="200" Header="Timestamp" Binding="{Binding TimeStamp}"/>
-            <controls:DataGridTextColumn Width="200" Header="NodeType" Binding="{Binding NodeType}"/>
+            <controls:DataGridTextColumn CanSort="True"  Width="200" Header="Timestamp" Binding="{Binding TimeStamp}"/>
+            <controls:DataGridTextColumn CanSort="True" Width="200" Header="NodeType" Binding="{Binding NodeType}"/>
+         
         </controls:DataGrid.Columns>
     </controls:DataGrid>
 </local:AnimatableUserControl>
