@@ -36,9 +36,9 @@
             <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         </Grid>
 
-                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}">
 
-                    <StackPanel Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Right" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                 <StackPanel.RenderTransform>
                     <TranslateTransform X="70" Y="140"></TranslateTransform>
                 </StackPanel.RenderTransform>

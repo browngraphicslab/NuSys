@@ -83,10 +83,10 @@ namespace NuSysApp
             TagBlock.Tapped += TagBlock_Tapped;
 
             //line for rearranging elements
-           _moveLine = new Line()
-           {
-               Stroke = new SolidColorBrush(Colors.Coral)
-           };
+            _moveLine = new Line()
+            {
+                Stroke = new SolidColorBrush(Colors.Coral)
+            };
 
             TimelineCanvas.Children.Add(_moveLine);
             //TimelinePanel.Tapped += TimelinePanel_Tapped;
@@ -150,7 +150,7 @@ namespace NuSysApp
             {
                 ViewBlock.Content = b1.Content.ToString();
             }
-          
+
             TagPanel.Opacity = TagPanel.Opacity == 0 ? 1 : 0;
         }
 
@@ -194,9 +194,8 @@ namespace NuSysApp
         #region Sort Timeline
         private async void ResortTimeline(String dataName)
         {
-            return;
             _sortBy = _viewBy = dataName;
-            
+
             _atomList.Clear();
             _panelNodes.Clear();
             ClearTimelineChild();
@@ -210,7 +209,7 @@ namespace NuSysApp
                 Object metaData = _nodeModel.GetMetaData(dataName);
 
                 Tuple<FrameworkElement, Object> tuple = new Tuple<FrameworkElement, Object>(atom, metaData);
-                
+
                 _atomList.Add(tuple);
             }
 
@@ -245,7 +244,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    controller.LibraryElementModel.OnLoaded += async delegate()
+                    controller.LibraryElementModel.OnLoaded += async delegate ()
                     {
                         String title = controller.Model.Title;
                         Image image = await _factory.CreateFromSendable(controller);
@@ -276,14 +275,14 @@ namespace NuSysApp
 
             if (_counter == _atomList.Count)
             {
-                for (int i =0; i < _panelNodes.Count; i++)
+                for (int i = 0; i < _panelNodes.Count; i++)
                 {
                     Canvas.SetLeft(_panelNodes.ElementAt(i), i * TimelineNodeWidth);
                 }
                 _counter = 0;
             }
         }
-        
+
         private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems == null)
@@ -292,7 +291,7 @@ namespace NuSysApp
             {
                 ResortTimeline(_sortBy);
                 AddMetaDataButtons(e.NewItems);
-            }   
+            }
         }
 
         private void AddMetaDataButtons(IList list)
@@ -303,12 +302,12 @@ namespace NuSysApp
                 var vm = (ElementViewModel)atom.DataContext;
                 var model = (ElementModel)vm.Model;
                 string[] keys = model.GetMetaDataKeys();
-                /*
+
                 Debug.WriteLine("key length: " + keys.Length);
                 foreach (var metadatatitle in keys)
                 {
                     Debug.WriteLine(metadatatitle);
-                }*/
+                }
 
                 foreach (var metadatatitle in keys)
                 {
@@ -345,7 +344,7 @@ namespace NuSysApp
 
             TimelineItemView item = (TimelineItemView)sender;
             _originalXPos = (int)Canvas.GetLeft(item);
-              
+
         }
 
         private void TimelineNode_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -353,7 +352,7 @@ namespace NuSysApp
             if (panelTapped)
             {
                 TimelineItemView item = (TimelineItemView)sender;
-                var timelineZoom = 1/_vm.CompositeTransform.ScaleX;
+                var timelineZoom = 1 / _vm.CompositeTransform.ScaleX;
                 var workspaceZoom = 1 / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
                 Canvas.SetTop(item, Canvas.GetTop(item) + e.Delta.Translation.Y * timelineZoom * workspaceZoom);
                 Canvas.SetLeft(item, Canvas.GetLeft(item) + e.Delta.Translation.X * timelineZoom * workspaceZoom);
@@ -372,7 +371,7 @@ namespace NuSysApp
 
                     // where element will be moved to
                     _moveToXPos = (int)index * TimelineNodeWidth;
-                    var moveToIndex = _moveToXPos/TimelineNodeWidth;
+                    var moveToIndex = _moveToXPos / TimelineNodeWidth;
 
                     // draw line
                     _moveLine.X1 = index * TimelineNodeWidth;
@@ -405,7 +404,7 @@ namespace NuSysApp
                     }
                     _originalXPos = _moveToXPos;
                 }
-            } 
+            }
         }
 
         private void TimelineNode_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -554,7 +553,7 @@ namespace NuSysApp
 
                 compositeTransform.CenterX = cent.X;
                 _vm.CompositeTransform = compositeTransform;
-            }    
+            }
         }
 
         private void TimelineGrid_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
@@ -605,7 +604,7 @@ namespace NuSysApp
                 }
                 //Debug.WriteLine(_vm.CompositeTransform.TranslateX - _vm.TranslateTransform.X);
                 _vm.CompositeTransform = compositeTransform;
-            } 
+            }
         }
         #endregion
         public static bool IsType(object value)
