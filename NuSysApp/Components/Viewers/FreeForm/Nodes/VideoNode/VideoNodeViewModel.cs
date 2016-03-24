@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,29 @@ namespace NuSysApp
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
+
+        public override async Task Init()
+        {
+            if (Controller.LibraryElementModel.Loaded)
+            {
+                Controller.SetSize(Model.Width, Model.Height);
+            }
+            else
+            {
+                Controller.LibraryElementModel.OnLoaded += async delegate
+                {
+                    Controller.SetSize(Model.Width, Model.Height);
+                };
+            }
+        }
+
         public override void SetSize(double width, double height)
         {
-            var model = Model as VideoNodeModel;
+            var model = (VideoNodeModel)Model;
+            if (model.ResolutionX < 1)
+            {
+                return;
+            }
             if (width > height)
             {
                 var r = model.ResolutionY / (double)model.ResolutionX;
@@ -46,6 +67,11 @@ namespace NuSysApp
         public void AddLinkTimeModel(LinkedTimeBlockModel model)
         {
             (Model as VideoNodeModel).LinkedTimeModels.Add(model);
+        }
+
+        protected override void OnSizeChanged(object source, double width, double height)
+        {
+            SetSize(width, height);
         }
     }
 }

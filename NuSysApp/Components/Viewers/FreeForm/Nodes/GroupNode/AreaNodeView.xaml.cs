@@ -37,7 +37,7 @@ namespace NuSysApp
             _selectMode = new SelectMode(this);
             _selectMode.Activate();
 
-            _nodeManipulationMode = new NodeManipulationMode(this);
+            _nodeManipulationMode = new NodeManipulationMode(this, true);
             _nodeManipulationMode.Activate();
 
             _panZoomMode = new PanZoomMode(this);
@@ -86,6 +86,6 @@ namespace NuSysApp
 
         public Canvas OuterCanvas => xCanvas;
 
-        public Canvas InnerCanvas => iCanvas;
+   
     }
 }

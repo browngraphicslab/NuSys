@@ -47,7 +47,7 @@ namespace NuSysApp
 
             DataContext = vm;
             _viewMod = vm;
-            SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
+          // SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
 
             var model = (TextElementModel)vm.Model;
 
@@ -111,7 +111,7 @@ namespace NuSysApp
         }
 
 
-            
+
 
         public void SetDimension(double parentWidth)
         {

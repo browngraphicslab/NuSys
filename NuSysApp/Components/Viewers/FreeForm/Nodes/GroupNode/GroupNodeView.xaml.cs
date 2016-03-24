@@ -53,8 +53,8 @@ namespace NuSysApp
             };
 
 
-            DefaultButton.AddHandler(TappedEvent,
-                new TappedEventHandler(MenuDetailButton_Tapped), true);
+            //DefaultButton.AddHandler(TappedEvent,
+            //    new TappedEventHandler(MenuDetailButton_Tapped), true);
             TimeLineButton.AddHandler(TappedEvent,
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
             ListButton.AddHandler(TappedEvent,
@@ -133,6 +133,12 @@ namespace NuSysApp
             {
                 freeFormView.Visibility = Visibility.Visible;
             }
+        }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (GroupNodeViewModel)DataContext;
+            vm.Controller.RequestDelete();
         }
     }
 }

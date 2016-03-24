@@ -23,14 +23,14 @@
                             VerticalAlignment="Bottom" 
                             HorizontalAlignment="Left" 
                             Background="CornflowerBlue" 
-                            Width="100" Opacity="0"/>
+                            Width="100" Opacity="0" IsHitTestVisible="False"/>
         <StackPanel x:Name="ViewPanel"  
                             Margin="0,0,-100,0" 
                             Orientation="Vertical" 
                             VerticalAlignment="Bottom" 
                             HorizontalAlignment="Right" 
                             Background="CornflowerBlue" 
-                            Width="100" Opacity="0"/>
+                            Width="100" Opacity="0" IsHitTestVisible="false"/>
         <Button Name="ViewBlock" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30"/>
         <Button Name="TagBlock" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30"/>
         <AutoSuggestBox x:Name="SearchBox"

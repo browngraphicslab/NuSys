@@ -17,10 +17,17 @@ namespace NuSysApp
     {
         public static int _zIndexCounter = 10000;
         private bool _isPinAnimating;
-
+        private bool _isFreeForm;
         public List<UserControl> ActiveNodes { get; private set; }
 
         public NodeManipulationMode(FrameworkElement view) : base(view) { }
+
+    
+        public NodeManipulationMode(FrameworkElement view, bool isFreeFormCollection) : base(view)
+        {
+            _isFreeForm = isFreeFormCollection;
+
+        }
 
         public override async Task Activate()
         {
@@ -97,7 +104,14 @@ namespace NuSysApp
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
-            if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
+            if (_isFreeForm)
+            {
+                var areaView = (AreaNodeView) _view;
+                var areaViewVM = (AreaNodeViewModel)areaView.DataContext;
+                dx = dx/areaViewVM.CompositeTransform.ScaleX;
+                dy = dy / areaViewVM.CompositeTransform.ScaleX;
+            }
+                if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
             {
                 if (_view is FreeFormViewer)
                 {

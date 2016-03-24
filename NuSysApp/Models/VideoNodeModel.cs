@@ -78,14 +78,10 @@ namespace NuSysApp
             {
                 props.Add("video", Convert.ToBase64String(ByteArray));
             }
-            if (ResolutionX != null)
-            {
-                props.Add("resolutionX", ResolutionX);
-            }
-            if (ResolutionY != null)
-            {
-                props.Add("resolutionY", ResolutionY);
-            }
+ 
+            props.Add("resolutionX", ResolutionX);
+            props.Add("resolutionY", ResolutionY);
+            
 
             return props;
         }
@@ -104,7 +100,7 @@ namespace NuSysApp
             {
                 ResolutionY = props.GetInt("resolutionY");
             }
-            base.UnPack(props);
+            await base.UnPack(props);
         }
     }
 }

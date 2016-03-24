@@ -34,12 +34,11 @@ namespace NuSysApp
         public delegate void VisualizationLoadedEventHandler();
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
 
-        public AudioNodeViewModel(ElementController model) : base(model)
+        public AudioNodeViewModel(ElementController controller) : base(controller)
         {
-            Width = 300;
-            Height = 200;
+            Width = controller.Model.Width;
+            Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            //_visualGrid = new Grid();
         }
 
         public void addTimeBlockChange(
