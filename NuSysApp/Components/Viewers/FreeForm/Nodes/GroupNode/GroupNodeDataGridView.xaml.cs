@@ -36,8 +36,12 @@ namespace NuSysApp
             DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
             SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
-            //DataGrid.Fi
             DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
+            DataGrid.SelectedItem = null;
+            DataGrid.SelectionChanged += delegate(object sender, SelectionChangedEventArgs args) //prevent selection of rows
+            {
+                DataGrid.SelectedItem = null;
+            };
         }
 
         private Image _drag;
