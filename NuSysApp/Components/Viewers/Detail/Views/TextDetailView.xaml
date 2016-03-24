@@ -5,10 +5,9 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
     mc:Ignorable="d">
-    <Grid>
-        <WebView Name ="MyWebView" Margin="10" Width ="{Binding Width}"  Height ="{Binding Height}"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
+    <Grid HorizontalAlignment ="Stretch" VerticalAlignment="Stretch">
+        <WebView Name ="MyWebView" Margin="10" Width="{Binding Width}" Height="{Binding Height}" ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
         </WebView>
     </Grid>

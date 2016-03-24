@@ -1,18 +1,37 @@
 ﻿body {
     background-color: #FFFFFF;
+    padding: 1em;
 }
 .container {
-   margin-top: 30px;
+    position: absolute;
+    top: 3em;
+    left: 0;
+    bottom:0;
+    right:0;
+    z-index: -10;
+}
+
+#buttonbar {
+   top: 0;
+   left: 0;
+   padding: 1em;
+   position: fixed;
 }
 
 #editor {
-	background-color: white;
 	border-collapse: separate; 
-	padding: 10px; 
-	box-sizing: content-box; 
-	overflow: auto;
+	position: absolute;
+    overflow: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right:0;
+    padding: 1em;
+    padding-right: 2em;
+    padding-bottom: 2em;
 	outline: none;
     font-family: Segoe UI;
+    z-index: -1;
 }
 
 .unselectable {
@@ -29,7 +48,7 @@ div[data-role="editor-toolbar"] {
 }
 
 .btn {
-    margin-bottom: 10px;
+    margin-bottom: 1em;
 }
 
 .dropdown-menu a {
@@ -46,7 +65,7 @@ div[data-role="editor-toolbar"] {
 }
 
 #editor input {
-    background:none!important;
+     background:none!important;
      border:none; 
      padding-left:5px;
      font-size: 10px;
