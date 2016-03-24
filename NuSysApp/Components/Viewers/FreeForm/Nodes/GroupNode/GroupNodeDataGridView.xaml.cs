@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -16,6 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
@@ -32,48 +34,88 @@ namespace NuSysApp
             DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
             DataGrid.AddHandler(UIElement.ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
             DataGrid.AddHandler(UIElement.ManipulationStartedEvent, new ManipulationStartedEventHandler(OnManipulationStarted), true);
+            DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
+            SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
 
         }
 
+        private Rectangle _drag;
+        private String _id;
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
             var src = (FrameworkElement) args.OriginalSource;
             if (src.DataContext is GroupNodeDataGridInfo)
             {
-                var dc = (GroupNodeDataGridInfo) src.DataContext;
-                _el = src;
-                int a = 0;
-                var b = Canvas.GetLeft(_el);
-                var p = (FrameworkElement)VisualTreeHelper.GetParent(_el);
-                var p1 =(FrameworkElement)VisualTreeHelper.GetParent(p);
-                var p2 = (FrameworkElement)VisualTreeHelper.GetParent(p1);
-                var pw = (FrameworkElement)VisualTreeHelper.GetParent(p2);
-                var pw2 = (FrameworkElement)VisualTreeHelper.GetParent(pw);
-                var c = Canvas.GetLeft(p2);
-                var d = 0;
-                //SessionController.Instance.IdToControllers[dc.Id].RequestMoveToCollection()
-                // get Id here
+                //BitmapImage bmp = new BitmapImage(new Uri("ms-appx:///Assets//icon_additional.png"));
+
+                //var img = new Image
+                //{
+                //    RenderTransform = new CompositeTransform(),
+                //    Source = bmp
+                //};
+
+                _drag = new Rectangle
+                {
+                    Width = 100,
+                    Height = 20,
+                    Fill = new SolidColorBrush(Colors.Crimson)
+                };
+                var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
+                Canvas.SetLeft(_drag, point.X);
+                Canvas.SetTop(_drag, point.Y);
+                SessionController.Instance.SessionView.MainCanvas.Children.Add(_drag);
+                //Canvas.SetLeft(img, 0);
+                //Canvas.SetTop(img, 0);
+                var info = (GroupNodeDataGridInfo) src.DataContext;
+                _id = info.Id;
             }
         }
 
+        private async void OnPointerReleased(object source, PointerRoutedEventArgs args)
+        {
+            if (_drag != null)
+            {
+                var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
+                if (!this.IsPointerInGroup(point))
+                {
+                    var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(point);
+                    var controller = SessionController.Instance.IdToControllers[_id];
+                    await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
+                }
+                SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
+                _drag = null;
+                _id = null;
+            }
+        }
+
+        private bool IsPointerInGroup(Point point)
+        {
+            var hits = VisualTreeHelper.FindElementsInHostCoordinates(point, SessionController.Instance.SessionView);
+            var result = hits.Where((uiElem) => uiElem is GroupNodeDataGridView);
+            return result.Any();
+        }
         private FrameworkElement _el;
 
-        private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs aargs)
+        private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
         {
-            var bmp = new RenderTargetBitmap();
-            await bmp.RenderAsync((UIElement)sender);
-            var img = new Image
-            {
-                RenderTransform = new CompositeTransform(),
-                Source = bmp
-            };
-            var vm = (GroupNodeDataGridViewModel) DataContext;
-            var t = (CompositeTransform)img.RenderTransform;
-           //t.TranslateX = vm.Transform.TranslateX
+            //BitmapImage bmp = new BitmapImage(new Uri("ms-appx:///Assets//icon_additional.png"));
+
+            //var img = new Image
+            //{
+            //    RenderTransform = new CompositeTransform(),
+            //    Source = bmp
+            //};
+
+            //Canvas.SetLeft(img, 0);
+            //Canvas.SetTop(img, 0);
+
+            //var vm = (GroupNodeDataGridViewModel) DataContext;
+            //var t = (CompositeTransform)img.RenderTransform;
+            //t.TranslateX = vm.Transform.TranslateX
             //t.TranslateY = point.Y
-            //Canvas.SetLeft(img, point.X);
-            //Canvas.SetTop(img, point.Y);
+            //Canvas.SetLeft(img, args.Position.X);
+            //Canvas.SetTop(img, args.Position.Y);
             //SessionController.Instance.SessionView.MainCanvas.Children.Add(img);
         }
 
@@ -81,22 +123,17 @@ namespace NuSysApp
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
 
-            int a = 0;
-            //if (!IsPointerInGroup(sender, args))
-            //{
-            //    this.StartTimer(sender, args);
-            //}
-            //else
-            //{
-            //    //this.StopTimer(sender, args);
-            //}
+            if (_drag != null)
+            {
+                var x = Canvas.GetLeft(_drag);
+                var y = Canvas.GetTop(_drag);
+                x += args.Delta.Translation.X;
+                y += args.Delta.Translation.Y;
 
-
-
-
-
-        }
-
+                Canvas.SetLeft(_drag, x);
+                Canvas.SetTop(_drag, y);
+            }
+         }
         //private bool IsPointerInGroup(object sender, ManipulationDeltaRoutedEventArgs args)
         //{
 
