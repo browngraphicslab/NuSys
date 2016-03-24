@@ -38,7 +38,7 @@ namespace NuSysApp
             DataGrid.ManipulationMode = ManipulationModes.All;
             SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             //DataGrid.Fi
-
+            DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
         }
 
         private Image _drag;
@@ -87,6 +87,7 @@ namespace NuSysApp
             return result.Any();
         }
         private FrameworkElement _el;
+        private bool _doubleTapped;
 
         private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
         {
@@ -167,6 +168,29 @@ namespace NuSysApp
 
         //}
 
+        private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            _doubleTapped = true;
+            var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
+        
+            if (dc is GroupNodeDataGridInfo)
+            {
+                var cdc = (GroupNodeDataGridInfo) dc;
+                var controller = SessionController.Instance.IdToControllers[cdc.Id];
+                var type = controller.LibraryElementModel.Type;
+
+                    if (type == ElementType.Word || type == ElementType.Powerpoint)
+                    {
+                        return;
+                    }
+                    else if (type != ElementType.Link)
+                    {
+                        SessionController.Instance.SessionView.ShowDetailView(controller);
+                    }
+
+                
+            }
+        }
 
     }
 }

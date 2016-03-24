@@ -64,5 +64,8 @@ namespace NuSysApp
             get { return _atomDataList; }
             set { _atomDataList = value; }
         }
+
+      
+        
     }
 }
