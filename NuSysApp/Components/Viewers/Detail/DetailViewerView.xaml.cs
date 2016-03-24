@@ -23,12 +23,13 @@ namespace NuSysApp
 {
     public sealed partial class DetailViewerView : AnimatableUserControl
     {
+
         public DetailViewerView()
         {
             InitializeComponent();
             Visibility = Visibility.Collapsed;
 
-
+  
      
 
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -153,6 +154,9 @@ namespace NuSysApp
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+      //      if (!_allowResize)
+        //        return;
+
             double rightCoord = Canvas.GetLeft(this) + this.Width;
        
             if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
@@ -165,6 +169,11 @@ namespace NuSysApp
                 Canvas.SetLeft(this, rightCoord - this.Width);
 
                 e.Handled = true;
+            }
+
+            if (Canvas.GetLeft(this) <= 30)
+            {
+                Canvas.SetLeft(this,30);
             }
         }
         
