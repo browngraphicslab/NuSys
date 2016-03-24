@@ -123,22 +123,22 @@
                     </Grid.RowDefinitions>
 
 
-                    <TextBlock  Grid.Column="0" Grid.Row="0" Text="Title" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBox  x:Name="Title" TextChanged="OnTitleTextChanged" Grid.Column="1" Grid.Row="0" Text="--" FontSize="16" BorderThickness="0"  Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="1" Text="Type" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBlock  x:Name="Type" Grid.Column="1" Grid.Row="1" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="2" Text="ID" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBlock  x:Name="ID" Grid.Column="1" Grid.Row="2" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="3" Text="Creator" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBlock  x:Name="Creator" Grid.Column="1" Grid.Row="3" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="4" Text="Last Edited" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBlock  x:Name="LastEdited" Grid.Column="1" Grid.Row="4" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
-                    <TextBlock  Grid.Column="0" Grid.Row="5" Text="History" FontSize="16" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
-                    <TextBlock  x:Name="History" Grid.Column="1" Grid.Row="5" Text="--" FontSize="16" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="0" Text="Title" FontSize="14" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBox  x:Name="Title" TextChanged="OnTitleTextChanged" Grid.Column="1" Grid.Row="0" Text="--" FontSize="14" BorderThickness="0" Padding="0"  Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="1" Text="Type" FontSize="14" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="Type" Grid.Column="1" Grid.Row="1" Text="--" FontSize="14" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="2" Text="ID" FontSize="14" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="ID" Grid.Column="1" Grid.Row="2" Text="--" FontSize="14" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="3" Text="Creator" FontSize="14" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="Creator" Grid.Column="1" Grid.Row="3" Text="--" FontSize="14" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="4" Text="Last Edited" FontSize="14" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="LastEdited" Grid.Column="1" Grid.Row="4" Text="--" FontSize="14" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
+                    <TextBlock  Grid.Column="0" Grid.Row="5" Text="History" FontSize="14" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"/>
+                    <TextBlock  x:Name="History" Grid.Column="1" Grid.Row="5" Text="--" FontSize="14" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
 
                 </Grid>
                 <Rectangle Height="30"></Rectangle>
-                <TextBlock Text="Aliases" Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"></TextBlock>
+                <TextBlock Text="Aliases" FontSize="14"  Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"></TextBlock>
                 <Rectangle Height="20"></Rectangle>
                 <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
@@ -165,13 +165,13 @@
                     </StackPanel>
                 </ScrollViewer>
 
-                <Button Width="30" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,50,0,0" Foreground="White" Background="Transparent"
+                <Button Width="25" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,50,0,0" Foreground="White" Background="Transparent"
                     Padding="0" Name="deleteButton" Click="Delete_OnClick">
-                    <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="30"></Image>
+                    <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="25"></Image>
                 </Button>
             </StackPanel>
-            <Button Name="EnterCollectionButton" Style="{StaticResource EnterButton}" Padding="0" Click="EnterCollection_OnClick" Width="60" Height="30" VerticalAlignment="Top" 
-                        HorizontalAlignment="Center" Margin="10,190,10,10" Background="#9cc5c2" Foreground="White" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+            <Button Name="EnterCollectionButton" Style="{StaticResource EnterButton}" Padding="0" Click="EnterCollection_OnClick" Width="60" Height="20" VerticalAlignment="Top" 
+                        HorizontalAlignment="Center" Margin="10,190,10,10" Background="#E6EDEC" Foreground="#83A6A3" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                 <TextBlock Margin="0,-4,0,0">enter</TextBlock>
             </Button>
         </Grid>

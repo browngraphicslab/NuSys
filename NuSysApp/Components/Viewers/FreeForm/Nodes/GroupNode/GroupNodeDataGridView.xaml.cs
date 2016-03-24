@@ -40,27 +40,17 @@ namespace NuSysApp
 
         }
 
-        private Rectangle _drag;
+        private Image _drag;
         private String _id;
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
             var src = (FrameworkElement) args.OriginalSource;
             if (src.DataContext is GroupNodeDataGridInfo)
             {
-                //BitmapImage bmp = new BitmapImage(new Uri("ms-appx:///Assets//icon_additional.png"));
+                _drag = new Image();//TODO temporary
+                BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_text.png", UriKind.Absolute));
+                _drag.Source = textimage;
 
-                //var img = new Image
-                //{
-                //    RenderTransform = new CompositeTransform(),
-                //    Source = bmp
-                //};
-
-                _drag = new Rectangle
-                {
-                    Width = 100,
-                    Height = 20,
-                    Fill = new SolidColorBrush(Colors.Crimson)
-                };
                 var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
                 Canvas.SetLeft(_drag, point.X);
                 Canvas.SetTop(_drag, point.Y);
