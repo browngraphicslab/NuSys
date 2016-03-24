@@ -23,13 +23,21 @@ namespace NuSysApp.Components.Nodes.GroupNode
 {
     public sealed partial class TimelineItemView : UserControl
     {
-        public TimelineItemView(FrameworkElement atom, Object sortElement)
+        private FrameworkElement _atom;
+
+        public TimelineItemView(FrameworkElement image, Object sortElement, FrameworkElement atom)
         {
             this.InitializeComponent();
-            atom.RenderTransform = null;
-            TimelineNode.Children.Add(atom); // add node
-            atom.VerticalAlignment = VerticalAlignment.Bottom;
-        
+
+            _atom = atom;
+
+            //image.RenderTransform = null;
+
+            TimelineNode.Children.Add(image); // add node
+                                              //image.VerticalAlignment = VerticalAlignment.Bottom;
+
+            //titleTb.Text = title;
+
             TextBlock tb = new TextBlock();
             tb.Name = "TextBlock";
             tb.Text = sortElement.ToString();
@@ -47,6 +55,12 @@ namespace NuSysApp.Components.Nodes.GroupNode
             //tbGrid.BorderThickness = new Thickness(2, 0, 2, 2);
             tbGrid.Children.Add(tb);
             TimelinePanel.Children.Add(tbGrid);
+        }
+
+        //TODO refactor
+        public FrameworkElement getAtom()
+        {
+            return _atom;
         }
 
         public void clearChild()
