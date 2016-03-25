@@ -19,11 +19,11 @@ namespace NuSysApp
             {
                 throw new Exception("The Sendable update must have a key labeled 'id'");
             }
+            _message["sender_user_id"] = SessionController.Instance.LocalUserID;
         }
 
         private void SetServerSettings(bool saveToServer = false)
         {
-            _message["sender_user_id"] = SessionController.Instance.LocalUserID;
             SetServerEchoType(ServerEchoType.EveryoneButSender);
             SetServerItemType(ServerItemType.Alias);
             SetServerIgnore(!saveToServer);

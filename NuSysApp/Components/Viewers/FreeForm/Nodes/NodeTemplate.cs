@@ -146,6 +146,7 @@ namespace NuSysApp
             {
                 if (user == null)
                 {
+                    userName.Foreground = new SolidColorBrush(Colors.Transparent);
                     highlight.Visibility = Visibility.Collapsed;
                     return;
                 }
