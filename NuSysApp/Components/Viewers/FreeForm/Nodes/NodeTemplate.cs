@@ -61,6 +61,9 @@ namespace NuSysApp
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.UserChanged -= ControllerOnUserChanged;
             vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
+            vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
+            title.TextChanged -= TitleOnTextChanged;
+
         }
 
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
@@ -124,23 +127,8 @@ namespace NuSysApp
             tags = (ItemsControl) GetTemplateChild("Tags");
 
             title = (TextBox)GetTemplateChild("xTitle");
-            title.TextChanged += delegate(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
-            {
-                titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
-                highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
-                highlight.Height = vm.Height + title.ActualHeight - 5;
-                //vm.Controller.SetTitle(title.Text);
-                vm.Controller.LibraryElementModel.SetTitle(title.Text);
-
-            };
-            vm.Controller.LibraryElementModel.OnTitleChanged += delegate
-            {
-                if (title.Text != vm.Controller.LibraryElementModel.Title)
-                {
-                    title.Text = vm.Controller.LibraryElementModel.Title;
-                }
-            };
-
+            title.TextChanged += TitleOnTextChanged;
+            vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
             title.Loaded += delegate(object sender, RoutedEventArgs args)
@@ -154,11 +142,33 @@ namespace NuSysApp
 
 
             if (vm.Controller.LibraryElementModel != null) { 
+
                 vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
+
             }
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
+        }
+
+        private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+            highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+            highlight.Height = vm.Height + title.ActualHeight - 5;
+            //vm.Controller.SetTitle(title.Text);
+            vm.Controller.LibraryElementModel.SetTitle(title.Text);
+        }
+
+        private void LibraryElementModelOnOnTitleChanged(string newTitle)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            if (title.Text != vm.Controller.LibraryElementModel.Title)
+            {
+                title.Text = vm.Controller.LibraryElementModel.Title;
+            }
+
         }
 
         private void ControllerOnUserChanged(object sender, NetworkUser user)
@@ -170,7 +180,7 @@ namespace NuSysApp
             userName.Text = user?.Name ?? "";
         }
 
-        private void LibraryElementModelOnOnLightupContent(bool lightup)
+        private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
         {
             highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
             highlight.BorderThickness = new Thickness(5);

@@ -46,40 +46,40 @@ namespace NuSysApp
             this.InitializeComponent();
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-              
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
-                foreach(var i in vm.PageElements)
-                {
-                    i.OnLightupContent += delegate(bool b)
-                    {
-                        if (b)
-                        {
-                            Select(i);
-                        }
-                    };
-                }
             };
             ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
             _propertiesWindow = propertiesWindow;
             _library = library;
             //vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
-
+            foreach (var element in vm.PageElements)
+            {
+                element.OnLightupContent += Select;
+            }
         }
-        private void Select(LibraryElementModel model)
+
+        private void Select(LibraryElementModel model, bool lightup = true)
         {
             ListView.SelectedItem = null;
+
 
             if (ListView.ItemsSource == null)
                 return;
 
-            if (((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Count == SessionController.Instance.ContentController.Count || ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Contains(model))
+            if (lightup)
             {
-                ListView.SelectedItem = model;
-                ListView.ScrollIntoView(model);
+                if ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource != null &&
+                    (((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Count ==
+                     SessionController.Instance.ContentController.Count ||
+                     ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Contains(model)))
+                {
+                    ListView.SelectedItem = model;
+                    ListView.ScrollIntoView(model);
+                }
             }
         }
-        
+
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
             var col = ((LibraryPageViewModel) DataContext).PageElements;

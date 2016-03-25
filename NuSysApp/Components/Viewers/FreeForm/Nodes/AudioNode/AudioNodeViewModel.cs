@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -39,6 +40,20 @@ namespace NuSysApp
             Width = controller.Model.Width;
             Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+
+            controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            Controller.LibraryElementModel.OnLoaded -= InitWhenReady;
+            Controller.Disposed -= ControllerOnDisposed;
+        }
+
+        public void removeTimeBlockChange(
+                System.Collections.Specialized.NotifyCollectionChangedEventHandler onCollectionChanged)
+        {
+            (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged -= onCollectionChanged;
         }
 
         public void addTimeBlockChange(
@@ -46,9 +61,6 @@ namespace NuSysApp
         {
             (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged += onCollectionChanged;
         }
-
-
-
 
 
 

@@ -39,7 +39,7 @@ namespace NuSysApp
             InitializeComponent();
             this.DataContext = vm;
             _stopped = true;
-            vm.PropertyChanged += new PropertyChangedEventHandler(Node_SelectionChanged);
+            vm.PropertyChanged += Node_SelectionChanged;
             _loaded = false;
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
@@ -48,6 +48,26 @@ namespace NuSysApp
             ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
             ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
             ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
+
+            vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (ImageElementViewModel)DataContext;
+            vm.PropertyChanged -= Node_SelectionChanged;
+            (DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
+            _timeBlocks = null;
+            
+            ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay;
+            ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause;
+            ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop;
+            ((AudioNodeModel)(vm.Model)).Controller = null;
+            playbackElement.MediaEnded -= PlaybackElementOnMediaEnded;
+            (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
+
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
         }
 
         private void Controller_OnStop(MediaElement playbackElement)
@@ -67,11 +87,9 @@ namespace NuSysApp
         {
             play.Opacity = .3;
             pause.Opacity = 1;
-            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
-            {
-                play.Opacity = 1;
-            };
+            playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
         }
+
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as AudioNodeViewModel).LinkedTimeModels.Last(), playbackElement.NaturalDuration.TimeSpan, scrubBar);
@@ -103,16 +121,16 @@ namespace NuSysApp
             }
             play.Opacity = .3;
             pause.Opacity = 1;
-            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
-            {
-                play.Opacity = 1;
-            };
+            playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
             
             ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Play();
             
-            
 
+        }
 
+        private void PlaybackElementOnMediaEnded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            play.Opacity = 1;
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
@@ -222,10 +240,7 @@ namespace NuSysApp
 
                 _loaded = true;
             }
-            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
-            {
-                play.Opacity = 1;
-            };
+            playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
         }
 
         private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)

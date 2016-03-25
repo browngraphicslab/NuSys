@@ -67,8 +67,7 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            
-
+            LibraryElementModel.OnDelete -= Delete;
             Disposed?.Invoke(this);
         }
 

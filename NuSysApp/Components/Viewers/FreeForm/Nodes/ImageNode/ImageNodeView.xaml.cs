@@ -34,6 +34,15 @@ namespace NuSysApp
 
             };
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
+
+            vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (ImageElementViewModel) DataContext;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
         }
 
         private void OnEditInk(object sender, RoutedEventArgs e)

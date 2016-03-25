@@ -109,10 +109,7 @@ namespace NuSysApp
             }
 
         }
-
-
-
-
+        
         public void SetDimension(double parentWidth)
         {
             MyWebView.Width = parentWidth * 0.9;

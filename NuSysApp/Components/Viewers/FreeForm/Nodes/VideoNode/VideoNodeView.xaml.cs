@@ -28,9 +28,7 @@ namespace NuSysApp
 {
     public sealed partial class VideoNodeView : AnimatableUserControl, IThumbnailable
     {
-        private MediaCapture _mediaCapture;
         private bool _isRecording;
-        private VideoNodeViewModel _vm;
         private List<LinkedTimeBlockViewModel> _timeBlocks;
 
         public VideoNodeView(VideoNodeViewModel vm)
@@ -56,7 +54,19 @@ namespace NuSysApp
             playbackElement.Position = new TimeSpan(0);
             //playbackElement.Stop();
 
+            vm.Controller.Disposed += ControllerOnDisposed;
 
+
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            playbackElement.Stop();
+            var vm = (VideoNodeViewModel) DataContext;
+            vm.Controller.LibraryElementModel.OnLoaded -= LoadVideo;
+            vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
         }
 
         private void LoadVideo()
@@ -135,32 +145,7 @@ namespace NuSysApp
         }
 
 
-        private async void OnRecord_Click(object sender, TappedRoutedEventArgs e)
-        {
-            var vm = (VideoNodeViewModel)this.DataContext;
-            var model = (VideoNodeModel)vm.Model;
-
-            if (!_isRecording)
-            {
-                model.Recording = new InMemoryRandomAccessStream();
-                var encodingProfile = MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Auto);
-                await _mediaCapture.StartRecordToStreamAsync(encodingProfile, model.Recording);
-                playbackElement.Visibility = Visibility.Collapsed;
-                preview.Visibility = Visibility.Visible;
-
-            }
-            else
-            {
-                await _mediaCapture.StopRecordAsync();
-                playbackElement.SetSource(model.Recording, "video/mp4");
-                playbackElement.Visibility = Visibility.Visible;
-                preview.Visibility = Visibility.Collapsed;
-                playbackElement.Play();
-            }
-
-
-            _isRecording = !_isRecording;
-        }
+       
 
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)

@@ -44,7 +44,7 @@ namespace NuSysApp
         public delegate void ElementDeletedEventHandler();
         public event ElementDeletedEventHandler OnDelete;
 
-        public delegate void LightupContentEventHandler(bool lightup);
+        public delegate void LightupContentEventHandler(LibraryElementModel sender, bool lightup);
         public event LightupContentEventHandler OnLightupContent;
         public ElementType Type { get; set; }
 
@@ -98,7 +98,7 @@ namespace NuSysApp
             {
                 LitElement = null;
             }
-            OnLightupContent?.Invoke(lightup);
+            OnLightupContent?.Invoke(this,lightup);
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {

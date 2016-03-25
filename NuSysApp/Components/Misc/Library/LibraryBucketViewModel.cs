@@ -24,7 +24,7 @@ namespace NuSysApp
 
         public event ElementDeletedEventHandler OnElementDeleted;
 
-        public delegate void HighlightElementEventHandler(LibraryElementModel element);
+        public delegate void HighlightElementEventHandler(LibraryElementModel element, bool highlight);
 
         public event HighlightElementEventHandler OnHighlightElement;
 
@@ -38,11 +38,11 @@ namespace NuSysApp
         
         private void FireNewContentAvailable(LibraryElementModel content)
         {
-            content.OnLightupContent += delegate(bool lit)
+            content.OnLightupContent += delegate(LibraryElementModel c, bool lit)
             {
                 if (lit)
                 {
-                    OnHighlightElement?.Invoke(content);
+                    OnHighlightElement?.Invoke(c, lit);
                 }
             };
             OnNewElementAvailable?.Invoke(content);
