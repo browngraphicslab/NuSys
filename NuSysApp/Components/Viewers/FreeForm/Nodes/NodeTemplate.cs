@@ -322,8 +322,8 @@ namespace NuSysApp
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 96, 109, 122));
-                    bg.BorderThickness = new Thickness(2);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    bg.BorderThickness = new Thickness(1);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }
