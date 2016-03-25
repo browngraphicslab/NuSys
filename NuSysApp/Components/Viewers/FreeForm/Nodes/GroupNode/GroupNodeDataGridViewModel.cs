@@ -38,7 +38,8 @@ namespace NuSysApp
                     string timeStamp = _nodeModel.GetMetaData("node_creation_date")?.ToString();
                     string creator = _nodeModel.GetMetaData("creator")?.ToString();
                     string nodeType = _nodeModel.ElementType.ToString();
-                    GroupNodeDataGridInfo atomData = new GroupNodeDataGridInfo(id, timeStamp, creator, nodeType);
+                    var title = _nodeModel.Title;
+                    GroupNodeDataGridInfo atomData = new GroupNodeDataGridInfo(id, timeStamp, creator, nodeType, title);
                     _atomDataList.Add(atomData);
                     _infoDict[atomTest] = atomData;
                 }
@@ -64,5 +65,10 @@ namespace NuSysApp
             get { return _atomDataList; }
             set { _atomDataList = value; }
         }
+
+
+
+      
+        
     }
 }

@@ -570,5 +570,6 @@ namespace NuSysApp
                 FloatingMenu.Visibility = Visibility.Collapsed;
             }
         }
+        public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
     }
 }

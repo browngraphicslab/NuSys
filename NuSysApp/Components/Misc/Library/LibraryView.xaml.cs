@@ -112,7 +112,7 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
-            ((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray());
+            //((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray());
             ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
         }
 

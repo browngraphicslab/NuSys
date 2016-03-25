@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            _items = vm._PageElements;
+            _items = vm.PageElements;
 
             _propertiesWindow = propertiesWindow;
             for (int i = 1; i < _items.Count/3 + 1; i++)
@@ -82,7 +82,7 @@ namespace NuSysApp
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
+            foreach (var item in ((LibraryPageViewModel)this.DataContext).PageElements)
             {
                 LoadThumbnails(_numRows, numCols, item);
             }
@@ -90,7 +90,7 @@ namespace NuSysApp
 
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            ((LibraryPageViewModel)this.DataContext)._PageElements = new ObservableCollection<LibraryElementModel>(elements);
+            ((LibraryPageViewModel)this.DataContext).PageElements = new ObservableCollection<LibraryElementModel>(elements);
         }
 
         public async Task Sort(string s)
@@ -101,7 +101,7 @@ namespace NuSysApp
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in ((LibraryPageViewModel)this.DataContext)._PageElements)
+            foreach (var item in ((LibraryPageViewModel)this.DataContext).PageElements)
             {
                 LoadThumbnails(_numRows, numCols, item);
             }
@@ -373,7 +373,7 @@ namespace NuSysApp
 
         public async Task Update()
         {
-            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+            this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
     }
 }

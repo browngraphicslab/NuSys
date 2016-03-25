@@ -33,11 +33,15 @@ namespace NuSysApp
        
             DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
             DataGrid.AddHandler(UIElement.ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
-            DataGrid.AddHandler(UIElement.ManipulationStartedEvent, new ManipulationStartedEventHandler(OnManipulationStarted), true);
             DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
             SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
-
+            DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
+            DataGrid.SelectedItem = null;
+            DataGrid.SelectionChanged += delegate(object sender, SelectionChangedEventArgs args) //prevent selection of rows
+            {
+                DataGrid.SelectedItem = null;
+            };
         }
 
         private Image _drag;
@@ -86,29 +90,7 @@ namespace NuSysApp
             return result.Any();
         }
         private FrameworkElement _el;
-
-        private async void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
-        {
-            //BitmapImage bmp = new BitmapImage(new Uri("ms-appx:///Assets//icon_additional.png"));
-
-            //var img = new Image
-            //{
-            //    RenderTransform = new CompositeTransform(),
-            //    Source = bmp
-            //};
-
-            //Canvas.SetLeft(img, 0);
-            //Canvas.SetTop(img, 0);
-
-            //var vm = (GroupNodeDataGridViewModel) DataContext;
-            //var t = (CompositeTransform)img.RenderTransform;
-            //t.TranslateX = vm.Transform.TranslateX
-            //t.TranslateY = point.Y
-            //Canvas.SetLeft(img, args.Position.X);
-            //Canvas.SetTop(img, args.Position.Y);
-            //SessionController.Instance.SessionView.MainCanvas.Children.Add(img);
-        }
-
+        private bool _doubleTapped;
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
@@ -124,48 +106,31 @@ namespace NuSysApp
                 Canvas.SetTop(_drag, y);
             }
          }
-        //private bool IsPointerInGroup(object sender, ManipulationDeltaRoutedEventArgs args)
-        //{
+       
 
-        //    var point = ((UIElement)sender).TransformToVisual(SessionController.Instance.SessionView.MainCanvas);
-        //    var hits = VisualTreeHelper.FindElementsInHostCoordinates(this.GetRealCoordinatesOnScreen(sender), SessionController.Instance.SessionView);
-        //    var result = hits.Where((uiElem) => uiElem is AreaNodeView);
-        //    return result.Any();
-        //}
+        private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            _doubleTapped = true;
+            var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
+        
+            if (dc is GroupNodeDataGridInfo)
+            {
+                var cdc = (GroupNodeDataGridInfo) dc;
+                var controller = SessionController.Instance.IdToControllers[cdc.Id];
+                var type = controller.LibraryElementModel.Type;
 
-        //private void StartTimer()
-        //{
-        //    if (_timer == null)
-        //    {
-        //        _timer = new DispatcherTimer();
-        //        _timer.Tick += async delegate (object o, object o1)
-        //        {
+                    if (type == ElementType.Word || type == ElementType.Powerpoint)
+                    {
+                        return;
+                    }
+                    else if (type != ElementType.Link)
+                    {
+                        SessionController.Instance.SessionView.ShowDetailView(controller);
+                    }
 
-
-        //        };
-        //        _timer.Interval = TimeSpan.FromMilliseconds(50);
-        //        _timer.Start();
-
-        //    }
-        //}
-
-        //private Point GetRealCoordinatesOnScreen(object sender)
-        //{
-        //    var cview = (AreaNodeView)this.Parent;
-        //    var vm = (AreaNodeViewModel)cview.DataContext;
-        //    var send = (FrameworkElement)sender;
-        //    var sendVm = (ElementViewModel)send.DataContext;
-        //    var model = sendVm.Model;
-        //    var groupModel = vm.Model;
-
-        //    var point = vm.CompositeTransform.TransformPoint(new Point(model.X, model.Y));
-        //    var x = point.X + groupModel.X;
-        //    var y = point.Y + groupModel.Y;
-        //    var point2 = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
-        //    return point2;
-
-        //}
-
+                
+            }
+        }
 
     }
 }

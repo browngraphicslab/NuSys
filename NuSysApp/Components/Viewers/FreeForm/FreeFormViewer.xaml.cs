@@ -131,6 +131,11 @@ namespace NuSysApp
             };
         }
 
+        public Canvas AtomCanvas
+        {
+            get { return xAtomCanvas; }
+        }
+
         public MultiSelectMenuView MultiMenu
         {
             get { return multiMenu; }

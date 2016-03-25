@@ -50,14 +50,17 @@
         <Image Name="DraggingGraphImage" Source="http://png-3.findicons.com/files/icons/2660/finance/256/bar_graph.png" Width="0" Height="0"></Image>
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
-        <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
-        <local:DetailViewerView x:Name="xDetailViewer"></local:DetailViewerView>
-        <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
-       
+
         <Grid x:Name="xBtnPen" CornerRadius="50"  BorderBrush="#c59e9c" BorderThickness="3"  Width="60" Height="60">
             <Grid x:Name="PenCircle" CornerRadius="50" Width="50" Height="50" Background="#c59e9c">
                 <Image Source="../Assets/node icons/pen.png" Height="30"></Image>
             </Grid>
         </Grid>
+
+        <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
+        <local:DetailViewerView x:Name="xDetailViewer"></local:DetailViewerView>
+        <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
+       
+
     </Canvas>
 </Page>
