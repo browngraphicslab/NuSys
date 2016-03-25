@@ -245,7 +245,7 @@ namespace NuSysApp
         public void Activate()
         {
             IsActivated = true;
-            InputMenu.Visibility = Visibility.Visible;
+            //InputMenu.Visibility = Visibility.Visible;
         }
 
         public void DeActivate()
