@@ -84,7 +84,10 @@ namespace NuSysApp
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
                     var box = new CollectionTextBox();
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
-                    box.Text = dict.ContainsKey("title") ? (string)dict["title"] : "Unnamed Collection";
+                    if (dict.ContainsKey("title") && dict["title"] != null)
+                        box.Text = (string) dict["title"];
+                    else
+                        box.Text = "Unnamed Collection";
                     List.Items.Add(box);
                     _preloadedIDs.Add(box.ID);
                 }
