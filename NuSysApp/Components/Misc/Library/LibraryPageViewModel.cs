@@ -34,7 +34,8 @@ namespace NuSysApp
         {
             UITask.Run(() =>
             {
-                _orgList.Add(content);
+                if(content.Type!= ElementType.Link)
+                    _orgList.Add(content);
                 Search(_searchString);
             });
 

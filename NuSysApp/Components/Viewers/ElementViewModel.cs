@@ -43,6 +43,7 @@ namespace NuSysApp
             controller.MetadataChange += OnMetadataChange;
             controller.TitleChanged += OnTitleChanged;
             controller.LinkedAdded += OnLinkedAdded;
+            controller.Disposed += OnDisposed;
 
             Tags = new ObservableCollection<Button>();
 
@@ -53,6 +54,11 @@ namespace NuSysApp
                 };
 
             ReadFromModel();
+        }
+
+        private void OnDisposed(object source)
+        {
+            Dispose();
         }
 
         private void OnLinkedAdded(object source, LinkElementController linkController)
@@ -188,6 +194,7 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
+            _controller.Disposed -= OnDisposed;
 
             Tags = null;
             _transform = null;

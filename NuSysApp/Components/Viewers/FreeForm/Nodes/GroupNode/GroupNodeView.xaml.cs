@@ -63,20 +63,16 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
 
-            freeFormView = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)vm.Controller));
-            timelineView = new GroupNodeTimelineView(new GroupNodeTimelineViewModel((ElementCollectionController)vm.Controller));
+            //freeFormView = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)vm.Controller));
+            //timelineView = new GroupNodeTimelineView(new GroupNodeTimelineViewModel((ElementCollectionController)vm.Controller));
             dataGridView = new GroupNodeDataGridView(new GroupNodeDataGridViewModel((ElementCollectionController)vm.Controller));
-            expandedView = new GroupNodeExpandedView();
+           // expandedView = new GroupNodeExpandedView();
 
-            timelineView.Visibility = Visibility.Collapsed;
             dataGridView.Visibility = Visibility.Visible;
-            expandedView.Visibility = Visibility.Collapsed;
-            freeFormView.Visibility = Visibility.Collapsed;
 
-            ExpandedGrid.Children.Add(timelineView);
+      
             ExpandedGrid.Children.Add(dataGridView);
-            ExpandedGrid.Children.Add(expandedView);
-            ExpandedGrid.Children.Add(freeFormView);
+
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -107,22 +103,29 @@ namespace NuSysApp
 
         public AreaNodeView FreeFormView => freeFormView;
 
-        private void MenuDetailButton_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void MenuDetailButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Button tb = (Button)sender;
+            var vm = (GroupNodeViewModel)DataContext;
+            var tb = (Button)sender;
 
-            timelineView.Visibility = Visibility.Collapsed;
-            dataGridView.Visibility = Visibility.Collapsed;
-            expandedView.Visibility = Visibility.Collapsed;
-            freeFormView.Visibility = Visibility.Collapsed;
+            if (timelineView != null)
+                timelineView.Visibility = Visibility.Collapsed;
+            if (dataGridView != null)
+                dataGridView.Visibility = Visibility.Collapsed;
+            if (freeFormView != null)
+                freeFormView.Visibility = Visibility.Collapsed;
 
 
-            if (tb.Name == "DefaultButton")
+            if (tb.Name == "TimeLineButton")
             {
-                expandedView.Visibility = Visibility.Visible;
-            }
-            else if (tb.Name == "TimeLineButton")
-            {
+                if (timelineView == null)
+                {
+                    var tvm = new GroupNodeTimelineViewModel((ElementCollectionController) vm.Controller);
+                    await tvm.CreateChildren();
+                    timelineView = new GroupNodeTimelineView(tvm);
+                    await timelineView.ResortTimeline();
+                    ExpandedGrid.Children.Add(timelineView);
+                }
                 timelineView.Visibility = Visibility.Visible;
             }
             else if (tb.Name == "ListButton")
@@ -131,6 +134,13 @@ namespace NuSysApp
             }
             else if (tb.Name == "FreeFormButton")
             {
+                if (freeFormView == null)
+                {
+                    var fvm = new AreaNodeViewModel((ElementCollectionController) vm.Controller);
+                    await fvm.CreateChildren();
+                    freeFormView = new AreaNodeView(fvm);
+                    ExpandedGrid.Children.Add(freeFormView);
+                }
                 freeFormView.Visibility = Visibility.Visible;
             }
         }

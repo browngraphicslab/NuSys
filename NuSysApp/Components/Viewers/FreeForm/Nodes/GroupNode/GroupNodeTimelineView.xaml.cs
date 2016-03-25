@@ -192,7 +192,13 @@ namespace NuSysApp
         }
 
         #region Sort Timeline
-        private async void ResortTimeline(String dataName)
+
+
+        public async Task ResortTimeline()
+        {
+            await ResortTimeline(_sortBy);
+        }
+        private async Task ResortTimeline(String dataName)
         {
             _sortBy = _viewBy = dataName;
 

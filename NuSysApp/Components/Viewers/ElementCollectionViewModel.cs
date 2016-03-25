@@ -28,6 +28,17 @@ namespace NuSysApp
             AtomViewList = new ObservableCollection<FrameworkElement>();
         }
 
+        public async Task CreateChildren()
+        {
+
+            var model = (CollectionLibraryElementModel) Controller.LibraryElementModel;
+            foreach (var id in model.Children )
+            {
+                var childController = SessionController.Instance.IdToControllers[id];
+                await CreateChild(childController);
+            }
+        }
+
         public override void Dispose()
         {
             var controller = (ElementCollectionController) Controller;
@@ -38,10 +49,14 @@ namespace NuSysApp
 
         private async void OnChildAdded(object source, ElementController elementController)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(elementController);   
-            AtomViewList.Add(view);
+            await CreateChild(elementController);
+        }
 
-            elementController.Deleted += OnChildDeleted;
+        private async Task CreateChild(ElementController controller)
+        {
+            var view = await _nodeViewFactory.CreateFromSendable(controller);
+            AtomViewList.Add(view);
+            controller.Deleted += OnChildDeleted;
         }
 
         private void OnChildDeleted(object source)

@@ -52,7 +52,7 @@ namespace NuSysApp
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
         {
             var userControl = (UserControl)sender;
-            if (userControl.DataContext is ElementViewModel)
+            if (userControl.DataContext is ElementViewModel && !(userControl.DataContext is LinkViewModel))
             {
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
             }

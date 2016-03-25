@@ -210,9 +210,16 @@ namespace NuSysApp
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
+            xLoadingGrid.Visibility = Visibility.Visible;
+
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                     new SubscribeToCollectionRequest(collectionId));
+
+            foreach (var controller in SessionController.Instance.IdToControllers.Values)
+            {
+                controller.Dispose();
+            }
 
             SessionController.Instance.IdToControllers.Clear();
             
@@ -255,6 +262,9 @@ namespace NuSysApp
                 await MakeCollection(dict, true, 2);
             });
             Debug.WriteLine("done joining collection: " + collectionId);
+
+            xLoadingGrid.Visibility = Visibility.Collapsed;
+
             /*
             foreach (var msg in nodeMessages)
             {
@@ -399,7 +409,7 @@ namespace NuSysApp
             //xWorkspaceTitle.Paste += UpdateTitle;
 
             freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
-            Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
+         //   Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             //Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 5);
