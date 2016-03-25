@@ -20,7 +20,7 @@ namespace NuSysApp
 
         private void SetServerSettings()
         {
-            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerEchoType(ServerEchoType.ForcedEveryone);
             SetServerIgnore(false);
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Remove);

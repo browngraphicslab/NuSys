@@ -13,13 +13,19 @@ namespace NuSysApp
 {
     public class LibraryPageViewModel
     {
-        public ObservableCollection<LibraryElementModel> _PageElements;
+        public ObservableCollection<LibraryElementModel> PageElements { get; set; }
+
+        private List<LibraryElementModel> _orgList;
+
+        private string _searchString = string.Empty;
+
 
         public delegate void ItemsChangedEventHandler();
         public event ItemsChangedEventHandler OnItemsChanged;
         public LibraryPageViewModel(ObservableCollection<LibraryElementModel> elements)
         {
-            _PageElements = elements;
+            PageElements = elements;
+            _orgList = new List<LibraryElementModel>(elements);
             SessionController.Instance.ContentController.OnNewContent += NewContent;
             SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
         }
@@ -28,8 +34,8 @@ namespace NuSysApp
         {
             UITask.Run(() =>
             {
-                _PageElements.Add(content);
-                OnItemsChanged?.Invoke();
+                _orgList.Add(content);
+                Search(_searchString);
             });
 
         }
@@ -38,13 +44,13 @@ namespace NuSysApp
         {
             UITask.Run(() =>
             {
-                _PageElements.Remove(content);
-                OnItemsChanged?.Invoke();
+                _orgList.Remove(content);
+                PageElements.Remove(content);
             });
         }
         public async Task Sort(string s)
         {
-            IOrderedEnumerable<LibraryElementModel> ordered = null;
+            List<LibraryElementModel> ordered = null;
             switch (s.ToLower().Replace(" ", string.Empty))
             {
                 //case "title":
@@ -54,45 +60,42 @@ namespace NuSysApp
                 //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
                 //    break;
                 case "title":
-                    ordered = _PageElements.OrderBy(l => ((LibraryElementModel)l).Title);
+                    ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Title));
                     break;
                 case "nodetype":
-                    ordered = _PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString());
+                    ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString()));
                     break;
                 case "timestamp":
-                    ordered = _PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks());
+                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks()));
                     break;
                 default:
                     break;
             }
             if (ordered != null)
             {
-                ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
-                await Task.Run(async delegate
+
+                //  ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
+                PageElements.Clear();
+
+                foreach (var item in ordered)
                 {
-                    foreach (var item in ordered)
-                    {
-                        newCollection.Add(item);
-                    }
-                });
-                _PageElements = newCollection;
+                    PageElements.Add(item);
+                }
+          
             }
         }
         public async Task Search(string s)
         {
-            ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
-            var coll = ((ObservableCollection<LibraryElementModel>)_PageElements);
-            await Task.Run(async delegate
+            _searchString = s;
+            PageElements.Clear();
+            
+            foreach (var item in _orgList)
             {
-                foreach (var item in coll)
+                if (item.InSearch(s))
                 {
-                    if (item.InSearch(s))
-                    {
-                        newCollection.Add(item);
-                    }
+                    PageElements.Add(item);
                 }
-            });
-            _PageElements = newCollection;
+            }
         }
 
     }

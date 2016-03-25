@@ -25,13 +25,13 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
-        public delegate void ClientDroppedEventHandler(Dictionary<string, object> dict);
+        public delegate void ClientDroppedEventHandler(string id);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
 
         public delegate void ContentAvailableNotificationEventHandler(Dictionary<string, object> dict);
         public event ContentAvailableNotificationEventHandler OnContentAvailable;
 
-        public delegate void ClientJoinedEventHandler(Dictionary<string, object> dict);
+        public delegate void ClientJoinedEventHandler(NetworkUser user);
         public event ClientJoinedEventHandler OnClientJoined;
 
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>(); 

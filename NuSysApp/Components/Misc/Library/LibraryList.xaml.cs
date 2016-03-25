@@ -40,14 +40,15 @@ namespace NuSysApp
         private LibraryView _library;
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
-            this.InitializeComponent();
-            ListView.ItemsSource = new ObservableCollection<LibraryElementModel>();
+           
+           
             this.DataContext = vm;
+            this.InitializeComponent();
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                ListView.ItemsSource = vm._PageElements;
+              
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
-                foreach(var i in vm._PageElements)
+                foreach(var i in vm.PageElements)
                 {
                     i.OnLightupContent += delegate(bool b)
                     {
@@ -61,14 +62,14 @@ namespace NuSysApp
             ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
             _propertiesWindow = propertiesWindow;
             _library = library;
-            vm.OnItemsChanged += Update;
+            //vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
 
         }
         private void Select(LibraryElementModel model)
         {
             ListView.SelectedItem = null;
-            if (((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Count == SessionController.Instance.ContentController.Count || ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Contains(model))
+            if ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource != null &&(((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Count == SessionController.Instance.ContentController.Count || ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Contains(model)))
             {
                 ListView.SelectedItem = model;
                 ListView.ScrollIntoView(model);
@@ -77,25 +78,29 @@ namespace NuSysApp
         
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            ListView.ItemsSource = new ObservableCollection<LibraryElementModel>(elements);
-            ((LibraryPageViewModel) this.DataContext)._PageElements = new ObservableCollection<LibraryElementModel>(elements);
+            var col = ((LibraryPageViewModel) DataContext).PageElements;
+            col.Clear();
+            foreach (var libraryElementModel in elements)
+            {
+                col.Add(libraryElementModel);
+            }
         }
 
         public async Task Sort(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Sort(s);
-            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+  //          this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
         public async Task Search(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Search(s);
-            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+            //this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
         public async void Update()
         {
-            this.SetItems(((LibraryPageViewModel)this.DataContext)._PageElements);
+            this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)

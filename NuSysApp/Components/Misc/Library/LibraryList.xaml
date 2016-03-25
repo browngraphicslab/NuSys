@@ -68,7 +68,7 @@
 
     <Grid BorderBrush="#83A6A3" BorderThickness="1">
 
-        <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True">
+        <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" ItemsSource="{Binding PageElements}">
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="White ">
                     <Grid.ColumnDefinitions>

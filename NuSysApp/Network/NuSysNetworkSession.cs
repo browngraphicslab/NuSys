@@ -297,7 +297,7 @@ namespace NuSysApp
             }
         }
 
-        public async void ClientDrop(Dictionary<string, object> dict)
+        public async void ClientDrop(string id)
         {
             //TODO fill in
         }

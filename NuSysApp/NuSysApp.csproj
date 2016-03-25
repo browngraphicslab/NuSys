@@ -105,11 +105,15 @@
     <Content Include="Assets\icon_delete_color.png" />
     <Content Include="Assets\icon_duplicate.png" />
     <Content Include="Assets\icon_folder.png" />
+    <Content Include="Assets\icon_image.png" />
     <Content Include="Assets\icon_ink.png" />
+    <Content Include="Assets\icon_library.png" />
     <Content Include="Assets\icon_link.png" />
     <Content Include="Assets\icon_mainmenu_search.png" />
+    <Content Include="Assets\icon_new_workspace.png" />
     <Content Include="Assets\icon_node.png" />
     <Content Include="Assets\icon_pano.png" />
+    <Content Include="Assets\icon_pdf.png" />
     <Content Include="Assets\icon_plus.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_recording.png" />
@@ -120,6 +124,7 @@
     <Content Include="Assets\icon_upload.png" />
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\icon_web_color.png" />
+    <Content Include="Assets\icon_whitex.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\150x150.scale-100.png" />
@@ -169,6 +174,7 @@
     <Content Include="Assets\logos\StoreLogo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.png" />
     <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\menububble.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
@@ -177,6 +183,7 @@
     <Content Include="Assets\node icons\icon_line.png" />
     <Content Include="Assets\node icons\icon_link.png" />
     <Content Include="Assets\node icons\icon_list.png" />
+    <Content Include="Assets\node icons\icon_new_collection.png" />
     <Content Include="Assets\node icons\icon_pause.png" />
     <Content Include="Assets\node icons\icon_play.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
@@ -308,6 +315,7 @@
       <DependentUpon>SearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\TimelineNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
