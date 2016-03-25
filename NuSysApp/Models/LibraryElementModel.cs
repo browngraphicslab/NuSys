@@ -105,6 +105,9 @@ namespace NuSysApp
             ViewUtilBucket.Clear();
             Data = null;
 
+            Loaded = false;
+            _loading = false;
+
             var ds = OnContentChanged?.GetInvocationList();
             if (ds != null)
             {
@@ -135,6 +138,14 @@ namespace NuSysApp
                 foreach (var d in ds)
                 {
                     OnLightupContent -= (LightupContentEventHandler)d;
+                }
+            }
+            ds = _onLoaded?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    _onLoaded -= (OnLoadedEventHandler)d;
                 }
             }
         }
