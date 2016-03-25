@@ -52,6 +52,7 @@ namespace NuSysApp
                 PositionResizer();
             };
 
+            vm.Controller.Disposed += ControllerOnDisposed;
 
             //DefaultButton.AddHandler(TappedEvent,
             //    new TappedEventHandler(MenuDetailButton_Tapped), true);
@@ -75,13 +76,22 @@ namespace NuSysApp
 
         }
 
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (GroupNodeViewModel) DataContext;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            dataGridView = null;
+            timelineView = null;
+            freeFormView = null;
+            DataContext = null;
+        }
+
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = (GroupNodeViewModel) DataContext;
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
             vm.Controller.SetSize(vm.Width + dx, vm.Height + dy);
-            
 
             PositionResizer();
             e.Handled = true;

@@ -55,6 +55,14 @@ namespace NuSysApp
             Inner = null;
         }
 
+        public void Dispose()
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            vm.PropertyChanged -= OnPropertyChanged;
+            vm.Controller.UserChanged -= ControllerOnUserChanged;
+            vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
+        }
+
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
             typeof (object), typeof (NodeTemplate), new PropertyMetadata(null));
 
@@ -133,25 +141,30 @@ namespace NuSysApp
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
-            vm.Controller.UserChanged += delegate (NetworkUser user)
-            {
-                highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
-                highlight.BorderBrush = vm.UserColor;
-                userName.Foreground = vm.UserColor;
-                userName.Text = user?.Name ?? "";
-            };
+            vm.Controller.UserChanged += ControllerOnUserChanged;
 
             if (vm.Controller.LibraryElementModel != null) { 
-                vm.Controller.LibraryElementModel.OnLightupContent += delegate (bool lightup)
-                {
-                     highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-                     highlight.BorderThickness = new Thickness(5);
-                     highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
-                 };
+                vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
             }
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
+        }
+
+        private void ControllerOnUserChanged(NetworkUser user)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
+            highlight.BorderBrush = vm.UserColor;
+            userName.Foreground = vm.UserColor;
+            userName.Text = user?.Name ?? "";
+        }
+
+        private void LibraryElementModelOnOnLightupContent(bool lightup)
+        {
+            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+            highlight.BorderThickness = new Thickness(5);
+            highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)

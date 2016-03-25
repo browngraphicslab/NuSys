@@ -21,6 +21,20 @@ namespace NuSysApp
                 ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
                 ((CollectionLibraryElementModel) contentModel).OnChildRemoved += RemoveChildById;
             }
+
+            Disposed += OnDisposed;
+        }
+
+        private void OnDisposed(object source)
+        {
+            var contentModel = SessionController.Instance.ContentController.Get(Model.LibraryId);
+            if (contentModel != null)
+            {
+                ((CollectionLibraryElementModel)contentModel).OnChildAdded -= AddChildById;
+                ((CollectionLibraryElementModel)contentModel).OnChildRemoved -= RemoveChildById;
+            }
+
+            Disposed -= OnDisposed;
         }
 
         private void AddChildById(string id)

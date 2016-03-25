@@ -198,6 +198,7 @@ namespace NuSysApp
 
             Tags = null;
             _transform = null;
+   //         _controller = null;
         }
 
         public virtual void SetSize(double width, double height)

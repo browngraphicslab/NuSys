@@ -46,7 +46,7 @@ namespace NuSysApp
             Title = _nodeModel.Title;
             
             var tempvm = (ElementViewModel) View.DataContext;
-            tempvm.PropertyChanged += NodeVMPropertChanged;
+            //tempvm.PropertyChanged += NodeVMPropertChanged;
             MakeTagList();
             RaisePropertyChanged("Title");
             RaisePropertyChanged("View");

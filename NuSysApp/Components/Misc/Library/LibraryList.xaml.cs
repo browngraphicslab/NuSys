@@ -70,6 +70,9 @@ namespace NuSysApp
         {
             ListView.SelectedItem = null;
 
+            if (ListView.ItemsSource == null)
+                return;
+
             if (((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Count == SessionController.Instance.ContentController.Count || ((ObservableCollection<LibraryElementModel>)ListView.ItemsSource).Contains(model))
             {
                 ListView.SelectedItem = model;

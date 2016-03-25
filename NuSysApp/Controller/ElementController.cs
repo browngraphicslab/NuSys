@@ -61,7 +61,7 @@ namespace NuSysApp
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             var delegates1 = SizeChanged?.GetInvocationList();
             if (delegates1 != null)
