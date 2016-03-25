@@ -113,7 +113,7 @@ namespace NuSysApp
                     if (SessionController.Instance.ContentController.Get(id) != null)
                     {
                         var element = SessionController.Instance.ContentController.Get(id);
-                        element.Title = title;//TODO make sure no other variables, like timestamp, need to be set here
+                        element.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
                     {

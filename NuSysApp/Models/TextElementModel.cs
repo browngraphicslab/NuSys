@@ -10,7 +10,6 @@ namespace NuSysApp
 {
     public class TextElementModel : ElementModel
     {
-        private string _text = string.Empty;
         public delegate void TextChangedEventHandler(object source, string text);
         public event TextChangedEventHandler TextChanged;
 
@@ -19,30 +18,14 @@ namespace NuSysApp
             ElementType = ElementType.Text;
         }
 
-        public string Text
-        {
-            get { return _text; }
-            set
-            {
-                _text = value;
-            }   
-        }
-
         public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
-
-            var controller = SessionController.Instance.ContentController;
-            var contentId = props.GetString("contentId");
-            if (!string.IsNullOrEmpty(contentId) && controller.Get(contentId) != null)
-                Text = SessionController.Instance.ContentController.Get(LibraryId).Data;
-
         }
 
         public override async Task<Dictionary<string,object>> Pack()
         {
-            var dict = await base.Pack();
-            return dict;
+            return await base.Pack();
         }
     }
 }

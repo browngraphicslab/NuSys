@@ -62,7 +62,7 @@ namespace NuSysApp
         public string Id { get; set; }
         public string Title {
             get { return _title; }
-            set
+            private set
             {
                 _title = value;
                 RaisePropertyChanged("Title");

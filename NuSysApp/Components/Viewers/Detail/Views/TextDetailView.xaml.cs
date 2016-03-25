@@ -221,7 +221,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextNodeViewModel)DataContext;
-                ((TextElementModel)vm.Model).Text = session.SpeechString;
+                vm.Controller.LibraryElementModel.SetContentData(vm,session.SpeechString);
             }
             else
             {
