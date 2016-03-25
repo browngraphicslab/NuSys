@@ -185,6 +185,7 @@ namespace NuSysApp
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = elementType.ToString();
+            dict["title"] =string.Empty;
             dict["x"] = (p.X).ToString();
             dict["y"] = (p.Y).ToString();
             dict["contentId"] = contentId;
