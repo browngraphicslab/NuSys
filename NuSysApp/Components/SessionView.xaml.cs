@@ -420,7 +420,7 @@ namespace NuSysApp
             xWorkspaceTitle.DropCompleted += UpdateTitle;
             //xWorkspaceTitle.Paste += UpdateTitle;
 
-            freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
+            freeFormViewerViewModel.Controller.LibraryElementModel.OnTitleChanged += TitleChanged;
          //   Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             //Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;

@@ -40,7 +40,7 @@ namespace NuSysApp
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
-            controller.TitleChanged += OnTitleChanged;
+            controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
 
@@ -176,7 +176,7 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
-            _controller.TitleChanged -= OnTitleChanged;
+            _controller.LibraryElementModel.OnTitleChanged -= OnTitleChanged;
             _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
             

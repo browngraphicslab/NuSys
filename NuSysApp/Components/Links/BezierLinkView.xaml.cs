@@ -23,7 +23,7 @@ namespace NuSysApp
 
             var model = vm.Model;
             this.Annotation.IsActivated = false;
-            vm.Controller.TitleChanged += ControllerOnTitleChanged;
+            vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
             Annotation.SizeChanged += delegate (object sender, SizeChangedEventArgs args)
@@ -52,7 +52,7 @@ namespace NuSysApp
             var vm = (ElementViewModel)DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
-            vm.Controller.TitleChanged -= ControllerOnTitleChanged;
+            vm.Controller.LibraryElementModel.OnTitleChanged -= ControllerOnTitleChanged;
             DataContext = null;
         }
 

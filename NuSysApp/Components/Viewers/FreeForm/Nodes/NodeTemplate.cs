@@ -167,7 +167,7 @@ namespace NuSysApp
             vm.Controller.LibraryElementModel.SetTitle(title.Text);
         }
 
-        private void LibraryElementModelOnOnTitleChanged(string newTitle)
+        private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
         {
             var vm = (ElementViewModel)this.DataContext;
             if (title.Text != vm.Controller.LibraryElementModel.Title)

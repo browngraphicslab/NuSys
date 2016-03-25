@@ -38,7 +38,7 @@ namespace NuSysApp
         public delegate void ContentChangedEventHandler(ElementViewModel originalSenderViewModel = null);
         public event ContentChangedEventHandler OnContentChanged;
 
-        public delegate void TitleChangedEventHandler(string newTitle);
+        public delegate void TitleChangedEventHandler(object sender, string newTitle);
         public event TitleChangedEventHandler OnTitleChanged;
 
         public delegate void ElementDeletedEventHandler();
@@ -187,7 +187,7 @@ namespace NuSysApp
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             });
             Title = title;
-            OnTitleChanged?.Invoke(title);
+            OnTitleChanged?.Invoke(this, title);
         }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)
         {

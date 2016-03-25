@@ -29,8 +29,6 @@ namespace NuSysApp
 
         public delegate void ScaleChangedEventHandler(object source, double sx, double sy);
 
-        public delegate void TitleChangedHandler(object source, string title);
-
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
         public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
@@ -45,7 +43,6 @@ namespace NuSysApp
         public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
-        public event TitleChangedHandler TitleChanged;
         public event NetworkUserChangedEventHandler UserChanged;
 
         public ElementController(ElementModel model)
@@ -60,7 +57,6 @@ namespace NuSysApp
                 LibraryElementModel.OnDelete += Delete;
                 var title = LibraryElementModel.Title;
                 Model.Title = title;
-                TitleChanged?.Invoke(this, title);
             }
         }
 
@@ -124,15 +120,6 @@ namespace NuSysApp
             AlphaChanged?.Invoke(this, alpha);
 
             _debouncingDictionary.Add("alpha", alpha);
-        }
-
-        public void SetTitle(string title)
-        {
-            Model.Title = title;
-
-            TitleChanged?.Invoke(this, title);
-
-            _debouncingDictionary.Add("title", title);
         }
 
         public void SetMetadata(string key, object val)
