@@ -30,9 +30,6 @@ namespace NuSysApp
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
 
-        public delegate void UserDroppedEventHandler(NetworkUser user);
-        public event UserDroppedEventHandler OnNetworkUserDropped;
-
         #endregion Public Members
         #region Private Members
         private HashSet<string> NetworkMemberIPs
@@ -291,16 +288,14 @@ namespace NuSysApp
                 {
                     var user = NetworkMembers[ip];
                     NetworkMembers.Remove(ip);
-                    await UITask.Run(async delegate {
-                                                        OnNetworkUserDropped?.Invoke(user);
-                    });
+                    user.Remove();
                 }
             }
         }
 
         public async void ClientDrop(string id)
         {
-            //TODO fill in
+            await DropNetworkUser(id);
         }
 
         public async Task FetchLibraryElementData(string id)

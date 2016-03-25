@@ -133,7 +133,12 @@ namespace NuSysApp
         {
             UserLabel b = new UserLabel(user);
             Users.Children.Add(b);
-            user.OnUserRemoved += delegate { Users.Children.Remove(b); };
+            user.OnUserRemoved += delegate
+            {
+                UITask.Run(delegate {
+                    Users.Children.Remove(b);
+                });
+            };
         }
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
