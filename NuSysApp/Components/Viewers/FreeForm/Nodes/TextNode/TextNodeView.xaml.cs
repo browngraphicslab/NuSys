@@ -35,44 +35,63 @@ namespace NuSysApp
         private string _text = string.Empty;
 
         private string _savedForInking = string.Empty;
-        private TextNodeViewModel _vm;
+
+        private static int _count = 0;
+        private bool navigated = false;
 
         public TextNodeView(TextNodeViewModel vm)
         {
+            _count++;
+            Debug.WriteLine(_count);
             InitializeComponent();
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
-            _vm = vm;
-            var navigated = false;
+  
+           
 
-            TextNodeWebView.NavigationCompleted += delegate
-            {
-                navigated = true;
-                UpdateText(vm.Text);
-            };
-
-            vm.TextBindingChanged += delegate(object source, string text)
-            {
-                if (navigated)
-                {
-                    UpdateText(text);
-                }
-                else
-                {
-                    TextNodeWebView.NavigationCompleted += delegate
-                    {
-                        UpdateText(text);
-                    };
-                }
-            };
-
+            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.TextBindingChanged += TextChanged;
+            TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
+        }
+
+        private void TextNodeWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            var vm = (TextNodeViewModel)DataContext;
+            navigated = true;
+            UpdateText(vm.Text);
+        }
+
+        private void TextChanged(object source, string text)
+        {
+
+             if (navigated)
+             {
+                 UpdateText(text);
+             }
+             else
+             {
+                 TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
+                 TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
+             }
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (TextNodeViewModel) DataContext;
+            vm.TextBindingChanged -= TextChanged;
+            TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
+            TextNodeWebView.ScriptNotify -= wvBrowser_ScriptNotify;
+            nodeTpl.Dispose();
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
         }
 
         private void SetUpInking()
         {
+            var vm = (TextNodeViewModel)DataContext;
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
-            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(_vm.Width, _vm.Height));
+            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
 
             var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;
@@ -122,7 +141,7 @@ namespace NuSysApp
             _savedForInking = _text;
             if (!_isopen)
             {
-                SetUpInking();
+                //SetUpInking();
                 FlipOpen.Begin();
             }
             else

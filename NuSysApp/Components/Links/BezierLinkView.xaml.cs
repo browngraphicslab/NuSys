@@ -23,14 +23,8 @@ namespace NuSysApp
 
             var model = vm.Model;
             this.Annotation.IsActivated = false;
-            vm.Controller.TitleChanged += delegate//TODO remove this handler eventually
-            {
-                Annotation.Text = model.Title;
-                //Annotation.Visibility
-                AnnotationContainer.Visibility = model.Title == ""
-                    ? Visibility.Collapsed
-                    : Visibility.Visible;
-            };
+            vm.Controller.TitleChanged += ControllerOnTitleChanged;
+            vm.Controller.Disposed += OnDisposed;
 
             Annotation.SizeChanged += delegate (object sender, SizeChangedEventArgs args)
             {
@@ -46,6 +40,22 @@ namespace NuSysApp
                 //       await SessionController.Instance.InitializeRecog();
             };
         }
+
+        private void ControllerOnTitleChanged(object source, string title)
+        {
+            Annotation.Text = title;
+            AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private void OnDisposed(object source)
+        {
+            var vm = (ElementViewModel)DataContext;
+            vm.PropertyChanged -= OnPropertyChanged;
+            vm.Controller.Disposed -= OnDisposed;
+            vm.Controller.TitleChanged -= ControllerOnTitleChanged;
+            DataContext = null;
+        }
+
         private void UpdateText()
         {
             var model = (DataContext as LinkViewModel).Model;

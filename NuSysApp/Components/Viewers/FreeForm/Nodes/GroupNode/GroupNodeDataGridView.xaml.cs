@@ -24,24 +24,35 @@ namespace NuSysApp
     public sealed partial class GroupNodeDataGridView : AnimatableUserControl
     {
         private DispatcherTimer _timer;
+        private PointerEventHandler _releaseHandler;
 
         public GroupNodeDataGridView(GroupNodeDataGridViewModel viewModel)
         {
            DataContext = viewModel;
            this.InitializeComponent();
 
-       
+            _releaseHandler = new PointerEventHandler(OnPointerReleased);
             DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
             DataGrid.AddHandler(UIElement.ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
             DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
-            SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, _releaseHandler, true);
             DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
             DataGrid.SelectedItem = null;
             DataGrid.SelectionChanged += delegate(object sender, SelectionChangedEventArgs args) //prevent selection of rows
             {
                 DataGrid.SelectedItem = null;
             };
+
+            viewModel.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (ElementViewModel) DataContext;
+            SessionController.Instance.SessionView.MainCanvas.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
+            DataContext = null;
+            vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
         private Image _drag;

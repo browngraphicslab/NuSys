@@ -176,10 +176,13 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
+            _controller.TitleChanged -= OnTitleChanged;
+            _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
-
+            
             Tags = null;
             _transform = null;
+   //         _controller = null;
         }
 
         public virtual void SetSize(double width, double height)

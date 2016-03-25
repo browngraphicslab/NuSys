@@ -63,67 +63,11 @@ namespace NuSysApp
                 TitleChanged?.Invoke(this, title);
             }
         }
-        public void Dispose()
+
+
+        public virtual void Dispose()
         {
-            var delegates1 = SizeChanged?.GetInvocationList();
-            if (delegates1 != null)
-                foreach (var d in delegates1)
-                {
-                    SizeChanged -= (SizeUpdateEventHandler)d;
-                }
-            var invocationList1 = ScaleChanged?.GetInvocationList();
-            if (invocationList1 != null)
-                foreach (var d in invocationList1)
-                {
-                    ScaleChanged -= (ScaleChangedEventHandler)d;
-                }
-            var ds = AlphaChanged?.GetInvocationList();
-            if (ds != null)
-                foreach (var d in ds)
-                {
-                    AlphaChanged -= (AlphaChangedEventHandler)d;
-                }
-            var list = TitleChanged?.GetInvocationList();
-            if (list != null)
-                foreach (var d in list)
-                {
-                    TitleChanged -= (TitleChangedHandler)d;
-                }
-            var delegates = UserChanged?.GetInvocationList();
-            if (delegates != null)
-                foreach (var d in delegates)
-                {
-                    UserChanged -= (NetworkUserChangedEventHandler)d;
-                }
-
-            var invocationList = Deleted?.GetInvocationList();
-            if (invocationList != null)
-                foreach (var d in invocationList)
-                {
-                    Deleted -= (DeleteEventHandler)d;
-                }
-
-            var invocationList2 = LinkedAdded?.GetInvocationList();
-            if (invocationList2 != null)
-                foreach (var d in LinkedAdded?.GetInvocationList())
-            {
-                LinkedAdded -= (LinkAddedEventHandler)d;
-            }
-
-            var invocationList3 = MetadataChange?.GetInvocationList();
-            if (invocationList3 != null)
-                foreach (var d in MetadataChange?.GetInvocationList())
-            {
-                MetadataChange -= (MetadataChangeEventHandler)d;
-            }
-
-            var invocationList4 = PositionChanged?.GetInvocationList();
-            if (invocationList4 != null)
-                foreach (var d in PositionChanged?.GetInvocationList())
-            {
-                PositionChanged -= (LocationUpdateEventHandler)d;
-            }
-
+            LibraryElementModel.OnDelete -= Delete;
             Disposed?.Invoke(this);
         }
 

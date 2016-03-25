@@ -52,7 +52,7 @@ namespace NuSysApp
             _isInking = false;
             _isActivated = false;
             this.InitializeComponent();
-            this.SetUpInking();
+       //     this.SetUpInking();
         }
 
         public Windows.UI.Color ButtonBg

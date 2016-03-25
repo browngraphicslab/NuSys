@@ -19,11 +19,20 @@ namespace NuSysApp
             _atomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
             _infoDict = new Dictionary<FrameworkElement, GroupNodeDataGridInfo>();
             AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
+
+            controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            _atomDataList = null;
+            _infoDict = null;
+            AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
+            Controller.Disposed -= ControllerOnDisposed;
         }
 
         private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-
             if (e.NewItems != null)
             {
                 foreach (var atom in e.NewItems)
@@ -54,7 +63,6 @@ namespace NuSysApp
                     {
                         AtomDataList.Remove(_infoDict[atomTest]);
                     }
-
                 }
 
             }
@@ -65,10 +73,6 @@ namespace NuSysApp
             get { return _atomDataList; }
             set { _atomDataList = value; }
         }
-
-
-
-      
         
     }
 }

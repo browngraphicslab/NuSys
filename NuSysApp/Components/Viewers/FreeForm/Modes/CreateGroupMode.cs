@@ -49,6 +49,8 @@ namespace NuSysApp
             }
 
             wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
+
+            _hoveredNode = null;
         }
 
 

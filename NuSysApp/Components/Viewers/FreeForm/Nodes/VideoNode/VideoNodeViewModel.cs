@@ -19,6 +19,12 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
+        public override void Dispose()
+        {
+            Controller.LibraryElementModel.OnLoaded -= LibraryElementModelOnOnLoaded;
+            base.Dispose();
+        }
+
         public override async Task Init()
         {
             if (Controller.LibraryElementModel.Loaded)
@@ -27,11 +33,13 @@ namespace NuSysApp
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += async delegate
-                {
-                    Controller.SetSize(Model.Width, Model.Height);
-                };
+                Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
             }
+        }
+
+        private void LibraryElementModelOnOnLoaded()
+        {
+            Controller.SetSize(Model.Width, Model.Height);
         }
 
         public override void SetSize(double width, double height)
@@ -53,11 +61,7 @@ namespace NuSysApp
                 base.SetSize(height * r, height + 100);
             }
         }
-        public void addTimeBlockChange(
-            System.Collections.Specialized.NotifyCollectionChangedEventHandler onCollectionChanged)
-        {
-            (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged += onCollectionChanged;
-        }
+
         public ObservableCollection<LinkedTimeBlockModel> LinkedTimeModels
         {
             get { return (Model as VideoNodeModel).LinkedTimeModels; }

@@ -50,7 +50,7 @@ namespace NuSysApp
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             
-
+            vm.Controller.Disposed += ControllerOnDisposed;
 
             //Loaded += delegate (object sender, RoutedEventArgs args)
             //{
@@ -65,6 +65,17 @@ namespace NuSysApp
             //};
         }
 
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (VideoNodeViewModel)DataContext;
+            vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
+            scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
+            playbackElement.MediaEnded -= PlaybackElementOnMediaEnded;
+            _temporaryLinkVisual.PointerMoved -= ScrubBar_OnPointerMoved;
+            _temporaryLinkVisual.PointerReleased -= ScrubBar_OnPointerReleased;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+        }
+
         public async void CheckBlocksForHit(double value)
         {
             foreach (var block in _timeBlocks)
@@ -74,7 +85,7 @@ namespace NuSysApp
                     if (block.OnBlock == false)
                     {
                         block.OnBlock = true;
-                        Debug.WriteLine("block hit");
+    
                         if (block.HasLinkedNode())
                         {
                             foreach (var element in block.NodeImageTuples)
@@ -84,10 +95,7 @@ namespace NuSysApp
                             await block.RefreshThumbnail();
                             foreach (var element in block.NodeImageTuples)
                             {
-                                Debug.Write("fdsjakflds;");
                                 ThumbnailGrid.Items.Add(element.Item2);
-
-
                             }
                         }
 
@@ -124,16 +132,19 @@ namespace NuSysApp
                 playbackElement.SetSource(memoryStream, "video/mp4");
                 _loaded = true;
             }
-            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
-            {
-                play.Opacity = 1;
-            };
+            playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
 
 
 
 
 
         }
+
+        private void PlaybackElementOnMediaEnded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            play.Opacity = 1;
+        }
+
         private void PlaybackElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
             this.AddAllLinksVisually();

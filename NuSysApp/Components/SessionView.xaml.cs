@@ -399,6 +399,7 @@ namespace NuSysApp
             if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
                 mainCanvas.Children.Remove(_activeFreeFormViewer);
 
+            
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
@@ -560,6 +561,7 @@ namespace NuSysApp
 
         private async Task DisposeCollectionView(FreeFormViewer oldFreeFormViewer)
         {
+            oldFreeFormViewer?.Dispose();
         }
 
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)

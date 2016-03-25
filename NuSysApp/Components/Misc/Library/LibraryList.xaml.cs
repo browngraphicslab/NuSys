@@ -62,6 +62,11 @@ namespace NuSysApp
         private void Select(LibraryElementModel model, bool lightup = true)
         {
             ListView.SelectedItem = null;
+
+
+            if (ListView.ItemsSource == null)
+                return;
+
             if (lightup)
             {
                 if ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource != null &&

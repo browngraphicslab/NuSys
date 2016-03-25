@@ -28,10 +28,6 @@ namespace NuSysApp
         {
             _canvasSize = canvasSize;
             Model = model;
-            Model.LineFinalized += OnLineFinalized;
-            Model.LineRemoved += OnLineRemoved;
-            Model.LineAdded += OnLineAdded;
-            Model.PageChanged +=OnPageChanged;
 
             //CurrentLine = new List<RawVector2>();
             //_source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);

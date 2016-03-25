@@ -24,7 +24,6 @@ namespace NuSysApp
 {
     public class PdfNodeViewModel : ElementViewModel
     {
-        private readonly FreeFormViewerViewModel _freeFormViewerViewModel;
         private CompositeTransform _inkScale;
         public int CurrentPageNumber { get;  private set; }
         public MuPDFWinRT.Document _document;
@@ -39,6 +38,14 @@ namespace NuSysApp
             CurrentPageNumber = model.CurrentPageNumber;
         }
 
+        public override void Dispose()
+        {
+            var model = (PdfNodeModel)Controller.Model;
+            model.PageChange -= OnPageChange;
+            _document.Dispose();
+            base.Dispose();
+        }
+
         public async override Task Init()
         {
             if (Controller.LibraryElementModel.Loaded)
@@ -47,11 +54,13 @@ namespace NuSysApp
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += async delegate
-                {
-                    await DisplayPdf();
-                };
+                Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
             }
+        }
+
+        private async void LibraryElementModelOnOnLoaded()
+        {
+            await DisplayPdf();
         }
 
 
