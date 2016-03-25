@@ -21,7 +21,7 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public sealed partial class SessionView : Page
+    public sealed partial class SessionView : Page, IDisposable
     {
         #region Private Members
 
@@ -581,5 +581,9 @@ namespace NuSysApp
             }
         }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
+        public void Dispose()
+        {
+            this.FreeFormViewer.InqCanvas.Dispose();
+        }
     }
 }

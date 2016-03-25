@@ -50,6 +50,11 @@ namespace NuSysApp
                 navigated = true;
                 UpdateText(vm.Text);
             };
+            var v = Window.Current.Content as Frame;
+            if (v != null)
+            {
+                var view = v.Content;
+            }
 
             vm.TextBindingChanged += delegate(object source, string text)
             {

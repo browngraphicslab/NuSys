@@ -29,7 +29,7 @@ namespace NuSysApp
 //TODO: fix interaction with other UI elements
 //fix size of canvas
 {
-    public sealed partial class InqCanvasView : UserControl
+    public sealed partial class InqCanvasView : UserControl, IDisposable
     {
         private bool _isEnabled;
         private uint _pointerId = uint.MaxValue;
@@ -48,6 +48,8 @@ namespace NuSysApp
             this.InitializeComponent();
             _viewModel = vm;
             DataContext = vm;
+
+
 
             _pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
             _pointerMovedHandler = new PointerEventHandler(OnPointerMoved);
@@ -88,12 +90,15 @@ namespace NuSysApp
                 _modelToGeometries.Remove(model);
                 win2dCanvas.Invalidate();
             };
+
+            
         }
 
         public InqCanvasViewModel ViewModel
         {
             get { return (InqCanvasViewModel)DataContext; }
         }
+
 
         private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
@@ -243,6 +248,14 @@ namespace NuSysApp
             foreach (CanvasGeometry line in _inqLines)
             {
                 args.DrawingSession.DrawGeometry(line, Colors.Black, 2);    
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach(CanvasGeometry line in _inqLines)
+            {
+                line.Dispose();
             }
         }
     }

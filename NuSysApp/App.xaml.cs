@@ -129,6 +129,13 @@ namespace NuSysApp
             //TODO: Save application state and stop any background activity
             //await AccessList.SaveFileTokens();
 
+            var v = Window.Current.Content as Frame;
+            if (v != null)
+            {
+                var view = v.Content as SessionView;
+                view?.Dispose();
+            }
+
             deferral.Complete();
         }
     }
