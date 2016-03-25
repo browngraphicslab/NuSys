@@ -25,5 +25,17 @@ namespace NuSysApp
             var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
             TextChanged?.Invoke(this, content.Data, originalSenderViewModel);
         }
+
+        public override void Dispose()
+        {
+           
+            if (SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
+            {
+                var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
+                content.OnContentChanged -= ContentChanged;
+            }
+            base.Dispose();
+
+        }
     }
 }

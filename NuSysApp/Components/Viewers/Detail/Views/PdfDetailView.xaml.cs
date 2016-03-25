@@ -52,7 +52,17 @@ namespace NuSysApp
             };
 
             vm.MakeTagList();
+
+            vm.Controller.Disposed += ControllerOnDisposed;
         }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (ImageElementViewModel)DataContext;
+            vm.Controller.Disposed += ControllerOnDisposed;
+            DataContext = null;
+        }
+
 
         private async void OnPageLeftClick(object sender, RoutedEventArgs e)
         {

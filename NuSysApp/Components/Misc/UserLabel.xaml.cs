@@ -29,25 +29,28 @@ namespace NuSysApp
 
         public UserLabel(NetworkUser user)
         {
-            this.InitializeComponent();
-            _user = user;
-            UserButton.Background = new SolidColorBrush(_user.Color);
-            var content = _user.Name ?? _user.IP;
-            if (content != "Me")
+            UITask.Run(delegate
             {
-                _userName = content.Substring(0, 1).ToUpper();
-            }
-            else
-            {
-                _userName = "Me";
-            }
-            UserBubbleText.Text = _userName;
-            UserButton.Foreground = new SolidColorBrush(Colors.White);
+                this.InitializeComponent();
+                _user = user;
+                UserButton.Background = new SolidColorBrush(_user.Color);
+                var content = _user.Name ?? _user.ID;
+                if (content != "Me")
+                {
+                    _userName = content.Substring(0, 1).ToUpper();
+                }
+                else
+                {
+                    _userName = "Me";
+                }
+                UserBubbleText.Text = _userName;
+                UserButton.Foreground = new SolidColorBrush(Colors.White);
 
-            UserBubbleText.Inlines.Clear();
-            UserBubbleText.Text = _userName;
+                UserBubbleText.Inlines.Clear();
+                UserBubbleText.Text = _userName;
 
-            UserButton.Click += UserButton_Click;
+                UserButton.Click += UserButton_Click;
+            });
         }
 
         private void UserButton_Click(object sender, RoutedEventArgs e)
@@ -61,7 +64,7 @@ namespace NuSysApp
                 UserInfoBox.Opacity = 1;
                 UserInfoBox.Foreground = new SolidColorBrush(_user.Color);
                 UserName.Text = _user.Name;
-                UserIP.Text = _user.IP;
+                UserIP.Text = _user.ID;
             }
         }
 

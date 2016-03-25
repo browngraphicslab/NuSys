@@ -13,10 +13,15 @@ namespace NuSysApp
 {
     public class WebNodeViewModel : ElementViewModel
     {
-        private double  _zoom = 1;
-       
+        private double _zoom = 1;
+
         public string Url { get; set; }
-        public List<WebNodeModel.Webpage> History { get { return (Model as WebNodeModel).History; } } 
+
+        //public List<WebNodeModel.Webpage> History
+        //{
+        //    get { return (Model as WebNodeModel).History; }
+        //}
+
         public Rect ClipRect { get; set; }
 
         public double Zoom
@@ -31,26 +36,35 @@ namespace NuSysApp
 
         public WebNodeViewModel(ElementController controller) : base(controller)
         {
-            ClipRect = new Rect(0,0, controller.Model.Width, controller.Model.Height);
+            ClipRect = new Rect(0, 0, controller.Model.Width, controller.Model.Height);
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
             // TODO: refactor
-            /*
-            Url = controller.Model.Url;
-            Controller.SizeChanged += delegate(object source, double width, double height)
+
+            //    Url = controller.Model.Url;
+            //    Controller.SizeChanged += delegate (object source, double width, double height)
+            //    {
+            //        Zoom = (Width / 1024.0);
+            //        ClipRect = new Rect(0, 0, width, height);
+            //        RaisePropertyChanged("Zoom");
+            //        RaisePropertyChanged("ClipRect");
+            //    };
+            //controller.Model.UrlChanged += delegate (object source, string url)
+            //{
+            //    Url = url;
+            //    RaisePropertyChanged("Url");
+            //};
+            controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
             {
-                Zoom = (Width / 1024.0);
-                ClipRect = new Rect(0, 0, width, height);
-                RaisePropertyChanged("Zoom");
-                RaisePropertyChanged("ClipRect");
+                Url = controller.LibraryElementModel.Data;
+                if (originalSenderViewModel != this)
+                {
+                    RaisePropertyChanged("Url");
+                }
             };
-            controller.Model.UrlChanged += delegate(object source, string url)
-            {
-                Url = url;
-                RaisePropertyChanged("Url");
-            };
-            Zoom = (Width / 1024.0);
-            */
+            //    Zoom = (Width / 1024.0);
+
+            //}
         }
     }
 }

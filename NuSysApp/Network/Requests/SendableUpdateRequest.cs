@@ -19,6 +19,7 @@ namespace NuSysApp
             {
                 throw new Exception("The Sendable update must have a key labeled 'id'");
             }
+            _message["sender_user_id"] = SessionController.Instance.LocalUserID;
         }
 
         private void SetServerSettings(bool saveToServer = false)
@@ -34,8 +35,13 @@ namespace NuSysApp
             var id = _message.GetString("id");
             if (SessionController.Instance.IdToControllers.ContainsKey(id))
             {
-                var sendable = SessionController.Instance.IdToControllers[id];
-                await sendable.UnPack(_message);
+                var Controller = SessionController.Instance.IdToControllers[id];
+                await Controller.UnPack(_message);
+                if(_message.ContainsKey("sender_user_id") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey((string)_message["sender_user_id"]))
+                {
+                    var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[(string)_message["sender_user_id"]];
+                    user.SetUserController(Controller);
+                }
             }
         }
     }

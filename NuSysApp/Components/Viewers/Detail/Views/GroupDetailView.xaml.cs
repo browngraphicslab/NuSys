@@ -36,11 +36,11 @@ namespace NuSysApp
 
             var model = (CollectionElementModel)vm.Model;
 
-            _views = new ObservableCollection<FrameworkElement>();
+         //   _views = new ObservableCollection<FrameworkElement>();
 
-            _factory = new FreeFormNodeViewFactory();
+           // _factory = new FreeFormNodeViewFactory();
 
-            this.AddChildren();
+           // this.AddChildren();
 
             //Loaded += delegate (object sender, RoutedEventArgs args)
             //{
@@ -51,6 +51,13 @@ namespace NuSysApp
             //    xGrid.Width = xGrid.ActualWidth / ratio;
             //    xGrid.Height = xGrid.ActualHeight / ratio;
             //};
+
+            vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            DataContext = null;
         }
 
         public async Task AddChildren()

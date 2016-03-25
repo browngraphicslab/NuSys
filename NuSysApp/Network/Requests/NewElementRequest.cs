@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using NuSysApp.Controller;
 
 namespace NuSysApp
 {
@@ -139,19 +140,7 @@ namespace NuSysApp
                             new SubscribeToCollectionRequest(libraryId));
                 });
             }
-
-            if (SessionController.Instance.ContentController.Get(libraryId).Loaded)
-            {
-              //  controller.FireContentLoaded();
-            }
-            else
-            {
-                SessionController.Instance.ContentController.Get(libraryId).OnLoaded += delegate
-                {
-               //     controller.FireContentLoaded();
-                };
-            }
-
+            
             if (elementType == ElementType.Collection)
             {
                 //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 

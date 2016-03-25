@@ -55,6 +55,19 @@ namespace NuSysApp
             Inner = null;
         }
 
+        public void Dispose()
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            vm.PropertyChanged -= OnPropertyChanged;
+            vm.Controller.UserChanged -= ControllerOnUserChanged;
+            vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
+            vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
+
+            if (title != null)
+                title.TextChanged -= TitleOnTextChanged;
+
+        }
+
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
             typeof (object), typeof (NodeTemplate), new PropertyMetadata(null));
 
@@ -116,14 +129,10 @@ namespace NuSysApp
             tags = (ItemsControl) GetTemplateChild("Tags");
 
             title = (TextBox)GetTemplateChild("xTitle");
-            title.TextChanged += delegate(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
-            {
-                titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
-                highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
-                highlight.Height = vm.Height + title.ActualHeight - 5;
-                vm.Controller.SetTitle(title.Text);
-
-            };
+            title.TextChanged += TitleOnTextChanged;
+            
+            if (vm.Controller.LibraryElementModel != null)
+                vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
             title.Loaded += delegate(object sender, RoutedEventArgs args)
@@ -133,25 +142,64 @@ namespace NuSysApp
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
-            vm.Controller.UserChanged += delegate (NetworkUser user)
-            {
-                highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
-                highlight.BorderBrush = vm.UserColor;
-                userName.Foreground = vm.UserColor;
-                userName.Text = user?.Name ?? "";
-            };
+
+            vm.Controller.UserChanged += ControllerOnUserChanged;
+
+
 
             if (vm.Controller.LibraryElementModel != null) { 
-                vm.Controller.LibraryElementModel.OnLightupContent += delegate (bool lightup)
-                {
-                     highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-                     highlight.BorderThickness = new Thickness(5);
-                     highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
-                 };
+
+                vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
+
             }
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
+        }
+
+        private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+            highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
+            highlight.Height = vm.Height + title.ActualHeight - 5;
+            //vm.Controller.SetTitle(title.Text);
+            vm.Controller.LibraryElementModel.SetTitle(title.Text);
+        }
+
+        private void LibraryElementModelOnOnTitleChanged(string newTitle)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            if (title.Text != vm.Controller.LibraryElementModel.Title)
+            {
+                title.Text = vm.Controller.LibraryElementModel.Title;
+            }
+
+        }
+
+        private void ControllerOnUserChanged(object sender, NetworkUser user)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            if (user == null)
+            {
+                userName.Foreground = new SolidColorBrush(Colors.Transparent);
+                highlight.Visibility = Visibility.Collapsed;
+                return;
+            }
+            else
+            {
+                highlight.Visibility = Visibility.Visible;
+            }
+            highlight.BorderBrush = new SolidColorBrush(user.Color);
+            userName.Foreground = new SolidColorBrush(user.Color);
+            userName.Text = user?.Name ?? "";
+        }
+
+        private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
+        {
+            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+            highlight.BorderThickness = new Thickness(5);
+            highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)

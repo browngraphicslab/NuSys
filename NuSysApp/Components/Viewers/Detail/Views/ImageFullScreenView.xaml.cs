@@ -23,9 +23,7 @@ namespace NuSysApp
 {
     public sealed partial class ImageFullScreenView : UserControl
     {
-        private InqCanvasView _inqCanvasView;
-
-
+   
         public ImageFullScreenView(ImageElementViewModel vm)
         {
             InitializeComponent();
@@ -41,8 +39,16 @@ namespace NuSysApp
             {
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
-
+            vm.Controller.Disposed += ControllerOnDisposed;
         }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (ImageElementViewModel) DataContext;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
+        }
+
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {

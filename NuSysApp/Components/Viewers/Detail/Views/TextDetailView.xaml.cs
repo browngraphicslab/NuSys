@@ -40,13 +40,12 @@ namespace NuSysApp
         private string _modelContentId;
         private string _modelId;
         private string _modelText="";
-        private TextNodeViewModel _viewMod;
+
         public TextDetailView(TextNodeViewModel vm)
         {
             InitializeComponent();
 
             DataContext = vm;
-            _viewMod = vm;
           // SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
 
             var model = (TextElementModel)vm.Model;
@@ -54,7 +53,7 @@ namespace NuSysApp
 
             List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
-            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
+           
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
@@ -62,22 +61,39 @@ namespace NuSysApp
             };
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
-            MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
-            {
-                if (((TextNodeViewModel)DataContext).Text != "")
-                {
-                    UpdateText(((TextNodeViewModel)DataContext).Text);
-                }
-                OpenTextBox(((TextNodeViewModel)DataContext).Text);
-
-            };
-            vm.TextBindingChanged += delegate(object source, string text) { UpdateText(text); };
+            MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
+            vm.TextBindingChanged += VmOnTextBindingChanged;
+            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
             _modelContentId = model.LibraryId;
             _modelId = model.Id;
 
+            vm.Controller.Disposed += ControllerOnDisposed;
+
         }
 
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (TextNodeViewModel)DataContext;
+            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
+            vm.TextBindingChanged -= VmOnTextBindingChanged;
+            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
+        }
 
+        private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            if (((TextNodeViewModel)DataContext).Text != "")
+            {
+                UpdateText(((TextNodeViewModel)DataContext).Text);
+            }
+            OpenTextBox(((TextNodeViewModel)DataContext).Text);
+        }
+
+        private void VmOnTextBindingChanged(object source, string text)
+        {
+            UpdateText(text);
+        }
 
 
         /* 
@@ -109,10 +125,7 @@ namespace NuSysApp
             }
 
         }
-
-
-
-
+        
         public void SetDimension(double parentWidth)
         {
             MyWebView.Width = parentWidth * 0.9;
@@ -195,19 +208,12 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeViewModel) DataContext).ChangeContentData(s);
-            /*
-            if (s != "")
-            {
-                var vm = DataContext as ElementViewModel;
-                var model = (TextElementModel)vm.Model;
-                model.Text = s;
-            }*/
+            ((TextNodeViewModel)DataContext).Controller.LibraryElementModel.SetContentData((TextNodeViewModel)DataContext, s);
         }
 
         public void Dispose()
         {
-            UpdateModelText(_modelText);
+            //UpdateModelText(_modelText);
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
@@ -228,7 +234,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextNodeViewModel)DataContext;
-                ((TextElementModel)vm.Model).Text = session.SpeechString;
+                vm.Controller.LibraryElementModel.SetContentData(vm,session.SpeechString);
             }
             else
             {
@@ -291,13 +297,6 @@ namespace NuSysApp
         //    _isRecording = false;
         //   // this.RecordVoice.Click -= stopTranscribing;
         //}
-
-        private void UpdateText()
-        {
-            var request = new ChangeContentRequest( _modelContentId, _modelText);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
-        }
-
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (TextElementModel)((TextNodeViewModel)DataContext).Model;

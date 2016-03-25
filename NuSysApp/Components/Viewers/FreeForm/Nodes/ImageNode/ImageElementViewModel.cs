@@ -20,6 +20,11 @@ namespace NuSysApp
             
         }
 
+        public override void Dispose()
+        {
+            Controller.LibraryElementModel.OnLoaded -= LibraryElementModelOnOnLoaded;
+        }
+
         public BitmapImage Image { get; set; }
 
         public override async Task Init()
@@ -30,12 +35,14 @@ namespace NuSysApp
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += async delegate
-                {
-                    await DisplayImage();
-                };
+                Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
             }
             RaisePropertyChanged("Image");
+        }
+
+        private void LibraryElementModelOnOnLoaded()
+        {
+            DisplayImage();
         }
 
         private async Task DisplayImage()

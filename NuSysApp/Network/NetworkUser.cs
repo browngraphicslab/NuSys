@@ -11,7 +11,7 @@ namespace NuSysApp
     public class NetworkUser
     {
         #region Public Variables
-        public string IP { get; private set; }
+        public string ID { get; private set; }
 
         public Color Color
         {
@@ -25,32 +25,32 @@ namespace NuSysApp
 
         #region Private Variables
         private Color _color;
-        private bool _colorSet;
-        private HashSet<ElementModel> _modelsInUse = new HashSet<ElementModel>(); 
+        private bool _colorSet = false;
+        private ElementController _controller = null;
         #endregion Private Variables
-        public NetworkUser(string ip)
+        public NetworkUser(string id, Dictionary<string,object> dict = null)
         {
-            IP = ip;
-            SessionController.Instance.NuSysNetworkSession.OnNetworkUserDropped += delegate (NetworkUser user)
-            {
-                if (user.IP == IP)
-                {
-                    OnUserRemoved?.Invoke();
-                    foreach (var atom in _modelsInUse)
-                    {
-
-                        //TODO: refactor
-                        //atom.LastNetworkUser = null;
-                    }
-                    _modelsInUse.Clear();
-                }
-            };
+            ID = id;
+            Name = id;
         }
         private Color GetColor()
         {
             try
             {
-                var number = Int64.Parse(IP.Replace(@".", ""));
+                var idHash = WaitingRoomView.Encrypt(ID);
+                long number = Math.Abs(BitConverter.ToInt64(idHash,0));
+                long r1 = BitConverter.ToInt64(idHash,1);
+                long r2 = BitConverter.ToInt64(idHash,2); ;
+
+                var mod = 250;
+
+                int r = (int)Math.Abs(((int)number % mod));
+                int b = (int)Math.Abs((r1 * number) % mod);
+                int g = (int)Math.Abs((r2 * number) % mod);
+                _color = Color.FromArgb((byte)200, (byte)r, (byte)g, (byte)b);
+                _colorSet = true;
+                /*
+                var number = Int64.Parse(ID.Replace(@".", ""));
                 var start = 2*(Int64.Parse(IP[IP.Length - 1].ToString()) + 1);
 
                 number += start*2*number; 
@@ -60,7 +60,7 @@ namespace NuSysApp
                 int r = (int)Math.Abs(start + ((int) number%mod));
                 int b = (int)Math.Abs(start + ((int) (number*Int64.Parse(IP[IP.Length - 1].ToString())% mod)));
                 int g = (int)Math.Abs(start + ((int) ((start*number*r )% mod)));
-                _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);
+                _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);*/
             }
             catch (Exception e)
             {
@@ -68,21 +68,24 @@ namespace NuSysApp
             }
             return _color;
         }
-
-        public void AddAtomInUse(ElementModel model)
+        public void Remove()
         {
-            foreach (var atom in _modelsInUse)
-            {
-
-                //TODO: refactor
-                //atom.LastNetworkUser = null;
-            }
-            _modelsInUse.Add(model);
+            OnUserRemoved?.Invoke();
         }
-
-        public void RemoveAtomInUse(ElementModel model)
+        public void SetUserController(ElementController controller)
         {
-            _modelsInUse.Remove(model);
+            if (controller != _controller)
+            {
+                if (_controller != null)
+                {
+                    _controller.SetNetworkUser(null);
+                }
+                if(controller != null)
+                {
+                    controller.SetNetworkUser(this);
+                }
+                _controller = controller;
+            }
         }
     }
 }

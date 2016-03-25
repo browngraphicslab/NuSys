@@ -156,25 +156,28 @@ namespace NuSysApp
         private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
         {
             var id = _currentElementModel.Id;
-            UITask.Run(async delegate
+            if (id != SessionController.Instance.ActiveFreeFormViewer.ContentId)
             {
-                var content = SessionController.Instance.ContentController.Get(id);
-                if (content != null && content.Type == ElementType.Collection)
+                UITask.Run(async delegate
                 {
-                    List<Message> messages = new List<Message>();
-                    await Task.Run(async delegate
+                    var content = SessionController.Instance.ContentController.Get(id);
+                    if (content != null && content.Type == ElementType.Collection)
                     {
-                        messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
-                    });
-                    Visibility = Visibility.Collapsed;
-                    SessionController.Instance.FireEnterNewCollectionEvent();
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new UnsubscribeFromCollectionRequest(
-                                SessionController.Instance.ActiveFreeFormViewer.ContentId));
-                    await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
-                }
-            });
+                        List<Message> messages = new List<Message>();
+                        await Task.Run(async delegate
+                        {
+                            messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                        });
+                        Visibility = Visibility.Collapsed;
+                        SessionController.Instance.FireEnterNewCollectionEvent();
+                        await
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                new UnsubscribeFromCollectionRequest(
+                                    SessionController.Instance.ActiveFreeFormViewer.ContentId));
+                        await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
+                    }
+                });
+            }
         }
     }
 }

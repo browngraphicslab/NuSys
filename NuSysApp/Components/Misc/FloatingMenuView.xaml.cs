@@ -197,7 +197,7 @@ namespace NuSysApp
 
             }
 
-            _lib.UpdateList();
+          //  _lib.UpdateList();
             vm.ClearSelection();
         }
 

@@ -24,7 +24,6 @@ namespace NuSysApp
         private SolidColorBrush _color;
         private bool _isEditing, _isEditingInk;
         private CompositeTransform _inkScale;
-        private SolidColorBrush _userColor;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
         protected bool _isSelected, _isVisible;
@@ -46,13 +45,6 @@ namespace NuSysApp
             controller.Disposed += OnDisposed;
 
             Tags = new ObservableCollection<Button>();
-
-            controller.UserChanged +=
-                delegate(NetworkUser user)
-                {
-                    _userColor = user != null ? new SolidColorBrush(user.Color) : new SolidColorBrush(Colors.Transparent);
-                };
-
             ReadFromModel();
         }
 
@@ -138,16 +130,6 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
         }
 
-        public bool ChangeContentData(string data)
-        {
-            var content = Controller.LibraryElementModel;
-            if (content != null)
-            {
-                content.SetContentData(this, data);
-                return true;
-            }
-            return false;
-        }
         #region Atom Manipulations
 
         public virtual void ReadFromModel()
@@ -194,10 +176,13 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
+            _controller.TitleChanged -= OnTitleChanged;
+            _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
-
+            
             Tags = null;
             _transform = null;
+   //         _controller = null;
         }
 
         public virtual void SetSize(double width, double height)
@@ -399,20 +384,6 @@ namespace NuSysApp
             {
                 _inkScale = value;
                 RaisePropertyChanged("InkScale");
-            }
-        }
-
-        public SolidColorBrush UserColor
-        {
-            get { return _userColor; }
-            set
-            {
-                if (_userColor == value)
-                {
-                    return;
-                }
-
-                RaisePropertyChanged("UserColor");
             }
         }
 

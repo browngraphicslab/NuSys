@@ -44,7 +44,7 @@ namespace NuSysApp
         public delegate void ElementDeletedEventHandler();
         public event ElementDeletedEventHandler OnDelete;
 
-        public delegate void LightupContentEventHandler(bool lightup);
+        public delegate void LightupContentEventHandler(LibraryElementModel sender, bool lightup);
         public event LightupContentEventHandler OnLightupContent;
         public ElementType Type { get; set; }
 
@@ -62,7 +62,7 @@ namespace NuSysApp
         public string Id { get; set; }
         public string Title {
             get { return _title; }
-            set
+            private set
             {
                 _title = value;
                 RaisePropertyChanged("Title");
@@ -98,11 +98,56 @@ namespace NuSysApp
             {
                 LitElement = null;
             }
-            OnLightupContent?.Invoke(lightup);
+            OnLightupContent?.Invoke(this,lightup);
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             ViewUtilBucket.Clear();
+            Data = null;
+
+            Loaded = false;
+            _loading = false;
+
+            var ds = OnContentChanged?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnContentChanged -= (ContentChangedEventHandler)d;
+                }
+            }
+            ds = OnTitleChanged?.GetInvocationList();
+            if(ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnTitleChanged -= (TitleChangedEventHandler)d;
+                }
+            }
+            ds = OnDelete?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnDelete -= (ElementDeletedEventHandler)d;
+                }
+            }
+            ds = OnLightupContent?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnLightupContent -= (LightupContentEventHandler)d;
+                }
+            }
+            ds = _onLoaded?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    _onLoaded -= (OnLoadedEventHandler)d;
+                }
+            }
         }
 
         public void FireDelete()

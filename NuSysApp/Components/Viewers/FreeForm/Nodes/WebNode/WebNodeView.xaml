@@ -14,29 +14,25 @@
 
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_x2.png" Height="30" Width="30"></Image>
-                </Button>
-                <Button x:Name="EditInk"  Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
-                    <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="30" Width="30"></Image>
+            <StackPanel Orientation="Vertical">
+                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Canvas>
+            <!--<Canvas Name ="WebCanvas" Width ="{Binding Width}" Height ="{Binding Height}">
                 <Canvas.Clip>
                     <RectangleGeometry Rect="{Binding ClipRect}">
                     </RectangleGeometry>
-                </Canvas.Clip>
-
-                <ScrollViewer IsHitTestVisible="False">
-                    <WebView x:Name="xWebView" Width="1024" Height="14257" IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
-                </ScrollViewer>
-                <Border Background="#99000000" Width="{Binding Width}">
-                    <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
+                </Canvas.Clip>-->
+            <Grid>
+                <WebView x:Name="xWebView" Width ="{Binding Width}" Height ="{Binding Height}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
+                <Border Background="#99000000" VerticalAlignment="Top" Width="{Binding Width}" Height="39">
+                    <TextBox x:Name="xUrlBox"  Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
                 </Border>
-            </Canvas>
+                <!--</Canvas>-->
+            </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableUserControl>

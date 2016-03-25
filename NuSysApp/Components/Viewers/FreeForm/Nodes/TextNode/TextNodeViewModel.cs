@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Media;
+﻿using System;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -9,6 +10,8 @@ namespace NuSysApp
 
         #endregion Private Members
 
+        public string Text { get; set; }
+
         public delegate void TextBindingChangedHandler(object source, string text);
         public event TextBindingChangedHandler TextBindingChanged;
 
@@ -17,6 +20,15 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
             Text = controller.LibraryElementModel?.Data;
             ((TextNodeController) controller).TextChanged += TextChanged;
+
+            controller.Disposed += ControllerOnDisposed;
+
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            ((TextNodeController)Controller).TextChanged -= TextChanged;
+            Controller.Disposed -= ControllerOnDisposed;
         }
 
         private void TextChanged (object sender, string text, ElementViewModel originalSenderViewModel)
@@ -29,7 +41,6 @@ namespace NuSysApp
         }
         #region Public Properties     
 
-        public string Text { get; set; }
         public string RtfText
         {
             get

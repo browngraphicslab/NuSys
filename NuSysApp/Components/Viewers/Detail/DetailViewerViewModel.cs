@@ -37,6 +37,14 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
         }
 
+        public void Dispose()
+        {
+            var tempvm = (ElementViewModel)View.DataContext;
+            tempvm.PropertyChanged -= NodeVMPropertChanged;
+            _nodeModel = null;
+
+        }
+
         public async Task<bool> ShowElement(ElementController controller)
         {
             View = await _viewFactory.CreateFromSendable(controller);

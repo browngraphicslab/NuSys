@@ -22,11 +22,21 @@ namespace NuSysApp
             InElement.AddLink(this);
             OutElement.AddLink(this);
 
-            base.PositionChanged += delegate(object source, double d, double d1, double dx, double dy)
-            {
-                InElement.SetPosition(InElement.Model.X + dx, InElement.Model.Y + dy);
-                OutElement.SetPosition(OutElement.Model.X + dx, OutElement.Model.Y + dy);
-            };
+            PositionChanged += OnPositionChanged;
+        }
+
+        private void OnPositionChanged(object source, double d, double d1, double dx, double dy)
+        {
+            InElement.SetPosition(InElement.Model.X + dx, InElement.Model.Y + dy);
+            OutElement.SetPosition(OutElement.Model.X + dx, OutElement.Model.Y + dy);
+        }
+
+        public override void Dispose()
+        {
+            InElement = null;
+            OutElement = null;
+            PositionChanged -= OnPositionChanged;
+            base.Dispose();
         }
 
         public override async Task RequestMoveToCollection(string newCollectionContentID, double x = 50000, double y = 50000)
