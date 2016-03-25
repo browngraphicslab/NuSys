@@ -54,7 +54,7 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (ImageElementViewModel)DataContext;
+            var vm = (AudioNodeViewModel)DataContext;
             vm.PropertyChanged -= Node_SelectionChanged;
             (DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = null;
