@@ -74,7 +74,7 @@ namespace NuSysApp
         }
         public void SetUserController(ElementController controller)
         {
-            if (controller != controller)
+            if (controller != _controller)
             {
                 if (_controller != null)
                 {

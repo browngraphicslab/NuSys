@@ -144,9 +144,17 @@ namespace NuSysApp
 
             vm.Controller.UserChanged += delegate (object source, NetworkUser user)
             {
-                highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
-                highlight.BorderBrush = vm.UserColor;
-                userName.Foreground = vm.UserColor;
+                if (user == null)
+                {
+                    highlight.Visibility = Visibility.Collapsed;
+                    return;
+                }
+                else
+                {
+                    highlight.Visibility = Visibility.Visible;
+                }
+                highlight.BorderBrush = new SolidColorBrush(user.Color);
+                userName.Foreground = new SolidColorBrush(user.Color);
                 userName.Text = user?.Name ?? "";
             };
 
