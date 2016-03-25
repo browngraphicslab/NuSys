@@ -66,6 +66,7 @@ namespace NuSysApp
             vm.Controller.LibraryElementModel.OnLoaded -= LoadVideo;
             vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
+            nodeTpl.Dispose();
             DataContext = null;
         }
 

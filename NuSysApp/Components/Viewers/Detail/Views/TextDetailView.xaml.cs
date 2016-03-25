@@ -40,13 +40,12 @@ namespace NuSysApp
         private string _modelContentId;
         private string _modelId;
         private string _modelText="";
-        private TextNodeViewModel _viewMod;
+
         public TextDetailView(TextNodeViewModel vm)
         {
             InitializeComponent();
 
             DataContext = vm;
-            _viewMod = vm;
           // SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
 
             var model = (TextElementModel)vm.Model;
@@ -54,7 +53,7 @@ namespace NuSysApp
 
             List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
-            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
+           
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
@@ -62,22 +61,39 @@ namespace NuSysApp
             };
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
-            MyWebView.NavigationCompleted += delegate (WebView w, WebViewNavigationCompletedEventArgs e)
-            {
-                if (((TextNodeViewModel)DataContext).Text != "")
-                {
-                    UpdateText(((TextNodeViewModel)DataContext).Text);
-                }
-                OpenTextBox(((TextNodeViewModel)DataContext).Text);
-
-            };
-            vm.TextBindingChanged += delegate(object source, string text) { UpdateText(text); };
+            MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
+            vm.TextBindingChanged += VmOnTextBindingChanged;
+            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
             _modelContentId = model.LibraryId;
             _modelId = model.Id;
 
+            vm.Controller.Disposed += ControllerOnDisposed;
+
         }
 
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (TextNodeViewModel)DataContext;
+            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
+            vm.TextBindingChanged -= VmOnTextBindingChanged;
+            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            DataContext = null;
+        }
 
+        private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            if (((TextNodeViewModel)DataContext).Text != "")
+            {
+                UpdateText(((TextNodeViewModel)DataContext).Text);
+            }
+            OpenTextBox(((TextNodeViewModel)DataContext).Text);
+        }
+
+        private void VmOnTextBindingChanged(object source, string text)
+        {
+            UpdateText(text);
+        }
 
 
         /* 

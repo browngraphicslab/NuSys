@@ -19,6 +19,15 @@ namespace NuSysApp
             InitializeComponent();
           //  IsDoubleTapEnabled = true;
             DataContext = vm;
+
+            vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            var vm = (PdfNodeViewModel) DataContext;
+            nodeTpl.Dispose();
+            vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
 

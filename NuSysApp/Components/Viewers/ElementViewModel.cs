@@ -24,7 +24,6 @@ namespace NuSysApp
         private SolidColorBrush _color;
         private bool _isEditing, _isEditingInk;
         private CompositeTransform _inkScale;
-        private SolidColorBrush _userColor;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
         protected bool _isSelected, _isVisible;
@@ -385,20 +384,6 @@ namespace NuSysApp
             {
                 _inkScale = value;
                 RaisePropertyChanged("InkScale");
-            }
-        }
-
-        public SolidColorBrush UserColor
-        {
-            get { return _userColor; }
-            set
-            {
-                if (_userColor == value)
-                {
-                    return;
-                }
-
-                RaisePropertyChanged("UserColor");
             }
         }
 

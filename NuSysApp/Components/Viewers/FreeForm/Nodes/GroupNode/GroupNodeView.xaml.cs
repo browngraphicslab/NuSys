@@ -83,7 +83,9 @@ namespace NuSysApp
             dataGridView = null;
             timelineView = null;
             freeFormView = null;
+            nodeTpl.Dispose();
             DataContext = null;
+          
         }
 
         private void ResizerOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

@@ -65,6 +65,7 @@ namespace NuSysApp
             ((AudioNodeModel)(vm.Model)).Controller = null;
             playbackElement.MediaEnded -= PlaybackElementOnMediaEnded;
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
+            nodeTpl.Dispose();
 
             vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;

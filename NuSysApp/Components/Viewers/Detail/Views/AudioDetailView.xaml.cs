@@ -62,9 +62,29 @@ namespace NuSysApp
             _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
             _temporaryLinkVisual.Opacity = 1;
 
-            
+            vm.Controller.Disposed += ControllerOnDisposed;
 
+        }
 
+        private void ControllerOnDisposed(object source)
+        {
+            _temporaryLinkVisual.PointerMoved -= ScrubBar_OnPointerMoved;
+            _temporaryLinkVisual.PointerReleased -= ScrubBar_OnPointerReleased;
+
+            var vm = (AudioNodeViewModel) DataContext;
+            scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+
+            ((AudioNodeModel)(vm.Model)).Controller.OnScrub -= ControllerOnScrub;
+            ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay1;
+            ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause1;
+            ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop1;
+            scrubBar.Loaded -= ScrubBarOnLoaded;
+            ((AudioNodeModel)(vm.Model)).Controller.Scrub();
+
+            (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
+            (DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
+     
         }
 
         private void LoadPlaybackElement()
@@ -96,10 +116,12 @@ namespace NuSysApp
         {
             Play.Opacity = .3;
             Pause.Opacity = 1;
-            playbackElement.MediaEnded += delegate (object o, RoutedEventArgs e2)
-            {
-                Play.Opacity = 1;
-            };
+            playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
+        }
+
+        private void PlaybackElementOnMediaEnded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            Play.Opacity = 1;
         }
 
         private void ControllerOnScrub(MediaElement playbackElement)
@@ -135,10 +157,7 @@ namespace NuSysApp
                             await block.RefreshThumbnail();
                             foreach (var element in block.NodeImageTuples)
                             {
-                                Debug.Write("fdsjakflds;");
                                 ThumbnailGrid.Items.Add(element.Item2);
-
-
                             }
                         }
 
@@ -153,12 +172,9 @@ namespace NuSysApp
                         foreach (var element in block.NodeImageTuples)
                         {
                             ThumbnailGrid.Items.Remove(element.Item2);
-
                         }
 
                     }
-
-                    Debug.WriteLine("block left");
                     //OnBlockLeaveEventHandler?.Invoke(element);
                 }
             }

@@ -42,6 +42,7 @@ namespace NuSysApp
         {
             var vm = (ImageElementViewModel) DataContext;
             vm.Controller.Disposed -= ControllerOnDisposed;
+            nodeTpl.Dispose();
             DataContext = null;
         }
 

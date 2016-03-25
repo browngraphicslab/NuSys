@@ -62,7 +62,9 @@ namespace NuSysApp
             vm.Controller.UserChanged -= ControllerOnUserChanged;
             vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
             vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
-            title.TextChanged -= TitleOnTextChanged;
+
+            if (title != null)
+                title.TextChanged -= TitleOnTextChanged;
 
         }
 
@@ -128,7 +130,9 @@ namespace NuSysApp
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.TextChanged += TitleOnTextChanged;
-            vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
+            
+            if (vm.Controller.LibraryElementModel != null)
+                vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
             title.Loaded += delegate(object sender, RoutedEventArgs args)
@@ -138,7 +142,9 @@ namespace NuSysApp
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
+
             vm.Controller.UserChanged += ControllerOnUserChanged;
+
 
 
             if (vm.Controller.LibraryElementModel != null) { 
@@ -174,9 +180,18 @@ namespace NuSysApp
         private void ControllerOnUserChanged(object sender, NetworkUser user)
         {
             var vm = (ElementViewModel)this.DataContext;
-            highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
-            highlight.BorderBrush = vm.UserColor;
-            userName.Foreground = vm.UserColor;
+            if (user == null)
+            {
+                userName.Foreground = new SolidColorBrush(Colors.Transparent);
+                highlight.Visibility = Visibility.Collapsed;
+                return;
+            }
+            else
+            {
+                highlight.Visibility = Visibility.Visible;
+            }
+            highlight.BorderBrush = new SolidColorBrush(user.Color);
+            userName.Foreground = new SolidColorBrush(user.Color);
             userName.Text = user?.Name ?? "";
         }
 

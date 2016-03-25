@@ -84,6 +84,7 @@ namespace NuSysApp
                         StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
                     };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
+                    string id = null;
                     if (dict.ContainsKey("server_indication_from_server"))
                     {
                         if (dict.ContainsKey("notification_type") )
@@ -94,12 +95,13 @@ namespace NuSysApp
                                     OnContentAvailable?.Invoke(dict);
                                     break;
                                 case "add_user":
-                                    var id = (string)dict["id"];
+                                    id = (string)dict["user_id"];
                                     var user = new NetworkUser(id, dict);
                                     OnClientJoined?.Invoke(user);
                                     break;
                                 case "remove_user":
-
+                                    id = (string)dict["user_id"];
+                                    OnClientDrop?.Invoke(id);
                                     break;
                             }
                         }
