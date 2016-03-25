@@ -32,7 +32,7 @@ namespace NuSysApp
             this.InitializeComponent();
             _user = user;
             UserButton.Background = new SolidColorBrush(_user.Color);
-            var content = _user.Name ?? _user.IP;
+            var content = _user.Name ?? _user.ID;
             if (content != "Me")
             {
                 _userName = content.Substring(0, 1).ToUpper();
@@ -61,7 +61,7 @@ namespace NuSysApp
                 UserInfoBox.Opacity = 1;
                 UserInfoBox.Foreground = new SolidColorBrush(_user.Color);
                 UserName.Text = _user.Name;
-                UserIP.Text = _user.IP;
+                UserIP.Text = _user.ID;
             }
         }
 

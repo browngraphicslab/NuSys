@@ -31,31 +31,42 @@ namespace NuSysApp
             Loaded += delegate (object sender, RoutedEventArgs args)
             {
                 SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
-
-                //(vm.Model as WebNodeModel).Url = "http://www.google.com";
-                (vm.Model as WebNodeModel).Url = vm.Url;
             };
             SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
 
-            (vm.Model as WebNodeModel).UrlChanged += OnUrlChanged;
+            var url = vm.Controller.LibraryElementModel.Data;
+            OnUrlChanged(url);
+
+            vm.Controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
+            {
+                if (originalSenderViewModel != vm)
+                {
+                    url = vm.Controller.LibraryElementModel.Data;
+                    OnUrlChanged(url);
+                }
+            };
         }
     
         public void SetDimension(double parentWidth, double parentHeight)
         {
-            xWebView.Width = parentWidth*0.8;
-            xWebView.Height = parentWidth*0.6;
-            xWebView.MaxHeight = SessionController.Instance.SessionView.ActualHeight - 370;
-            xScrollViewer.Height = xWebView.Height;
-            xScrollViewer.Width = xWebView.Width;
-            webTopBar.Width = xWebView.ActualWidth;
-            this.Height = xWebView.ActualHeight + 37;
-            this.Width = xWebView.ActualWidth;
+            xWebView.Width = parentWidth;
+            xWebView.Height = parentHeight;
             Canvas.SetZIndex(Refresh,20);
         }
 
-        private void OnUrlChanged(object source, string url)
+        private void OnUrlChanged(string url)
         {
-            xWebView.Navigate(new Uri(url));
+            if (!Uri.IsWellFormedUriString(url,UriKind.Absolute))
+            {
+                url = "http://www.google.com";
+            }
+            try {
+                xWebView.Navigate(new Uri(url));
+            }
+            catch(Exception e)
+            {
+                xWebView.Navigate(new Uri("http://www.google.com"));
+            }
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -64,11 +75,12 @@ namespace NuSysApp
             {
                 var vm = (WebNodeViewModel)DataContext;
                 //(vm.Model as WebNodeModel).Url = xUrlBox.Text;
-                xWebView.Navigate(new Uri(this.checkIfUrlRight(xUrlBox.Text)));
-                //(vm.Model as WebNodeModel).Url = this.checkIfUrlRight(xUrlBox.Text);
+                var url = this.checkIfUrlRight(xUrlBox.Text);
+                xWebView.Navigate(new Uri(url));
+                vm.Controller.LibraryElementModel?.SetContentData(vm, url);
             }
         }
-
+        
         private string checkIfUrlRight(string s)
         {
             string url = null;
@@ -131,17 +143,16 @@ namespace NuSysApp
         {
             string url = sender.Source.AbsoluteUri;
             xUrlBox.Text = url;
-            if (((DataContext as WebNodeViewModel).Model as WebNodeModel).Url != url)
+            if (_viewMod.Controller.LibraryElementModel.Data != url)
             {
-                (DataContext as WebNodeViewModel).Url = url;
-                (DataContext as WebNodeViewModel).History.Add(new WebNodeModel.Webpage(url, GetTimestamp(DateTime.Now)));
                 Back.IsEnabled = true;
+                _viewMod.Controller.LibraryElementModel?.SetContentData(_viewMod, url);
 
-                var message = new Message();
-                message["url"] = url;
-                message["id"] = (DataContext as WebNodeViewModel).Id;
-                var request = new SendableUpdateRequest(message);
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                //var message = new Message();
+                //message["url"] = url;
+                //message["id"] = (DataContext as WebNodeViewModel).Id;
+                //var request = new SendableUpdateRequest(message);
+                //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }
 
         }

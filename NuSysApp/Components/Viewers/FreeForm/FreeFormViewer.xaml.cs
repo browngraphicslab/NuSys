@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Foundation;
@@ -55,9 +56,7 @@ namespace NuSysApp
                 _simpleEditMode = new MultiMode(this, _selectMode, _floatingMenuMode);
                 SwitchMode(Options.SelectNode, false);
             };
-
-
-
+            
             // TODO:refactor
             /*
             CompositeTransform ct = new CompositeTransform();
@@ -72,63 +71,90 @@ namespace NuSysApp
 
             _inqCanvas.Transform = vm.CompositeTransform;
 
+            vm.SelectionChanged += VmOnSelectionChanged;
+            vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void ControllerOnDisposed(object source)
+        {
+            _nodeManipulationMode.Deactivate();
+            _createGroupMode.Deactivate();
+            _duplicateMode.Deactivate();
+            _panZoomMode.Deactivate();
+            _gestureMode.Deactivate();
+            _selectMode.Deactivate();
+            _floatingMenuMode.Deactivate();
+
+            _tagMode.Deactivate();
+            _linkMode.Deactivate();
+            _mainMode.Deactivate();
+            _simpleEditMode.Deactivate();
+ 
+        
+
+            var vm = (FreeFormViewerViewModel)DataContext;
+            vm.SelectionChanged -= VmOnSelectionChanged;
+            vm.Controller.Model.InqCanvas.LineFinalized -= InqCanvasOnLineFinalized;
+            vm.Controller.Disposed -= ControllerOnDisposed;
+            _mode = null;
+
+            _inqCanvas = null;
+        }
+
+        private void InqCanvasOnLineFinalized(InqLineModel model)
+        {
+            var vm = (FreeFormViewerViewModel)DataContext;
+            if (!model.IsGesture)
             {
-                //SwitchMode(Options.SelectNode, false);
-            };
+                //var createdTag = await CheckForTagCreation(model);
+                //if (createdTag)
+                //{
+                //    model.Delete();
+                //}
+                return;
+            }
 
-            inqCanvasModel.AppSuspended += delegate()
+            var gestureType = GestureRecognizer.Classify(model);
+            switch (gestureType)
             {
-                //_inqCanvas.DisposeResources();
-            };
+                case GestureRecognizer.GestureType.None:
+                    break;
+                case GestureRecognizer.GestureType.Scribble:
+                    var deletedSome = vm.CheckForInkNodeIntersection(model);
+                    if (deletedSome)
+                        model.Delete();
+                    break;
+            }
+        }
 
-            vm.SelectionChanged += delegate(object source)
+        private void VmOnSelectionChanged(object source)
+        {
+            var vm = (FreeFormViewerViewModel) DataContext;
+            if (vm.Selections.Count == 0)
             {
-                if (vm.Selections.Count == 0)
-                {
-                    SetViewMode(_mainMode);
-                    var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
-                    xOuterWrapper.Children.Move((uint)oldIndex, (uint)(xOuterWrapper.Children.Count-1));
-                }
-                else if (vm.Selections.Count == 1)
-                {
-                    SetViewMode(_simpleEditMode);
-                    var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
-                    xOuterWrapper.Children.Move((uint)oldIndex, 0);
-                }
-                else
-                {
-                    SetViewMode(_mainMode);
-                    var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
-                    xOuterWrapper.Children.Move((uint)oldIndex, 0);
-                }
-            };
-
-            vm.Controller.Model.InqCanvas.LineFinalized += async delegate (InqLineModel model)
+                SetViewMode(_mainMode);
+                var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                xOuterWrapper.Children.Move((uint)oldIndex, (uint)(xOuterWrapper.Children.Count - 1));
+            }
+            else if (vm.Selections.Count == 1)
             {
-                if (!model.IsGesture)
-                {
-                    //var createdTag = await CheckForTagCreation(model);
-                    //if (createdTag)
-                    //{
-                    //    model.Delete();
-                    //}
-                    return;
-                }
+                SetViewMode(_simpleEditMode);
+                var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                xOuterWrapper.Children.Move((uint)oldIndex, 0);
+            }
+            else
+            {
+                SetViewMode(_mainMode);
+                var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                xOuterWrapper.Children.Move((uint)oldIndex, 0);
+            }
+        }
 
-                var gestureType = GestureRecognizer.Classify(model);
-                switch (gestureType)
-                {
-                    case GestureRecognizer.GestureType.None:
-                        break;
-                    case GestureRecognizer.GestureType.Scribble:
-                        var deletedSome = vm.CheckForInkNodeIntersection(model);
-                        if (deletedSome)
-                            model.Delete();
-                        break;
-                } 
-            };
+        public void Dispose()
+        {
+           
         }
 
         public Canvas AtomCanvas

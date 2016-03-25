@@ -87,7 +87,7 @@
 ////                if (subMessage.Length > 0)
 ////                {
                
-//<<<<<<< HEAD
+
 //                }
 //            }*/
 //        }
@@ -580,8 +580,6 @@
 
 ////                string m = MakeSubMessageFromDict(props);
 
-
-//<<<<<<< HEAD
 //                await _clientHandler.SendMessageToHost(m);
 //});
 //        }
@@ -1019,7 +1017,7 @@
 
 
 
-//<<<<<<< HEAD
+
 //            private async Task HandleCreateNewGroup(string id, Message props)
 //{
 //    NodeModel node1 = null;

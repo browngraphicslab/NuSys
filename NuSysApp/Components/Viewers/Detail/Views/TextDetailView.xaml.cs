@@ -195,19 +195,12 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeViewModel) DataContext).ChangeContentData(s);
-            /*
-            if (s != "")
-            {
-                var vm = DataContext as ElementViewModel;
-                var model = (TextElementModel)vm.Model;
-                model.Text = s;
-            }*/
+            ((TextNodeViewModel)DataContext).Controller.LibraryElementModel.SetContentData((TextNodeViewModel)DataContext, s);
         }
 
         public void Dispose()
         {
-            UpdateModelText(_modelText);
+            //UpdateModelText(_modelText);
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)
@@ -291,13 +284,6 @@ namespace NuSysApp
         //    _isRecording = false;
         //   // this.RecordVoice.Click -= stopTranscribing;
         //}
-
-        private void UpdateText()
-        {
-            var request = new ChangeContentRequest( _modelContentId, _modelText);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.UDP);
-        }
-
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (TextElementModel)((TextNodeViewModel)DataContext).Model;

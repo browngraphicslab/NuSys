@@ -28,12 +28,13 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            base.Dispose();
+           
             if (SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
             {
                 var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
                 content.OnContentChanged -= ContentChanged;
             }
+            base.Dispose();
 
         }
     }

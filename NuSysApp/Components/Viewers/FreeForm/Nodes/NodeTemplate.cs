@@ -129,9 +129,18 @@ namespace NuSysApp
                 titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
-                vm.Controller.SetTitle(title.Text);
+                //vm.Controller.SetTitle(title.Text);
+                vm.Controller.LibraryElementModel.SetTitle(title.Text);
 
             };
+            vm.Controller.LibraryElementModel.OnTitleChanged += delegate
+            {
+                if (title.Text != vm.Controller.LibraryElementModel.Title)
+                {
+                    title.Text = vm.Controller.LibraryElementModel.Title;
+                }
+            };
+
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
             title.Loaded += delegate(object sender, RoutedEventArgs args)
@@ -143,6 +152,7 @@ namespace NuSysApp
 
             vm.Controller.UserChanged += ControllerOnUserChanged;
 
+
             if (vm.Controller.LibraryElementModel != null) { 
                 vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
             }
@@ -151,7 +161,7 @@ namespace NuSysApp
             OnTemplateReady?.Invoke();
         }
 
-        private void ControllerOnUserChanged(NetworkUser user)
+        private void ControllerOnUserChanged(object sender, NetworkUser user)
         {
             var vm = (ElementViewModel)this.DataContext;
             highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;

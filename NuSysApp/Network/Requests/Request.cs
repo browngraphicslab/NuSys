@@ -46,7 +46,8 @@ namespace NuSysApp
         public enum ServerEchoType
         {
             None,
-            Everyone,
+            Everyone,//Will be broadcasted to everyone who is subscribed to relevant collections
+            ForcedEveryone,//Will be broadcasted to everyone and will ignore subscriptions
             EveryoneButSender
         }
 

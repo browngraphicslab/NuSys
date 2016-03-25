@@ -25,8 +25,14 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
-        public delegate void ClientDroppedEventHandler(string ip);
+        public delegate void ClientDroppedEventHandler(string id);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
+
+        public delegate void ContentAvailableNotificationEventHandler(Dictionary<string, object> dict);
+        public event ContentAvailableNotificationEventHandler OnContentAvailable;
+
+        public delegate void ClientJoinedEventHandler(NetworkUser user);
+        public event ClientJoinedEventHandler OnClientJoined;
 
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>(); 
         public string ServerBaseURI { get; private set; }
@@ -80,52 +86,21 @@ namespace NuSysApp
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
                     if (dict.ContainsKey("server_indication_from_server"))
                     {
-                        if (dict.ContainsKey("notification_type") &&
-                            (string)dict["notification_type"] == "content_available")
+                        if (dict.ContainsKey("notification_type") )
                         {
-                            if (dict.ContainsKey("id"))
+                            switch ((string)dict["notification_type"])
                             {
-                                var id = (string)dict["id"];
-                                string title = null;
-                                ElementType type = ElementType.Text;
-                                if (dict.ContainsKey("title"))
-                                {
-                                    title = (string)dict["title"];
-                                }
-                                if (dict.ContainsKey("type"))
-                                {
-                                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                                }
+                                case "content_available":
+                                    OnContentAvailable?.Invoke(dict);
+                                    break;
+                                case "add_user":
+                                    var id = (string)dict["id"];
+                                    var user = new NetworkUser(id, dict);
+                                    OnClientJoined?.Invoke(user);
+                                    break;
+                                case "remove_user":
 
-                                UITask.Run(async delegate {
-                                    if (SessionController.Instance.ContentController.Get(id) != null)
-                                    {
-                                        var element = SessionController.Instance.ContentController.Get(id);
-                                        element.Title = title;//TODO make sure no other variables, like timestamp, need to be set here
-                                    }
-                                    else
-                                    {
-                                        if (type == ElementType.Collection)
-                                        {
-                                            SessionController.Instance.ContentController.Add(
-                                                new CollectionLibraryElementModel(id, title));
-                                        }
-                                        else
-                                        {
-                                            SessionController.Instance.ContentController.Add(
-                                                new LibraryElementModel(id, type, title));
-                                        }
-                                    }
-                                    if (NeededLibraryDataIDs.Contains(id))
-                                    {
-                                        Task.Run(async() =>
-                                        {
-                                            await FetchLibraryElementData(id);
-                                            NeededLibraryDataIDs.Remove(id);
-                                        });
-
-                                    }
-                                });
+                                    break;
                             }
                         }
 

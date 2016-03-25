@@ -35,7 +35,6 @@ namespace NuSysApp
         private string _text = string.Empty;
 
         private string _savedForInking = string.Empty;
-        private TextNodeViewModel _vm;
 
         private static int _count = 0;
         private bool navigated = false;
@@ -47,7 +46,7 @@ namespace NuSysApp
             InitializeComponent();
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
-            _vm = vm;
+  
            
 
             vm.Controller.Disposed += ControllerOnDisposed;
@@ -72,11 +71,9 @@ namespace NuSysApp
              }
              else
              {
-                 TextNodeWebView.NavigationCompleted += delegate
-                 {
-                     UpdateText(text);
-                 };
-            }
+                 TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
+                 TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
+             }
         }
 
         private void ControllerOnDisposed(object source)
@@ -92,8 +89,9 @@ namespace NuSysApp
 
         private void SetUpInking()
         {
+            var vm = (TextNodeViewModel)DataContext;
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
-            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(_vm.Width, _vm.Height));
+            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
 
             var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;

@@ -165,7 +165,19 @@ namespace NuSysApp
                // xContainer.Width = this.Width - 30;
 
                // exitButtonContainer.Width = xContainer.Width;
-               
+
+                if (nodeContent.Content is ImageFullScreenView)
+                {
+                   // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                } else if (nodeContent.Content is TextDetailView)
+                {
+                 //   ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                } else if (nodeContent.Content is WebDetailView)
+                {
+                    ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                    Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
+                }
+
                 Canvas.SetLeft(this, rightCoord - this.Width);
 
                 e.Handled = true;

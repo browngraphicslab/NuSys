@@ -15,6 +15,7 @@ namespace NuSysApp
 {
     public sealed partial class WebNodeView : AnimatableUserControl
     {
+        private String  _url ;
         public WebNodeView(WebNodeViewModel vm)
         {
             InitializeComponent();
@@ -27,39 +28,54 @@ namespace NuSysApp
                 ScaleY = vm.Zoom
             };
 
-            (vm.Model as WebNodeModel).UrlChanged += OnUrlChanged;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-              
-                var model = (vm.Model as WebNodeModel);
-                model.Url = model.Url == "" ? "http://www.google.com" : model.Url;
+                String url = vm.Controller.LibraryElementModel.Data;
+                url = url ?? "http://www.google.com";
+                vm.Controller.LibraryElementModel?.SetContentData(vm, url);
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
-                   // xUrlBox.CancelDirectManipulations();
                     eventArgs.Handled = true;
                 };
             };
 
+
+            vm.Controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
+            {
+                if (originalSenderViewModel != DataContext)
+                {
+                    var url = vm.Controller.LibraryElementModel.Data;
+                    OnUrlChanged(url);
+                }
+            };
+
+
             vm.PropertyChanged += OnPropertyChanged;
+        }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (ElementViewModel)this.DataContext;
+            vm.Controller.RequestDelete();
         }
 
         private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             var vm = (WebNodeViewModel) DataContext;
             //   await xWebView.InvokeScriptAsync("eval", new string[] { "ZoomFunction(" + vm.Zoom + ");" });
-
+            vm.Url = _url;
             var c = xWebView.RenderTransform as CompositeTransform;
             c.ScaleX = vm.Zoom;
             c.ScaleY = vm.Zoom;
         }
 
-        private void OnUrlChanged(object source, string url)
+        private void OnUrlChanged(string url)
         {
+            url = checkIfUrlRight(url);
+            //url = url ?? "http://www.google.com";
             xWebView.Navigate(new Uri(url));
-            var vm = (WebNodeViewModel)DataContext;
-           
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -69,7 +85,8 @@ namespace NuSysApp
                 var vm = (WebNodeViewModel)DataContext;
 
                 //(vm.Model as WebNodeModel).Url = xUrlBox.Text;
-                (vm.Model as WebNodeModel).Url = this.checkIfUrlRight(xUrlBox.Text);
+                var url  = this.checkIfUrlRight(xUrlBox.Text);
+                vm.Controller.LibraryElementModel?.SetContentData(vm, url);
 
             }
         }
@@ -107,10 +124,16 @@ namespace NuSysApp
                     foreach (string word in s.Split(separators, StringSplitOptions.RemoveEmptyEntries))
                         terms.Add(word);
                     foreach (string word in terms)
+                    {
                         searchterms = searchterms + word + "+";
-                    if (!searchterms.EndsWith("+"))
+                    }
+                    if ( searchterms != null && !searchterms.EndsWith("+"))
                     {
                         searchterms = searchterms.Remove(-1);
+                    }
+                    if(searchterms == null)
+                    {
+                        return "http://www.google.com";
                     }
                     url = "http://www.google.com/search?q=" + searchterms;
                     return url;

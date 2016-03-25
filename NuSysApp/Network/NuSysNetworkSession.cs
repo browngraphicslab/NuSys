@@ -52,6 +52,8 @@ namespace NuSysApp
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnClientDrop += ClientDrop;
+            _serverClient.OnContentAvailable += ContentAvailable;
+            _serverClient.OnClientJoined += AddNetworkUser;
         }
         #region Requests
 
@@ -93,6 +95,53 @@ namespace NuSysApp
         {
             await request.CheckOutgoingRequest();
             await ProcessIncomingSystemRequest(request.GetFinalMessage());
+        }
+        private async void ContentAvailable(Dictionary<string,object> dict)
+        {
+            if (dict.ContainsKey("id"))
+            {
+                var id = (string)dict["id"];
+                string title = null;
+                ElementType type = ElementType.Text;
+                if (dict.ContainsKey("title"))
+                {
+                    title = (string)dict["title"];
+                }
+                if (dict.ContainsKey("type"))
+                {
+                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                }
+
+                UITask.Run(async delegate {
+                    if (SessionController.Instance.ContentController.Get(id) != null)
+                    {
+                        var element = SessionController.Instance.ContentController.Get(id);
+                        element.Title = title;//TODO make sure no other variables, like timestamp, need to be set here
+                    }
+                    else
+                    {
+                        if (type == ElementType.Collection)
+                        {
+                            SessionController.Instance.ContentController.Add(
+                                new CollectionLibraryElementModel(id, title));
+                        }
+                        else
+                        {
+                            SessionController.Instance.ContentController.Add(
+                                new LibraryElementModel(id, type, title));
+                        }
+                    }
+                    if (ServerClient.NeededLibraryDataIDs.Contains(id))
+                    {
+                        Task.Run(async () =>
+                        {
+                            await FetchLibraryElementData(id);
+                            ServerClient.NeededLibraryDataIDs.Remove(id);
+                        });
+
+                    }
+                });
+            }
         }
         private async void OnMessageRecieved(Message m)
         {
@@ -227,10 +276,10 @@ namespace NuSysApp
         }
         public void AddNetworkUser(NetworkUser user)
         {
-            var add = NetworkMembers.ContainsKey(user.IP);
-            if (!add)
+            var add = !NetworkMembers.ContainsKey(user.ID);
+            if (add)
             {
-                NetworkMembers[user.IP] = user;
+                NetworkMembers[user.ID] = user;
                 OnNewNetworkUser?.Invoke(user);
             }
         }
@@ -249,12 +298,9 @@ namespace NuSysApp
             }
         }
 
-        public async void ClientDrop(string ip)
+        public async void ClientDrop(string id)
         {
-            if (ip != null)
-            {
-                await DropNetworkUser(ip);
-            }
+            //TODO fill in
         }
 
         public async Task FetchLibraryElementData(string id)
