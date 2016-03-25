@@ -91,12 +91,7 @@ namespace NuSysApp
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
 
-            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += delegate(NetworkUser user)
-            {
-                UserLabel b = new UserLabel(user);
-                Users.Children.Add(b);
-                user.OnUserRemoved += delegate { Users.Children.Remove(b); };
-            };
+            SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
 
             var l = WaitingRoomView.GetFirstLoadList();
             var firstId = WaitingRoomView.InitialWorkspaceId;
@@ -114,9 +109,11 @@ namespace NuSysApp
 
             await SessionController.Instance.InitializeRecog();
 
-            SessionController.Instance.NuSysNetworkSession.AddNetworkUser(
-                new NetworkUser(SessionController.Instance.NuSysNetworkSession.LocalIP) {Name = "Me"});
-                //TODO have Trent fix this -trent
+            foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+            {
+                NewNetworkUser(user);
+            }
+
 
            // await Library.Reload();
             ChatPopup.OnNewTextsChanged += delegate(int newTexts)
@@ -131,6 +128,12 @@ namespace NuSysApp
                     ChatNotifs.Opacity = 0;
                 }
             };
+        }
+        private void NewNetworkUser(NetworkUser user)
+        {
+            UserLabel b = new UserLabel(user);
+            Users.Children.Add(b);
+            user.OnUserRemoved += delegate { Users.Children.Remove(b); };
         }
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
@@ -210,9 +213,16 @@ namespace NuSysApp
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
+            xLoadingGrid.Visibility = Visibility.Visible;
+
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                     new SubscribeToCollectionRequest(collectionId));
+
+            foreach (var controller in SessionController.Instance.IdToControllers.Values)
+            {
+                controller.Dispose();
+            }
 
             SessionController.Instance.IdToControllers.Clear();
             
@@ -255,6 +265,9 @@ namespace NuSysApp
                 await MakeCollection(dict, true, 2);
             });
             Debug.WriteLine("done joining collection: " + collectionId);
+
+            xLoadingGrid.Visibility = Visibility.Collapsed;
+
             /*
             foreach (var msg in nodeMessages)
             {
@@ -399,7 +412,7 @@ namespace NuSysApp
             //xWorkspaceTitle.Paste += UpdateTitle;
 
             freeFormViewerViewModel.Controller.TitleChanged += TitleChanged;
-            Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
+         //   Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
             //Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 5);

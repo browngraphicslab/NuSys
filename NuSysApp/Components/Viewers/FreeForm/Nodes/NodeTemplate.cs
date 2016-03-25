@@ -121,9 +121,18 @@ namespace NuSysApp
                 titleContainer.RenderTransform = new TranslateTransform {X=0, Y= -title.ActualHeight + 5};
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.Height = vm.Height + title.ActualHeight - 5;
-                vm.Controller.SetTitle(title.Text);
+                //vm.Controller.SetTitle(title.Text);
+                vm.Controller.LibraryElementModel.SetTitle(title.Text);
 
             };
+            vm.Controller.LibraryElementModel.OnTitleChanged += delegate
+            {
+                if (title.Text != vm.Controller.LibraryElementModel.Title)
+                {
+                    title.Text = vm.Controller.LibraryElementModel.Title;
+                }
+            };
+
             titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
 
             title.Loaded += delegate(object sender, RoutedEventArgs args)
@@ -133,7 +142,7 @@ namespace NuSysApp
                 highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
-            vm.Controller.UserChanged += delegate (NetworkUser user)
+            vm.Controller.UserChanged += delegate (object source, NetworkUser user)
             {
                 highlight.Visibility = vm.UserColor.Color == Colors.Transparent ? Visibility.Collapsed : Visibility.Visible;
                 highlight.BorderBrush = vm.UserColor;
@@ -322,8 +331,8 @@ namespace NuSysApp
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 96, 109, 122));
-                    bg.BorderThickness = new Thickness(2);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    bg.BorderThickness = new Thickness(1);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }

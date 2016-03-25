@@ -103,6 +103,40 @@ namespace NuSysApp
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             ViewUtilBucket.Clear();
+            Data = null;
+
+            var ds = OnContentChanged?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnContentChanged -= (ContentChangedEventHandler)d;
+                }
+            }
+            ds = OnTitleChanged?.GetInvocationList();
+            if(ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnTitleChanged -= (TitleChangedEventHandler)d;
+                }
+            }
+            ds = OnDelete?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnDelete -= (ElementDeletedEventHandler)d;
+                }
+            }
+            ds = OnLightupContent?.GetInvocationList();
+            if (ds != null)
+            {
+                foreach (var d in ds)
+                {
+                    OnLightupContent -= (LightupContentEventHandler)d;
+                }
+            }
         }
 
         public void FireDelete()

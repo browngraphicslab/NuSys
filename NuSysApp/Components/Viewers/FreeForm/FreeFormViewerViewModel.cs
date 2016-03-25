@@ -207,7 +207,9 @@ namespace NuSysApp
             var libElemModel = ((ElementViewModel)selectedElements.First().DataContext).Controller.LibraryElementModel;
             if (libElemModel != null)
                 libElemModel.FireLightupContent(true);
-            Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
+
+            if (libElemModel.Type != ElementType.Link)
+                Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
          
 
             SelectionChanged?.Invoke(this);

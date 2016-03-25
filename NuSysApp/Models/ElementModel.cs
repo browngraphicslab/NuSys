@@ -196,6 +196,7 @@ namespace NuSysApp
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
             Title = props.GetString("title", "");
+
             if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers != null &&
                 SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(
                     props.GetString("system_sender_ip")))

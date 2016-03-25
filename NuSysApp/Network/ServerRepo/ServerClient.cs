@@ -94,7 +94,9 @@ namespace NuSysApp
                                     OnContentAvailable?.Invoke(dict);
                                     break;
                                 case "add_user":
-
+                                    var id = (string)dict["id"];
+                                    var user = new NetworkUser(id, dict);
+                                    OnClientJoined?.Invoke(user);
                                     break;
                                 case "remove_user":
 

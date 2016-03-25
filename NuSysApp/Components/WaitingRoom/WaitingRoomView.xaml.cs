@@ -147,7 +147,8 @@ namespace NuSysApp
                 JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var cred = new Dictionary<string, string>();
 
-                cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
+                //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
+                cred["user"] = usernameInput.Text;
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
                 if (createNewUser)
                 {
@@ -184,12 +185,17 @@ namespace NuSysApp
                 }
                 bool validCredentials;
                 string serverSessionId;
+                string userID = "";
                 try
                 {
                     XmlDocument doc = new XmlDocument();
                     doc.LoadXml(data);
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
                     validCredentials = bool.Parse(dict["valid"]);
+                    if (dict.ContainsKey("user_id"))
+                    {
+                        userID = dict["user_id"].ToString();
+                    }
                     serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
                 }
                 catch (Exception boolParsException)
@@ -204,6 +210,7 @@ namespace NuSysApp
                     try
                     {
                         await SessionController.Instance.NuSysNetworkSession.Init();
+                        SessionController.Instance.LocalUserID = userID;
 
                         SessionController.Instance.ContentController.OnNewContent += delegate (LibraryElementModel element)
                         {

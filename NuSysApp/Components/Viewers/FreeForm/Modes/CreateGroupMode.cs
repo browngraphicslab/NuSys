@@ -179,7 +179,7 @@ namespace NuSysApp
         private FrameworkElement _hoveredView;
         private void UserControlOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var draggedItem = (AnimatableUserControl)e.OriginalSource;
+            var draggedItem = (FrameworkElement)e.OriginalSource;
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
             var result = hits.Where((uiElem) =>
             {

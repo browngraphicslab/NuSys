@@ -19,11 +19,13 @@ namespace NuSysApp
 
         public delegate void DeleteEventHandler(object source);
 
+        public delegate void DisposeEventHandler(object source);
+
         public delegate void LocationUpdateEventHandler(object source, double x, double y, double dx = 0, double dy = 0);
 
         public delegate void MetadataChangeEventHandler(object source, string key);
 
-        public delegate void NetworkUserChangedEventHandler(NetworkUser user);
+        public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
 
         public delegate void ScaleChangedEventHandler(object source, double sx, double sy);
 
@@ -35,6 +37,7 @@ namespace NuSysApp
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
+        public event DisposeEventHandler Disposed;
         public event DeleteEventHandler Deleted;
         public event LinkAddedEventHandler LinkedAdded;
         public event MetadataChangeEventHandler MetadataChange;
@@ -55,7 +58,73 @@ namespace NuSysApp
             if (LibraryElementModel != null)
             {
                 LibraryElementModel.OnDelete += Delete;
+                var title = LibraryElementModel.Title;
+                Model.Title = title;
+                TitleChanged?.Invoke(this, title);
             }
+        }
+        public void Dispose()
+        {
+            var delegates1 = SizeChanged?.GetInvocationList();
+            if (delegates1 != null)
+                foreach (var d in delegates1)
+                {
+                    SizeChanged -= (SizeUpdateEventHandler)d;
+                }
+            var invocationList1 = ScaleChanged?.GetInvocationList();
+            if (invocationList1 != null)
+                foreach (var d in invocationList1)
+                {
+                    ScaleChanged -= (ScaleChangedEventHandler)d;
+                }
+            var ds = AlphaChanged?.GetInvocationList();
+            if (ds != null)
+                foreach (var d in ds)
+                {
+                    AlphaChanged -= (AlphaChangedEventHandler)d;
+                }
+            var list = TitleChanged?.GetInvocationList();
+            if (list != null)
+                foreach (var d in list)
+                {
+                    TitleChanged -= (TitleChangedHandler)d;
+                }
+            var delegates = UserChanged?.GetInvocationList();
+            if (delegates != null)
+                foreach (var d in delegates)
+                {
+                    UserChanged -= (NetworkUserChangedEventHandler)d;
+                }
+
+            var invocationList = Deleted?.GetInvocationList();
+            if (invocationList != null)
+                foreach (var d in invocationList)
+                {
+                    Deleted -= (DeleteEventHandler)d;
+                }
+
+            var invocationList2 = LinkedAdded?.GetInvocationList();
+            if (invocationList2 != null)
+                foreach (var d in LinkedAdded?.GetInvocationList())
+            {
+                LinkedAdded -= (LinkAddedEventHandler)d;
+            }
+
+            var invocationList3 = MetadataChange?.GetInvocationList();
+            if (invocationList3 != null)
+                foreach (var d in MetadataChange?.GetInvocationList())
+            {
+                MetadataChange -= (MetadataChangeEventHandler)d;
+            }
+
+            var invocationList4 = PositionChanged?.GetInvocationList();
+            if (invocationList4 != null)
+                foreach (var d in PositionChanged?.GetInvocationList())
+            {
+                PositionChanged -= (LocationUpdateEventHandler)d;
+            }
+
+            Disposed?.Invoke(this);
         }
 
         public void AddLink(LinkElementController linkController)
@@ -130,8 +199,11 @@ namespace NuSysApp
 
         public void Delete()
         {
+            
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
+
+            Dispose();
         }
 
         public async virtual Task RequestDelete()
@@ -139,7 +211,10 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
         }
 
-
+        public void SetNetworkUser(NetworkUser user)
+        {
+            UserChanged?.Invoke(this, user);
+        }
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
            if (m == null)
@@ -190,22 +265,6 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
 
         }
-
-        public void SetLastNetworkUser( NetworkUser user )
-        {
-            if (user != null)
-            {
-                _lastNetworkUser?.RemoveAtomInUse(_model);
-                user.AddAtomInUse(_model);
-                _lastNetworkUser = user;
-                UserChanged?.Invoke(user);
-            }
-            else
-            {
-                _lastNetworkUser = null;
-                UserChanged?.Invoke(null);
-            }
-         }
 
         public ElementModel Model
         {

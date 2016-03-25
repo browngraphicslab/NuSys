@@ -37,7 +37,7 @@ namespace NuSysApp
         {
             get { return _nuSysNetworkSession; }
         }
-
+        public string LocalUserID { set; get; }
         public ObservableDictionary<string, ElementController> IdToControllers { set; get; }
 
         public SessionView SessionView { get; set; }

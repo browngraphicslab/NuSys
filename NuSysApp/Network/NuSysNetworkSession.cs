@@ -53,6 +53,7 @@ namespace NuSysApp
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnClientDrop += ClientDrop;
             _serverClient.OnContentAvailable += ContentAvailable;
+            _serverClient.OnClientJoined += AddNetworkUser;
         }
         #region Requests
 
@@ -275,10 +276,10 @@ namespace NuSysApp
         }
         public void AddNetworkUser(NetworkUser user)
         {
-            var add = NetworkMembers.ContainsKey(user.IP);
-            if (!add)
+            var add = !NetworkMembers.ContainsKey(user.ID);
+            if (add)
             {
-                NetworkMembers[user.IP] = user;
+                NetworkMembers[user.ID] = user;
                 OnNewNetworkUser?.Invoke(user);
             }
         }
