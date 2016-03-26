@@ -291,13 +291,15 @@ namespace NuSysApp
 
         private async void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.NewItems == null)
-                return;
-            if (_vm.AtomViewList.Count >= _count)
-            {
-                ResortTimeline(_sortBy);
-                AddMetaDataButtons(e.NewItems);
+            if (e.NewItems != null) { 
+           
+                if (_vm.AtomViewList.Count >= _count)
+                {
+               
+                    AddMetaDataButtons(e.NewItems);
+                }
             }
+            ResortTimeline(_sortBy);
         }
 
         private void AddMetaDataButtons(IList list)
@@ -373,7 +375,7 @@ namespace NuSysApp
                 {
                     //dt = DateTime.Now;
                     //t.Interval = new TimeSpan(0, 0, 0, 0, 1);
-                    //t.Start();
+                    //t.Start();t
 
                     // where element will be moved to
                     _moveToXPos = (int)index * TimelineNodeWidth;

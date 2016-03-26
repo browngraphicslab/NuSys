@@ -18,7 +18,7 @@ namespace NuSysApp
         private double _width;
         private double _x;
         private double _y;
-
+        
         protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
         public ElementModel(string id) : base(id)
@@ -35,7 +35,7 @@ namespace NuSysApp
 
         public string LibraryId { set; get; }
 
-        public string Creator { get; set; }
+        public string ParentCollectionId { get; set; }
 
         // TODO: Move color to higher level type
 
@@ -140,6 +140,8 @@ namespace NuSysApp
             return Metadata.Keys.ToArray();
         }
 
+        public string CreatorId { get; set; }
+
         public virtual void Delete()
         {
         }
@@ -196,6 +198,7 @@ namespace NuSysApp
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
             Title = props.GetString("title", "");
+            CreatorId = props.GetString("creator_user_id", null);
 
             if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers != null &&
                 SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(
@@ -216,7 +219,7 @@ namespace NuSysApp
             }
             if (props.ContainsKey("creator"))
             {
-                Creator = props.GetString("creator", Creator);
+                ParentCollectionId = props.GetString("creator", ParentCollectionId);
             }
 
 

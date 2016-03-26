@@ -17,12 +17,14 @@
             <RectangleGeometry Rect="{Binding ClipRect}">
             </RectangleGeometry>
         </Canvas.Clip>
-        <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <Canvas x:Name="xAtomContainer" HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}">
+            <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas  />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Canvas>
     </Canvas>
 </local:AnimatableUserControl>

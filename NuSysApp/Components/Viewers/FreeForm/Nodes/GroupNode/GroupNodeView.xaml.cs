@@ -47,8 +47,16 @@ namespace NuSysApp
             DataContext = vm;
             Resizer.ManipulationDelta += ResizerOnManipulationDelta;
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            Loaded += async delegate(object sender, RoutedEventArgs args)
             {
+                var dvm = new GroupNodeDataGridViewModel((ElementCollectionController) vm.Controller);
+                await dvm.CreateChildren();
+                dataGridView = new GroupNodeDataGridView(dvm);
+                ExpandedGrid.Children.Add(dataGridView);
+
+                dataGridView.Visibility = Visibility.Visible;
+           //     freeFormView.Visibility = Visibility.Collapsed;
+
                 PositionResizer();
             };
 
@@ -64,15 +72,7 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
 
-            //freeFormView = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)vm.Controller));
-            //timelineView = new GroupNodeTimelineView(new GroupNodeTimelineViewModel((ElementCollectionController)vm.Controller));
-            dataGridView = new GroupNodeDataGridView(new GroupNodeDataGridViewModel((ElementCollectionController)vm.Controller));
-           // expandedView = new GroupNodeExpandedView();
-
-            dataGridView.Visibility = Visibility.Visible;
-
-      
-            ExpandedGrid.Children.Add(dataGridView);
+   
 
         }
 
@@ -162,5 +162,7 @@ namespace NuSysApp
             var vm = (GroupNodeViewModel)DataContext;
             vm.Controller.RequestDelete();
         }
+
+
     }
 }

@@ -40,7 +40,8 @@ namespace NuSysApp
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
-            controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
+            if (controller.LibraryElementModel != null)
+                controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
 

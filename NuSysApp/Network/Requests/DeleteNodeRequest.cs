@@ -44,6 +44,10 @@ namespace NuSysApp
             }
 
             var controller = SessionController.Instance.IdToControllers[Id];
+            if (controller.Model != null) { 
+                var parent = SessionController.Instance.ContentController.Get(controller.Model.ParentCollectionId) as CollectionLibraryElementModel;
+                parent?.Children.Remove(Id);
+            }
             controller.Delete();
             SessionController.Instance.IdToControllers.Remove(Id);
         }

@@ -200,7 +200,8 @@ namespace NuSysApp
                 if (send != null)
                 {
                     var sendVm = (ElementViewModel)send.DataContext;
-                    sendVm.IsVisible = true;
+                    if (sendVm != null)
+                        sendVm.IsVisible = true;
                 }
 
             }

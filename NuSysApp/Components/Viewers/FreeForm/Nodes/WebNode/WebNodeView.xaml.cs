@@ -75,7 +75,8 @@ namespace NuSysApp
         {
             url = checkIfUrlRight(url);
             //url = url ?? "http://www.google.com";
-            xWebView.Navigate(new Uri(url));
+            if (url != null)
+                xWebView.Navigate(new Uri(url));
         }
 
         private void OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -102,7 +103,7 @@ namespace NuSysApp
             }
             else
             {
-                if (s.StartsWith("http://") == false && s.EndsWith(".com") == true)
+                if (s?.StartsWith("http://") == false && s.EndsWith(".com") == true)
                 {
                     if (!s.Contains("www."))
                     {
@@ -117,7 +118,7 @@ namespace NuSysApp
 
                     return url;
                 }
-                else if (!s.EndsWith(".com"))
+                else if ( s != null && !s.EndsWith(".com"))
                 {
                     List<string> terms = new List<string>();
                     string[] separators = new string[] { ",", ".", "!", "\'", " ", "\'s" };

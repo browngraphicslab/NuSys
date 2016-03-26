@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -11,21 +12,20 @@ namespace NuSysApp
 {
     public class GroupNodeDataGridViewModel : ElementCollectionViewModel
     {
-        private ObservableCollection<GroupNodeDataGridInfo> _atomDataList;
+
         private ElementModel _nodeModel;
         private Dictionary<FrameworkElement, GroupNodeDataGridInfo> _infoDict;
         public GroupNodeDataGridViewModel(ElementCollectionController controller) : base(controller)
         {
-            _atomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
+            AtomDataList = new ObservableCollection<GroupNodeDataGridInfo>();
             _infoDict = new Dictionary<FrameworkElement, GroupNodeDataGridInfo>();
             AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
-
             controller.Disposed += ControllerOnDisposed;
         }
 
         private void ControllerOnDisposed(object source)
         {
-            _atomDataList = null;
+            AtomDataList.Clear();
             _infoDict = null;
             AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
             Controller.Disposed -= ControllerOnDisposed;
@@ -40,16 +40,16 @@ namespace NuSysApp
                     var atomTest = (FrameworkElement)atom;
                     var vm = (ElementViewModel)atomTest.DataContext; //access viewmodel
                     _nodeModel = (ElementModel)vm.Model; // access model
+                    _nodeModel.SetMetaData("creator", _nodeModel.CreatorId);
 
-                    _nodeModel.SetMetaData("creator", "Dummy Data");
-
-                    string id = _nodeModel.Id;
-                    string timeStamp = _nodeModel.GetMetaData("node_creation_date")?.ToString();
-                    string creator = _nodeModel.GetMetaData("creator")?.ToString();
-                    string nodeType = _nodeModel.ElementType.ToString();
+                    var id = _nodeModel.Id;
+                    var timeStamp = _nodeModel.GetMetaData("node_creation_date")?.ToString();
+                    var creator = _nodeModel.GetMetaData("creator")?.ToString();
+                    var nodeType = _nodeModel.ElementType.ToString();
                     var title = _nodeModel.Title;
-                    GroupNodeDataGridInfo atomData = new GroupNodeDataGridInfo(id, timeStamp, creator, nodeType, title);
-                    _atomDataList.Add(atomData);
+
+                    var atomData = new GroupNodeDataGridInfo(id, timeStamp, creator, nodeType, title);
+                    AtomDataList.Add(atomData);
                     _infoDict[atomTest] = atomData;
                 }
             }
@@ -68,11 +68,13 @@ namespace NuSysApp
             }
         }
 
-        public ObservableCollection<GroupNodeDataGridInfo> AtomDataList 
+        private void OnTitleChanged(object sender, string newTitle)
         {
-            get { return _atomDataList; }
-            set { _atomDataList = value; }
+            var s = sender;
+            //AtomDataList.Where()
         }
+
+        public ObservableCollection<GroupNodeDataGridInfo> AtomDataList { get; set; }
         
     }
 }

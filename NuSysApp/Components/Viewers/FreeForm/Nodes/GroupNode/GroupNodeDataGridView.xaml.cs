@@ -39,18 +39,20 @@ namespace NuSysApp
             SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, _releaseHandler, true);
             DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
             DataGrid.SelectedItem = null;
-            DataGrid.SelectionChanged += delegate(object sender, SelectionChangedEventArgs args) //prevent selection of rows
-            {
-                DataGrid.SelectedItem = null;
-            };
-
+            DataGrid.SelectionChanged += DataGridOnSelectionChanged;
             viewModel.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void DataGridOnSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        {
+            DataGrid.SelectedItem = null;
         }
 
         private void ControllerOnDisposed(object source)
         {
             var vm = (ElementViewModel) DataContext;
             SessionController.Instance.SessionView.MainCanvas.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
+            vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
             vm.Controller.Disposed -= ControllerOnDisposed;
         }

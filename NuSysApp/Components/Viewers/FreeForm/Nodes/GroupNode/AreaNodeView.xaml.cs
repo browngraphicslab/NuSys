@@ -31,8 +31,9 @@ namespace NuSysApp
 
         public AreaNodeView(AreaNodeViewModel vm)
         {
-            DataContext = vm;
             this.InitializeComponent();
+            DataContext = vm;
+            
 
             _selectMode = new SelectMode(this);
             _selectMode.Activate();
@@ -86,6 +87,8 @@ namespace NuSysApp
 
         public Canvas OuterCanvas => xCanvas;
 
-   
+        public Canvas AtomContainer { get { return xAtomContainer; } }
+
+
     }
 }

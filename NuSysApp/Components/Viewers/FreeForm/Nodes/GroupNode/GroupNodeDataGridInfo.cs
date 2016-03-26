@@ -1,4 +1,6 @@
-﻿namespace NuSysApp
+﻿using System;
+
+namespace NuSysApp
 {
     public class GroupNodeDataGridInfo
     {
@@ -10,6 +12,7 @@
         public GroupNodeDataGridInfo(string id,string time, string name, string nodetype, string title)
         {
             Id = id;
+
             this._timeStamp = time;
             this._creator = name;
             this._nodetype = nodetype;

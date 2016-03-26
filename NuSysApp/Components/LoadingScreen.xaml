@@ -53,7 +53,7 @@
     </Page.Resources>
 
     <Grid Background="#9cc5c2">
-        <TextBlock Margin="0,0,0,100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="40"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" >Loading Workspace</TextBlock>
+        <TextBlock Margin="0,0,0,100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="40"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" >Loading Collection</TextBlock>
 
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="180" Height="50" Margin="0,50,0,0"  Orientation="Horizontal">
             <Ellipse Opacity="0"  x:Name="ellipse1" Fill="White" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>

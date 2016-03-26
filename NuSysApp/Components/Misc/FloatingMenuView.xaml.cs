@@ -95,18 +95,18 @@ namespace NuSysApp
 
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
-            var c = (CompositeTransform) RenderTransform;
-            
+            if (_dragItem == null)
+                return;
             xWrapper.Children.Remove(_dragItem);
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
            var r = xWrapper.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(args.Position.X, args.Position.Y));
-          //  var r = wvm.CompositeTransform.Inverse.TransformPoint(new Point(args.Position.X + c.TranslateX, args.Position.Y + c.TranslateY));
-            await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
+           await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
 
         }
          
         private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
+            if (_dragItem == null)
+                return;
             var t = (CompositeTransform)_dragItem.RenderTransform;
             t.TranslateX += args.Delta.Translation.X;
             t.TranslateY += args.Delta.Translation.Y;

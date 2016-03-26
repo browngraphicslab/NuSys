@@ -13,12 +13,12 @@
     Height="{Binding Height}"
      >
     
-    <controls:DataGrid x:Name="DataGrid" DefaultOrderIndex="1" ItemsSource="{Binding Path=AtomDataList}" >
+    <controls:DataGrid x:Name="DataGrid" DefaultOrderIndex="1" ItemsSource="{Binding AtomDataList}" >
         <controls:DataGrid.Columns>
-            <controls:DataGridTextColumn CanSort="True" Width="70" Header="Type" Binding="{Binding NodeType}"/>
-            <controls:DataGridTextColumn CanSort="True"  Width="100" Header="Title" Binding="{Binding Title}"/>
-            <controls:DataGridTextColumn CanSort="True"  Width="150" Header="Creator" Binding="{Binding Creator}"/>
-            <controls:DataGridTextColumn CanSort="True"  Width="200" Header="Timestamp" Binding="{Binding TimeStamp}"/>
+            <controls:DataGridTextColumn CanSort="True"  Width="3.5*" Header="Title"  Binding="{Binding Title}"/>
+            <controls:DataGridTextColumn CanSort="True"  Width="2*" Header="Type"  Binding="{Binding NodeType}"/>
+            <controls:DataGridTextColumn CanSort="True"  Width="2*" Header="Creator"  Binding="{Binding Creator}"/>
+            <controls:DataGridTextColumn CanSort="True"  Width="2.5*" Header="Created" Binding="{Binding TimeStamp}"/>
           
         </controls:DataGrid.Columns>
     </controls:DataGrid>

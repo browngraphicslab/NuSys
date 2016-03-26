@@ -82,9 +82,14 @@ namespace NuSysApp
 
         private async void UserControlOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            if (_hoveredNode == null)
+                return;
+
             if (!_isHovering)
                 return;
 
+            var draggedView = (FrameworkElement) sender;
+            draggedView.Opacity = 1;
             var draggedItem = (((FrameworkElement) sender).DataContext as ElementViewModel);
 
             if (draggedItem is LinkViewModel)
@@ -123,6 +128,9 @@ namespace NuSysApp
                 var contentId = SessionController.Instance.GenerateId();
                 var newCollectionId = SessionController.Instance.GenerateId();
 
+                draggedView.Visibility = Visibility.Collapsed;
+                _hoveredView.Visibility  = Visibility.Collapsed;
+
                 var elementMsg = new Message();
                 elementMsg["metadata"] = metadata;
                 elementMsg["width"] = 300;
@@ -152,18 +160,27 @@ namespace NuSysApp
 
             if (c2IsCollection)
             {
-                var x = draggedItem.Transform.TranslateX;
-                var y = draggedItem.Transform.TranslateY;
-                var point = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.TransformPoint(new Point(x, y));
-                var model = (ElementModel)_hoveredNode.Model;
-                var modelX = model.X;
-                var modelY = model.Y;
-                var gX = modelX - point.X;
-                var gY = modelY - point.Y;
+                var parentVm = (FreeFormViewerViewModel) _view.DataContext;
+                var found  = parentVm.AtomViewList.Where(a => a.DataContext == _hoveredNode);
+                if (!found.Any())
+                    return;
+                var groupnode = (GroupNodeView)found.First();
 
-                var point2 = _hoveredNode.Transform.TransformPoint(point);
+                Point targetPoint;
 
-                await controller1.RequestMoveToCollection(controller2.Model.LibraryId, point2.X, point2.Y);
+                if (groupnode.FreeFormView != null)
+                {
+                    var canvas = groupnode.FreeFormView.AtomContainer;
+                    targetPoint =
+                        SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas)
+                            .TransformPoint(e.Position);
+                }
+                else
+                {
+                    targetPoint = new Point(50000,50000);
+                } 
+
+                await controller1.RequestMoveToCollection(controller2.Model.LibraryId, targetPoint.X, targetPoint.Y);
                 return;
             }
 

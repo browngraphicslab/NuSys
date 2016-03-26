@@ -24,7 +24,6 @@ namespace NuSysApp
             controller.ChildRemoved += OnChildRemoved;
             
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-
             AtomViewList = new ObservableCollection<FrameworkElement>();
         }
 
@@ -63,6 +62,7 @@ namespace NuSysApp
         {
             var c = (ElementCollectionController) Controller;
             c.RemoveChild((ElementController)source);
+            var model = (CollectionElementModel) Model;
         }
 
         private void OnChildRemoved(object source, ElementController elementController)

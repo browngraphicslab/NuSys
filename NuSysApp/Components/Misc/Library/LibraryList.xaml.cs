@@ -212,7 +212,7 @@ namespace NuSysApp
             rect.Height = 0;
 
 
-            var t = (CompositeTransform)rect.RenderTransform;
+         //   var t = (CompositeTransform)rect.RenderTransform;
 
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(_x - 100, _y - 100, 200, 200));

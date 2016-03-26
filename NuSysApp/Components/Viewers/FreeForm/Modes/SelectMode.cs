@@ -88,7 +88,7 @@ namespace NuSysApp
             if (!isCtrlDown) {
 
 
-                if (dc is FreeFormViewerViewModel)
+                if (dc == viwerVm)
                 {
                     viwerVm?.ClearSelection();
                     return;

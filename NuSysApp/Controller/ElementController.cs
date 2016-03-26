@@ -48,6 +48,7 @@ namespace NuSysApp
         public ElementController(ElementModel model)
         {
             _model = model;
+            
             if (_model != null)
             {
                 _debouncingDictionary = new DebouncingDictionary(model.Id);
@@ -167,7 +168,7 @@ namespace NuSysApp
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.Creator,contentId);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
         }
@@ -215,6 +216,7 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
+            Debug.WriteLine("unpacking");
             if (props.ContainsKey("data"))
             {
                 var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
