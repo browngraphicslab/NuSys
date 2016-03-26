@@ -50,6 +50,7 @@ namespace NuSysApp
         public GroupNodeTimelineView(GroupNodeTimelineViewModel viewModel)
         {
             this.InitializeComponent();
+            _elementControllerDict = new Dictionary<Image, ElementController>();
             _vm = viewModel;
             DataContext = _vm;
             var model = _vm.Model;
@@ -236,10 +237,11 @@ namespace NuSysApp
                     String title = controller.Model.Title;
                     Image image = await _factory.CreateFromSendable(controller);
                     Object secondItem = metadata;
-                    _view = new TimelineItemView(image, secondItem, atom);
-
+                    _view = new TimelineItemView(image, secondItem, atom, controller.Model.ElementType);
+                    _elementControllerDict[image] = controller;
                     _view.ManipulationMode = ManipulationModes.All;
                     _view.ManipulationDelta += TimelineNode_ManipulationDelta;
+                    _view.DoubleTapped += ViewOnDoubleTapped;
                     _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
                     _view.ManipulationStarting += TimelineNode_ManipulationStarting;
                     _view.VerticalAlignment = VerticalAlignment.Center;
@@ -255,12 +257,13 @@ namespace NuSysApp
                         String title = controller.Model.Title;
                         Image image = await _factory.CreateFromSendable(controller);
                         Object secondItem = metadata;
-                        _view = new TimelineItemView(image, secondItem, atom);
-
+                        _view = new TimelineItemView(image, secondItem, atom, controller.Model.ElementType);
+                        _elementControllerDict[image] = controller;
                         _view.ManipulationMode = ManipulationModes.All;
                         _view.ManipulationDelta += TimelineNode_ManipulationDelta;
                         _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
                         _view.ManipulationStarting += TimelineNode_ManipulationStarting;
+                        _view.DoubleTapped += ViewOnDoubleTapped;
                         _view.VerticalAlignment = VerticalAlignment.Center;
 
                         TimelinePanel.Children.Add(_view);
@@ -273,6 +276,30 @@ namespace NuSysApp
             }
             _vm.DataList = _atomList;
         }
+
+        private Dictionary<Image, ElementController> _elementControllerDict;
+        private void ViewOnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var dc = (e.OriginalSource as FrameworkElement);
+
+            if (dc is Image)
+            {
+                var image = (Image)dc;
+                var type = _elementControllerDict[image].Model.ElementType; ;
+
+                if (type == ElementType.Word || type == ElementType.Powerpoint)
+                {
+                    return;
+                }
+                else if (type != ElementType.Link)
+                {
+                    SessionController.Instance.SessionView.ShowDetailView(_elementControllerDict[image]);
+                }
+
+                e.Handled = true;
+
+            }
+    }
 
         private void IncrementCounter()
         {
