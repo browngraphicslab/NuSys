@@ -24,11 +24,11 @@ namespace NuSysApp.Components.Nodes.GroupNode
     public sealed partial class TimelineItemView : UserControl
     {
         private FrameworkElement _atom;
-
-        public TimelineItemView(FrameworkElement image, Object sortElement, FrameworkElement atom)
+        public readonly ElementType EType;
+        public TimelineItemView(FrameworkElement image, Object sortElement, FrameworkElement atom, ElementType type)
         {
             this.InitializeComponent();
-
+            EType = type;
             _atom = atom;
 
             //image.RenderTransform = null;
