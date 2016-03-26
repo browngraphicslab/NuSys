@@ -23,7 +23,7 @@ namespace NuSysApp
 
             var model = vm.Model;
             this.Annotation.IsActivated = false;
-            vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
+          //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
             Annotation.SizeChanged += delegate (object sender, SizeChangedEventArgs args)

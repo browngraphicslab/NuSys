@@ -13,7 +13,7 @@ namespace NuSysApp
             SetServerSettings();
         }
 
-        public CreateNewLibraryElementRequest(string id, string data, ElementType type, string title = null)
+        public CreateNewLibraryElementRequest(string id, string data, ElementType type, string title = "")
             : base(RequestType.CreateNewLibrayElementRequest)
         {
             _message["id"] = id;

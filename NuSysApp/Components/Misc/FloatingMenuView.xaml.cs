@@ -33,7 +33,7 @@ namespace NuSysApp
         private FrameworkElement _dragItem;
         private ElementType _elementType;
         private LibraryView _lib;
-
+        private LibraryElementPropertiesWindow libProp;
         public FloatingMenuView()
         {
             RenderTransform = new CompositeTransform();
@@ -41,9 +41,10 @@ namespace NuSysApp
 
             btnLibrary.Tapped += BtnLibrary_Tapped;
             btnAddNode.Tapped += BtnAddNode_Tapped;
-            LibraryElementPropertiesWindow libProp = new LibraryElementPropertiesWindow();
+            libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
+           
             xWrapper.Children.Add(libProp);
             libProp.Visibility = _lib.Visibility = Visibility.Collapsed;
             xAddNodeMenu.Visibility = Visibility.Collapsed;
@@ -59,6 +60,13 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnNew);
         }
 
+        public void Reset()
+        {
+            btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
+            _lib.Visibility = _lib.Visibility = Visibility.Collapsed;
+            xAddNodeMenu.Visibility = Visibility.Collapsed;
+            libProp.Visibility = Visibility.Collapsed;
+        }
 
         private void AddNodeSubmenuButton(FrameworkElement btn)
         {
@@ -83,6 +91,7 @@ namespace NuSysApp
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _lib.ToggleVisiblity();
+            xAddNodeMenu.Visibility = Visibility.Collapsed;
             if (_lib.Visibility == Visibility.Visible)
             {
                 btnLibrary.Icon = "ms-appx:///Assets/icon_whitex.png";

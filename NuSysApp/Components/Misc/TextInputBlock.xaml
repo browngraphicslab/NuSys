@@ -35,24 +35,24 @@
     </local:AnimatableUserControl.Resources>
 
 
-    <Grid Name ="MainGrid">
+    <Grid x:Name="MainGrid" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Name ="Input" Grid.Column="0" MinWidth="300">
+        <Grid Name ="Input" Grid.Column="0" HorizontalAlignment="Stretch">
 
-            <Grid x:Name="InkBox" Width="{Binding ElementName=Input, Path=Width}">
+            <Grid x:Name="InkBox" HorizontalAlignment="Stretch" Background="Transparent">
                 <Grid.Projection>
                     <PlaneProjection RotationY="0"></PlaneProjection>
                 </Grid.Projection>
             </Grid>
-            <Grid x:Name="Main" >
+            <Grid x:Name="Main" HorizontalAlignment="Stretch" Background="Transparent">
                 <Grid.Projection>
                     <PlaneProjection RotationY="0"></PlaneProjection>
                 </Grid.Projection>
-                <TextBox x:Name="TextBox" FontSize="27" TextChanged="TextBox_OnTextChanged"  CharacterSpacing="40" BorderThickness="0" IsTabStop="False"></TextBox>
+                <TextBox x:Name="TextBox" FontSize="27" TextChanged="TextBox_OnTextChanged"  CharacterSpacing="40" BorderThickness="0" HorizontalAlignment="Stretch"></TextBox>
             </Grid>
         </Grid>
 
@@ -60,7 +60,7 @@
             <Button x:Name="MenuButton"  Click="MenuButton_OnClick" Style="{StaticResource InputButton}"  Margin="5 0 5 0" >
                 <Image x:Name ="ButtonImg" Source="ms-appx:///Assets/icon_node_text.png" MaxHeight="18" MaxWidth="18"/>
             </Button>
-            <StackPanel x:Name="InputMenu" Orientation="Horizontal" Visibility="Collapsed">
+            <StackPanel x:Name="InputMenu" Orientation="Horizontal" Visibility="Collapsed" Margin="-120, 0">
                 <Button x:Name="TextButton" Visibility ="Collapsed"  Click="TextButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
                     <Image x:Name="TextImg" Source="ms-appx:///Assets/icon_node_text.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>
