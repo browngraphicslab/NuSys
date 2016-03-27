@@ -78,8 +78,8 @@ namespace NuSysApp
         public const double ButtonDeactivatedOpacity = 0.5;
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg", ".tif", ".tiff" };
-        public static IEnumerable<string> WordFileTypes = new List<string> { ".doc", ".docx" };
-        public static IEnumerable<string> PowerpointFileTypes = new List<string> { ".ppt", ".pptx" };
+        public static IEnumerable<string> WordFileTypes = new List<string> { };
+        public static IEnumerable<string> PowerpointFileTypes = new List<string> { };
 
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
         public static IEnumerable<string> VideoFileTypes   = new List<string> { ".mp4"};//TODO add more types

@@ -48,7 +48,7 @@
                         <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
                     </Button>
 
-                    <MediaElement   x:Name="playbackElement" Loaded ="PlaybackElement_Onloaded"  Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Source="{Binding AudioSource}" Position ="0"/>
+                    <MediaElement   x:Name="playbackElement" Loaded ="PlaybackElement_Onloaded"  Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0"/>
                 </StackPanel>
 
 

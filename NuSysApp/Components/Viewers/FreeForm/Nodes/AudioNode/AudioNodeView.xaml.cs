@@ -44,12 +44,18 @@ namespace NuSysApp
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
+            playbackElement.MediaFailed += PlaybackElement_MediaFailed;
             ((AudioNodeModel)(vm.Model)).Controller = new MediaController(playbackElement);
             ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
             ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
             ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
 
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void PlaybackElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void ControllerOnDisposed(object source)
