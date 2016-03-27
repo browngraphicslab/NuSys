@@ -12,10 +12,9 @@
     Height="{Binding Height}"
     HorizontalAlignment="Left" VerticalAlignment="Top"
 >
-    <Canvas x:Name="xCanvas" Width="1000" Height="1000">
+    <Canvas x:Name="xCanvas" Width="{Binding Width}" Height="{Binding Height}" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Canvas.Clip>
-            <RectangleGeometry Rect="{Binding ClipRect}">
-            </RectangleGeometry>
+            <RectangleGeometry Rect="{Binding ClipRect}"></RectangleGeometry>
         </Canvas.Clip>
         <Canvas x:Name="xAtomContainer" HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}">
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}">

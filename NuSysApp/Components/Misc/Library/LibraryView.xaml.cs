@@ -38,14 +38,16 @@ namespace NuSysApp
         private double _graphButtonX;
         private double _graphButtonY;
         private LibraryElementPropertiesWindow _propertiesWindow;
+        private LibraryPageViewModel _pageViewModel;
+
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
             this.DataContext = vm;
             this.InitializeComponent();
             var data = SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link);
-            LibraryPageViewModel pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
-            this.MakeViews(pageViewModel, properties);
+            _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
+            this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
@@ -387,7 +389,7 @@ namespace NuSysApp
             t.TranslateY += e.Delta.Translation.Y;
         }
 
-        private void Graph_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private async void Graph_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             // Hid the dragged graph image/button
             var draggedGraphImage = SessionController.Instance.SessionView.GraphImage;
@@ -397,19 +399,61 @@ namespace NuSysApp
             // extract composite transform and add the chart/graph based on the dropped location
             var t = (CompositeTransform)draggedGraphImage.RenderTransform;
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
+       //     var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
+            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(t.TranslateX, t.TranslateY));
+
 
             // graph is added by passing in the bounding rectangle
-            this.AddGraph(r);
+            await AddGraph(r);
             
         }
 
         // adds the graph/chart based on the location that the graph button was dragged to
-        private void AddGraph(Rect r)
+        private async Task AddGraph(Point r)
         {
-          
-            // TODO: add the graph/chart
 
+            var metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+
+            // TODO: add the graph/chart
+            var contentId = SessionController.Instance.GenerateId();
+            var newCollectionId = SessionController.Instance.GenerateId();
+
+            var elementMsg = new Message();
+            elementMsg["metadata"] = metadata;
+            elementMsg["width"] = 300;
+            elementMsg["height"] = 300;
+            elementMsg["x"] = r.X;
+            elementMsg["y"] = r.Y;
+            elementMsg["contentId"] = contentId;
+            elementMsg["nodeType"] = ElementType.Collection;
+            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            elementMsg["id"] = newCollectionId;
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
+
+            foreach (var libraryElementModel in _pageViewModel.PageElements)
+            {
+                var dict = new Message();
+                dict["title"] = libraryElementModel?.Title;
+                dict["width"] = "300";
+                dict["height"] = "300";
+                dict["nodeType"] = libraryElementModel.Type.ToString();
+                dict["x"] = "50000";
+                dict["y"] = "50000";
+                dict["contentId"] = libraryElementModel.Id;
+                dict["metadata"] = metadata;
+                dict["autoCreate"] = true;
+                dict["creator"] = controller.LibraryElementModel.Id;
+                var request = new NewElementRequest(dict);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            }
         }
     }
 }

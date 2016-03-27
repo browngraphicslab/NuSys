@@ -214,9 +214,10 @@ namespace NuSysApp
 
          //   var t = (CompositeTransform)rect.RenderTransform;
 
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(_x - 100, _y - 100, 200, 200));
-            await _library.AddNode(new Point(r.X, r.Y), new Size(r.Width, r.Height), element.Type,element.Id);
+      //      var wvm = SessionController.Instance.ActiveFreeFormViewer;
+          //  var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(_x - 100, _y - 100, 200, 200));
+            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
+            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.Id);
         }
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)

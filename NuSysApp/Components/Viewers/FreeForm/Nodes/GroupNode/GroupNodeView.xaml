@@ -53,7 +53,7 @@
             <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         </Grid>
 
-                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}">
+                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" HorizontalAlignment="Left">
 
 
         </Grid>
