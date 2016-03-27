@@ -19,7 +19,7 @@ namespace NuSysApp
         private double _x;
         private double _y;
         
-        protected Dictionary<string, object> Metadata = new Dictionary<string, object>();
+        public Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
         public ElementModel(string id) : base(id)
         {
@@ -175,8 +175,10 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             var md = props.GetDict<string, object>("metadata");
-            if (md.ContainsKey("tags"))
+            if (md.ContainsKey("tags")) { 
                 md["tags"] = JsonConvert.DeserializeObject<List<string>>(md["tags"].ToString());
+
+            }
             else
                 md["tags"] = new List<string>();
 

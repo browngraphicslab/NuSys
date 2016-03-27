@@ -24,11 +24,20 @@ namespace NuSysApp
         {
             if (! _children.Contains(id))
             {
+                var elementController = SessionController.Instance.IdToControllers[id];
+                elementController.Deleted += ElementControllerOnDeleted;
+
                 _children.Add(id);
                 OnChildAdded?.Invoke(id);
                 return true;
             }
             return false;
+        }
+
+        private void ElementControllerOnDeleted(object source)
+        {
+            var elementController = (ElementController) source;
+            Children.Remove(elementController.Model.Id);
         }
 
         protected override void OnSessionControllerEnterNewCollection()
@@ -41,6 +50,8 @@ namespace NuSysApp
         {
             if (_children.Contains(id))
             {
+                var elementController = SessionController.Instance.IdToControllers[id];
+                elementController.Deleted += ElementControllerOnDeleted;
                 _children.Remove(id);
                 OnChildRemoved?.Invoke(id);
                 return true;

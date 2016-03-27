@@ -20,7 +20,7 @@ namespace NuSysApp
         {
             InAtomId = props.GetString("id1", InAtomId);
             OutAtomId = props.GetString("id2", InAtomId);
-            Annotation = props.GetString("annotation", InAtomId);
+            Annotation = props.GetString("annotation", "");
             base.UnPack(props);
         }
 

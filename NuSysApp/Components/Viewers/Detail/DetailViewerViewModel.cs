@@ -29,6 +29,8 @@ namespace NuSysApp
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
+
+        private ElementViewModel _currentElementViewModel;
  
         public DetailViewerViewModel()
 
@@ -137,6 +139,10 @@ namespace NuSysApp
         {
             List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
             tags.Add(tag);
+
+            var contentVm = (ElementViewModel) View.DataContext;
+            contentVm.Controller.LibraryElementModel.Keywords.Add(tag);
+
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
 
             //this should be refactored later

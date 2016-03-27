@@ -33,8 +33,8 @@ namespace NuSysApp
             var libraryId = _message.GetString("contentId");
             var creator = _message.GetString("creator");
 
-            ElementModel elementModel;
-            ElementController controller;
+            ElementModel elementModel = null;
+            ElementController controller = null;
 
             var libraryElement = SessionController.Instance.ContentController.Get(libraryId);
             if (libraryElement == null)
@@ -125,6 +125,12 @@ namespace NuSysApp
                 default:
                     throw new InvalidOperationException("This node type is not yet supported");
             }
+
+            foreach (var tag in elementModel.GetMetaData("tags") as List<string>)
+            {
+                controller.LibraryElementModel.Keywords.Add(tag);
+            }
+            //controller.LibraryElementModel.Keywords.
 
             SessionController.Instance.IdToControllers[id] = controller;
 

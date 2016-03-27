@@ -132,6 +132,7 @@ namespace NuSysApp
         {
             Model.SetMetaData(key, val);
             MetadataChange?.Invoke(this, key);
+            _debouncingDictionary.Add("metadata", Model.Metadata);
         }
 
         public void Delete()

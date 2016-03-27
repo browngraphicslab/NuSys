@@ -14,6 +14,8 @@ namespace NuSysApp
     {
         public bool Loaded { get; set; }
 
+        public HashSet<string> Keywords { get; set; }
+
         public static LibraryElementModel LitElement;
 
         public delegate void OnLoadedEventHandler();
@@ -82,6 +84,7 @@ namespace NuSysApp
             Title = contentName;
             Type = elementType;
             Loaded = false;
+            Keywords = new HashSet<string>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
         public void FireLightupContent(bool lightup)
@@ -172,6 +175,11 @@ namespace NuSysApp
             if (title.Contains(s) || type.Contains(s))
             {
                 return true;
+            }
+            foreach (var keyword in Keywords)
+            {
+                if (keyword.StartsWith(s))
+                    return true;
             }
             return false;
         }

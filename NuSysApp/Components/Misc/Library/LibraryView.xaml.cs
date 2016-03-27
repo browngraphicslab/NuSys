@@ -116,6 +116,7 @@ namespace NuSysApp
         {
             //((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray());
             ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
+            _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
         private async void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)

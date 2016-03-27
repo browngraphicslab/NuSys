@@ -444,12 +444,8 @@ namespace NuSysApp
         private void UpdateTitle(object sender, object args)
         {
             var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
-           model.Title = xWorkspaceTitle.Text;
-            var m = new Message();
-            m["id"] = model.Id;
-            m["title"] = model.Title;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m),
-                NetworkClient.PacketType.UDP);
+            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.SetTitle(xWorkspaceTitle.Text);
+            model.Title = xWorkspaceTitle.Text;
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
 
