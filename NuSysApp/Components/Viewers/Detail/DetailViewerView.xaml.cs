@@ -89,11 +89,17 @@ namespace NuSysApp
             //tagLine.Opacity = 1;
             var vm = (DetailViewerViewModel)DataContext;
             string newTag = NewTagBox.Text.Trim();
-            if (newTag != "")
+            var str = newTag.Replace(", ", ",");
+            var tags = str.Split(',');
+            foreach (var tag in tags)
             {
-                vm.AddTag(newTag);
-                Tags.ItemsSource = vm.Tags;
+                if (tag != "")
+                {
+                    vm.AddTag(tag);
+                    Tags.ItemsSource = vm.Tags;
+                }
             }
+            
             NewTagBox.Text = "";
         }
 

@@ -46,7 +46,7 @@ namespace NuSysApp
                 var link = new LinkModel(id);
                 await link.UnPack(_message);
                 var linkController = new LinkElementController(link);
-                SessionController.Instance.IdToControllers.Add(id, linkController);
+                SessionController.Instance.IdToControllers[id] = linkController;
 
                 var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creator);
                 parentCollectionLibraryElement.AddChild(id);

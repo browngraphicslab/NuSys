@@ -13,7 +13,7 @@ namespace NuSysApp
         private ConcurrentDictionary<string, object> _dict; 
         private bool _timing = false;
         private Timer _timer;
-        private int _milliSecondDebounce = 10;
+        private int _milliSecondDebounce = 30;
         private string _id;
 
         private ConcurrentDictionary<string, object> _serverDict;

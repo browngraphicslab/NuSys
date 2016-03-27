@@ -52,7 +52,14 @@ namespace NuSysApp
             _isInking = false;
             _isActivated = false;
             this.InitializeComponent();
+
+            TextBox.KeyUp += TextBoxOnKeyUp;
        //     this.SetUpInking();
+        }
+
+        private void TextBoxOnKeyUp(object sender, KeyRoutedEventArgs keyRoutedEventArgs)
+        {
+            TextChanged?.Invoke(this, this.Text);
         }
 
         public Windows.UI.Color ButtonBg
@@ -167,6 +174,7 @@ namespace NuSysApp
                 {
 
                     TextBox.Text = inkText;
+                    TextChanged?.Invoke(this, TextBox.Text);
                     inkText = "";
                     ResetTextFromInk();
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -29,7 +30,7 @@ namespace NuSysApp
 
         private SessionController()
         {
-            IdToControllers = new ObservableDictionary<string, ElementController>();
+            IdToControllers = new ConcurrentDictionary<string, ElementController>();
             _nuSysNetworkSession = new NuSysNetworkSession();
         }
 
@@ -38,7 +39,7 @@ namespace NuSysApp
             get { return _nuSysNetworkSession; }
         }
         public string LocalUserID { set; get; }
-        public ObservableDictionary<string, ElementController> IdToControllers { set; get; }
+        public ConcurrentDictionary<string, ElementController> IdToControllers { set; get; }
 
         public SessionView SessionView { get; set; }
 

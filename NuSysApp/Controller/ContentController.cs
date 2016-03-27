@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ namespace NuSysApp
     public class ContentController
     {
 
-        private Dictionary<string, LibraryElementModel> _contents = new Dictionary<string, LibraryElementModel>();
+        private ConcurrentDictionary<string, LibraryElementModel> _contents = new ConcurrentDictionary<string, LibraryElementModel>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
 
         public delegate void NewContentEventHandler(LibraryElementModel element);
@@ -44,7 +45,7 @@ namespace NuSysApp
         {
             if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))
             {
-                _contents.Add(model.Id, model);
+                _contents.TryAdd(model.Id, model);
                 Debug.WriteLine("content directly added with ID: " + model.Id);
                 OnNewContent?.Invoke(model);
                 return model.Id;
@@ -56,7 +57,7 @@ namespace NuSysApp
         {
             var id = presetID ?? SessionController.Instance.GenerateId();
             var n = new LibraryElementModel(id, elementType);
-            _contents.Add(id, n );
+            _contents.TryAdd(id, n );
             OnNewContent?.Invoke(n);
             /*
             if (presetID != null)
@@ -86,7 +87,8 @@ namespace NuSysApp
             {
                 return false;
             }
-            _contents.Remove(model.Id);
+            LibraryElementModel removedElement;
+            _contents.TryRemove(model.Id, out removedElement);
             OnElementDelete?.Invoke(model);
             return true;
         }

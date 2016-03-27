@@ -44,7 +44,8 @@ namespace NuSysApp
         {
             IsDeleted = true;
             OnDeleteInqLine?.Invoke(this, this);
-            SessionController.Instance.IdToControllers.Remove(Id);
+            ElementController removed;
+            SessionController.Instance.IdToControllers.TryRemove(Id, out removed);
         }
 
         public override Task UnPack(Message props)

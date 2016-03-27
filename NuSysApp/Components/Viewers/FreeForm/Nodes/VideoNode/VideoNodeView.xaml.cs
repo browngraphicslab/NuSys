@@ -83,10 +83,8 @@ namespace NuSysApp
                 if (stream == null)
                 {
                     memoryStream = new InMemoryRandomAccessStream();
-                    var byteArray =
-                        Convert.FromBase64String(
-                            SessionController.Instance.ContentController.Get(
-                                (((VideoNodeViewModel) DataContext).Model as VideoNodeModel).LibraryId).Data);
+                    var nodeModel = (((VideoNodeViewModel) DataContext).Model as VideoNodeModel);
+                    var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get(nodeModel.LibraryId).Data);
                     memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
                     memoryStream.Seek(0);
                     content.ViewUtilBucket["videoStream"] = stream;

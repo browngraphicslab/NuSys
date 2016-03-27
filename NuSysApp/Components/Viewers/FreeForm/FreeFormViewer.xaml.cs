@@ -53,7 +53,7 @@ namespace NuSysApp
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
                 _mainMode = new MultiMode(this, _selectMode, _floatingMenuMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
-                _simpleEditMode = new MultiMode(this, _selectMode, _floatingMenuMode);
+                _simpleEditMode = new MultiMode(this, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 SwitchMode(Options.SelectNode, false);
             };
             

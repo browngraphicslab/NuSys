@@ -12,6 +12,10 @@ namespace NuSysApp
 
         public event AnchorUpdatedEventHandler AnchorUpdated;
 
+        public delegate void AnnotationChangedEventHandler(string text);
+
+        public event AnnotationChangedEventHandler AnnotationChanged;
+
         public ElementController InElement { get; set; }
         public ElementController OutElement { get; set; }
 
@@ -61,9 +65,25 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLinkRequest(m1));
         }
 
+        public void SetAnnotation(string text)
+        {
+            var linkModel = (LinkModel) Model;
+            linkModel.Annotation = text;
+            AnnotationChanged?.Invoke(text);
+
+            _debouncingDictionary.Add("annotation", text);
+        }
+
         public void UpdateAnchor()
         {
             AnchorUpdated?.Invoke(this);
+        }
+
+        public override Task UnPack(Message props)
+        {
+            if (props.ContainsKey("annotation"))
+                AnnotationChanged?.Invoke(props.GetString("annotation"));
+            return base.UnPack(props);
         }
     }
 }

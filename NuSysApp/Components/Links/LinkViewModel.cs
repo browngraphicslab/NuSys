@@ -15,14 +15,15 @@ namespace NuSysApp
         public LinkViewModel(LinkElementController controller) : base(controller)
         {
             var linkModel = (LinkModel)controller.Model;
+
+            controller.AnnotationChanged += ControllerOnAnnotationChanged;
+            Annotation = linkModel.Annotation;
+
             InElementController = SessionController.Instance.IdToControllers[linkModel.InAtomId]; 
             OutElementController = SessionController.Instance.IdToControllers[linkModel.OutAtomId];
 
             Anchor = new Point2d((int) (OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X)/2)),
                 (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
-
-
-            AnnotationText = controller.Model.Title;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
    
@@ -31,20 +32,15 @@ namespace NuSysApp
             OutElementController.PositionChanged += InElementControllerOnPositionChanged;
             InElementController.SizeChanged += OutElementControllerOnSizeChanged;
             OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
+        }
 
+        private void ControllerOnAnnotationChanged(string text)
+        {
+            Annotation = text;
+            RaisePropertyChanged("Annotation");
         }
 
         private void OutElementControllerOnSizeChanged(object source, double width, double height)
-        {
-            UpdateAnchor();
-        }
-
-        private void InElementControllerOnSizeChangedInElementControllerOnSizeChanged(object source, double width, double height)
-        {
-            UpdateAnchor();
-        }
-
-        private void OutElementControllerOnPositionChanged(object source, double d, double d1, double x, double y)
         {
             UpdateAnchor();
         }
@@ -54,15 +50,14 @@ namespace NuSysApp
             UpdateAnchor();
         }
 
-        public string AnnotationText
-        {
-            get { return Model.Title; }
-            set { Model.Title = value; }
-        }
 
         public override void Dispose()
         {
-            var model = (LinkModel) Model;
+            InElementController.PositionChanged -= InElementControllerOnPositionChanged;
+            OutElementController.PositionChanged -= InElementControllerOnPositionChanged;
+            InElementController.SizeChanged -= OutElementControllerOnSizeChanged;
+            OutElementController.SizeChanged -= OutElementControllerOnSizeChanged;
+
             base.Dispose();
         }
 
@@ -101,6 +96,11 @@ namespace NuSysApp
             }
         }
 
+        public string Annotation
+        {
+            get;set;
+        }
+
         public override PointCollection ReferencePoints
         {
              get
@@ -111,14 +111,5 @@ namespace NuSysApp
  
              }
          }
-
-#region Private Members
-
-
-        private string _annotationText;
-
-        #endregion Private members
-
-
     }
 }

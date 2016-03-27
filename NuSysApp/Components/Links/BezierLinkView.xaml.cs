@@ -21,8 +21,8 @@ namespace NuSysApp
 
             vm.PropertyChanged += OnPropertyChanged;
 
-            var model = vm.Model;
-            this.Annotation.IsActivated = false;
+           Annotation.IsActivated = false;
+           
           //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
@@ -31,20 +31,43 @@ namespace NuSysApp
                 Rect.Width = args.NewSize.Width;
                 Rect.Height = args.NewSize.Height;
             };
+
+            Annotation.Text = vm.Annotation;
+            Annotation.TextChanged += AnnotationOnTextChanged;
+
+            var linkController = (LinkElementController) vm.Controller;
+            linkController.AnnotationChanged += LinkControllerOnAnnotationChanged;
+          //  linkController.PositionChanged += LinkControllerOnPositionChanged;
+
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
-                AnnotationContainer.Visibility = vm.AnnotationText == "" ? Visibility.Collapsed : Visibility.Visible;
-                //       await SessionController.Instance.InitializeRecog();
             };
+        }
+
+        private void LinkControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LinkControllerOnAnnotationChanged(string text)
+        {
+        
+        }
+
+        private void AnnotationOnTextChanged(object source, string title)
+        {
+            var vm = (LinkViewModel) DataContext;
+            var controller = (LinkElementController)vm.Controller;
+            controller.SetAnnotation(title);
         }
 
         private void ControllerOnTitleChanged(object source, string title)
         {
-            Annotation.Text = title;
-            AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
+       //     Annotation.Text = title;
+       //     AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void OnDisposed(object source)
@@ -53,27 +76,22 @@ namespace NuSysApp
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
             vm.Controller.LibraryElementModel.OnTitleChanged -= ControllerOnTitleChanged;
+            //var linkController = (LinkElementController)vm.Controller;
+           // linkController.AnnotationChanged -= LinkControllerOnAnnotationChanged;
             DataContext = null;
         }
 
         private void UpdateText()
         {
-            var model = (DataContext as LinkViewModel).Model;
-            var vm = DataContext as LinkViewModel;
-            vm.AnnotationText = Annotation.Text;
-            if (model.Title != Annotation.Text)
-            {
-                model.Title = Annotation.Text;
-                var m = new Message();
-                m["id"] = model.Id;
-                m["title"] = model.Title;
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SendableUpdateRequest(m), NetworkClient.PacketType.UDP);
-            }
+          //  var vm = DataContext as LinkViewModel;
+          //  vm.Controller.LibraryElementModel.SetTitle(Annotation.Text);           
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            
             this.UpdateControlPoints();
+            return;
 
             if (propertyChangedEventArgs.PropertyName == "AnnotationText")
             {
@@ -151,23 +169,6 @@ namespace NuSysApp
 
             pathfigure.StartPoint = anchor1;
             curve.Point3 = anchor2;
-        }
-
-        private async void OnRecordClick(object sender, RoutedEventArgs e)
-        {
-            var session = SessionController.Instance;
-            if (!session.IsRecording)
-            {
-                await session.TranscribeVoice();
-
-                var vm = (LinkViewModel)DataContext;
-                //((TextNodeModel)vm.Model).Text = session.SpeechString;
-                vm.AnnotationText = session.SpeechString;
-            }
-            else
-            {
-                var vm = this.DataContext as LinkViewModel;
-            }
         }
 
         private async void Delete_OnClick(object sender, RoutedEventArgs e)

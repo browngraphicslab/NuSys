@@ -49,6 +49,10 @@ namespace NuSysApp
         {
             _model = model;
             
+         //   Debug.WriteLine(_model.Title);
+
+         //   LibraryElementModel.SetTitle(_model.Title);
+
             if (_model != null)
             {
                 _debouncingDictionary = new DebouncingDictionary(model.Id);
@@ -64,7 +68,8 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            LibraryElementModel.OnDelete -= Delete;
+            if (LibraryElementModel != null)
+                LibraryElementModel.OnDelete -= Delete;
             Disposed?.Invoke(this);
         }
 

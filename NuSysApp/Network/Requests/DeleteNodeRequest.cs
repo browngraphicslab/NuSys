@@ -49,7 +49,8 @@ namespace NuSysApp
                 parent?.Children.Remove(Id);
             }
             controller.Delete();
-            SessionController.Instance.IdToControllers.Remove(Id);
+            ElementController removed;
+            SessionController.Instance.IdToControllers.TryRemove(Id, out removed);
         }
     }
     public class DeleteSendableRequestException : Exception
