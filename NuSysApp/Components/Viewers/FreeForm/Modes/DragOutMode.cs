@@ -21,12 +21,19 @@ namespace NuSysApp
         private DispatcherTimer _timer;
         private int _counter = 0;
         private readonly int _waitTime = 500;
+        private ElementViewModel _draggedVm;
+        private PointerEventHandler _releasedHandler;
+        private bool _released;
 
-        public DragOutMode(FrameworkElement view) : base(view) { }
+        public DragOutMode(FrameworkElement view) : base(view)
+        {
+            _releasedHandler = UserControlOnPointerReleased;
+        }
 
         public override async Task Activate()
         {
-            FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
+            var wvm = (FreeFormViewerViewModel)_view.DataContext;
+            SessionController.Instance.SessionView.AddHandler(UIElement.PointerReleasedEvent, _releasedHandler, true);
 
             foreach (var n in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
             {
@@ -34,8 +41,9 @@ namespace NuSysApp
                 if (userControl.DataContext is ElementViewModel)
                 {
                     userControl.ManipulationMode = ManipulationModes.All;
+                    userControl.ManipulationStarting += UserControlOnManipulationStarting;
                     userControl.ManipulationDelta += OnManipulationDelta;
-                    userControl.PointerReleased += UserControlOnPointerReleased;
+              //      userControl.PointerReleased += UserControlOnPointerReleased;
                 }
             }
 
@@ -45,7 +53,8 @@ namespace NuSysApp
         public override async Task Deactivate()
         {
             FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
-
+            //          _view.PointerReleased -= UserControlOnPointerReleased;
+            SessionController.Instance.SessionView.RemoveHandler(UIElement.PointerReleasedEvent, _releasedHandler);
             foreach (var n in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
             {
                 var userControl = (UserControl)n;
@@ -53,6 +62,7 @@ namespace NuSysApp
                 {
 
                     userControl.ManipulationDelta -= OnManipulationDelta;
+                    userControl.ManipulationStarting -= UserControlOnManipulationStarting;
                     userControl.PointerReleased -= UserControlOnPointerReleased;
                 }
             }
@@ -60,27 +70,84 @@ namespace NuSysApp
             wvm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
         }
 
+        private async void UserControlOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs manipulationStartingRoutedEventArgs)
+        {
+            _released = false;
+            await Task.Delay(300);
+            if (_released)
+                return;
+            var send = (FrameworkElement)sender;
+          
+            var bmp = new RenderTargetBitmap();
+            await bmp.RenderAsync((UIElement)sender);
+            var img = new Image
+            {
+                RenderTransform = new CompositeTransform(),
+                Source = bmp
+            };
+            _dragItem = img;
+            _dragItem.IsHitTestVisible = false;
+            _draggedVm = (ElementViewModel)send.DataContext;
+            var point = this.GetRealCoordinatesOnScreen(sender);
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            t.TranslateX = point.X;
+            t.TranslateY = point.Y;
+
+          //  SessionController.Instance.SessionView.MainCanvas.Children.Add(_dragItem);
+        }
+
+    
+
 
         //HANDLER METHODS START HERE
-        private void UserControlOnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        private async void UserControlOnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
+        //    if (IsPointerInGroup())
+            _released = true;
+            if (_dragItem == null)
+                return;
+
+
+            if (!IsPointerInGroup(pointerRoutedEventArgs.GetCurrentPoint(null).Position))
+            {
+
+
+                var t = (CompositeTransform) _dragItem.RenderTransform;
+                var screenX = t.TranslateX;
+                var screenY = t.TranslateY;
+                var newPos =
+                    SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
+                        new Point(screenX, screenY));
+                var controller = SessionController.Instance.IdToControllers[_draggedVm.Id];
+
+                _dragItem = null;
+                _counter = 0;
+                _timer?.Stop();
+                _timer = null;
+
+                await controller.RequestMoveToCollection(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id, newPos.X, newPos.Y);
+            }
+
             _dragItem = null;
             _counter = 0;
             _timer?.Stop();
             _timer = null;
+
+
+            //  SessionController.Instance.SessionView.MainCanvas.Children.Remove(_dragItem);
+
+
         }
 
 
         private async void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
-            if (!IsPointerInGroup(sender, args))
-            {
-                this.StartTimer(sender, args);
-            }
-            else
-            {
-                this.StopTimer(sender, args);
-            }
+            if (_dragItem == null)
+                return;
+
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            t.TranslateX += args.Delta.Translation.X;
+            t.TranslateY += args.Delta.Translation.Y;
         }
 
 
@@ -96,29 +163,14 @@ namespace NuSysApp
                 var userControl = (UserControl)n;
                 if (userControl.DataContext is ElementViewModel)
                 {
-                    userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
+                    userControl.ManipulationStarting += UserControlOnManipulationStarting;
                     userControl.PointerReleased += UserControlOnPointerReleased;
                 }
             }
         }
 
-        //PRIVATE HELPER METHODS START HERE
-        private void SetUpDragObject(object sender)
-        {
-            if (_dragItem == null)
-                return;
-            var cview = (AreaNodeView)_view;
-            var vm = (AreaNodeViewModel)cview.DataContext;
-            var send = (FrameworkElement)sender;
-            var sendVm = (ElementViewModel)send.DataContext;
-            var model = sendVm.Model;
-            var groupModel = vm.Model;
-            var point = this.GetRealCoordinatesOnScreen(sender);
-            var t = (CompositeTransform)_dragItem.RenderTransform;
-            t.TranslateX = point.X;
-            t.TranslateY = point.Y;
-        }
+       
 
         private Point GetRealCoordinatesOnScreen(object sender)
         {
@@ -135,58 +187,14 @@ namespace NuSysApp
             return point2;
         }
 
-        private bool IsPointerInGroup(object sender, ManipulationDeltaRoutedEventArgs args)
+        private bool IsPointerInGroup(Point point)
         {
-            var hits = VisualTreeHelper.FindElementsInHostCoordinates(this.GetRealCoordinatesOnScreen(sender), SessionController.Instance.SessionView);
+            var hits = VisualTreeHelper.FindElementsInHostCoordinates(point, SessionController.Instance.SessionView);
             var result = hits.Where((uiElem) => uiElem is AreaNodeView);
             return result.Any();
         }
 
-        private void StartTimer(object sender, ManipulationDeltaRoutedEventArgs args)
-        {
-            var send = (FrameworkElement)sender;
-            var sendVm = (ElementViewModel)send.DataContext;
-            var model = sendVm.Model;
-            if (_timer == null)
-            {
-                _timer = new DispatcherTimer();
-                _timer.Tick += async delegate (object o, object o1)
-                {
-                    _counter++;
-                    if (_counter == 1)//This happens after dragging a node out and waiting 0.5 seconds 
-                    {
-                        var bmp = new RenderTargetBitmap();
-                        await bmp.RenderAsync((UIElement)sender);
-                        var img = new Image
-                        {
-                            RenderTransform = new CompositeTransform(),
-                            Source = bmp
-                        };
-                        _dragItem = img;
-                        SessionController.Instance.SessionView.MainCanvas.Children.Add(_dragItem);
-                        this.SetUpDragObject(sender);
-                        var t = (CompositeTransform)_dragItem.RenderTransform;
-                        t.TranslateX += args.Delta.Translation.X;
-                        t.TranslateY += args.Delta.Translation.Y;
 
-                        sendVm.IsVisible = false;
-                    }
-                    if (_counter == 2) //This happens after waiting another 0.5 seconds
-                    {
-                        var t = (CompositeTransform)_dragItem.RenderTransform;
-                        var screenX = t.TranslateX;
-                        var screenY = t.TranslateY;
-                        var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(screenX, screenY));
-                        var controller = SessionController.Instance.IdToControllers[model.Id];
-                        await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
-                        this.StopTimer(sender, args);
-                    }
-                };
-                _timer.Interval = TimeSpan.FromMilliseconds(_waitTime);
-                _timer.Start();
-
-            }
-        }
 
         private void StopTimer(object sender, ManipulationDeltaRoutedEventArgs args)
         {

@@ -166,7 +166,7 @@ namespace NuSysApp
             m["width"] = Model.Width;
             m["height"] = Model.Height;
             m["nodeType"] = Model.ElementType.ToString();
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = Model.ParentCollectionId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
