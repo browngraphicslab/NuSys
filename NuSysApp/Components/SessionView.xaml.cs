@@ -236,7 +236,12 @@ namespace NuSysApp
             
             var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
             {
-                Title = "Instance title"
+                Title = "Instance title",
+                LocationX = -Constants.MaxCanvasSize / 2.0,
+                LocationY = -Constants.MaxCanvasSize / 2.0,
+                CenterX = -Constants.MaxCanvasSize / 2.0,
+                CenterY = -Constants.MaxCanvasSize / 2.0,
+                Zoom = 1,
             };
 
             elementCollectionInstance.LibraryId = collectionId;

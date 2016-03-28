@@ -49,17 +49,11 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                var dvm = new GroupNodeDataGridViewModel((ElementCollectionController) vm.Controller);
-                await dvm.CreateChildren();
-                dataGridView = new GroupNodeDataGridView(dvm);
-                ExpandedGrid.Children.Add(dataGridView);
-
-                dataGridView.Visibility = Visibility.Visible;
-           //     freeFormView.Visibility = Visibility.Collapsed;
-
+                SwitchView(vm.ActiveCollectionViewType);
                 PositionResizer();
             };
 
+            (vm.Controller as ElementCollectionController).CollectionViewChanged += OnCollectionViewChanged;
             vm.Controller.Disposed += ControllerOnDisposed;
 
             //DefaultButton.AddHandler(TappedEvent,
@@ -70,10 +64,79 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
             FreeFormButton.AddHandler(TappedEvent,
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
+            EnterButton.AddHandler(TappedEvent,
+                new TappedEventHandler(MenuDetailButton_Tapped), true);
+
+        }
+
+        private void OnCollectionViewChanged(object source, CollectionElementModel.CollectionViewType type)
+        {
+            SwitchView(type);
+        }
+
+        private void SwitchView(CollectionElementModel.CollectionViewType type)
+        {
+            switch (type)
+            {
+                case CollectionElementModel.CollectionViewType.FreeForm:
+                    CreateFreeFormView();
+                    break;
+                case CollectionElementModel.CollectionViewType.List:
+                    CreateDataGridView();
+                    break;
+                case CollectionElementModel.CollectionViewType.Timeline:
+                    CreateTimelineView();
+                    break;
+            }
+        }
 
 
-   
+        private async void CreateDataGridView()
+        {
+            if (dataGridView != null)
+            {
+                dataGridView.Visibility = Visibility.Visible;
+                return;
+            }
+            var vm = (GroupNodeViewModel)DataContext;
+            var dvm = new GroupNodeDataGridViewModel((ElementCollectionController)vm.Controller);
+            await dvm.CreateChildren();
+            dataGridView = new GroupNodeDataGridView(dvm);
+            ExpandedGrid.Children.Add(dataGridView);
+            dataGridView.Visibility = Visibility.Visible;
+        }
 
+        private async void CreateFreeFormView()
+        {
+            if (freeFormView != null)
+            {
+                freeFormView.Visibility = Visibility.Visible;
+                return;
+            }
+            var vm = (GroupNodeViewModel)DataContext;
+            var fvm = new AreaNodeViewModel((ElementCollectionController)vm.Controller);
+            await fvm.CreateChildren();
+            freeFormView = new AreaNodeView(fvm);
+            ExpandedGrid.Children.Add(freeFormView);
+            freeFormView.Visibility = Visibility.Visible;
+        }
+
+        private async void CreateTimelineView()
+        {
+
+            if (timelineView != null)
+            {
+                timelineView.Visibility = Visibility.Visible;
+                return;
+            }
+                
+            var vm = (GroupNodeViewModel)DataContext;
+            var tvm = new GroupNodeTimelineViewModel((ElementCollectionController)vm.Controller);
+            await tvm.CreateChildren();
+            timelineView = new GroupNodeTimelineView(tvm);
+            await timelineView.ResortTimeline();
+            ExpandedGrid.Children.Add(timelineView);
+            
         }
 
         private void ControllerOnDisposed(object source)
@@ -120,6 +183,8 @@ namespace NuSysApp
             var vm = (GroupNodeViewModel)DataContext;
             var tb = (Button)sender;
 
+            var controller = (ElementCollectionController) vm.Controller;
+
             if (timelineView != null)
                 timelineView.Visibility = Visibility.Collapsed;
             if (dataGridView != null)
@@ -130,30 +195,36 @@ namespace NuSysApp
 
             if (tb.Name == "TimeLineButton")
             {
-                if (timelineView == null)
-                {
-                    var tvm = new GroupNodeTimelineViewModel((ElementCollectionController) vm.Controller);
-                    await tvm.CreateChildren();
-                    timelineView = new GroupNodeTimelineView(tvm);
-                    await timelineView.ResortTimeline();
-                    ExpandedGrid.Children.Add(timelineView);
-                }
-                timelineView.Visibility = Visibility.Visible;
+                controller.SetCollectionViewType(CollectionElementModel.CollectionViewType.Timeline);
             }
             else if (tb.Name == "ListButton")
             {
-                dataGridView.Visibility = Visibility.Visible;
+                controller.SetCollectionViewType(CollectionElementModel.CollectionViewType.List);
             }
             else if (tb.Name == "FreeFormButton")
             {
-                if (freeFormView == null)
+                controller.SetCollectionViewType(CollectionElementModel.CollectionViewType.FreeForm);
+            }
+            else if (tb.Name == "EnterButton")
+            {
+                var id = vm.Controller.LibraryElementModel.Id;
+                var content = SessionController.Instance.ContentController.Get(id);
+                if (content != null && content.Type == ElementType.Collection)
                 {
-                    var fvm = new AreaNodeViewModel((ElementCollectionController) vm.Controller);
-                    await fvm.CreateChildren();
-                    freeFormView = new AreaNodeView(fvm);
-                    ExpandedGrid.Children.Add(freeFormView);
+                    List<Message> messages = new List<Message>();
+                    await Task.Run(async delegate
+                    {
+                        messages =
+                            await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                    });
+                    Visibility = Visibility.Collapsed;
+                    SessionController.Instance.FireEnterNewCollectionEvent();
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new UnsubscribeFromCollectionRequest(
+                                SessionController.Instance.ActiveFreeFormViewer.ContentId));
+                    await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                 }
-                freeFormView.Visibility = Visibility.Visible;
             }
         }
 

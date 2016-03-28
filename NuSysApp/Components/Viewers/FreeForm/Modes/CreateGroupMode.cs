@@ -139,7 +139,7 @@ namespace NuSysApp
                 elementMsg["y"] = p.Y;
                 elementMsg["contentId"] = contentId;
                 elementMsg["nodeType"] = ElementType.Collection;
-                elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                elementMsg["creator"] = controller2.LibraryElementModel.Id;
                 elementMsg["id"] = newCollectionId;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));

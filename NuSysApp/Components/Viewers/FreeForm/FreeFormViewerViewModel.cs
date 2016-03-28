@@ -32,32 +32,17 @@ namespace NuSysApp
 
             SelectionChanged += OnSelectionChanged;
 
-            var model = controller.Model;
-
-            if (model.GetMetaData("locationX") == null)
+            var model = controller.Model as CollectionElementModel;
+            CompositeTransform = new CompositeTransform
             {
-                CompositeTransform = new CompositeTransform
-                {
-                    ScaleX = 1,
-                    ScaleY = 1,
-                    TranslateX = -Constants.MaxCanvasSize / 2.0,
-                    TranslateY = -Constants.MaxCanvasSize / 2.0,
-                    CenterX = -Constants.MaxCanvasSize / 2.0,
-                    CenterY = -Constants.MaxCanvasSize / 2.0
-                };
-
-            }
-            else {
-                CompositeTransform = new CompositeTransform
-                {
-                    TranslateX = (double)model.GetMetaData("locationX"),
-                    TranslateY = (double)model.GetMetaData("locationY"),
-                    CenterX = (double)model.GetMetaData("centerX"),
-                    CenterY = (double)model.GetMetaData("centerY"),
-                    ScaleX = (double)model.GetMetaData("zoom"),
-                    ScaleY = (double)model.GetMetaData("zoom")
-                };
-            }
+                TranslateX = model.LocationX,
+                TranslateY = model.LocationY,
+                CenterX = model.CenterX,
+                CenterY = model.CenterY,
+                ScaleX = model.ScaleX,
+                ScaleY = model.ScaleY
+            };
+    
         }
 
         private void OnSelectionChanged(object source)

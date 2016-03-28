@@ -174,11 +174,16 @@ namespace NuSysApp
 
                 vm.AtomViewList.Add(r);
                 
-            } else if (elementType == ElementType.Text || elementType == ElementType.Web || elementType == ElementType.Collection) { 
-                
+            } else if (elementType == ElementType.Text || elementType == ElementType.Web || elementType == ElementType.Collection)
+            {
 
-       
-            var p = pos;
+
+                var title = string.Empty;
+                if (elementType == ElementType.Text)
+                    title = "Unnamed Text";
+                if (elementType == ElementType.Collection)
+                    title = "Unnamed Collection";
+                var p = pos;
 
             var dict = new Message();
             Dictionary<string, object> metadata;
@@ -194,7 +199,7 @@ namespace NuSysApp
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
             dict["nodeType"] = elementType.ToString();
-            dict["title"] =string.Empty;
+            dict["title"] = title;
             dict["x"] = (p.X).ToString();
             dict["y"] = (p.Y).ToString();
             dict["contentId"] = contentId;

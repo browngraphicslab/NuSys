@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public class StaticServerCalls
     {
-        public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string contentID, double width = 400, double height = 400, string id = null)
+        public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string contentID, double width = 400, double height = 400, string id = null, CollectionElementModel.CollectionViewType collectionView = CollectionElementModel.CollectionViewType.List)
         {
             return await Task.Run(async delegate
             {
@@ -21,6 +21,7 @@ namespace NuSysApp
                 message["width"] = width;
                 message["height"] = height;
                 message["nodeType"] = ElementType.Collection;
+                message["collectionview"] = collectionView;
                 message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 message["id"] = newId;
 

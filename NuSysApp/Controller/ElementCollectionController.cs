@@ -13,6 +13,9 @@ namespace NuSysApp
         public event ChildChangedHandler ChildAdded;
         public event ChildChangedHandler ChildRemoved;
 
+        public delegate void CollectionViewChangedHandler(object source, CollectionElementModel.CollectionViewType type);
+        public event CollectionViewChangedHandler CollectionViewChanged;
+
         public ElementCollectionController(ElementModel model) : base(model)
         {
             var contentModel = SessionController.Instance.ContentController.Get(model.LibraryId);
@@ -61,5 +64,16 @@ namespace NuSysApp
         {
             ChildRemoved?.Invoke(this, child);
         }
+
+        public void SetCollectionViewType(CollectionElementModel.CollectionViewType type)
+        {
+            var colModel = (Model as CollectionElementModel);
+            colModel.ActiveCollectionViewType = type;
+            CollectionViewChanged?.Invoke(this, type);
+
+            _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
+        }
+
+   
     }
 }

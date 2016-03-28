@@ -13,13 +13,15 @@ namespace NuSysApp
 {
     public class GroupNodeViewModel : ElementCollectionViewModel
     {
+
+        public CollectionElementModel.CollectionViewType ActiveCollectionViewType { get; set; }
        
         public GroupNodeViewModel(ElementCollectionController controller) : base(controller)
         {
             _nodeViewFactory = new GroupItemThumbFactory();
+            ActiveCollectionViewType = (controller.Model as CollectionElementModel).ActiveCollectionViewType;
 
         }
-
   
     }
 }

@@ -179,6 +179,26 @@ namespace NuSysApp
             };
         }
 
+        public static Point2d GetRectCenter(Rect rect)
+        {
+           
+            return new Point2d(rect.X + rect.Width/2, rect.Y + rect.Height/2);
+        }
+
+        public static Rect NodesToBoudingRect(List<ElementViewModel> nodeVm)
+        {
+            var points = new List<Point2d>();
+            foreach (var vm in nodeVm)
+            {
+                points.Add(new Point2d(vm.Transform.TranslateX, vm.Transform.TranslateY));
+                points.Add(new Point2d(vm.Transform.TranslateX + vm.Width, vm.Transform.TranslateY));
+                points.Add(new Point2d(vm.Transform.TranslateX, vm.Transform.TranslateY + vm.Height));
+                points.Add(new Point2d(vm.Transform.TranslateX + vm.Width, vm.Transform.TranslateY + vm.Height));
+            }
+
+            return PointCollecionToBoundingRect(points);
+        }
+
         public static Rect PointCollecionToBoundingRect(List<Point2d> pc)
         {
             var minX = double.MaxValue;

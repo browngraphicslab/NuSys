@@ -23,7 +23,17 @@ namespace NuSysApp
             _view.ManipulationMode = ManipulationModes.All;
             _view.ManipulationDelta += OnManipulationDelta;
             _view.ManipulationStarting += OnManipulationStarting;
+            _view.ManipulationCompleted += ViewOnManipulationCompleted;
             _view.PointerWheelChanged += OnPointerWheelChanged;
+        }
+
+        private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
+        {
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            if (SessionController.Instance.ActiveFreeFormViewer != vm)
+                return;
+            
+ 
         }
 
         public override async Task Deactivate()
@@ -31,6 +41,7 @@ namespace NuSysApp
             _view.ManipulationMode = ManipulationModes.None;
             _view.ManipulationDelta -= OnManipulationDelta;
             _view.ManipulationStarting -= OnManipulationStarting;
+            _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
         }
         protected void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)

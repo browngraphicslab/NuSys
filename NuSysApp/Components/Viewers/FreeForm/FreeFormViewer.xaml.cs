@@ -27,6 +27,8 @@ namespace NuSysApp
         private FloatingMenuMode _floatingMenuMode;
         private MultiMode _mainMode;
         private MultiMode _simpleEditMode;
+        private MultiMode _simpleEditGroupMode;
+        private AbstractWorkspaceViewMode _prevMode;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
@@ -53,7 +55,8 @@ namespace NuSysApp
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
                 _mainMode = new MultiMode(this, _selectMode, _floatingMenuMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
-                _simpleEditMode = new MultiMode(this, _selectMode, _nodeManipulationMode, _floatingMenuMode);
+                _simpleEditMode = new MultiMode(this, _selectMode, _panZoomMode, _nodeManipulationMode, _floatingMenuMode);
+                _simpleEditGroupMode = new MultiMode(this, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 SwitchMode(Options.SelectNode, false);
             };
             
@@ -140,7 +143,10 @@ namespace NuSysApp
             }
             else if (vm.Selections.Count == 1)
             {
-                SetViewMode(_simpleEditMode);
+                if (vm.Selections[0].ElementType == ElementType.Collection)
+                    SetViewMode(_simpleEditGroupMode);
+                else
+                    SetViewMode(_simpleEditMode);
                 var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
                 xOuterWrapper.Children.Move((uint)oldIndex, 0);
             }
@@ -179,6 +185,7 @@ namespace NuSysApp
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
+            _prevMode = _mode;
             if (mode == _mode)
                 return;
 
@@ -190,6 +197,7 @@ namespace NuSysApp
 
         public async void SwitchMode(Options mode, bool isFixed)
         {
+           
             switch (mode)
             {
                 case Options.Idle:
