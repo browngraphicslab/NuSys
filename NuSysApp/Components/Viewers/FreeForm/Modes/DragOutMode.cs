@@ -110,8 +110,6 @@ namespace NuSysApp
 
             if (!IsPointerInGroup(pointerRoutedEventArgs.GetCurrentPoint(null).Position))
             {
-
-
                 var t = (CompositeTransform) _dragItem.RenderTransform;
                 var screenX = t.TranslateX;
                 var screenY = t.TranslateY;

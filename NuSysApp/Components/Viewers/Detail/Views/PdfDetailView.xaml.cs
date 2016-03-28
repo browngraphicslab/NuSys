@@ -58,7 +58,7 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (ImageElementViewModel)DataContext;
+            var vm = (PdfNodeViewModel)DataContext;
             vm.Controller.Disposed += ControllerOnDisposed;
             DataContext = null;
         }

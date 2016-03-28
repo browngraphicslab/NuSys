@@ -260,7 +260,8 @@ namespace NuSysApp
 
         private void ScrubBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub();
+            if (DataContext != null) // CPTTE fix
+                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub();
         }
     }
 }

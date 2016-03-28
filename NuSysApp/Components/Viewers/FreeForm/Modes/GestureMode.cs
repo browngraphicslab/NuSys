@@ -62,6 +62,12 @@ namespace NuSysApp
             }
             
             SelectionByStroke();
+
+            var p = args.GetCurrentPoint(null).Position;
+            _cview.MultiMenu.Visibility = Visibility.Visible;
+            Canvas.SetLeft(_cview.MultiMenu,  p.X + 10);
+            Canvas.SetTop(_cview.MultiMenu, p.Y - 60);
+
             args.Handled = true;
         }
 
@@ -79,9 +85,7 @@ namespace NuSysApp
             var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
             if (numSelections > 0) { 
                 _inqLine.Delete();
-                _cview.MultiMenu.Visibility = Visibility.Visible;
-                Canvas.SetLeft(_cview.MultiMenu, screenPoints.Points[0].X);
-                Canvas.SetTop(_cview.MultiMenu, screenPoints.Points[0].Y);
+
             }
         }
 

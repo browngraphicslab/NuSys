@@ -105,8 +105,7 @@ namespace NuSysApp
             if (id1 == id2)
                 return;
 
-            var p = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                            e.Position);
+            var p = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(e.Position);
             p.X -= 150;
             p.Y -= 150;
 
@@ -148,7 +147,7 @@ namespace NuSysApp
 
                 //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
-                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 300, 300, newCollectionId);
+                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 380, 300, newCollectionId);
 
                 await controller2.RequestMoveToCollection(contentId);
                 await controller1.RequestMoveToCollection(contentId);
@@ -170,10 +169,12 @@ namespace NuSysApp
 
                 if (groupnode.FreeFormView != null)
                 {
+                    var np =new Point(e.Position.X - controller2.Model.Width/2, e.Position.Y - controller2.Model.Height/2);
                     var canvas = groupnode.FreeFormView.AtomContainer;
-                    targetPoint =
-                        SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas)
-                            .TransformPoint(e.Position);
+                    targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(e.Position);
+                    targetPoint.X -= controller1.Model.Width/2;
+                    targetPoint.Y -= controller1.Model.Height/2;
+
                 }
                 else
                 {

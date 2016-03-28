@@ -30,7 +30,7 @@ namespace NuSysApp
         private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
         {
             var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
-            var bb = Geometry.NodesToBoudingRect(selections);       
+            var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  !(v is LinkViewModel)).ToList());       
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -68,6 +68,8 @@ namespace NuSysApp
            
             foreach (var vm in selections.ToArray())
             {
+                if (vm.ElementType == ElementType.Link)
+                    continue;
                 var libraryElementModel = vm.Controller.LibraryElementModel;
                 var dict = new Message();
                 dict["title"] = libraryElementModel?.Title;
