@@ -170,9 +170,11 @@ namespace NuSysApp
         private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
         {
             var vm = (ElementViewModel)this.DataContext;
-            if (title.Text != vm.Controller.LibraryElementModel.Title)
+            if (title.Text != newTitle)
             {
+                title.TextChanged -= TitleOnTextChanged;
                 title.Text = vm.Controller.LibraryElementModel.Title;
+                title.TextChanged += TitleOnTextChanged;
             }
 
         }
@@ -263,7 +265,7 @@ namespace NuSysApp
                     var first = (FrameworkElement)hitsStart.First();
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
-                    if (vm == dc || (dc is FreeFormViewerViewModel))
+                    if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
                     {
                         return;
                     }

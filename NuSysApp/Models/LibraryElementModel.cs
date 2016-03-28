@@ -64,10 +64,11 @@ namespace NuSysApp
         public string Id { get; set; }
         public string Title {
             get { return _title; }
-            private set
+            set
             {
                 _title = value;
                 RaisePropertyChanged("Title");
+                OnTitleChanged?.Invoke(this, _title);
             } 
         }
         public string Creator { set; get; }
@@ -195,7 +196,7 @@ namespace NuSysApp
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             });
             Title = title;
-            OnTitleChanged?.Invoke(this, title);
+          //  OnTitleChanged?.Invoke(this, title);
         }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)
         {

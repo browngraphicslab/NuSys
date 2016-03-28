@@ -53,7 +53,7 @@ namespace NuSysApp
             _library = library;
             //vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
-            foreach (var element in vm.PageElements)
+            foreach (var element in vm.PageElements.ToArray())
             {
                 element.OnLightupContent += Select;
             }

@@ -44,9 +44,18 @@ namespace NuSysApp
                 controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
+            controller.Deleted += ControllerOnDeleted;
 
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
+        }
+
+        private void ControllerOnDeleted(object source)
+        {
+            foreach (var link in LinkList)
+            {
+                link.RequestDelete();
+            }
         }
 
         private void OnDisposed(object source)

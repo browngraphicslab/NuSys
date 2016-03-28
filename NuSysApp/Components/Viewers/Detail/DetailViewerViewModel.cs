@@ -53,7 +53,10 @@ namespace NuSysApp
             if (View == null)
                 return false;
             _nodeModel = controller.Model;
-            Title = _nodeModel.Title;
+            Title = controller.LibraryElementModel.Title;
+
+            controller.MetadataChange += ControllerOnMetadataChange;
+            controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
             
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
@@ -64,6 +67,20 @@ namespace NuSysApp
             RaisePropertyChanged("Metadata");
             this.MakeMetadataList();
             return true;
+        }
+
+        private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
+        {
+            Title = newTitle;
+            RaisePropertyChanged("Title");
+        }
+
+        private void ControllerOnMetadataChange(object source, string key)
+        {
+            if (key == "tags")
+            {
+                MakeTagList();
+            }
         }
 
         private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
@@ -133,6 +150,7 @@ namespace NuSysApp
                     Tags.Add(tagBlock);
                 }
             }
+            RaisePropertyChanged("Tags");
         }
 
         public async void AddTag(string tag)
@@ -144,7 +162,7 @@ namespace NuSysApp
             contentVm.Controller.LibraryElementModel.Keywords.Add(tag);
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
-
+            /*
             //this should be refactored later
             var tagBlock = this.MakeTagBlock(tag);
             Tags.Add(tagBlock);
@@ -153,6 +171,7 @@ namespace NuSysApp
 
             //makes the entire metadata list again to update new tags
             MakeMetadataList();
+            */
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel

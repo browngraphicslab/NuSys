@@ -214,7 +214,7 @@ namespace NuSysApp
                 IsPenMode = false;
                 xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                 PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
-                Debug.WriteLine("asdasdas");
+
             }
             
         }
@@ -333,7 +333,6 @@ namespace NuSysApp
         }
         private async Task MakeElement(HashSet<string> made, Dictionary<string,Message> messagesLeft, Message message, bool loadCollections, int levelsLeft = 1)
         {
-            Debug.WriteLine("making element");
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
             var libraryModel = SessionController.Instance.ContentController.Get(libraryId);

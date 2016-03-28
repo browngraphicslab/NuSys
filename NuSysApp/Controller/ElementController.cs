@@ -222,7 +222,6 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
-            Debug.WriteLine("unpacking");
             if (props.ContainsKey("data"))
             {
                 var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
@@ -236,6 +235,9 @@ namespace NuSysApp
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y
                 var x = props.GetDouble("x", this.Model.X);
                 var y = props.GetDouble("y", this.Model.Y);
+                Model.X = x;
+                Model.Y = y;
+
                 PositionChanged?.Invoke(this, x,y);
             }
             if (props.ContainsKey("width") || props.ContainsKey("height"))

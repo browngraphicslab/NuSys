@@ -54,7 +54,7 @@ namespace NuSysApp
 
         private void LinkControllerOnAnnotationChanged(string text)
         {
-        
+            Annotation.Text = text;
         }
 
         private void AnnotationOnTextChanged(object source, string title)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Controller;
@@ -32,6 +33,14 @@ namespace NuSysApp
             OutElementController.PositionChanged += InElementControllerOnPositionChanged;
             InElementController.SizeChanged += OutElementControllerOnSizeChanged;
             OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
+
+            
+        }
+
+        public override Task Init()
+        {
+            UpdateAnchor();
+            return base.Init();
         }
 
         private void ControllerOnAnnotationChanged(string text)
@@ -60,14 +69,6 @@ namespace NuSysApp
 
             base.Dispose();
         }
-
-        #region Link Manipulation Methods
-
-  
-
-        #endregion Link Manipulation Methods
-
-  
       
 
         public override void UpdateAnchor()

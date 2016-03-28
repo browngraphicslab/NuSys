@@ -29,6 +29,7 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             LibraryElementModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
+            content.Title = _message.GetString("title");
             content.Data = _message.GetString("data");
         }
     }

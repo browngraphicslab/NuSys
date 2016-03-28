@@ -78,13 +78,14 @@ namespace NuSysApp
                     data = await content.ReadAsStringAsync();
                 }
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
+                list.Sort();
                 List?.Items?.Clear();
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
                     var box = new CollectionTextBox();
                     box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
-                    if (dict.ContainsKey("title") && dict["title"] != null)
+                    if (dict.ContainsKey("title") && dict["title"] != null && dict["title"] != "")
                         box.Text = (string) dict["title"];
                     else
                         box.Text = "Unnamed Collection";

@@ -96,7 +96,7 @@ namespace NuSysApp
                 if (tag != "")
                 {
                     vm.AddTag(tag);
-                    Tags.ItemsSource = vm.Tags;
+                   // Tags.ItemsSource = vm.Tags;
                 }
             }
             

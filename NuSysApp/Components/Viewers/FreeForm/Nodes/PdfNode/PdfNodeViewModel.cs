@@ -66,6 +66,9 @@ namespace NuSysApp
 
         private async Task DisplayPdf()
         {
+            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null)
+                return;
+
             var data = Controller.LibraryElementModel.Data;
             var dataBytes = Convert.FromBase64String(data);
             var ms = new MemoryStream(dataBytes);

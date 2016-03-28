@@ -439,7 +439,7 @@ namespace NuSysApp
 
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
 
-            foreach (var libraryElementModel in _pageViewModel.PageElements)
+            foreach (var libraryElementModel in _pageViewModel.PageElements.ToArray())
             {
                 var dict = new Message();
                 dict["title"] = libraryElementModel?.Title;
